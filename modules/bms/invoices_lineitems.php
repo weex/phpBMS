@@ -8,15 +8,17 @@ if(isset($_GET["id"])) if($_GET["id"]) $id=$_GET["id"];
 if(isset($_POST["command"])){
 	switch($_POST["command"]){
 		case"del":
-			$thequery="delete from templineitems where id=".$deleteid." and sessionid=\"".session_id()."\"";
-			$theresult=mysql_query($thequery,$dblink);
+			$querystatement="delete from templineitems where id=".$_POST["deleteid"]." and sessionid=\"".session_id()."\"";
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult) reportError(500,("SQL Error: ".mysql_error($dblink)."<BR><BR>".$querystatement));
 		break;
 		case"add":
-			if ($memo!="Prerequisite not met") {
+			if ($_POST["memo"]!="Prerequisite not met") {
 				$price=ereg_replace("\\\$|,","",$price);
-				$thequery="insert into templineitems (invoiceid,productid,unitprice,quantity,unitcost,unitweight,memo,sessionid)
-							VALUES(".$id.",\"".$partnumber."\",".$price.",".$qty.",".$unitcost.",".$unitweight.",\"".$memo."\",\"".session_id()."\")";
-				$theresult=mysql_query($thequery,$dblink); 
+				$querystatement="INSERT INTO templineitems (invoiceid,productid,unitprice,quantity,unitcost,unitweight,memo,sessionid)
+							VALUES(".$_POST["id"].",\"".$_POST["partnumber"]."\",".ereg_replace("\\\$|,","",$_POST["price"]).",".$_POST["qty"].",".$_POST["unitcost"].",".$_POST["unitweight"].",\"".$_POST["memo"]."\",\"".session_id()."\")";
+				$queryresult=mysql_query($querystatement,$dblink); 
+				if(!$queryresult) reportError(500,("SQL Error: ".mysql_error($dblink)."<BR><BR>".$querystatement));
 				}// end if
 		break;
 	}//end switch
@@ -106,6 +108,7 @@ if(isset($_POST["command"])){
    <td valign="top" style="padding:0px;border-right:0px;"><input name="command" type="submit" class="smallButtons" value="del" style="width:35px;" onClick="return deleteLine(<?PHP echo $therecord["id"] ?>,this)"></td>
   </tr>
   <?PHP } ?>
+  </table>
   <input name="subtotal" type="hidden" value="<?PHP echo $subtotal?>">
   <input name="totalweight" type="hidden" value="<?PHP echo $totalweight?>">
   <input name="totalcost" type="hidden" value="<?PHP echo $totalcost?>">

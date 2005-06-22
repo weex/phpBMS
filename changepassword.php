@@ -4,12 +4,12 @@
 	$statement="&nbsp;";
 	if(isset($_POST["command"])){
 		//they want to change their password
-		$checkstatement="select id from users where id=".$_SESSION["userinfo"]["id"]." and password=ENCODE(\"".$currpass."\",\"".$_SESSION["encryption_seed"]."\")";
-		$checkquery=mysql_query($checkstatement);
+		$checkstatement="select id from users where id=".$_SESSION["userinfo"]["id"]." and password=ENCODE(\"".$_POST["currpass"]."\",\"".$_SESSION["encryption_seed"]."\")";
+		$checkquery=mysql_query($checkstatement,$dblink);
 		if(mysql_num_rows($checkquery)){
-			if($newpass1==$newpass2){
-				$checkstatement="update users set password=ENCODE(\"".$newpass1."\",\"".$_SESSION["encryption_seed"]."\") where id=".$_SESSION["userinfo"]["id"];
-				$checkquery=mysql_query($checkstatement);
+			if($_POST["newpass1"]==$_POST["newpass2"]){
+				$checkstatement="update users set password=ENCODE(\"".$_POST["newpass1"]."\",\"".$_SESSION["encryption_seed"]."\") where id=".$_SESSION["userinfo"]["id"];
+				$checkquery=mysql_query($checkstatement,$dblink);
 								
 				echo "<SCRIPT language=\"JavaScript\">window.close()</SCRIPT>";
 				die();

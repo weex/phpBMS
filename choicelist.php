@@ -1,8 +1,8 @@
 <?PHP
 	include("include/session.php");
 
-	$name=stripslashes($name);
-	$list=stripslashes($list);
+	if (isset($_GET["name"])) $name=stripslashes($_GET["name"]); else $name=$_POST["name"];
+	if (isset($_GET["list"])) $list=stripslashes($_GET["list"]); else $name=$_POST["list"];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
 <html>
@@ -22,9 +22,13 @@ function getObjectFromID(id){
 
 function sendInfo(name,thevalue){
 		theform=opener.document.forms['record'];
-		theform[name].value=thevalue;
-		if(theform[name].onchange) theform[name].onchange();
-		window.close();
+		if(theform[name]){
+			theform[name].value=thevalue;
+			if(theform[name].onchange) theform[name].onchange();
+			window.close();
+		} else{
+			alert ("An error has occured setting choice list \n Field Name: " + name + "\n Value to set: "+ thevalue)
+		}
 }
 
 function doOptions(){
@@ -86,19 +90,24 @@ function setFocus(){
 				$thequery=mysql_query($thequery,$dblink);		
 			break;
 		}//end switch
-	}//end if
+	} else $_POST["command"]="show";
 	
-	if(isset($_GET["list"])) $_POST["list"]=$_GET["list"];
-	$thequery="Select thevalue,selected from choices where listname=\"".$_POST["list"]."\" order by selected DESC,thevalue;";
-	$thequery=mysql_query($thequery,$dblink);
+	
+	if($_POST["command"]!="select") {
+	
+	$querystatement="SELECT thevalue,selected FROM choices WHERE listname=\"".$list."\" ORDER BY selected DESC,thevalue;";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.")
 ?>
-<form action="choicelist.php" method="post" name="thechoice"><input name="name" type="hidden" value="<?PHP echo $name ?>"><input name="list" type="hidden" value="<?PHP echo $list ?>">
+<form action="choicelist.php" method="post" name="thechoice">
+<input name="name" type="hidden" value="<?PHP echo $name ?>">
+<input name="list" type="hidden" value="<?PHP echo $list ?>">
 <div class="bodyline">
 	<div>
 		<strong>choose from list...</strong><br>
 		<select name="theselect" size="10" id="theselect" style="width:96%" ondblclick="this.form['select'].click()">
 		  <?PHP
-			while($queryrow = mysql_fetch_array($thequery)){
+			while($queryrow = mysql_fetch_array($queryresult)){
 				echo "<option value=\"".$queryrow["thevalue"]."\" onDblClick=\"this.form['select'].click()\" ";
 				if($queryrow["selected"]) echo "selected";
 				echo ">".$queryrow["thevalue"]."</option>\n";
@@ -140,3 +149,4 @@ function setFocus(){
 </form>
 </body>
 </html>
+<?php }//end if?>

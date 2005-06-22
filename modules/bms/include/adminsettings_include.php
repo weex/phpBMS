@@ -1,27 +1,27 @@
 <?php
-	if ($invoice_default_printinstruc!=$sinvoice_default_printinstruc){
+	if ($_SESSION["invoice_default_printinstruc"]!=$_POST["sinvoice_default_printinstruc"]){
 		$writesettings[]=Array(
 			"name"=>"invoice_default_printinstruc",
-			"value"=>$sinvoice_default_printinstruc
+			"value"=>$_POST["sinvoice_default_printinstruc"]
 		);		
-		$invoice_default_printinstruc=$sinvoice_default_printinstruc;
+		$_SESSION["invoice_default_printinstruc"]=$_POST["sinvoice_default_printinstruc"];
 	}
 
-	if ($shipping_markup!=$sshipping_markup){
+	if ($_SESSION["shipping_markup"]!=$_POST["sshipping_markup"]){
 		$writesettings[]=Array(
 			"name"=>"shipping_markup",
-			"value"=>$sshipping_markup
+			"value"=>$_POST["sshipping_markup"]
 		);		
-		$shipping_markup=$sshipping_markup;
+		$_SESSION["shipping_markup"]=$_POST["sshipping_markup"];
 	}
 
 
 
-	if ($shipping_postalcode!=$sshipping_postalcode){
+	if ($_SESSION["shipping_postalcode"]!=$_POST["sshipping_postalcode"]){
 		$writesettings[]=Array(
 			"name"=>"shipping_postalcode",
-			"value"=>$sshipping_postalcode
+			"value"=>$_POST["sshipping_postalcode"]
 		);		
-		$shipping_postalcode=$sshipping_postalcode;
+		$_SESSION["shipping_postalcode"]=$_POST["sshipping_postalcode"];
 	}
 ?>
