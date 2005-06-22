@@ -1,0 +1,4 @@
+'description','id','name','reportfile','type','createdby','creationdate','modifiedby','modifieddate','tabledefid','displayorder'
+'This report will prints out of every field for the table for the given records.  The report is displayed HTML format.','4','Raw Table Print','report/general_tableprint.php','report','2','2003-01-28 12:15:01','2','20040413102959','0','0'
+'This report will generate a tab-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.','5','Raw Table Export','report/general_export.php','export','2','2003-01-28 18:10:35','2','20050218110113','0','0'
+'PDF report giving basic note information (subject,dates,content) .  By deault, the notes are shown in chronological order.','19','Note Summary','modules/base/report/notes_summary.php','PDF Report','18','2005-03-30 16:41:39','2','20050401143706','12','50'

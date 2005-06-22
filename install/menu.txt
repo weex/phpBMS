@@ -1,0 +1,3 @@
+'id','name','link','parentid','displayorder','createdby','modifiedby','creationdate','modifieddate','accesslevel'
+'14','Notes','search.php?id=12','0','3','2','2','2004-04-08 14:30:58','20050126151700','0'
+'15','Admin','modules/base/admin.php','0','4','2','2','2004-04-08 14:31:36','20050209120312','90'

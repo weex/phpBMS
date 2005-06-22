@@ -1,0 +1,160 @@
+<?PHP
+// These following functions and processing are similar for all pages
+//========================================================================================
+//========================================================================================
+
+//set table id
+$tableid=9;
+
+function getRecords($id){
+//========================================================================================
+	global $dblink;
+	
+	$thequerystatement="select id, login, firstname, lastname, accesslevel, 
+				date_Format(lastlogin,\"%c/%e/%Y %T\") as lastlogin, revoked,
+				email,phone,department,employeenumber,
+
+				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
+				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				from users
+				where id=".$id;		
+	$thequery = mysql_query($thequerystatement,$dblink);
+	$therecord = mysql_fetch_array($thequery);
+	return $therecord;
+}//end function
+
+
+function setRecordDefaults(){
+//========================================================================================
+	$therecord["id"]=NULL;
+	
+	$therecord["lastname"]="";
+	$therecord["firstname"]="";
+	$therecord["login"]="";
+	
+	$therecord["email"]="";
+	$therecord["phone"]="";
+	$therecord["department"]="";
+	$therecord["employeenumber"]="";
+
+	$therecord["revoked"]=0;
+	$therecord["accesslevel"]=10;
+	$therecord["lastlogin"]=NULL;
+	
+	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
+	$therecord["modifiedby"]=NULL;
+
+	$therecord["creationdate"]=NULL;
+	$therecord["modifieddate"]=NULL;
+	
+	return $therecord;	
+}//end function
+
+
+function updateRecord(){
+//========================================================================================
+	global $dblink;
+	
+	$thequerystatement="UPDATE users SET ";
+	
+	$thequerystatement.="firstname=\"".$_POST["firstname"]."\", "; 
+	$thequerystatement.="lastname=\"".$_POST["lastname"]."\", "; 
+	$thequerystatement.="login=\"".$_POST["login"]."\", "; 
+
+	$thequerystatement.="email=\"".$_POST["email"]."\", "; 
+	$thequerystatement.="phone=\"".$_POST["phone"]."\", "; 
+	$thequerystatement.="department=\"".$_POST["department"]."\", "; 
+	$thequerystatement.="employeenumber=\"".$_POST["employeenumber"]."\", "; 
+
+	$thequerystatement.="accesslevel=".$_POST["accesslevel"].", "; 
+	if(isset($_POST["revoked"])) $thequerystatement.="revoked=1, "; else $thequerystatement.="revoked=0, ";
+
+	if($_POST["password"]) $thequerystatement.="password=encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+
+	//==== Almost all records should have this =========
+	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$thequerystatement.="WHERE id=".$_POST["id"];
+		
+	$thequery = mysql_query($thequerystatement,$dblink);
+	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+}// end function
+
+
+function insertRecord(){
+//========================================================================================
+	global $dblink;
+
+	$thequerystatement="INSERT INTO users ";
+	
+	$thequerystatement.="(login,lastname,firstname,email,phone,department,employeenumber,
+						password,accesslevel,revoked,
+	createdby,creationdate,modifiedby) VALUES (";
+	
+	$thequerystatement.="\"".$_POST["login"]."\", ";
+	$thequerystatement.="\"".$_POST["lastname"]."\", ";
+	$thequerystatement.="\"".$_POST["firstname"]."\", ";
+	
+	$thequerystatement.="\"".$_POST["email"]."\", "; 
+	$thequerystatement.="\"".$_POST["phone"]."\", "; 
+	$thequerystatement.="\"".$_POST["department"]."\", "; 
+	$thequerystatement.="\"".$_POST["employeenumber"]."\", "; 	
+	
+	$thequerystatement.="encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+	$thequerystatement.=$_POST["accesslevel"].", ";
+	if(isset($_POST["revoked"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+	
+	//==== Almost all records should have this =========
+	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$thequerystatement.="Now(), ";
+	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	
+	$thequery = mysql_query($thequerystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	return mysql_insert_id($dblink);
+}
+
+
+
+//==================================================================
+// Process adding, editing, creating new, canceling or updating
+//==================================================================
+if(!isset($_POST["command"])){
+	if(isset($_GET["id"]))
+		$therecord=getRecords($_GET["id"]);
+	else
+		$therecord=setRecordDefaults();
+	$createdby=getUserName($therecord["createdby"]);
+	$modifiedby=getUserName($therecord["modifiedby"]);
+}
+else
+{
+	switch($_POST["command"]){
+		case "cancel":
+			// if we needed to do any clean up (deleteing temp line items)
+			if(!isset($_POST["id"])) $_POST["id"]=0;
+			$theid=$_POST["id"];
+			header("Location: ../../search.php?id=".$tableid."#".$theid);
+		break;
+		case "save":
+			if($_POST["id"]) {
+				updateRecord();
+				$theid=$_POST["id"];
+				//get record
+				$therecord=getRecords($theid);
+				$createdby=getUserName($therecord["createdby"]);
+				$modifiedby=getUserName($therecord["modifiedby"]);
+				$statusmessage="Record Updated";
+			}
+			else {
+				$theid=insertRecord();
+				//get record
+				$therecord=getRecords($theid);
+				$createdby=getUserName($therecord["createdby"]);
+				$modifiedby=getUserName($therecord["modifiedby"]);
+				$statusmessage="Record Created";
+			}
+		break;
+	}
+	
+}
+?>

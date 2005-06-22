@@ -1,0 +1,329 @@
+BODY { background-color: #CCCCCC; margin:2px;margin-top:0px;}
+BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI { 
+	font-size : 12px;
+	font-family : Arial,Helvitica,sans-serif;
+	color : black; }
+	
+SELECT, INPUT, TEXTAREA, .uneditable { 
+	border: 1px solid #666666;
+	border-bottom-color:#999999;
+	border-right-color:#999999;
+	font-size: 11px; padding: 2px;  background-color: #C4DCED; vertical-align: middle; font-style:normal;
+}
+SELECT{padding:0px;}
+TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:#E3E9ED;border-color:black;}
+INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; background-image:none;}
+INPUT[disabled]:Active{border:1px outset black;}
+FORM{margin:0px;padding:0px;}
+DIV {padding:3px;}
+
+A {	color : #444444; font-weight:bold; text-decoration:none;}
+A:Hover { text-decoration:underline;}
+
+/* ============================================================================== */
+/* Form Elements                                                                  */
+/* ============================================================================== */
+
+.uneditable,.uneditable:Focus {background-color:transparent;}
+.radiochecks ,.radiochecks:Focus{background-color:white;color:black; border:0;}
+
+.Buttons,.smallButtons {
+	-moz-border-radius: 3px;
+	background-color:#ADB697;
+	color:black; font-size: 11px;  font-weight:bold; 
+	border: 1px solid #7F8B63;
+	border-top-color:#D7D6CB;
+	border-left-color:#D7D6CB;
+	cursor:pointer;
+}
+.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
+	background-color:#ADB697;
+	border:1px solid white;
+}
+.Buttons[disabled],.smallButtons[disabled]{
+	/* first three entries are from disabled, the last are from standard buttons */
+	/* this disables hover for disabled buttons */
+	background-color:#AAAAAA;color:#EFEFEF; background-image:none;
+	border: 1px solid black;
+	border-top-color:#999999;
+	border-left-color:#999999;
+}
+
+.Buttons:Active,.smallButtons:Active{
+	background-color:#666666; 
+	border: 1px solid black; 
+	border-bottom-color:#999999;
+	border-right-color:#999999;		
+	background-image:none;	
+}
+.smallButtons{font-size:10px}
+
+
+
+/* ============================================================================== */
+/* Font size/standouts                                                            */
+/* ============================================================================== */
+
+.huge{font-size : 17px;}
+.large{font-size : 16px;}
+.small { font-size : 11px;}
+.tiny { font-size : 10px}
+.mono {font-family:'Courier New', Courier, mono;width:100%;font-size:12px;}
+
+.ident { padding-left: 3px;}
+.standout {background-color:#7F8B63;color:white; font-weight:bold; font-size:14px;}
+.important{font-weight:bold;}
+
+H1, .searchtitle, .addedittitle{
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:24px;
+	margin:0px;
+	margin-bottom:8px;
+	font-weight:bold;
+	letter-spacing:-1px;
+}
+H1, .addedittitle{}
+H2{	
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	padding:2px;
+	padding-left:3px;
+	margin:0px;
+	margin-top:30px; 
+	margin-bottom:5px;
+	font-size:18px; 
+	background-color:#537DCC;
+	color:white;
+	text-transform:capitalize;
+}
+
+/* ============================================================================== */
+/* Boxes                                                                          */
+/* ============================================================================== */
+.bodyline,.untabbedbox,.tabselected,.tabs,.tabbottoms,.box,.recordbottom{ 
+	border: 1px #666666 solid; 
+	border-top-color:#999999;
+	border-left-color:#999999;
+	padding:0px;
+}
+.bodyline,.untabbedbox,.tabselected{
+	background-color: #FFFFFF; 
+}
+
+.untabbedbox{border-top-width:0px;}
+.box,.recordbottom{
+	background-color:#EEEEEE;
+	border-width:1px;
+	border-color:#666666;
+	border-bottom-color:#999999;
+	border-right-color:#999999;
+	margin:3px;
+	margin-bottom:7px;
+	padding:3px; 	
+	-moz-border-radius: 3px;	
+}
+
+/* ============================================================================== */
+/* Tabs                                                                       */
+/* ============================================================================== */
+.tabselected	{ 	
+					padding:3px;
+					border-bottom-width:0px;
+					-moz-border-radius-topleft:8px;
+					-moz-border-radius-topright:8px;
+					font-weight:bold;
+				}
+.tabs	{ 	padding:3px;
+			font-size:11px;
+			background-color:#EEEEEE; 
+			color:#999999; 
+			border-top-width:1px; 
+			border-left-width:1px; 
+			border-right-width:1px; 
+			-moz-border-radius-topleft:8px;
+			-moz-border-radius-topright:8px;
+		}
+.tabs a:hover {}
+.tabbottoms	{	
+				border-top-width:0px; 
+				border-left-width:0px; 
+				border-right-width:0px; 
+			}
+
+
+/* ============================================================================== */
+/* Query Results                                                                  */
+/* ============================================================================== */
+
+.row1{background-color:#E5E5E5;}
+.row2{background-color:#EEEEEE;}
+
+
+.dottedline { border-bottom: 2px #AAAAAA dotted;}
+
+.buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; font-size:10px; padding:1px; padding-bottom:0px;}
+.buttonSection{border-top:0;  padding-top:0; padding-bottom:1px;}
+
+.recordbottom{margin-bottom:3px;}
+.norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; }
+
+.querytable{ 
+	border: 1px #666666 solid;
+	border-bottom-color:#999999;
+	border-right-color:#999999;	
+}
+.querytable td, .queryrow1 td, .queryrow2 td{ 
+				border-top:0px;
+				border-right: 1px #9CBBE7 solid; 
+				font-size: 11px;
+				padding-top:3px;
+				padding-left:2px;
+				padding-right:2px;
+			}
+
+.queryheader{
+	font-weight:bold;
+	background-color:#537DCC;
+	color:white; 
+	border-right:1px #2247AB solid;
+	border-left:1px #9CBBE7 solid;
+	border-bottom:2px #2247AB solid;
+	padding:4px;
+	padding-bottom:2px;
+}
+
+.queryheader A{color: white;}
+.queryheader A:hover{color: white;}
+.queryheader A:active{color: white;}
+.queryheader A:visited{color: white;}
+.querytable td.queryfooter, .queryfooter{
+	background-color:#ADB697;
+	color:black; 
+	font-weight:bold; 
+	border-top: 2px #7F8B63 solid; 
+	border-left:1px solid #D7D6CB; 
+	border-right: 1px solid #7F8B63;}
+
+.qr1,.qr2{background-color:#C4DCED;
+			cursor: pointer; 
+            cursor: hand;
+}
+.qr2{background-color:white;}
+
+.qr1:hover, .qr2:Hover {background-color:#E3E9ED;}
+
+.qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
+.qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
+
+
+/* ============================================================================== */
+/* Auto Fill                                                                      */
+/* ============================================================================== */
+
+	.autofillField{
+		background-image:  url("magnify.gif");
+		background-repeat:no-repeat;
+		background-position:right;
+		background-origin: border;
+	}
+	.autofillDropDown{
+		border: 1px solid black;
+		padding:1px;
+		position:absolute;
+		background-color:white;		
+	}
+	.autofillDropDown td{font-size:11px; padding:1px;}
+	.af-choice{font-weight:bold}
+	.af-extra{color:#999999;}
+	.af-highlighted{background-color:#2247AB;}
+	.af-highlighted td{color:white;}
+
+
+/* ============================================================================== */
+/* Menu Navigation                                                                */
+/* ============================================================================== */
+	#appname{
+		float:left;
+		padding-top:6px;
+		font-weight:bold;
+		font-size:16px;
+	}
+
+	#menu{
+		margin-bottom:5px;
+		background-color:#2247AB;
+		border:2px solid #2247AB;
+		color:white;
+		border-bottom-width:1px;
+	}
+	#menu td,#menu form{color:white;}
+	
+	  .mainmenuitems {
+		font-weight: bold; 
+		cursor: pointer; 
+		cursor: hand;
+		padding:0px;			
+		background-color:#537DCC;
+	 }
+	.mainmenuitems a{
+		color:white;
+		display:block;
+		padding:3px;
+		padding-left:7px;
+		border: 1px solid #2247AB;
+	}
+	.mainmenuitems a:hover{border: 1px solid white; text-decoration:none;}
+	
+	.submenuitems {
+		position:absolute;
+		background-color:#E3E9ED;
+		padding:2px;					
+		border:1px solid black;
+	}
+	.submenuitems a{display:block; 
+		margin-bottom:1px;
+		padding:2px;
+		font-size:11px;
+		color:black;
+	}
+	.submenuitems a:hover{text-decoration:none; color:white; background-color:#2247AB;}
+	
+/* ============================================================================== */
+/* Calendar                                                                       */
+/* ============================================================================== */
+	.calendartable {
+		border: 1px #666666 solid;
+		border-bottom-color:#999999;
+		border-right-color:#999999;	
+	}
+	
+	.calendartable td a{
+		padding-top:4px;
+		padding-bottom:4px;
+		display:block;
+		border:1px solid transparent;
+	}
+
+	.calendartable td a:hover{
+		background-color:black;
+		color:white;
+		border:1px solid #537DCC;
+	}
+
+	.today{background-color:#FFFFCC}
+	.weekend{background-color:#C4DCED;}
+	.othermonths{background-color:#999999;color:white; font-weight:normal;}
+	.dayofweek{
+		background-color:#537DCC;
+		color:white; 
+		border-right:1px #2247AB solid;
+		border-left:1px #9CBBE7 solid;
+		border-bottom:2px #2247AB solid;
+		padding:4px;
+		padding-bottom:2px;
+	}
+	.regulardays{background-color:white;}
+	.regulardays,.today,.dayofweek,.weekend{
+		border-right: 1px #9CBBE7 solid; 
+		border-bottom: 1px #9CBBE7 solid; 
+		font-size: 11px;
+	}	
