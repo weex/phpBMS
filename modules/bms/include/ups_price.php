@@ -16,7 +16,9 @@ HEIGHT    - (optional) Height (in inches) of oversized package.
 LENGTH    - (optional) Length (in inches) of oversized package.
 OVERSIZED - (optional) Package is oversized, valid options are YES and NO,
                        defaults to NO.
-RESPONSE  - (optional) Delivery confirmation service, valid options are
+RESPONSE  - (not used) As of 7/12/2005, the response actually casues the UPS CGI script to break, so we are no
+					   longer using it
+					   Delivery confirmation service, valid options are
                        NONE BASIC SIGNATURE ALTERNATE or ALL, defaults to
 					   NONE.
 SATDELIV  - (optional) Saturday delivery, valid options are YES and NO,
@@ -131,7 +133,7 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 	$passedparams.="&35_calltag=".$calltag;
 	$passedparams.="&37_saturdaydelivery=".$satdeliv;
 	$passedparams.="&38_saturdaypickup=".$satpickup;
-	$passedparams.="&39_response=".$response;
+	//$passedparams.="&39_response=".$response;
 	$passedparams.="&43_vcd=".$verbconf;
 	$passedparams.="&44_firstshipnotify=".$shipnot1;
 	$passedparams.="&45_secondshipnotify=".$shipnot2;
