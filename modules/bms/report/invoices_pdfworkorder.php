@@ -303,6 +303,7 @@
 		//write the frickin thing! Need to write to a temp file and then you know...
 		chdir("../../../report");
 		$file=basename(tempnam(getcwd(),'tmp'));
+		chmod($file,744);		
 		rename($file,$file.'.pdf');
 		$file.='.pdf';
 	
