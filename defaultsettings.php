@@ -11,8 +11,8 @@ invoice_default_printinstruc	= "Thank You For Your Order."
 [ mySQL ]
 mysql_server			= "localhost"
 mysql_database			= "phpbms"
-mysql_user			= "phpbms"
-mysql_userpass			= "phpbms"
+mysql_user			= "bms"
+mysql_userpass			= "bmspass"
 
 [ Company ]
 company_name			= "Kreotek LLC"

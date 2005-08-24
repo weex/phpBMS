@@ -1,0 +1,6 @@
+phpBMS v0.51/ BMS module v0.21
+==============================
+
+phpBMS v0.5/ BMS module v0.2
+==============================
+Initial Release

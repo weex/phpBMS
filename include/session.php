@@ -53,7 +53,7 @@ function sendDebug($variable){
 // Start Code
 //=================================================================================================================
 	session_start();
-	error_reporting(E_ALL);
+	//error_reporting(E_ALL);
 	$mainpath="";
 	if (!isset($_SESSION["isloaded"])) $mainpath=loadSettings();
 	

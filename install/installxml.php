@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 
 function importData($thetable){
 	global $dblink;
@@ -62,7 +63,7 @@ function createTables(){
 }//end function
 
 
-function loadSettings() {	
+function loadSettings() {
 	$settingsfile = @ fopen("../settings.php","r");
 	if($settingsfile){
 		//loop through the settings file and load variables into the session 
@@ -129,73 +130,77 @@ function writeSettings($server,$database,$user,$userpass){
 	return "settings.php file updated successfully";
 }//end function
 
-
+function createDefaultFiles(){
+	$thereturn="Copying Default Files Successful\n";
+	if(!copy("../defaultsettings.php","../settings.php"))
+		$thereturn="Error Copying Default Settings File.";
+	if(!copy("../report/defaultlogo.png","../report/logo.png"))
+		$thereturn="Error Copying Default Logo Picture File.";
+	return $thereturn;
+}
 
 		$thereturn="Error Processing: No Command Given";
 		if(isset($_GET["command"])){
 			$vars=loadSettings();
-			if (!is_array($vars)) 
-				$thereturn=$vars; 
-			else {
 
-				switch($_GET["command"]){
-					case "updatesettings":
-						$thereturn=writeSettings($_GET["ms"],$_GET["mdb"],$_GET["mu"],$_GET["mup"]);
-					break;
+			switch($_GET["command"]){
+				case "updatesettings":
+					$thereturn=createDefaultFiles();
+					$thereturn.=writeSettings($_GET["ms"],$_GET["mdb"],$_GET["mu"],$_GET["mup"]);
+				break;
 
 
-					case "testconnection":
-						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
-						if(!$dblink) 
-							$thereturn="Could Not Establish Connection To MySQL Server: Check server, username and password"; 
-						else
-							$thereturn="Connection to MySQL Established";
-					break;
-					
-					
-					case "createdatabase":
-						$thereturn="";
-						$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
-						if (!mysql_select_db($vars["mysql_database"])){
-							$queryresult=mysql_query("create database `".$vars["mysql_database"]."`",$dblink);							
-							if(!$queryresult)
-								$thereturn=mysql_error($dblink)."\n";
-						}
-						
-						if (!mysql_select_db($vars["mysql_database"])) 
-							$thereturn.="Could not connect to database: '".$vars["mysql_database"]."'.";
-						else
-							$thereturn.="Connection to database '".$vars["mysql_database"]."' established";
-					break;
-					
-		
-					case "populatedata":
-						$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
-						mysql_select_db($vars["mysql_database"]);
-						
-						$thereturn=createTables();
-						if(!$thereturn)
-							$thereturn="Tables Successfully created\n===========================\n";
-						else
-							$thereturn.="\n\n";
-							
-						$thereturn.=importData("notes");
-						$thereturn.=importData("menu");
-						$thereturn.=importData("modules");
-						$thereturn.=importData("reports");
-						$thereturn.=importData("tablecolumns");
-						$thereturn.=importData("tabledefs");
-						$thereturn.=importData("tablefindoptions");
-						$thereturn.=importData("tableoptions");
-						$thereturn.=importData("tablesearchablefields");
-						$thereturn.=importData("users");
-						//$thereturn.=importData("usersearches");
-						$thereturn.="==================\nDone Importing Data\n==================";
+				case "testconnection":
+					$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					if(!$dblink) 
+						$thereturn="Could Not Establish Connection To MySQL Server: Check server, username and password"; 
+					else
+						$thereturn="Connection to MySQL Established";
+				break;
 				
-					break;
+				
+				case "createdatabase":
+					$thereturn="";
+					$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					if (!mysql_select_db($vars["mysql_database"])){
+						$queryresult=mysql_query("create database `".$vars["mysql_database"]."`",$dblink);							
+						if(!$queryresult)
+							$thereturn=mysql_error($dblink)."\n";
+					}
 					
-				}//end switch
-			}//end if
+					if (!mysql_select_db($vars["mysql_database"])) 
+						$thereturn.="Could not connect to database: '".$vars["mysql_database"]."'.";
+					else
+						$thereturn.="Connection to database '".$vars["mysql_database"]."' established";
+				break;
+				
+	
+				case "populatedata":
+					$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					mysql_select_db($vars["mysql_database"]);
+					
+					$thereturn=createTables();
+					if(!$thereturn)
+						$thereturn="Tables Successfully created\n===========================\n";
+					else
+						$thereturn.="\n\n";
+						
+					$thereturn.=importData("notes");
+					$thereturn.=importData("menu");
+					$thereturn.=importData("modules");
+					$thereturn.=importData("reports");
+					$thereturn.=importData("tablecolumns");
+					$thereturn.=importData("tabledefs");
+					$thereturn.=importData("tablefindoptions");
+					$thereturn.=importData("tableoptions");
+					$thereturn.=importData("tablesearchablefields");
+					$thereturn.=importData("users");
+					//$thereturn.=importData("usersearches");
+					$thereturn.="==================\nDone Importing Data\n==================";
+			
+				break;
+				
+			}//end switch
 		}//end if
 		
 		

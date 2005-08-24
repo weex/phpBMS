@@ -74,7 +74,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		var themodule=getObjectFromID("modules");
 		var responseText= getObjectFromID("moduleresults");
 		if(themodule.value=="")
-			alert("First, Select a mdoule");
+			alert("First, select a Module");
 		else {
 			var theURL="../modules/"+themodule.value+"/install/install.php";
 			loadXMLDoc(theURL,null,false);
@@ -117,6 +117,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<h4 style="margin-right:42%">A) Enter Connection Information</h4>
 	
 	<div style="margin-left:25px;margin-right:42%;">
+		<div>Enter The mySQL connection information and then click the &quot;Create Settings&quot; button. This will create the settings file required to run phpBMS. It will also copy some other default files used throughout the program (logo picture used on reports, etc..)</div>
 		<div><em style="color:red;">(insecure if not done through SSL)</em></div>
 		<div>
 			MySQL Server<br>
@@ -135,12 +136,12 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			MySQL Password<br>
 			<input type="password" name="mysqluserpass" id="mysqluserpass" size="32" value="">
 		</div>
-		<div><input type="button" value="Update Settings" class="Buttons" onClick="runCommand('updatesettings')"></div>
+		<div><input type="button" value="Create Settings" class="Buttons" onClick="runCommand('updatesettings')"></div>
 	</div>
 	
-	<h4>B) or, Manually modify the settings.php file through shell</h4>
+	<h4>B) Or, Manually Create the settings.php File</h4>
 	<div style="margin-left:25px;">		
-	Modify the MySQL settings in the <strong>settings.php</strong> file. You can also modify any other settings at this time but the four
+	Copy the file <strong>defaultsettings.php</strong> and create the file <strong>settings.php</strong>. Make sure to modify the MySQL settings in the <strong>settings.php</strong> file. You can also modify any other settings at this time but the four
 	settings that are essential to connecting to the database are:
 	<ul class="small">
 		<li><strong>mysql_server</strong>: the mysql server location (in most cases, this should be the same location as the web server, or &quot;localhost &quot;)<br><br>
