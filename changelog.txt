@@ -1,6 +1,14 @@
-phpBMS v0.51/ BMS module v0.21
+phpBMS v0.51/ BMS module v0.51
 ==============================
+- Fixed issue with invoice line items not able to enter/fill correctly
+- addressed global variable problem in multiple areas
+- Removed parameter "response" from passed variables to UPS shipping lookup.  
+- Including parameter breaks the CGI lookup (returned blank response) for UPS shipping lookup
+- Included amount due on invoice report
+- Added Update Functionality
+- Modified Install routines to copy default settings file
+- Fixed report permissions problem
 
-phpBMS v0.5/ BMS module v0.2
+phpBMS v0.5/ BMS module v0.5
 ==============================
 Initial Release
