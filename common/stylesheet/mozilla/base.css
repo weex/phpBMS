@@ -237,6 +237,11 @@ H2{
 	.af-highlighted{background-color:#666666;}
 	.af-highlighted td{color:white;}
 
+/* ============================================================================== */
+/* Choice List                                                                    */
+/* ============================================================================== */
+	.choiceListBlank{ font-style:italic;}
+	.choiceListModify {background-color:#999999; font-weight:bold;}
 
 /* ============================================================================== */
 /* Menu Navigation                                                                */

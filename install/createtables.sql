@@ -1,7 +1,6 @@
 CREATE TABLE `choices` (
   `id` int(11) NOT NULL auto_increment,
   `listname` varchar(64) NOT NULL default '',
-  `selected` smallint(6) NOT NULL default '0',
   `thevalue` varchar(64) default NULL,
   UNIQUE KEY `theid` (`id`)
 ) TYPE=MyISAM PACK_KEYS=0; 

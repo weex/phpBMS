@@ -49,15 +49,6 @@ function dosearch(theform){
 	window.close();
 }
 
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
 function toggletips(){
 	var thebutton=getObjectFromID("showtips");
 	var thediv=getObjectFromID("tipsbox");

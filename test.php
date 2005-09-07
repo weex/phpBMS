@@ -1,49 +1,31 @@
-<?php
-function loadSettings() {
-	$_SESSION["isloaded"]=true;
-	
-	$path="";
-	$count=1;
-	//need to look for settings file... only go up a total of 5 directorieds
-	while(!file_exists("settings.php") and ($count<5)){
-		$path.="../";
-		@ chdir("../");
-		$count++;
-	}
-	
-	$settingsfile =  @ fopen("settings.php","r");
-	if($settingsfile){
-		//loop through the settings file and load variables into the session 
-		while( !feof($settingsfile)) {
-			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
-			if ($line){
-				$key=trim($key);
-				$value=trim($value);
-				if($key!="" and !strpos($key,"]")){	
-					$startpos=strpos($value,"\"");
-					$endpos=strrpos($value,"\"");
-					if($endpos!=false)
-						$value=substr($value,$startpos+1,$endpos-$startpos-1);
-					$_SESSION[$key]=$value;
-				}
-			}
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
-		}
-		fclose($settingsfile);
-		return $path;
-	} else reportError(500,"Settings file could not be opened");
-}
+<?php 
+	include("include/session.php");
+	include("include/common_functions.php");
+	include("include/fields.php");
 
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>phpBMS - TEST</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/grays/base.css" rel="stylesheet" type="text/css">
+<link href="common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="common/javascript/common.js"></script>
+<script language="javascript" src="common/javascript/choicelist.js"></script>
+<script language="javascript" src="common/javascript/fields.js"></script>
+<script language="javascript" src="common/javascript/autofill.js"></script>
 </head>
-<body><?php loadSettings();?>
+<body>
+	<div>
+		<?PHP autofill("clientid","",2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"70","maxlength"=>"128","style"=>"","style"=>"font-weight:bold"),1,"The quote/order/invoice must have a client.") ?>
+		<br><br>
+		<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"11","maxlength"=>"32","style"=>"border-left-width:0px;"),false,"") ?>
+	</div>
+	<div>
+		<?PHP choicelist("test2","","test"); ?>
+	</div>
+	<div align="right">
+		<?PHP choicelist("test","","test"); ?>
+	</div>
+	
 </body>
 </html>

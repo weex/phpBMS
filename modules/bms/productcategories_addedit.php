@@ -12,6 +12,7 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 </head>
 <body><?php include("../../menu.php")?>

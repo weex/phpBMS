@@ -1,15 +1,6 @@
 //Set up all switching array
 theReport=new Array();
 
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
 function switchReport(theitem){
 	var theform=theitem.form;
 	for(var i=0;i<theReport.length;i++){

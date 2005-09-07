@@ -23,6 +23,7 @@
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
+					invoices.ponumber,
 					
 					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
 					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
@@ -136,22 +137,24 @@
 		
 		$pdf->SetXY($leftmargin,$tempnext+.05);
 		$pdf->SetFont("Arial","",8);
-		$pdf->Cell(1,.13,"Order ID",$border_debug,0,"L");
-		$pdf->Cell(1,.13,"Order Date",$border_debug,0,"L");
-		$pdf->Cell(2.5,.13,"Processed by",$border_debug,0,"L");
+		$pdf->Cell(.75,.13,"Order ID",$border_debug,0,"L");
+		$pdf->Cell(.75,.13,"Order Date",$border_debug,0,"L");
+		$pdf->Cell(.75,.13,"Client PO",$border_debug,0,"L");
+		$pdf->Cell(2.25,.13,"Processed by",$border_debug,0,"L");
 		$pdf->SetX($paperwidth-$rightmargin-1.5);
 		$pdf->Cell(1.5,.13,"Payment Method",$border_debug,0,"L");
 	
 		$pdf->SetXY($leftmargin,$tempnext+$tempheight/2+0.03);
-		$pdf->Cell(1,.13,$therecord["id"],$border_debug,0,"L");
-		$pdf->Cell(1,.13,$therecord["orderdate"],$border_debug,0,"L");
+		$pdf->Cell(.75,.13,$therecord["id"],$border_debug,0,"L");
+		$pdf->Cell(.75,.13,$therecord["orderdate"],$border_debug,0,"L");
+		$pdf->Cell(.75,.13,$therecord["ponumber"],$border_debug,0,"L");
 		
 		// THe last person who modified the record is the person who processed the order
 		$getuserstatement="select firstname,lastname from users where id=".$therecord["modifiedby"];
 		$userquery=mysql_query($getuserstatement,$dblink);
 		$userrecord=mysql_fetch_array($userquery);
 		
-		$pdf->Cell(2.5,.13,$userrecord["firstname"]." ".$userrecord["lastname"],$border_debug,0,"L");
+		$pdf->Cell(2.25,.13,$userrecord["firstname"]." ".$userrecord["lastname"],$border_debug,0,"L");
 		$pdf->SetX($paperwidth-$rightmargin-1.5);
 		$pdf->Cell(1.5,.13,$therecord["paymentmethod"],$border_debug,0,"L");
 	

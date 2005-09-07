@@ -1,12 +1,3 @@
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
 function showSavedSearches(option){
 	var thedisplay="none";					
 	var thediv=getObjectFromID("showsavedsearches");	

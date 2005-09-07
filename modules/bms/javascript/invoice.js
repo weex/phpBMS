@@ -52,6 +52,22 @@ function populateShipping(){
 			theitem.value=thevalue;
 			if(theitem.onchange) theitem.onchange();
 		}
+	} else {
+		//blank out current shipping
+		theitem=getObjectFromID("address1");
+		if((theitem.value!="") && confirm("Do you wish to clear the shipping information?")){
+				theitem.value="";
+				theitem=getObjectFromID("address2");
+				theitem.value="";
+				theitem=getObjectFromID("city");
+				theitem.value="";
+				theitem=getObjectFromID("state");
+				theitem.value="";
+				theitem=getObjectFromID("postalcode");
+				theitem.value="";
+				theitem=getObjectFromID("country");
+				theitem.value="";
+		}
 	}
 	return true;
 }
@@ -160,8 +176,8 @@ function deleteLine(theid,theitem){
 
 //this function sets the default shipped date information for shipping appropriately
 function setShipped(theitem){
-	var thecheckbox=document.forms["record"]["shipped"]
-	var thedate=document.forms["record"]["shippeddate"]
+	var thecheckbox=getObjectFromID("shipped");
+	var thedate=getObjectFromID("shippeddate");
 
 	if (theitem.name=="shipped"){
 		if(thecheckbox.checked) {
@@ -305,15 +321,6 @@ function dollartoNumber(thedollar){
 	return thenumber;
 }
 
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
 function showPaymentOptions(){
 	var theform=document.forms["record"];
 	var checkinfo=getObjectFromID("checkpaymentinfo");
@@ -357,4 +364,13 @@ function disableSaves(theform){
 			theform[i].disabled="true";
 		}
 	}
+}
+
+function showWebConfirmationNum(theitem){
+		webdiv=getObjectFromID("webconfirmdiv");
+		if (theitem.checked)
+			webdiv.style.display="block";
+		else
+			webdiv.style.display="none";
+			
 }

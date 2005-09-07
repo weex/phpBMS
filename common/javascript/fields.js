@@ -299,35 +299,6 @@ function formatDollar(thenumber){
 	return newdollar;
 }
 
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
-
-function loadXMLDoc(url,readyStateFunction,async) 
-{
-	// branch for native XMLHttpRequest object
-	if (window.XMLHttpRequest) {
-		req = new XMLHttpRequest();
-		req.onreadystatechange = readyStateFunction;
-		req.open("GET", url, async);
-		req.send(null);
-	// branch for IE/Windows ActiveX version
-	} else if (window.ActiveXObject) {
-		req = new ActiveXObject("Microsoft.XMLHTTP");
-		if (req) {
-			if(readyStateFunction) req.onreadystatechange = readyStateFunction;
-			req.open("GET", url, async);
-			req.send();
-		}
-	}
-}
-
 function  processUniqueReqChange(){
 	var response,isunique,thename,thefield,theitem;
 	

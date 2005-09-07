@@ -11,7 +11,9 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
@@ -52,7 +54,7 @@
 			</div>
 			<div>
 				lead source<br>
-        		<?PHP choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("class"=>"small","style"=>"width:150px","maxlength"=>"64")); ?>
+        		<?PHP choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("class"=>"small","style"=>"width:170px")); ?>
 			</div>
 			</div>
 			
@@ -60,7 +62,7 @@
 				<div><strong>default payment information</strong></div>
 				<div>
 					payment type<br>
-					<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("style"=>"width:150px;","size"=>"20","maxlength"=>"64")); ?>
+					<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("style"=>"width:170px;")); ?>
 				</div>
 				<div>
 					credit card number<br>

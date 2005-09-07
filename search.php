@@ -169,6 +169,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 <link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
 	 work properly -->
+<script language="JavaScript" src="common/javascript/common.js" type="text/javascript" ></script>
 <script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
 </head>
 <body>

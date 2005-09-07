@@ -51,15 +51,6 @@ function dosort(theform){
 	window.close();
 }
 
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
 function togglesql(){
 	var thebutton=getObjectFromID("showsql");
 	var thediv=getObjectFromID("sqlbox");

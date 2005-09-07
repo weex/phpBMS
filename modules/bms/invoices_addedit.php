@@ -16,7 +16,9 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="javascript/invoice.js"></script>
 <script language="JavaScript" src="../../common/javascript/cal.js"></script>
@@ -27,7 +29,7 @@
 <?PHP } // end if ?>
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <?php invoice_tabs("General",$therecord["id"]);?><div class="untabbedbox">
-	<div style="float:right;width:160px;margin-bottom:0px;padding-bottom:0px;">
+	<div style="float:right;width:250px;margin-bottom:0px;padding-bottom:0px;">
 			<?php include("../../include/savecancel.php"); ?>
 			  </script>
 			  <?php if($therecord["id"]){?>
@@ -36,30 +38,53 @@
 				</div>
 			  <?php }//end if?>
 			<div class="box" style="margin-bottom:0px;" align="right">
-				<div align="left">
-					id<br>
-					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%">
-				</div>
-				<div class="important" align="left">
-				  status<br>
-				  <?PHP  if($therecord["status"]=="VOID" || $therecord["status"]=="Invoice") {?>
-						<input name="status" type="text" value="<?php echo $therecord["status"]?>" size="10" maxlength="10" readonly="true" class="uneditable" style="width:100%;font-weight:bold">
-					<?php }else 
-						basic_choicelist("status",$therecord["status"],Array(Array("name"=>"Quote","value"=>"Quote"),Array("name"=>"Order","value"=>"Order"),Array("name"=>"Invoice","value"=>"Invoice"),Array("name"=>"VOID","value"=>"VOID")),Array("onChange"=>"checkStatus(this)","class"=>"important","style"=>"width:100px;"));
-				  ?>
-				</div>
-				<div align="left">
-					order date<br>
-					<?PHP field_cal("orderdate",$therecord["orderdate"],0,"Order date must be a valid date",Array("size"=>"15","maxlength"=>"11"),false);?>
+				<div align="left" style="float:right">
+					<div>
+						id<br>
+						<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" style="">
+					</div>
+					<div>
+						invoice date<br>
+						<?PHP field_cal("invoicedate",$therecord["invoicedate"],0,"Invoice date must be a valid date",Array("size"=>"11","maxlength"=>"11"),false);?>
+					</div>
+					<div>
+						required date<br>
+						<?PHP field_cal("requireddate",$therecord["requireddate"],0,"Required date must be a valid date",Array("size"=>"11","maxlength"=>"11"),false);?>
+					</div>
 				</div>
 				<div align="left">
-					invoice date<br>
-					<?PHP field_cal("invoicedate",$therecord["invoicedate"],0,"Invoice date must be a valid date",Array("size"=>"15","maxlength"=>"11"),false);?>
+					<div class="important">
+						type<br>
+						<?PHP  if($therecord["status"]=="VOID" || $therecord["status"]=="Invoice") {?>
+							<input name="status" type="text" value="<?php echo $therecord["status"]?>" size="11" maxlength="11" readonly="true" class="uneditable" style="width:100%;font-weight:bold">
+						<?php }else 
+							basic_choicelist("status",$therecord["status"],Array(Array("name"=>"Quote","value"=>"Quote"),Array("name"=>"Order","value"=>"Order"),Array("name"=>"Invoice","value"=>"Invoice"),Array("name"=>"VOID","value"=>"VOID")),Array("onChange"=>"checkStatus(this)","class"=>"important","style"=>"width:90px"));
+						?>
+					</div>
+					<div>
+						order date<br>
+						<?PHP field_cal("orderdate",$therecord["orderdate"],0,"Order date must be a valid date",Array("size"=>"11","maxlength"=>"11"),false);?>
+					</div>
+					<div>
+						Their PO<br>
+						<input name="ponumber" id="ponumber" type="text" value="<?PHP echo $therecord["ponumber"]?>" size="11" maxlength="64">
+					</div>
 				</div>
+				<div align="left"><?PHP field_checkbox("weborder",$therecord["weborder"],0,Array("onClick"=>"showWebConfirmationNum(this);"));?> web order</div>
+				<div align="left" style="display:<?php if($therecord["weborder"]==1) echo "block"; else echo "none"; ?>" id="webconfirmdiv">
+					web confirmation number<br>
+					<input name="webconfirmationno" type="text" value="<?PHP echo $therecord["webconfirmationno"] ?>" size="38" maxlength="64">
+				</div>						
+
+				<div align="left">
+					lead source<br>
+					<?PHP choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("style"=>"width:220px;")); ?>
+				</div>				
+
 			</div>
 	</div>
 	
-	<div style="margin-right:163px;">
+	<div style="margin-right:255px;">
 		<h1><?php echo $pageTitle ?></h1>
 		<div class="important" style="margin-bottom:13px;">
 			  client<br>			  
@@ -94,13 +119,14 @@
 					</div>
 				</td>
         		</tr>
-        	</table>		
-			<div>
+				<tr><td colspan=3><div>
 				country<br>
 				<input name="country" id="country" type="text" value="<?PHP echo $therecord["country"]?>" size="44" maxlength="64">
-			</div>
+				</div></td></tr>
+        	</table>
 	</div>
-	<div style="margin-bottom:0px;padding-bottom:0px;"><iframe src="invoices_lineitems.php?id=<?PHP echo $therecord["id"];?>" name="lineitems" width="99%" marginwidth="0" height="170" marginheight="0" scrolling="auto"></iframe></div>
+	<div style="clear:both;"></div>
+	<div style="margin-bottom:0px;padding-bottom:0px;"><iframe src="invoices_lineitems.php?id=<?PHP echo $therecord["id"];?>" name="lineitems" width="99%" marginwidth="0" height="215" marginheight="0" scrolling="auto"></iframe></div>
 	<div style="float:left;width:370px;">
 		<table border=0 cellspacing=0 cellpadding=0>
 			<tr>
@@ -135,16 +161,12 @@
 		<div style="margin:0px;padding:0px;">shipping&nbsp;<input name="shipping" id="shipping" type="text" value="<?PHP echo $therecord["shipping"]?>" size="10" maxlength="10" onChange="calculateTotal();" style="text-align:right;" ></div>
 		<div style="margin:0px;padding:0px;" class=important>total&nbsp;<input name="totalti" type="text" value="<?PHP echo $therecord["totalti"]?>" size="10" maxlength="10" onChange="calculateTotal();" class="uneditable"  readonly="true" style="text-align:right;font-weight:bold"></div>
 		<input name="totalcost" type="hidden" value="<?PHP echo $therecord["totalcost"] ?>">
-	</div>
-
-	<div style="width:49%;float:right;">
+	</div><div style="width:300px;float:right;">
 	<h2>payment information</h2>
 	<div>
 		payment method<br>
-		<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("size"=>"24","maxlength"=>"64")); ?>
-		  <script language="JavaScript">
-			document.forms["record"]["paymentmethod"].onchange=showPaymentOptions;
-		  </script>
+		<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod"); ?>
+		  <script language="JavaScript">document.forms["record"]["paymentmethod"].onchange2=new Function("showPaymentOptions()");</script>
 	</div>
 	<div style="display:none;" id="checkpaymentinfo">
 		<div>
@@ -193,13 +215,11 @@
 <input name="amountdue" type="text" value="<?PHP echo $therecord["amountdue"] ?>" size="11" maxlength="11" onChange="calculatePaidDue();" style="text-align:right; font-weight:bold;"></td>
 	 </tr>	  
 	</table>
-</div>
-
-<div style="margin-right:50%">
+</div><div style="margin-right:330px;">
 			<h2>shipping information</h2>
 				<div>
 				   ship via<br>
-				   <?PHP choicelist("shippingmethod",$therecord["shippingmethod"],"shippingmethod",Array("size"=>"22","maxlength"=>"64",)); ?><input name="estimate" type="button" class="Buttons" id="estimate" value="estimate UPS shipping" onClick="estimateShipping()" style="margin-left:10px;">		
+				   <?PHP choicelist("shippingmethod",$therecord["shippingmethod"],"shippingmethod"); ?><input name="estimate" type="button" class="Buttons" id="estimate" value="estimate UPS shipping" onClick="estimateShipping()" style="margin-left:10px;">		
 				</div>			
 				<div>
 					tracking number<br>
@@ -219,21 +239,11 @@
 						field_text("shippeddate",$therecord["shippeddate"],0,"Shipped date must be a valid date.","date",$theattributes); 
 					?>
 				</div>
-				<h2>web information</h2>
-				<div><?PHP field_checkbox("weborder",$therecord["weborder"]);?> web order</div>
-				<div>
-					web confirmation number<br>
-					<input name="webconfirmationno" type="text" style="" value="<?PHP echo $therecord["webconfirmationno"] ?>" size="32" maxlength="64">
-				</div>						
 		</div>
 		
 
 <div>
 <h2>other information</h2>
-<div>
-	lead source<br>
-	<?PHP choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("size"=>"21","maxlength"=>"64")); ?>
-</div>				
 <div>
 	special instructions (will not print on invoice)<br>
 	<textarea name="specialinstructions" cols="45" rows="3" style="width:100%"><?PHP echo $therecord["specialinstructions"]?></textarea>	

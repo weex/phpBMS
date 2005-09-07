@@ -1,16 +1,10 @@
 
 			key="";
 			function captureKey(e){
-				 if(!e) // IE
-				 	e=window.event;
-				key = e.keyCode;
+				 //first line is for IE
+				 if(!e) e=window.event;
+				 key = e.keyCode;
 			}
-			
-			function auotfillInit(divid){
-				thediv=getObjectFromID(divid);
-				displayfield=getObjectFromID("ds-"+divid.substring(3));
-			}
-
 			
 			function autofillChange(theitem){
 				
@@ -34,7 +28,7 @@
 								return false;}
 						}
 						if(theitem.value.toLowerCase()==changeitem.toLowerCase())
-							return false;
+							return true;
 					}
 				}
 				if (theitem.value.toLowerCase()!=changeitem.toLowerCase() && theitem.value!=""){
@@ -78,7 +72,7 @@
 						thediv.style.display="block";
 					} else thediv.style.display="none"; //end numrec>0 if
 										
-					var lower=theitem.value.toLowerCase()
+					var lower=theitem.value.toLowerCase();
 					if(lower.indexOf("%")==-1){
 						//highlight, and fill the rest of the stuff.. but only
 						//if there is no wildcard character
@@ -113,10 +107,10 @@
 					autofill[basename]["uh"]="";
 					thediv.style.display="none";
 				}
-				
+				return true;
 			}//end function
 			
-			function autofillOnChange(theitem){
+			function lastLookup(theitem){
 				var basename=theitem.name.substring(3);
 				var thefield=getObjectFromID(basename);			
 
@@ -148,22 +142,20 @@
 						thefield.value="";
 					}
 
+
 				}
+				autofill[basename]["vl"]=theitem.value;
 				if(thefield.onchange) thefield.onchange();
 			}
 			
 			function blurAutofill(theitem){
-				var thediv=getObjectFromID("dd-"+theitem.name.substring(3));
-				var thetable=thediv.childNodes[0];
-				var hide=true;
-				if(thetable)
-					for(i=0;i<thetable.childNodes[0].childNodes.length;i++)
-						if(thetable.childNodes[0].childNodes[i].className=="af-highlighted")
-							if(thetable.childNodes[0].childNodes[i].firstChild.firstChild.data!=theitem.value) 
-								hide=false;
-				
-				if(hide)
-					thediv.style.display="none";
+				var basename=theitem.name.substring(3);
+				var thedisplay=getObjectFromID("ds-"+basename);
+				var thediv=getObjectFromID("dd-"+basename);
+				thediv.style.display="none";
+				if(autofill[basename]["vl"]!=thedisplay.value)
+					lastLookup(thedisplay);
+
 			}
 
 			function populateDiv(thediv,displays,extras){
@@ -174,8 +166,10 @@
 				var displayfield=getObjectFromID("ds-"+thediv.id.substring(3));
 				thediv.style.left=getLeft(displayfield);
 				//stoopid IE
-				if(document.selection)
-					thediv.style.top=getTop(displayfield)+displayfield.offsetHeight;
+				if(document.selection){
+					thediv.style.top=getTop(displayfield)+displayfield.offsetHeight+"px";
+					thediv.style.width="0px";
+				}
 
 				var thetr,thetd;
 				var thetable=document.createElement("TABLE");
@@ -185,12 +179,12 @@
 				var thetbody=document.createElement("TBODY");
 				for(i=0; i<displays.length;i++){
 					thetr=document.createElement("TR");
-					thetr.onclick=clickHighlightListItem;
 					thetr.onmouseover=highlightListItem;
 						thetd=document.createElement("TD")
 							thetd.appendChild(document.createTextNode(displays[i]));
 							thetd.className="af-choice";
 							thetd.setAttribute("valign","top");
+							thetd.setAttribute("nowrap","true");
 						thetr.appendChild(thetd);
 						if(extras[i]){
 						thetd=document.createElement("TD");
@@ -198,6 +192,7 @@
 							thetd.className="af-extra";
 							thetd.align="right";
 							thetd.setAttribute("valign","top");
+							thetd.setAttribute("nowrap","true");
 						thetr.appendChild(thetd);
 						}
 					thetbody.appendChild(thetr);
@@ -211,11 +206,13 @@
 				if(!theitem || !theitem.parentNode) theitem=this;
 				var thetable=theitem.parentNode.parentNode;
 				var thediv=thetable.parentNode;
+				var thedisplay=getObjectFromID("ds-"+thediv.id.substring(3));				
 
 				var i;
 				for(i=0;i<thetable.childNodes[0].childNodes.length;i++) 
 					thetable.childNodes[0].childNodes[i].className="";
 				theitem.className="af-highlighted";
+				thedisplay.value=theitem.firstChild.firstChild.data;				
 			}
 		
 			function moveHighlight(thediv,direction){
@@ -235,68 +232,4 @@
 	
 			};
 			
-			function clickHighlightListItem(){
-				theitem=this;
-				var thetable=theitem.parentNode.parentNode;
-				var thediv=thetable.parentNode;
-				var thedisplay=getObjectFromID("ds-"+thediv.id.substring(3));				
-				thediv.style.display="none";
-				thedisplay.value=theitem.firstChild.firstChild.data;
-				autofillOnChange(thedisplay);
-			}
-
-			function getLeft(theitem){
-				var offsetTrail = theitem;
-				var offsetLeft = 0;
-				while (offsetTrail) {
-					offsetLeft += offsetTrail.offsetLeft;
-					offsetTrail = offsetTrail.offsetParent;
-				}
-				if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined") 
-					offsetLeft += document.body.leftMargin;
-			    return offsetLeft;
-			}
-
-			function getTop(theitem){
-				var offsetTrail = theitem;
-				var offsetTop = 0;
-				while (offsetTrail) {
-					offsetTop += offsetTrail.offsetTop;
-					offsetTrail = offsetTrail.offsetParent;
-				}
-				if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined") 
-					offsetLeft += document.body.TopMargin;
-			    return offsetTop;
-			}
-
-
-			function getObjectFromID(id){
-				var theObject;
-				if(document.getElementById)
-					theObject=document.getElementById(id);
-				else
-					theObject=document.all[id];
-				return theObject;
-			}
-
-		
-			function loadXMLDoc(url,readyStateFunction,async) 
-			{
-				// branch for native XMLHttpRequest object
-				if (window.XMLHttpRequest) {
-					req = new XMLHttpRequest();
-					req.onreadystatechange = readyStateFunction;
-					req.open("GET", url, async);
-					req.send(null);
-				// branch for IE/Windows ActiveX version
-				} else if (window.ActiveXObject) {
-					req = new ActiveXObject("Microsoft.XMLHTTP");
-					if (req) {
-						if(readyStateFunction) req.onreadystatechange = readyStateFunction;
-						req.open("GET", url, async);
-						req.send();
-					}
-				}
-			}
-
 autofill=new Array();

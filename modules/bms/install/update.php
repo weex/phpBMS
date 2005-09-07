@@ -64,6 +64,7 @@ function loadSettings() {
 		
 		while($ver["version"]!=$newVersion){
 			switch($ver["version"]){
+				// ================================================================================================
 				case "0.5":
 					$thereturn.="Updating BMS Module to 0.51\n";
 		
@@ -75,6 +76,29 @@ function loadSettings() {
 					$thereturn.="Update to 0.51 Successful\n\n";
 			
 					$ver["version"]="0.51";
+				break;
+				// ================================================================================================
+				case "0.51":
+					$thereturn.="Updating BMS Module to 0.52\n";
+		
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.52\" WHERE name=\"bms\";";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - modified bms record in modules table\n";
+					
+					//Adding columns to invoice
+					$querystatement="ALTER TABLE invoices ADD ponumber varchar(64) default '';";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - added client po field to invoices";
+
+					//Adding columns to invoice
+					$querystatement="ALTER TABLE invoices ADD requireddate date default NULL;";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - added required date field to invoices";
+
+					$thereturn.="Update to 0.52 Successful\n\n";
+			
+					$ver["version"]="0.52";
 				break;
 			}//end switch
 		}//end while

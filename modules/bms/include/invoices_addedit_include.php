@@ -90,6 +90,8 @@ function getRecords($id){
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
+					ponumber,
+					date_Format(requireddate,\"%c/%e/%Y\") as requireddate,
 					
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
@@ -155,6 +157,9 @@ function setRecordDefaults(){
 	$therecord["modifieddate"]=NULL;
 	
 	$therecord["taxpercentage"]=0;
+
+	$therecord["ponumber"]="";
+	$therecord["requireddate"]=NULL;
 
 	return $therecord;	
 }//end function
@@ -242,6 +247,15 @@ function updateRecord(){
 
 			$thequerystatement.="taxareaid=\"".$_POST["taxareaid"]."\", "; 
 
+			$thequerystatement.="ponumber=\"".$_POST["ponumber"]."\", "; 
+				if($_POST["requireddate"]=="" || $_POST["requireddate"]=="0/0/0000") $tempdate="NULL";
+				else{
+					$requireddate="/".ereg_replace(",.","/",$_POST["requireddate"]);
+					$temparray=explode("/",$requireddate);
+					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+				}
+			$thequerystatement.="requireddate=".$tempdate.", "; 
+
 			if(!isset($_POST["weborder"])) $_POST["weborder"]=0; 
 			$thequerystatement.="weborder=".$_POST["weborder"].", "; 
 			$thequerystatement.="webconfirmationno=\"".$_POST["webconfirmationno"]."\", "; 
@@ -271,7 +285,7 @@ function insertRecord(){
 			invoicedate,address1,address2,city,state,postalcode, country, totaltni,totalti,shipping,tax,amountpaid,
 			totalcost,totalweight,shippingmethod,shipped,shippeddate,trackingno,paymentmethod,
 			checkno,bankname,ccnumber,ccexpiration,ccverification,specialinstructions,printedinstructions,
-			taxareaid,weborder,webconfirmationno,	
+			taxareaid,weborder,webconfirmationno,ponumber,requireddate,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$thequerystatement.="\"".$_POST["clientid"]."\", "; 
@@ -346,6 +360,14 @@ function insertRecord(){
 			if(!isset($_POST["weborder"])) $_POST["weborder"]=0; 
 			$thequerystatement.=$_POST["weborder"].", "; 
 			$thequerystatement.="\"".$_POST["webconfirmationno"]."\", "; 
+			$thequerystatement.="\"".$_POST["ponumber"]."\", "; 
+				if($_POST["requireddate"]=="" || $_POST["requireddate"]=="0/0/0000") $tempdate="NULL";
+				else{
+					$requireddate="/".ereg_replace(",.","/",$_POST["requireddate"]);
+					$temparray=explode("/",$requireddate);
+					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+				}
+			$thequerystatement.=$tempdate.", "; 
 				
 	//==== Almost all records should have this =========
 	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 

@@ -1,152 +1,96 @@
-<?PHP
-	include("include/session.php");
-
-	if (isset($_GET["name"])) $name=stripslashes($_GET["name"]); else $name=$_POST["name"];
-	if (isset($_GET["list"])) $list=stripslashes($_GET["list"]); else $name=$_POST["list"];
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
-<html>
-<head>
-<title>Choose...</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript">
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}
-
-function sendInfo(name,thevalue){
-		theform=opener.document.forms['record'];
-		if(theform[name]){
-			theform[name].value=thevalue;
-			if(theform[name].onchange) theform[name].onchange();
-			window.close();
-		} else{
-			alert ("An error has occured setting choice list \n Field Name: " + name + "\n Value to set: "+ thevalue)
-		}
-}
-
-function doOptions(){
-	var showit=document.forms["thechoice"]["showoptions"].value;
+<?php
+	require_once("include/session.php");
 	
-	if (document.getElementById) {
-		var thegraphic=document.getElementById("thearrow");
-		var thebox=document.getElementById("theextra");
-	}else{
-		var thegraphic=document.all["thearrow"];
-		var thebox=document.all["theextra"];
+	function deleteList($listname){
+		global $dblink;
+
+		$querystatement="DELETE FROM choices WHERE listname=\"".$listname."\" ";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$querystatement) 
+			reportError(100,"SQL Statement Could not be executed.");
+		else
+			echo "ok";
 	}
 	
-	if (showit==0){
-		thegraphic.src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif";
-		thebox.style.display="block";
-		self.resizeBy(0,175);
-		showit=1;
-	} else{
-		thegraphic.src="<?php echo $_SESSION["app_path"]?>common/image/left_arrow.gif";
-		thebox.style.display="none";
-		self.resizeBy(0,-175);
-		showit=0;
-	}
-	document.forms["thechoice"]["showoptions"].value=showit;
-	
-}//end function
+	function addToList($listname,$value){
+		global $dblink;
 
-function setFocus(){
-	var theselect=getObjectFromID("theselect");
-	theselect.focus();		
-}
-</script>
-</head>
-<body>
-<script>self.resizeTo(330,290)</script>
-<?PHP 
-	//The Bulk of the Processing is going to be done here to allow access to the javascript function
-	if(isset($_POST["command"])){
-		switch($_POST["command"]){
-			//Process commands
-			case "select":
-			// send javascript back
-				echo "<script language=\"JavaScript\">sendInfo('".$_POST["name"]."','".$_POST["theselect"]."')</script>";
-			break;
-			case "delete":
-				$thequery="delete from choices where listname=\"".$_POST["list"]."\" and thevalue=\"".$_POST["theselect"]."\";";
-				$thequery=mysql_query($thequery,$dblink);
-			break;
-			case "set as default":
-				$thequery="update choices set selected=0 where listname=\"".$_POST["list"]."\" ;";
-				$thequery=mysql_query($thequery,$dblink);		
-	
-				$thequery="update choices set selected=1 where listname=\"".$_POST["list"]."\" and thevalue=\"".$_POST["theselect"]."\";";
-				$thequery=mysql_query($thequery,$dblink);		
-			break;
-			case "add":
-				$thequery="insert into choices (listname,thevalue) values (\"".$_POST["list"]."\",\"".$_POST["addnew"]."\");";
-				$thequery=mysql_query($thequery,$dblink);		
-			break;
-		}//end switch
-	} else $_POST["command"]="show";
-	
-	
-	if($_POST["command"]!="select") {
-	
-	$querystatement="SELECT thevalue,selected FROM choices WHERE listname=\"".$list."\" ORDER BY selected DESC,thevalue;";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.")
-?>
-<form action="choicelist.php" method="post" name="thechoice">
-<input name="name" type="hidden" value="<?PHP echo $name ?>">
-<input name="list" type="hidden" value="<?PHP echo $list ?>">
-<div class="bodyline">
-	<div>
-		<strong>choose from list...</strong><br>
-		<select name="theselect" size="10" id="theselect" style="width:96%" ondblclick="this.form['select'].click()">
-		  <?PHP
-			while($queryrow = mysql_fetch_array($queryresult)){
-				echo "<option value=\"".$queryrow["thevalue"]."\" onDblClick=\"this.form['select'].click()\" ";
-				if($queryrow["selected"]) echo "selected";
-				echo ">".$queryrow["thevalue"]."</option>\n";
+		$querystatement="INSERT INTO choices (listname,thevalue) VALUES(\"".$listname."\",\"".$value."\") ";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$querystatement) 
+			reportError(100,"SQL Statement Could not be executed.");
+		else
+			echo "ok";
+	}
+
+	function displayList($queryresult,$blankvalue){
+		while($therecord=mysql_fetch_array($queryresult)){
+			$display=$therecord["thevalue"];
+			$theclass="";
+			if($therecord["thevalue"]==""){
+				$display="&lt;".$blankvalue."&gt;";
+				$theclass=" class=\"choiceListBlank\" ";
 			}
-		  ?>
-		</select>
-		<script language="javascript">setFocus();</script>
-	</div>
-	<div class="small" style="padding-top:0px;padding-bottom:0px;">
-		<a href="#" onClick="doOptions()">options<img src="<?php echo $_SESSION["app_path"]?>common/image/left_arrow.gif" id="thearrow" width=10 height=10 border="0" align="absmiddle"></a>
-		<input type="hidden" name="showoptions" value="0">
-	</div>
-	<div align="right" id="thebottom">
-		<input name="command" id="select" type="submit" class="Buttons" value="select" style="font-weight:bold; width:110px; height:25px;">
-    </div>
+			if($therecord["thevalue"]==$value){
+				$inlist=true;
+			}
+			if($value=="" and $therecord["thevalue"])
+			?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?>><?php echo $display?></option><?php
+		}//end while
 	
-	<div id="theextra" style="display:none;">
-		<div class="box">
-			<div>
-				<div>
-				<strong>modify selected</strong>
-				</div>
-				<div align="center">
-				<input name="command" id="delete" type="submit" class="Buttons" value="delete" style="width:120px;margin-right:3px;"><input name="command" id="setdefault" type="submit" class="Buttons" value="set as default" style="width:120px;">
-				</div>
-			</div>
-		</div>
-		<div class="box">
-			<div>
-    	    	<strong>add new item</strong><br>
-	            <input name="addnew" type="text" id="addnew" style="width:100%;" size="45" maxlength="128" >
-			</div>
-			<div align="right">
-				<input name="command" id="new" type="submit" class="Buttons" value="add" style="width:110px">        		
-			</div>
-		</div>
+	}
+	
+	function displayBox($listname,$blankvalue,$listid){
+		global $dblink;
+		
+		$blankvalue=str_replace("<","",$blankvalue);
+		$blankvalue=str_replace(">","",$blankvalue);
+		
+		$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$listname."\" ORDER BY thevalue;";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
+?>
+	<h2 style="margin-top:0px;">Modify List</h2>
+	<table width="100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<td valign="top"><select id="MLlist" name="MLList" size="12" style="width:230px;margin-right:10px;margin-bottom:10px;" onChange="updateML(this)"><?php displayList($queryresult,$blankvalue)?>
+			</select></td>
+			<td valign="top" style="width:100%">
+			<input type="button" id="MLDelete" name="MLDelete" value="delete" class="Buttons" style="width:50px;;margin-bottom:5px;" disabled onClick="delML()" /><br/>
+			<input type="button" id="MLInsert" name="MLInsert" value="insert" class="Buttons" style="width:50px" onClick="insertML()"/>
+			</td>
+			<tr>
+				<td valign="top">
+					<input name="MLaddedit" id="MLaddedit" type="text" style="width:220px;margin-right:10px;margin-bottom:5px;"/>
+					<input name="MLblankvalue" id="MLblankvalue" type="hidden" value="<?php echo $blankvalue?>"/>
+				</td>
+				<td valign="top"><input type="button" id="MLaddeditbutton" name="MLaddeditbutton" value="add" class="Buttons" style="width:50px" onClick="addeditML('<?php echo $blankvalue?>')" /></td>
+			</tr>
+		</tr>
+	</table>
+	<div align="right">
+		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onClick="closeBox('<?php echo $listid?>');"/>&nbsp;
+		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onClick="clickOK('<?php echo $_SESSION["app_path"]?>','<?php echo $listid?>','<?php echo $listname?>')"/>
 	</div>
-	</div>
-</form>
-</body>
-</html>
-<?php }//end if?>
+<?php	}//end function
+
+	if(!isset($_GET["cm"])) 
+		$_GET["cm"]="shw";
+	
+	if(!isset($_GET["ln"]))
+		$_GET["ln"]="shippingmethod";
+	if(!isset($_GET["bv"]))
+		$_GET["bv"]="none";
+	switch($_GET["cm"]){
+		case "shw":
+			displayBox($_GET["ln"],$_GET["bv"],$_GET["lid"]);
+		break;
+		case "del":
+			deleteList($_GET["ln"]);
+		break;
+		case "add":
+			addToList($_GET["ln"],$_GET["val"]);
+		break;
+	}
+	
+?>

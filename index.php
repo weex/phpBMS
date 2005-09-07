@@ -39,7 +39,14 @@
 	<script language="javascript">if(top!=self){top.location=self.location;}</script>
 	<title><?PHP echo $_SESSION["application_name"]; ?> - Login Page</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
+	<script language="javascript" src="common/javascript/common.js"></script>
+	<script language="javascript">
+		function setMainFocus(){
+			var focusField=getObjectFromID("username");
+			focusField.focus();		
+		}
+	</script>
 </head>
 
 <body>
@@ -52,7 +59,7 @@
 
 		<div style="padding-top:15px">name<br>
     	<input name="name" type="text" id="username" size="25" maxlength="64" style="width:100%">
-		<script>document.forms["form1"]["name"].focus()</script>
+		<script>setMainFocus();</script>
 		</div>
 		<div>password<br>
     	<input name="password" type="password" id="password" size="25" maxlength="24" style="width:100%"></div>

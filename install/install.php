@@ -19,36 +19,8 @@ H2{ font-size:20px;}
 h3{ font-size:18px; border-bottom:1px solid #666666; padding:2px; margin-left:10px; color:#0B63A2;}
 h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25px; color:#0B63A2;}
 </style>
-<script language="javascript">
-	function getObjectFromID(id){
-		var theObject;
-		if(document.getElementById)
-			theObject=document.getElementById(id);
-		else
-			theObject=document.all[id];
-		return theObject;
-	}
-
-	
-	function loadXMLDoc(url,readyStateFunction,async) 
-	{
-		// branch for native XMLHttpRequest object
-		if (window.XMLHttpRequest) {
-			req = new XMLHttpRequest();
-			req.onreadystatechange = readyStateFunction;
-			req.open("GET", url, async);
-			req.send(null);
-		// branch for IE/Windows ActiveX version
-		} else if (window.ActiveXObject) {
-			req = new ActiveXObject("Microsoft.XMLHTTP");
-			if (req) {
-				if(readyStateFunction) req.onreadystatechange = readyStateFunction;
-				req.open("GET", url, async);
-				req.send();
-			}
-		}
-	}
-	
+<script language="JavaScript" src="../common/javascript/common.js"></script>
+<script language="javascript">	
 	function runCommand(command){
 		var theURL="installxml.php?command="+command;
 		if(command=="updatesettings"){

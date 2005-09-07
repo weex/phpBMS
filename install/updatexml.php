@@ -52,6 +52,7 @@
 		$thereturn="";
 		while($currentVersion!=$newVersion){
 			switch($currentVersion){
+				// ================================================================================================
 				case "0.5":
 					$thereturn.="Updating Base Module to 0.51\n";
 					
@@ -62,6 +63,23 @@
 					
 					$thereturn.="Update to 0.51 Successful\n\n";
 					$currentVersion="0.51";
+				break;
+				// ================================================================================================
+				case "0.51":
+					$thereturn.="Updating Base Module to 0.52\n";
+					
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.52\" WHERE name=\"base\";";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - modified base record in modules table\n";
+					
+					//Dropping selected field in choices table
+					$querystatement="ALTER TABLE choices DROP selected";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - dropped selected field from choices table\n";
+
+					$thereturn.="Update to 0.52 Successful\n\n";
+					$currentVersion="0.52";
 				break;
 			}//end switch
 		}//end while

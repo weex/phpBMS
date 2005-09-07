@@ -99,6 +99,8 @@ CREATE TABLE `invoices` (
   `webconfirmationno` varchar(64) default '',
   `ccverification` varchar(4) default '',
   `country` varchar(64) default '',
+  `ponumber` varchar(64 default '',
+  `requireddate` date default NULL,
   UNIQUE KEY `theid` (`id`),
   KEY `client` (`clientid`)
 ) TYPE=MyISAM PACK_KEYS=0; 

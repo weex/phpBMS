@@ -172,12 +172,3 @@ function setMainFocus(){
 	var startswithfield=getObjectFromID("startswith");
 	startswithfield.focus();
 }
-
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
-}

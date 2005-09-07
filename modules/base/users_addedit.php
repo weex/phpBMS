@@ -12,7 +12,9 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
 <script language="JavaScript">
 	function checkPassword(theform){
 		if(theform["password"].value!=theform["password2"].value && theform["command"].value!="cancel"){
@@ -107,7 +109,7 @@
 		</div>
 		<div>
 			department<br>
-			<?PHP choicelist("department",$therecord["department"],"department",Array("style"=>"","size"=>"32","maxlength"=>"128")); ?>			
+			<?PHP choicelist("department",$therecord["department"],"department",Array("style"=>"")); ?>			
 		</div>
 		<div>
 			employee number<br>

@@ -44,7 +44,7 @@ function field_checkbox($name,$value="",$disabled=false,$attributes=""){
 		$name.="forshow";
 	}
 	
-	?><input name="<?php echo $name ?>" type="checkbox" value="1" <?php 
+	?><input name="<?php echo $name ?>" id="<?php echo $name ?>" type="checkbox" value="1" <?php 
 	if ($value) echo "checked ";
 	if ($disabled) echo "disabled=\"true\" ";
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
@@ -75,20 +75,54 @@ function basic_choicelist($name,$value="",$list="",$attributes=""){
 
 // choicelist
 //============================================================================================
-function choicelist($name,$value="",$listname,$attributes=""){
+function choicelist($name,$value="",$listname,$attributes=array(),$blankvalue="none"){
+	error_reporting(E_ALL);
 	/*
-	   name =			Name of the field
-	   value =			Value for field
-	   listname = 		name of database list to retrieve
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
+	name =			Name of the field
+	value =			Value for field
+	listname = 		name of database list to retrieve
+	attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
+					attribute value.
+	blankvalue =	What to display for a blank value.
 	*/
+	
+	global $dblink;
+	
+	$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$listname."\" ORDER BY thevalue;";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
 
-	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" onClick="choiceListOpen('<?php echo $name?>','<?php echo $listname?>','<?php echo $_SESSION["app_path"]?>');return false;" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> readonly="true">&nbsp;<?php 
-	?><a href="select" onClick="choiceListOpen('<?php echo $name?>','<?php echo $listname?>','<?php echo $_SESSION["app_path"]?>');return false;"><?php
-	?><img src="<?php echo $_SESSION["app_path"] ?>common/image/choice.gif" align="absmiddle" alt="select from list" width="15" height="15" border="0"></a><?php
+	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onChange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onFocus="setInitialML(this)">
+	<?php 
+		$inlist=false;
+		while($therecord=mysql_fetch_array($queryresult)){
+			$display=$therecord["thevalue"];
+			$theclass="";
+			$selected="";
+			if($therecord["thevalue"]==""){
+				$display="&lt;".$blankvalue."&gt;";
+				$theclass=" class=\"choiceListBlank\" ";
+			}
+			if($therecord["thevalue"]==$value){
+				$selected=" selected ";
+				$inlist=true;
+			}
+			if($value=="" and $therecord["thevalue"])
+			?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?> <?php echo $selected?>><?php echo $display?></option><?php
+		}//end while
+		if(!$inlist){
+			if ($value==""){
+				$display="&lt;".$blankvalue."&gt;";
+				$theclass=" class=\"choiceListBlank\" ";
+			}
+			else{
+				$display=$value;
+				$theclass="";
+			}
+			?><option value="<?php echo $value?>" <?php echo $theclass?> selected><?php echo $display?></option><?php					
+		}//end if
+	?>
+<option value="*mL*" class="choiceListModify">modify list...</option></select><?php 
 }//end function
 
 
@@ -227,10 +261,13 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 	</script>
 	<input autocomplete="off" type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>" <?php 
 		if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> value="<?php echo $displayresult["display"] ?>" onKeyUp="autofillChange(this)" onBlur="blurAutofill(this);return true;" onChange="autofillOnChange(this)" onKeyDown="captureKey(event)" class="autofillField">
-	<div id="dd-<?php echo $fieldname?>" class="autofillDropDown" style="display:none;"></div>
+	?> value="<?php echo $displayresult["display"] ?>" onKeyUp="autofillChange(this);return true;" onBlur="blurAutofill(this)"  onKeyDown="captureKey(event)" class="autofillField">
+	<div id="dd-<?php echo $fieldname?>" class="autofillDropDown" style="position:absolute;white-space:nowrap;display:none;"></div>
 	<?php if ($required) {
-		?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');</script><?php
+		?><script language="JavaScript">
+			requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');
+			autofill["<?php echo $fieldname?>"]["vl"]=<? echo $displayresult ?>;
+		</script><?php
 	}//end required if
 }//end function
 
