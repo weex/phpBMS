@@ -1,1 +1,1 @@
-<div align="right"><input name="command" type="submit" value="save" class="Buttons" style="width:68px;margin-right:3px;"><input name="command" type="submit" value="cancel" class="Buttons" style="width:68px;" onClick="this.form.cancelclick.value=true;"></div>
+<div align="right"><input accesskey="s" name="command" type="submit" value="save" class="Buttons" style="width:68px;margin-right:3px;" /><input name="command" type="submit" value="cancel" class="Buttons" style="width:68px;" onClick="this.form.cancelclick.value=true;" accesskey="x" /></div>

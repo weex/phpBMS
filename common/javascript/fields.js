@@ -1,39 +1,3 @@
-// This function handles keyboard shortcuts
-function keyhandler(e) {
-
-	if (navigator.userAgent.toLowerCase().indexOf("msie")!=-1) {
-		var thekeydown=window.event.ctrlKey;
-		var shiftkeydown=window.event.shiftKey;
-		var Key = window.event.keyCode;
-	}
-	else {	
-		var thekeydown=(e.altKey);
-		var shiftkeydown=e.shiftKey;
-		var Key = e.which;
-	}
-	
-	if (thekeydown){
-		thekey=String.fromCharCode(Key)
-		switch(thekey){
-			case "X":
-				if (document.forms["record"]["command"])
-					for(var i=0; i<document.forms["record"]["command"].length;i++)
-						if(document.forms["record"]["command"][i].value=="cancel")
-							document.forms["record"]["command"][i].click();
-				return false;
-			break;
-			case "S":
-				if (document.forms["record"]["command"])
-					for(var i=0; i<document.forms["record"]["command"].length;i++)
-						if(document.forms["record"]["command"][i].value=="save")
-							document.forms["record"]["command"][i].click();
-				return false;
-			break;
-		}
-	}
-}
-document.onkeydown = keyhandler;
-
 // Testing
 requiredArray= new Array();
 integerArray= new Array();
@@ -42,10 +6,13 @@ emailArray= new Array();
 wwwArray= new Array();
 realArray= new Array();
 dateArray= new Array();
+timeArray= new Array();
 
 function validateForm(theform){
 	var i;
-		
+	var thereturn=true;
+	var errorMessage="";
+			
 	//skip validation if cancel
 	if (theform["cancelclick"]){
 		if (theform["cancelclick"].value!=0) return true;
@@ -56,23 +23,25 @@ function validateForm(theform){
 	// --not found-- anywhere.... invlaidate the form
 	for(i=0;i<theform.length;i++){
 		if(theform[i].value && theform[i].value=="--not found--"){
-			alert("One or more fields have an invlaid input.");
-			return false;
+			errorMessage+="<LI>One or more fields have an invalid input.</LI>";
+			thereturn=false;
+			break;
 		}
 	}	
+		
 	//validate required fields first
 	for(i=0;i<requiredArray.length;i++){
 		if(!theform[requiredArray[i][0]].value) {
-		alert(requiredArray[i][1]);
-		return false;
+			errorMessage+="<LI>"+requiredArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 	//next integers
 	for(i=0;i<integerArray.length;i++){
 		var numcheck=theform[integerArray[i][0]].value;
 		if(!validateInteger(numcheck)) {
-			alert(integerArray[i][1]);
-			return false;
+		errorMessage+="<LI>"+integerArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 	//next real numbers
@@ -80,36 +49,44 @@ function validateForm(theform){
 		var numcheck=theform[realArray[i][0]].value;
 		if(numcheck =="") theform[realArray[i][0]].value="0";
 		if(numcheck !="" && !validateReal(numcheck)) {
-			alert(realArray[i][1]);
-			return false;
+			errorMessage+="<LI>"+realArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 
 	//next dates
 	for(i=0;i<dateArray.length;i++){
 		var thedate=theform[dateArray[i][0]].value;
-		if(thedate=="0/0/0000") thedate=""
+		if(thedate=="0/0/0000") thedate="";
 		if(thedate!="" && !validateDate(thedate)) {
-			alert(dateArray[i][1]);
-			return false;
+			errorMessage+="<LI>"+dateArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 
+	//next times
+	for(i=0;i<timeArray.length;i++){
+		var thetime=theform[timeArray[i][0]].value;
+		if(thedate!="" && !validateTime(thetime)) {
+			errorMessage+="<LI>"+timeArray[i][1]+"</LI>";
+			thereturn=false;
+		}
+	}
 	
 	//next phone numbers
 	for(i=0;i<phoneArray.length;i++){
 		var thevalue=theform[phoneArray[i][0]].value;
 		if(thevalue && !validatePhone(thevalue)) {
-			alert(phoneArray[i][1]);
-			return false;
+			errorMessage+="<LI>"+phoneArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 	//next email
 	for(i=0;i<emailArray.length;i++){
 		var thevalue=theform[emailArray[i][0]].value;
 		if(thevalue && !validateEmail(thevalue)) {
-			alert(emailArray[i][1]);
-			return false;
+			errorMessage+="<LI>"+emailArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
 
@@ -117,11 +94,26 @@ function validateForm(theform){
 	for(i=0;i<wwwArray.length;i++){
 		var thevalue=theform[wwwArray[i][0]].value;
 		if(thevalue!="" && thevalue!="http://" && !validateWebpage(thevalue)) {
-			alert(wwwArray[i][1]);
-			return false;
+			errorMessage+="<LI>"+wwwArray[i][1]+"</LI>";
+			thereturn=false;
 		}
 	}
-	return true;
+	if(errorMessage!=""){
+		errorMessage="<UL>"+errorMessage+"</UL><DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\">ok</button></DIV>";
+
+		showModal(errorMessage,"Cannot Save",300);
+	}
+	return thereturn;
+	
+}
+
+//validate a time (12 hour)
+function validateTime(strValue){
+	var objRegExp= /^([1-9]|1[0-2]|0[1-9]){1}(:[0-5][0-9]\ [aApP][mM]){1}$/;
+	if(!objRegExp.test(strValue))
+		return false;
+	else
+		return true;
 }
 
 // validate dates
@@ -211,15 +203,6 @@ function validateWebpage(thevalue){
   var theaddress=thevalue.substring(8,thevalue.length-1);
   if(thevalue.substring(0,7)=="http://" && theaddress.indexOf(".",0) !=-1 ) return true;
   else return false;
-}
-
-// Open Choice Lists
-function choiceListOpen(name,thelist,rootlocation){
-	theform=document.forms['record'];
-	theurl=rootlocation+"choicelist.php?name="+name;
-	theurl=theurl+"&list="+escape(thelist);
-
-	dialogWindow=window.open(theurl,"ChooseList","resize=yes,status=yes,scrollbars=yes,width=320,height=240,modal=yes");
 }
 
 // Open an email

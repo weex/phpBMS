@@ -32,10 +32,10 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT id, name,userid,emailto,emailfrom,subject,body,DATE_FORMAT(lastrun,\"%m/%d/%Y %H:%i\")as lastrun
+	$querystatement="SELECT id, name,userid,emailto,emailfrom,subject,body,DATE_FORMAT(lastrun,\"%m/%d/%Y %H:%i\")as lastrun
 				FROM clientemailprojects
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -61,17 +61,17 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE clientemailprojects SET ";
+	$querystatement="UPDATE clientemailprojects SET ";
 	
 			if(isset($_POST["makeglobal"]))
-				$thequerystatement.="userid=0, "; 
-			$thequerystatement.="name=\"".$_POST["name"]."\" "; 
+				$querystatement.="userid=0, "; 
+			$querystatement.="name=\"".$_POST["name"]."\" "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 

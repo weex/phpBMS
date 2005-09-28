@@ -151,8 +151,8 @@ if (isset($_POST["command"])) {
 		$_SESSION["stylesheet"]=$_POST["sstylesheet"];
 	}
 
-			$thequerystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-			$modulequery=mysql_query($thequerystatement,$dblink);
+			$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
+			$modulequery=mysql_query($querystatement,$dblink);
 			
 			while($modulerecord=mysql_fetch_array($modulequery)){
 				include "../".$modulerecord["name"]."/include/adminsettings_include.php";
@@ -163,8 +163,10 @@ if (isset($_POST["command"])) {
 	if(count($writesettings)>0) { write_settings($writesettings);}
 	
 	// deal with logo graphic.
-	if($_POST["printedlogo"]!="none"){
-		copy($_POST["printedlogo"],$_SERVER["DOCUMENT_ROOT"]."/report/logo.png");
+	if(isset($_POST["printedlogo"])){
+		if($_POST["printedlogo"]!="none"){
+			copy($_POST["printedlogo"],$_SERVER["DOCUMENT_ROOT"]."/report/logo.png");
+		}
 	}
 }
 

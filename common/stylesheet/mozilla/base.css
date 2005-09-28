@@ -3,12 +3,12 @@ BODY { background: white url(back.gif); background-attachment:fixed;
 	background-repeat:repeat-x;
 	margin:15px;
 }
-BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI { 
+BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI, BUTTON { 
 	font-size : 12px;
 	font-family : Arial,Helvitica,sans-serif;
 	color : black; }
 	
-SELECT, INPUT, TEXTAREA, .uneditable { 
+SELECT, INPUT, TEXTAREA, .uneditable, .fieldtext { 
 	border: 1px solid #9097A2;
 	font-size: 11px; padding: 2px;  background-color: #D9DBE1; vertical-align: middle; font-style:normal;
 }
@@ -19,7 +19,7 @@ INPUT[disabled]:Active{border:1px outset black;}
 FORM{margin:0px;padding:0px;}
 DIV {padding:3px;}
 
-A {	color : #444444; font-weight:bold; text-decoration:none;}
+A {	color : #455372; font-weight:bold; text-decoration:none;}
 A:Hover { text-decoration:underline;}
 
 /* ============================================================================== */
@@ -27,11 +27,14 @@ A:Hover { text-decoration:underline;}
 /* ============================================================================== */
 
 .uneditable,.uneditable:Focus {background-color:transparent;}
+.disabledtext{color:#CCCCCC;}
 .radiochecks ,.radiochecks:Focus{background-color:white;color:black; border:0;}
 
 .Buttons,.smallButtons {
+	padding:2px;
+	font-size:11px;
 	background-color:#617389;color:#FFFFFF; font-size: 11px;  font-weight:bold; 
-	border: 1px outset black;
+	border: 1px outset #617389;
 	cursor:pointer;
 }
 .Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
@@ -50,9 +53,21 @@ A:Hover { text-decoration:underline;}
 	background-color:#747F96; 
 	border: 1px inset black; 
 }
+.invisibleButtons,.invisibleTextField{
+border-style:none;
+background-color:transparent;
+}
+.invisibleButtons{
+padding:0px;
+text-size:9px;
+color:#0B63A2;
+font-weight:bold;
+vertical-align:middle;
+cursor: pointer; 
+cursor: hand;
+}
+
 .smallButtons{font-size:10px}
-
-
 
 /* ============================================================================== */
 /* Font size/standouts                                                            */
@@ -64,24 +79,28 @@ A:Hover { text-decoration:underline;}
 .tiny { font-size : 10px}
 .mono {font-family:'Courier New', Courier, mono;width:100%;font-size:12px;}
 
-.ident { padding-left: 3px;}
 .standout	{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
 .important {font-weight:bold;}
 
 H1, .searchtitle, .addedittitle{
 	font-family: Arial, Helvitica, sans-serif;
 	border-bottom: 1px solid #ccc;
-	font-size:18px;
-	margin:0px;
+	font-size:20px;
+	margin:3px;
+	padding-left:2px;
 	margin-bottom:8px;
 	font-weight:normal;
 }
 H1, .addedittitle{}
-H2{	
+LEGEND,H2{	
 	font-weight:bold;
-	font-size:14px; 
-	text-transform:capitalize;
-	font-family: Arial, Helvitica, sans-serif;
+	font-size:15px; 
+	color:#455372;
+        text-transform:capitalize;
+        font-family: Arial, Helvitica, sans-serif;
+}
+LEGEND {margin-top:0px;}
+H2{
 	border-bottom: 1px solid #ccc;
 	padding:2px;
 	padding-left:3px;
@@ -94,56 +113,59 @@ H2{
 /* ============================================================================== */
 /* Boxes                                                                          */
 /* ============================================================================== */
-.bodyline,.untabbedbox,.tabselected,.tabs,.tabbottoms,.box,.recordbottom{ 
+LABEL{display:block;padding:2px;}
+FIELDSET,.bodyline,.untabbedbox,.tabselected,.tabs,.tabbottoms,.box,.recordbottom,#modalBox{ 
 	-moz-border-radius:8px;
 	border: 1px #E4ECEC outset; 
 	padding:0px;
+	margin-bottom:5px;
 }
-.bodyline,.untabbedbox,.tabselected{
+.bodyline,.untabbedbox,.tabselected,#modalBox{
 	background-color: #E4ECEC; 
 }
-
-.untabbedbox{}
-.box,.recordbottom{
-	background-color:#FFFFFF;
-	border-width:1px;
+.untabbedbox,.bodyline{padding:2px;}
+.untabbedbox{border-top:0px;}
+FIELDSET,.box,.recordbottom{
 	border-style:inset;
+	border-width:2px;
 	margin:3px;
 	margin-bottom:7px;
 	padding:3px; 	
 	
 }
+.box,.recordbottom{background-color:#EFF9F9;}
 
 /* ============================================================================== */
 /* Tabs                                                                       */
 /* ============================================================================== */
-.tabselected	{ 	
-					padding:3px;
-					border-bottom-width:0px;
-					-moz-border-radius:0px;
-					-moz-border-radius-topleft:8px;
-					-moz-border-radius-topright:8px;
-					font-weight:bold;
-				}
-.tabs	{ 	padding:3px;
-			font-size:11px;
-			border-style:none;
-			background-color:#CCCCCC; 
-			color:#999999; 
-			border-top-width:1px; 
-			border-left-width:1px; 
-			border-right-width:1px; 
-			-moz-border-radius:0px;
-			-moz-border-radius-topleft:8px;
-			-moz-border-radius-topright:8px;
-		}
+.tabselected{ 	
+	padding:3px;
+	border-bottom-width:0px;
+	-moz-border-radius:0px;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	font-weight:bold;
+}
+.tabs	{ 	
+	padding:3px;
+	font-size:11px;
+	border-style:none;
+	background-color:#CCCCCC; 
+	color:#999999; 
+	border-top-width:1px; 
+	border-left-width:1px; 
+	border-right-width:1px; 
+	-moz-border-radius:0px;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+}
 .tabs a:hover {}
 .tabbottoms	{	
-				border:0px;
-				border-top-width:0px; 
-				border-left-width:0px; 
-				border-right-width:0px; 
-			}
+	border:0px;
+	border-top-width:0px; 
+	border-left-width:0px; 
+	border-right-width:0px; 
+}
 
 
 /* ============================================================================== */
@@ -176,9 +198,8 @@ H2{
 				border-top:0px;
 				border-right: 1px #CCCCCC solid; 
 				font-size: 11px;
-				padding-top:3px;
-				padding-left:2px;
-				padding-right:2px;
+				padding:4px;
+				padding-bottom:2px
 			}
 
 .queryheader{
@@ -260,7 +281,8 @@ H2{
 		color:white;
 		border-bottom-color:#666666;
 	}
-	#menu td,#menu form{color:white;}
+	#menu td a, #menu td,#menu form{color:white;}
+	
 	
 	  .mainmenuitems {
 	  	-moz-border-radius-topleft:8px;
@@ -287,14 +309,11 @@ H2{
 	
 	.submenuitems {
 		margin-top:1px;
+		padding:0px;
+		padding-top:2px;
 		position:absolute;
 		background-color:#E0E9E9;
-		padding:0px;
-		padding-top:10px;
-		padding-bottom:10px;
 		border:1px outset black;
-		-moz-border-radius-bottomleft:8px;
-		-moz-border-radius-bottomright:8px;
 	}
 	.submenuitems a{
 		display:block; 
@@ -302,46 +321,119 @@ H2{
 		border-top:1px solid white;
 		border-bottom:1px solid #DDDDDD;
 		margin-bottom:1px;
-		padding:2px;
-		font-size:11px;
-		color:#663366;
+		padding:3px;
+		padding-left:5px;
+		font-size:11px;		
 	}
-	.submenuitems a:hover{text-decoration:none; background-color:transparent;}
+	#menu td div.submenuitems a{color:#663366;}
+	.submenuitems a:hover{text-decoration:none; background-color:#663366;;}
+	#menu td div.submenuitems a:hover{color:white;}
 	
 /* ============================================================================== */
 /* Calendar                                                                       */
 /* ============================================================================== */
-	.calendartable {
-		border: 1px black inset; 
-		-moz-border-radius:8px;
-	}
-	
-	.calendartable td a{
-		padding-top:4px;
-		padding-bottom:4px;
-		display:block;
-		border:1px solid transparent;
-	}
-
-	.calendartable td a:hover{
-		background-color:black;
-		color:white;
-		border:1px solid 0B63A2;
-	}
-
-	.today{background-color:#FFFFCC}
-	.weekend{background-color:#D9DBE1;}
-	.othermonths{background-color:#999999;color:white; font-weight:normal;}
-	.dayofweek{
+	.dp td, .tpHour td, .tpMinute td{padding:2px; font-size:10px;}
+	.dpHead,.tpHead,.tpHour td:Hover .tpHead{ 
+		font-weight:bold;
 		background-color:#0B63A2;
-		color:white;
-		border-top: 2px #021746 solid; 
-		border-left:1px solid #61B5CD; 
-		border-right: 1px solid #021746;
+		color:white; 
+		font-size:11px;
+		cursor:auto;
 	}
-	.regulardays{background-color:white;}
-	.regulardays,.today,.dayofweek,.weekend{
-		border-right: 1px #CCCCCC solid; 
-		border-bottom: 1px #CCCCCC solid; 
-		font-size: 11px;
+	.dpButtons,.tpButtons {
+		text-align:center;
+		background-color:#617389;color:#FFFFFF; font-weight:bold; 
+		border: 1px outset black;
+		cursor:pointer;	
 	}
+	.dpButtons:Active,.tpButtons:Active{border: 1px outset black;}
+	.dpDayNames td,.dpExplanation {background-color:#D9DBE1; font-weight:bold; text-align:center; font-size:11px;}
+	.dpExplanation{ font-weight:normal; font-size:11px;}
+	.dpWeek td{text-align:center}
+	.dpWeek:Hover{background-color:#CCCCCC;}
+	
+	.dpToday,.dpReg,.dpSelected{
+		cursor:pointer;
+	}
+	.dpToday{font-weight:bold; color:#0B63A2; background-color:#BBBBBB;}
+	.dpReg:Hover,.dpToday:Hover{background-color:black;color:white}
+	.dpSelected{background-color:#0B63A2;color:white;font-weight:bold; }
+	
+	.tpHour{border-top:1px solid #DDDDDD; border-right:1px solid #DDDDDD;}
+	.tpHour td {border-left:1px solid #DDDDDD; border-bottom:1px solid #DDDDDD; cursor:pointer;}
+	.tpHour td:Hover {background-color:black;color:white;}
+
+	.tpMinute {margin-top:5px;}
+	.tpMinute td:Hover {background-color:black; color:white; }
+	.tpMinute td {background-color:#D9DBE1; text-align:center; cursor:pointer;}
+
+/* ============================================================================== */
+/*  Notes/Tasks/Events                                                            */
+/* ============================================================================== */	
+.SysMessageContent	{
+	margin-left:15px;
+	margin-bottom:5px;
+	display:none;
+	border:1px solid #CCCCCC;
+}
+
+.task a,.taskCompleted a,.taskPastDue a,.taskPrivate a{ font-weight:normal;}
+.taskPrivate a{ font-weight:bold;}
+
+.taskCompleted { text-decoration:line-through; color:#CCCCCC;}
+.taskCompleted a{color:#CCCCCC;}
+
+.taskPastDue a{color:#FF0000;}
+
+.eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
+.event{padding:4px;padding-bottom:6px;}
+
+.snapshotRecords{margin-left:4px; border-bottom:1px dotted #EEEEEE;}
+.snapshotRecords a{font-weight:normal;}
+
+/* ============================================================================== */
+/*  Modal                                                                         */
+/* ============================================================================== */	
+#modalMask{
+	position: absolute;
+	z-index: 200;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	padding:0px;
+	margin:0px;
+/*	opacity: .4;
+	filter: alpha(opacity=40);
+	background-color: #AAAAAA; */
+}
+
+#modalBox {
+	border-top-width:0px;
+	padding:0px;
+	border-width:2px;
+	position: absolute;
+	z-index: 201;
+	top: 0px;
+	left: 0px;
+}
+#modalTitle{
+	font-weight: bold;
+	font-size:14px;
+	padding: 2px;
+	padding-left:4px;
+
+	background-color:#0B63A2;
+	color:white; 
+	border-right:1px #021746 solid;
+	border-left:1px #61B5CD solid;
+	border-top:1px #61B5CD solid;
+	border-bottom:2px #021746 solid;
+	z-index: 203;
+	-moz-border-radius:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+}
+#modalContent{
+	padding:4px;
+}

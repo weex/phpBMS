@@ -10,12 +10,12 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
 				id,name,displayname,version,description
 				
 				FROM modules
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function

@@ -7,7 +7,7 @@ if(isset($_GET["id"])) if($_GET["id"]) $id=$_GET["id"];
 
 if(isset($_POST["command"])){
 	switch($_POST["command"]){
-		case"del":
+		case"delete":
 			$querystatement="delete from templineitems where id=".$_POST["deleteid"]." and sessionid=\"".session_id()."\"";
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(500,("SQL Error: ".mysql_error($dblink)."<BR><BR>".$querystatement));
@@ -24,26 +24,25 @@ if(isset($_POST["command"])){
 	}//end switch
 }//end if
 
-  	$thequery="select products.partnumber as partnumber, products.partname as partname,
+  	$querystatement="select products.partnumber as partnumber, products.partname as partname,
 				templineitems.id as id, templineitems.quantity as quantity, concat(\"\$\",format(templineitems.unitprice,2)) as unitprice, templineitems.unitprice as numprice,
 				templineitems.unitcost as unitcost, templineitems.unitweight as unitweight, templineitems.memo as memo,
 				concat(\"\$\",format((templineitems.unitprice*templineitems.quantity),2)) as extended 
 				from templineitems left join products on templineitems.productid=products.id where templineitems.invoiceid=".$id." and templineitems.sessionid=\"".session_id()."\" 
 				and sessionid=\"".session_id()."\";";
-	$theresult=mysql_query($thequery,$dblink);
-	if(!$theresult) reportError(1,$thequery." - ".mysql_error($dblink));
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Line Items ".$querystatement." - ".mysql_error($dblink)));
 	$subtotal=0;
 	$totalweight=0;
 	$totalcost=0;
 
 
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>Line Items</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
@@ -57,13 +56,14 @@ if(isset($_POST["command"])){
 	}
 </style>
 </head>
-<body style="margin:0px;">
-<form name="record" method="post" action="invoices_lineitems.php">
+<body style="margin:0px;padding:0px;">
+<form name="record" method="post" action="invoices_lineitems.php" style="margin:0px;padding:0px;">
 <input name="id" type="hidden" value="<?PHP echo $id ?>">
-<input name="deleteid" type="hidden" value="0">
+<input id="deleteid" name="deleteid" type="hidden" value="0">
 <input name="unitweight" type="hidden" value="0">
 <input name="unitcost" type="hidden" value="0">
- <table border="0" cellpadding="0" cellspacing="0" class="bodyline" style="border:0px;">
+<input id="command" name="command" type="hidden" value="0">
+ <table border="0" cellpadding="0" cellspacing="0" class="bodyline" style="border:0px;margin:0px;padding:0px;">
   <tr>
    <th nowrap class="queryheader" align="left">part number</td>
    <th nowrap class="queryheader" align="left">part name</td>
@@ -81,20 +81,20 @@ if(isset($_POST["command"])){
 	</script>
    </td>
    <td nowrap>
-	<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"18","maxlength"=>"64","style"=>"border-left-width:0px;"),false,"") ?>
+	<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"20","maxlength"=>"64","style"=>"border-left-width:0px;"),false,"") ?>
    	<script language="JavaScript">
 		  	document.forms["record"]["partname"].onchange=populateLineItem;
 	</script>
    </td>
    <td nowrap><input name="memo" type="text" id="memo" size="64" maxlength="255" style="width:100%;border-left-width:0px;"></td>
-   <td align="right" nowrap><input name="price" type="text" id="price" value="$0.00" size="9" maxlength="16" onChange="calculateExtended()" style="text-align:right;border-left:0px;"></td>
-   <td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="3" maxlength="16" onChange="calculateExtended()" style="text-align:center; border-left:0px;"></td>
-   <td align="right" nowrap><input name="extended" type="text" id="extended" value="$0.00" size="9" maxlength="16" readonly="true" style="text-align:right;border-left:0px;"></td>
-   <td nowrap><input name="command" type="submit" class="smallButtons" value="add" style="width:35px;"></td>
+   <td align="right" nowrap><input name="price" type="text" id="price" value="$0.00" size="8" maxlength="16" onChange="calculateExtended()" style="text-align:right;"></td>
+   <td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="2" maxlength="16" onChange="calculateExtended()" style="text-align:center; border-left:0px;"></td>
+   <td align="right" nowrap><input name="extended" type="text" id="extended" value="$0.00" size="8" maxlength="16" readonly="true" style="text-align:right;border-left:0px;"></td>
+   <td nowrap align="center"><button type="submit" class="invisibleButtons" onClick="addLine();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="link" width="16" height="16" border="0" /></button></td>
   </tr><tr><td colspan="7" style="font-size:1px;padding:0px;" class="dottedline">&nbsp;</td></tr>
   <?PHP 
   	$therow=1;
-	while($therecord=mysql_fetch_array($theresult)){
+	while($therecord=mysql_fetch_array($queryresult)){
 		$subtotal+=($therecord["numprice"]*$therecord["quantity"]);
 		$totalweight+=($therecord["unitweight"]*$therecord["quantity"]);
 		$totalcost+=($therecord["unitcost"]*$therecord["quantity"]);
@@ -105,8 +105,8 @@ if(isset($_POST["command"])){
    <td class="tiny" valign="top"><?PHP if($therecord["memo"]) echo $therecord["memo"]; else echo "&nbsp;"?></td>
    <td align="right" nowrap class="small" valign="top"><?PHP echo $therecord["unitprice"]?></td>
    <td align="center" nowrap class="small" valign="top"><?PHP echo $therecord["quantity"]?></td>
-   <td align="right" nowrap class="small" valign="top" style="border-right:0px;"><?PHP echo $therecord["extended"]?></td>
-   <td valign="top" style="padding:0px;border-right:0px;"><input name="command" type="submit" class="smallButtons" value="del" style="width:35px;" onClick="return deleteLine(<?PHP echo $therecord["id"] ?>,this)"></td>
+   <td align="right" nowrap class="small" valign="top"><?PHP echo $therecord["extended"]?></td>
+   <td valign="top" style="padding:0px;border-right:0px;" align="center"><button type="submit" class="invisibleButtons" onClick="return deleteLine(<?PHP echo $therecord["id"] ?>,this)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png" align="middle" alt="link" width="16" height="16" border="0" /></button></td>
   </tr>
   <?PHP } ?>
   </table>

@@ -53,7 +53,7 @@ function sendDebug($variable){
 // Start Code
 //=================================================================================================================
 	session_start();
-	//error_reporting(E_ALL);
+	error_reporting(E_ALL);
 	$mainpath="";
 	if (!isset($_SESSION["isloaded"])) $mainpath=loadSettings();
 	
@@ -70,10 +70,10 @@ function sendDebug($variable){
 		}	
 	}//end if
 	
-	function xmlEncode($str){
-		$str=str_replace("&","&amp;",$str);
-		$str=str_replace("<","&lt;",$str);
-		$str=str_replace(">","&gt;",$str);
-		return $str;
-	}
+function xmlEncode($str){
+	$str=str_replace("&","&amp;",$str);
+	$str=str_replace("<","&lt;",$str);
+	$str=str_replace(">","&gt;",$str);
+	return $str;
+}
 ?>

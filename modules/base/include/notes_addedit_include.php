@@ -1,4 +1,37 @@
 <?PHP
+
+function checkForNewerRepeats($parentid,$id){
+	global $dblink;
+	if ($parentid=="NULL") return true;
+	
+	$querystatement="SELECT creationdate FROM notes WHERE id=".$id;
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,("Error retrieving creationdate lookup".mysql_error($dblink)." ".$querystatement));
+	$therecord=mysql_fetch_array($queryresult);
+
+	$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".$parentid." AND creationdate > \"".$therecord["creationdate"]."\"";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,("Error retrieving  last child record".mysql_error($dblink)." ".$querystatement));
+	if(mysql_num_rows($queryresult)) return false; else return true;
+}
+
+function repeatTaskUpdate($parentid){
+	global $dblink;
+	
+	$querystatement="DELETE FROM notes WHERE completed=0 AND parentid=".$parentid;
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,("Error deleteing uncompleted children".mysql_error($dblink)." ".$querystatement));
+	
+	$querystatement="SELECT id FROM notes WHERE completed=1 AND parentid=".$parentid." ORDER BY startdate DESC LIMIT 0,1";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,("Error retrieving  last child record".mysql_error($dblink)." ".$querystatement));
+	if(mysql_num_rows($queryresult)){
+		$therecord=mysql_fetch_array($queryresult);
+		repeatTask($therecord["id"]);
+	}
+}
+
+
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
@@ -6,14 +39,25 @@
 //set table id
 $tableid=12;
 // For notes, we need to track who called you, so that when the save/cancel, it takes them to the appropriate page
-if(!isset($_GET["backurl"])) $backurl="../../search.php?id=".$tableid; else $backurl=$_GET["backurl"]."?refid=".$_GET["refid"];
+if(!isset($_GET["backurl"])) 
+	$backurl=$_SESSION["app_path"]."search.php?id=".$tableid; 
+else{ 
+	$backurl=$_GET["backurl"];
+	if(isset($_GET["refid"]))
+		$backurl.="?refid=".$_GET["refid"];
+}
+
 
 function getAttachedTableDefInfo($id){
 	global $dblink;
-	
-	$querystatement="SELECT displayname,editfile FROM tabledefs WHERE id =".$id;
-	$queryresult=mysql_query($querystatement,$dblink) or reportError(100,(mysql_error($dblink)." ".$querystatement));
-	$therecord=mysql_fetch_array($queryresult);
+	if($id){
+		$querystatement="SELECT displayname,editfile FROM tabledefs WHERE id =".$id;
+		$queryresult=mysql_query($querystatement,$dblink) or reportError(100,(mysql_error($dblink)." ".$querystatement));
+		$therecord=mysql_fetch_array($queryresult);
+	}else{
+		$therecord["displayname"]="";
+		$therecord["editfile"]="";
+	}
 	
 	return $therecord;	
 }
@@ -22,16 +66,21 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
 				id, subject, assignedtoid, type, content, importance,
-				date_Format(followup,\"%c/%e/%Y %T\") as followup, attachedtabledefid, attachedid, beenread,
+				attachedtabledefid, attachedid, parentid,location,private,status,
+				repeat,repeatfrequency,repeattype,repeatdays,repeattimes,repeat,date_Format(repeatuntildate,\"%c/%e/%Y\") as repeatuntildate,
+				completed,date_Format(completeddate,\"%c/%e/%Y\") as completeddate,date_Format(startdate,\"%c/%e/%Y\") as startdate,
+				time_format(starttime,\"%l:%i %p\") as starttime,date_Format(enddate,\"%c/%e/%Y\") as enddate, time_format(endtime,\"%l:%i %p\") as endtime,
+				assignedtoid,date_Format(assignedtodate,\"%c/%e/%Y\") as assignedtodate,time_format(assignedtotime,\"%l:%i %p\") as assignedtotime,assignedbyid,
 
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM notes
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	$therecord = mysql_fetch_array($thequery);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,(mysql_error($dblink)." ".$querystatement));
+	$therecord = mysql_fetch_array($queryresult);
 	return $therecord;
 }//end function
 
@@ -39,21 +88,46 @@ function getRecords($id){
 function setRecordDefaults(){
 //========================================================================================
 	
+	$therecord["id"]=NULL;
+	$therecord["parentid"]=NULL;
+	$therecord["importance"]=0;
+	$therecord["type"]="NT";
+	if(isset($_GET["ty"]))
+		$therecord["type"]=$_GET["ty"];
+	$therecord["location"]="";
 	$therecord["subject"]="";
 	$therecord["content"]="";
-	$therecord["id"]=NULL;
-	$therecord["beenread"]=false;
+	$therecord["category"]="";
+	$therecord["status"]="";
+
+	$therecord["private"]=true;
+
+	$therecord["startdate"]=NULL;
+	$therecord["starttime"]=NULL;
+	$therecord["enddate"]=NULL;
+	$therecord["endtime"]=NULL;
+
+	$therecord["completed"]=false;
+	$therecord["completeddate"]=NULL;
+
 	$therecord["assignedtoid"]=NULL;
-	$therecord["followup"]=NULL;
+	$therecord["assignedbyid"]=0;
+	$therecord["assignedtodate"]=NULL;
+	$therecord["assignedtotime"]=NULL;
 	
-	$therecord["type"]=(isset($_GET["reftable"]))?"record":"personal";
 	$therecord["attachedtabledefid"]=(isset($_GET["reftableid"]))?$_GET["reftableid"]:NULL;
 	$therecord["attachedid"]=(isset($_GET["refid"]))?$_GET["refid"]:NULL;
-	$therecord["importance"]="Normal";
+
+	$therecord["repeat"]=false;
+	$therecord["repeatfrequency"]=1;
+	$therecord["repeatdays"]=NULL;
+	$therecord["repeattype"]="repeatDaily";
+	$therecord["repeattimes"]=0;
+	$therecord["repeatuntildate"]=NULL;
+
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
-
 	$therecord["creationdate"]=NULL;
 	$therecord["modifieddate"]=NULL;
 
@@ -61,88 +135,209 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE notes SET ";
+	$querystatement="UPDATE notes SET ";
 	
-			$thequerystatement.="importance=\"".$_POST["importance"]."\", "; 
+			$querystatement.="subject=\"".$variables["subject"]."\", "; 
+			$querystatement.="content=\"".$variables["content"]."\", "; 
+			$querystatement.="importance=".$variables["importance"].", "; 
+			if(isset($variables["thetype"])) $querystatement.="type=\"".$variables["thetype"]."\", "; 
+			$querystatement.="category=\"".$variables["category"]."\", "; 
+			$querystatement.="location=\"".$variables["location"]."\", "; 
+			if($variables["parentid"]=="") $variables["parentid"]="NULL";
+			$querystatement.="parentid=".$variables["parentid"].", "; 
+			if(isset($variables["private"])) $querystatement.="private=1,"; else $querystatement.="private=0,";
 
-			$thequerystatement.="subject=\"".$_POST["subject"]."\", "; 
-			$thequerystatement.="content=\"".$_POST["content"]."\", "; 
-		
-			$thequerystatement.="type=\"".$_POST["type"]."\", "; 
-			$thequerystatement.="assignedtoid=\"".$_POST["assignedtoid"]."\", "; 
+			if(isset($variables["completed"])) {
+				$querystatement.="completed=1, "; 
+				$querystatement.="completeddate=".formatToSQLDate($variables["completeddate"]).", "; 
+			}else {
+				$querystatement.="completed=0, completeddate=NULL, ";
+			}
 
-			if(!isset($_POST["followup"]))$_POST["followup"]="";
-				if($_POST["followup"]=="") $tempdate="NULL";
-				else{
-					$followup=ereg_replace(",.","/",$_POST["followup"]);
-					$temparray=explode(" ",$followup);
-					$temptimearray=explode(":",$temparray[1]);
-					$tempdatearray=explode("/",$temparray[0]);
-					if(strlen($tempdatearray[0])==1) $tempdatearray[0]="0".$tempdatearray[0];
-					if(strlen($tempdatearray[1])==1) $tempdatearray[1]="0".$tempdatearray[1];
-					$tempdate="\"".$tempdatearray[2].$tempdatearray[0].$tempdatearray[1].$temptimearray[0].$temptimearray[1].$temptimearray[2]."\"";
+			if($variables["enddate"]!="") {
+				$querystatement.="enddate=".formatToSQLDate($variables["enddate"]).", "; 
+				$querystatement.="endtime=".formatToSQLTime($variables["endtime"]).", "; 
+			} else {
+				$querystatement.="enddate=NULL,endtime=NULL, ";
+			}
+
+			if($variables["startdate"]!="") {
+				$querystatement.="startdate=".formatToSQLDate($variables["startdate"]).", "; 
+				$querystatement.="starttime=".formatToSQLTime($variables["starttime"]).", "; 
+			} else {
+				$querystatement.="startdate=NULL,starttime=NULL, ";
+			}
+			
+			if(isset($variables["repeat"])) {
+				$querystatement.="repeat=1, "; 
+				$querystatement.="repeatfrequency=".$variables["repeatfrequency"].", "; 					
+				$tempRepeatType="repeat".$variables["repeattype"];
+				if($variables["repeattype"]=="Monthly")
+					$tempRepeatType.=$variables["rpmo"];
+				$querystatement.="repeattype=\"".$tempRepeatType."\",";
+				
+				$tempRepeatDays="";	
+				if($variables["repeattype"]=="Weekly"){
+					if(isset($variables["wosc"])) $tempRepeatDays.=$variables["wosc"];
+					if(isset($variables["womc"])) $tempRepeatDays.=$variables["womc"];
+					if(isset($variables["wotc"])) $tempRepeatDays.=$variables["wotc"];
+					if(isset($variables["wowc"])) $tempRepeatDays.=$variables["wowc"];
+					if(isset($variables["worc"])) $tempRepeatDays.=$variables["worc"];
+					if(isset($variables["wofc"])) $tempRepeatDays.=$variables["wofc"];
+					if(isset($variables["woac"])) $tempRepeatDays.=$variables["woac"];
 				}
-			$thequerystatement.="followup=".$tempdate.", "; 
+				$querystatement.="repeatdays=\"".$tempRepeatDays."\", ";
+				if($variables["rpuntil"]<1) $variables["repeattimes"]=$variables["rpuntil"];
+				$querystatement.="repeattimes=".$variables["repeattimes"].", ";
+				if($variables["repeattimes"]==-1)
+					$querystatement.="repeatuntildate=".formatToSQLDate($variables["repeatuntildate"]).", "; 
+				else
+					$querystatement.="repeatuntildate=NULL,"; 
+					
+				$repeatChanges=$tempRepeatDays."*".$variables["repeatfrequency"]."*".$variables["repeattimes"]."*".$tempRepeatType."*".$variables["repeatuntildate"];
+			}else {
+				$querystatement.="repeat=0, repeattimes=0,repeatdays=\"\",repeatfrequency=1,repeattype=\"\",repeatuntildate=NULL, ";
+			}
 
-			if(isset($_POST["beenread"])) $thequerystatement.="beenread=1, "; else $thequerystatement.="beenread=0, ";
-
-			$thequerystatement.="attachedtabledefid=".$_POST["attachedtabledefid"].", "; 
-			$thequerystatement.="attachedid=\"".$_POST["attachedid"]."\", "; 
+			if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
+			$querystatement.="assignedtoid=".$variables["assignedtoid"].", "; 
+			$querystatement.="assignedtodate=".formatToSQLDate($variables["assignedtodate"]).", "; 
+			$querystatement.="assignedtotime=".formatToSQLTime($variables["assignedtotime"]).", "; 
+			if($variables["assignedtoid"]!=$variables["assignedtochange"]){
+				if($variables["assignedtoid"]!="NULL")
+					$querystatement.="assignedbyid=".$userid.", "; 
+				else
+					$querystatement.="assignedbyid=0, "; 
+			}
+			
+			if($variables["attachedtabledefid"]=="") $variables["attachedtabledefid"]=0;
+			$querystatement.="attachedtabledefid=".$variables["attachedtabledefid"].", "; 
+			if($variables["attachedid"]=="") $variables["attachedid"]=0;
+			$querystatement.="attachedid=".$variables["attachedid"].", "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+		
+	// if this has been changed to a repeatable task, we need to redo uncompleted tasks.
+	if(isset($variables["repeat"]) && $variables["typeCheck"]=="TS"){
+		if($variables["repeatChanges"]!=$repeatChanges){
+			repeatTaskUpdate($variables["id"]);
+		}
+	}
+
+	//repeat task where applicable
+	if((isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $therecord["parentid"]!="NULL"))) {
+		if(checkForNewerRepeats($variables["parentid"],$variables["id"])){
+			repeatTask($variables["id"]);
+		}
+	}
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO notes ";
+	$querystatement="INSERT INTO notes ";
 	
-			$thequerystatement.="(importance,subject,content,type,assignedtoid,followup,beenread,attachedtabledefid,attachedid,";
-			$thequerystatement.="createdby,creationdate,modifiedby) values (";
+	$querystatement.="(subject,content,importance,type,category,location,parentid,private, ";
+	$querystatement.="completed,completeddate, ";
+	$querystatement.="enddate,endtime, ";
+	$querystatement.="startdate,starttime, ";
+	$querystatement.="repeat,repeatfrequency,repeattype,repeatdays,repeattimes,repeatuntildate, ";
+	$querystatement.="assignedtoid,assignedtodate,assignedtotime,assignedbyid, ";
+	$querystatement.="attachedtabledefid,attachedid,";
+	$querystatement.="createdby,creationdate,modifiedby) values (";
 
-			$thequerystatement.="\"".$_POST["importance"]."\", "; 
+	$querystatement.="\"".$variables["subject"]."\", "; 
+	$querystatement.="\"".$variables["content"]."\", "; 
+	$querystatement.=$variables["importance"].", "; 
+	$querystatement.="\"".$variables["thetype"]."\", "; 
+	$querystatement.="\"".$variables["category"]."\", "; 
+	$querystatement.="\"".$variables["location"]."\", "; 
+	if($variables["parentid"]=="") $variables["parentid"]="NULL";
+	$querystatement.=$variables["parentid"].", "; 
+	if(isset($variables["private"])) $querystatement.="1,"; else $querystatement.="0,";
 
-			$thequerystatement.="\"".$_POST["subject"]."\", "; 
-			$thequerystatement.="\"".$_POST["content"]."\", "; 
+	if(isset($variables["completed"])) {
+		$querystatement.="1, "; 
+		$querystatement.=formatToSQLDate($variables["completeddate"]).", "; 
+	}else {
+		$querystatement.="0, NULL, ";
+	}
+
+	if($variables["enddate"]!="") {
+		$querystatement.=formatToSQLDate($variables["enddate"]).", "; 
+		$querystatement.=formatToSQLTime($variables["endtime"]).", "; 
+	} else {
+		$querystatement.="NULL,NULL, ";
+	}
+	if($variables["startdate"]!="") {
+		$querystatement.=formatToSQLDate($variables["startdate"]).", "; 
+		$querystatement.=formatToSQLTime($variables["starttime"]).", "; 
+	} else {
+		$querystatement.="NULL,NULL, ";
+	}
+	
+	if(isset($variables["repeat"])) {
+		$querystatement.="1, "; 
+		$querystatement.=$variables["repeatfrequency"].", "; 
+		$tempRepeatType="repeat".$variables["repeattype"];
+		if($variables["repeattype"]=="Monthly")
+			$tempRepeatType.=$variables["rpmo"];
+		$querystatement.="\"".$tempRepeatType."\",";
 		
-			$thequerystatement.="\"".$_POST["type"]."\", "; 
-			$thequerystatement.="\"".$_POST["assignedtoid"]."\", "; 
-			if(!isset($_POST["followup"]))$_POST["followup"]="";
-				if($_POST["followup"]=="") $tempdate="NULL";
-				else{
-					$followup=ereg_replace(",.","/",$_POST["followup"]);
-					$temparray=explode(" ",$followup);
-					$temptimearray=explode(":",$temparray[1]);
-					$tempdatearray=explode("/",$temparray[0]);
-					if(strlen($tempdatearray[0])==1) $tempdatearray[0]="0".$tempdatearray[0];
-					if(strlen($tempdatearray[1])==1) $tempdatearray[1]="0".$tempdatearray[1];
-					$tempdate="\"".$tempdatearray[2].$tempdatearray[0].$tempdatearray[1].$temptimearray[0].$temptimearray[1].$temptimearray[2]."\"";
-				}
-			$thequerystatement.=$tempdate.", "; 
+		$tempRepeatDays="";	
+		if($variables["repeattype"]=="Weekly"){
+			if(isset($variables["wosc"])) $tempRepeatDays.=$variables["wosc"];
+			if(isset($variables["womc"])) $tempRepeatDays.=$variables["womc"];
+			if(isset($variables["wotc"])) $tempRepeatDays.=$variables["wotc"];
+			if(isset($variables["wowc"])) $tempRepeatDays.=$variables["wowc"];
+			if(isset($variables["worc"])) $tempRepeatDays.=$variables["worc"];
+			if(isset($variables["wofc"])) $tempRepeatDays.=$variables["wofc"];
+			if(isset($variables["woac"])) $tempRepeatDays.=$variables["woac"];
+		}
+		$querystatement.="\"".$tempRepeatDays."\", ";
+		if($variables["rpuntil"]<1) $variables["repeattimes"]=$variables["rpuntil"];
+		$querystatement.=$variables["repeattimes"].", ";
+		if($variables["repeattimes"]==-1)
+			$querystatement.=formatToSQLDate($variables["repeatuntildate"]).", "; 
+		else
+			$querystatement.="NULL,"; 
 
-			if(isset($_POST["beenread"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+	}else {
+		$querystatement.="0, 1,\"\",\"\",0,NULL, ";
+	}
 
-			$thequerystatement.="\"".$_POST["attachedtabledefid"]."\", "; 
-			$thequerystatement.="\"".$_POST["attachedid"]."\", "; 
+	if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
+	$querystatement.=$variables["assignedtoid"].", "; 
+	$querystatement.=formatToSQLDate($variables["assignedtodate"]).", "; 
+	$querystatement.=formatToSQLTime($variables["assignedtotime"]).", "; 
+	if($variables["assignedtoid"]!=$variables["assignedtochange"])
+		$querystatement.="assignedbyid=".$userid.", "; 
+	else
+		$querystatement.="assignedbyid=0, "; 
+	
+	if($variables["attachedtabledefid"]=="") $variables["attachedtabledefid"]=0;
+	if($variables["attachedid"]=="") $variables["attachedid"]=0;
+	$querystatement.=$variables["attachedtabledefid"].", "; 
+	$querystatement.=$variables["attachedid"].", "; 
 				
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$userid.")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -171,7 +366,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord($_POST,$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -180,7 +375,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord($_POST,$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

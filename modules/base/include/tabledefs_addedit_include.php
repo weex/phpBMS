@@ -10,7 +10,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
 				id,maintable,displayname,querytable,addfile,editfile,deletebutton,type,moduleid,
 				defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 
@@ -18,7 +18,7 @@ function getRecords($id){
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM tabledefs
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -60,31 +60,31 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE tabledefs SET ";
+	$querystatement="UPDATE tabledefs SET ";
 	
-			$thequerystatement.="maintable=\"".$_POST["maintable"]."\", "; 
-			$thequerystatement.="querytable=\"".$_POST["querytable"]."\", "; 
-			$thequerystatement.="displayname=\"".$_POST["displayname"]."\", "; 
-			$thequerystatement.="type=\"".$_POST["type"]."\", "; 
-			$thequerystatement.="moduleid=".$_POST["moduleid"].", "; 
+			$querystatement.="maintable=\"".$_POST["maintable"]."\", "; 
+			$querystatement.="querytable=\"".addslashes($_POST["querytable"])."\", "; 
+			$querystatement.="displayname=\"".$_POST["displayname"]."\", "; 
+			$querystatement.="type=\"".$_POST["type"]."\", "; 
+			$querystatement.="moduleid=".$_POST["moduleid"].", "; 
 
-			$thequerystatement.="addfile=\"".$_POST["addfile"]."\", "; 
-			$thequerystatement.="editfile=\"".$_POST["editfile"]."\", "; 
+			$querystatement.="addfile=\"".addslashes($_POST["addfile"])."\", "; 
+			$querystatement.="editfile=\"".addslashes($_POST["editfile"])."\", "; 
 
-			$thequerystatement.="deletebutton=\"".$_POST["deletebutton"]."\", "; 
+			$querystatement.="deletebutton=\"".$_POST["deletebutton"]."\", "; 
 
-			$thequerystatement.="defaultwhereclause=\"".$_POST["defaultwhereclause"]."\", "; 
-			$thequerystatement.="defaultsortorder=\"".$_POST["defaultsortorder"]."\", "; 
-			$thequerystatement.="defaultsearchtype=\"".$_POST["defaultsearchtype"]."\", "; 
-			$thequerystatement.="defaultcriteriafindoptions=\"".$_POST["defaultcriteriafindoptions"]."\", "; 
-			$thequerystatement.="defaultcriteriaselection=\"".$_POST["defaultcriteriaselection"]."\", "; 
+			$querystatement.="defaultwhereclause=\"".addslashes($_POST["defaultwhereclause"])."\", "; 
+			$querystatement.="defaultsortorder=\"".addslashes($_POST["defaultsortorder"])."\", "; 
+			$querystatement.="defaultsearchtype=\"".$_POST["defaultsearchtype"]."\", "; 
+			$querystatement.="defaultcriteriafindoptions=\"".addslashes($_POST["defaultcriteriafindoptions"])."\", "; 
+			$querystatement.="defaultcriteriaselection=\"".addslashes($_POST["defaultcriteriaselection"])."\", "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -92,36 +92,36 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO tabledefs ";
+	$querystatement="INSERT INTO tabledefs ";
 	
-	$thequerystatement.="(maintable,querytable,displayname,type,moduleid,addfile,editfile,deletebutton,
+	$querystatement.="(maintable,querytable,displayname,type,moduleid,addfile,editfile,deletebutton,
 						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$thequerystatement.="\"".$_POST["maintable"]."\", "; 
-			$thequerystatement.="\"".$_POST["querytable"]."\", "; 
-			$thequerystatement.="\"".$_POST["displayname"]."\", "; 
-			$thequerystatement.="\"".$_POST["type"]."\", "; 
-			$thequerystatement.=$_POST["moduleid"].", "; 
+			$querystatement.="\"".$_POST["maintable"]."\", "; 
+			$querystatement.="\"".addslashes($_POST["querytable"])."\", "; 
+			$querystatement.="\"".$_POST["displayname"]."\", "; 
+			$querystatement.="\"".$_POST["type"]."\", "; 
+			$querystatement.=$_POST["moduleid"].", "; 
 
-			$thequerystatement.="\"".$_POST["addfile"]."\", "; 
-			$thequerystatement.="\"".$_POST["editfile"]."\", "; 
+			$querystatement.="\"".addslashes($_POST["addfile"])."\", "; 
+			$querystatement.="\"".addslashes($_POST["editfile"])."\", "; 
 
-			$thequerystatement.="\"".$_POST["deletebutton"]."\", "; 
+			$querystatement.="\"".$_POST["deletebutton"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["defaultwhereclause"]."\", "; 
-			$thequerystatement.="\"".$_POST["defaultsortorder"]."\", "; 
-			$thequerystatement.="\"".$_POST["defaultsearchtype"]."\", "; 
-			$thequerystatement.="\"".$_POST["defaultcriteriafindoptions"]."\", "; 
-			$thequerystatement.="\"".$_POST["defaultcriteriaselection"]."\", "; 
+			$querystatement.="\"".addslashes($_POST["defaultwhereclause"])."\", "; 
+			$querystatement.="\"".addslashes($_POST["defaultsortorder"])."\", "; 
+			$querystatement.="\"".$_POST["defaultsearchtype"]."\", "; 
+			$querystatement.="\"".addslashes($_POST["defaultcriteriafindoptions"])."\", "; 
+			$querystatement.="\"".addslashes($_POST["defaultcriteriaselection"])."\", "; 
 				
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

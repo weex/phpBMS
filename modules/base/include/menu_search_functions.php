@@ -18,11 +18,11 @@ function delete_record($theids){
 	$whereclause=substr($whereclause,3);		
 	$verifywhereclause=substr($verifywhereclause,3);;
 	
-	$thequerystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;
-	$thequery = mysql_query($thequery,$dblink) or die(mysql_error().$thequerystatement);
+	$querystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;
+	$thequery = mysql_query($thequery,$dblink) or die(mysql_error().$querystatement);
 	if (mysql_num_rows($thequery)){
-		$thequerystatement = "DELETE FROM menu WHERE ".$whereclause;
-		$thequery = mysql_query($thequery,$dblink) or die(mysql_error().$thequerystatement);
+		$querystatement = "DELETE FROM menu WHERE ".$whereclause;
+		$thequery = mysql_query($thequery,$dblink) or die(mysql_error().$querystatement);
 	}
 	
 }

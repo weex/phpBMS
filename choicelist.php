@@ -50,7 +50,6 @@
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
 ?>
-	<h2 style="margin-top:0px;">Modify List</h2>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<td valign="top"><select id="MLlist" name="MLList" size="12" style="width:230px;margin-right:10px;margin-bottom:10px;" onChange="updateML(this)"><?php displayList($queryresult,$blankvalue)?>
@@ -68,9 +67,10 @@
 			</tr>
 		</tr>
 	</table>
+	<div id="MLStatus" class="small" align="center">&nbsp;</div>
 	<div align="right">
-		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onClick="closeBox('<?php echo $listid?>');"/>&nbsp;
 		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onClick="clickOK('<?php echo $_SESSION["app_path"]?>','<?php echo $listid?>','<?php echo $listname?>')"/>
+		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onClick="closeBox('<?php echo $listid?>');"/>&nbsp;
 	</div>
 <?php	}//end function
 

@@ -10,14 +10,14 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT id, partnumber, partname, description, status, categoryid,
+	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,
 				unitprice,unitcost,unitofmeasure,weight,isprepackaged,isoversized,packagesperitem,webenabled,
 
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM products
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -59,37 +59,37 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE products SET ";
+	$querystatement="UPDATE products SET ";
 	
-			$thequerystatement.="partnumber=\"".$_POST["partnumber"]."\", "; 
-			$thequerystatement.="partname=\"".$_POST["partname"]."\", "; 
-			$thequerystatement.="description=\"".$_POST["description"]."\", "; 
+			$querystatement.="partnumber=\"".$_POST["partnumber"]."\", "; 
+			$querystatement.="partname=\"".$_POST["partname"]."\", "; 
+			$querystatement.="description=\"".$_POST["description"]."\", "; 
 		
 				$unitprice=ereg_replace("\\\$|,","",$_POST["unitprice"]);
 				$unitcost=ereg_replace("\\\$|,","",$_POST["unitcost"]);
 			
-			$thequerystatement.="unitprice=".$unitprice.", "; 
-			$thequerystatement.="unitcost=".$unitcost.", "; 
-			$thequerystatement.="unitofmeasure=\"".$_POST["unitofmeasure"]."\", "; 
+			$querystatement.="unitprice=".$unitprice.", "; 
+			$querystatement.="unitcost=".$unitcost.", "; 
+			$querystatement.="unitofmeasure=\"".$_POST["unitofmeasure"]."\", "; 
 
-			$thequerystatement.="status=\"".$_POST["status"]."\", "; 
-			$thequerystatement.="categoryid=\"".$_POST["categoryid"]."\", "; 
+			$querystatement.="status=\"".$_POST["status"]."\", "; 
+			$querystatement.="categoryid=\"".$_POST["categoryid"]."\", "; 
 
-			$thequerystatement.="weight=".$_POST["weight"].", "; 
-			if(isset($_POST["isprepackaged"])) $thequerystatement.="isprepackaged=1, "; else $thequerystatement.="isprepackaged=0, ";
-			if(isset($_POST["isoversized"])) $thequerystatement.="isoversized=1, "; else $thequerystatement.="isoversized=0, ";
+			$querystatement.="weight=".$_POST["weight"].", "; 
+			if(isset($_POST["isprepackaged"])) $querystatement.="isprepackaged=1, "; else $querystatement.="isprepackaged=0, ";
+			if(isset($_POST["isoversized"])) $querystatement.="isoversized=1, "; else $querystatement.="isoversized=0, ";
 			if($_POST["packagesperitem"])
 				$_POST["packagesperitem"]=1/$_POST["packagesperitem"];
-			$thequerystatement.="packagesperitem=".$_POST["packagesperitem"].", "; 
+			$querystatement.="packagesperitem=".$_POST["packagesperitem"].", "; 
 
-			if(isset($_POST["webenabled"])) $thequerystatement.="webenabled=1, "; else $thequerystatement.="webenabled=0, ";
+			if(isset($_POST["webenabled"])) $querystatement.="webenabled=1, "; else $querystatement.="webenabled=0, ";
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -97,42 +97,42 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO products ";
+	$querystatement="INSERT INTO products ";
 	
-	$thequerystatement.="(partnumber,partname, description, unitprice,unitcost,unitofmeasure,status,categoryid,
+	$querystatement.="(partnumber,partname, description, unitprice,unitcost,unitofmeasure,status,categoryid,
 						weight,isprepackaged,isoversized,packagesperitem,webenabled,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$thequerystatement.="\"".$_POST["partnumber"]."\", "; 
-			$thequerystatement.="\"".$_POST["partname"]."\", "; 
-			$thequerystatement.="\"".$_POST["description"]."\", "; 
+			$querystatement.="\"".$_POST["partnumber"]."\", "; 
+			$querystatement.="\"".$_POST["partname"]."\", "; 
+			$querystatement.="\"".$_POST["description"]."\", "; 
 		
 				$unitprice=ereg_replace("\\\$|,","",$_POST["unitprice"]);
 				$unitcost=ereg_replace("\\\$|,","",$_POST["unitcost"]);
 			
-			$thequerystatement.=$unitprice.", "; 
-			$thequerystatement.=$unitcost.", "; 
-			$thequerystatement.="\"".$_POST["unitofmeasure"]."\", "; 
+			$querystatement.=$unitprice.", "; 
+			$querystatement.=$unitcost.", "; 
+			$querystatement.="\"".$_POST["unitofmeasure"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["status"]."\", "; 
-			$thequerystatement.="\"".$_POST["categoryid"]."\", "; 
+			$querystatement.="\"".$_POST["status"]."\", "; 
+			$querystatement.="\"".$_POST["categoryid"]."\", "; 
 
-			$thequerystatement.=$_POST["weight"].", "; 
-			if(isset($_POST["isprepackaged"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
-			if(isset($_POST["isoversized"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+			$querystatement.=$_POST["weight"].", "; 
+			if(isset($_POST["isprepackaged"])) $querystatement.="1, "; else $querystatement.="0, ";
+			if(isset($_POST["isoversized"])) $querystatement.="1, "; else $querystatement.="0, ";
 			if($_POST["packagesperitem"])
 				$_POST["packagesperitem"]=1/$_POST["packagesperitem"];
-			$thequerystatement.=$_POST["packagesperitem"].", "; 
+			$querystatement.=$_POST["packagesperitem"].", "; 
 
-			if(isset($_POST["webenabled"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+			if(isset($_POST["webenabled"])) $querystatement.="1, "; else $querystatement.="0, ";
 				
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

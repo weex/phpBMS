@@ -11,11 +11,11 @@
 		$sortorder=" ORDER BY notes.creationdate DESC";
 
 	//Generate the notes Query
-	$thequerystatement="SELECT users.firstname, users.lastname, notes.id, date_Format(notes.creationdate,\"%c/%e/%Y %T\") as thecreationdate,
+	$querystatement="SELECT users.firstname, users.lastname, notes.id, date_Format(notes.creationdate,\"%c/%e/%Y %T\") as thecreationdate,
 						notes.subject,notes.content 
 						FROM notes INNER JOIN users on notes.createdby=users.id ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$thequerystatement);
+	$thequery=mysql_query($querystatement,$dblink);
+	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$querystatement);
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================

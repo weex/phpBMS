@@ -48,7 +48,7 @@
 	$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 
 	//get history
-	$thequerystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
+	$querystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
 		Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,invoices.status,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
@@ -61,19 +61,19 @@
 		and invoices.".$searchdate."<=".$mysqltodate."
 		and ".$thestatus."		
 		ORDER BY invoices.invoicedate,invoices.orderdate,invoices.id;";
-	$thequery=mysql_query($thequerystatement);
+	$thequery=mysql_query($querystatement);
 	if(!$thequery) reportError(500,"Could Not Retrieve purchase history<BR>".$querystatement);
 
 	$numrows=mysql_num_rows($thequery);
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/common.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/cal.js"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <?php client_tabs("Purchase History",$_GET["id"]);?><div class="untabbedbox" style="padding:4px;">
@@ -93,11 +93,11 @@
 					</td>
 					<td nowrap>
 					   from<br>
-					   <?PHP field_cal("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()"),false);?>
+					   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
 						to<br>
-						<?PHP field_cal("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()","style"=>""),false);?>
+						<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:20px;"><br>
 				       <input name="command" type="submit" value="change timeframe/view" class="smallButtons" style="">					
@@ -143,6 +143,9 @@
 	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
     <?PHP }//end while ?>
+    <?PHP  if(!mysql_num_rows($thequery)) {?>
+	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
+	<?php }?>	
 	<tr>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>

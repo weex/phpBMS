@@ -320,8 +320,8 @@ if(isset($_POST["command"])){
 					</td>
 					<td>
 						<div><br>
-							<input type="button" value="&lt;&lt;" class="buttons" onClick="moveItem('groupings','to',this.form);"><br><br>
-							<input type="button" value="&gt;&gt;" class="buttons" onClick="moveItem('groupings','from',this.form);">							
+							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('groupings','to',this.form);"><br><br>
+							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('groupings','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">
@@ -370,8 +370,8 @@ if(isset($_POST["command"])){
 					</td>
 					<td>
 						<div><br>
-							<input type="button" value="&lt;&lt;" class="buttons" onClick="moveItem('columns','to',this.form);"><br><br>
-							<input type="button" value="&gt;&gt;" class="buttons" onClick="moveItem('columns','from',this.form);">							
+							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('columns','to',this.form);"><br><br>
+							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('columns','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">

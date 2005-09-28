@@ -1,3 +1,14 @@
+function returnFalse(){
+	return false;
+}
+
+function initializePage(){
+	var shippeddateB=getObjectFromID("shippeddateButton");
+	
+	SDBOC=shippeddateB.onclick;
+	setShipped();
+}
+
 // These function are used when redefining the onChange property of 
 // a hidden field for the the taxAreaID.  It uses XMLHttpRequest to
 // grab the tax percentage.
@@ -98,7 +109,7 @@ function estimateShipping(){
 			message   +="This may be caused because:\n\n";
 			message   +="1) The site UPS is not working or could not ship to the zip/postal code using the shipping method.\n";
 			message   +="2) The products on the invoice do not contain the proper shipping information.\n";
-			message   +="3) A unrecognized form of shipping was chosen.";
+			message   +="3) A unrecognized form of shipping was chosen. (non UPS)";
 			alert(message);
 		}
 		theshipping.value=thevalue;
@@ -110,9 +121,9 @@ function estimateShipping(){
 //this function makes sure that amount due is 0 before allowing changing to an invoice
 function checkStatus(theitem){
 	if (theitem.value=="Invoice" && document.forms["record"]["amountdue"].value!="$0.00"){
-		alert("The order has not been fully paid. \n Check the 'amount paid' field.");
 		theitem.value="Order";
 		document.forms["record"]["amountpaid"].focus();
+		alert("The order has not been fully paid. \n Check the 'amount paid' field.");
 	}
 }
 
@@ -132,12 +143,13 @@ function populateLineItem(){
 		if(response.getElementsByTagName('value')[0].firstChild)
 			if(response.getElementsByTagName('value')[0].firstChild.data=="Prerequisite Not Met"){
 				// did not meet prerequisites
-				var message=		"The product you entered has prerequisite products that must have \n";
-				message=message+	"been purchased by the client prior to ordering this product. \n\n";
-				message=message+ 	"Make sure the client has been entered and that they have purchased\n";
-				message=message+ 	"any prerequiste products before adding this product.";
+				var message="The product you entered has prerequisite products that must have<br \>";
+				message+=	"been purchased by the client prior to ordering this product.<br \><br \>";
+				message+= 	"Make sure the client has been entered and that they have purchased<br \>";
+				message+= 	"any prerequiste products before adding this product.";
+				message+=	"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
+
 				
-				alert(message);
 				this.form["partnumber"].value="";
 				this.form["ds-partnumber"].value="";
 				this.form["ds-partname"].value="";
@@ -147,6 +159,7 @@ function populateLineItem(){
 				thediv1.style.display="none";
 				thediv2.style.display="none";
 				this.form["ds-partnumber"].focus();
+				showModal(message,"Prerequisite Not Met",400,10);
 
 			} else {
 				for(i=0;i<response.getElementsByTagName('field').length;i++){
@@ -168,25 +181,54 @@ function populateLineItem(){
 
 
 //This function set the line item to be deleted
-function deleteLine(theid,theitem){
-	var theform=theitem.form;
-	theform["deleteid"].value=theid;
-	return true;
+function deleteLine(theid){
+	var deleteid=getObjectFromID("deleteid");
+	var thecommand=getObjectFromID("command");
+	deleteid.value=theid;
+	thecommand.value="delete";
+}
+
+function addLine(theid){
+	var thecommand=getObjectFromID("command");
+	thecommand.value="add";
+}
+
+function checkShipping(){
+	var thecheckbox=getObjectFromID("shipped");
+	var thedate=getObjectFromID("shippeddate");
+	var cancelclick=getObjectFromID("cancelclick");
+
+	if (cancelclick)
+		if (cancelclick.value!=0)
+			return true;
+
+	if(thecheckbox.checked && !thecheckbox.disabled && !thedate.value){
+			alert("A shipping date must be filled in \n if the shipped status is set.");
+			return false;
+	}else
+		return true;
 }
 
 //this function sets the default shipped date information for shipping appropriately
-function setShipped(theitem){
+function setShipped(){
 	var thecheckbox=getObjectFromID("shipped");
 	var thedate=getObjectFromID("shippeddate");
+	var thedateB=getObjectFromID("shippeddateButton");
 
-	if (theitem.name=="shipped"){
-		if(thecheckbox.checked) {
+	if(thecheckbox){
+		if(thecheckbox.checked && thecheckbox.disabled==false) {
 			var currentdate= new Date();
 			thedate.value=(currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-		} else
-		thedate.value="";
+			thedate.removeAttribute("readonly");
+			thedate.className=null;
+			thedateB.onclick=SDBOC;		
+		} else {
+			thedate.value="";
+			thedate.setAttribute("readonly","readonly");
+			thedateB.onclick=returnFalse;
+			thedate.className="uneditable";
+		}
 	}
-	else thecheckbox.checked=true;
 }
 
 //this function calulates how much is left to pay

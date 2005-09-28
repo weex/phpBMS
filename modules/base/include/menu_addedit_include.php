@@ -1,8 +1,8 @@
 <?PHP
 function displayTableDropDown($selectedlink){
 	global $dblink;
-	$thequerystatement="select id, displayname from tabledefs order by displayname";
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$querystatement="select id, displayname from tabledefs order by displayname";
+	$thequery=mysql_query($querystatement,$dblink);
 	
 	echo "<select name=\"linkdropdown\">\n";
 	echo "<option value=\"0\" ";
@@ -21,8 +21,8 @@ function displayTableDropDown($selectedlink){
 function displayParentDropDown($selectedpid,$id=0){
 	global $dblink;
 	if($id=="")$id=0;
-	$thequerystatement="SELECT id, name FROM menu WHERE id!=".$id." and parentid=0 and (link=\"\" or link is null) ORDER BY displayorder";
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$querystatement="SELECT id, name FROM menu WHERE id!=".$id." and parentid=0 and (link=\"\" or link is null) ORDER BY displayorder";
+	$thequery=mysql_query($querystatement,$dblink);
 	echo "<select name=\"parentid\">\n";
 	echo "<option value=\"0\" ";
 	if ($selectedpid=="0") echo "selected";
@@ -47,12 +47,12 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT id, name, link, parentid, displayorder, accesslevel,
+	$querystatement="SELECT id, name, link, parentid, displayorder, accesslevel,
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM menu
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -82,25 +82,25 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE menu SET ";
+	$querystatement="UPDATE menu SET ";
 	
 	//fields
-	$thequerystatement.="name=\"".$_POST["name"]."\", "; 
+	$querystatement.="name=\"".$_POST["name"]."\", "; 
 	
 	if($_POST["linkdropdown"]!="0") $_POST["link"]=$_POST["linkdropdown"];
-	$thequerystatement.="link=\"".$_POST["link"]."\", "; 
+	$querystatement.="link=\"".$_POST["link"]."\", "; 
 	
 	if(!$_POST["parentid"])$_POST["parentid"]=0;
-	$thequerystatement.="parentid=".$_POST["parentid"].", "; 
-	$thequerystatement.="displayorder=".$_POST["displayorder"].", "; 
-	$thequerystatement.="accesslevel=".$_POST["accesslevel"].", "; 
+	$querystatement.="parentid=".$_POST["parentid"].", "; 
+	$querystatement.="displayorder=".$_POST["displayorder"].", "; 
+	$querystatement.="accesslevel=".$_POST["accesslevel"].", "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="where id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="where id=".$_POST["id"];
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -108,28 +108,28 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO menu ";
+	$querystatement="INSERT INTO menu ";
 	
-	$thequerystatement.="(name,link,parentid,displayorder,accesslevel,
+	$querystatement.="(name,link,parentid,displayorder,accesslevel,
 	createdby,creationdate,modifiedby) VALUES (";
 	
-	$thequerystatement.="\"".$_POST["name"]."\", "; 
+	$querystatement.="\"".$_POST["name"]."\", "; 
 
 	if($_POST["linkdropdown"]!="0") $_POST["link"]=$_POST["linkdropdown"];
-	$thequerystatement.="\"".$_POST["link"]."\", "; 
+	$querystatement.="\"".$_POST["link"]."\", "; 
 
 	if(!$_POST["parentid"])$_POST["parentid"]=0;
-	$thequerystatement.=$_POST["parentid"].", "; 
-	$thequerystatement.=$_POST["displayorder"].", "; 
-	$thequerystatement.=$_POST["accesslevel"].", "; 
+	$querystatement.=$_POST["parentid"].", "; 
+	$querystatement.=$_POST["displayorder"].", "; 
+	$querystatement.=$_POST["accesslevel"].", "; 
 	
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

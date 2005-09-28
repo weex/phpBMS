@@ -3,9 +3,9 @@
 function product_tabs($selected="none",$id=0) {
 	global $dblink;
 	
-	$thequerystatement="select id from notes where 
+	$querystatement="select id from notes where 
 						attachedtabledefid=4 and attachedid=".$id;
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$thequery=mysql_query($querystatement,$dblink);
 	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 
 	$thetabs=array(

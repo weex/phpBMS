@@ -1,53 +1,58 @@
-<?PHP
-	include("include/session.php");
+<?php 
+require_once("include/session.php");
+		
+function checkUserPassword($password,$id){
+	global $dblink;
 	
-	$statement="&nbsp;";
-	if(isset($_POST["command"])){
-		//they want to change their password
-		$checkstatement="select id from users where id=".$_SESSION["userinfo"]["id"]." and password=ENCODE(\"".$_POST["currpass"]."\",\"".$_SESSION["encryption_seed"]."\")";
-		$checkquery=mysql_query($checkstatement,$dblink);
-		if(mysql_num_rows($checkquery)){
-			if($_POST["newpass1"]==$_POST["newpass2"]){
-				$checkstatement="update users set password=ENCODE(\"".$_POST["newpass1"]."\",\"".$_SESSION["encryption_seed"]."\") where id=".$_SESSION["userinfo"]["id"];
-				$checkquery=mysql_query($checkstatement,$dblink);
-								
-				echo "<SCRIPT language=\"JavaScript\">window.close()</SCRIPT>";
-				die();
-			} else $statement="New and retyped passwords did not match.";
-		} else $statement="Current password not entered correctly.";
-	}
+	$querystatement="SELECT id FROM users WHERE id=".$id." AND password=ENCODE(\"".$password."\",\"".$_SESSION["encryption_seed"]."\")";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if($queryresult)
+		if (mysql_num_rows($queryresult))
+			echo "ok";
+}
+
+function updatePassword($newpassword,$id){
+	global $dblink;
+	
+	$querystatement="UPDATE users SET password=ENCODE(\"".$newpassword."\",\"".$_SESSION["encryption_seed"]."\") WHERE id=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if($queryresult)
+			echo "ok";
+	else echo mysql_error($dblink)."<br><br>".$querystatement;
+}
+		
+function showUserInfo($base){
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
-<html>
-<head>
-<title>Change Password</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<form action="<?PHP echo $_SERVER["PHP_SELF"] ?>" method="post" name="thechoice">
-<div class="bodyline">
-	<h1 style="margin:0px;">Change Password</h1>
-	<div <?PHP if($statement!="&nbsp;") echo "class=\"standout\""?>><?PHP echo $statement?></div>	
-	<div>
-		current password<br>
-		<input name="currpass" type="password" id="currpass" style="width:100%">
-	</div>
-	
-	<div>
-		new password<br>
-		<input name="newpass1" type="password" id="newpass1" style="width:100%">
-	</div>
-	
-	<div>
-		re-type new password<br>
-		<input name="newpass2" type="password" id="newpass2" style="width:100%">
-	</div>
-	<div align="right">
-		<input name="command" type="submit" class="Buttons" value="change" style="width:75px">
-		<input name="Button" type="button" class="Buttons" value="cancel" onClick="window.close()" style="width:75px;">
-	</div>
+<div>
+<div class=small>
+	current password<br>
+	<input type="password" id="userCurPass" name="userCurPass" maxlength="32" style="width:99%"/>
 </div>
-</form>
-</body>
-</html>
+
+<div class=small>
+	new password<br>
+	<input type="password" id="userNewPass" name="userNewPass" maxlength="32" style="width:99%"/>
+	re-type new password<br>
+	<input type="password" id="userNew2Pass" name="userNew2Pass" maxlength="32" style="width:99%"/>
+</div>
+<div id="cpStatus" align="center" style="font-size:10px;">&nbsp;</div>
+<div align=right><input class="smallButtons" type="button" value="change password" onClick="changePassword('<?php echo $base?>')"/><input id="userCP" class="smallButtons" type="button" value="done" style="margin-left:3px;" onClick="closeModal()" /></div>
+</div>
+<?php
+}// end funtion
+
+//=============================================
+if(isset($_GET["cm"])){
+	switch($_GET["cm"]){
+		case "shw":
+			showUserInfo($_GET["base"]);
+		break;
+		case "chk":
+			checkUserPassword($_GET["pass"],$_SESSION["userinfo"]["id"]);
+		break;
+		case "upd":
+			updatePassword($_GET["pass"],$_SESSION["userinfo"]["id"]);
+		break;
+	}
+}
+?>

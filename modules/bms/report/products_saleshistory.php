@@ -58,7 +58,7 @@ class salesHistoryReport{
 		$temparray=explode("/",$this->todate);
 		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 			
-		$thequerystatement="select invoices.id as id, Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
+		$querystatement="select invoices.id as id, Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
 			Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,
 			if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
 			lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
@@ -71,8 +71,8 @@ class salesHistoryReport{
 			and invoices.".$searchdate."<=".$mysqltodate."
 			and ".$thestatus."
 			order by invoices.invoicedate, invoices.orderdate;";
-		$thequery=mysql_query($thequerystatement,$dblink);
-		if(!$thequery) reportError(100,mysql_error($dblink)." ".$thequerystatement);
+		$thequery=mysql_query($querystatement,$dblink);
+		if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
 		$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 ?>
    <table border="0" cellpadding="3" cellspacing="0">
@@ -220,7 +220,7 @@ if(isset($_POST["command"])){
 	<link href="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 	<script language="javascript" src="../../../common/javascript/common.js"></script>
 <script language="javascript" src="../../../common/javascript/fields.js"></script>
-	<script language="javascript" src="../../../common/javascript/cal.js"></script>		
+	<script language="javascript" src="../../../common/javascript/datepicker.js"></script>		
 </head>
 
 <body>
@@ -233,11 +233,11 @@ if(isset($_POST["command"])){
 				<tr>
 					<td nowrap>
 					   from<br>
-					   <?PHP field_cal("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()"),false);?>
+					   <?PHP field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
 						to<br>
-						<?PHP field_cal("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()","style"=>""),false);?>
+						<?PHP field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 				</tr>
 			</table>

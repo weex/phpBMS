@@ -47,11 +47,11 @@
 			$theids=explode(",",$_POST["theids"]);
 			eval($_POST["othercommands"]."(\$theids);");
 		break;
-		case "Search":
+		case "search":
 			$displayTable->recordoffset=0;		
 			$displayTable->buildSearch($_POST);		
 		break;		
-		case "Reset":		
+		case "reset":		
 			$displayTable->recordoffset=0;		
 			$displayTable->resetQuery();
 		break;
@@ -93,7 +93,10 @@
 			// relocate to edit screen
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			header("Location: ".$displayTable->thetabledef["editfile"]."?id=".$theids[0]);
+			$connector="?";
+			if (strpos($displayTable->thetabledef["editfile"],"?"))
+				$connector="&";
+			header("Location: ".$displayTable->thetabledef["editfile"].$connector."id=".$theids[0]);
 		break;
 		case "advanced search":
 			$displayTable->recordoffset=0;		
@@ -166,7 +169,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 <head>
 <title><?php echo $displayTable->thetabledef["displayname"] ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
 	 work properly -->
 <script language="JavaScript" src="common/javascript/common.js" type="text/javascript" ></script>
@@ -183,7 +186,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 	
 ?>
 <div class="<?php echo $table_class ?>">
-	<div class="searchtitle"><?php echo $displayTable->thetabledef["displayname"] ?></div>
+	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
 	<div>
 <?PHP  
 		//Search//select

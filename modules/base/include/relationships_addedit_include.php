@@ -2,8 +2,8 @@
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
-	$thequerystatement="SELECT id, displayname FROM tabledefs WHERE type!=\"view\" ORDER BY displayname";
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$querystatement="SELECT id, displayname FROM tabledefs WHERE type!=\"view\" ORDER BY displayname";
+	$thequery=mysql_query($querystatement,$dblink);
 	
 	echo "<select name=\"".$fieldname."\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
@@ -26,14 +26,14 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
 				id,name,fromtableid,fromfield,totableid,tofield,inherint,
 
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM relationships
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink) or die($thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink) or die($querystatement);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -66,25 +66,25 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE relationships SET ";
+	$querystatement="UPDATE relationships SET ";
 	
-			$thequerystatement.="name=\"".$_POST["name"]."\", "; 
-			if(isset($_POST["inherint"])) $thequerystatement.="inherint=1, "; else $thequerystatement.="inherint=0, ";
+			$querystatement.="name=\"".$_POST["name"]."\", "; 
+			if(isset($_POST["inherint"])) $querystatement.="inherint=1, "; else $querystatement.="inherint=0, ";
 
-			$thequerystatement.="fromtableid=".$_POST["fromtableid"].", "; 
-			$thequerystatement.="fromfield=\"".$_POST["fromfield"]."\", "; 
+			$querystatement.="fromtableid=".$_POST["fromtableid"].", "; 
+			$querystatement.="fromfield=\"".$_POST["fromfield"]."\", "; 
 
-			$thequerystatement.="totableid=".$_POST["totableid"].", "; 
-			$thequerystatement.="tofield=\"".$_POST["tofield"]."\", "; 		
+			$querystatement.="totableid=".$_POST["totableid"].", "; 
+			$querystatement.="tofield=\"".$_POST["tofield"]."\", "; 		
 
 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -92,27 +92,27 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO relationships ";
+	$querystatement="INSERT INTO relationships ";
 	
-	$thequerystatement.="(name,inherint,fromtableid,fromfield,totableid,tofield,
+	$querystatement.="(name,inherint,fromtableid,fromfield,totableid,tofield,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$thequerystatement.="\"".$_POST["name"]."\", "; 
-			if(isset($_POST["inherint"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+			$querystatement.="\"".$_POST["name"]."\", "; 
+			if(isset($_POST["inherint"])) $querystatement.="1, "; else $querystatement.="0, ";
 
-			$thequerystatement.=$_POST["fromtableid"].", "; 
-			$thequerystatement.="\"".$_POST["fromfield"]."\", "; 
+			$querystatement.=$_POST["fromtableid"].", "; 
+			$querystatement.="\"".$_POST["fromfield"]."\", "; 
 
-			$thequerystatement.=$_POST["totableid"].", "; 
-			$thequerystatement.="\"".$_POST["tofield"]."\", "; 		
+			$querystatement.=$_POST["totableid"].", "; 
+			$querystatement.="\"".$_POST["tofield"]."\", "; 		
 					
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

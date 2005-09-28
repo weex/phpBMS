@@ -3,7 +3,7 @@
 application_name		= "phpBMS"
 encryption_seed			= "freeble"
 record_limit			= "50"
-default_load_page		= "search.php?id=12"
+default_load_page		= "modules/base/snapshot.php"
 
 [ Invoice ]
 invoice_default_printinstruc	= "Thank You For Your Order."

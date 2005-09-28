@@ -157,11 +157,7 @@ H2{
 .row1{background-color:#E5E5E5;}
 .row2{background-color:#EEEEEE;}
 
-
 .dottedline { border-bottom: 2px #AAAAAA dotted;}
-
-.buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; font-size:10px; padding:1px; padding-bottom:0px;}
-.buttonSection{border-top:0;  padding-top:0; padding-bottom:1px;}
 
 .recordbottom{margin-bottom:3px;}
 .norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; }

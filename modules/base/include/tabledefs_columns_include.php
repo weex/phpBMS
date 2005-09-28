@@ -16,33 +16,33 @@
 	
 	function getColumns($tabledefid,$columnid=false){
 		global $dblink;
-		$thequerystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size
+		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size
 		FROM tablecolumns 
 		WHERE tabledefid=".$tabledefid;
-		if($columnid) $thequerystatement.=" AND id=".$columnid;
-		$thequerystatement.=" ORDER BY displayorder";
+		if($columnid) $querystatement.=" AND id=".$columnid;
+		$querystatement.=" ORDER BY displayorder";
 		
-		$thequery=mysql_query($thequerystatement,$dblink) or $thequery=mysql_error()." -- ".$thequerystatement;		
+		$thequery=mysql_query($querystatement,$dblink) or $thequery=mysql_error()." -- ".$querystatement;		
 		return $thequery;
 	}// end function
 
 
 	function addColumn(){
 		global $dblink;
-		$thequerystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,wrap)
+		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,wrap)
 		values (";
-		$thequerystatement.=$_GET["id"].", ";
-		$thequerystatement.="\"".$_POST["name"]."\", ";
-		$thequerystatement.="\"".$_POST["column"]."\", ";
-		$thequerystatement.="\"".$_POST["align"]."\", ";
-		$thequerystatement.="\"".$_POST["footerquery"]."\", ";
-		$thequerystatement.="\"".$_POST["sortorder"]."\", ";
-		$thequerystatement.="\"".$_POST["displayorder"]."\", ";		
-		$thequerystatement.="\"".$_POST["size"]."\", ";		
+		$querystatement.=$_GET["id"].", ";
+		$querystatement.="\"".$_POST["name"]."\", ";
+		$querystatement.="\"".addslashes($_POST["column"])."\", ";
+		$querystatement.="\"".addslashes($_POST["align"])."\", ";
+		$querystatement.="\"".addslashes($_POST["footerquery"])."\", ";
+		$querystatement.="\"".addslashes($_POST["sortorder"])."\", ";
+		$querystatement.="\"".addslashes($_POST["displayorder"])."\", ";		
+		$querystatement.="\"".addslashes($_POST["size"])."\", ";		
 		if(!isset($_POST["wrap"])) $_POST["wrap"]=0;
-		$thequerystatement.=" ".$_POST["wrap"]." )";		
+		$querystatement.=" ".$_POST["wrap"]." )";		
 
-		if(mysql_query($thequerystatement,$dblink)) $thereturn ="Column Added"; else $thereturn=mysql_error()." -- ".$thequerystatement;
+		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Added"; else $thereturn=mysql_error()." -- ".$querystatement;
 		
 		return $thereturn;
 	}// end function
@@ -50,17 +50,17 @@
 
 	function updateColumn(){
 		global $dblink;
-		$thequerystatement="UPDATE tablecolumns set ";
-		$thequerystatement.="name=\"".$_POST["name"]."\", ";
-		$thequerystatement.="`column`=\"".$_POST["column"]."\", ";
-		$thequerystatement.="align=\"".$_POST["align"]."\", ";
-		$thequerystatement.="sortorder=\"".$_POST["sortorder"]."\", ";
-		$thequerystatement.="footerquery=\"".$_POST["footerquery"]."\", ";		
-		$thequerystatement.="size=\"".$_POST["size"]."\", ";		
+		$querystatement="UPDATE tablecolumns set ";
+		$querystatement.="name=\"".$_POST["name"]."\", ";
+		$querystatement.="`column`=\"".addslashes($_POST["column"])."\", ";
+		$querystatement.="align=\"".addslashes($_POST["align"])."\", ";
+		$querystatement.="sortorder=\"".addslashes($_POST["sortorder"])."\", ";
+		$querystatement.="footerquery=\"".addslashes($_POST["footerquery"])."\", ";		
+		$querystatement.="size=\"".addslashes($_POST["size"])."\", ";		
 		if(!isset($_POST["wrap"])) $_POST["wrap"]=0;
-		$thequerystatement.="wrap=".$_POST["wrap"]." ";		
-		$thequerystatement.="WHERE id=".$_POST["columnid"];
-		if(mysql_query($thequerystatement,$dblink)) $thereturn ="Column Updated"; else $thereturn=mysql_error()." -- ".$thequerystatement;
+		$querystatement.="wrap=".addslashes($_POST["wrap"])." ";		
+		$querystatement.="WHERE id=".$_POST["columnid"];
+		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Updated"; else $thereturn=mysql_error()." -- ".$querystatement;
 		
 		return $thereturn;
 	}
@@ -68,17 +68,17 @@
 	function deleteColumn($id){
 		global $dblink;
 		
-		$thequerystatement="SELECT tabledefid,displayorder FROM tablecolumns WHERE id=".$id;
-		$theresult=mysql_query($thequerystatement,$dblink);
+		$querystatement="SELECT tabledefid,displayorder FROM tablecolumns WHERE id=".$id;
+		$theresult=mysql_query($querystatement,$dblink);
 		$therecord=mysql_fetch_array($theresult);
 				
 		
-		$thequerystatement="UPDATE tablecolumns SET displayorder=displayorder-1
+		$querystatement="UPDATE tablecolumns SET displayorder=displayorder-1
 							WHERE tabledefid=".$therecord["tabledefid"]." AND displayorder>".$therecord["displayorder"];
-		if(!mysql_query($thequerystatement,$dblink)) $thereturn=mysql_error()." -- ".$thequerystatement; else {
+		if(!mysql_query($querystatement,$dblink)) $thereturn=mysql_error()." -- ".$querystatement; else {
 
-			$thequerystatement="DELETE FROM tablecolumns WHERE id=".$id;
-			if(mysql_query($thequerystatement,$dblink)) $thereturn ="Column Deleted"; else $thereturn=mysql_error()." -- ".$thequerystatement;
+			$querystatement="DELETE FROM tablecolumns WHERE id=".$id;
+			if(mysql_query($querystatement,$dblink)) $thereturn ="Column Deleted"; else $thereturn=mysql_error()." -- ".$querystatement;
 		}
 				
 		return $thereturn;
@@ -89,20 +89,20 @@
 
 		if($direction=="down") $increment="1"; else $increment="-1";
 
-		$thequerystatement="select displayorder,tabledefid FROM tablecolumns WHERE id=".$id;
-		$thequery=mysql_query($thequerystatement,$dblink) or $thereturn=mysql_error()." -1- ".$thequerystatement;
+		$querystatement="select displayorder,tabledefid FROM tablecolumns WHERE id=".$id;
+		$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error()." -1- ".$querystatement;
 		$therecord=mysql_fetch_array($thequery);
 
-		$thequerystatement="select max(displayorder) as themax FROM tablecolumns WHERE tabledefid=".$_GET["id"];
-		$thequery=mysql_query($thequerystatement,$dblink) or $thereturn=mysql_error()." -2- ".$thequerystatement;
+		$querystatement="select max(displayorder) as themax FROM tablecolumns WHERE tabledefid=".$_GET["id"];
+		$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error()." -2- ".$querystatement;
 		$maxrecord=mysql_fetch_array($thequery);
 		
 		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
-			$thequerystatement="UPDATE tablecolumns set displayorder=".$therecord["displayorder"]." WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$therecord["tabledefid"];
-			$thequery=mysql_query($thequerystatement,$dblink) or $thereturn=mysql_error()." -4- ".$thequerystatement;
+			$querystatement="UPDATE tablecolumns set displayorder=".$therecord["displayorder"]." WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$therecord["tabledefid"];
+			$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error()." -4- ".$querystatement;
 
-			$thequerystatement="UPDATE tablecolumns set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=mysql_query($thequerystatement,$dblink) or $thereturn=mysql_error()." -3- ".$thequerystatement;
+			$querystatement="UPDATE tablecolumns set displayorder=displayorder+".$increment." WHERE id=".$id;
+			$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error()." -3- ".$querystatement;
 		}// end if
 		
 		if(isset($thereturn)) return $thereturn; else return "column moved";

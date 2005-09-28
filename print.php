@@ -81,12 +81,12 @@ if (isset($_POST["command"])){
 		break;
 	}
 }
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="common/javascript/common.js"></script>
 <script language="JavaScript" src="common/javascript/print.js"></script>
 <?PHP  $tablePrinter->showJavaScriptArray();?>
@@ -159,8 +159,12 @@ if (isset($_POST["command"])){
 			</select>
 		</div>
 	</div>
-
+	
     <div align="right" class="recordbottom">
+	 <div align=left class="small">
+	 	<strong>Note About Printing Reports:</strong> Each report will display in its own window. If you have disabled
+		pop-ups within your browser's options or are running a third-party pop-up blocker, the report will not appear.
+	 </div>
 	 <input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
 	 <input name="command" type="submit" class="Buttons" id="cancel" value="done" style="width:75px;">	 
 	 </div>

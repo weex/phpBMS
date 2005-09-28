@@ -7,7 +7,7 @@
 		
 	}
 
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -217,7 +217,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			</select>
 		</div>
 		<div>
-			<input type="button" id="installmodule" name="installmodule" value="Install Module" style="width:200px;" class="buttons" onClick="runModuleInstall()">
+			<input type="button" id="installmodule" name="installmodule" value="Install Module" style="width:200px;" class="Buttons" onClick="runModuleInstall()">
 		</div>			
 		<div>&nbsp;</div>
 	</div>
@@ -241,7 +241,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	</div>
 	<h2>Completing The Installation</h2>
 	<div>If phpBMS was installed successfully, go to the log in screen, use the administrative user name password to log in and complete the installation process</div>
-	<div><input type="button" id="login" name="login" value="Go to Log In Screen" class="buttons" onClick="document.location='../'"></div>
+	<div><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onClick="document.location='../'"></div>
 	
 </div>
 </body>

@@ -10,7 +10,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="select id, login, firstname, lastname, accesslevel, 
+	$querystatement="select id, login, firstname, lastname, accesslevel, 
 				date_Format(lastlogin,\"%c/%e/%Y %T\") as lastlogin, revoked,
 				email,phone,department,employeenumber,
 
@@ -18,7 +18,7 @@ function getRecords($id){
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				from users
 				where id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -55,28 +55,28 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE users SET ";
+	$querystatement="UPDATE users SET ";
 	
-	$thequerystatement.="firstname=\"".$_POST["firstname"]."\", "; 
-	$thequerystatement.="lastname=\"".$_POST["lastname"]."\", "; 
-	$thequerystatement.="login=\"".$_POST["login"]."\", "; 
+	$querystatement.="firstname=\"".$_POST["firstname"]."\", "; 
+	$querystatement.="lastname=\"".$_POST["lastname"]."\", "; 
+	$querystatement.="login=\"".$_POST["login"]."\", "; 
 
-	$thequerystatement.="email=\"".$_POST["email"]."\", "; 
-	$thequerystatement.="phone=\"".$_POST["phone"]."\", "; 
-	$thequerystatement.="department=\"".$_POST["department"]."\", "; 
-	$thequerystatement.="employeenumber=\"".$_POST["employeenumber"]."\", "; 
+	$querystatement.="email=\"".$_POST["email"]."\", "; 
+	$querystatement.="phone=\"".$_POST["phone"]."\", "; 
+	$querystatement.="department=\"".$_POST["department"]."\", "; 
+	$querystatement.="employeenumber=\"".$_POST["employeenumber"]."\", "; 
 
-	$thequerystatement.="accesslevel=".$_POST["accesslevel"].", "; 
-	if(isset($_POST["revoked"])) $thequerystatement.="revoked=1, "; else $thequerystatement.="revoked=0, ";
+	$querystatement.="accesslevel=".$_POST["accesslevel"].", "; 
+	if(isset($_POST["revoked"])) $querystatement.="revoked=1, "; else $querystatement.="revoked=0, ";
 
-	if($_POST["password"]) $thequerystatement.="password=encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+	if($_POST["password"]) $querystatement.="password=encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -84,32 +84,32 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO users ";
+	$querystatement="INSERT INTO users ";
 	
-	$thequerystatement.="(login,lastname,firstname,email,phone,department,employeenumber,
+	$querystatement.="(login,lastname,firstname,email,phone,department,employeenumber,
 						password,accesslevel,revoked,
 	createdby,creationdate,modifiedby) VALUES (";
 	
-	$thequerystatement.="\"".$_POST["login"]."\", ";
-	$thequerystatement.="\"".$_POST["lastname"]."\", ";
-	$thequerystatement.="\"".$_POST["firstname"]."\", ";
+	$querystatement.="\"".$_POST["login"]."\", ";
+	$querystatement.="\"".$_POST["lastname"]."\", ";
+	$querystatement.="\"".$_POST["firstname"]."\", ";
 	
-	$thequerystatement.="\"".$_POST["email"]."\", "; 
-	$thequerystatement.="\"".$_POST["phone"]."\", "; 
-	$thequerystatement.="\"".$_POST["department"]."\", "; 
-	$thequerystatement.="\"".$_POST["employeenumber"]."\", "; 	
+	$querystatement.="\"".$_POST["email"]."\", "; 
+	$querystatement.="\"".$_POST["phone"]."\", "; 
+	$querystatement.="\"".$_POST["department"]."\", "; 
+	$querystatement.="\"".$_POST["employeenumber"]."\", "; 	
 	
-	$thequerystatement.="encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
-	$thequerystatement.=$_POST["accesslevel"].", ";
-	if(isset($_POST["revoked"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+	$querystatement.="encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+	$querystatement.=$_POST["accesslevel"].", ";
+	if(isset($_POST["revoked"])) $querystatement.="1, "; else $querystatement.="0, ";
 	
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

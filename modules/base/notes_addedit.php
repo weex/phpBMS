@@ -1,135 +1,211 @@
 <?php 
-	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	require_once("../../include/session.php");
+	require_once("../../include/common_functions.php");
+	require_once("../../include/fields.php");
+	require_once("snapshot_xml.php");
 
-	include("include/notes_addedit_include.php");
+	require_once("include/notes_addedit_include.php");
 
-	if($therecord["attachedtabledefid"])
-		$attachedtableinfo=getAttachedTableDefInfo($therecord["attachedtabledefid"]);
+	$attachedtableinfo=getAttachedTableDefInfo($therecord["attachedtabledefid"]);
 	
-?>
-
-<?PHP $pageTitle="Note"?>
-
-<html>
+?><?PHP $pageTitle="Note/Task/Event"?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/common.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
-<script language="JavaScript" src="../../common/javascript/cal.js"></script>
-<script language="JavaScript" >
-	function timeStamp(){
-		var theDate= new Date()
-		var theform=document.forms["record"]
-		theform["content"].value=theform["content"].value+"[ "+theform["username"].value+" - "+theDate.toLocaleString()+" ]"
-	}
-	function checkStatus(statusfield){
-		var theform=document.forms["record"]
-		if(statusfield.value=="system"){
-			theform["assignedtoid"].value="";
-			theform["ds-assignedtoid"].disabled=true;
-			theform["beenread"].checked=false;
-			theform["beenread"].disabled=true;			
-			theform["followup"].disabled=true;			
-			theform["followup"].value="";			
-			theform["assignedtoid"].value="";			
-			theform["ds-assignedtoid"].value="";			
-			theform["ds-assignedtoid"].disabled=true;			
-		} else {
-			theform["beenread"].disabled=false;			
-			theform["followup"].disabled=false;			
-			theform["ds-assignedtoid"].disabled=false;
-		}
-	}
-</script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
+<script language="JavaScript" src="../../common/javascript/timepicker.js"></script>
+<script language="JavaScript" src="javascript/notes.js"></script>
 </head>
-<body><?php include("../../menu.php")?>
+<body onLoad="initialize();"><?php include("../../menu.php")?>
 <?PHP if (isset($statusmessage)) {?>
 	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
 <?PHP } // end if ?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <div class="bodyline">
-	<div style="float:right;width:180px;">
+	<div style="float:right;width:150px;"><?php include("../../include/savecancel.php"); ?></div>
+	<h1 style="margin-right:150px;"><?php echo $pageTitle ?></h1>
 
-			<?php include("../../include/savecancel.php"); ?>
-			<div class="box">
-				<div>
-					id<br>
-					<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%">
-				</div>
-				<div>
-					note type<br>
-					  <?PHP 
-						if($therecord["type"]!="record")
-							basic_choicelist("type",$therecord["type"],array(array("value"=>"personal","name"=>"Personal"),array("value"=>"system","name"=>"System Wide")),Array("class"=>"important","onChange"=>"checkStatus(this);","style"=>"width:150px;"));
-						else {
-					  ?>
-						<input name="type" type="text" value="<?PHP echo $therecord["type"]?>" size="20" maxlength="32" readonly="true" class="uneditable" style="text-align:center;width:100%">			  
-					  <?PHP } ?>
-				</div>
-				<div>
-					importance<br>
-					<?PHP basic_choicelist("importance",$therecord["importance"],array(array("value"=>"High","name"=>"High"),array("value"=>"Medium","name"=>"Medium"),array("value"=>"Normal","name"=>"Normal"),array("value"=>"Low","name"=>"Low")),Array("class"=>"important","style"=>"width:150px")); ?>
-				</div>
-				<div align="center">
-					<strong>mark as read&nbsp;</strong><?PHP field_checkbox("beenread",$therecord["beenread"])?>
-				</div>
-			</div>
+	<FIELDSET style="clear:both;">
+		<label for="id" style="float:right">id <br/>
+			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable"/>
+			<input name="parentid" id="parentid" type="hidden" value="<?php echo $therecord["parentid"]; ?>" />
+			<input name="thebackurl" id="thebackurl" type="hidden" value="<?php if($_GET["backurl"]) echo $_GET["backurl"]; ?>" />
+		</label>
+		<label for="type" class="important">type<br />
+			<?php basic_choicelist("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onChange"=>"changeType();","style"=>"width:150px;"));?>
+			<input type="hidden" id="typeCheck" name="typeCheck" value="<?php echo $therecord["type"]?>" />		
+		</label>
+		<label for="title">title<br />
+			<?PHP field_text("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"128","class"=>"important","style"=>"width:99%")); ?>				
+		</label>		
+	</FIELDSET>
+	
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td valign=top width="44%" style="padding-right:5px;">
+				<FIELDSET>
+					<LEGEND><label for="importance">importance / privacy</label></LEGEND>
+					<div>
+						<?PHP basic_choicelist("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
+						&nbsp;<?PHP field_checkbox("private",$therecord["private"])?>&nbsp;private
+					</div>
+				</FIELDSET>
 
-			<div class=box>
+				<FIELDSET id="thedates">
+					<LEGEND>dates</LEGEND>
+					<div>
+						<div id="starttext" style="padding:0px;padding-left:30px;">start</div>
+					<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
+					&nbsp;<?PHP field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"setEnglishDates()"));?>	
+					&nbsp;<?PHP field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+					</div>
+					<div>
+						<div id="endtext" style="padding:0px;padding-left:30px;">end</div>
+					<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked" ?> onClick="dateChecked('end')" class="radiochecks" />
+					&nbsp;<?PHP field_datepicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+					&nbsp;<?PHP field_timepicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+					</div>
+				</FIELDSET>
+				<DIV id="thecompleted">
+					<div>
+						<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>">
+						<?PHP field_checkbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<span id="completedtext">completed</span>
+						&nbsp;<?PHP field_datepicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
+					</div>
+					<div id="thestatus">
+					   status<br>
+					   <?PHP choicelist("status",$therecord["status"],"notestatus"); ?>
+					</div>
+				</DIV>
+				<FIELDSET>
+					<LEGEND><LABEL for="ds-assignedtoid">assigned to</LABEL></LEGEND>
+					<div>
+						<?PHP autofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32","style"=>"width:90%")) ?>				
+						<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
+					</div>
+					<?php if($therecord["assignedbyid"]!=0){ ?>
+					<div>
+						assigned by<br>
+						<input value="<?php echo getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable" style="width:90%">
+					</div>
+					<?php }?>
+					<div>
+						follow up date<br>
+						<?PHP field_datepicker("assignedtodate","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+						&nbsp;<?PHP field_timepicker("assignedtotime","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+					</div>
+				</FIELDSET>
+		
+				<input id="attachedtabledefid" name="attachedtabledefid" type="hidden" value="<?PHP echo $therecord["attachedtabledefid"]?>">
+				<input id="attachedid" name="attachedid" type="hidden" value="<?PHP echo $therecord["attachedid"]?>">
+				<FIELDSET class="box" id="theassociated" style="display:none;">
+					<legend>associated with</legend>
+						<label for="assocarea">area<br />
+							<input id="assocarea" type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" style="width:98%">
+						</label>
+						<label for="attachedid">record id</label>
+						<div style="padding-top:0px;">
+							<input id="attachedid" type="text" readonly="true" class="uneditable" value="<?PHP echo $therecord["attachedid"]?>" size="6">&nbsp;
+							<input name="link" type="button" class="Buttons" value=" go to record " onClick="document.location='<?php echo $_SESSION["app_path"]?><?PHP echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'">
+						</div>
+				</FIELDSET>
+			<FIELDSET>
 				<div>
-					assigned to<br>
-					<?PHP autofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32","style"=>"width:100%")) ?>				
+					location<br>
+					<input name="location" id="location" type="text" value="<?php echo $therecord["location"]?>" style="width:90%"/>
 				</div>
 				<div>
-					follow up<br>
-					<?PHP field_cal("followup",$therecord["followup"],0,"",Array("size"=>"20","maxlength"=>"32","readonly"=>"true","onClick"=>"calfollowup.popup()"),1);?>
+					category<br>
+					<?PHP choicelist("category","","notecategories",array("style"=>"width:91%")); ?>
 				</div>
-			</div>
+			</FIELDSET>
+			</td>
+			<td valign=top width="55%">
+				<FIELDSET>
+					<LEGEND><LABEL for="content">memo</LABEL></LEGEND>
+					<div align="right">
+						<button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="timeStamp();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-timestamp.png" align="absmiddle" alt="pick date" width="16" height="16" border="0" /> timestamp</button>
+						&nbsp;
+					</div>
+					<div>
+						<textarea name="content" cols="45" rows="23" id="content" style="width:98%"><?PHP echo $therecord["content"]?></textarea>
+						<input name="username" type="hidden" value="<?PHP echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>">
+					</div>
+				</FIELDSET>
+			</td>
+		</tr>
+	</table>
+	
+	<span <?php if($therecord["parentid"]) echo "style=\"display:none;\""?>>
+		<FIELDSET id="therepeat" class="box" style="padding-top:7px;">
+			<LEGEND>recurrence</LEGEND>
+			<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
+			<?PHP field_checkbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?> repeat every&nbsp;&nbsp;<span id="repeatoptions">
+			<?php field_text("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onKeyup"=>"addS(this)"))?>
+			<?php 
+				$plural="";
+				if($therecord["repeatfrequency"]>1) $plural="s";
+			?>
+			<select id="repeattype" name="repeattype" style="width:100px;" onChange="changeRepeatType();">
+				<option value="Daily" <?php if ($therecord["repeattype"]=="repeatDaily") echo "selected"?>>Day<?php echo $plural?></option>
+				<option value="Weekly" <?php if ($therecord["repeattype"]=="repeatWeekly") echo "selected"?>>Week<?php echo $plural?></option>
+				<option value="Monthly" <?php if (substr($therecord["repeattype"],0,13)=="repeatMonthly") echo "selected"?>>Month<?php echo $plural?></option>
+				<option value="Yearly" <?php if ($therecord["repeattype"]=="repeatYearly") echo "selected"?>>Year<?php echo $plural?></option>
+			</select>
 			
-			<input name="attachedtabledefid" 	type="hidden" value="<?PHP echo $therecord["attachedtabledefid"]?>">
-			<input name="attachedid" 			type="hidden" value="<?PHP echo $therecord["attachedid"]?>">
-			<?php if($therecord["attachedtabledefid"]){?>
-			<div class="box">
-					<div>
-						<strong>note associated with...</strong><br>
-						<input type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" style="width:100%">
-					</div>
-					<div>
-						associated record id<br> 
-						<input type="text" readonly="true" class="uneditable" value="<?PHP echo $therecord["attachedid"]?>" style="width:100%">
-					</div>
-					<div align=right>
-						<input name="link" type="button" class="Buttons" value=" go to record " onClick="document.location='<?php echo $_SESSION["app_path"]?><?PHP echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'">									
-					</div>
+			<div id="weeklyoptions" <?php if ($therecord["repeattype"]!="repeatweekly"){?>style="display:none;"<?php }?>>
+				<span id="wos" style="padding-right:10px;"><input name="wosc" type="checkbox" value="s" <?php if(strpos(" ".$therecord["repeatdays"],"s",0)) echo "checked"?> class="radiochecks" />Sun</span>
+				<span id="wom" style="padding-right:10px;"><input name="womc" type="checkbox" value="m" <?php if(strpos(" ".$therecord["repeatdays"],"m",0)) echo "checked"?> class="radiochecks" />Mon</span>
+				<span id="wot" style="padding-right:10px;"><input name="wotc" type="checkbox" value="t" <?php if(strpos(" ".$therecord["repeatdays"],"t",0)) echo "checked"?> class="radiochecks" />Tue</span>
+				<span id="wow" style="padding-right:10px;"><input name="wowc" type="checkbox" value="w" <?php if(strpos(" ".$therecord["repeatdays"],"w",0)) echo "checked"?> class="radiochecks" />Wed</span>
+				<span id="wor" style="padding-right:10px;"><input name="worc" type="checkbox" value="r" <?php if(strpos(" ".$therecord["repeatdays"],"r",0)) echo "checked"?> class="radiochecks" />Thu</span>
+				<span id="wof" style="padding-right:10px;"><input name="wofc" type="checkbox" value="f" <?php if(strpos(" ".$therecord["repeatdays"],"f",0)) echo "checked"?> class="radiochecks" />Fri</span>
+				<span id="woa" style="padding-right:10px;"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked"?> class="radiochecks" />Sat</span>
 			</div>
-		<?PHP }// end if ?>	
-	</div>
+			<div id="monthlyoptions" style=" <?php if (substr($therecord["repeattype"],0,13)!="repeatMonthly"){?>display:none;<?php }?>margin-bottom:5px;">
+				<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)!="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br>
+				<input type="radio" class="radiochecks" name="rpmo" id="rpmobda" value="byDay" <?php if (substr($therecord["repeattype"],13)=="byDay"){?>checked<?php }?>/><span id="rpmobyday"></span> of the month.
+			</div>
+			<div id="rpuntilforever">
+				<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked" ?> value="0" onClick="updateRepeatUntil()"/> forever
+			</div>
+			<div id="rpuntiltimes">
+				<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked" ?> value="1" onClick="updateRepeatUntil()" /> number of times&nbsp;&nbsp;
+				<?php 
+				$tempvalue="";
+				$attribs=array("size"=>"2","maxlength"=>"3");				
+				if($therecord["repeattimes"]<1){
+					$attribs["class"]="uneditable";
+					$attribs["readonly"]="readonly";					
+				}
+				if($therecord["repeattimes"]>0) $tempvalue=$therecord["repeattimes"];
+				field_text("repeattimes",$tempvalue,false,$message="The number of times to repeat must be a valid integer","integer",$attribs)?>
+			</div>
+			<div id="rpuntildate">
+				<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked" ?> value="-1" onClick="updateRepeatUntil()"/> until&nbsp;&nbsp;
+				<?PHP field_datepicker("repeatuntildate",$therecord["repeatuntildate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
+			</div>
+			</span>
+	</FIELDSET></span>
+	<FIELDSET id="hasparent" class="box small" <?php if(!$therecord["parentid"]) echo "style=\"display:none;\""?>>
+		<LEGEND>recurrence</LEGEND>
+		<div>
+		This task/event was created from a repeated task/event.  <br>
+		Click the <strong>Edit Repeating Options</strong> button to edit the options for the repeatable parent record. 
+		<br>
+		(Any unsaved changes with the current record will be lost.)
+		</div>
+		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent()" class="Buttons"></div>
+	</FIELDSET>
+	 
+  <?PHP if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)
+	  echo "<SCRIPT>document.forms['record']['save'].disabled=true</SCRIPT>";?>  
 
-	<div style="margin-right:180px;">
-	  <div class="addedittitle"><?php echo $pageTitle ?></div>			
-	  <div>
-		  subject<br>
-		  <?PHP field_text("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:100%")); ?>
-		  <script language="javascript">var thesubject=getObjectFromID("subject");thesubject.focus();</script>
-	  </div>
-	  <div>
-	  	<input name="username" type="hidden" value="<?PHP echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>">
-		content&nbsp;<a href="javascript:timeStamp();"><img src="../../common/image/timestamp.gif" width="15" height="15" border="0" align="absmiddle"></a><br>
-		<textarea name="content" cols="45" rows="23" id="content" style="width:100%"><?PHP echo $therecord["content"]?></textarea>
-	  </div>
-
- 
-  <?PHP 
-  	  if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)
-	  echo "<SCRIPT>document.forms['record']['save'].disabled=true</SCRIPT>";
-  ?>  
-</div>
-<div><?php include("../../include/createmodifiedby.php"); ?></div>
+	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 </form>
 </body>

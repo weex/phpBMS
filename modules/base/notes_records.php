@@ -45,17 +45,17 @@
 	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
 	
 		$displayTable->issueQuery();		
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/common.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
 </head>
 <body><?php include("../../menu.php")?><?php doTabs()?><div class="untabbedbox">
-	<div class="addedittitle"><?php echo $pageTitle ?></div>
+	<H1><?php echo $pageTitle ?></H1>
 	<div>
 		<form name="search" id="searchform" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
 		<input name="theids" type="hidden" value="">

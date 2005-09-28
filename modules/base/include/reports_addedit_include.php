@@ -2,8 +2,8 @@
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
-	$thequerystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
+	$thequery=mysql_query($querystatement,$dblink);
 	
 		
 	echo "<select name=\"".$fieldname."\">\n";
@@ -33,14 +33,14 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
 				id,name,type,reportfile,tabledefid,description,displayorder,
 				
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM reports
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -71,21 +71,21 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE reports SET ";
+	$querystatement="UPDATE reports SET ";
 	
-			$thequerystatement.="name=\"".$_POST["name"]."\", "; 
-			$thequerystatement.="type=\"".$_POST["type"]."\", "; 
-			$thequerystatement.="tabledefid=".$_POST["tabledefid"].", "; 
-			$thequerystatement.="reportfile=\"".$_POST["reportfile"]."\", "; 
-			$thequerystatement.="description=\"".$_POST["description"]."\", "; 
-			$thequerystatement.="displayorder=".$_POST["displayorder"].", "; 
+			$querystatement.="name=\"".$_POST["name"]."\", "; 
+			$querystatement.="type=\"".$_POST["type"]."\", "; 
+			$querystatement.="tabledefid=".$_POST["tabledefid"].", "; 
+			$querystatement.="reportfile=\"".$_POST["reportfile"]."\", "; 
+			$querystatement.="description=\"".$_POST["description"]."\", "; 
+			$querystatement.="displayorder=".$_POST["displayorder"].", "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -93,25 +93,25 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO reports ";
+	$querystatement="INSERT INTO reports ";
 	
-	$thequerystatement.="(name,type,tabledefid,reportfile,description,displayorder,
+	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$thequerystatement.="\"".$_POST["name"]."\", "; 
-			$thequerystatement.="\"".$_POST["type"]."\", "; 
-			$thequerystatement.=$_POST["tabledefid"].", "; 
-			$thequerystatement.="\"".$_POST["reportfile"]."\", "; 
-			$thequerystatement.="\"".$_POST["description"]."\", "; 
-			$thequerystatement.=$_POST["displayorder"].", "; 
+			$querystatement.="\"".$_POST["name"]."\", "; 
+			$querystatement.="\"".$_POST["type"]."\", "; 
+			$querystatement.=$_POST["tabledefid"].", "; 
+			$querystatement.="\"".$_POST["reportfile"]."\", "; 
+			$querystatement.="\"".$_POST["description"]."\", "; 
+			$querystatement.=$_POST["displayorder"].", "; 
 				
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

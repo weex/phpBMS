@@ -59,7 +59,7 @@ class purchaseHistoryReport{
 		$temparray=explode("/",$this->todate);
 		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 			
-		$thequerystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
+		$querystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
 		Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,invoices.status,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
@@ -72,8 +72,8 @@ class purchaseHistoryReport{
 		and invoices.".$searchdate."<=".$mysqltodate."
 		and ".$thestatus."		
 		ORDER BY invoices.invoicedate,invoices.orderdate,invoices.id;";
-		$thequery=mysql_query($thequerystatement,$dblink);
-		if(!$thequery) reportError(100,mysql_error($dblink)." ".$thequerystatement);
+		$thequery=mysql_query($querystatement,$dblink);
+		if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
 		$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 ?>
    <table border="0" cellpadding="0" cellspacing="0" >
@@ -207,7 +207,7 @@ if(isset($_POST["command"])){
 	<link href="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 	<script language="javascript" src="../../../common/javascript/common.js"></script>
 	<script language="javascript" src="../../../common/javascript/fields.js"></script>	
-	<script language="javascript" src="../../../common/javascript/cal.js"></script>	
+	<script language="javascript" src="../../../common/javascript/datepicker.js"></script>	
 </head>
 
 <body>
@@ -220,11 +220,11 @@ if(isset($_POST["command"])){
 				<tr>
 					<td nowrap>
 					   from<br>
-					   <?PHP field_cal("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()"),false);?>
+					   <?PHP field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
 						to<br>
-						<?PHP field_cal("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12","onClick"=>"calfollowup.popup()","style"=>""),false);?>
+						<?PHP field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 				</tr>
 			</table>

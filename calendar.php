@@ -11,11 +11,11 @@ About us: Our company provides offshore IT consulting services.
     Contact us at sales@softcomplex.com if you have any programming task you
     want to be handled by professionals. Our typical hourly rate is $20.
 -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>Select Date</title>
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <script language="JavaScript">
 
 // months as they appear in the calendar's title

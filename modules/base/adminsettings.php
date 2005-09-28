@@ -13,7 +13,7 @@ include("include/adminsettings_include.php");
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 </head>
 <body><?php include("../../menu.php")?>
 <?php admin_tabs("General");?><div class="untabbedbox"><div>
@@ -119,8 +119,8 @@ include("include/adminsettings_include.php");
 	
 
 		    <?php 
-			$thequerystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-			$modulequery=mysql_query($thequerystatement,$dblink);
+			$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
+			$modulequery=mysql_query($querystatement,$dblink);
 			
 			while($modulerecord=mysql_fetch_array($modulequery)){
 				echo "<DIV>&nbsp;</DIV>";

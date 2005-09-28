@@ -2,8 +2,8 @@
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
-	$thequerystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
-	$thequery=mysql_query($thequerystatement,$dblink);
+	$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
+	$thequery=mysql_query($querystatement,$dblink);
 	
 	echo "<select name=\"".$fieldname."\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
@@ -25,12 +25,12 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT
+	$querystatement="SELECT
  				id, name, userid, tabledefid, sqlclause, type 
 				
  				FROM usersearches
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -59,19 +59,19 @@ function setRecordDefaults(){
 function updateRecord(){
 //========================================================================================
 	global $dblink;
-	$thequerystatement="UPDATE usersearches SET ";
+	$querystatement="UPDATE usersearches SET ";
 	
-			if(isset($_POST["makeglobal"])) $thequerystatement.="userid=0, "; 
-			$thequerystatement.="name=\"".$_POST["name"]."\", "; 
-			$thequerystatement.="tabledefid=\"".$_POST["tabledefid"]."\", "; 
-			if(isset($_POST["type"]))$thequerystatement.="type=\"".$_POST["type"]."\", "; 
-			$thequerystatement.="sqlclause=\"".$_POST["sqlclause"]."\" "; 
+			if(isset($_POST["makeglobal"])) $querystatement.="userid=0, "; 
+			$querystatement.="name=\"".$_POST["name"]."\", "; 
+			$querystatement.="tabledefid=\"".$_POST["tabledefid"]."\", "; 
+			if(isset($_POST["type"]))$querystatement.="type=\"".$_POST["type"]."\", "; 
+			$querystatement.="sqlclause=\"".$_POST["sqlclause"]."\" "; 
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 

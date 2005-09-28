@@ -11,7 +11,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="SELECT id, firstname, lastname, company, city, state, postalcode, country, shiptocountry,
+	$querystatement="SELECT id, firstname, lastname, company, city, state, postalcode, country, shiptocountry,
 				address1, address2, type, inactive, leadsource, salesmanagerid, homephone, workphone,
 				mobilephone, fax, otherphone, shiptoaddress1, shiptoaddress2, shiptocity,shiptostate,
 				shiptopostalcode, email, webaddress, comments, paymentmethod, ccnumber, ccexpiration, 
@@ -20,7 +20,7 @@ function getRecords($id){
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM clients
 				WHERE id=".$id;		
-	$thequery = mysql_query($thequerystatement,$dblink);
+	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
@@ -82,54 +82,54 @@ function updateRecord(){
 //========================================================================================
 	global $dblink;
 	
-	$thequerystatement="UPDATE clients SET ";
+	$querystatement="UPDATE clients SET ";
 	
-			$thequerystatement.="firstname=\"".$_POST["firstname"]."\", "; 
-			$thequerystatement.="lastname=\"".$_POST["lastname"]."\", "; 
+			$querystatement.="firstname=\"".$_POST["firstname"]."\", "; 
+			$querystatement.="lastname=\"".$_POST["lastname"]."\", "; 
 		
-			$thequerystatement.="company=\"".$_POST["company"]."\", "; 
+			$querystatement.="company=\"".$_POST["company"]."\", "; 
 
-			$thequerystatement.="homephone=\"".$_POST["homephone"]."\", "; 
-			$thequerystatement.="workphone=\"".$_POST["workphone"]."\", "; 
-			$thequerystatement.="mobilephone=\"".$_POST["mobilephone"]."\", "; 
-			$thequerystatement.="fax=\"".$_POST["fax"]."\", "; 
-			$thequerystatement.="otherphone=\"".$_POST["otherphone"]."\", "; 
+			$querystatement.="homephone=\"".$_POST["homephone"]."\", "; 
+			$querystatement.="workphone=\"".$_POST["workphone"]."\", "; 
+			$querystatement.="mobilephone=\"".$_POST["mobilephone"]."\", "; 
+			$querystatement.="fax=\"".$_POST["fax"]."\", "; 
+			$querystatement.="otherphone=\"".$_POST["otherphone"]."\", "; 
 
-			$thequerystatement.="email=\"".$_POST["email"]."\", "; 
-			if ($_POST["webaddress"]=="http://") $thequerystatement.="webaddress=\"\", "; 
-			else $thequerystatement.="webaddress=\"".$_POST["webaddress"]."\", "; 
+			$querystatement.="email=\"".$_POST["email"]."\", "; 
+			if ($_POST["webaddress"]=="http://") $querystatement.="webaddress=\"\", "; 
+			else $querystatement.="webaddress=\"".$_POST["webaddress"]."\", "; 
 
-			$thequerystatement.="type=\"".$_POST["type"]."\", "; 
-			if(isset($_POST["inactive"])) $thequerystatement.="inactive=1, "; else $thequerystatement.="inactive=0, ";
-			$thequerystatement.="salesmanagerid=\"".$_POST["salesmanagerid"]."\", "; 
-			$thequerystatement.="leadsource=\"".$_POST["leadsource"]."\", "; 
+			$querystatement.="type=\"".$_POST["type"]."\", "; 
+			if(isset($_POST["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
+			$querystatement.="salesmanagerid=\"".$_POST["salesmanagerid"]."\", "; 
+			$querystatement.="leadsource=\"".$_POST["leadsource"]."\", "; 
 
-			$thequerystatement.="address1=\"".$_POST["address1"]."\", "; 
-			$thequerystatement.="address2=\"".$_POST["address2"]."\", "; 
-			$thequerystatement.="city=\"".$_POST["city"]."\", "; 
-			$thequerystatement.="state=\"".$_POST["state"]."\", "; 
-			$thequerystatement.="postalcode=\"".$_POST["postalcode"]."\", "; 
-			$thequerystatement.="country=\"".$_POST["country"]."\", "; 
+			$querystatement.="address1=\"".$_POST["address1"]."\", "; 
+			$querystatement.="address2=\"".$_POST["address2"]."\", "; 
+			$querystatement.="city=\"".$_POST["city"]."\", "; 
+			$querystatement.="state=\"".$_POST["state"]."\", "; 
+			$querystatement.="postalcode=\"".$_POST["postalcode"]."\", "; 
+			$querystatement.="country=\"".$_POST["country"]."\", "; 
 
-			$thequerystatement.="shiptoaddress1=\"".$_POST["shiptoaddress1"]."\", "; 
-			$thequerystatement.="shiptoaddress2=\"".$_POST["shiptoaddress2"]."\", "; 
-			$thequerystatement.="shiptocity=\"".$_POST["shiptocity"]."\", "; 
-			$thequerystatement.="shiptostate=\"".$_POST["shiptostate"]."\", "; 
-			$thequerystatement.="shiptopostalcode=\"".$_POST["shiptopostalcode"]."\", "; 
-			$thequerystatement.="shiptocountry=\"".$_POST["shiptocountry"]."\", "; 
+			$querystatement.="shiptoaddress1=\"".$_POST["shiptoaddress1"]."\", "; 
+			$querystatement.="shiptoaddress2=\"".$_POST["shiptoaddress2"]."\", "; 
+			$querystatement.="shiptocity=\"".$_POST["shiptocity"]."\", "; 
+			$querystatement.="shiptostate=\"".$_POST["shiptostate"]."\", "; 
+			$querystatement.="shiptopostalcode=\"".$_POST["shiptopostalcode"]."\", "; 
+			$querystatement.="shiptocountry=\"".$_POST["shiptocountry"]."\", "; 
 
-			$thequerystatement.="paymentmethod=\"".$_POST["paymentmethod"]."\", "; 
-			$thequerystatement.="ccnumber=\"".$_POST["ccnumber"]."\", "; 
-			$thequerystatement.="ccexpiration=\"".$_POST["ccexpiration"]."\", "; 
+			$querystatement.="paymentmethod=\"".$_POST["paymentmethod"]."\", "; 
+			$querystatement.="ccnumber=\"".$_POST["ccnumber"]."\", "; 
+			$querystatement.="ccexpiration=\"".$_POST["ccexpiration"]."\", "; 
 
-			$thequerystatement.="comments=\"".$_POST["comments"]."\", "; 			
+			$querystatement.="comments=\"".$_POST["comments"]."\", "; 			
 
 	//==== Almost all records should have this =========
-	$thequerystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$thequerystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
+	$querystatement.="WHERE id=".$_POST["id"];
 		
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Update Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -137,62 +137,62 @@ function insertRecord(){
 //========================================================================================
 	global $dblink;
 
-	$thequerystatement="INSERT INTO clients ";
+	$querystatement="INSERT INTO clients ";
 	
-	$thequerystatement.="(firstname,lastname,company,homephone,workphone,mobilephone,fax,otherphone,email,webaddress,";
-	$thequerystatement.="type,inactive,salesmanagerid,leadsource,address1,address2,city,state,postalcode,country,shiptoaddress1,";
-	$thequerystatement.="shiptoaddress2,shiptocity,shiptostate,shiptopostalcode,shiptocountry,";
-	$thequerystatement.="paymentmethod,ccnumber,ccexpiration,comments,
+	$querystatement.="(firstname,lastname,company,homephone,workphone,mobilephone,fax,otherphone,email,webaddress,";
+	$querystatement.="type,inactive,salesmanagerid,leadsource,address1,address2,city,state,postalcode,country,shiptoaddress1,";
+	$querystatement.="shiptoaddress2,shiptocity,shiptostate,shiptopostalcode,shiptocountry,";
+	$querystatement.="paymentmethod,ccnumber,ccexpiration,comments,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$thequerystatement.="\"".$_POST["firstname"]."\", "; 
-			$thequerystatement.="\"".$_POST["lastname"]."\", "; 
-			$thequerystatement.="\"".$_POST["company"]."\", "; 
+			$querystatement.="\"".$_POST["firstname"]."\", "; 
+			$querystatement.="\"".$_POST["lastname"]."\", "; 
+			$querystatement.="\"".$_POST["company"]."\", "; 
 		
-			$thequerystatement.="\"".$_POST["homephone"]."\", "; 
-			$thequerystatement.="\"".$_POST["workphone"]."\", "; 
-			$thequerystatement.="\"".$_POST["mobilephone"]."\", "; 
-			$thequerystatement.="\"".$_POST["fax"]."\", "; 
-			$thequerystatement.="\"".$_POST["otherphone"]."\", "; 
+			$querystatement.="\"".$_POST["homephone"]."\", "; 
+			$querystatement.="\"".$_POST["workphone"]."\", "; 
+			$querystatement.="\"".$_POST["mobilephone"]."\", "; 
+			$querystatement.="\"".$_POST["fax"]."\", "; 
+			$querystatement.="\"".$_POST["otherphone"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["email"]."\", "; 
-			if ($_POST["webaddress"]=="http://") $thequerystatement.="\"\", "; 
-			else $thequerystatement.="\"".$_POST["webaddress"]."\", "; 
+			$querystatement.="\"".$_POST["email"]."\", "; 
+			if ($_POST["webaddress"]=="http://") $querystatement.="\"\", "; 
+			else $querystatement.="\"".$_POST["webaddress"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["type"]."\", "; 
-			if(isset($_POST["inactive"])) $thequerystatement.="1, "; else $thequerystatement.="0, ";
+			$querystatement.="\"".$_POST["type"]."\", "; 
+			if(isset($_POST["inactive"])) $querystatement.="1, "; else $querystatement.="0, ";
 
 			if(!$_POST["salesmanagerid"]) $_POST["salesmanagerid"]="NULL";
-			$thequerystatement.=$_POST["salesmanagerid"].", "; 
-			$thequerystatement.="\"".$_POST["leadsource"]."\", "; 
+			$querystatement.=$_POST["salesmanagerid"].", "; 
+			$querystatement.="\"".$_POST["leadsource"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["address1"]."\", "; 
-			$thequerystatement.="\"".$_POST["address2"]."\", "; 
-			$thequerystatement.="\"".$_POST["city"]."\", "; 
-			$thequerystatement.="\"".$_POST["state"]."\", "; 
-			$thequerystatement.="\"".$_POST["postalcode"]."\", "; 
-			$thequerystatement.="\"".$_POST["country"]."\", "; 
+			$querystatement.="\"".$_POST["address1"]."\", "; 
+			$querystatement.="\"".$_POST["address2"]."\", "; 
+			$querystatement.="\"".$_POST["city"]."\", "; 
+			$querystatement.="\"".$_POST["state"]."\", "; 
+			$querystatement.="\"".$_POST["postalcode"]."\", "; 
+			$querystatement.="\"".$_POST["country"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["shiptoaddress1"]."\", "; 
-			$thequerystatement.="\"".$_POST["shiptoaddress2"]."\", "; 
-			$thequerystatement.="\"".$_POST["shiptocity"]."\", "; 
-			$thequerystatement.="\"".$_POST["shiptostate"]."\", "; 
-			$thequerystatement.="\"".$_POST["shiptopostalcode"]."\", "; 
-			$thequerystatement.="\"".$_POST["shiptocountry"]."\", "; 
+			$querystatement.="\"".$_POST["shiptoaddress1"]."\", "; 
+			$querystatement.="\"".$_POST["shiptoaddress2"]."\", "; 
+			$querystatement.="\"".$_POST["shiptocity"]."\", "; 
+			$querystatement.="\"".$_POST["shiptostate"]."\", "; 
+			$querystatement.="\"".$_POST["shiptopostalcode"]."\", "; 
+			$querystatement.="\"".$_POST["shiptocountry"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["paymentmethod"]."\", "; 
-			$thequerystatement.="\"".$_POST["ccnumber"]."\", "; 
-			$thequerystatement.="\"".$_POST["ccexpiration"]."\", "; 
+			$querystatement.="\"".$_POST["paymentmethod"]."\", "; 
+			$querystatement.="\"".$_POST["ccnumber"]."\", "; 
+			$querystatement.="\"".$_POST["ccexpiration"]."\", "; 
 
-			$thequerystatement.="\"".$_POST["comments"]."\", "; 
+			$querystatement.="\"".$_POST["comments"]."\", "; 
 				
 	//==== Almost all records should have this =========
-	$thequerystatement.=$_SESSION["userinfo"]["id"].", "; 
-	$thequerystatement.="Now(), ";
-	$thequerystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
 	
-	$thequery = mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$thequerystatement);
+	$thequery = mysql_query($querystatement,$dblink);
+	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 

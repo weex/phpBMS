@@ -11,7 +11,7 @@
 		$sortorder=" ORDER BY invoices.id";
 
 	//Generate the invoice Query
-	$thequerystatement="select invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
+	$querystatement="select invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
 					shippingmethod, invoices.paymentmethod, checkno, bankname, invoices.ccnumber,
 					invoices.ccexpiration, invoices.specialinstructions, invoices.printedinstructions, 
 					invoices.tax, invoices.shipping, invoices.ccverification,
@@ -28,8 +28,8 @@
 					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
 					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
 					from invoices inner join clients on invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($thequerystatement,$dblink);
-	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$thequerystatement);
+	$thequery=mysql_query($querystatement,$dblink);
+	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$querystatement);
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================
