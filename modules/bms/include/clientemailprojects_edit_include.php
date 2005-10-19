@@ -1,4 +1,5 @@
 <?PHP
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
 function getEmailInfo($id){
 	global $dblink;
 	
@@ -10,14 +11,16 @@ function getEmailInfo($id){
 	
 }
 
-function shoSavedSearch($id){
+function showSavedSearch($id){
 	global $dblink;
 	
 	$querystatement="SELECT name FROM usersearches WHERE id=".$id;
 	$queryresult=mysql_query($querystatement,$dblink);
-	$therecord=mysql_fetch_array($queryresult);
-
-	return $therecord["name"];
+	if(mysql_num_rows($queryresult)){
+		$therecord=mysql_fetch_array($queryresult);
+		return $therecord["name"];
+	} else
+	return "Saved Search Deleted";
 }
 
 // These following functions and processing are similar for all pages
@@ -57,25 +60,25 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE clientemailprojects SET ";
 	
-			if(isset($_POST["makeglobal"]))
+			if(isset($variables["makeglobal"]))
 				$querystatement.="userid=0, "; 
 			$querystatement.="name=\"".$_POST["name"]."\" "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
@@ -107,7 +110,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -118,7 +121,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$username=getUserName($therecord["userid"]);

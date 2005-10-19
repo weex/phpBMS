@@ -1,49 +1,34 @@
-function changePass(base){
-	dialogWindow=window.open(base+"changepassword.php","changepassword","resize=yes,status=no,scrollbars=no,width=375,height=220,modal=yes");
-	return true;
+function showHelp(base){
+	window.open(base+"help");
 }
-var supported = (document.getElementById || document.all);
-
-if (supported)
-{
-	document.write("<STYLE TYPE=\"text/css\">");
-	document.write(".submenuitems {display: none}");
-	document.write("</STYLE>");
-
-	var max = 7; // # of menus
-	var shown = new Array();
-	for (var i=1;i<=max;i++)
-	{
-		shown[i+1] = false;
-	}
-}
-
-function expand(i)
-{
-	shown[i] = (shown[i]) ? false : true;
-	current = (shown[i]) ? 'block' : 'none';
-
-
-	if (document.getElementById) {
-		document.getElementById('sub'+i).style.display = current;
-		var oldImage = document.getElementById('right' + i);
-		base=oldImage.src.substring(0,oldImage.src.indexOf("common/image"));
-		if (shown[i]) {
-			oldImage.src=base+'common/image/down_arrow.gif';
-		} else {
-			oldImage.src=base+'common/image/left_arrow.gif';
+function expandMenu(theitem){
+	var i;
+	var tempdiv;
+	var tempImage;
+	var showid=theitem.id.substring(4);
+	var specificdiv=getObjectFromID("submenu"+showid);
+	var menuImage=getObjectFromID("menuImage"+showid)
+	if(specificdiv.style.display)
+		if(specificdiv.style.display=="block"){
+			specificdiv.style.display="none";
+			menuImage.src=downArrow.src;
+			return false;
 		}
-	} else if (document.all) {
-		document.all['sub'+i].style.display = current;
-		var oldImage ="document.right" + i;
-		base=oldImage.src.substring(0,oldImage.src.indexOf("common/image"));
-		if (shown[i]) {
-			oldImage.src=base+'common/image/down_arrow.gif';
-		} else {
-			oldImage.src=base+'common/image/left_arrow.gif';
+
+	for(i=0;i<subMenuArray.length;i++){
+		if(subMenuArray[i]!=showid){
+			tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
+			tempdiv.style.display="none";
+			tempImage=getObjectFromID("menuImage"+subMenuArray[i])
+			tempImage.src=downArrow.src;
 		}
 	}
-	return false;
+	var thetop=getTop(theitem);
+	var theleft=getLeft(theitem);
+	specificdiv.style.top=(thetop+theitem.offsetHeight)+"px";
+	specificdiv.style.left=theleft+"px";
+	specificdiv.style.display="block";
+	menuImage.src=upArrow.src;
 }
 
 function showUserInfo(base){
@@ -51,7 +36,7 @@ function showUserInfo(base){
 	showModal(content,"Change Password",250);
 	var modalContent=getObjectFromID("modalContent");
 	
-	var theURL=base+"changepassword.php?cm=shw&base="+escape(base);
+	var theURL=base+"changepassword.php?cm=shw&base="+encodeURI(base);
 	loadXMLDoc(theURL,null,false);
 	modalContent.innerHTML=req.responseText;
 }

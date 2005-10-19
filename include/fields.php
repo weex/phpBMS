@@ -17,15 +17,10 @@ function field_text($name,$value="",$required=false,$message="",$type="",$attrib
 	   attribute =	Associateive array for extra tag properties.  the key is the attribute and the value is the
 					attribute value;	
 	*/
-	
-	?><input name="<?php echo $name?>"  id="<?php echo $name?>" type="text" value="<?php echo $value ?>" <?php 
+	?><input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo htmlQuotes($value) ?>" <?php 
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> ><?php if ($required) { ?>
-	<script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script>
-	<?php } //end required if 
-	if ($type) {?>
-	<script language="JavaScript"><?php echo $type?>Array[<?php echo $type?>Array.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script>	
-	<?php }//end $type if
+	?> /><?php if ($required) { ?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php } //end required if 
+	if ($type) {?><script language="JavaScript"><?php echo $type?>Array[<?php echo $type?>Array.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php }//end $type if
 }//end function
 
 
@@ -66,6 +61,7 @@ function basic_choicelist($name,$value="",$list="",$attributes=""){
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> > <?php
 		foreach($list as $theitem){
+			$theitem["value"]=str_replace("\"","&quot;",$theitem["value"]);
 			?><option value="<?php echo $theitem["value"]?>" <?php if ($theitem["value"]==$value) echo " selected "?> ><?php echo $theitem["name"]?></option>
 			<?php
 		}
@@ -134,8 +130,8 @@ function field_email($name,$value,$attributes){
 	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
 						attribute value.
 	*/
-	?> 
-	<input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
+	$value=str_replace("\"","&quot;",$value);	
+	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> /><button id="<?php echo $name?>Button" type="button" style="vertical-align:middle;" class="invisibleButtons" onClick="openEmail('<?php echo $name?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-email.png" align="absmiddle" alt="send email" width="16" height="16" border="0" /></button>
 	<script language="JavaScript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
@@ -151,6 +147,7 @@ function field_web($name,$value="http://",$attributes=""){
 	*/
 	
 	if(!$value) $value="http://";
+	$value=str_replace("\"","&quot;",$value);	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="openWebpage('<?php echo $name?>')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-www.png" align="absmiddle" alt="link" width="16" height="16" border="0" /></button>
@@ -173,10 +170,32 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 
 	if(is_numeric($value)) $value="\$".number_format($value,2);
 	else $value="\$0.00";
+	$value=str_replace("\"","&quot;",$value);
 	
-	?> <input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
+	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> onChange="validateDollar(this);" style="text-align:right;" /><?php
+	if ($required) {?>
+		echo "<script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script>
+	<?php }//end required if
+}
+
+//============================================================================================
+function field_percentage($name,$value,$precision=1,$required=false,$message="",$attributes="") {
+	/*
+	   name =			Name of the field
+	   value =			Value for field 
+	   precision =		Number of decimal points to round the percentage
+	   required =		true/false wether the field is validated by javascript before submitting for blank values
+	   message =		message displayed if not validate						
+	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
+						attribute value.
+	*/
+
+	if(is_numeric($value)) $value=$value."%";	
+	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
+	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onChange") echo " ".$attribute."=\"".$tvalue."\"";
+	?> onChange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"] ?>" style="text-align:right;" /><?php
 	if ($required) {?>
 		echo "<script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script>
 	<?php }//end required if
@@ -262,16 +281,16 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 		autofill["<?php echo $fieldname?>"]["gf"]="<?php echo urlencode(stripslashes($getfield)) ?>";
 		autofill["<?php echo $fieldname?>"]["wc"]="<?php echo urlencode(stripslashes($whereclause)) ?>";
 		autofill["<?php echo $fieldname?>"]["bo"]=<?php if ($blankout) echo "true"; else echo "false" ?>;
+		autofill["<?php echo $fieldname?>"]["vl"]="<?php echo htmlQuotes($displayresult["display"]) ?>";
 		appPath="<?php echo $_SESSION["app_path"]?>";
 	</script>
 	<input autocomplete="off" type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>" <?php 
 		if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> value="<?php echo $displayresult["display"] ?>" onKeyUp="autofillChange(this);return true;" onBlur="blurAutofill(this)"  onKeyDown="captureKey(event)" class="autofillField" />
+	?> value="<?php echo htmlQuotes($displayresult["display"]) ?>" onKeyUp="autofillChange(this);return true;" onBlur="blurAutofill(this)"  onKeyDown="captureKey(event)" class="autofillField" />
 	<div id="dd-<?php echo $fieldname?>" class="autofillDropDown" style="position:absolute;white-space:nowrap;display:none;"></div>
 	<?php if ($required) {
 		?><script language="JavaScript">
 			requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');
-			autofill["<?php echo $fieldname?>"]["vl"]=<? echo $displayresult ?>;
 		</script><?php
 	}//end required if
 }//end function

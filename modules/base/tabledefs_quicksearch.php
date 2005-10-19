@@ -26,19 +26,19 @@
 		break;
 		
 		case "add quick search item":
-			$statusmessage=addQuicksearch();
+			$statusmessage=addQuicksearch(addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit quick search item":
-			$statusmessage=updateQuicksearch();
+			$statusmessage=updateQuicksearch(addSlashesToArray($_POST));
 		break;
 		
 		case "moveup":
-			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"up");
+			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"up",$_GET["id"]);
 		break;
 		
 		case "movedown":
-			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"down");
+			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"down",$_GET["id"]);
 		break;
 	}//end switch
 	
@@ -56,33 +56,34 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 
-<?php tabledefs_tabs("Quick Search",$_GET["id"]);?><div class="untabbedbox">
+<?php tabledefs_tabs("Quick Search",$_GET["id"]);?><div class="bodyline">
 <div>
 	<h1><?php echo $pageTitle?></h1>
-	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
+	<table border="0" cellpadding="3" cellspacing="0" class="querytable" style="margin-bottom:15px;">
 		<tr>
 			 <th nowrap class="queryheader">Move</td>
 			 <th nowrap class="queryheader" align="left">Name</td>
 			 <th width="100%" nowrap class="queryheader" align="left">Search</td>
+			 <th width="100%" nowrap class="queryheader" align="left">Restricted</td>
 			 <th nowrap class="queryheader">&nbsp;</td>
 		</tr>
 	<?php 
 		$topdisplayorder=-1;
+		$row=1;
 		while($therecord=mysql_fetch_array($quicksearchsquery)){ 
 			$topdisplayorder=$therecord["displayorder"];
+			if($row==1) $row=2; else $row=1;
 	?>
-	<tr>	 
+	<tr class="qr<?php echo $row?>" style="cursor:auto">
 	 <td nowrap valign="top">
-		 <input name="command" type="button" value="up" style="margin-right:0px;" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&quicksearchid=".$therecord["id"]?>';">
-		 <input name="command" type="button" value="dn" style="margin-right:4px;" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&quicksearchid=".$therecord["id"]?>';">
+	 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&quicksearchid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
+	 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&quicksearchid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
 		 <?php echo $therecord["displayorder"]?>
 	 </td>
 	 <td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
 	 <td valign="top" class="small"><?php echo $therecord["search"]?></td>
+	 <td valign="top" align=center class="small"><?php if ($therecord["accesslevel"]>0) echo "X"; else echo "&nbsp;" ?></td>
 	 <td nowrap valign="top">
 		 <input name="command" type="button" value="edit" style="margin-right:0px;"  class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&quicksearchid=".$therecord["id"]?>';">
 		 <input name="command" type="button" value="delete" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&quicksearchid=".$therecord["id"]?>';">
@@ -90,26 +91,30 @@
 	</tr>	
 	<?php } ?>
 	</table>
-	<div>&nbsp;</div>
-	<div class="box">
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-		<input name="quicksearchid" type="hidden" value="<?php echo $thequicksearch["id"]?>">
-		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>">
-		<h2 style="margin-top:0px;"><?php echo $action?></h2>
-		<div>
-			name<br>
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+	<fieldset>
+		<legend><?php echo $action?></legend>
+		<input name="quicksearchid" type="hidden" value="<?php echo $thequicksearch["id"]?>" />
+		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>" />
+		<label for="name" class="important">
+			name<br/>
 			<?PHP field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
-		</div>
-		<div>
+		</label>
+		<label for="accesslevel">
+			access level<br />
+			<?php basic_choicelist("accesslevel",$thequicksearch["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")));?>
+		</label>
+		<label for="search">
 			search (SQL where clause)<br>
-			<textarea name="search" cols="32" rows="3" style="width:100%"><?php echo $thequicksearch["search"] ?></textarea>
-		</div>
+			<textarea id="search" name="search" cols="32" rows="2" style="width:99%"><?php echo htmlQuotes($thequicksearch["search"]) ?></textarea>
+		</label>
 		<div align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">
 		</div>
-		</form>
-	</div>
+	</fieldset>
+	</form>
 </div>
 </div>
+<?php include("../../footer.php")?>
 </body>
 </html>

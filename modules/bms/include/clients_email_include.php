@@ -7,7 +7,7 @@
 
 		$numrows=mysql_num_rows($thequery);
 		?>
-		<select name="savedsearches" <?php if ($numrows<1) echo "disabled" ?> style="width:100%;">
+		<select id="savedsearches" name="savedsearches" <?php if ($numrows<1) echo "disabled" ?> style="width:100%;">
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
 			<?php 
@@ -61,7 +61,7 @@
 
 		$numrows=mysql_num_rows($thequery);
 		?>
-		<select name="savedprojects" <?php if ($numrows<1) echo "disabled" ?> style="width:100%;">
+		<select name="savedprojects" id="savedprojects" <?php if ($numrows<1) echo "disabled" ?> style="width:99%;" size="9" onClick="updateSavedProjects(this)">
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
 			<?php 

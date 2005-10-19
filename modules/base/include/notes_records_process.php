@@ -12,7 +12,7 @@ if(isset($_POST["command"])) {
 	case "new":
 		// relocate to new screen
 		//=====================================================================================================
-		$theurl="../base/notes_addedit.php?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
+		$theurl=getAddEditFile(12)."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
 		header("Location: ".$theurl );
 	break;
 	case "delete":
@@ -27,12 +27,12 @@ if(isset($_POST["command"])) {
 			$dwhereclause=substr($dwhereclause,3);		
 			$thequery = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$dwhereclause.");";
 			$theresult = mysql_query($thequery);
-			if (!$theresult) die ("Couldn't Update: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+			if (!$theresult) die ("Couldn't Update: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$thequery."]");		
 	break;
 	case "edit/view":
 		// relocate to edit screen
 		//=====================================================================================================
-		  header("Location: notes_addedit.php?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
+		  header("Location: ".getAddEditFile(12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
 	break;
 	}//end switch
 } //end if

@@ -1,11 +1,13 @@
 <?PHP
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
+
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
 	$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
 	$thequery=mysql_query($querystatement,$dblink);
 	
-	echo "<select name=\"".$fieldname."\">\n";
+	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "	<option value=\"".$therecord["id"]."\"";
 			if($selectedid==$therecord["id"]) echo " selected ";
@@ -26,7 +28,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
- 				id, name, userid, tabledefid, sqlclause, type 
+ 				id, name, userid, tabledefid, sqlclause, type, accesslevel 
 				
  				FROM usersearches
 				WHERE id=".$id;		
@@ -44,6 +46,7 @@ function setRecordDefaults(){
 	$therecord["userid"]=NULL;
 	$therecord["tabledefid"]=NULL;
 	$therecord["sqlclause"]="";
+	$therecord["accesslevel"]=10;
 	$therecord["type"]="";
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
@@ -56,22 +59,23 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	$querystatement="UPDATE usersearches SET ";
 	
-			if(isset($_POST["makeglobal"])) $querystatement.="userid=0, "; 
-			$querystatement.="name=\"".$_POST["name"]."\", "; 
-			$querystatement.="tabledefid=\"".$_POST["tabledefid"]."\", "; 
-			if(isset($_POST["type"]))$querystatement.="type=\"".$_POST["type"]."\", "; 
-			$querystatement.="sqlclause=\"".$_POST["sqlclause"]."\" "; 
+			if(isset($variables["makeglobal"])) $querystatement.="userid=0, "; 
+			$querystatement.="name=\"".$variables["name"]."\", "; 
+			$querystatement.="tabledefid=\"".$variables["tabledefid"]."\", "; 
+			if(isset($variables["accesslevel"]))$querystatement.="accesslevel=\"".$variables["accesslevel"]."\", "; 
+			if(isset($variables["type"]))$querystatement.="type=\"".$variables["type"]."\", "; 
+			$querystatement.="sqlclause=\"".$variables["sqlclause"]."\" "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
@@ -101,7 +105,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);

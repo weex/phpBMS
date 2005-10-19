@@ -26,11 +26,11 @@
 		break;
 		
 		case "add option":
-			$statusmessage=addOption();
+			$statusmessage=addOption(addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit option":
-			$statusmessage=updateOption();
+			$statusmessage=updateOption(addSlashesToArray($_POST));
 		break;
 		
 	}//end switch
@@ -49,25 +49,22 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 
-<?php tabledefs_tabs("Options",$_GET["id"]);?><div class="untabbedbox">
+<?php tabledefs_tabs("Options",$_GET["id"]);?><div class="bodyline">
 <div>
 	<h1><?php echo $pageTitle?></h1>
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
-	 <th nowrap class="queryheader" align="center">Other Cmd</td>
-	 <th nowrap class="queryheader" align="left">Name</td>
-	 <th nowrap class="queryheader" align="left" width="100%">Option</td>
+	 <th nowrap class="queryheader" align="center">command list</td>
+	 <th nowrap class="queryheader" align="left">name / function name</td>
+	 <th nowrap class="queryheader" align="left" width="100%">option / function display name</td>
 	 <th nowrap class="queryheader">&nbsp;</td>
 	</tr>
 
 	<?php 
 		while($therecord=mysql_fetch_array($optionsquery)){ 
 	?>
-	<tr>
+	<tr class="qr2" style="cursor:auto">
 	 <td align="center" nowrap><?php if($therecord["othercommand"]) echo "<strong>X</strong>"; else echo "&nbsp;"; ?></td>
 	 <td nowrap><strong><?php echo $therecord["name"]?></strong></td>
 	 <td nowrap class="small"><?php echo $therecord["option"]?></td>
@@ -78,49 +75,49 @@
 	</tr>	
 	<?php } ?>
 	</table>
-	<div>&nbsp;</div>
-	<table border=0 cellspacing=0 cellpadding=0>
-		<tr>
-			<td class=box valign=top nowrap>
-		<h2 style="margin-top:0px;"><?php echo $action?></h2>
+	<fieldset>
+		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-			<input name="optionid" type="hidden" value="<?php echo $theoption["id"]?>">
+			<input id="optionid" name="optionid" type="hidden" value="<?php echo $theoption["id"]?>" />
 			<div>				
-				list option as other command<br>
-				<input type="radio" name="othercommand" value="0" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked"?>> no
-				&nbsp;&nbsp;
-				<input name="othercommand" type="radio" class="radiochecks" value="1" <?php if($theoption["othercommand"]) echo "checked"?>>  yes
+				command type<br />
+				<label for="oc1" style="display:inline">
+				<input type="radio" id="oc1" name="othercommand" value="0" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked"?>> pre-defined
+				</label>
+				<label for="oc2" style="display:inline">
+				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" <?php if($theoption["othercommand"]) echo "checked"?>>  command list
+				</label>
 			</div>
-			<div>
-				name / function name <br>
-				<?PHP field_text("name",$theoption["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
-			</div>			
-			<div>
-				option / function display name<br>
-				<?PHP field_text("option",$theoption["option"],1,"Option cannot be blank","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
-			</div>
-			<div align="right">
+			<label for="name">
+				name / function name <br />
+				<?PHP field_text("name",$theoption["name"],1,"Name cannot be blank","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+			</label>
+			<label for="option">
+				option / function display name<br />
+				<?PHP field_text("option",$theoption["option"],1,"Option cannot be blank","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+			</label>
+			<div align="left">
 				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">
 			</div>
-		</form>			
-			</td>
-			<td class=tiny>&nbsp;</td>
-			<td class=box valign=top>
-		<div class=small>
-		
-			<h2 style="margin-top:0px;">Notes about Adding Options:</h2>
-			<strong>Predefined Options:</strong><br>
-				new = 1,0 (dictates new record creation is possible: 1 for true, 0 for false)<br>
-				edit = 1,0 (dictates editing of records is possible: 1 for true, 0 for false)<br>
-				select = 1,0 (dictates selection of records is possible: 1 for true, 0 for false)<br>
-				printex = 1,0 (dictates printing/export of records is possible: 1 for true, 0 for false)<br>&nbsp;<br>
-			<strong>other command options:</strong><br>
-				Other commands should correspond to functions specific to the table. the name should contain no spaces, and correspond to a function defined in the &quot;include/tablename_search_functions.php&quot; file. The 'option' field should represents the plain english phrase that will show in the commands drop down on the list view.
+		</form>
+	</fieldset>
+	<fieldset>
+		<legend>notes</legend>
+		<div class=small>	
+			<strong>pre-defined:</strong><br>
+				new = 1,0 (is record creation possible: 1 for true, 0 for false)<br />
+				edit = 1,0 (is editing/viewing of records possible: 1 for true, 0 for false)<br />
+				select = 1,0 (is selection of records possible: 1 for true, 0 for false)<br />
+				printex = 1,0 (is printing of records possible: 1 for true, 0 for false)<br />&nbsp;<br />
+			<strong>command list:</strong><br />
+				command list options correspond to php functions specific to the table. 
+				function name references a php function defined in the &quot;include/tablename_search_functions.php&quot; file.<br /><br />
+				
+				The "function display name" is how the function is displayed to the end user in the command list drop down.
 		</div>					
-			</td>
-		</tr>
-	</table>
+	</fieldset>	
 </div>
 </div>
+<?php include("../../footer.php"); ?>
 </body>
 </html>

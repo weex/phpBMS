@@ -1,3 +1,20 @@
+function editPreviewWebDesc(thebutton){
+	var editDiv=getObjectFromID("webDescEdit");
+	var previewDiv=getObjectFromID("webDescPreview");
+	var webDesc=getObjectFromID("webdescription");
+	
+	if (thebutton.value=="preview"){
+		thebutton.value="edit";
+		previewDiv.style.display="block";
+		editDiv.style.display="none";
+		previewDiv.innerHTML=webDesc.value;
+	} else {
+		thebutton.value="preview";
+		previewDiv.style.display="none";
+		editDiv.style.display="block";
+	}
+}
+
 function calculateMarkUp(){
 	var thecost=getObjectFromID("unitcost");
 	var theprice=getObjectFromID("unitprice");
@@ -17,7 +34,7 @@ function calculateMarkUp(){
 	if(unitcost!=0 && unitprice!=0){
 		
 		var markup=getObjectFromID("markup");
-		markup.value=(Math.round(unitprice/unitcost*100)-100)+"%"
+		markup.value=(Math.round((unitprice/unitcost -1)*10000)/100)+"%"
 		
 	}
 }
@@ -38,26 +55,17 @@ function calculatePrice(){
 	theprice.value=formatDollar(newnumber);	
 }
 
-function changeMarkup(){
-	var themarkup=getObjectFromID("markup");
-	var markup=getNumberFromPercentage(themarkup.value);
-	
-	themarkup.value=""+(Math.round(markup*10)/10);
-	if(themarkup.value.indexOf(".")==-1) themarkup.value+=".0";
-	themarkup.value+="%";
+function updatePictureStatus(pic,status){
+	var thechange=getObjectFromID(pic+"change");
+	thechange.value=status;
 }
 
-function getNumberFromPercentage(thenumber){
-	var markupnumber="";
-	for(i=0;i<thenumber.length;i++){
-		if (thenumber.charAt(i)!="%" && thenumber.charAt(i)!="+" && thenumber.charAt(i)!=",") markupnumber+=thenumber.charAt(i);
-	}
-	
-	//get rid of trailing zeros and possibly "."
-	while(markupnumber.charAt(markupnumber.length-1)=="0" && markupnumber.indexOf(".")!=-1) markupnumber=markupnumber.substring(0,markupnumber.length-1);
-	if(markupnumber.charAt(markupnumber.length-1)==".") markupnumber=markupnumber.substring(0,markupnumber.length-1);
-
-	if (isNaN(parseFloat(markupnumber)) || markupnumber.length!=((parseFloat(markupnumber)).toString()).length) markupnumber="0";
-	markupnumber=parseFloat(markupnumber);
-	return markupnumber;
+function deletePicture(pic){
+	var thepic=getObjectFromID(pic+"pic");
+	var deleteDiv=getObjectFromID(pic+"delete");
+	var addDiv=getObjectFromID(pic+"add");
+	thepic.style.display="none";
+	deleteDiv.style.display="none";
+	addDiv.style.display="block";
+	updatePictureStatus(pic,"delete");
 }

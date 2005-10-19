@@ -2,24 +2,28 @@
 //=============================================
 //functions
 //=============================================
-//revoke access
 function delete_record($theids){
-	global $session_productcategoriesinfo;
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	foreach($theids as $theid){
-		$whereclause=$whereclause." or productcategories.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	$whereclause=buildWhereClause($theids,"productcategories.id");
 	
-	$thequery = "select products.id from products inner join productcategories on products.categoryid=productcategories.id where ".$whereclause.";";
-	$theresult = mysql_query($thequery);
-	$numrows=mysql_num_rows($theresult);
+	$querystatement= "SELECT products.id FROM products INNER JOIN productcategories ON products.categoryid=productcategories.id 
+					 WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Select for delete failed: ".mysql_error($dblink)." -- ".$querystatement);
 	
-	if(!$numrows){
-		$thequery = "delete from productcategories where ".$whereclause.";";
-		$theresult = mysql_query($thequery);
+	if(!mysql_num_rows($queryresult)){
+		$querystatement = "DELETE FROM productcategories WHERE ".$whereclause.";";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
+		
+		$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	} else {
+		$message=buildStatusMessage(0,count($theids));	
 	}
-			
+	$message.=" deleted.";
+	return $message;			
 }
 
 

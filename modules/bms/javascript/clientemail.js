@@ -6,34 +6,89 @@ function showSavedSearches(option){
 }
 
 function showSavedProjects(){
-	var thediv=getObjectFromID("loadedprojects");	
-	if (thediv.style.display=="none")
-		thediv.style.display="block";
+	var thediv=getObjectFromID("loadedprojects");
+	savedText=thediv.innerHTML;
+	thediv.innerHTML="";
+	showModal(savedText,"Load E-mail Project",300);
 }
 
 function hideSavedProjects(){
 	var thediv=getObjectFromID("loadedprojects");	
-	thediv.style.display="none";
+	closeModal();
+	thediv.innerHTML=savedText
+}
+
+function loadProject(){
+	var theselect=getObjectFromID("savedprojects");
+	var projectid=getObjectFromID("projectid");
+	var othercommand=getObjectFromID("othercommand");
+	projectid.value=theselect.value;
+	othercommand.value="load project";
+	closeModal();
+	othercommand.click();
+}
+
+function deleteProject(){
+	var theselect=getObjectFromID("savedprojects");
+	var projectid=getObjectFromID("projectid");
+	var othercommand=getObjectFromID("othercommand");
+	projectid.value=theselect.value;
+	othercommand.value="delete project";
+	closeModal();
+	othercommand.click();
+}
+
+function updateSavedProjects(theselect){
+	var deletebutton=getObjectFromID("deleteproject");
+	var loadbutton=getObjectFromID("loadproject");
+	if (theselect.value!="NA"){
+		deletebutton.disabled=false;
+		loadbutton.disabled=false;
+	} else {
+		deletebutton.disabled=true;
+		loadbutton.disabled=true;
+	}
 }
 
 function saveProject(theform){
-	if(theform["email"].value=="" && theform["ds-email"].value==""){
-		alert("From field cannot be blank");
-		theform["subject"].value="[ No Subject ]";
-		return false;
+	var theemail=getObjectFromID("email");
+	var theemail2=getObjectFromID("ds-email");
+	var subject=getObjectFromID("subject");
+	var alertMessage="";
+	
+	if(theemail.value=="" && theemail2.value=="")
+		alertMessage+="From cannot be blank.<br>";	
+
+	if(subject.value==""){
+		subject.value="[ No Subject ]";
+		alertMessage+="Subject cannot be blank.<br>";
 	}
-
-	if(theform["subject"].value==""){
-		alert("Subject cannot be blank");
-		theform["subject"].value="[ No Subject ]";
-		return false;
+	
+	if(alertMessage!="")
+		alert(alertMessage);
+	else{
+		text="<div><input type=\"text\" id=\"saveInput\" maxlength=\"128\" style=\"width:99%\" onKeyUp=\"updateSaveProject(this)\"></div>";
+		text+="<div align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"saveSave\" style=\"width:75px;\" value=\"save\" disabled=\"true\" onClick=\"finishSaveProject();\">&nbsp;<input class=\"Buttons\" type=\"button\" value=\"cancel\" id=\"saveCancel\" onClick=\"closeModal()\" style=\"width:75px;\"></div>";
+		showModal(text,"Save Project As...",300);
 	}
+}
 
-	var savedname=prompt("Enter e-mail project name");
-	if (!savedname || savedname=="") return false;
+function updateSaveProject(theText){
+	var savebutton=getObjectFromID("saveSave");
+	if(theText.value=="")
+		savebutton.disabled=true;
+	else
+		savebutton.disabled=false;
+}
 
-	theform["savename"].value=savedname;
-	return true;
+function finishSaveProject(){
+	var saveInput=getObjectFromID("saveInput");
+	var savename=getObjectFromID("savename");
+	var othercommand=getObjectFromID("othercommand");
+	savename.value=saveInput.value;
+	othercommand.value="save project";
+	closeModal();
+	othercommand.click();
 }
 
 function addField(){

@@ -16,7 +16,7 @@
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);	
 	
-	$pageTitle="Product: ".$refrecord["partname"].": Notes/Messages";
+	$pageTitle="Product Notes: ".$refrecord["partname"];
 
 	function doTabs(){
 		product_tabs("Notes/Messages",$_GET["refid"]);

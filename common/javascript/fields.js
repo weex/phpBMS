@@ -99,7 +99,7 @@ function validateForm(theform){
 		}
 	}
 	if(errorMessage!=""){
-		errorMessage="<UL>"+errorMessage+"</UL><DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\">ok</button></DIV>";
+		errorMessage="<UL>"+errorMessage+"</UL><DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px;\">ok</button></DIV>";
 
 		showModal(errorMessage,"Cannot Save",300);
 	}
@@ -244,6 +244,13 @@ function validateDollar(theitem){
 	if (theitem.thechange) theitem.thechange();
 }
 
+function validatePercentage(thefield,precision){
+	var percentage=getNumberFromPercentage(thefield.value);
+	thefield.value=""+(Math.round(percentage*Math.pow(10,precision))/Math.pow(10,precision));
+	if(thefield.value.indexOf(".")==-1) thefield.value+=".0";
+	thefield.value+="%";
+}
+
 function formatDollar(thenumber){
 	var newdollar,retval
 	
@@ -283,29 +290,37 @@ function formatDollar(thenumber){
 }
 
 function  processUniqueReqChange(){
-	var response,isunique,thename,thefield,theitem;
-	
 	 if (req.readyState == 4) {
 		// only if "OK"
-		if (req.status == 200) {
+		if (req.status == 200) {			
+			var response = req.responseXML.documentElement;
+			var thename = response.getElementsByTagName('name')[0].firstChild.data;
+			var isunique = response.getElementsByTagName('isunique')[0].firstChild.data;
 			
-			response = req.responseXML.documentElement;
-			thename = response.getElementsByTagName('name')[0].firstChild.data;
-			isunique = response.getElementsByTagName('isunique')[0].firstChild.data;
-			
-			if(isunique==0) {
-				alert("This field requires a unique value.");
-				theitem=getObjectFromID(thename);
-				theitem.value="";
-				theitem.focus();
-			}
+			if(isunique==0)
+				alert("This field requires a unique value.<br/><br/>Another record already exists with this value.");
 		}
 	}
 }
 
+function getNumberFromPercentage(thenumber){
+	var markupnumber="";
+	for(i=0;i<thenumber.length;i++){
+		if (thenumber.charAt(i)!="%" && thenumber.charAt(i)!="+" && thenumber.charAt(i)!=",") markupnumber+=thenumber.charAt(i);
+	}
+	
+	//get rid of trailing zeros and possibly "."
+	while(markupnumber.charAt(markupnumber.length-1)=="0" && markupnumber.indexOf(".")!=-1) markupnumber=markupnumber.substring(0,markupnumber.length-1);
+	if(markupnumber.charAt(markupnumber.length-1)==".") markupnumber=markupnumber.substring(0,markupnumber.length-1);
+
+	if (isNaN(parseFloat(markupnumber)) || markupnumber.length!=((parseFloat(markupnumber)).toString()).length) markupnumber="0";
+	markupnumber=parseFloat(markupnumber);
+	return markupnumber;
+}
+
 function checkUnique(path,thevalue,thename,thetable,thefield,excludeid){
 	
-	var theurl=path+"checkunique.php?value="+escape(thevalue);
+	var theurl=path+"checkunique.php?value="+encodeURI(thevalue);
 	theurl=theurl+"&table="+thetable;
 	theurl=theurl+"&name="+thename;
 	theurl=theurl+"&field="+thefield;

@@ -21,38 +21,50 @@ function getSubItems($parentid){
 }
 
 	$menus=getMenu();
+	$nummenus=mysql_num_rows($menus);
 
-?>
-<script language="JavaScript" src="<?php echo $_SESSION["app_path"]?>common/javascript/menu.js" type="text/javascript" ></script>
+?><script language="JavaScript" src="<?php echo $_SESSION["app_path"]?>common/javascript/menu.js" type="text/javascript" ></script>
 <script language="JavaScript" src="<?php echo $_SESSION["app_path"]?>common/javascript/common.js" type="text/javascript" ></script>
-<script language="JavaScript" >var spinner=new Image;spinner.src=+"<?php echo $_SESSION["app_path"] ?>common/image/spinner.gif";</script>
-<table border="0" cellpadding="0" cellspacing=0 id="menu" width="100%"><tr><td valign="top" align=right  nowrap colspan=<?php echo mysql_num_rows($menus)?>>
-	<div id="appname"><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>"><?php echo $_SESSION["application_name"];?></a></div>
-	<div class=small>
-	<a href="/click for information/" id="loggedinuser" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a> 	
-	<input name="lo" type="button" class="smallButtons" value="log out" style="margin-left:3px;margin-right:3px;" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')">
+<script language="JavaScript" >
+	var spinner=new Image;spinner.src=+"<?php echo $_SESSION["app_path"] ?>common/image/spinner.gif";
+	var upArrow=new Image;upArrow.src="<?php echo $_SESSION["app_path"] ?>common/image/up_arrow.gif";
+        var downArrow=new Image;downArrow.src="<?php echo $_SESSION["app_path"] ?>common/image/down_arrow.gif";
+</script>
+<div id="menu">
+	<div id="menuLogout" class="small">
+		<a href="/click for information/"  name="toptop" id="loggedinuser" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a> 	
+		<input id="lo" name="lo" type="button" class="smallButtons" value="log out" style="margin-left:3px;margin-right:3px;" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')">
+		<input id="help" name="help" type="button" class="smallButtons" value="?" style="" onClick="showHelp('<?php echo $_SESSION["app_path"]?>')">
 	</div>
-</td></tr>
-<tr><?php 	
-	while($menurecord=mysql_fetch_array($menus)){
-		if($_SESSION["userinfo"]["accesslevel"]>$menurecord["accesslevel"]){
-			echo "<td valign=top nowrap width=\"".round(100/mysql_num_rows($menus))."%\">";
-			if($menurecord["link"]) {
-				echo "<div class=mainmenuitems><a href=\"".$_SESSION["app_path"].$menurecord["link"]."\" class=exp1>".$menurecord["name"]."<img src=\"".$_SESSION["app_path"]."common/image/spacer.gif\" width=1 height=1 border=\"0\" ></a></div>";
-			}
-			else {
-				echo "<div class=mainmenuitems onClick=\"expand(".$menurecord["id"]."); return false;\"><a href=\"\" class=exp1>".$menurecord["name"]."<img src=\"".$_SESSION["app_path"]."common/image/left_arrow.gif\" id=\"right".$menurecord["id"]."\" width=10 height=10 border=\"0\" ></a></div><div class=submenuitems id=sub".$menurecord["id"].">";
-				$subitemsquery=getSubItems($menurecord["id"]);
-				if($subitemsquery){
-					while($subrecord=mysql_fetch_array($subitemsquery)){
-						if($_SESSION["userinfo"]["accesslevel"]>$subrecord["accesslevel"])
-						echo "<a href=\"".$_SESSION["app_path"].$subrecord["link"]."\" class=exp2>&nbsp;".$subrecord["name"]."<img src=\"".$_SESSION["app_path"]."common/image/spacer.gif\" width=1 height=1 border=\"0\" ></a>";
-					}//end while
+	<div id="menuAppname"><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>"><?php echo $_SESSION["application_name"];?></a></div>
+	<div id="menuBar" style="clear:both;">
+	<?php 	
+		$submenustring="";
+		while($menurecord=mysql_fetch_array($menus)){
+			if($_SESSION["userinfo"]["accesslevel"]>=$menurecord["accesslevel"]){
+				if($menurecord["link"]) {
+					if(strpos($menurecord["link"],"http")!==0)
+						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
+					?><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a><?php 
+				}
+				else { ?><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"><?php echo $menurecord["name"]; ?>&nbsp;<img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" id="menuImage<?php echo $menurecord["id"]?>" width=10 height=10 border="0" ></a><div class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php 
+					$submenustring.=$menurecord["id"].",";
+					$subitemsquery=getSubItems($menurecord["id"]);
+					if($subitemsquery){
+						while($subrecord=mysql_fetch_array($subitemsquery)){
+							if($_SESSION["userinfo"]["accesslevel"]>=$subrecord["accesslevel"]){
+								if(strpos($subrecord["link"],"http")!==0)
+									$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
+							?><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a><?php }//end if
+						}//end while
+					}//end if
+					echo "</div>";
 				}//end if
-				echo "</div>";
-			echo "</td>";					
 			}//end if
-		}//end if
-	}//end while
-?></tr>
-</table>
+		}//end while
+		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
+	?></div></div><script language="JavaScript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
+<?PHP if (isset($statusmessage)) {?>
+<div id="statusmessage"><?PHP echo $statusmessage ?></div>
+<?PHP } // end if ?>
+	

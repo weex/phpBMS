@@ -19,55 +19,60 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <div class="bodyline">
-	<div style="float:right;width:180px;">
-		  <?php include("../../include/savecancel.php"); ?>
-		  <div class="box">
-		  	<div>
-				id<br>
-				<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%">				
-			</div>
-			<div>
-				type<br>
-				<?PHP basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true","style"=>"width:100%")); ?>
-			</div>
-		  </div>
+	<div style="float:right;width:160px;">
+		  <?php showSaveCancel(1); ?>
 	</div>
-	<div style="margin-right:183px;">
-		<h1><?php echo $pageTitle ?></h1>
-		<div>
-			name<br>
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","style"=>"width:100%")); ?>
-		</div>
-		<div>
-			table<br>
+	<h1 style="margin-right:165px;"><?php echo $pageTitle ?></h1>
+	<FIELDSET class="box" style="float:right;width:200px;">
+		<LEGEND>attirbutes</LEGEND>
+		<label for="id">
+			id<br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">				
+		</label>
+		<label for="type">
+			type<br />
+			<?PHP basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true","style"=>"width:98%")); ?>
+		</label>
+		<label for="tabledefid">
+			table<br />
 			<?php displayTables("tabledefid",$therecord["tabledefid"]) ?>
-		</div>
-		<div>
-			user<br>
-			<input name="username" type="text" value="<?php echo $username ?>" size="32" readonly="true" class="uneditable">
-		</div>
+		</label>
+		<label for="username">
+			user<br />
+			<input id="username" name="username" type="text" value="<?php echo htmlQuotes($username) ?>" size="32" readonly="true" class="uneditable">
+		</label>
 		<?php if($therecord["userid"]!=0) {?>
-		<div><input name="makeglobal" type="checkbox" class="radiochecks" value="1"> make global</div>
+		<label for="makeglobal" style="text-align:center"><input id="makeglobal" name="makeglobal" type="checkbox" class="radiochecks" value="1"> make global</label>
+		<?php } else {?>
+		<label for="accesslevel">
+			access level<br />
+			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>			
+		</label>
 		<?php } ?>
-	</div>
-		<div>
-			sql clause<br>
-			<textarea name="sqlclause" cols="55" rows="4" style="width:100%"><?php echo $therecord["sqlclause"]?></textarea>
-		</div>
-<div class="recordbottom" align="right">
-	<div style="padding:0px;margin:0px;">
-		<?php include("../../include/savecancel.php"); ?>
-	</div>
-<input name="cancelclick" type="hidden" value="0">
-</div>
+	</FIELDSET>
+	<FIELDSET>
+		<legend>name / sql</legend>
+		<label for="name">
+			name<br />
+			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"")); ?>
+		</label>
+		<label for="sqlclause">
+			sql clause<br />
+			<textarea id="sqlclause" name="sqlclause" cols="62" rows="10"><?php echo $therecord["sqlclause"]?></textarea>
+		</label>
+	</FIELDSET>
 
+<div class="box" align="right" style="clear:both;">
+	<div style="padding:0px;margin:0px;">
+		<?php showSaveCancel(2); ?>
+	</div>
+	<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
 </div>
+</div>
+<?php include("../../footer.php");?>
 </form>
 </body>
 </html>

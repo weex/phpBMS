@@ -27,7 +27,7 @@ function loadSettings() {
 
 
 	function verifyAdminLogin($user,$pass,$encryptionSeed,$dblink){
-		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$encryptionSeed."\") AND accesslevel>90";
+		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$encryptionSeed."\") AND accesslevel>=90";
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) die("what the!");//return false;
 		if (mysql_num_rows($queryresult)>0) return true;

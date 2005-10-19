@@ -22,7 +22,7 @@
 			$this->maintable=$therecord["maintable"];
 
 			$querystatement="SELECT id,name,reportfile,type,description,displayorder FROM reports 
-							WHERE tabledefid=0 or tabledefid=".$this->tableid." ORDER BY tabledefid desc, displayorder desc,name";
+							WHERE tabledefid=0 or tabledefid=".$this->tableid." and accesslevel <= ".$_SESSION["userinfo"]["accesslevel"]." ORDER BY tabledefid desc, displayorder desc,name";
 			$queryresult=mysql_query($querystatement,$dblink);		
 			if(!$queryresult) reportError(500,"Error retreving reports.");
 			$this->reports=$queryresult;
@@ -41,7 +41,7 @@
 		function getSaved($userid,$type){
 			global $dblink;
 			
-			$querystring="SELECT id,name,userid FROM usersearches WHERE tabledefid=".$this->tableid." and type=\"".$type."\" and(userid=0 or userid=\"".$userid."\") order by userid,name";
+			$querystring="SELECT id,name,userid FROM usersearches WHERE tabledefid=".$this->tableid." and type=\"".$type."\" and((userid=0 and accesslevel<=".$_SESSION["userinfo"]["accesslevel"].") or userid=\"".$userid."\") order by userid,name";
 			$thequery = mysql_query($querystring,$dblink);
 			return $thequery;
 		}//end function
@@ -68,7 +68,7 @@
 		function displayReportList(){
 			mysql_data_seek($this->reports,0);
 		?>
-	   <select name="choosereport[]" id="choosereport" size="11" multiple style="width:200px;" onChange="switchReport(this)">
+	   <select name="choosereport[]" id="choosereport" size="12" multiple style="width:205px;" onChange="switchReport(this)">
 	    <?PHP
 		 $diplayorder=-1;
 	   	 while($therecord=mysql_fetch_array($this->reports)){

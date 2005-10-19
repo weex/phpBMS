@@ -69,7 +69,7 @@ class totalReport{
 		$querystatement.=" count(invoices.id) as thecount ";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error()."<br><br>".$querystatement);
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		?>
 		<tr>
@@ -97,7 +97,7 @@ class totalReport{
 			$querystatement.=$groupby." AS thegroup, count(invoices.id) as thecount ";
 			$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$groupby;
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(500,"Bad SQL:".mysql_error()."<br><br>".$querystatement);
+			if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)){
 				
@@ -143,7 +143,7 @@ class totalReport{
 		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as thedate";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error()."<br><br>".$querystatement);	
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);	
 
 		while($therecord=mysql_fetch_array($queryresult)){			
 			
@@ -175,7 +175,7 @@ class totalReport{
 							FROM (lineitems left join products on lineitems.productid=products.id)
 						WHERE lineitems.invoiceid=".$invoiceid;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error()."<br><br>".$querystatement);	
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);	
 				
 		?>
 			<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="invoices" style="padding-right:40px;padding-left:<?php echo ($indent+2)?>px;">
@@ -261,13 +261,10 @@ TH {
 if(isset($_POST["command"])){
 	$myreport= new totalReport();
 	$myreport->initialize($_POST);
-//	echo "<PRE>";
-//	var_dump($_POST);
-//	echo "</PRE>";
 	
 	$myreport->showReport();
 } else {
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<title>Invoice Totals</title>
@@ -331,7 +328,7 @@ if(isset($_POST["command"])){
 
 <body>
 <div class="bodyline" style="width:550px;padding:4px;">
-	<div class="searchtitle">Invoice Total Options</div>	
+	<h1>Invoice Total Options</h1>	
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="return submitForm(this)">
 		<div>
 			report title<br>			
@@ -438,7 +435,7 @@ if(isset($_POST["command"])){
 			<input type="hidden" name="showlineitems" value="">
 		</div>
 
-		<div align="right" class="recordbottom">
+		<div align="right" class="box">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
 		</div>

@@ -30,7 +30,7 @@ if(isset($_POST["command"])){
 	$prereqresult=mysql_query($prerequstatement,$dblink);
 	$prereqresult? $numrows=mysql_num_rows($prereqresult): $numrows=0;
 
-$pageTitle="Product: ".$refrecord["partname"].": Prerequisites"?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+$pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title><?php echo $pageTitle ?></title>
@@ -42,17 +42,10 @@ $pageTitle="Product: ".$refrecord["partname"].": Prerequisites"?><!DOCTYPE HTML 
 <script language="JavaScript" src="javascript/prereq.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php product_tabs("Prerequisites",$_GET["id"]);?><div class="untabbedbox">
+<?php product_tabs("Prerequisites",$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
-	<div>
-		<strong>Note About Prerequisites:</strong> Prerequisites are products that must be purchased by the client
-		prior to the purchase of the current product.  For example, if you
-		are a membership organization, a membership (product) might be required
-		to be purchased before any other products (membership magazine, patches)
-		can be bought.
-	</div>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
-		<input name="deleteid" type="hidden" value="0">
+		<input name="deleteid" type="hidden" value="0" />
 		<div><table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
 	 <th align="left" nowrap class="queryheader">Part Number</td>
@@ -77,30 +70,40 @@ $pageTitle="Product: ".$refrecord["partname"].": Prerequisites"?><!DOCTYPE HTML 
 	}//end if
 	?>
    </table></div>
-   <h2>add prerequisite</h2>
+   <fieldset>
+   	<legend>add prerequisite</legend>
    <table  border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<td align="left" nowrap>
 			<div>
 			part number<br>
 			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript">
-					document.forms["record"]["partnumber"].onchange=populateLineItem;
-			</script></div>
+			<script language="JavaScript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
+			</div>
 		</td>
 		<td align="left" nowrap>
 			<div>
 			part name<br>
 			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript">
-					document.forms["record"]["partname"].onchange=populateLineItem;
-			</script>
+			<script language="JavaScript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
 			</div>
 		</td>
 		<td align="right"><div><br>
-		<input name="command" type="submit" class="Buttons" value="add" style="width:40px;"></div></td>
+		<input name="command" type="submit" class="Buttons" value="add" style="width:40px;" /></div></td>
 	</tr>
 	</table>
+   </fieldset>
+   <fieldset>
+   	<legend>notes</legend>
+	<div class="small">
+		Prerequisites are products that must be purchased by the client
+		on a prior order before this product can be purchased.
+	</div>
+	<div class="small">
+		For example, if you run a membership organization, a membership (product) might be required
+		before any other products (membership magazine, patches) can be bought.
+	</div>
+   </fieldset>
 	</form>
 </div>
 </body>

@@ -12,7 +12,7 @@
 		
 		$querystatement="UPDATE notes SET completed=".$completed." , completeddate=".$compDate." WHERE id=".$id;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Updating Note: ".mysql_error()."<br />".$querystatement);		
+		if(!$queryresult) reportError(300,"Error Updating Note: ".mysql_error($dblink)."<br />".$querystatement);		
 		
 		if($completed && $type="TS")
 			repeatTask($id);
@@ -26,7 +26,7 @@
 		
 		$querystatement="SELECT parentid,startdate,repeat FROM notes WHERE id=".$id;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Retrieving Parent Note ID: ".mysql_error()."<br />".$querystatement);
+		if(!$queryresult) reportError(300,"Error Retrieving Parent Note ID: ".mysql_error($dblink)."<br />".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		
 		if($therecord["repeat"]){
@@ -38,7 +38,7 @@
 		
 			$querystatement="SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE id=".$id;
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(300,"Error Retrieving Parent Note Repeat Options: ".mysql_error()."<br />".$querystatement);
+			if(!$queryresult) reportError(300,"Error Retrieving Parent Note Repeat Options: ".mysql_error($dblink)."<br />".$querystatement);
 			$therecord=mysql_fetch_array($queryresult);
 			$startdate=dateFromSQLDate($therecord["startdate"]);
 			$enddate=dateFromSQLDate($therecord["enddate"]);
@@ -170,7 +170,7 @@
 					attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid
 					FROM notes WHERE id=".$parentid;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error()."<br />".$querystatement);		
+		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);		
 		$therecord=mysql_fetch_array($queryresult);
 		if(!$therecord["assignedtoid"])
 			$therecord["assignedtoid"]="NULL";
@@ -200,7 +200,7 @@
 		$querystatement.=$therecord["assignedbyid"].") ";
 		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Inserting Note: ".mysql_error()."<br />".$querystatement);		
+		if(!$queryresult) reportError(300,"Error Inserting Note: ".mysql_error($dblink)."<br />".$querystatement);		
 
 	}
 
@@ -209,7 +209,7 @@
 		$thereturn="";
 		switch($_GET["cm"]){
 			case "updateTask":
-				$thereturn=updateTask($_GET["id"],$_GET["cp"],$_GET["tp"]);
+				$thereturn=updateTask($_GET["id"],$_GET["cp"],$_GET["ty"]);
 			break;
 		}
 		echo $thereturn;

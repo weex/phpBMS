@@ -22,8 +22,8 @@ function  modifyList(thelist,base,listname,blankvalue){
 	var modalContent=getObjectFromID("modalContent");
 		
 	var theURL=base+"choicelist.php?cm=shw";
-	theURL+="&ln="+escape(listname);
-	theURL+="&bv="+escape(blankvalue);
+	theURL+="&ln="+encodeURI(listname);
+	theURL+="&bv="+encodeURI(blankvalue);
 	theURL+="&lid="+thelist.id;
 	loadXMLDoc(theURL,null,false);
 	
@@ -52,7 +52,7 @@ function saveList(base,listname){
 
 	//delete current list
 	var theURL=base+"choicelist.php?cm=del";
-	theURL+="&ln="+escape(listname);
+	theURL+="&ln="+encodeURI(listname);
 	loadXMLDoc(theURL,null,false);
 	if (req.responseText!="ok")
 		alert(theURL+"\n\n"+req.responseText);
@@ -60,8 +60,8 @@ function saveList(base,listname){
 	//add each new item in.
 	for(i=0;i<thelist.options.length;i++){
 		theURL=base+"choicelist.php?cm=add";
-		theURL+="&ln="+escape(listname);
-		theURL+="&val="+escape(thelist.options[i].value);			
+		theURL+="&ln="+encodeURI(listname);
+		theURL+="&val="+encodeURI(thelist.options[i].value);			
 		loadXMLDoc(theURL,null,false);
 		if (req.responseText!="ok")
 			alert(theURL+"\n\n"+req.responseText);

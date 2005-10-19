@@ -1,11 +1,11 @@
 <?php
 
 // access level to admin area
-if($_SESSION["userinfo"]["accesslevel"]<91) header("Location: noaccess.html"); else{
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html"); else{
 	global $admintabs;
 	$admintabs=array(
 		array(
-			"name"=>"General",
+			"name"=>"Settings",
 			"href"=>$_SESSION["app_path"]."modules/base/adminsettings.php"
 		),
 		array(

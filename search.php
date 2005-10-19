@@ -20,6 +20,9 @@
 	if(!isset($_POST["advancedsearch"])) $_POST["advancedsearch"]="";
 	if(!isset($_POST["advancedsort"])) $_POST["advancedsort"]="";
 			
+	if(isset($_POST["doprint"])) $_POST["command"]="print";
+	if(isset($_POST["deleteCommand"]))
+		if($_POST["deleteCommand"]) $_POST["command"]=$_POST["deleteCommand"];
 	if($_POST["othercommands"]) $_POST["command"]="other";
 	if($_POST["relationship"]) $_POST["command"]="relate records";
 	if($_POST["advancedsearch"]) $_POST["command"]="advanced search";
@@ -45,7 +48,8 @@
 			// process table specific commands (passed by settings)		
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			eval($_POST["othercommands"]."(\$theids);");
+			eval("\$tempmessage=".$_POST["othercommands"]."(\$theids);");
+			if($tempmessage) $statusmessage=$tempmessage;			
 		break;
 		case "search":
 			$displayTable->recordoffset=0;		
@@ -79,24 +83,11 @@
 			$tempwhere=substr($tempwhere,3);
 			$displayTable->querywhereclause=$tempwhere;
 		break;
-		case "new":
-			// relocate to new screen
-			//=====================================================================================================
-			header("Location: ".$displayTable->thetabledef["addfile"]);
-		break;
-		case $displayTable->thetabledef["deletebutton"]:
+		case "delete":
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			delete_record($theids);
-		break;
-		case "edit":
-			// relocate to edit screen
-			//=====================================================================================================
-			$theids=explode(",",$_POST["theids"]);
-			$connector="?";
-			if (strpos($displayTable->thetabledef["editfile"],"?"))
-				$connector="&";
-			header("Location: ".$displayTable->thetabledef["editfile"].$connector."id=".$theids[0]);
+			$tempmessage=delete_record($theids);
+			if($tempmessage) $statusmessage=$tempmessage;
 		break;
 		case "advanced search":
 			$displayTable->recordoffset=0;		
@@ -175,17 +166,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 <script language="JavaScript" src="common/javascript/common.js" type="text/javascript" ></script>
 <script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
 </head>
-<body>
-<?php include("menu.php");?>
-<?php 
-	$table_class="bodyline";
-	if(isset($has_header)) {
-		display_header();
-		$table_class=$displayTable->isselect?"bodyline":"untabbedbox";
-	}
-	
-?>
-<div class="<?php echo $table_class ?>">
+<body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
 	<div>
 <?PHP  
@@ -204,5 +185,6 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 			$displayTable->saveQueryParameters();
 	?></div>
 </div>
+<?php include("footer.php")?>
 </body>
 </html><?php }// end relate/print if?>

@@ -42,7 +42,7 @@
 			
 		break;
 		case "delete project":
-			deleteProject($_POST["savedprojects"]);
+			deleteProject($_POST["projectid"]);
 			$statusmessage="Project Deleted";
 			$thecommand="showoptions";
 		case "showoptions":
@@ -53,12 +53,12 @@
 			$therecord["id"]="";
 		break;
 		case "load project":
-			$therecord=loadProject($_POST["savedprojects"]);
+			$therecord=loadProject($_POST["projectid"]);
 			$statusmessage="Project Loaded";
 			$thecommand="showoptions";
 		break;
-		case "save project...":
-			$id=saveProject($_POST);
+		case "save project":
+			$id=saveProject(addSlashesToArray($_POST));
 			$statusmessage="Project Saved";
 			$therecord=loadProject($id);
 			$thecommand="showoptions";
@@ -71,35 +71,30 @@
 	}
 	
 	
-?><?PHP $pageTitle="Client/Prospect E-Mail"?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+?><?PHP $pageTitle="Client/Prospect E-Mail"?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="javascript/clientemail.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 	<div class="bodyline">
 		<h1><?php echo $pageTitle?></h1>
-
 		<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="theform" id="theform">
 	<?php if($thecommand=="showoptions") { ?>
-		<input type="hidden" name="pid" id="pid" value="<?php echo $therecord["id"]?>">
-		<div class="box">
-			<div id="showsavedsearches" style="display:none;float:right;width:48%">
+		<input type="hidden" name="pid" id="pid" value="<?php echo $therecord["id"]?>" />
+		<fieldset>
+			<label for="savedsearches" id="showsavedsearches" style="display:none;float:right;width:48%">
 				load e-mail addresses from saved search...<br>
 				<?php showSavedSearches($therecord["emailto"]); ?>
-			</div>
-			<div style="margin-right:49%">
-				to<br>			
-				<select name="therecords" onChange="showSavedSearches(this);" style="width:100%;">
+			</label>
+			<label for="therecords" style="margin-right:49%">
+				to<br />			
+				<select id="therecords" name="therecords" onChange="showSavedSearches(this);" style="width:100%;">
 					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected"?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
 					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected"?>>e-mail addresses from saved search...</option>
 					<option value="all" <?php if ($therecord["emailto"]=="all") echo "selected"?>>e-mail addresses from all records</option>
@@ -112,9 +107,9 @@
 						</script>
 					<?php
 					}?>
-			</div>
-			<div>
-				from<br>
+			</label>
+			<label for="email">
+				from<br />
 				<?PHP 
 				if(is_numeric($therecord["emailfrom"]))
 					$theid=$therecord["emailfrom"];
@@ -131,41 +126,46 @@
 					<?php
 					}
 				?>
-			</div>
-			<div>
-				subject<br>
-				<input type="text" name="subject" id="subject" maxlength="128" style="width:100%" value="<?php echo $therecord["subject"]?>"/>
-			</div>
-		</div>
-		<div class="box" style="margin-bottom:0px;">
+			</label>
+			<label for="subject">
+				subject<br />
+				<input type="text" name="subject" id="subject" maxlength="128" style="width:99%" value="<?php echo htmlQuotes($therecord["subject"])?>"/>
+			</label>
+		</fieldset>
+		<fieldset>
 			<div>
 				add field<br>
 				<?php showClientFields(); ?>
-				<input type="button" name="addfield" id="addfield" value="add field" class="smallButtons" onClick="addField()">
-				<input type="button" name="adddate" id="adddate" value="add today's date" class="smallButtons" onClick="insertAtCursor('body','[[todays_date]]')">
+				<input type="button" name="addfield" id="addfield" value="add field" class="smallButtons" onClick="addField()" />
+				<input type="button" name="adddate" id="adddate" value="add today's date" class="smallButtons" onClick="insertAtCursor('body','[[todays_date]]')" />
 			</div>
 			<div>
-				<textarea class="mono" rows="15" name="body" id="body"><?php echo $therecord["body"]?></textarea>
+				<textarea class="mono" rows="15" name="body" id="body" cols="30" style="width:99%"><?php echo $therecord["body"]?></textarea>
+			</div>
+		</fieldset>
+		
+		<div class="box">
+			<div style="float:left">
+				<input type="button" name="loademail"	id="loademil" value="load project..." class="Buttons" onClick="showSavedProjects();" />
+				<input type="button" name="saveproject"	id="saveproject" value="save project..." class="Buttons" style="margin-right:10px;" onClick="return saveProject();" />
+				<input type="hidden" name="savename"	id="savename" value="" />
+				<input type="hidden" name="projectid"	id="projectid" value="" />
+			</div>
+			<div align="right">
+				<input type="submit" name="command" 	id="sendemail" value="send email" class="Buttons" style="width:90px;" />
+				<input type="submit" name="command" 	id="cancel" value="cancel" class="Buttons" style="width:90px;" />
+				<input type="submit" name="command" 	id="othercommand" value="" class="Buttons" style="display:none;" />				
 			</div>
 		</div>
-		<div align="right">
-			<input type="button" name="loademail"	id="loademil" value="load project..." class="smallButtons" onClick="showSavedProjects();">
-			<input type="submit" name="command"		id="saveproject" value="save project..." class="smallButtons" style="margin-right:10px;" onClick="return saveProject(this.form);">
-			<input type="hidden" name="savename"	id="savename" value="">
-			<input type="submit" name="command" 	id="cance" value="cancel" class="Buttons" style="width:100px;">
-			<input type="submit" name="command" 	id="snedemail" value="send email" class="Buttons" style="width:100px;">
-		</div>
-		<div id="loadedprojects" style="display:none;margin:0px;padding:0px;"><div style="position:absolute;left:32%;top:27%;background-color:black;width:300px;height:100px;opacity: 0.5;">&nbsp;</div>
-		<div class="box" style="position:absolute;left:30%;top:25%;width:300px;height:100px;">
-			<div style="float:right;margin:2px;"><a href="#" onClick="hideSavedProjects();return false;">x</a></div>
-			<div class="large"><strong>Load E-Mail Project</strong></div>
+		
+		<div id="loadedprojects" style="display:none;">
 			<div><?php showSavedProjects()?></div>
 			<div align="right">
+				<input type="button" name="deleteproject" id="deleteproject" value="delete project" class="Buttons" disabled="true" onClick="deleteProject()">
+				<input type="button" name="loadproject" id="loadproject" value="load project" class="Buttons" disabled="true" onClick="loadProject()">
 				<input type="button" name="closeproject" id="closeproject" value="cancel" onClick="hideSavedProjects()" class="Buttons">
-				<input type="submit" name="command" id="deleteproject" value="delete project" class="Buttons">
-				<input type="submit" name="command" id="loadproject" value="load project" class="Buttons">
 			</div>
-		</div></div>
+		</div>
 <?php } elseif($thecommand=="send email"){?>
 		<script language="javascript">		
 			ids=new Array();			
@@ -193,15 +193,15 @@
 			
 			<div style="margin-right:200px;">
 				<div>
-					<TABLE id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
-						<TR>
-							<Th nowrap class="queryheader"><strong>#</strong></Th>
-							<Th nowrap class="queryheader"><strong>Client ID</strong></Th>
-							<Th nowrap class="queryheader" align="left"><strong>Name</strong></Th>
-							<Th nowrap class="queryheader"><strong>E-Mail Address</strong></Th>
-							<Th nowrap width=50% align="right" class="queryheader"><strong>Status</strong></Th>
-						</TR>
-					</TABLE>
+					<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
+						<tr>
+							<th nowrap class="queryheader"><strong>#</strong></th>
+							<th nowrap class="queryheader"><strong>Client ID</strong></th>
+							<th nowrap class="queryheader" align="left"><strong>Name</strong></th>
+							<th nowrap class="queryheader"><strong>E-Mail Address</strong></th>
+							<th nowrap width=50% align="right" class="queryheader"><strong>Status</strong></th>
+						</tr>
+					</table>
 				</div>
 				<div>&nbsp;</div>
 				<div>&nbsp;</div>
@@ -212,5 +212,6 @@
 <?php } ?>
 	</form>
 	</div>
+	<?php include("../../footer.php");?>
 </body>
 </html>

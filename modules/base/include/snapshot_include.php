@@ -1,4 +1,13 @@
 <?php 
+function checkForBMS(){
+	global $dblink;
+
+	$querystatement="SELECT id FROM modules WHERE name=\"bms\" ";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Error Retrieving Module Information: ".mysql_error($dblink)."<br />".$querystatement);
+	if (mysql_num_rows($queryresult)) return true; else return false;
+}
+
 function showSystemMessages(){
 	global $dblink;
 	
@@ -8,31 +17,32 @@ function showSystemMessages(){
 					WHERE type=\"SM\" ORDER BY importance DESC,notes.creationdate";
 					
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	
 	if(mysql_num_rows($queryresult)){ 
 	?>
-	<div>
-		<div class="box">	
-			<h2 style="margin-top:4px;">System Messages</h2>
-			<?php while($therecord=mysql_fetch_array($queryresult)) {
-					$therecord["content"]=str_replace("\n","<br />",$therecord["content"]);
-			?>
-			<div>
-				<a href="/Show Content" onClick="showContent(<?php echo $therecord["id"]?>);return false;">
-				<?php if($therecord["content"]) {?>
-				<img src="../../common/image/left_arrow.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />
-				<?php } else {?>
-				<img src="../../common/image/spacer.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />				
-				<?php }?><em style="font-weight:normal;"><?php echo $therecord["creationdate"]?> <?php echo $therecord["createdby"]?></em> - <?php echo $therecord["subject"]?></a>
-			</div>
+	<div class="box">		
+		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'systemMessages')" width="16" height="16" border="0" /></div>
+		<h2 style="margin-top:4px;">System Messages</h2>
+		<div id="systemMessages" style="margin:0px;padding:0px">
+		<?php while($therecord=mysql_fetch_array($queryresult)) {
+				$therecord["content"]=str_replace("\n","<br />",$therecord["content"]);
+		?>
+		<div>
+			<a href="/Show Content" onClick="showContent(<?php echo $therecord["id"]?>);return false;">
 			<?php if($therecord["content"]) {?>
-			<div class="small SysMessageContent"  id="SMT<?php echo $therecord["id"]?>">
-				<?php echo $therecord["content"]?>
-			</div>			
-			<?php } } ?>
+			<img src="../../common/image/left_arrow.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />
+			<?php } else {?>
+			<img src="../../common/image/spacer.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />				
+			<?php }?><em style="font-weight:normal;"><?php echo $therecord["creationdate"]?> <?php echo $therecord["createdby"]?></em> - <?php echo $therecord["subject"]?></a>
 		</div>
-	</div>		
+		<?php if($therecord["content"]) {?>
+		<div class="small SysMessageContent"  id="SMT<?php echo $therecord["id"]?>">
+			<?php echo $therecord["content"]?>
+		</div>			
+		<?php } } ?>
+		</div>
+	</div>
 	<?php } 
 }
 
@@ -58,7 +68,7 @@ function showTasks($userid,$type="Tasks"){
 
 	
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){ 	
 		while($therecord=mysql_fetch_array($queryresult)) {
 		$className="task";		
@@ -69,10 +79,11 @@ function showTasks($userid,$type="Tasks"){
 		if($therecord["private"]) $className.=" taskPrivate";
 		
 	?>
-	<div id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>"><input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
+	<div id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>">
 		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
-		<a href="notes_addedit.php?id=<?php echo $therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a>
+		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
+		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a>
 		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo getUserName($tid)?>)</em><?php } ?>
 	</div>
 	<?php } } else {
@@ -85,21 +96,26 @@ function showTasks($userid,$type="Tasks"){
 function showTodaysClients($interval="1 DAY"){
 	global $dblink;
 	$querystatement="SELECT id,
-					clients.type,
+					clients.type, clients.city,clients.state,clients.postalcode,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
 					FROM clients
 					WHERE creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") 
 					ORDER BY creationdate DESC LIMIT 0,50
 	";
-
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){
 		while($therecord=mysql_fetch_array($queryresult)){
-			if($therecord["type"]=="client")
-				$therecord["thename"]="<strong>".$therecord["thename"]."</strong>";
+			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
+			$displayType=ucwords(str_replace(".","&nbsp;",$displayType));
+			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
+			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?>
-		<div class="small snapshotRecords"><a href="../bms/clients_addedit.php?id=<?php echo $therecord["id"] ?>"><?php echo $therecord["thename"] ?></a></div>			
+		<a href="<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>" class="small snapshotRecords <?php if($therecord["type"]=="client") echo " important"?>">
+			<div style="float:right;"><?php echo $displayCSZ ?></div>
+			<div style="float:left;"><?php echo $displayType ?></div>
+			<div><?php echo $therecord["thename"] ?></div>
+		</a>
 		<?php }?>
 	<?php
 	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
@@ -111,6 +127,7 @@ function showTodaysOrders($interval="1 DAY"){
 	$querystatement="SELECT invoices.id,
 					invoices.status,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
+					if(invoices.status!=\"VOID\",if(invoices.totalti>=0,concat(\"$\",format(invoices.totalti,2)),concat(\"-$\",format(abs(invoices.totalti),2))),\"<span style='color:blue;'>**VOID**</span>\") as total,
 					if(invoices.status!=\"VOID\",if(invoices.totalti-invoices.amountpaid>=0,concat(\"$\",format((invoices.totalti-invoices.amountpaid),2)),concat(\"-$\",format(abs(invoices.totalti-invoices.amountpaid),2))),\"<span style='color:blue;'>**VOID**</span>\") as amtdue
 					FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 					WHERE invoices.creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") AND (invoices.status=\"Quote\" OR invoices.status=\"Order\")
@@ -118,17 +135,32 @@ function showTodaysOrders($interval="1 DAY"){
 	";
 
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){
-		while($therecord=mysql_fetch_array($queryresult)){
 		?>
-		<div class="small snapshotRecords">
-
-			<div style="float:right"><a href="../bms/invoices_addedit.php?id=<?php echo $therecord["id"] ?>" <?php if ($therecord["status"]=="Order") echo "style=\"font-weight:bold\" ";?>><?php echo $therecord["amtdue"] ?></a></div>
-			<div style="float:left"><a href="../bms/invoices_addedit.php?id=<?php echo $therecord["id"] ?>" <?php if ($therecord["status"]=="Order") echo "style=\"font-weight:bold\" ";?>><?php echo str_pad($therecord["id"],5,"0",STR_PAD_LEFT) ?></a></div>
-			<div style="float:left"><a href="../bms/invoices_addedit.php?id=<?php echo $therecord["id"] ?>" <?php if ($therecord["status"]=="Order") echo "style=\"font-weight:bold\" ";?>><?php echo $therecord["thename"] ?></a></div>
-			<div style="padding:0px;">&nbsp;</div>
-		</div>			
+		<div class="small snapshotHeader">
+			<div style="float:right">&nbsp;&nbsp;Amt. Due</div>
+			<div style="float:right">Total</div>
+			<div style="float:left">ID&nbsp;&nbsp;&nbsp;</div>
+			<div style="float:left">Status&nbsp;&nbsp;&nbsp;</div>
+			<div>Name</div>
+		</div>
+		<?php 
+		while($therecord=mysql_fetch_array($queryresult)){
+			$displayID=str_pad($therecord["id"],5,".",STR_PAD_RIGHT);
+			$displayID=str_replace(".","&nbsp;",$displayID);
+			$displayStatus=str_pad($therecord["status"],8,".",STR_PAD_RIGHT);
+			$displayStatus=str_replace(".","&nbsp;",$displayStatus);
+			$displayAmtDue=str_pad($therecord["amtdue"],10,"*",STR_PAD_LEFT);
+			$displayAmtDue=str_replace("*","&nbsp;",$displayAmtDue);
+		?>
+		<a href="<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>" class="small snapshotRecords" <?php if ($therecord["status"]=="Order") echo "style=\"font-weight:bold\"";?>>
+			<div style="float:right"><?php echo $displayAmtDue?></div>
+			<div style="float:right"><?php echo $therecord["total"] ?></div>
+			<div style="float:left"><?php echo $displayID ?></div>
+			<div style="float:left"><?php echo $displayStatus ?></div>
+			<div><?php echo $therecord["thename"] ?></div>
+		</a>
 		<?php }?>
 	<?php
 	} else {?><div class="small disabledtext">no orders entered in last day</div><?php
@@ -166,7 +198,7 @@ function showSevenDays($userid){
 				}
 				?><tr>
 					<td class="small event" nowrap valign="top"><?php echo $times?></td>
-					<td class="small event" valign="top" width="100%"><a href="notes_addedit.php?id=<?php echo $therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a></td>
+					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a></td>
 				</tr><?php
 			}
 		} else {
@@ -192,7 +224,7 @@ function getRepeatableInTime($fromdate,$todate,$userid){
 	
 	$querystatement="SELECT id,startdate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE repeat=1 AND type=\"EV\" AND (private=0 or (private=1 and createdby=".$userid."))";
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving Repeatable Events: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving Repeatable Events: ".mysql_error($dblink)."<br />".$querystatement);
 	
 	while($therecord=mysql_fetch_array($queryresult)){		
 		$startdate=dateFromSQLDate($therecord["startdate"]);
@@ -300,7 +332,7 @@ function getEventsForDay($day,$userid,$repeatArray){
 				ORDER BY notes.starttime,notes.endtime,importance DESC";
 
 	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving days events: ".mysql_error()."<br />".$querystatement);
+	if(!$queryresult) reportError(300,"Error Retrieving days events: ".mysql_error($dblink)."<br />".$querystatement);
 	
 	return $queryresult;
 }

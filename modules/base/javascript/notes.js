@@ -25,6 +25,9 @@ function initialize(){
 	if(theid.value)
 		thetype.disabled=true;
 	setEnglishDates();	
+	
+	var thetitle=getObjectFromID("subject");
+	if (thetitle.value=="") thetitle.focus();
 }
 
 function changeType(){
@@ -125,6 +128,25 @@ function completedCheck(){
 	}	
 }
 
+function checkEndDate(){
+	var endEnabled=getObjectFromID("endcheck");
+	if(endEnabled.checked){
+		var startdatefield=getObjectFromID("startdate");
+		var enddatefield=getObjectFromID("enddate");
+		var endtimefield=getObjectFromID("endtime");
+		var starttimefield=getObjectFromID("starttime");
+		var thestart=dateFromField(startdatefield.value,starttimefield.value);
+		var theend=dateFromField(enddatefield.value,endtimefield.value);
+		if (thestart>theend){
+			theend=thestart;
+			theend.setHours(theend.getHours()+1);
+			enddatefield.value=englishDate(theend);
+			if(starttimefield.value)
+				endtimefield.value=englishTime(theend);
+		}
+	}
+}
+
 function dateChecked(type){
 	var checkbox=getObjectFromID(type+"check");
 
@@ -154,21 +176,10 @@ function dateChecked(type){
 		
 		if(!thedate.value){
 			var today=new Date();
-			thedate.value=(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear();
-	
-			if (type=="end")
+			if(type=="end")
 				today.setHours(today.getHours()+1);
-			var ampm = " AM";
-			var hours = today.getHours()
-			if(hours==0) hours=12;
-			if (hours>12){
-				var ampm = " PM";
-				hours=hours-12
-			}
-			var minutes=today.getMinutes();
-			if(minutes<10)
-				minutes="0"+minutes.toString();
-			thetime.value=hours+":"+minutes+ampm;
+			thedate.value= englishDate(today);
+			thetime.value= englishTime(today);
 		}
 		thetext.className=null;
 		thedate.removeAttribute("readonly");
@@ -308,17 +319,16 @@ function setEnglishDates(){
 	var byDateText= getObjectFromID("rpmobydate");
 	var byDayText= getObjectFromID("rpmobyday");	
 	var startdate= getObjectFromID("startdate");
-	var thedate= new Date();
-	var themonth= startdate.value.substring(0,startdate.value.indexOf("/"))
+	if(startdate.value=="") return false;
+	var thedate= dateFromField(startdate.value)
 	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")));
-	thedate.setMonth(themonth-1,theday);
 	
 	var dayending="th";
-	if(theday==3) dayending="rd";
-	if(theday==2) dayending="nd";
-	if(theday==1) dayending="st";
+	if(thedate.getDate()==3) dayending="rd";
+	if(thedate.getDate()==2) dayending="nd";
+	if(thedate.getDate()==1) dayending="st";
 	
-	byDateText.innerHTML=theday+dayending;
+	byDateText.innerHTML=thedate.getDate()+dayending;
 	
 	
 	var whichday=Math.floor((thedate.getDate()-1)/7);
@@ -396,18 +406,29 @@ function updateRepeatUntil(){
 		rpUntilDate.className="";
 		rpUntilDateButton.onclick=RUDB;
 		var today=new Date();
-		theday= new Date(today.valueOf()+(1000*60*60*24));
+		var theday= new Date(today.valueOf()+(1000*60*60*24));
 		rpUntilDate.value=(theday.getMonth()+1)+"/"+theday.getDate()+"/"+theday.getFullYear();
 		
 		rpUntilDate.focus()
 	}
 }
 
-function goParent(){
-	parentid=getObjectFromID("parentid");
-	theback=getObjectFromID("thebackurl");
-	theURL="notes_addedit.php?id="+parentid.value;
+function goParent(addeditfile){
+	var parentid=getObjectFromID("parentid");
+	var theback=getObjectFromID("thebackurl");
+	var theURL=addeditfile"?id="+parentid.value;
 	if(theback.value!="")
 		theURL+="&backurl="+theback.value;
 	document.location=theURL;
+}
+
+function sendEmailNotice(base){
+	var content="<div align=\"center\" class=\"important\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Processing...</strong></div>";
+	showModal(content,"Sending Email",300);
+	var theid=getObjectFromID("id");
+	var theURL=base+"modules/base/notes_ajax.php?cm=sendemail&id="+theid.value;
+	loadXMLDoc(theURL,null,false);
+	content=req.responseText+"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
+	var modalcontent=getObjectFromID("modalContent");
+	modalcontent.innerHTML=content;
 }

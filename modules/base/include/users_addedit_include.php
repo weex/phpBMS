@@ -1,4 +1,6 @@
 <?PHP
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
+
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
@@ -51,36 +53,36 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE users SET ";
 	
-	$querystatement.="firstname=\"".$_POST["firstname"]."\", "; 
-	$querystatement.="lastname=\"".$_POST["lastname"]."\", "; 
-	$querystatement.="login=\"".$_POST["login"]."\", "; 
+	$querystatement.="firstname=\"".$variables["firstname"]."\", "; 
+	$querystatement.="lastname=\"".$variables["lastname"]."\", "; 
+	$querystatement.="login=\"".$variables["login"]."\", "; 
 
-	$querystatement.="email=\"".$_POST["email"]."\", "; 
-	$querystatement.="phone=\"".$_POST["phone"]."\", "; 
-	$querystatement.="department=\"".$_POST["department"]."\", "; 
-	$querystatement.="employeenumber=\"".$_POST["employeenumber"]."\", "; 
+	$querystatement.="email=\"".$variables["email"]."\", "; 
+	$querystatement.="phone=\"".$variables["phone"]."\", "; 
+	$querystatement.="department=\"".$variables["department"]."\", "; 
+	$querystatement.="employeenumber=\"".$variables["employeenumber"]."\", "; 
 
-	$querystatement.="accesslevel=".$_POST["accesslevel"].", "; 
-	if(isset($_POST["revoked"])) $querystatement.="revoked=1, "; else $querystatement.="revoked=0, ";
+	$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
+	if(isset($variables["revoked"])) $querystatement.="revoked=1, "; else $querystatement.="revoked=0, ";
 
-	if($_POST["password"]) $querystatement.="password=encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+	if($variables["password"]) $querystatement.="password=encode(\"".$variables["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
 	$thequery = mysql_query($querystatement,$dblink);
 	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
@@ -90,26 +92,26 @@ function insertRecord(){
 						password,accesslevel,revoked,
 	createdby,creationdate,modifiedby) VALUES (";
 	
-	$querystatement.="\"".$_POST["login"]."\", ";
-	$querystatement.="\"".$_POST["lastname"]."\", ";
-	$querystatement.="\"".$_POST["firstname"]."\", ";
+	$querystatement.="\"".$variables["login"]."\", ";
+	$querystatement.="\"".$variables["lastname"]."\", ";
+	$querystatement.="\"".$variables["firstname"]."\", ";
 	
-	$querystatement.="\"".$_POST["email"]."\", "; 
-	$querystatement.="\"".$_POST["phone"]."\", "; 
-	$querystatement.="\"".$_POST["department"]."\", "; 
-	$querystatement.="\"".$_POST["employeenumber"]."\", "; 	
+	$querystatement.="\"".$variables["email"]."\", "; 
+	$querystatement.="\"".$variables["phone"]."\", "; 
+	$querystatement.="\"".$variables["department"]."\", "; 
+	$querystatement.="\"".$variables["employeenumber"]."\", "; 	
 	
-	$querystatement.="encode(\"".$_POST["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
-	$querystatement.=$_POST["accesslevel"].", ";
-	if(isset($_POST["revoked"])) $querystatement.="1, "; else $querystatement.="0, ";
+	$querystatement.="encode(\"".$variables["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+	$querystatement.=$variables["accesslevel"].", ";
+	if(isset($variables["revoked"])) $querystatement.="1, "; else $querystatement.="0, ";
 	
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 	
 	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	if(!$thequery) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -137,7 +139,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -146,7 +148,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

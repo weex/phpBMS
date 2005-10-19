@@ -1,7 +1,5 @@
 <?php
 function loadSettings() {
-	$_SESSION["isloaded"]=true;
-	
 	$settingsfile = fopen("../../../settings.php","r") or die ("Couldn't open Settings File");
 	while( !feof($settingsfile)) {
 		$line=fgets($settingsfile,1024);
@@ -29,7 +27,7 @@ function deleteTables(){
 		if(strpos($deletestatement,";")){
 			$theresult=mysql_query(trim($deletestatement),$dbtlink); 
 			if(!$theresult){
-				echo "<div style=\"font-size:10px;\">".mysql_error()." -- '".$deletestatement."'<br>&nbsp;</div>";
+				echo "<div style=\"font-size:10px;\">".mysql_error($dblink)." -- '".$deletestatement."'<br>&nbsp;</div>";
 				$thereturn="false";
 			}
 			$deletestatement="";
@@ -102,7 +100,7 @@ if($_POST["command"]){
 	if(!isset($dbtlink)){
 		$dbtlink = mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);
 		if (!$dbtlink) die("No Link to MySQL possible");
-		mysql_select_db($_SESSION["mysql_database"]) or die("Couldn't open $database: ".mysql_error());
+		mysql_select_db($_SESSION["mysql_database"]) or die("Couldn't open $database: ".mysql_error($dblink));
 	}
 	
 	
@@ -122,7 +120,7 @@ if($_POST["command"]){
 <body>
 <table width="100%"  border="0" cellpadding="4" cellspacing="0" class="bodyline">
 	<tr>
-		<td ><p class="searchtitle">Uninstall BMS Module</p>
+		<td ><h1>Uninstall BMS Module</h1>
 		    
 		<?php if (!$_POST["command"]){?>
 		<p>Uninstalling the BMS module will <strong>not</strong> delete the module directory module or files form the server, but it will uninstall the entries from the phpBMS applications and drop all the tables that were installed by the module.</p>

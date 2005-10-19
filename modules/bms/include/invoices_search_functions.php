@@ -5,69 +5,88 @@
 
 //mark orders as shipped
 function mark_ashipped($theids){
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	foreach($theids as $theid){
-		$whereclause=$whereclause." or invoices.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$thequery = "update invoices set invoices.shipped=1,invoices.shippeddate=Now() where (".$whereclause.") and (invoices.status!=\"Invoice\" or invoices.status!=\"VOID\");";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as shipped: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$querystatement = "UPDATE invoices SET invoices.shipped=1,invoices.shippeddate=Now() WHERE (".$whereclause.") AND (invoices.status!=\"Invoice\" or invoices.status!=\"VOID\");";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Mark As Shipped: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked as shipped.";
+
+	return $message;
 }
 
 
 //mark as paid in full
 function mark_aspaid($theids){
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or invoices.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	global $dblink;
+
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$thequery = "update invoices set invoices.amountpaid=invoices.totalti where (".$whereclause.") and (invoices.status!=\"Invoice\" or invoices.status!=\"VOID\")";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as paid: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");				
+	$querystatement = "UPDATE invoices SET invoices.amountpaid=invoices.totalti WHERE (".$whereclause.") AND (invoices.status!=\"Invoice\" OR invoices.status!=\"VOID\")";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Mark As Paid In Full: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked as paid in full.";
+
+	return $message;
 }
 
 //mark as invoice
 function mark_asinvoice($theids){
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or invoices.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	global $dblink;
+
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$thequery = "update invoices set invoices.status=\"Invoice\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()) where (".$whereclause.") and (invoices.status!=\"Invoice\" or invoices.status!=\"VOID\") and invoices.amountpaid=invoices.totalti;";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as invoice: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");				
+	$querystatement = "UPDATE invoices SET invoices.status=\"Invoice\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()) WHERE (".$whereclause.") AND (invoices.status!=\"Invoice\" OR invoices.status!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Mark As Paid In Full: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked as invoice.";
+
+	return $message;
 }
 
 //mark as un-invoice
 function mark_asuninvoice($theids){
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or invoices.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	global $dblink;
+
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$thequery = "update invoices set invoices.status=\"Order\"  where (".$whereclause.") and (invoices.status=\"Invoice\");";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't un-mark as invoice: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");				
+	$querystatement = "UPDATE invoices SET invoices.status=\"Order\"  WHERE (".$whereclause.") AND (invoices.status=\"Invoice\");";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Reset Invoice Status: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" reset invoice status.";
+
+	return $message;
 }
 
 //void/delete
 function delete_record($theids){
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or invoices.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$thequery = "update invoices set invoices.status=\"VOID\" where (".$whereclause.") and invoices.status!=\"Invoice\";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$querystatement = "UPDATE invoices SET invoices.status=\"VOID\" WHERE (".$whereclause.") AND invoices.status!=\"Invoice\";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Void: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" voided.";
+
+	return $message;
 }
 
 

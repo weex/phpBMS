@@ -4,16 +4,18 @@
 //=============================================
 
 function mark_asread($theids){
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or notes.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	$whereclause=buildWhereClause($theids,"notes.id");
 	
-	$thequery = "update notes set notes.beenread=1 where (".$whereclause.") and type!=\"System\";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as read: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$querystatement = "UPDATE notes SET notes.completed=1 WHERE (".$whereclause.") AND type!=\"SY\";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Mark as Read/Completed: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked as completed/read.";
+	return $message;
 }
 
 
@@ -22,14 +24,16 @@ function delete_record($theids){
 	global $dblink;
 	
 	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);		
-	$querystatement = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$whereclause.");";
+	$whereclause=buildWhereClause($theids,"notes.id");
+
+	$querystatement = "DELETE FROM notes WHERE (notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$whereclause.") and (notes.repeat!=1);";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(1,"Couldn't Update: ".mysql_error()."<BR>\n SQL STATEMENT [".$querystatement."]");		
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" deleted";
+	return $message;
+
 }
 
 ?>

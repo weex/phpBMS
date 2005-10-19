@@ -4,12 +4,15 @@
 	include("../../include/fields.php");
 
 	include("include/clients_functions.php");
+
+	if(!isset($_GET["id"])) reportError(300,"Passed variable not set (id)");
 	$clientquerystatement="SELECT firstname,lastname,company FROM clients WHERE id=".$_GET["id"];
 	$clientqueryresult=mysql_query($clientquerystatement,$dblink);
+	if(!$clientqueryresult) reportError(300,"Could not retrieve client record ".mysql_error($dblink)." -- ".$clientquerystatement);
 	$clientrecord=mysql_fetch_array($clientqueryresult);
 
-	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m")."/01/".date("Y");
-	if(!isset($_POST["todate"])) $_POST["todate"]=date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y")));
+	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m/d/Y",strtotime("-1 year"));
+	if(!isset($_POST["todate"])) $_POST["todate"]=date("m/d/Y");
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
 
@@ -20,10 +23,11 @@
 			require("report/clients_purchasehistory.php");
 	} else {
 
+	$pageTitle="Client Purchase History: ";
 	if($clientrecord["company"]=="")
-		$pageTitle="Client: ".$clientrecord["firstname"]." ".$clientrecord["lastname"]." : Purchase History";
+		$pageTitle.=$clientrecord["firstname"]." ".$clientrecord["lastname"];
 	else
-		$pageTitle="Client: ".$clientrecord["company"]." : Purchase History";
+		$pageTitle.=$clientrecord["company"];
 	
 	$thestatus="(invoices.status =\"";
 	switch($_POST["status"]){
@@ -61,10 +65,10 @@
 		and invoices.".$searchdate."<=".$mysqltodate."
 		and ".$thestatus."		
 		ORDER BY invoices.invoicedate,invoices.orderdate,invoices.id;";
-	$thequery=mysql_query($querystatement);
-	if(!$thequery) reportError(500,"Could Not Retrieve purchase history<BR>".$querystatement);
+	$queryresult=mysql_query($querystatement);
+	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history<br />".$querystatement);
 
-	$numrows=mysql_num_rows($thequery);
+	$numrows=mysql_num_rows($queryresult);
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -76,7 +80,7 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php client_tabs("Purchase History",$_GET["id"]);?><div class="untabbedbox" style="padding:4px;">
+<?php client_tabs("Purchase History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
 	<h1><?php echo $pageTitle ?></h1>
 
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
@@ -84,7 +88,7 @@
 			<table border=0 cellspacing="0" cellpadding="0">
 				<tr>
 					<td style="padding-right:20px;">
-					   invoice status<br>
+					   status<br />
 					   <select name="status" style="">
 							<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
 							<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
@@ -92,18 +96,18 @@
 					   </select>					
 					</td>
 					<td nowrap>
-					   from<br>
+					   from<br />
 					   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
-						to<br>
+						to<br />
 						<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
-					<td style="padding-left:20px;"><br>
-				       <input name="command" type="submit" value="change timeframe/view" class="smallButtons" style="">					
+					<td style="padding-left:5px;"><br />
+				       <input name="command" type="submit" value="change view" class="smallButtons" style="">					
 					</td>
 					<td width="100%" align="right">
-						<br>
+						<br />
 						<input name="command" type="submit" value="print" class="Buttons" style="width:80px;">	
 					</td>
 				</tr>
@@ -114,8 +118,7 @@
 	<div>
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
-	 <th align="center" nowrap class="queryheader">&nbsp;</td>
-	 <th align="center" nowrap class="queryheader">invc. id</td>
+	 <th align="center" nowrap class="queryheader">id</td>
 	 <th align="center" nowrap class="queryheader">order date </td>
 	 <th align="center" nowrap class="queryheader">invc. date </td>
 	 <th nowrap class="queryheader" align="left">part num. </td>
@@ -123,31 +126,33 @@
 	 <th align="right" nowrap class="queryheader">price</td>
 	 <th align="center" nowrap class="queryheader">qty.</td>
 	 <th align="right" nowrap class="queryheader">ext.</td>
+	 <th align="center" nowrap class="queryheader">&nbsp;</td>
 	</tr>
     <?PHP 
 	$totalextended=0;		
 	$row=1;
-	while ($therecord=mysql_fetch_array($thequery)){
+	while ($therecord=mysql_fetch_array($queryresult)){
 		$row==1? $row++ : $row--;
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
 	<tr class="row<?php echo $row?>">
-	 <td style="padding:0px;margin:0px;" nowrap><input name="goToInvoice" type="button" class="smallButtons" onClick="location.href='invoices_addedit.php?id=<?php echo $therecord["id"]?>'" value="go to <?php echo strtolower($therecord["status"])?>" style="width:80px;"></td>
-	 <td align="center" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
-	 <td nowrap><?PHP echo $therecord["partnumber"]?></td>
-	 <td nowrap><?PHP echo $therecord["partname"]?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="center" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
+		<td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
+		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
+		<td nowrap><?PHP echo $therecord["partname"]?></td>
+		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
+		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+		<td style="padding:0px;margin:0px;" nowrap>
+			<button type="button" class="invisibleButtons" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+		</td>
 	</tr>
     <?PHP }//end while ?>
-    <?PHP  if(!mysql_num_rows($thequery)) {?>
+    <?PHP  if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
-	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
@@ -156,6 +161,7 @@
 	 <td align="right" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
+	 <td align="center" class="queryfooter">&nbsp;</td>
 	</tr>
    </table>	
 	</div></div></body>

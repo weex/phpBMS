@@ -71,7 +71,7 @@ class totalReport{
 		$querystatement.=" count(lineitems.id) as thecount ";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"showGrandTotals - Bad SQL:".mysql_error()."<br><br>".$querystatement);
+		if(!$queryresult) reportError(500,"showGrandTotals - Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		?>
 		<tr>
@@ -99,7 +99,7 @@ class totalReport{
 			$querystatement.=$groupby." AS thegroup, count(lineitems.id) as thecount ";
 			$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$groupby;
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(500,"showGroup - Bad SQL:".mysql_error()."<br><br>".$querystatement);
+			if(!$queryresult) reportError(500,"showGroup - Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)){
 				
@@ -145,7 +145,7 @@ class totalReport{
 						lineitems.id,products.partnumber,products.partname,quantity,lineitems.unitprice,quantity*lineitems.unitprice as extended
 						FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY lineitems.id ";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"showLineItems Bad SQL:".mysql_error()."<br><br>".$querystatement);	
+		if(!$queryresult) reportError(500,"showLineItems Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);	
 				
 		?>
 			<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="invoices" style="padding-right:10px;padding-left:<?php echo ($indent+2)?>px;">
@@ -155,9 +155,9 @@ class totalReport{
 		while($therecord=mysql_fetch_array($queryresult)){			
 			?>
 			<tr>
-				<td class="lineitems" nowrap><?php echo $therecord["invoiceid"]?></TD>
-				<td class="lineitems" nowrap><?php if($therecord["thedate"]) echo $therecord["thedate"]; else echo "&nbsp;"?></TD>
-				<td class="lineitems" width="20%"><?php echo $therecord["thename"]?></TD>
+				<td class="lineitems" nowrap><?php echo $therecord["invoiceid"]?></td>
+				<td class="lineitems" nowrap><?php if($therecord["thedate"]) echo $therecord["thedate"]; else echo "&nbsp;"?></td>
+				<td class="lineitems" width="20%"><?php echo $therecord["thename"]?></td>
 				<td width="60%" class="lineitems" nowrap><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
 				<td width="9%" class="lineitems" align="right" nowrap><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
 				<td width="8%" class="lineitems" align="center" nowrap><?php echo number_format($therecord["quantity"],2)?></td>
@@ -234,13 +234,10 @@ TH {
 if(isset($_POST["command"])){
 	$myreport= new totalReport();
 	$myreport->initialize($_POST);
-//	echo "<PRE>";
-//	var_dump($_POST);
-//	echo "</PRE>";
 	
 	$myreport->showReport();
 } else {
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<title>Line Item Totals</title>
@@ -302,7 +299,7 @@ if(isset($_POST["command"])){
 
 <body>
 <div class="bodyline" style="width:550px;padding:4px;">
-	<div class="searchtitle">Line Item Total Options</div>	
+	<h1>Line Item Total Options</h1>	
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="return submitForm(this)">
 		<div>
 			report title<br>			
@@ -405,7 +402,7 @@ if(isset($_POST["command"])){
 			<input type="hidden" name="showlineitems" value="">
 		</div>
 
-		<div align="right" class="recordbottom">
+		<div align="right" class="box">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
 		</div>

@@ -7,6 +7,18 @@ function initializePage(){
 	
 	SDBOC=shippeddateB.onclick;
 	setShipped();
+	calculateTotal();
+	var theid=getObjectFromID("id");
+	var clientid=getObjectFromID("clientid");
+	if(clientid.value!=""){
+		if(theid.value==""){
+			clientid.onchange();
+		}
+	}
+	else {
+		var displayClient=getObjectFromID("ds-clientid");
+		displayClient.focus();
+	}
 }
 
 // These function are used when redefining the onChange property of 
@@ -27,18 +39,37 @@ function getPercentage(){
 		thevalue = response.getElementsByTagName('value')[0].firstChild.data;
 		
 		theitem=getObjectFromID("taxpercentage");
-		theitem.value=thevalue;
-		theitem=getObjectFromID("displaytaxpercentage");
 		theitem.value=thevalue+"%";
 	} else {
 		theitem=getObjectFromID("taxpercentage");
-		theitem.value="0";
-		theitem=getObjectFromID("displaytaxpercentage");
-		theitem.value="0%";
+		theitem.value="";
 	}
-	theitem=getObjectFromID("tax");
-	theitem.onchange();
+	calculateTotal();
 	return true;
+}
+
+function changeTaxPercentage(){
+	var thetaxareaid=getObjectFromID("taxareaid");
+	var taxareaidDisplay=getObjectFromID("ds-taxareaid");
+	thetaxareaid.value="";
+	taxareaidDisplay.value="";
+	autofill["taxareaid"]["ch"]="";
+	autofill["taxareaid"]["uh"]="";
+	autofill["taxareaid"]["vl"]="";	
+	calculateTotal();
+}
+
+function changeTaxAmount(){
+	var taxpercent=getObjectFromID("taxpercentage");
+	var thetaxareaid=getObjectFromID("taxareaid");
+	var taxareaidDisplay=getObjectFromID("ds-taxareaid");
+	taxpercent.value="";
+	thetaxareaid.value="";
+	taxareaidDisplay.value="";
+	autofill["taxareaid"]["ch"]="";
+	autofill["taxareaid"]["uh"]="";
+	autofill["taxareaid"]["vl"]="";	
+	calculateTotal();
 }
 
 // This function is used when redefining the onChange property of 
@@ -95,7 +126,7 @@ function estimateShipping(){
 	if(postalcode.value!="" && shippingmethod.value!="") {
 		var theurl=base+"invoiceestimateshipping.php?id="+theid.value;
 		var theurl=theurl+"&postalcodeto="+postalcode.value;
-		var theurl=theurl+"&shipvia="+escape(shippingmethod.value);
+		var theurl=theurl+"&shipvia="+encodeURI(shippingmethod.value);
 
 		loadXMLDoc(theurl,null,false);
 		response = req.responseXML.documentElement;
@@ -130,12 +161,18 @@ function checkStatus(theitem){
 //this function opens a page in a new window that will lookup and populate the add line item info based on a choosen partnumber
 function populateLineItem(){
 	if (this.value!=""){
-		var mainform=parent.document.forms["record"];
+		var clientid=getObjectFromID("clientid")
+		var partnumber=getObjectFromID("partnumber");
+		var partnumberDS=getObjectFromID("ds-partnumber");
+		var partname=getObjectFromID("partname");
+		var partnameDS=getObjectFromID("ds-partname");
+		var tempitem;
+		
 		var base=document.URL;
 		base=base.substring(0,base.indexOf("invoices_addedit.php"));
 
 		var theurl=base+"invoicelineitemlookup.php?id="+this.value;
-		var theurl=theurl+"&cid="+mainform["clientid"].value;
+		theurl=theurl+"&cid="+clientid.value;
 		
 		loadXMLDoc(theurl,null,false);
 		response = req.responseXML.documentElement;		
@@ -150,26 +187,26 @@ function populateLineItem(){
 				message+=	"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
 
 				
-				this.form["partnumber"].value="";
-				this.form["ds-partnumber"].value="";
-				this.form["ds-partname"].value="";
-				this.form["partname"].value="";
+				partnumber.value="";
+				partnumberDS.value="";
+				partname.value="";
+				partnameDS.value="";
 				var thediv1=getObjectFromID("dd-partnumber");
 				var thediv2=getObjectFromID("dd-partname");
 				thediv1.style.display="none";
 				thediv2.style.display="none";
-				this.form["ds-partnumber"].focus();
+				partnameDS.focus();
 				showModal(message,"Prerequisite Not Met",400,10);
 
 			} else {
 				for(i=0;i<response.getElementsByTagName('field').length;i++){
-					theitem=this.form[response.getElementsByTagName('field')[i].firstChild.data];
-					if(!theitem) alert(response.getElementsByTagName('field')[i].firstChild.data);
+					tempitem=getObjectFromID(response.getElementsByTagName('field')[i].firstChild.data);
+					if(!tempitem) alert("Field not found: "+response.getElementsByTagName('field')[i].firstChild.data);
 					thevalue="";
 					if(response.getElementsByTagName('value')[i].firstChild)
 						thevalue=response.getElementsByTagName('value')[i].firstChild.data;
-					theitem.value=thevalue;
-					if(theitem.onchange && theitem.name=="price") theitem.onchange();
+					tempitem.value=thevalue;
+					if(tempitem.onchange && tempitem.name=="price") tempitem.onchange();
 				}
 		
 				if(this.form["memo"]) this.form["memo"].focus();
@@ -181,16 +218,202 @@ function populateLineItem(){
 
 
 //This function set the line item to be deleted
-function deleteLine(theid){
-	var deleteid=getObjectFromID("deleteid");
-	var thecommand=getObjectFromID("command");
-	deleteid.value=theid;
-	thecommand.value="delete";
+function deleteLine(thebutton){
+	var thetd=thebutton.parentNode;
+	var thetr=thetd.parentNode;
+
+	var attribs;
+	if(thetd.firstChild.innerHTML)
+		attribs= thetd.firstChild.innerHTML.split("[//]",6);
+	else
+		attribs= thetd.childNodes[1].innerHTML.split("[//]",6);
+	
+	var unitcost= attribs[1];
+	var quantity= attribs[4];
+	var unitprice= attribs[3];
+	var unitweight= attribs[2];	
+
+	//Update Total Cost
+	var totalcost=getObjectFromID("totalcost");
+	totalcost.value=Math.round((parseFloat(totalcost.value)-(parseFloat(unitcost)*parseFloat(quantity)))*100)/100;
+	
+	//Update Total Weight
+	var totalweight=getObjectFromID("totalweight");
+	totalweight.value=Math.round((parseFloat(totalweight.value)-(parseFloat(unitweight)*parseFloat(quantity)))*1000)/1000;
+	
+	//Update Totals
+	var totaltni=getObjectFromID("totaltni");
+	totaltni.value=dollartoNumber(totaltni.value)-(unitprice*quantity);
+	calculateTotal();
+
+	// Remove The Line
+	var thetbody=thetr.parentNode;
+	thetbody.removeChild(thetr);
+	
+	var lineitemschanged=getObjectFromID("lineitemschanged");
+	lineitemschanged.value=1;
 }
 
-function addLine(theid){
-	var thecommand=getObjectFromID("command");
-	thecommand.value="add";
+var addlinenum=0;
+function addLine(thetd){
+	var thetable=thetd.parentNode.parentNode;
+	var thelastrow=getObjectFromID("LITotals")
+	
+	var productid=getObjectFromID("partnumber");
+	var partnumber=getObjectFromID("ds-partnumber");
+	var partname=getObjectFromID("ds-partname");
+	var memo=getObjectFromID("memo");
+	var unitweight=getObjectFromID("unitweight");
+	var unitcost=getObjectFromID("unitcost");
+	var unitprice=getObjectFromID("price");
+	var quantity=getObjectFromID("qty");
+	var extended=getObjectFromID("extended");
+	var imgPath=getObjectFromID("imgpath");
+
+	if(unitcost.value=="")
+		unitcost.value="0";
+	if(unitweight.value=="")
+		unitweight.value="0";
+	
+	var sep=getObjectFromID("LISep");
+	if(!sep){
+		var thetr=document.createElement("tr");
+		thetr.id="LISep";
+		var temptd=document.createElement("td");
+		temptd.setAttribute("colSpan",7);
+		temptd.className="dottedline lineitemsRight lineitemsLeft";
+		temptd.style.fontSize="1px";
+		temptd.style.padding="0px";
+		temptd.innerHTML="&nbsp;";
+		thetr.appendChild(temptd);
+		thetable.insertBefore(thetr,thelastrow);	
+	}
+	//Create the line
+	var thetr=document.createElement("tr");
+	thetr.id="LINN"+addlinenum++;
+	thetr.className="lineitems";
+	
+	temptd=document.createElement("td");
+	temptd.setAttribute("nowrap","nowrap");
+	temptd.setAttribute("valign","top");
+	temptd.className="small lineitemsLeft important";
+	temptd.innerHTML=(partnumber.value=="")?"&nbsp;":partnumber.value;
+	thetr.appendChild(temptd);
+	
+	temptd=document.createElement("td");
+	temptd.setAttribute("valign","top");
+	temptd.className="small important";
+	temptd.innerHTML=(partname.value=="")?"&nbsp;":partname.value;
+	thetr.appendChild(temptd);
+
+	temptd=document.createElement("td");
+	temptd.setAttribute("valign","top");
+	temptd.className="tiny";
+	temptd.innerHTML=(memo.value=="")?"&nbsp;":memo.value;
+	thetr.appendChild(temptd);
+
+	temptd=document.createElement("td");
+	temptd.setAttribute("valign","top");
+	temptd.setAttribute("align","right");
+	temptd.className="small";
+	temptd.innerHTML=(unitprice.value=="")?"$0.00":unitprice.value;
+	thetr.appendChild(temptd);
+
+	temptd=document.createElement("td");
+	temptd.setAttribute("valign","top");
+	temptd.setAttribute("align","center");
+	temptd.className="small";
+	temptd.innerHTML=(quantity.value=="")?"0":quantity.value;
+	thetr.appendChild(temptd);
+
+	temptd=document.createElement("td");
+	temptd.setAttribute("valign","top");
+	temptd.setAttribute("align","right");
+	temptd.className="small";
+	temptd.innerHTML=(extended.value=="")?"$0.00":extended.value;
+	thetr.appendChild(temptd);
+
+	temptd=document.createElement("td");
+	temptd.setAttribute("align","center");
+	temptd.style.padding="0px";
+	var content="<span style=\"display:none;\">";
+	content+=productid.value+"[//]";
+	content+=unitcost.value+"[//]";
+	content+=unitweight.value+"[//]";
+	content+=dollartoNumber(unitprice.value)+"[//]";
+	content+=quantity.value+"[//]";
+	content+=memo.value+"</span>";
+	content+="<button type=\"button\" class=\"invisibleButtons\" onClick=\"return deleteLine(this)\"><img src=\""+imgPath.value+"/button-minus.png\" align=\"middle\" alt=\"-\" width=\"16\" height=\"16\" border=\"0\" /></button>";
+	temptd.innerHTML=content
+	thetr.appendChild(temptd);
+
+	thetable.insertBefore(thetr,thelastrow);	
+	
+	//Update Total Cost
+	var totalcost=getObjectFromID("totalcost");
+	totalcost.value=Math.round((parseFloat(totalcost.value)+(parseFloat(unitcost.value)*parseFloat(quantity.value)))*100)/100;
+	
+	//Update Total Weight
+	var totalweight=getObjectFromID("totalweight");
+	totalweight.value=Math.round((parseFloat(totalweight.value)+(parseFloat(unitweight.value)*parseFloat(quantity.value)))*1000)/1000;
+	
+	//Update Totals
+	var totaltni=getObjectFromID("totaltni");
+	totaltni.value=dollartoNumber(totaltni.value)+dollartoNumber(extended.value);
+	calculateTotal();
+	
+	//clear line
+	productid.value="";
+	partnumber.value="";
+	partname.value="";
+	memo.value="";
+	unitweight.value=0
+	unitcost.value=0
+	unitprice.value="$0.00"
+	quantity.value="1";
+	extended.value="$0.00"
+	autofill["partname"]["ch"]="";
+	autofill["partname"]["uh"]="";
+	autofill["partname"]["vl"]="";	
+	autofill["partnumber"]["ch"]="";
+	autofill["partnumber"]["uh"]="";
+	autofill["partnumber"]["vl"]="";
+
+	var lineitemschanged=getObjectFromID("lineitemschanged");
+	lineitemschanged.value=1;	
+}
+
+function setLineItems(){
+	// if lineitemschanged=1
+	var changed=getObjectFromID("lineitemschanged");
+	var lineitems=getObjectFromID("thelineitems");
+	if(changed.value==1){
+		// get table (tbody)
+		var thetable=getObjectFromID("LIHeader").parentNode;
+		//for each line that starts with LIN  get the last childs first child
+		var therow;
+		var j;
+		var attribs;
+		lineitems.value="";
+		for(var i=0;i<thetable.childNodes.length;i++){
+			if(thetable.childNodes[i].tagName){
+				therow=thetable.childNodes[i];
+				if(therow.id.substring(0,3)=="LIN"){
+					for(j=0;j<therow.childNodes.length;j++){
+						if(therow.childNodes[j].className==""){
+							// set text area "thelineitems" field contents to variable
+							if(therow.childNodes[j].firstChild.innerHTML)
+								lineitems.value+=therow.childNodes[j].firstChild.innerHTML+"{[]}";
+							else
+								lineitems.value+=therow.childNodes[j].childNodes[1].innerHTML+"{[]}";
+						}
+					}					
+				}
+			}
+		}
+		if(lineitems.value.length>4)
+			lineitems.value=lineitems.value.substring(0,lineitems.value.length-4);
+	}
 }
 
 function checkShipping(){
@@ -201,12 +424,13 @@ function checkShipping(){
 	if (cancelclick)
 		if (cancelclick.value!=0)
 			return true;
-
-	if(thecheckbox.checked && !thecheckbox.disabled && !thedate.value){
-			alert("A shipping date must be filled in \n if the shipped status is set.");
-			return false;
-	}else
-		return true;
+	if(thecheckbox){
+		if(thecheckbox.checked && !thecheckbox.disabled && !thedate.value){
+				alert("A shipping date must be filled in \n if the shipped status is set.");
+				return false;
+		}
+	}
+	return true;
 }
 
 //this function sets the default shipped date information for shipping appropriately
@@ -251,33 +475,39 @@ function calculatePaidDue(){
 
 //this function adds all the tax,shipping,subtotal, and totaling stuff
 function calculateTotal(){
-	var subtotal=document.forms["record"]["totaltni"].value;
-	var shipping=document.forms["record"]["shipping"].value;
-	var taxpercentage=document.forms["record"]["taxpercentage"].value/100;
-	var tax=document.forms["record"]["tax"].value;
+	var subtotal=getObjectFromID("totaltni");
+	var shipping=getObjectFromID("shipping"); 
+	var taxpercentage=getObjectFromID("taxpercentage");
+	var tax=getObjectFromID("tax");
+	var totalti=getObjectFromID("totalti");
 	
 	//first calculate and reformat subtotal
-	var numsubtotal=dollartoNumber(subtotal);
-	subtotal=formatDollar(numsubtotal);
-	document.forms["record"]["totaltni"].value=subtotal;
+	var numsubtotal=dollartoNumber(subtotal.value);
+	var subtotalValue=formatDollar(numsubtotal);
+	subtotal.value=subtotalValue;
 
 	//next calculate and reformat shipping
 	var numshipping=dollartoNumber(shipping);
-	shipping=formatDollar(numshipping);
-	document.forms["record"]["shipping"].value=shipping;
+	shippingValue=formatDollar(numshipping);
+	shipping.value=shippingValue;
 
 	//next calculate and reformat tax
-	if (taxpercentage!=0)
-		var numtax=numsubtotal*taxpercentage;
-	else 
-		var numtax=dollartoNumber(tax);
-	tax=formatDollar(numtax);
-	document.forms["record"]["tax"].value=tax;
+	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
+	if (taxpercentagevalue!=0)
+		var numtax=numsubtotal*(taxpercentagevalue/100);
+	else {
+		var numtax=dollartoNumber(tax.value);
+		taxpercentagevalue=(numtax/numsubtotal)*100;
+		taxpercentage.value=taxpercentagevalue;
+		validatePercentage(taxpercentage,5);
+	}
+	taxValue=formatDollar(numtax);
+	tax.value=taxValue;
 
 	//last calculate and format the grand total
 	var thetotal=numsubtotal+numshipping+numtax;
 	thetotal=formatDollar(thetotal);
-	document.forms["record"]["totalti"].value=thetotal;
+	totalti.value=thetotal;
 	
 	calculatePaidDue();
 }
@@ -390,14 +620,16 @@ function showPaymentOptions(){
 	}//end switch
 }
 
-function viewClient(theform){
-	if (theform["clientid"].value!="" &&  theform["clientid"].value!=0){
-		location.href="clients_addedit.php?id="+theform["clientid"].value+"&invoiceid="+theform["id"].value;
+function viewClient(addeditfile){
+	var theclient=getObjectFromID("clientid");
+	var theid=getObjectFromID("id");
+	if (theclient.value!="" &&  theclient.value!=0){
+		location.href=addeditfile+"?id="+theclient.value+"&invoiceid="+theid.value;
 	}
 }
 
 function doPrint(id){
-		location.href=("../../print.php?backurl="+escape("modules/bms/invoices_addedit.php?id="+id));
+		location.href=("../../print.php?backurl="+encodeURI(document.location));
 }
 
 function disableSaves(theform){

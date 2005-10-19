@@ -11,35 +11,41 @@ function delete_record($theids){
 	$whereclause="";
 	$linkedwhereclause="";
 	$relationshipswhereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or tabledefs.id=".$theid;
-		$linkedwhereclause.=" or tabledefid=".$theid;
-		$relationshipswhereclause.=" or fromtableid=".$theid. " or totableid=".$theid;
-	}
-	$whereclause=substr($whereclause,3);		
-	$linkedwhereclause=substr($linkedwhereclause,3);		
-	$relationshipswhereclause=substr($relationshipswhereclause,3);		
+	$whereclause=buildWhereClause($theids,"tabledefs.id");
+	$linkedwhereclause=buildWhereClause($theids,"tabledefid");
+	$relationshipswhereclause=buildWhereClause($theids,"fromtableid")." or ".buildWhereClause($theids,"totableid");
+	
+	$querystatement = "DELETE FROM tablecolumns WHERE ".$linkedwhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete Columns: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM tabledefs WHERE ".$whereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM tablefindoptions WHERE ".$linkedwhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete Find Options: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM tablecolumns WHERE ".$linkedwhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM tableoptions WHERE ".$linkedwhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete Options: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM tablefindoptions WHERE ".$linkedwhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM tablesearchablefields WHERE ".$linkedwhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete Searchable Fields: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM tableoptions WHERE ".$linkedwhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM usersearches WHERE ".$linkedwhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete User Searches: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM tablesearchablefields WHERE ".$linkedwhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM relationships WHERE ".$relationshipswhereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete Relationships: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM usersearches WHERE ".$linkedwhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$querystatement = "DELETE FROM tabledefs WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
 
-	$thequery = "DELETE FROM relationships WHERE ".$relationshipswhereclause.";";
-	$theresult = mysql_query($thequery,$dblink) or die ("Couldn't Delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" deleted.";
+	return $message;	
 }
 
 //Need to set this so that we can include tabs in the header for this one.
@@ -47,7 +53,7 @@ global $has_header;
 $has_header=true;
 function display_header(){
 	admin_tabs("Tables");
-	echo "<table width='100%' cellspacing=0 cellpadding=0 class='untabbedbox' style='border-bottom:0px;padding-top:3px;'><tr><td>";
+	echo "<table width='100%' cellspacing=0 cellpadding=0 class='bodyline' style='border-bottom:0px;margin-bottom:0px;background-image:none;padding-top:3px;-moz-border-radius-bottomleft:0px;-moz-border-radius-bottomright:0px;'><tr><td>";
 	admin_table_tabs("Table Definitions");
 	echo "</td></tr></table>";	
 };

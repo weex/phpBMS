@@ -4,17 +4,17 @@
 //=============================================
 //change status to discontiuned
 function delete_record($theids){
-	global $session_productinfo;
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	foreach($theids as $theid){
-		$whereclause=$whereclause." or products.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
+	$whereclause=buildWhereClause($theids,"products.id");
 	
-	$thequery = "update products set status=\"DISCONTINUED\" where ".$whereclause.";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't delete: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$querystatement = "UPDATE products SET status=\"DISCONTINUED\" WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked as discontinued.";
+	return $message;
 }
-
-
 ?>

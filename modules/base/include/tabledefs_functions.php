@@ -1,6 +1,6 @@
 <?php
 // access level to admin area
-if($_SESSION["userinfo"]["accesslevel"]<91)
+if($_SESSION["userinfo"]["accesslevel"]<90)
 	header("Location: noaccess.html");
 
 //format tabs for user admin.

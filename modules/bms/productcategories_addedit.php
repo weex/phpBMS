@@ -16,38 +16,42 @@
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 <div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-	<div style="float:right;width:200px;">
-			<?php include("../../include/savecancel.php"); ?>
-			<div class="box">
-				<div>
-					id<br>
-					<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%">
-				</div>
-				<div style="margin-top:10px;"><?PHP field_checkbox("webenabled",$therecord["webenabled"])?>web enabled</div>
-				<div>
-					web display name<br>
-					<input name="webdisplayname" type="text" value="<?php echo $therecord["webdisplayname"]?>" size="22" maxlength="64" style="width:100%">
-				</div>
-			</div>
+	<div style="float:right;width:160px;">
+		  <?php showSaveCancel(1); ?>
 	</div>
-	<div style="margin-right:203px;">
+	<div style="margin-right:160px;">
 		<h1><?php echo $pageTitle ?></h1>
-		<div>
-			name<br>
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:100%")); ?>
-		</div>
-		<div>
-			description<br>
-			<textarea name="description" cols="32" rows="3" id="description" style="width:100%"><?PHP echo $therecord["description"]?></textarea>			
-		</div>
 	</div>
+	
+	<fieldset style="clear:both;float:right;width:150px;">
+		<legend>attributes</legend>
+		<label for="id">
+			id<br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" style="">
+		</label>
+		<label for="webenabled" style="text-align:center;margin-top:15px;"><?PHP field_checkbox("webenabled",$therecord["webenabled"])?>web enabled</label>
+		<label for="webdisplayname" style="margin-top:5px;">
+			web display name<br />
+			<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="22" maxlength="64" style="">
+		</label>
+	</fieldset>
+	<div style="margin:0px;margin-right:155px;padding:0px;">
+		<fieldset>
+			<legend><label for="name">name</label></legend>
+			<div style="padding-top:0px;">
+				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important","style"=>"width:98%")); ?>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend><label for="description">description</label></legend>
+			<div style="padding-top:0px;"><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?PHP echo $therecord["description"]?></textarea></div>
+		</fieldset>
+		</div>
 	<?php include("../../include/createmodifiedby.php"); ?>
 	</form>
 </div>
+<?php include("../../footer.php")?>
 </body>
 </html>

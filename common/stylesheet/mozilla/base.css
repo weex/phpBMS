@@ -1,4 +1,4 @@
-BODY { background: white url(back.gif); background-attachment:fixed;
+BODY { background: white url(back.png); background-attachment:fixed;
 	background-position:top;
 	background-repeat:repeat-x;
 	margin:15px;
@@ -18,6 +18,7 @@ INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; backgro
 INPUT[disabled]:Active{border:1px outset black;}
 FORM{margin:0px;padding:0px;}
 DIV {padding:3px;}
+UL{margin:5px;padding-left:20px;}
 
 A {	color : #455372; font-weight:bold; text-decoration:none;}
 A:Hover { text-decoration:underline;}
@@ -31,15 +32,19 @@ A:Hover { text-decoration:underline;}
 .radiochecks ,.radiochecks:Focus{background-color:white;color:black; border:0;}
 
 .Buttons,.smallButtons {
+	background-image:url(button-backs.png);
+	background-position:0px 0px;
 	padding:2px;
 	font-size:11px;
+	
 	background-color:#617389;color:#FFFFFF; font-size: 11px;  font-weight:bold; 
 	border: 1px outset #617389;
 	cursor:pointer;
 }
 .Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
-	border:1px outset #F99809;
-	background-color:#617389;
+	border:1px solid #F99809;
+	background-position:0px 20px;
+	background-color:#697388;
 }
 .Buttons[disabled]:Hover,.smallButtons[disabled]:Hover{
 	/* first three entries are from disabled, the last are from standard buttons */
@@ -50,8 +55,7 @@ A:Hover { text-decoration:underline;}
 	border-left-color:#999999;
 }
 .Buttons:Active,.smallButtons:Active{
-	background-color:#747F96; 
-	border: 1px inset black; 
+	border: 1px inset #617389; 
 }
 .invisibleButtons,.invisibleTextField{
 border-style:none;
@@ -59,9 +63,9 @@ background-color:transparent;
 }
 .invisibleButtons{
 padding:0px;
-text-size:9px;
+font-size:9px;
+border-width:0px;
 color:#0B63A2;
-font-weight:bold;
 vertical-align:middle;
 cursor: pointer; 
 cursor: hand;
@@ -77,21 +81,24 @@ cursor: hand;
 .large{font-size : 16px;}
 .small { font-size : 11px;}
 .tiny { font-size : 10px}
-.mono {font-family:'Courier New', Courier, mono;width:100%;font-size:12px;}
+.mono {font-family:'Courier New', Courier, mono;}
 
-.standout	{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
+.standout,#statusmessage{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
+
 .important {font-weight:bold;}
 
-H1, .searchtitle, .addedittitle{
+H1 {
 	font-family: Arial, Helvitica, sans-serif;
 	border-bottom: 1px solid #ccc;
 	font-size:20px;
 	margin:3px;
-	padding-left:2px;
+	padding-left:24px;
 	margin-bottom:8px;
 	font-weight:normal;
+	background-image:url(h1graphic.png);
+	background-position:4px 4px;
+	background-repeat:no-repeat;
 }
-H1, .addedittitle{}
 LEGEND,H2{	
 	font-weight:bold;
 	font-size:15px; 
@@ -109,31 +116,55 @@ H2{
 	margin-top:30px; 
 	margin-bottom:5px;
 }
+H3{
+	font-size:14px;
+	font-weight:bold;
+	margin:2px;
+	margin-top:10px;
+    font-family: Arial, Helvitica, sans-serif;
+}
+
+#footer{
+	margin-top:-3px;
+	padding-left:6px;
+	padding-right:6px;
+	font-size:10px;
+	padding-top:0px;
+}
+#footer div{padding:0px;margin:0px;}
 
 /* ============================================================================== */
 /* Boxes                                                                          */
 /* ============================================================================== */
 LABEL{display:block;padding:2px;}
-FIELDSET,.bodyline,.untabbedbox,.tabselected,.tabs,.tabbottoms,.box,.recordbottom,#modalBox{ 
+FIELDSET,.bodyline,.tabselected,.tabs,.tabbottoms,.box,#modalBox{ 
 	-moz-border-radius:8px;
 	border: 1px #E4ECEC outset; 
 	padding:0px;
 	margin-bottom:5px;
 }
-.bodyline,.untabbedbox,.tabselected,#modalBox{
+.bodyline,.tabselected,#modalBox{
 	background-color: #E4ECEC; 
+	background-image:url(bodyline.png);
+	background-repeat:repeat-x;
+	background-position:bottom left
 }
-.untabbedbox,.bodyline{padding:2px;}
-.untabbedbox{border-top:0px;}
-FIELDSET,.box,.recordbottom{
+.tabselected{
+background-image:none;
+}
+
+.bodyline{display:inline-block; padding:4px;margin-top:0px;}
+
+FIELDSET,.box{
+	border-color:#455372;
 	border-style:inset;
-	border-width:2px;
+	border-width:1px;
 	margin:3px;
 	margin-bottom:7px;
-	padding:3px; 	
-	
+	padding:3px; 		
 }
-.box,.recordbottom{background-color:#EFF9F9;}
+FIELDSET{padding-top:0px}
+.box{background-color:#EFF9F9;}
 
 /* ============================================================================== */
 /* Tabs                                                                       */
@@ -167,6 +198,33 @@ FIELDSET,.box,.recordbottom{
 	border-right-width:0px; 
 }
 
+.searchtabs{
+	height:22px;
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom:0px;
+	padding-bottom:0px;
+}
+.searchtabs a {
+	display:block;
+	float:left;
+	padding:3px;
+	font-size:11px;
+	border-style:none;
+	background-color:#CCCCCC; 
+	color:#455372;
+	border: 2px solid #CCCCCC;
+	border-bottom-width:0px;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	margin-right:2px;
+
+}
+.searchtabsSel a{
+background-color:#EFF9F9;
+border:1px #455372 inset;
+border-bottom-width:0px;
+}
 
 /* ============================================================================== */
 /* Query Results                                                                  */
@@ -186,7 +244,7 @@ FIELDSET,.box,.recordbottom{
 .buttonSection{border-top:0;  padding-top:0; padding-bottom:1px; 	-moz-border-radius:0px;
 }
 
-.recordbottom{margin-bottom:3px;}
+.box{margin-bottom:3px;}
 .norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; }
 
 .querytable{ 
@@ -236,6 +294,20 @@ FIELDSET,.box,.recordbottom{
 .qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
 
 
+.lineitems td{
+	background-color:white;
+	padding-left:2px;
+	padding-right:2px;
+	border-right:1px solid #CCCCCC;
+	border-bottom:1px solid #CCCCCC;
+}
+
+.lineitemsRight{ border-right:1px solid #CCCCCC;}
+.lineitemsLeft{ border-left:1px solid #CCCCCC;}
+.lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
+
+
+
 /* ============================================================================== */
 /* Auto Fill                                                                      */
 /* ============================================================================== */
@@ -262,60 +334,95 @@ FIELDSET,.box,.recordbottom{
 /* Choice List                                                                    */
 /* ============================================================================== */
 	.choiceListBlank{ font-style:italic;}
-	.choiceListModify {background-color:#999999; font-weight:bold;}
+	.choiceListModify{ background-color:#999999; font-weight:bold;}
+
+/* ============================================================================== */
+/* Quick View                                                                     */
+/* ============================================================================== */
+	.selectListItems{ border-bottom: 1px solid #666666; background-color:white;}
+	.Order{ font-weight:bold;}
+	.Quote{ font-style:italic;}
+	.Invoice{ background-color:#EEEEEE;}
+	.VOID{ color:blue; background-color:#EEEEEE;}
 
 /* ============================================================================== */
 /* Menu Navigation                                                                */
 /* ============================================================================== */
-	#appname{
-		float:left;
-		padding-top:4px;
-		font-weight:bold;
-		font-size:18px;
+	#statusmessage{
+		background-image:url(statusmessage.png);
+		background-repeat:no-repeat;
+		background-position:7px 5px;
+		margin:15px;
+		margin-bottom:15px;
+		margin-top:-15px;
+		padding-left:30px;
+		padding-bottom:6px;
+		vertical-align:middle;
+		-moz-border-radius-bottomleft:8px;
+		-moz-border-radius-bottomright:8px;
+		
 	}
 	
 	#menu{
-		padding:3px;
-		margin-bottom:5px;
+		padding:0px;
+		margin-bottom:15px;
 		background: transparent url(menu.png);
 		color:white;
 		border-bottom-color:#666666;
+		z-index:203;
 	}
-	#menu td a, #menu td,#menu form{color:white;}
-	
-	
-	  .mainmenuitems {
-	  	-moz-border-radius-topleft:8px;
-	  	-moz-border-radius-topright:8px;
-		font-weight: bold; 
-		cursor: pointer; 
-		cursor: hand;
-		padding:0px;			
+	#menu a, #menu a:hover{color:white}
+	#menuAppname{
+		padding:10px;
+		padding-left:15px;
+		font-weight:bold;
+		font-size:20px;
+	}
+	#menuLogout{float:right;
+		margin-top:9px;
+		margin-right:10px;
+	}
+
+	#menuBar {
+		background-image:url(menubar.png);
+		repeat:repeat-x;
 		background-color:#697388;
-		margin-right:2px;
-	 }
-	.mainmenuitems a{
-		font-size:13px;
-		color:white;
-		display:block;
-		padding:3px;
-		padding-left:7px;
+		border-top:1px solid #8693ae;
+		border-bottom:2px solid #444a58;
+		text-transform:lowercase;
+		vertical-align:middle;
+		padding-top:6px;
+		padding-left:15px;
+		height:18px;
 	}
-	.mainmenuitems a:hover{ 
-		text-decoration:none; background-color:#747F96;
-	  	-moz-border-radius-topleft:8px;
-	  	-moz-border-radius-topright:8px;
+	#menuBar a{
+		background-image:url(menulinks.png);
+		background-position:0px 0px;
+		border-right:1px solid #5a6375;
+		font-size:12px;
+		color:white;
+		padding:6px;
+		padding-left:8px;
+		padding-right:8px;
+	}
+	#menuBar a:hover{ 
+		background-position:0px 27px;
+		text-decoration:none; 
+		background-color:#747F96;
 	}
 	
-	.submenuitems {
-		margin-top:1px;
+	.submenuitems{
+		display:none;
+		margin-top:0px;
 		padding:0px;
-		padding-top:2px;
+		padding-top:1px;
 		position:absolute;
 		background-color:#E0E9E9;
-		border:1px outset black;
+		border:1px outset #E0E9E9;
 	}
-	.submenuitems a{
+	#menuBar .submenuitems a{
+		background-image:none;
+		margin:0px;
 		display:block; 
 		background-color:#EDF2F2;
 		border-top:1px solid white;
@@ -323,11 +430,14 @@ FIELDSET,.box,.recordbottom{
 		margin-bottom:1px;
 		padding:3px;
 		padding-left:5px;
-		font-size:11px;		
+		font-size:11px;
+		color:#663366;
 	}
-	#menu td div.submenuitems a{color:#663366;}
-	.submenuitems a:hover{text-decoration:none; background-color:#663366;;}
-	#menu td div.submenuitems a:hover{color:white;}
+	#menuBar .submenuitems a:hover{text-decoration:none; background-color:#663366;color:white;
+	-moz-border-radius:0px;
+        border-top:1px solid white;
+        border-bottom:1px solid #DDDDDD;
+	}
 	
 /* ============================================================================== */
 /* Calendar                                                                       */
@@ -388,8 +498,11 @@ FIELDSET,.box,.recordbottom{
 .eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
 .event{padding:4px;padding-bottom:6px;}
 
-.snapshotRecords{margin-left:4px; border-bottom:1px dotted #EEEEEE;}
-.snapshotRecords a{font-weight:normal;}
+.snapshotHeader{padding:0px;padding-left:2px; border-bottom:2px solid #999999; margin:0px; margin-left:3px;}
+.snapshotHeader div{padding-bottom:0px;}
+.snapshotRecords{margin-left:4px; border-bottom:1px solid #CCCCCC; display:block; font-weight:normal;clear:both;}
+.snapshotRecords div{padding-bottom:0px;}
+.snapshotRecords:Hover{background-color:black;color:white;text-decoration:none;}
 
 /* ============================================================================== */
 /*  Modal                                                                         */

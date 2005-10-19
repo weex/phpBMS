@@ -41,29 +41,29 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE productcategories SET ";
 	
-			$querystatement.="name=\"".$_POST["name"]."\", "; 
-			$querystatement.="description=\"".$_POST["description"]."\", "; 
+			$querystatement.="name=\"".$variables["name"]."\", "; 
+			$querystatement.="description=\"".$variables["description"]."\", "; 
 			
-			if (!isset($_POST["webenabled"])) $_POST["webenabled"]=0;
-			$querystatement.="webenabled=".$_POST["webenabled"].", "; 
-			$querystatement.="webdisplayname=\"".$_POST["webdisplayname"]."\", "; 
+			if (!isset($variables["webenabled"])) $variables["webenabled"]=0;
+			$querystatement.="webenabled=".$variables["webenabled"].", "; 
+			$querystatement.="webdisplayname=\"".$variables["webdisplayname"]."\", "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
@@ -72,20 +72,20 @@ function insertRecord(){
 	$querystatement.="(name,description, webenabled, webdisplayname,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_POST["name"]."\", "; 
-			$querystatement.="\"".$_POST["description"]."\", "; 
+			$querystatement.="\"".$variables["name"]."\", "; 
+			$querystatement.="\"".$variables["description"]."\", "; 
 
-			if (!isset($_POST["webenabled"])) $_POST["webenabled"]=0;
-			$querystatement.=$_POST["webenabled"].", "; 
-			$querystatement.="\"".$_POST["webdisplayname"]."\", "; 
+			if (!isset($variables["webenabled"])) $variables["webenabled"]=0;
+			$querystatement.=$variables["webenabled"].", "; 
+			$querystatement.="\"".$variables["webdisplayname"]."\", "; 
 				
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 	
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -113,7 +113,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -122,7 +122,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

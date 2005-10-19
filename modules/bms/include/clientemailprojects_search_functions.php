@@ -2,19 +2,22 @@
 //=============================================
 //functions
 //=============================================
-
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
 
 //delete
 function delete_record($theids){
+	global $dblink;
+
 	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or clientemailprojects.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);		
-	$thequery = "DELETE FROM clientemailprojects WHERE ".$whereclause.";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't Update: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$whereclause=buildWhereClause($theids,"clientemailprojects.id");
+
+	$querystatement = "DELETE FROM clientemailprojects WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" deleted.";
+	return $message;
 }
 
 

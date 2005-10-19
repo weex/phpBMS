@@ -54,7 +54,7 @@
 
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
 </head>
-<body><?php include("../../menu.php")?><?php doTabs()?><div class="untabbedbox">
+<body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
 	<H1><?php echo $pageTitle ?></H1>
 	<div>
 		<form name="search" id="searchform" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">

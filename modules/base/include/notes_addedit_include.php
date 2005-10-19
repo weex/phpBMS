@@ -67,7 +67,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				id, subject, assignedtoid, type, content, importance,
+				id, subject, assignedtoid, type, content, importance, category,
 				attachedtabledefid, attachedid, parentid,location,private,status,
 				repeat,repeatfrequency,repeattype,repeatdays,repeattimes,repeat,date_Format(repeatuntildate,\"%c/%e/%Y\") as repeatuntildate,
 				completed,date_Format(completeddate,\"%c/%e/%Y\") as completeddate,date_Format(startdate,\"%c/%e/%Y\") as startdate,
@@ -117,6 +117,11 @@ function setRecordDefaults(){
 	
 	$therecord["attachedtabledefid"]=(isset($_GET["reftableid"]))?$_GET["reftableid"]:NULL;
 	$therecord["attachedid"]=(isset($_GET["refid"]))?$_GET["refid"]:NULL;
+	//form quickview
+	if(isset($_GET["cid"])){
+		$therecord["attachedtabledefid"]=2;
+		$therecord["attachedid"]=$_GET["cid"];
+	}
 
 	$therecord["repeat"]=false;
 	$therecord["repeatfrequency"]=1;
@@ -234,7 +239,7 @@ function updateRecord($variables,$userid){
 	}
 
 	//repeat task where applicable
-	if((isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $therecord["parentid"]!="NULL"))) {
+	if((isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $variables["parentid"]!="NULL"))) {
 		if(checkForNewerRepeats($variables["parentid"],$variables["id"])){
 			repeatTask($variables["id"]);
 		}
@@ -321,10 +326,12 @@ function insertRecord($variables,$userid){
 	$querystatement.=$variables["assignedtoid"].", "; 
 	$querystatement.=formatToSQLDate($variables["assignedtodate"]).", "; 
 	$querystatement.=formatToSQLTime($variables["assignedtotime"]).", "; 
+	$assignedby=0;
 	if($variables["assignedtoid"]!=$variables["assignedtochange"])
-		$querystatement.="assignedbyid=".$userid.", "; 
-	else
-		$querystatement.="assignedbyid=0, "; 
+		if($variables["assignedtoid"]!="NULL")
+			$assignedby=$userid;
+			
+	$querystatement.=$assignedby.",";
 	
 	if($variables["attachedtabledefid"]=="") $variables["attachedtabledefid"]=0;
 	if($variables["attachedid"]=="") $variables["attachedid"]=0;
@@ -337,7 +344,7 @@ function insertRecord($variables,$userid){
 	$querystatement.=$userid.")"; 
 	
 	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	if(!$thequery) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -366,7 +373,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord($_POST,$_SESSION["userinfo"]["id"]);
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -375,7 +382,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord($_POST,$_SESSION["userinfo"]["id"]);
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

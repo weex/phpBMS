@@ -11,7 +11,7 @@ function client_tabs($selected="none",$id=0) {
 	$thetabs=array(
 		array(
 			"name"=>"General",
-			"href"=>($id)?"clients_addedit.php?id=".$id:"/clients_addedit.php"
+			"href"=>($id)?"clients_addedit.php?id=".$id:"clients_addedit.php"
 		),
 		array(
 			"name"=>"Purchase History",

@@ -2,7 +2,7 @@
 	require_once("../../include/session.php");
 	require_once("../../include/common_functions.php");
 	require_once("../../include/fields.php");
-	require_once("snapshot_xml.php");
+	require_once("snapshot_ajax.php");
 
 	require_once("include/notes_addedit_include.php");
 
@@ -21,15 +21,12 @@
 <script language="JavaScript" src="javascript/notes.js"></script>
 </head>
 <body onLoad="initialize();"><?php include("../../menu.php")?>
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <div class="bodyline">
-	<div style="float:right;width:150px;"><?php include("../../include/savecancel.php"); ?></div>
+	<div style="float:right;width:150px;"><?php showSaveCancel(1); ?></div>
 	<h1 style="margin-right:150px;"><?php echo $pageTitle ?></h1>
 
-	<FIELDSET style="clear:both;">
+	<fieldset style="clear:both;">
 		<label for="id" style="float:right">id <br/>
 			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable"/>
 			<input name="parentid" id="parentid" type="hidden" value="<?php echo $therecord["parentid"]; ?>" />
@@ -42,67 +39,71 @@
 		<label for="title">title<br />
 			<?PHP field_text("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"128","class"=>"important","style"=>"width:99%")); ?>				
 		</label>		
-	</FIELDSET>
+	</fieldset>
 	
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
 			<td valign=top width="44%" style="padding-right:5px;">
-				<FIELDSET>
-					<LEGEND><label for="importance">importance / privacy</label></LEGEND>
-					<div>
+				<fieldset>
+					<legend><label for="importance" style="padding:0px;">importance / privacy</label></legend>
+					<div style="padding-top:0px;">
 						<?PHP basic_choicelist("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
-						&nbsp;<?PHP field_checkbox("private",$therecord["private"])?>&nbsp;private
+						&nbsp;<?PHP field_checkbox("private",$therecord["private"])?><label for="private" style="display:inline;padding:0px;">&nbsp;private</label>
 					</div>
-				</FIELDSET>
+				</fieldset>
 
-				<FIELDSET id="thedates">
-					<LEGEND>dates</LEGEND>
+				<fieldset id="thedates">
+					<legend>dates</legend>
 					<div>
-						<div id="starttext" style="padding:0px;padding-left:30px;">start</div>
-					<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
-					&nbsp;<?PHP field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"setEnglishDates()"));?>	
-					&nbsp;<?PHP field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+						<label for="startdate" id="starttext" style="padding:0px;padding-left:30px;">start</label>
+						<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
+						&nbsp;<?PHP field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"checkEndDate();setEnglishDates()"));?>	
+						&nbsp;<?PHP field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 					</div>
 					<div>
-						<div id="endtext" style="padding:0px;padding-left:30px;">end</div>
-					<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked" ?> onClick="dateChecked('end')" class="radiochecks" />
-					&nbsp;<?PHP field_datepicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
-					&nbsp;<?PHP field_timepicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+						<label for="enddate" id="endtext" style="padding:0px;padding-left:30px;">end</label>
+						<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked" ?> onClick="dateChecked('end')" class="radiochecks" />
+						&nbsp;<?PHP field_datepicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+						&nbsp;<?PHP field_timepicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 					</div>
-				</FIELDSET>
-				<DIV id="thecompleted">
+				</fieldset>
+				<div id="thecompleted">
 					<div>
 						<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>">
-						<?PHP field_checkbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<span id="completedtext">completed</span>
+						<?PHP field_checkbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext" style="display:inline;padding:0px;">completed</label>
 						&nbsp;<?PHP field_datepicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
 					</div>
-					<div id="thestatus">
-					   status<br>
+					<label for="status" id="thestatus">
+					   status<br />
 					   <?PHP choicelist("status",$therecord["status"],"notestatus"); ?>
-					</div>
-				</DIV>
-				<FIELDSET>
-					<LEGEND><LABEL for="ds-assignedtoid">assigned to</LABEL></LEGEND>
-					<div>
+					</label>
+				</div>
+				<fieldset>
+					<legend><label for="ds-assignedtoid" style="padding:0px;">assigned to</label></legend>
+					<label for="ds-assignedtoid">
 						<?PHP autofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32","style"=>"width:90%")) ?>				
 						<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
-					</div>
+					</label>
 					<?php if($therecord["assignedbyid"]!=0){ ?>
-					<div>
-						assigned by<br>
+					<label for="assignedbyid">
+						assigned by<br />
 						<input value="<?php echo getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable" style="width:90%">
-					</div>
-					<?php }?>
+					</label>
+					<?php if($therecord["assignedbyid"]==$_SESSION["userinfo"]["id"]){?>
 					<div>
-						follow up date<br>
+						<button type="button" id="sendemailnotice" class="Buttons" onClick="sendEmailNotice('<?php echo $_SESSION["app_path"]?>')">send e-mail notice</button>
+					</div>
+					<?php } }?>
+					<div>
+						<label for="assignedtodate" style="padding:0px;">follow up date</label>
 						<?PHP field_datepicker("assignedtodate","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
 						&nbsp;<?PHP field_timepicker("assignedtotime","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
 					</div>
-				</FIELDSET>
+				</fieldset>
 		
 				<input id="attachedtabledefid" name="attachedtabledefid" type="hidden" value="<?PHP echo $therecord["attachedtabledefid"]?>">
 				<input id="attachedid" name="attachedid" type="hidden" value="<?PHP echo $therecord["attachedid"]?>">
-				<FIELDSET class="box" id="theassociated" style="display:none;">
+				<fieldset id="theassociated" style="display:none;">
 					<legend>associated with</legend>
 						<label for="assocarea">area<br />
 							<input id="assocarea" type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" style="width:98%">
@@ -112,39 +113,38 @@
 							<input id="attachedid" type="text" readonly="true" class="uneditable" value="<?PHP echo $therecord["attachedid"]?>" size="6">&nbsp;
 							<input name="link" type="button" class="Buttons" value=" go to record " onClick="document.location='<?php echo $_SESSION["app_path"]?><?PHP echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'">
 						</div>
-				</FIELDSET>
-			<FIELDSET>
-				<div>
-					location<br>
+				</fieldset>
+			<fieldset>
+				<label for="location">
+					location<br />
 					<input name="location" id="location" type="text" value="<?php echo $therecord["location"]?>" style="width:90%"/>
-				</div>
-				<div>
-					category<br>
-					<?PHP choicelist("category","","notecategories",array("style"=>"width:91%")); ?>
-				</div>
-			</FIELDSET>
+				</label>
+				<label for="category">
+					category<br />
+					<?PHP choicelist("category",$therecord["category"],"notecategories",array("style"=>"width:91%")); ?>
+				</label>
+			</fieldset>
 			</td>
 			<td valign=top width="55%">
-				<FIELDSET>
-					<LEGEND><LABEL for="content">memo</LABEL></LEGEND>
-					<div align="right">
-						<button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="timeStamp();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-timestamp.png" align="absmiddle" alt="pick date" width="16" height="16" border="0" /> timestamp</button>
-						&nbsp;
+				<fieldset>
+					<legend><label for="content" style="padding:0px;">memo</label></legend>
+					<div align="right" style="padding:0px;padding-right:5px;">
+						<button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="timeStamp();">timestamp <img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-timestamp.png" align="absmiddle" alt="timestamp" width="16" height="16" border="0" /></button>
 					</div>
-					<div>
+					<div style="padding-top:0px;">
 						<textarea name="content" cols="45" rows="23" id="content" style="width:98%"><?PHP echo $therecord["content"]?></textarea>
 						<input name="username" type="hidden" value="<?PHP echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>">
 					</div>
-				</FIELDSET>
+				</fieldset>
 			</td>
 		</tr>
 	</table>
 	
 	<span <?php if($therecord["parentid"]) echo "style=\"display:none;\""?>>
-		<FIELDSET id="therepeat" class="box" style="padding-top:7px;">
-			<LEGEND>recurrence</LEGEND>
+		<fieldset id="therepeat" style="padding-top:7px;">
+			<legend>recurrence</legend>
 			<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
-			<?PHP field_checkbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?> repeat every&nbsp;&nbsp;<span id="repeatoptions">
+			<?PHP field_checkbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?> <label for="repeat" style="padding:0px;display:inline;">repeat every</label>&nbsp;&nbsp;<span id="repeatoptions">
 			<?php field_text("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onKeyup"=>"addS(this)"))?>
 			<?php 
 				$plural="";
@@ -167,14 +167,14 @@
 				<span id="woa" style="padding-right:10px;"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked"?> class="radiochecks" />Sat</span>
 			</div>
 			<div id="monthlyoptions" style=" <?php if (substr($therecord["repeattype"],0,13)!="repeatMonthly"){?>display:none;<?php }?>margin-bottom:5px;">
-				<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)!="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br>
+				<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)!="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br />
 				<input type="radio" class="radiochecks" name="rpmo" id="rpmobda" value="byDay" <?php if (substr($therecord["repeattype"],13)=="byDay"){?>checked<?php }?>/><span id="rpmobyday"></span> of the month.
 			</div>
 			<div id="rpuntilforever">
-				<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked" ?> value="0" onClick="updateRepeatUntil()"/> forever
+				<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked" ?> value="0" onClick="updateRepeatUntil()"/> <label for="rprduntilforever" style="display:inline;padding:0px;">forever</label>
 			</div>
 			<div id="rpuntiltimes">
-				<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked" ?> value="1" onClick="updateRepeatUntil()" /> number of times&nbsp;&nbsp;
+				<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked" ?> value="1" onClick="updateRepeatUntil()" /> <label for="rprduntilftimes" style="display:inline;padding:0px;">number of times</label>&nbsp;&nbsp;
 				<?php 
 				$tempvalue="";
 				$attribs=array("size"=>"2","maxlength"=>"3");				
@@ -186,26 +186,24 @@
 				field_text("repeattimes",$tempvalue,false,$message="The number of times to repeat must be a valid integer","integer",$attribs)?>
 			</div>
 			<div id="rpuntildate">
-				<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked" ?> value="-1" onClick="updateRepeatUntil()"/> until&nbsp;&nbsp;
+				<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked" ?> value="-1" onClick="updateRepeatUntil()"/> <label for="rprduntildate" style="display:inline;padding:0px;">until</label>&nbsp;&nbsp;
 				<?PHP field_datepicker("repeatuntildate",$therecord["repeatuntildate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
 			</div>
 			</span>
-	</FIELDSET></span>
-	<FIELDSET id="hasparent" class="box small" <?php if(!$therecord["parentid"]) echo "style=\"display:none;\""?>>
-		<LEGEND>recurrence</LEGEND>
+	</fieldset></span>
+	<fieldset id="hasparent" class="box small" <?php if(!$therecord["parentid"]) echo "style=\"display:none;\""?>>
+		<legend>recurrence</legend>
 		<div>
-		This task/event was created from a repeated task/event.  <br>
+		This task/event was created from a repeated task/event.  <br />
 		Click the <strong>Edit Repeating Options</strong> button to edit the options for the repeatable parent record. 
-		<br>
+		<br />
 		(Any unsaved changes with the current record will be lost.)
 		</div>
-		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent()" class="Buttons"></div>
-	</FIELDSET>
-	 
-  <?PHP if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)
-	  echo "<SCRIPT>document.forms['record']['save'].disabled=true</SCRIPT>";?>  
-
+		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons"></div>
+	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
+	<?PHP if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)
+		  echo "<SCRIPT language=\"javascript\">disableSave()</SCRIPT>";?>  
 </div>
 </form>
 </body>

@@ -103,14 +103,14 @@
 <body>
 
 <div class="bodyline" style="width:550px;">
-	<div class="searchtitle">Label Options</div>
+	<h1>Label Options</h1>
 	
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print">
 		<div class="box">
 			skip first labels<br>
 			<input name="skiplabels" value="0" size="3" maxlength="3">
 		</div>
-		<div align="right" class="recordbottom">
+		<div align="right" class="box">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="canel" style="width:75px;" onClick="window.close();">	 
 		</div>

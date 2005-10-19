@@ -1,11 +1,13 @@
 <?PHP
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
+
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
 	$querystatement="SELECT id, displayname FROM tabledefs WHERE type!=\"view\" ORDER BY displayname";
 	$thequery=mysql_query($querystatement,$dblink);
 	
-	echo "<select name=\"".$fieldname."\">\n";
+	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "	<option value=\"".$therecord["id"]."\"";
 			if($selectedid==$therecord["id"]) echo " selected ";
@@ -62,33 +64,33 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE relationships SET ";
 	
-			$querystatement.="name=\"".$_POST["name"]."\", "; 
-			if(isset($_POST["inherint"])) $querystatement.="inherint=1, "; else $querystatement.="inherint=0, ";
+			$querystatement.="name=\"".$variables["name"]."\", "; 
+			if(isset($variables["inherint"])) $querystatement.="inherint=1, "; else $querystatement.="inherint=0, ";
 
-			$querystatement.="fromtableid=".$_POST["fromtableid"].", "; 
-			$querystatement.="fromfield=\"".$_POST["fromfield"]."\", "; 
+			$querystatement.="fromtableid=".$variables["fromtableid"].", "; 
+			$querystatement.="fromfield=\"".$variables["fromfield"]."\", "; 
 
-			$querystatement.="totableid=".$_POST["totableid"].", "; 
-			$querystatement.="tofield=\"".$_POST["tofield"]."\", "; 		
+			$querystatement.="totableid=".$variables["totableid"].", "; 
+			$querystatement.="tofield=\"".$variables["tofield"]."\", "; 		
 
 
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
 	$thequery = mysql_query($querystatement,$dblink);
 	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
@@ -97,22 +99,22 @@ function insertRecord(){
 	$querystatement.="(name,inherint,fromtableid,fromfield,totableid,tofield,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_POST["name"]."\", "; 
-			if(isset($_POST["inherint"])) $querystatement.="1, "; else $querystatement.="0, ";
+			$querystatement.="\"".$variables["name"]."\", "; 
+			if(isset($variables["inherint"])) $querystatement.="1, "; else $querystatement.="0, ";
 
-			$querystatement.=$_POST["fromtableid"].", "; 
-			$querystatement.="\"".$_POST["fromfield"]."\", "; 
+			$querystatement.=$variables["fromtableid"].", "; 
+			$querystatement.="\"".$variables["fromfield"]."\", "; 
 
-			$querystatement.=$_POST["totableid"].", "; 
-			$querystatement.="\"".$_POST["tofield"]."\", "; 		
+			$querystatement.=$variables["totableid"].", "; 
+			$querystatement.="\"".$variables["tofield"]."\", "; 		
 					
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 
 	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	if(!$thequery) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -139,7 +141,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -148,7 +150,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

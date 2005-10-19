@@ -39,3 +39,18 @@ function showSortOptions(theoption){
 			break;
 		}//end case
 }
+
+function showMoreOptions(thelink){
+	var linkGraphic=getObjectFromID("moreOptionsGraphic");
+	var theDiv=getObjectFromID("moreoptions");
+	if(thelink.lastChild.data==" more options"){
+		thelink.lastChild.data=" less options";
+		linkGraphic.src=buttonUp.src;
+		theDiv.style.display="block";
+	}
+	else {
+		thelink.lastChild.data=" more options";
+		linkGraphic.src=buttonDown.src;
+		theDiv.style.display="none";
+	}
+}

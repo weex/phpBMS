@@ -11,7 +11,7 @@ function product_tabs($selected="none",$id=0) {
 	$thetabs=array(
 		array(
 			"name"=>"General",
-			"href"=>($id)?"products_addedit.php?id=".$id:"/clients_addedit.php"
+			"href"=>($id)?"products_addedit.php?id=".$id:"products_addedit.php"
 		),
 		array(
 			"name"=>"Prerequisites",
@@ -20,7 +20,7 @@ function product_tabs($selected="none",$id=0) {
 		)
 	);
 	
-	if($_SESSION["userinfo"]["accesslevel"]>90){
+	if($_SESSION["userinfo"]["accesslevel"]>=30){
 		array_push($thetabs,array(
 			"name"=>"Sales History",
 			"href"=>(($id)?"products_saleshistory.php?id=".$id:"N/A"),

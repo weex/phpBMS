@@ -8,7 +8,7 @@
 <table border="0" cellspacing=0 cellpadding=0 style="width:230px;">
 	<tr>
 		<td width="100%" class="tpHead">&nbsp;</td>
-		<td class="tpButtons" onClick="closeTPBox();" style="padding-left:3px;padding-right:3px;" align="center">x</td>
+		<td class="tpHead"><button type="buttton" class="invisibleButtons" id="TPCancel" onClick="closeTPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>		
 	</tr>
 </table>
 <table border="0" cellspacing=0 cellpadding=0 class="tpHour" style="width:230px;">

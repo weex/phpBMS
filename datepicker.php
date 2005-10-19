@@ -23,7 +23,7 @@
 <table class="dp" cellspacing="0" cellpadding="0" border=0>
 	<tr>
 		<td colspan=6 class="dpHead"><?php echo date("F, Y",$thedate)?></td>
-		<td class="dpButtons" onClick="closeDPBox();" id="DPCancel"> x</td>
+		<td class="dpHead"><button type="buttton" class="invisibleButtons" id="DPCancel" onClick="closeDPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>
 	</tr>
 	<tr>
 		<td class="dpButtons" onClick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo $month?>','<?php echo $year-1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;&lt;</td>
@@ -32,7 +32,7 @@
 		<td class="dpButtons" onClick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php if($month==12) echo "1"; else echo $month+1?>','<?php if($month==12) echo $year+1; else echo $year;?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;</td>
 		<td class="dpButtons" onClick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo $month?>','<?php echo $year+1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;&gt;</td>
 	</tr>
-	<TR  class="dpDayNames">
+	<tr  class="dpDayNames">
 		<td width="14.286%">S</td>
 		<td width="14.286%">M</td>
 		<td width="14.286%">T</td>
@@ -40,7 +40,7 @@
 		<td width="14.286%">R</td>
 		<td width="14.286%">F</td>
 		<td width="14.286%">S</td>
-	</TR>
+	</tr>
 	<?php 
 		$firstdate=getdate($thedate);
 		$mydate=$firstdate;

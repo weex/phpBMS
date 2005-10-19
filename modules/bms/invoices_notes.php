@@ -17,7 +17,7 @@
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);	
 	
-	$pageTitle="Order: ".$refrecord["id"]." ".$refrecord["name"].": Notes/Messages";
+	$pageTitle="Order Notes: ".$refrecord["id"].", ".$refrecord["name"];
 
 	function doTabs(){
 		invoice_tabs("Notes/Messages",$_GET["refid"]);

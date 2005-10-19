@@ -98,6 +98,51 @@ function getViewportWidth() {
 	return window.undefined; 
 }
 
+function disableSave(){
+	var tempButton=getObjectFromID("saveButton1");
+	if(tempButton)
+		tempButton.disabled=true;
+	tempButton=getObjectFromID("saveButton2");
+	if(tempButton)
+		tempButton.disabled=true;		
+}
+
+function englishTime(thedate){
+			var ampm = " AM";
+			var hours = thedate.getHours()
+			if(hours==0) hours=12;
+			if (hours>12){
+				var ampm = " PM";
+				hours=hours-12
+			}
+			var minutes=thedate.getMinutes();
+			if(minutes<10)
+				minutes="0"+minutes;
+			return hours+":"+minutes+ampm;
+}
+
+function englishDate(thedate){
+	return (thedate.getMonth()+1)+"/"+thedate.getDate()+"/"+thedate.getFullYear();	
+}
+
+function dateFromField(englishdate,englishtime){
+	var theyear= parseInt(englishdate.substring(englishdate.lastIndexOf("/")+1));
+	var themonth= parseInt(englishdate.substring(0,englishdate.indexOf("/")))-1;
+	var theday= parseInt(englishdate.substring(englishdate.indexOf("/")+1,englishdate.lastIndexOf("/")));
+	var thedate= new Date(theyear,themonth,theday);
+	if(englishtime){
+		var thehour=parseInt(englishtime.substring(0,englishtime.indexOf(":")));
+		var theminute=parseInt(englishtime.substring(englishtime.indexOf(":")+1,englishtime.indexOf(" ")));;
+		var AMPM=englishtime.substring(englishtime.indexOf(" ")+1);
+		if(AMPM=="PM")
+			thehour+=12;
+		else if (thehour==12)
+			thehour=0;
+		thedate.setHours(thehour,theminute);
+	}
+	return thedate;	
+}
+
 /* ----------------------------------------------------------------------------- */
 
 function showModal(content,title,thewidth,thetop){
@@ -131,12 +176,7 @@ function showModal(content,title,thewidth,thetop){
 	document.body.appendChild(showModal.box);
 	document.body.appendChild(showModal.mask);
 	centerModal();
-
-	var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
-	if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {
-		hideSelectBoxes();
-	}
-
+	hideSelectBoxes();
 
 	addEvent(window, "resize", centerModal);
 	window.onscroll=centerModal;
@@ -149,10 +189,8 @@ function closeModal(){
 
 	document.body.removeChild(showModal.mask);
 	document.body.removeChild(showModal.box);
-        var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
-        if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {	
-               displaySelectBoxes();
-        }
+	displaySelectBoxes();
+
 	showModal.mask=null;
 	showModal.box=null;
 }
@@ -184,24 +222,30 @@ function centerModal(){
 }
 
 function hideSelectBoxes() {
-	for(var i = 0; i < document.all.length; i++) {
-		if(document.all[i].tagName)
-			if(document.all[i].tagName == "SELECT") 
-				document.all[i].style.visibility="hidden";
+	var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
+	if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {		
+		for(var i = 0; i < document.all.length; i++) {
+			if(document.all[i].tagName)
+				if(document.all[i].tagName == "SELECT") 
+					document.all[i].style.visibility="hidden";
+		}
 	}
 }
-
 function displaySelectBoxes() {
+	var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
+	if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {		
         for(var i = 0; i < document.all.length; i++) {
                 if(document.all[i].tagName)
                         if(document.all[i].tagName == "SELECT")
                                 document.all[i].style.visibility="visible";
         }
+	}
 }
 
 function modalAlert(text){
+	text=""+text;
 	text.replace("\n","<br />");
-	text+="<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
+	text+="<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	showModal(text,"Alert",250);
 }
 window.alert = function(txt) {modalAlert(txt);}

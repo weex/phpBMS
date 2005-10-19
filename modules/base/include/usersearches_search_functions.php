@@ -9,14 +9,15 @@ function delete_record($theids){
 	global $dblink;
 	
 	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or usersearches.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);		
-	$thequery = "delete from usersearches where ".$whereclause.";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't Update: ".mysql_error()."<BR>\n SQL STATEMENT [".$thequery."]");		
+	$whereclause=buildWhereClause($theids,"usersearches.id");
+
+	$querystatement = "DELETE FROM usersearches WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" deleted.";
+	return $message;	
 }
 
 
@@ -25,7 +26,7 @@ global $has_header;
 $has_header=true;
 function display_header(){
 	admin_tabs("Tables");
-	echo "<table width='100%' cellspacing=0 cellpadding=0 class='untabbedbox' style='border-bottom:0px;padding-top:3px;'><tr><td>";
+	echo "<table width='100%' cellspacing=0 cellpadding=0 class='bodyline' style='border-bottom:0px;margin-bottom:0px;background-image:none;padding-top:3px;-moz-border-radius-bottomleft:0px;-moz-border-radius-bottomright:0px;'><tr><td>";
 	admin_table_tabs("Saved Searches/Sorts");
 	echo "</td></tr></table>";	
 };?>

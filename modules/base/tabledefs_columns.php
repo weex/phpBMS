@@ -27,11 +27,11 @@
 		break;
 		
 		case "add column":
-			$statusmessage=addColumn();
+			$statusmessage=addColumn(addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit column":
-			$statusmessage=updateColumn();
+			$statusmessage=updateColumn(addSlashesToArray($_POST));
 		break;
 		
 		case "moveup":
@@ -57,12 +57,8 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 
-<?php tabledefs_tabs("Columns",$_GET["id"]);?><div class="untabbedbox">
-<div>
+<?php tabledefs_tabs("Columns",$_GET["id"]);?><div class="bodyline"><div>
 	<h1><?php echo $pageTitle?></h1>
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
@@ -76,13 +72,15 @@
 	</tr>
 	<?php 
 		$topdisplayorder=-1;
+		$row=1;
 		while($therecord=mysql_fetch_array($columnsquery)){ 
 			$topdisplayorder=$therecord["displayorder"];
+			if($row==1) $row=2; else $row=1;
 	?>
-	<tr>
+	<tr class="qr<?php echo $row?>" style="cursor:auto">
 		<td nowrap valign="top">
-			<input name="command" type="button" value="up"		style="margin:0px;" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&columnid=".$therecord["id"]?>';">
-			<input name="command" type="button" value="dn" 	style="margin:0px;" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&columnid=".$therecord["id"]?>';">
+		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
+		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
 			<?php echo $therecord["displayorder"];?>
 		</td>
 		<td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
@@ -97,44 +95,43 @@
 	</tr>	
 	<?php } ?>
 	</table>
-	<div>&nbsp;</div>
-	<div class="box">
-		<h2 style="margin-top:0px;"><?php echo $action?></h2>
+	<fieldset style="margin-top:15px;">
+		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-		<input name="columnid" type="hidden" value="<?php echo $thecolumn["id"]?>">
-		<input name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>">
-		<div class="important">
-			name<br>
+		<input id="columnid" name="columnid" type="hidden" value="<?php echo $thecolumn["id"]?>" />
+		<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>" />
+		<label class="important" for="name">
+			name<br />
 			<?PHP field_text("name",$thecolumn["name"],1,"Column Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>
-		</div>
-		<div>
-			text align<br>
+		</label>
+		<label for="align">
+			text align<br />
 			<?PHP basic_choicelist("align",$thecolumn["align"],Array(Array("name"=>"left","value"=>"left"),Array("name"=>"center","value"=>"center"),Array("name"=>"right","value"=>"right")),Array("style"=>"width:170px;"));?>
-		</div>
-		<div><?PHP field_checkbox("wrap",$thecolumn["wrap"])?>wrap text</div>
-		<div>
-			column size<br>
-			<input name="size" type="text" value="<?php echo $thecolumn["size"]?>" size="32" maxlength="128" style="width:80%">
-		</div>
-		<div>
-			column (SQL clause)<br>
-			<textarea name="column" cols="32" rows="2" style="width:100%"><?php echo $thecolumn["column"] ?></textarea>
-		</div>
-		<div>
-			sort order (SQL clause)<br>
-			<input name="sortorder" type="text" value="<?php echo $thecolumn["sortorder"]?>" size="32" maxlength="128" style="width:80%">
-			<div class="small">leave this blank if the sort order is the exact same as the column SQL</div>
-		</div>
-		<div>
-			footer query<br>
-			<textarea name="footerquery" cols="32" rows="2" style="width:100%"><?php echo $thecolumn["footerquery"] ?></textarea>
-		</div>
+		</label>
+		<label for="wrap"><?PHP field_checkbox("wrap",$thecolumn["wrap"])?>wrap text</label>
+		<label for="size">
+			column size<br />
+			<input id="size" name="size" type="text" value="<?php echo htmlQuotes($thecolumn["size"])?>" size="32" maxlength="128">
+		</label>
+		<label for="column">
+			field <em>(SQL clause)</em><br>
+			<textarea id="column" name="column" cols="64" rows="2" style="width:99%"><?php echo $thecolumn["column"] ?></textarea>
+		</label>
+		<label for="sortorder">
+			sort order <em>(SQL clause)</em><br>
+			<input id="sortorder" name="sortorder" type="text" value="<?php echo htmlQuotes($thecolumn["sortorder"])?>" size="64" maxlength="128">
+		</label>
+		<div class="small"><em>leave sort order blank if it is exactly the same as the field</em></div>
+		<label for="footerquery">
+			footer <em>(SQL group function)</em><br>
+			<textarea id="footerquery" name="footerquery" cols="32" rows="2" style="width:99%"><?php echo $thecolumn["footerquery"] ?></textarea>
+		</label>
 		<div align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons">
 		</div>
 		</form>
-	</div>
-</div>
-</div>
+	</fieldset>
+</div></div>
+<?php include("../../footer.php")?>
 </body>
 </html>

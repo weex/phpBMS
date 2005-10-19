@@ -2,6 +2,7 @@
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
 
 //set table id
 $tableid=11;
@@ -56,39 +57,39 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE tabledefs SET ";
 	
-			$querystatement.="maintable=\"".$_POST["maintable"]."\", "; 
-			$querystatement.="querytable=\"".addslashes($_POST["querytable"])."\", "; 
-			$querystatement.="displayname=\"".$_POST["displayname"]."\", "; 
-			$querystatement.="type=\"".$_POST["type"]."\", "; 
-			$querystatement.="moduleid=".$_POST["moduleid"].", "; 
+			$querystatement.="maintable=\"".$variables["maintable"]."\", "; 
+			$querystatement.="querytable=\"".$variables["querytable"]."\", "; 
+			$querystatement.="displayname=\"".$variables["displayname"]."\", "; 
+			$querystatement.="type=\"".$variables["type"]."\", "; 
+			$querystatement.="moduleid=".$variables["moduleid"].", "; 
 
-			$querystatement.="addfile=\"".addslashes($_POST["addfile"])."\", "; 
-			$querystatement.="editfile=\"".addslashes($_POST["editfile"])."\", "; 
+			$querystatement.="addfile=\"".$variables["addfile"]."\", "; 
+			$querystatement.="editfile=\"".$variables["editfile"]."\", "; 
 
-			$querystatement.="deletebutton=\"".$_POST["deletebutton"]."\", "; 
+			$querystatement.="deletebutton=\"".$variables["deletebutton"]."\", "; 
 
-			$querystatement.="defaultwhereclause=\"".addslashes($_POST["defaultwhereclause"])."\", "; 
-			$querystatement.="defaultsortorder=\"".addslashes($_POST["defaultsortorder"])."\", "; 
-			$querystatement.="defaultsearchtype=\"".$_POST["defaultsearchtype"]."\", "; 
-			$querystatement.="defaultcriteriafindoptions=\"".addslashes($_POST["defaultcriteriafindoptions"])."\", "; 
-			$querystatement.="defaultcriteriaselection=\"".addslashes($_POST["defaultcriteriaselection"])."\", "; 
+			$querystatement.="defaultwhereclause=\"".$variables["defaultwhereclause"]."\", "; 
+			$querystatement.="defaultsortorder=\"".$variables["defaultsortorder"]."\", "; 
+			$querystatement.="defaultsearchtype=\"".$variables["defaultsearchtype"]."\", "; 
+			$querystatement.="defaultcriteriafindoptions=\"".$variables["defaultcriteriafindoptions"]."\", "; 
+			$querystatement.="defaultcriteriaselection=\"".$variables["defaultcriteriaselection"]."\", "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
@@ -98,30 +99,30 @@ function insertRecord(){
 						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_POST["maintable"]."\", "; 
-			$querystatement.="\"".addslashes($_POST["querytable"])."\", "; 
-			$querystatement.="\"".$_POST["displayname"]."\", "; 
-			$querystatement.="\"".$_POST["type"]."\", "; 
-			$querystatement.=$_POST["moduleid"].", "; 
+			$querystatement.="\"".$variables["maintable"]."\", "; 
+			$querystatement.="\"".$variables["querytable"]."\", "; 
+			$querystatement.="\"".$variables["displayname"]."\", "; 
+			$querystatement.="\"".$variables["type"]."\", "; 
+			$querystatement.=$variables["moduleid"].", "; 
 
-			$querystatement.="\"".addslashes($_POST["addfile"])."\", "; 
-			$querystatement.="\"".addslashes($_POST["editfile"])."\", "; 
+			$querystatement.="\"".$variables["addfile"]."\", "; 
+			$querystatement.="\"".$variables["editfile"]."\", "; 
 
-			$querystatement.="\"".$_POST["deletebutton"]."\", "; 
+			$querystatement.="\"".$variables["deletebutton"]."\", "; 
 
-			$querystatement.="\"".addslashes($_POST["defaultwhereclause"])."\", "; 
-			$querystatement.="\"".addslashes($_POST["defaultsortorder"])."\", "; 
-			$querystatement.="\"".$_POST["defaultsearchtype"]."\", "; 
-			$querystatement.="\"".addslashes($_POST["defaultcriteriafindoptions"])."\", "; 
-			$querystatement.="\"".addslashes($_POST["defaultcriteriaselection"])."\", "; 
+			$querystatement.="\"".$variables["defaultwhereclause"]."\", "; 
+			$querystatement.="\"".$variables["defaultsortorder"]."\", "; 
+			$querystatement.="\"".$variables["defaultsearchtype"]."\", "; 
+			$querystatement.="\"".$variables["defaultcriteriafindoptions"]."\", "; 
+			$querystatement.="\"".$variables["defaultcriteriaselection"]."\", "; 
 				
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 	
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -150,7 +151,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -159,7 +160,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

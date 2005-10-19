@@ -1,4 +1,6 @@
 <?PHP
+if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
+
 function displayTables($fieldname,$selectedid){
 	global $dblink;
 	
@@ -6,7 +8,7 @@ function displayTables($fieldname,$selectedid){
 	$thequery=mysql_query($querystatement,$dblink);
 	
 		
-	echo "<select name=\"".$fieldname."\">\n";
+	echo "<select id=\"$fieldname\" name=\"".$fieldname."\" tabindex=\"20\">\n";
 
 	echo "<option value=\"0\" ";
 	if ($selectedid=="0") echo "selected";
@@ -34,7 +36,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				id,name,type,reportfile,tabledefid,description,displayorder,
+				id,name,type,reportfile,tabledefid,description,displayorder,accesslevel,
 				
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
@@ -55,6 +57,7 @@ function setRecordDefaults(){
 	$therecord["tabledefid"]=0;
 	$therecord["reportfile"]="";
 	$therecord["displayorder"]=0;
+	$therecord["accesslevel"]=10;
 	$therecord["description"]="";
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
@@ -67,51 +70,53 @@ function setRecordDefaults(){
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE reports SET ";
 	
-			$querystatement.="name=\"".$_POST["name"]."\", "; 
-			$querystatement.="type=\"".$_POST["type"]."\", "; 
-			$querystatement.="tabledefid=".$_POST["tabledefid"].", "; 
-			$querystatement.="reportfile=\"".$_POST["reportfile"]."\", "; 
-			$querystatement.="description=\"".$_POST["description"]."\", "; 
-			$querystatement.="displayorder=".$_POST["displayorder"].", "; 
+			$querystatement.="name=\"".$variables["name"]."\", "; 
+			$querystatement.="type=\"".$variables["type"]."\", "; 
+			$querystatement.="tabledefid=".$variables["tabledefid"].", "; 
+			$querystatement.="reportfile=\"".$variables["reportfile"]."\", "; 
+			$querystatement.="description=\"".$variables["description"]."\", "; 
+			$querystatement.="displayorder=".$variables["displayorder"].", "; 
+			$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
 	$querystatement="INSERT INTO reports ";
 	
-	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,
+	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,accesslevel
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_POST["name"]."\", "; 
-			$querystatement.="\"".$_POST["type"]."\", "; 
-			$querystatement.=$_POST["tabledefid"].", "; 
-			$querystatement.="\"".$_POST["reportfile"]."\", "; 
-			$querystatement.="\"".$_POST["description"]."\", "; 
-			$querystatement.=$_POST["displayorder"].", "; 
+			$querystatement.="\"".$variables["name"]."\", "; 
+			$querystatement.="\"".$variables["type"]."\", "; 
+			$querystatement.=$variables["tabledefid"].", "; 
+			$querystatement.="\"".$variables["reportfile"]."\", "; 
+			$querystatement.="\"".$variables["description"]."\", "; 
+			$querystatement.=$variables["displayorder"].", "; 
+			$querystatement.=$variables["accesslevel"].", "; 
 				
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 	
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -140,7 +145,7 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
@@ -149,7 +154,7 @@ else
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

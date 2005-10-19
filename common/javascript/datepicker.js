@@ -32,6 +32,7 @@ function showDP(base,dateFieldID){
 		month=tdate.getUTCMonth()+1;
 	}
 	loadMonth(base,month,year,dateField.value);
+	hideSelectBoxes();
 	document.body.appendChild(showDP.box);
 }
 
@@ -39,11 +40,11 @@ function loadMonth(base,month,year,selectedDate){
 	var content="<div align=\"center\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";	
 	showDP.box.innerHTML=content;
 	var theURL=base+"datepicker.php?cm=shw";
-	theURL+="&m="+escape(month);
-	theURL+="&y="+escape(year);
+	theURL+="&m="+encodeURI(month);
+	theURL+="&y="+encodeURI(year);
 	if (selectedDate){
 		tempdate=stringToDate(selectedDate);
-		theURL+="&sd="+escape(tempdate.getFullYear()+"-"+tempdate.getMonth()+"-"+tempdate.getDate());
+		theURL+="&sd="+encodeURI(tempdate.getFullYear()+"-"+tempdate.getMonth()+"-"+tempdate.getDate());
 	}
 	loadXMLDoc(theURL,null,false);
 	showDP.box.innerHTML=req.responseText;	
@@ -52,6 +53,7 @@ function loadMonth(base,month,year,selectedDate){
 
 function closeDPBox(){
 	document.body.removeChild(showDP.box);
+	displaySelectBoxes();
 	showDP.box=null;	
 	showDP.datefieldID=null;	
 }

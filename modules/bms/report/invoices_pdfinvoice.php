@@ -254,7 +254,7 @@
 		if($therecord["taxareaid"]) {
 			$taxstatement="select id, name, percentage from tax where id=".$therecord["taxareaid"];
 			$taxquery=mysql_query($taxstatement,$dblink);
-			if(!$taxquery) die ("cannot get tax: ".mysql_error()."<br>".$taxstatement);
+			if(!$taxquery) die ("cannot get tax: ".mysql_error($dblink)."<br>".$taxstatement);
 			$taxrecord=mysql_fetch_array($taxquery);
 			$pdf->SetFont("Arial","",8);
 			$pdf->SetXY($leftmargin,$tempnext+.2+.2);

@@ -1,4 +1,4 @@
-<div class="recordbottom"><div style="float:right;padding:0px;margin:0px;"><br /><?php include"savecancel.php"?></div>
+<div class="box" style="clear:both;"><div style="float:right;padding:0px;margin:0px;"><br /><?php showSaveCancel(2)?></div>
 <table border=0 cellspacing=0 cellpadding=0>
 <tr>
 <td class=small>

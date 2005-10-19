@@ -22,7 +22,7 @@
 							  WHERE tabledefs.id=".$id;
 			
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error()." -- ".$querystatement);
+			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			
 			if (mysql_num_rows($queryresult)<1) reportError(1,"table definition not found. ".$queryresult);
 			
@@ -41,7 +41,7 @@
 			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size
 								  FROM tablecolumns WHERE tabledefid=".$id." ORDER BY displayorder";
 			$queryresult=mysql_query($querystatement,$dblink) ;
-			if(!$queryresult) reportError(1,mysql_error()." -- ".$querystatement);
+			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			while($therecord=mysql_fetch_array($queryresult)) $thecolumns[]=$therecord;
 			return $thecolumns;
 		}
@@ -116,12 +116,13 @@ function displayQueryHeader(){
 		
 		function initialize($id){
 			$this->thetabledef=$this->getTableDef($id);
-
-			if ($this->thetabledef["type"]!="view")
+			$this->ref=$this->thetabledef["id"];
+			
+/*			if ($this->thetabledef["type"]!="view")
 				$this->ref=$this->thetabledef["maintable"];
 			else
 				$this->ref=$this->thetabledef["maintable"].$this->thetabledef["id"];
-
+*/
 			//next we set the columns
 			$this->thecolumns=$this->getTableColumns($id);
 
@@ -250,7 +251,7 @@ function sendInfo(name,thevalue,thedisplay){
 				$querystatement.="AND (".$this->whereclause.")";
 			
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(100,"Error Retrieving Initial Rowset: ".mysql_error()."<br>".$querystatement);
+			if(!$queryresult) reportError(100,"Error Retrieving Initial Rowset: ".mysql_error($dblink)."<br>".$querystatement);
 			
 			return $queryresult;
 		}
@@ -301,7 +302,7 @@ function sendInfo(name,thevalue,thedisplay){
 			$querystatement="SELECT name,`option`,othercommand
 								  FROM tableoptions WHERE tabledefid=".$id;
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error()." -- ".$querystatement);
+			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)) {
 			if($therecord["othercommand"])
@@ -316,10 +317,10 @@ function sendInfo(name,thevalue,thedisplay){
 			global $dblink;
 			
 			$findoptions=Array();
-			$querystatement="SELECT name,search
+			$querystatement="SELECT name,search,accesslevel
 								  FROM tablefindoptions WHERE tabledefid=".$id." ORDER BY displayorder";
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error()." -- ".$querystatement);
+			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 		
 			while($therecord=mysql_fetch_array($queryresult)){
 				$therecord["search"]=$this->subout($therecord["search"]);
@@ -336,45 +337,55 @@ function sendInfo(name,thevalue,thedisplay){
 			$querystatement="SELECT id,field,name,type
 								  FROM tablesearchablefields WHERE tabledefid=".$id." ORDER BY displayorder";
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error()." -- ".$querystatement);
+			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 		
 			while($therecord=mysql_fetch_array($queryresult)) $searchablefields[]=$therecord;
 			
 			return $searchablefields;
 		}
 
-
-
-
 		function displaySearch(){
 
 		?>
 <form name="search" id="searchform" method="post" action="<?PHP echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
-<input name="theids" type="hidden" value="">
-<input name="advancedsearch" type="hidden" value="">
-<input name="advancedsort" type="hidden" value="">
-<div class="box" style="margin:0px;margin-bottom:28px;">
-	<?php if ($this->querytype!="" and $this->querytype!="search") 
-			echo "<div><i>(currently showing ".$this->querytype.")</i></div>"
-	?>
+<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" \>
+<input id="theids" name="theids" type="hidden" value="" \>
+<input id="advancedsearch" name="advancedsearch" type="hidden" value="" \>
+<input id="advancedsort" name="advancedsort" type="hidden" value="" \>
+<?php if ($this->querytype!="" and $this->querytype!="search") {
+		$temptype=$this->querytype;
+		if($temptype=="advanced search")
+			$temptype="advanced or saved search";
+		echo "<div><i>(currently showing ".$temptype.")</i></div>";
+	}
+?>
+<div class="searchtabs">
+	<span id="basicSearchT" class="searchtabsSel"><a href="" onClick="switchSearchTabs(this);return false">basic</a></span>
+	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><span id="advancedSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></span><?php } //end accesslevel ?>
+	<span id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load</a></span>
+	<span id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save</a></span>
+	<span id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sort</a></span>
+</div><div class="box" style="margin:0px;margin-bottom:15px;display:inline-block;"><div id="basicSearchTab" style="padding:0px;margin:0px;">
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
 			<td nowrap valign=top>
-				<div>find<br>
-				<select name="find">
+				<label for="find">find<br />
+				<select name="find" id="find">
 					<?PHP 											
 						for($i=0;$i<count($this->findoptions);$i++) {
-							?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
-								if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
-							?>><?php echo $this->findoptions[$i]["name"]?></option><?php
+							if($this->findoptions[$i]["accesslevel"]<=$_SESSION["userinfo"]["accesslevel"]){
+								?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
+									if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
+								?>><?php echo $this->findoptions[$i]["name"]?></option><?php
+							}
 						}
 					?>
 				</select>				  
-				</div></td>
+				</label></td>
 			<td nowrap valign=top>
-				<div>
-					where<br>
-					<select name="startswithfield">
+				<label for="startswithfield">
+					where<br />
+					<select name="startswithfield" id="startswithfield">
 						<?PHP 
 							for($i=0;$i<count($this->searchablefields);$i++) {
 								echo "<option value=\"".$this->searchablefields[$i]["id"]."\" ";
@@ -387,66 +398,91 @@ function sendInfo(name,thevalue,thedisplay){
 							}
 						?>
 					</select>
-				</div>
+				</label>
 			</td>
 			<td width="100%" nowrap valign=top >
-				<div>
-					starts with<br>
-					<input id="startswith" name="startswith" type="text" style="width:99%;" value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo stripslashes($this->savedstartswith)?>" size="35" maxlength="128"><script language="javascript">setMainFocus()</script>
-				</div>
+				<label for="startswith">
+					starts with<br />
+					<input id="startswith" name="startswith" type="text" style="width:99%;" value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="javascript">setMainFocus()</script>
+				</label>
 			</td>
 			<td align="left" valign="top" nowrap class="small">
-				<div>
+				<label>
 					<br>
-					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search" style="width:90px;" accesskey="" />
-				</div>
+					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search" style="width:90px;"/>
+				</label>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" align="right" valign=middle nowrap>
-				<div style="display:none;padding-right:0px;padding-top:0px;" id="moresearchoptions" class="small"> 
-					<div style="float:left;margin:0px;padding:0px;">
-					<select name="Selection">
-						<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected"?> >new result</option>
-						<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected"?>>add to result</option>
-						<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "checked"?>>remove from result</option>
-						<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "checked"?>>narrow result</option>
-					</select></div>
-					<?PHP if($_SESSION["userinfo"]["accesslevel"]>90){?><input name="command" type="button" class="smallButtons" value="view SQL" style="margin-right:3px;" onClick="openWindow('viewsqlstatement.php','Count','resize=yes,status=yes,scrollbars=yes,width=700,height=350,modal=yes')" /><?PHP }//end accesslevel?>
-					<input name="command" type="button" class="smallButtons" id="advancedsortbutton" style="" onClick="openWindow('advancedsort.php?id=<?PHP echo $this->thetabledef["id"] ?>','AdvancedSearch','status=no,scrollbars=no,width=540,height=310,modal=yes')" value="advanced sort" />
-					<input name="command" type="button" class="smallButtons" id="advanced" style="" onClick="openWindow('advancedsearch.php?id=<?PHP echo $this->thetabledef["id"] ?>','AdvancedSearch','status=no,scrollbars=no,width=540,height=310,modal=yes')" value="advanced search" />
-					<button type="button" class="invisibleButtons" onClick="showMore('less');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-chevron-dark-right.png" align="absmiddle" alt="" width="16" height="16" border="0" />less</button>
-				</div>
-				<div id="lesssearchoptions" style="padding-right:0px;padding-top:0px;" class="small">
-					<button type="button" class="invisibleButtons" onClick="showMore('more');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-chevron-dark-left.png" align="absmiddle" alt="" width="16" height="16" border="0" />more</button>
-				</div>
-			</td>
-			<td align="right" valign=top nowrap ><div style="padding-top:0px;"><input name="command" type="submit" id="reset" class="smallButtons" value="reset" style="width:90px;" accesskey="t" /></div></td>
+			<td colspan="3" align="left" valign=middle nowrap>
+			<label style="padding-right:0px;">
+			<select name="Selection">
+				<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected"?> >new result</option>
+				<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected"?>>add to result</option>
+				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "checked"?>>remove from result</option>
+				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "checked"?>>narrow result</option>
+			</select></label>
+			<td align="left" valign=top nowrap ><label><input name="command" type="submit" id="reset" class="smallButtons" value="reset" style="width:90px;" accesskey="t" /></label></td>
 		</tr>				
 	</table>
-</div>
-<?PHP 				
-		}//end function
-		
+</div><?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;padding:0px;margin:0px;"></div><?php } //end accesslevel ?>
+<div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
+<div id="saveSearchTab" style="display:none;margin:padding:0px;margin:0px;">
+	<div id="saveSearchReults" style="display:none"></div>
+	<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td width="100%">
+				<label for="saveSearchName">
+					save current search as<br />
+					<input id="saveSearchName" name="saveSearchName" type="text" style="width:99%;" value="" size="35" maxlength="128" onKeyUp="enableSave(this)" />
+				</label>			
+			</td>
+			<td align="right">
+				<label>
+					<br>
+					<input id="saveSearch" onClick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="true" type="button" class="Buttons" value="save search" style="width:90px;" />
+				</label>
+			</td>
+		</tr>
+	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div>
+<script language="javascript">
+buttonMinusEnabled=new Image();
+buttonMinusEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png";
+buttonMinusDisabled=new Image();
+buttonMinusDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus-disabled.png";						
+buttonUpEnabled=new Image();
+buttonUpEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png";
+buttonUpDisabled=new Image();
+buttonUpDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up-disabled.png";						
+buttonDownEnabled=new Image();
+buttonDownEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png";
+buttonDownDisabled=new Image();
+buttonDownDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down-disabled.png";						
+</script><?PHP 				
+	}//end function		
 		
 function displayQueryButtons() { 
-
-
 	if(!isset($this->tableoptions["new"])) $this->tableoptions["new"]=0;
 	if(!isset($this->tableoptions["select"])) $this->tableoptions["select"]=0;
 	if(!isset($this->tableoptions["edit"])) $this->tableoptions["edit"]=0;
 	if(!isset($this->tableoptions["printex"])) $this->tableoptions["printex"]=0;
 	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
-	
-	
-	
+	if($_SESSION["userinfo"]["accesslevel"]>=90){?>
+	<div id="sqlstatement" style="display:none;padding:0px;" ><fieldset>
+		<legend><span style="text-transform:capitalize">SQL</span> Statement</legend>
+		<div class="mono small" style="height:150px; overflow:auto;"><?php echo stripslashes(htmlspecialchars($this->querystatement))?></div>
+	</fieldset><?php if($this->sqlerror) {?>
+	<fieldset>
+		<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
+		<div><?php echo $this->sqlerror?></div>
+	</fieldset><?php }?></div>
+	<?php }
 	if($this->numrows){
-		?><div style="float:right" align="right" class="small"><?php
+		?><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><div style="float:right" align="right" class="small"><?php
 		if ($this->truecount<=$_SESSION["record_limit"]) 
 			echo "<div style=\"padding:0px;padding-top:8px;\">records:&nbsp;".$this->numrows."</div>";
 		else {?>			
-			<input name="offset" type="hidden" value="">records
-			  <select name="offsetselector" onChange="this.form.offset.value=this.value;this.form.submit();">
+			<input name="offset" type="hidden" value=""><select name="offsetselector" onChange="this.form.offset.value=this.value;this.form.submit();">
 			  	<?php
 					$displayedoffset=0;
 					while($displayedoffset<$this->truecount){
@@ -456,40 +492,41 @@ function displayQueryButtons() {
 				?>
 			  </select> of <?php echo $this->truecount;
 			if($this->recordoffset>0){
-				?><input name="command" id="recPrev" type="button" class="smallButtons" style="margin-left:2px;"value="< prev" onClick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();" /><?php
+				?><button type="button" class="invisibleButtons" onClick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-rew.png" align="absmiddle" alt="prev"  width="16" height="16" border="0" /></button><?php
 			}
 			if(($this->numrows+$this->recordoffset)<$this->truecount){
-				?><input name="command" id="recNext" type="button" class="smallButtons" style="margin-left:2px;" value="next >" onClick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();" /><?php
+				?><button type="button" class="invisibleButtons" onClick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-ff.png" align="absmiddle" alt="next"  width="16" height="16" border="0" /></button><?php
 			}
 						  
 		} ?></div><?php }?>	
 	
 		<div>
-		<?php if ($this->tableoptions["new"]) {?><input name="command" id="new" type="submit" accesskey="n" value="new" class="Buttons" style="width:35px;margin-right:2px;" /><?php } 
+		<?php if ($this->tableoptions["new"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="document.location='<?php echo $this->thetabledef["addfile"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]) {
-				?><input name="command" id="edit" type="submit" value="edit" accesskey="e" disabled="true" class="Buttons" style="width:35px;margin-right:2px;" /><?php
+				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
 			}
-			if($this->thetabledef["deletebutton"] != "NA") {
-				?><input name="command" id="delete" type="submit" value="<?php  echo $this->thetabledef["deletebutton"] ?>" disabled="true" class="Buttons" accesskey="d"/><?php
+			if($this->tableoptions["printex"]){
+				?><button id="print" name="doprint" accesskey="p" type="submit" disabled="true" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png"  alt="print" width="16" height="16" border="0" /></button><?php
 			}
-
-		if($this->tableoptions["printex"]){?>
-			<input name="command" type="submit" id="print" disabled="true" value="print" class="Buttons" style="margin-left:2px;margin-right:2px;width:60px;" accesskey="p"/>
-			<?php
+			if($this->thetabledef["deletebutton"] == "delete") {				
+				?><button id="delete" name="dodelete" accesskey="d" type="button" disabled="true" onClick="confirmDelete('delete')" class="invisibleButtons" style="border-style:solid"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png" alt="print" width="16" height="16" border="0" /></button><?php
+			}
+	
+			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
+				<select id="othercommands" name="othercommands" disabled=true onChange="chooseOtherCommand(this)">
+				<option value="" selected class="choiceListBlank">commands...</option>
+				<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
+					<option value="delete_record" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
+				<?php } 
+				if($this->tableoptions["othercommands"]){
+					foreach($this->tableoptions["othercommands"] as $key => $value){
+						?><option value="<?php echo $key?>"><?php echo $value?></option><?php
+					}
+				}
+				?></select><?php
 		}
-
-		if($this->tableoptions["othercommands"]){?>			
-			<select name="othercommands" disabled=true onChange="setSelIDs(this.form);this.form.submit();">
-			<option value="" selected class="choiceListBlank">commands...</option>
-			<?php				
-			foreach($this->tableoptions["othercommands"] as $key => $value){
-				?><option value="<?php echo $key?>"><?php echo $value?></option><?php
-			}
-			?></select><?php
-		}
-		if($this->tableoptions["select"]){?>
-			<select id="searchSelection" onChange="perfromToSelection(this)">
+		if($this->tableoptions["select"]){?><select id="searchSelection" onChange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
 				<option value="selectall">select all</option>
@@ -497,16 +534,29 @@ function displayQueryButtons() {
 				<option value="">_____________</option>
 				<option value="keepselected">keep selected</option>
 				<option value="omitselected">omit selected</option>
-			</select>
-			<a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a>
-			<a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a>
-			<a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a>
-			<a href="" onClick="changeSelection('omitselected');return false;" accesskey="k" tabindex="-1"></a>
-		<?php } 
+			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
-		}//end if numrows	?>		
-		</div><?php
-	
+		}//end if numrows	
+		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png" align="middle" alt="show SQL" width="35" height="16" border="0" /></button><?PHP }//end accesslevel?>
+		</div><script language="javascript">
+	var editFile="<?php echo $this->thetabledef["addfile"]?>";
+	var editButtonImg=new Image();
+		editButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png";
+	var editButtonImgDisabled=new Image();
+		editButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png";
+	var printButtonImg=new Image();
+		printButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print.png";
+	var printButtonImgDisabled=new Image();
+		printButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png";
+	var deleteButtonImg=new Image();
+		deleteButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png";
+	var deleteButtonImgDisabled=new Image();
+		deleteButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png";
+	var sqlButtonUp=new Image();
+		sqlButtonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png";
+	var sqlButtonDn=new Image();
+		sqlButtonDn.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-down.png";
+	</script><?php	
 }//end function
 			
 
@@ -540,16 +590,15 @@ function displayRelationships(){
 		 WHERE fromtableid=\"".$this->thetabledef["id"]."\" ORDER BY name";
 	$queryresult = mysql_query($querystatement);	
 	if (!$queryresult) reportError(1,"Error Retrieving Relationships");
-	?><div class="small recordbottom" style="margin:0px;margin-top:3px;">
-	relate selected records to <select name="relationship" onChange="setSelIDs(this.form);this.form.submit();"	disabled="true">
-		<option value="" selected class="choiceListBlank">area...</option><?php 
-		while($therecord = mysql_fetch_array($queryresult)){
-		?>
-			<option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option>
+	if (mysql_num_rows($queryresult)) {
+		?><div class="small box" style="margin:0px;margin-top:3px;">
+		relate selected records to <select id="relationship" name="relationship" onChange="setSelIDs(this.form);this.form.submit();"	disabled="true">
+			<option value="" selected class="choiceListBlank">area...</option><?php 
+			while($therecord = mysql_fetch_array($queryresult)){
+			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
+		?></select></div>
 		<?php
-	}
-	?></select></div></form>
-	<?php
+	}  ?></form><?php
 }//end function
 
 		function initialize($id){
@@ -572,7 +621,11 @@ function displayRelationships(){
 				
 											
 			//load table specific functions
-			@ include($this->base."modules/".$this->thetabledef["name"]."/include/".$this->ref."_search_functions.php");
+			if ($this->thetabledef["type"]!="view")
+				@ include($this->base."modules/".$this->thetabledef["name"]."/include/".$this->thetabledef["maintable"]."_search_functions.php");
+            else
+				@ include($this->base."modules/".$this->thetabledef["name"]."/include/".$this->thetabledef["maintable"].$this->thetabledef["id"]."_search_functions.php");
+
 		}
 
 		function issueQuery(){
@@ -658,6 +711,7 @@ function displayRelationships(){
 	
 			//add start with & end with stuff
 				if ($params["startswith"]){ 
+					$params["startswith"]=addslashes($params["startswith"]);
 					//Get the startswithfield info
 					$i=0;
 					while($this->searchablefields[$i]["id"]!=$params["startswithfield"]) $i++;

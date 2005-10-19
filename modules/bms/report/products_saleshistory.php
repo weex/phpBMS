@@ -19,8 +19,9 @@ class salesHistoryReport{
 		$this->view=$variables["status"];
 		
 		$this->whereclause=$_SESSION["printing"]["whereclause"];
-		if($_SESSION["printing"]["sortorder"]);
-			$this->sortorder=$_SESSION["printing"]["sortorder"];
+		if(isset($_SESSION["printing"]["sortorder"]))
+			if($_SESSION["printing"]["sortorder"])
+				$this->sortorder=$_SESSION["printing"]["sortorder"];
 
 		if($this->whereclause=="") $this->whereclause="WHERE products.id!=-1";		
 		$this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
@@ -205,14 +206,11 @@ TH {
 if(isset($_POST["command"])){
 	$myreport= new salesHistoryReport();
 	$myreport->initialize($_POST);
-//	echo "<PRE>";
-//	var_dump($_POST);
-//	echo "</PRE>";
 	
 	$myreport->showReport();
 } else {
 	require("../../../include/fields.php");
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 	<title>Product Sales History </title>
@@ -250,7 +248,7 @@ if(isset($_POST["command"])){
 				<option value="Orders">Orders</option>
 		   </select>					
 		</div>
-		<div align="right" class="recordbottom">
+		<div align="right" class="box">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
 		</div>

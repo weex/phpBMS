@@ -52,9 +52,10 @@ function clean_pdf_reports($dir,$sectime=3600)
 function getUserName($id=0){
 	global $dblink;
 	if($id=="") $id=0;
-	$thequerystatment="select concat(firstname,\" \",lastname) as name from users where id=".$id;
-	$thequery = mysql_query($thequerystatment,$dblink);
-	$tempinfo = mysql_fetch_array($thequery);
+	$querystatment="select concat(firstname,\" \",lastname) as name from users where id=".$id;
+	$queryresult = mysql_query($querystatment,$dblink);
+	if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
+	$tempinfo = mysql_fetch_array($queryresult);
 	return trim($tempinfo["name"]);
 }
 
@@ -93,5 +94,55 @@ function dateFromSQLDate($sqlDate){
 	if(count($temparray)>1)
 		$thedate=mktime(0,0,0,$temparray[1],$temparray[2],$temparray[0]);
 	return $thedate;
+}
+
+function addSlashesToArray($thearray){
+	foreach($thearray as $key=>$value)
+		$thearray[$key]=addslashes($value);
+	return $thearray;
+}
+
+function htmlQuotes($string){
+	return str_replace("\"","&quot;",$string);
+}
+
+function showSaveCancel($ids=1){
+	?><div align="right"><input <?php if($ids==1) {?>accesskey="s"<?php }?> id="saveButton<?php echo $ids?>" name="command" type="submit" value="save" class="Buttons" style="width:68px;margin-right:3px;" /><input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" style="width:68px;" onClick="this.form.cancelclick.value=true;" <?php if($ids==1) {?>accesskey="x"<?php }?> /></div><?php
+}
+
+function buildStatusMessage($affected,$selected){
+	switch($affected){
+		case "0":
+			$message="No records";
+		break;
+		case "1":
+			$message="1 record";		
+		break;
+		default:
+			$message=$affected." records";					
+		break;
+	}
+	if($affected!=$selected)
+		$message.=" (of ".$selected." selected)";
+	return $message;
+}
+
+function buildWhereClause($idArray,$phrase){
+	$whereclause="";
+	foreach($idArray as $theid){
+		$whereclause.=" or ".$phrase."=".$theid;
+	}
+	$whereclause=substr($whereclause,3);
+	return $whereclause;
+}
+
+function getAddEditFile($tabledefid,$addedit="edit"){
+	global $dblink;
+	
+	$querystatement="SELECT ".$addedit."file AS thefile FROM tabledefs WHERE id=".$tabledefid;
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
+	$therecord=mysql_fetch_array($queryresult);
+	return $_SESSION["app_path"].$therecord["thefile"];
 }
 ?>

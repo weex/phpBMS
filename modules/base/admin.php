@@ -2,7 +2,7 @@
 	require("../../include/session.php");
 	include("include/admin_functions.php");
 	
-	if(!isset($_SESSION["admintab"])) $_SESSION["admintab"]="General";
+	if(!isset($_SESSION["admintab"])) $_SESSION["admintab"]="Settings";
 	if(!isset($_SESSION["tabletab"])) $_SESSION["tabletab"]="Reports";
 	
 	foreach($admintabs as $theadmin){

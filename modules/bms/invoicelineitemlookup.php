@@ -22,7 +22,7 @@
 			where clients.id=".$_GET["cid"]." and invoices.status != \"Void\" and invoices.status != \"Quote\" and
 			(".$checkpids.")";
 		$prquery=mysql_query($prlookupstatement,$dblink);
-		if (!$prquery) reportError(100,mysql_error()." ".$prlookupstatement);
+		if (!$prquery) reportError(100,mysql_error($dblink)." ".$prlookupstatement);
 		if (!mysql_num_rows($prquery)){
 			$prereqnotmet=true;
 		}

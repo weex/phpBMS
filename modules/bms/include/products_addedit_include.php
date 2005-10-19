@@ -10,15 +10,18 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,
+	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,type,
 				unitprice,unitcost,unitofmeasure,weight,isprepackaged,isoversized,packagesperitem,webenabled,
+				keywords,thumbnailmime,picturemime,webdescription,
 
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
 				FROM products
 				WHERE id=".$id;		
-	$thequery = mysql_query($querystatement,$dblink);
-	$therecord = mysql_fetch_array($thequery);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Select Failed: ".mysql_error($dblink)." -- ".$querystatement);
+
+	$therecord = mysql_fetch_array($queryresult);
 	return $therecord;
 }//end function
 
@@ -28,6 +31,7 @@ function setRecordDefaults(){
 	$therecord["id"]=NULL;
 	$therecord["categoryid"]=NULL;
 	
+	$therecord["type"]="Inventoried";
 	$therecord["status"]="In Stock";
 
 	$therecord["partnumber"]="";
@@ -45,94 +49,182 @@ function setRecordDefaults(){
 	$therecord["isoversized"]=NULL;
 	$therecord["packagesperitem"]=NULL;
 
+	$therecord["keywords"]="";
+	$therecord["thumbnailmime"]="";
+	$therecord["picturemime"]="";
+	$therecord["webdescription"]=NULL;
+
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
 
 	$therecord["creationdate"]=NULL;
 	$therecord["modifieddate"]=NULL;
-	
+		
 	return $therecord;	
 }//end function
 
 
-function updateRecord(){
+function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="UPDATE products SET ";
 	
-			$querystatement.="partnumber=\"".$_POST["partnumber"]."\", "; 
-			$querystatement.="partname=\"".$_POST["partname"]."\", "; 
-			$querystatement.="description=\"".$_POST["description"]."\", "; 
+			$querystatement.="partnumber=\"".$variables["partnumber"]."\", "; 
+			$querystatement.="partname=\"".$variables["partname"]."\", "; 
+			$querystatement.="description=\"".$variables["description"]."\", "; 
 		
-				$unitprice=ereg_replace("\\\$|,","",$_POST["unitprice"]);
-				$unitcost=ereg_replace("\\\$|,","",$_POST["unitcost"]);
+				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
+				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
 			
 			$querystatement.="unitprice=".$unitprice.", "; 
 			$querystatement.="unitcost=".$unitcost.", "; 
-			$querystatement.="unitofmeasure=\"".$_POST["unitofmeasure"]."\", "; 
+			$querystatement.="unitofmeasure=\"".$variables["unitofmeasure"]."\", "; 
 
-			$querystatement.="status=\"".$_POST["status"]."\", "; 
-			$querystatement.="categoryid=\"".$_POST["categoryid"]."\", "; 
+			$querystatement.="type=\"".$variables["type"]."\", "; 
+			$querystatement.="status=\"".$variables["status"]."\", "; 
+			$querystatement.="categoryid=\"".$variables["categoryid"]."\", "; 
 
-			$querystatement.="weight=".$_POST["weight"].", "; 
-			if(isset($_POST["isprepackaged"])) $querystatement.="isprepackaged=1, "; else $querystatement.="isprepackaged=0, ";
-			if(isset($_POST["isoversized"])) $querystatement.="isoversized=1, "; else $querystatement.="isoversized=0, ";
-			if($_POST["packagesperitem"])
-				$_POST["packagesperitem"]=1/$_POST["packagesperitem"];
-			$querystatement.="packagesperitem=".$_POST["packagesperitem"].", "; 
+			$querystatement.="weight=".$variables["weight"].", "; 
+			if(isset($variables["isprepackaged"])) $querystatement.="isprepackaged=1, "; else $querystatement.="isprepackaged=0, ";
+			if(isset($variables["isoversized"])) $querystatement.="isoversized=1, "; else $querystatement.="isoversized=0, ";
+			if($variables["packagesperitem"])
+				$variables["packagesperitem"]=1/$variables["packagesperitem"];
+			$querystatement.="packagesperitem=".$variables["packagesperitem"].", "; 
 
-			if(isset($_POST["webenabled"])) $querystatement.="webenabled=1, "; else $querystatement.="webenabled=0, ";
+			if(isset($variables["webenabled"])) $querystatement.="webenabled=1, "; else $querystatement.="webenabled=0, ";
+
+			$querystatement.="keywords=\"".$variables["keywords"]."\", "; 
+			$querystatement.="webdescription=\"".$variables["webdescription"]."\", "; 
+
+			if($variables["thumbchange"]){
+				if($variables["thumbchange"]=="upload"){
+					if (function_exists('file_get_contents')) {
+                    	$file = addslashes(file_get_contents($_FILES['thumbnailupload']['tmp_name']));
+					} else {
+	                    // If using PHP < 4.3.0 use the following:
+    	                $file = addslashes(fread(fopen($_FILES['thumbnailupload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+					}
+					$querystatement.="thumbnail=\"".$file."\", ";
+					$querystatement.="thumbnailmime=\"".$_FILES['thumbnailupload']['type']."\", ";
+				} else {
+					//delete
+					$querystatement.="thumbnail=NULL, ";
+					$querystatement.="thumbnailmime=NULL, ";
+				}
+			}
+			if($variables["picturechange"]){
+				if($variables["picturechange"]=="upload"){
+					if (function_exists('file_get_contents')) {
+                    	$file = addslashes(file_get_contents($_FILES['pictureupload']['tmp_name']));
+					} else {
+	                    // If using PHP < 4.3.0 use the following:
+    	                $file = addslashes(fread(fopen($_FILES['pictureupload']['tmp_name'], 'r'), filesize($_FILES['pictureupload']['tmp_name'])));
+					}
+					$querystatement.="picture=\"".$file."\", ";
+					$querystatement.="picturemime=\"".$_FILES['pictureupload']['type']."\", ";
+				} else {
+					//delete
+					$querystatement.="picture=NULL, ";
+					$querystatement.="picturemime=NULL, ";
+				}
+			}
 
 	//==== Almost all records should have this =========
-	$querystatement.="modifiedby=\"".$_SESSION["userinfo"]["id"]."\" "; 
-	$querystatement.="WHERE id=".$_POST["id"];
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="WHERE id=".$variables["id"];
 		
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) {
+		$error=mysql_error($dblink);
+		if(strpos($error,"Duplicate entry")===false)
+			reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+		else
+			return "Record not updated: Duplicate part number in another product found";
+	}
+	return "Record Updated";
 }// end function
 
 
-function insertRecord(){
+function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
 	$querystatement="INSERT INTO products ";
 	
-	$querystatement.="(partnumber,partname, description, unitprice,unitcost,unitofmeasure,status,categoryid,
-						weight,isprepackaged,isoversized,packagesperitem,webenabled,
+	$querystatement.="(partnumber,partname, description, unitprice,unitcost,unitofmeasure,type,status,categoryid,
+						weight,isprepackaged,isoversized,packagesperitem,webenabled,keywords,webdescription,
+						thumbnail,thumbnailmime,picture,picturemime,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_POST["partnumber"]."\", "; 
-			$querystatement.="\"".$_POST["partname"]."\", "; 
-			$querystatement.="\"".$_POST["description"]."\", "; 
+			$querystatement.="\"".$variables["partnumber"]."\", "; 
+			$querystatement.="\"".$variables["partname"]."\", "; 
+			$querystatement.="\"".$variables["description"]."\", "; 
 		
-				$unitprice=ereg_replace("\\\$|,","",$_POST["unitprice"]);
-				$unitcost=ereg_replace("\\\$|,","",$_POST["unitcost"]);
+				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
+				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
 			
 			$querystatement.=$unitprice.", "; 
 			$querystatement.=$unitcost.", "; 
-			$querystatement.="\"".$_POST["unitofmeasure"]."\", "; 
+			$querystatement.="\"".$variables["unitofmeasure"]."\", "; 
 
-			$querystatement.="\"".$_POST["status"]."\", "; 
-			$querystatement.="\"".$_POST["categoryid"]."\", "; 
+			$querystatement.="\"".$variables["type"]."\", "; 
+			$querystatement.="\"".$variables["status"]."\", "; 
+			$querystatement.="\"".$variables["categoryid"]."\", "; 
 
-			$querystatement.=$_POST["weight"].", "; 
-			if(isset($_POST["isprepackaged"])) $querystatement.="1, "; else $querystatement.="0, ";
-			if(isset($_POST["isoversized"])) $querystatement.="1, "; else $querystatement.="0, ";
-			if($_POST["packagesperitem"])
-				$_POST["packagesperitem"]=1/$_POST["packagesperitem"];
-			$querystatement.=$_POST["packagesperitem"].", "; 
+			$querystatement.=$variables["weight"].", "; 
+			if(isset($variables["isprepackaged"])) $querystatement.="1, "; else $querystatement.="0, ";
+			if(isset($variables["isoversized"])) $querystatement.="1, "; else $querystatement.="0, ";
+			if($variables["packagesperitem"])
+				$variables["packagesperitem"]=1/$variables["packagesperitem"];
+			$querystatement.=$variables["packagesperitem"].", "; 
 
-			if(isset($_POST["webenabled"])) $querystatement.="1, "; else $querystatement.="0, ";
+			if(isset($variables["webenabled"])) $querystatement.="1, "; else $querystatement.="0, ";
 				
+			$querystatement.="\"".$variables["keywords"]."\", "; 
+			$querystatement.="\"".$variables["webdescription"]."\", "; 
+
+			$file="NULL";
+			$mime="NULL";
+			if($variables["thumbchange"]){
+				if($variables["thumbchange"]=="upload"){
+					if (function_exists('file_get_contents')) {
+                    	$file = addslashes(file_get_contents($_FILES['thumbnailupload']['tmp_name']));
+					} else {
+	                    // If using PHP < 4.3.0 use the following:
+    	                $file = addslashes(fread(fopen($_FILES['thumbnailupload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+					}
+					$file="\"".$file."\"";
+					$mime="\"".$_FILES['thumbnailupload']['type']."\"";
+				} 
+			}
+			$querystatement.=$file.", ";
+			$querystatement.=$mime.", ";
+			
+			$file="NULL";
+			$mime="NULL";
+			if($variables["picturechange"]){
+				if($variables["picturechange"]=="upload"){
+					if (function_exists('file_get_contents')) {
+                    	$file = addslashes(file_get_contents($_FILES['pictureupload']['tmp_name']));
+					} else {
+	                    // If using PHP < 4.3.0 use the following:
+    	                $file = addslashes(fread(fopen($_FILES['pictureupload']['tmp_name'], 'r'), filesize($_FILES['pictureupload']['tmp_name'])));
+					}
+					$file="\"".$file."\"";
+					$mime="\"".$_FILES['pictureupload']['type']."\"";
+				}
+			}	
+			$querystatement.=$file.", ";
+			$querystatement.=$mime.", ";
+
 	//==== Almost all records should have this =========
-	$querystatement.=$_SESSION["userinfo"]["id"].", "; 
+	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
-	$querystatement.=$_SESSION["userinfo"]["id"].")"; 
+	$querystatement.=$userid.")"; 
 	
-	$thequery = mysql_query($querystatement,$dblink);
-	if(!$thequery) die ("Insert Failed: ".mysql_error()." -- ".$querystatement);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);
 }
 
@@ -160,16 +252,15 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord();
+				$statusmessage=updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);
 				$modifiedby=getUserName($therecord["modifiedby"]);
-				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

@@ -15,11 +15,12 @@
 	$refquery="select firstname,lastname,company from clients where id=".$_GET["refid"];
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);
-	
+
+	$pageTitle="Client Notes: ";
 	if($refrecord["company"]=="")
-		$pageTitle="Client: ".$refrecord["firstname"]." ".$refrecord["lastname"]." : Notes";
+		$pageTitle.=$refrecord["firstname"]." ".$refrecord["lastname"];
 	else
-		$pageTitle="Client: ".$refrecord["company"]." : Notes";
+		$pageTitle.=$refrecord["company"];
 
 
 	function doTabs(){

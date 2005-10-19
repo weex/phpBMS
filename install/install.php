@@ -28,10 +28,10 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			var mDatabase=getObjectFromID("mysqldb");
 			var mUser=getObjectFromID("mysqluser");
 			var mPassword=getObjectFromID("mysqluserpass");
-			theURL+="&ms="+escape(mServer.value);
-			theURL+="&mdb="+escape(mDatabase.value);
-			theURL+="&mu="+escape(mUser.value);
-			theURL+="&mup="+escape(mPassword.value);
+			theURL+="&ms="+encodeURI(mServer.value);
+			theURL+="&mdb="+encodeURI(mDatabase.value);
+			theURL+="&mu="+encodeURI(mUser.value);
+			theURL+="&mup="+encodeURI(mPassword.value);
 		}
 		var responseText= getObjectFromID(command+"results");
 		loadXMLDoc(theURL,null,false);

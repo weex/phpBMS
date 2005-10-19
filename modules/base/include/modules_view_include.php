@@ -45,6 +45,6 @@ else
 			$theid=$_POST["id"];
 		break;
 	}
-	header("Location: ../../search.php?id=".$tableid."#".$theid);
+	header("Location: ".$_SESSION["app_path"]."search.php?id=".$tableid."#".$theid);
 }
 ?>

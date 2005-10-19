@@ -1,4 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<?php 
+	phpinfo();
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>phpBMS - TEST</title>
@@ -70,9 +72,9 @@ Test text<br/>
 <form name="thereques" method="post" action="test.php">
 <fieldset >
 <legend>My Controls</legend>
-<BUTTON name="reset" type="reset" value="oops" accesskey="o" onCLick="alert('holy shnikeys');"><IMG src="http://www.google.com/intl/en/images/logo.gif" alt="oops" width="16" height=16 align="absmiddle"> reset</BUTTON>
-<input type="button" onCLick="alert('here - F')" accesskey="f" value="f-test" /><br />
-<input type="button" onCLick="alert('here - T')" accesskey="t" value="t-test" /><br />
+<button name="reset" type="reset" value="oops" accesskey="o" onClick="alert('holy shnikeys');"><img src="http://www.google.com/intl/en/images/logo.gif" alt="oops" width="16" height=16 align="absmiddle"> reset</button>
+<input type="button" onClick="alert('here - F')" accesskey="f" value="f-test" /><br />
+<input type="button" onClick="alert('here - T')" accesskey="t" value="t-test" /><br />
 
 <button type="button" name="command" id="savebutton" value="save" onClick="alert('test\nthis is a test alert.')">save record</button><br />
 <button type="submit" name="command" id="cancelbutton" value="cancel">cancel record</button><br />
@@ -89,8 +91,8 @@ Test text<br/>
 Test text<br/> 
 <fieldset accesskey="z">
 <legend accesskey="y">My Controls</legend>
-<input type="button" onCLick="alert('here - F')" accesskey="f" value="f-test" /><br />
-<input type="button" onCLick="alert('here - T')" accesskey="t" value="t-test" /><br />
+<input type="button" onClick="alert('here - F')" accesskey="f" value="f-test" /><br />
+<input type="button" onClick="alert('here - T')" accesskey="t" value="t-test" /><br />
 <label for="firstname">First Name</label><br />
 <input type="text" id="firstname" tabindex=1>
 

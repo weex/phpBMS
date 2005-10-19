@@ -18,45 +18,43 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<?PHP if (isset($statusmessage)) {?>
-	<div class="standout" style="margin-bottom:3px;"><?PHP echo $statusmessage ?></div>
-<?PHP } // end if ?>
 <div class="bodyline">
-				<h1><?php echo $pageTitle ?></h1>
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-			<div style="float:right;width:100px;"><br>
-				<div class="box">
-					<div>
-						id<br>
-						<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%">
-					</div>
-					<div>
-						version<br>
-						<input name="vresion" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable" style="width:100%">
-					</div>
-				</div>
-			
-			</div>
-			<div style="margin-right:103px;">
-				<div>
-					name<br>
-					<input name="displayname" type="text" value="<?php echo $therecord["displayname"]; ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:100%;">
-				</div>
-				<div>
-					module folder name<br>
-					<input name="name" type="text" value="<?php echo $therecord["name"]; ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:100%;">
-				</div>
-				<?php if($therecord["description"]){?>
-				<div>
-					description<br>
-					<em><?php echo $therecord["description"]?></em>
-				</div>
-				<?php } else echo "<DIV>&nbsp;<br>&nbsp;</div>"?>
-			</div>
-			<div class="recordbottom" align="right">
-	 	<input name="cancelclick" type="hidden" value="0">
-	 	<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" style="width:80px;" onClick="this.form.cancelclick.value=true;">
-	 	&nbsp;&nbsp;			
+	<h1><?php echo $pageTitle ?></h1>
+	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">			
+		<div style="float:right;width:100px;padding:0px;">
+			<fieldset style="margin-top:0px;padding-top:0px;">
+				<LEGEND>attributes</LEGEND>
+				<label for="id">
+					id<br />
+					<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:99%" />
+				</label>
+				<label for="version">
+					version<br />
+					<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable" style="width:99%" />
+				</label>
+			</fieldset>			
+		</div>
+		<div style="margin-right:105px;padding:0px;">
+			<FIELDSET>
+				<LEGEND>name / folder</LEGEND>
+				<label for="displayname">
+					name<br />
+					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:99%;" />
+				</label>
+				<label for="name">
+					folder name <em>(location)</em><br>
+					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:99%;" />
+				</label>					
+			</FIELDSET>
+		</div>
+		<fieldset style="clear:both;">
+			<legend><label for="description">description</label></legend>
+			<div style="padding-top:0px;"><textarea id="description" name="description" rows=7 cols="56" readonly="readonly" class="uneditable" style="width:99%"><?php echo $therecord["description"]?></textarea></div>
+		</fieldset>
+		
+		<div class="box" align="right">
+			<input name="cancelclick" type="hidden" value="0" />
+			<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" style="width:80px;margin-right:10px;" onClick="this.form.cancelclick.value=true;" />
 			</div>
 	</form>
 </div>

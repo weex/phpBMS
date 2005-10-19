@@ -4,7 +4,7 @@
 //=============================================
 //void
 function delete_record($theids){
-	// Null Function... can't delete line items outside the invoice
+	// Null Function... can't delete prerequisites outside the product
 }
 
 

@@ -2,7 +2,9 @@
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
-
+	
+	if($_SESSION["userinfo"]["accesslevel"]<30) header("Location: ".$_SESSION["app_path"]."noaccess.html");	
+	
 	include("include/products_functions.php");
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m")."/01/".date("Y");
 	if(!isset($_POST["todate"])) $_POST["todate"]=date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y")));
@@ -58,7 +60,7 @@
 	if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
 	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 
-	$pageTitle="Product: ".$refrecord["partname"].": Sales History";	
+	$pageTitle="Product Sales History: ".$refrecord["partname"];	
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -70,7 +72,7 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php product_tabs("Sales History",$_GET["id"]);?><div class="untabbedbox" style="padding:4px;">
+<?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
 	<h1><?php echo $pageTitle ?></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
 		<div class="box" style="vertical-align:middle;">

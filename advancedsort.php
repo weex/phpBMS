@@ -1,140 +1,161 @@
-<?php
-	include("include/session.php");
-	include("include/advancedsort_functions.php");
-	
-	if(!isset($_GET["id"])) reportError(100,"Passed Variable Not Present");
-	
-	//First, grab table name from id	
-	$querystatement="SELECT id,displayname,maintable FROM tabledefs WHERE id=".$_GET["id"];
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-	$thetabledef=mysql_fetch_array($queryresult);
+<?php 
+	require("include/session.php");
 
-	//Grab query for all columns (for sort purposes)
-	$querystatement="SELECT * FROM ".$thetabledef["maintable"]." LIMIT 1";
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-	$numfields = mysql_num_fields($queryresult);
-	for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_name($queryresult,$i);
-	
-	//saved search commands
-	$loadedsort="";
-	if(isset($_POST["command"])){
-		switch($_POST["command"]){
-			case "save sort":
-				save_sort($_SESSION["userinfo"]["id"],$thetabledef["id"],$_POST["savename"],$_POST["constructedquery"]);
+	function loadSavedSort($id){
+		global $dblink;
+		
+		$querystatement="SELECT sqlclause FROM usersearches 
+						WHERE id=".$id;
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot load saved sort");		
+		$therecord=mysql_fetch_array($queryresult);
+		echo $therecord["sqlclause"];
+	}
+
+	function deleteSavedSort($id){
+		global $dblink;
+		
+		$querystatement="DELETE FROM usersearches 
+						WHERE id=".$id;
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot delete saved sort<br/>".$querystatement);		
+		echo "success";
+	}
+
+	function displaySavedSortList($queryresult){
+		$numrows=mysql_num_rows($queryresult);
+		?>
+		<select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onChange="sortSavedSelect(this)" />
+			<?php if($numrows<1) {?>
+				<option value="NA">No Saved Sorts</option>
+			<?php 
+				} else {
+					$numglobal=0;
+					while($therecord=mysql_fetch_array($queryresult))
+						if($therecord["userid"]<1) $numglobal++;
+					mysql_data_seek($queryresult,0);				
+			?>			
+				<?php if($numglobal>0){ ?>
+				<option value="NA" style="font-style:italic;font-weight:bold"> -- global sorts ---------</option>
+				<?PHP
+					}//end if
+					$userqueryline=true;
+					while($therecord=mysql_fetch_array($queryresult)){
+						if ($therecord["userid"]> 0 and $userqueryline) {
+							$userqueryline=false;						
+							?><option value="NA" style="font-style:italic;font-weight:bold"> -- user sorts---------</option><?php 
+						}
+						?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php 
+					}// end while
+				}//end if
+			?>
+		</select>
+		<?php
+	}//end function
+
+	function showSavedSorts($tabledefid,$basepath,$userid){
+		global $dblink;
+
+		$querystatement="SELECT id,name,userid FROM usersearches 
+						WHERE tabledefid=".$tabledefid." AND type=\"SRT\" AND (userid=0 OR userid=\"".$userid."\") ORDER BY userid, name";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot retrieve saved sort infromation");
+		?><label for="sortSavedList">
+			saved sorts<br />
+			<?php displaySavedSortList($queryresult,$basepath)?>
+		</label>				
+		<div align="right">
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedDeleteButton" value="delete" disabled="true" onClick="sortSavedDelete('<?php echo $basepath ?>')"/>
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedLoadButton" value="load" disabled="true" onClick="sortSavedLoad('<?php echo $basepath ?>')"/>
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedCancelButton" value="cancel" onClick="closeModal()"/>
+		</div>
+		<?php
+	}
+
+	function saveSort($name,$sqlclause,$tabledefid,$userid){
+		global $dblink;
+		
+		$querystatement="insert into usersearches (userid,tabledefid,name,type,sqlclause) values (";
+		$querystatement.=$userid.", ";
+		$querystatement.="\"".$tabledefid."\", ";
+		$querystatement.="\"".$name."\", ";
+		$querystatement.="\"SRT\", ";		
+		$querystatement.="\"".$sqlclause."\")";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot Save Sort");
+		echo "success";
+	}
+
+	function showSort($tabledefid,$basepath){
+		global $dblink;
+		
+		//First, grab table name from id	
+		$querystatement="SELECT querytable FROM tabledefs WHERE id=".$tabledefid;
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
+		$thetabledef=mysql_fetch_array($queryresult);
+
+		//Grab query for all columns
+		$querystatement="SELECT * FROM ".$thetabledef["querytable"]." LIMIT 1";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
+		$numfields = mysql_num_fields($queryresult);
+		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_table($queryresult,$i).".".mysql_field_name($queryresult,$i);
+		?><table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td valign=top width="99%">
+					<div id="theSorts" style="margin:0px;padding:0px;">
+						<div id="Sort1">
+							<select id="Sort1Field" onChange="updateSort()">
+								<?php 
+									foreach($fieldlist as $field){
+										echo "<option value=\"".$field."\" >".$field."</option>\n";}?>
+							</select>
+							<select id="Sort1Order" onChange="updateSort()">
+								 <option value="ASC" selected="selected">Ascending</option>
+								 <option value="DESC">Descending</option>
+							</select>
+							<button type="button" id="Sort1Up" class="invisibleButtons" onClick="sortMove(this,'up')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up-disabled.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
+							<button type="button" id="Sort1Down" class="invisibleButtons" onClick="sortMove(this,'down')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down-disabled.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
+							<button type="button" id="Sort1Minus" class="invisibleButtons" onClick="sortRemoveLine(this)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus-disabled.png" align="middle" alt="-" width="16" height="16" border="0" /></button>
+							<button type="button" id="Sort1Plus" class="invisibleButtons" onClick="sortAddLine()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button>
+						</div>
+					</div>
+					<div>
+						sql order by clause<br/>
+						<textarea id="sortSQL" style="width:98%;height:75px;" cols="57" rows="4" onKeyUp="sortEnableButtons(this)" ></textarea>		
+					</div>
+				</td>
+				<td valign=top><br/>
+					<div><input id="sortRunSort" type="button" onClick="performAdvancedSort(this)" class="Buttons" disabled="true" value="run sort" style="width:90px;" /></div>
+					<div><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load..." style="width:90px;" /></div>
+					<div><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save..." style="width:90px;" /></div>
+					<div><input id="sortClearSort" type="button" onClick="clearSort()" class="Buttons" disabled="true" value="clear sort" style="width:90px;" /></div>
+				</td>
+			</tr>
+		</table>
+		<?php		
+		
+	}
+
+
+	if(isset($_GET["cmd"])){
+		switch($_GET["cmd"]){
+			case "show":
+				showSort($_GET["tid"],$_GET["base"]);
 			break;
-	
-			case "delete sort":
-				delete_sort($_SESSION["userinfo"]["id"],$_POST["loadsearch"]);
+			case "save":
+				saveSort($_GET["name"],$_GET["clause"],$_GET["tid"],$_SESSION["userinfo"]["id"]);
 			break;
-	
-			case "load sort":
-				$loadedsort=load_sort($_POST["loadsearch"]);
+			case "showSaved":
+				showSavedSorts($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"]);
+			break;
+			case "deleteSaved":
+				deleteSavedSort($_GET["id"]);
+			break;
+			case "loadSaved":
+				loadSavedSort($_GET["id"]);
 			break;
 		}//end switch
-	}//end if
-	
-	//get all saved searches for this table, for hthe user (or global)
-	$savedsorts=get_saved_sorts($_SESSION["userinfo"]["id"],$thetabledef["id"]);
+	}
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title><?php echo $thetabledef["displayname"]; ?> Advanced Sort</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="common/javascript/common.js"></script>
-<script language="JavaScript" src="common/javascript/advancedsort.js"></script>
-</head>
-<body>
-<script>self.resizeTo(540,360)</script>
-<div class=bodyline>
-	<div class=large><strong><?php echo $thetabledef["displayname"]; ?> Advanced Sort</strong></div>
-	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]?>" method="post" name="queryconstruct">
-		<input name="tablename" type="hidden" value="<?php echo $thetabledef["maintable"] ?>">
-<table border="0" cellspacing="0" cellpadding="0" class="box">
-	<tr>
-		<td width="100%">
-			<div>
-				sort by<br>
-				<select name="sortby" onChange="checkForCustom(this.value)" style="width:100%">
-					<?php 
-						foreach($fieldlist as $field){
-							echo "<option value=\"".$field."\"";
-							if($field=="id") echo "selected";
-							echo ">".$field."</option>\n";
-						}
-					?>
-					<option value="**CUSTOM**" class="important">custom SQL</option>
-				</select>
-				<div id="sqlsortby" class="" style="display:none;padding-left:0px;padding-right:0px">
-					<input type="text" name="freetextsortby"  size="5" style="width:100%;">
-				</div>
-			</div>
-		</td>
-		<td valign="top">
-			<div>
-				order<br>
-				<select name="order">
-					<option value="ASC">Ascending</option>
-					<option value="DESC">Descending</option>
-				</select>
-			</div>
-		</td>
-		<td valign="top">
-			<div>
-				<br><input type="button" name="addterm" value="add to sort" class="Buttons" onClick="addToSort(this.form,'<?php echo $thetabledef["maintable"]?>')">
-			</div>
-		</td>
-	</tr>
-</table>
-<div>
-<select style="width:98%" class="small" size="6" name="englishsortby"></select>
-</div>
-<div align="center">
-</div>
-<div class="box">
-	<div>
-		<input name="movedn" type="button" class="smallButtons" value="move item down" style="" onClick="moveItem(this.form,'down')">
-		<input name="moveup" type="button" class="smallButtons" value="move item up" style="" onClick="moveItem(this.form,'up')">
-		<input name="deleteitem" type="button" class="smallButtons" value="remove item" style="" onClick="removeItem(this.form)">
-		<input name="reset" type="button" class="smallButtons" value="clear sort" style="" onClick="clearSort(this.form)">
-	</div>
-	<div style="padding-top:0px;">
-		<input name="showsql" id="showsql"type="button" class="smallButtons" onClick="togglesql();" value="show SQL" style="width:120px;">
-		<input name="savedsorts" id="savedsorts" onClick="togglesavedsorts()" type="button" class="smallButtons" value="saved sorts..."  style="width:120px;">
-	</div>
-</div>
-	<div class=box id="sqlbox" style="display:none;">
-		<div>SQL<br>
-			<textarea name="constructedquery" cols="85" rows="3" class=small style="width:100%"><?PHP echo $loadedsort; ?></textarea>
-		</div>		
-	</div>
-	<div class=box id="savedsortsbox" style="display:none;">
-		<div style="float:right;width:120px;"><br>
-			<input name="command" type="submit" class="Buttons" value="load sort" style="width:120px;margin-bottom:3px;" <?php if(!mysql_num_rows($savedsorts)) echo "disabled"?>><br>
-        	<input name="command" type="submit" class="Buttons" value="delete sort" style="width:120px;" <?php if(!mysql_num_rows($savedsorts)) echo "disabled"?>>
-		</div>
-		<div style="margin-right:130px;">
-			saved sorts<br>
-			<?PHP display_saved_sort_list($savedsorts); ?><br><br>&nbsp;
-		</div>
-	</div>
-	<div class="recordbottom" align="right">
-		<input name="savename" type="hidden" size="32" maxlength="64" style="">
-		<input class=Buttons name="command" type="button" value="execute sort" onClick="dosort(this.form)" style="width:100px;">
-		<input name="command" type="submit" onClick="getname(this.form);" class="Buttons" value="save sort" style="width:100px;">
-		<input class=Buttons name="cancel" type="button" onClick="window.close();" value="cancel" style="width:100px;"> 		
-	</div>
-	<?php if($loadedsort){?>
-		<script language="javascript">document["queryconstruct"]["showsql"].click();</script>
-	<?php }?>
-	</form>
-</div>
-
-
-
-
-</body>
-</html>

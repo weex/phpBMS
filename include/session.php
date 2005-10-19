@@ -3,7 +3,6 @@
 // in settings.php into session variables.
 //=========================================
 function loadSettings() {
-	$_SESSION["isloaded"]=true;
 	
 	$path="";
 	$count=1;
@@ -44,36 +43,35 @@ function reportError($id,$extras){
 	die();
 }
 
-function sendDebug($variable){
-	echo "<PRE class=small>";
-	var_dump($variable);
-	echo "</PRE><br><br>";
-}
-
-// Start Code
-//=================================================================================================================
-	session_start();
-	error_reporting(E_ALL);
-	$mainpath="";
-	if (!isset($_SESSION["isloaded"])) $mainpath=loadSettings();
-	
-	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
-	// no session information and not index.php
-			header("Location: ".$mainpath."index.php");
-	} else {
-
-		// OPEN DATABASE IF NOT OPENED
-		if(!isset($dblink)){
-			$dblink = mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
-			if (!$dblink) { session_destroy(); die("No Link to MySQL possible"); }
-			if (!mysql_select_db($_SESSION["mysql_database"])) {session_destroy(); die("Couldn't open database: ".mysql_error()); }
-		}	
-	}//end if
-	
 function xmlEncode($str){
 	$str=str_replace("&","&amp;",$str);
 	$str=str_replace("<","&lt;",$str);
 	$str=str_replace(">","&gt;",$str);
 	return $str;
 }
+
+// Start Code
+//=================================================================================================================
+	session_start();
+	error_reporting(E_ALL);
+	if (!isset($_SESSION["app_path"])) $mainpath=loadSettings();
+	else $mainpath=$_SESSION["app_path"];
+	
+	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
+		if(isset($loginNoKick)){
+			if(!isset($loginNoDisplayError))
+				header("Location: ".$mainpath."noaccess.html");				
+		} else{
+			header("Location: ".$mainpath."index.php");
+		}
+	} else {
+
+		// OPEN DATABASE IF NOT OPENED
+		if(!isset($dblink)){
+			$dblink = mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
+			if (!$dblink) { session_destroy(); die("Error: No Link to MySQL possible"); }
+			if (!mysql_select_db($_SESSION["mysql_database"])) {session_destroy(); die("Error: Couldn't open database: ".mysql_error($dblink)); }
+		}	
+	}//end if
+	
 ?>

@@ -10,7 +10,7 @@ function invoice_tabs($selected="none",$id=0) {
 	$thetabs=array(
 		array(
 			"name"=>"General",
-			"href"=>($id)?"invoices_addedit.php?id=".$id:"/invoices_addedit.php"
+			"href"=>($id)?"invoices_addedit.php?id=".$id:"invoices_addedit.php"
 		),
 		array(
 			"name"=>"Notes/Messages",
