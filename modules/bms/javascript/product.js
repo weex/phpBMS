@@ -1,3 +1,16 @@
+function init(){
+	var thepn=getObjectFromID("partname");
+	thepn.focus();
+}
+
+function showWeb(thecheckbox){
+	var thewebstuff=getObjectFromID("webstuff");
+	if(thecheckbox.checked)
+		thewebstuff.style.display="block";
+	else
+		thewebstuff.style.display="none";
+}
+
 function editPreviewWebDesc(thebutton){
 	var editDiv=getObjectFromID("webDescEdit");
 	var previewDiv=getObjectFromID("webDescPreview");

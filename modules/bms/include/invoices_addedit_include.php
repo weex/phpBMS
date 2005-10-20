@@ -4,7 +4,7 @@ function getLineItems($id){
 	global $dblink;
   	$querystatement="SELECT lineitems.id,lineitems.productid,
 	
-				products.partnumber as partnumber, products.partname as partname,
+				products.partnumber as partnumber, products.partname as partname, lineitems.taxable,
 				lineitems.quantity as quantity, concat(\"\$\",format(lineitems.unitprice,2)) as unitprice, 
 				lineitems.unitprice as numprice, lineitems.unitcost as unitcost, lineitems.unitweight as unitweight, lineitems.memo as memo,
 				concat(\"\$\",format((lineitems.unitprice*lineitems.quantity),2)) as extended 
@@ -40,7 +40,9 @@ function addLineItems($values,$invoiceid,$userid){
 	$lineitems= explode("{[]}",$values);		
 	foreach($lineitems as $lineitem) {
 		$fields=explode("[//]",$lineitem);
-		$querystatement="INSERT INTO lineitems (invoiceid,productid,quantity,unitcost,unitprice,unitweight,memo,createdby,creationdate,modifiedby) VALUES (";
+		var_dump($fields);
+		echo "<br>";
+		$querystatement="INSERT INTO lineitems (invoiceid,productid,quantity,unitcost,unitprice,unitweight,taxable,memo,createdby,creationdate,modifiedby) VALUES (";
 		$querystatement.=$invoiceid.", ";
 		if(trim($fields[0])!="" and trim($fields[0])!="0"){
 			$querystatement.=trim($fields[0]).", ";
@@ -61,6 +63,10 @@ function addLineItems($values,$invoiceid,$userid){
 			$querystatement.="0, ";
 		if(trim($fields[2])!="" and trim($fields[2])!="0")
 			$querystatement.=trim($fields[2]).", ";
+		else
+			$querystatement.="0, ";
+		if(trim($fields[6])!="" and trim($fields[6])!="0")
+			$querystatement.=trim($fields[6]).", ";
 		else
 			$querystatement.="0, ";
 		$querystatement.="\"".trim($fields[5])."\",";
@@ -92,12 +98,12 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, clientid, status, totalweight, totaltni, totalti, totalcost,
+	$querystatement="SELECT id, clientid, status, type, totalweight, totaltni, totalti, totalcost,
 					leadsource, shippingmethod, paymentmethod, checkno, bankname, ccnumber,
 					ccexpiration, specialinstructions, printedinstructions, tax, shipping,
-					address1,address2,city,state,postalcode, country, amountpaid, shipped, 
+					address1,address2,city,state,postalcode, country, amountpaid, 
 					trackingno, taxareaid, taxpercentage, totalti-amountpaid as amountdue,
-					weborder,webconfirmationno,ccverification,
+					weborder,webconfirmationno,ccverification, totaltaxable, discountamount,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
@@ -122,7 +128,8 @@ function setRecordDefaults(){
 	//from quickview
 	if(isset($_GET["cid"]))
 		$therecord["clientid"]=$_GET["cid"];
-	$therecord["status"]="Order";
+	$therecord["type"]="Order";
+	$therecord["status"]="Open";
 
 	$therecord["leadsource"]="";
 	$therecord["address1"]="";
@@ -137,13 +144,14 @@ function setRecordDefaults(){
 	$therecord["shippingmethod"]=NULL;
 	$therecord["tax"]=0;
 	$therecord["totalweight"]=0;
+	$therecord["discountamount"]=0;
 	$therecord["subtotal"]=0;
 	$therecord["totaltni"]=0;
+	$therecord["totaltaxable"]=0;
 	$therecord["totalti"]=0;
 	$therecord["shipping"]=0;
 	$therecord["totalcost"]=0;
 
-	$therecord["shipped"]=0;
 	$therecord["weborder"]=0;
 	$therecord["shippeddate"]=NULL;
 	$therecord["trackingno"]="";
@@ -219,12 +227,14 @@ function updateRecord($variables,$userid){
 			$querystatement.="country=\"".$variables["country"]."\", "; 
 
 				$totaltni=ereg_replace("\\\$|,","",$variables["totaltni"]);
+				$totaltaxable=ereg_replace("\\\$|,","",$variables["totaltaxable"]);
 				$totalti=ereg_replace("\\\$|,","",$variables["totalti"]);
 				$shipping=ereg_replace("\\\$|,","",$variables["shipping"]);
 				$tax=ereg_replace("\\\$|,","",$variables["tax"]);
 				$amountpaid=ereg_replace("\\\$|,","",$variables["amountpaid"]);
 
 			$querystatement.="totaltni=".$totaltni.", "; 
+			$querystatement.="totaltaxable=".$totaltaxable.", "; 
 			$querystatement.="totalti=".$totalti.", "; 
 			$querystatement.="shipping=".$shipping.", "; 
 			$querystatement.="tax=".$tax.", "; 
@@ -300,7 +310,7 @@ function insertRecord($variables,$userid){
 	}
 	$querystatement="INSERT INTO invoices 
 			(clientid,leadsource,status,orderdate,
-			invoicedate,address1,address2,city,state,postalcode, country, totaltni,totalti,shipping,tax,amountpaid,
+			invoicedate,address1,address2,city,state,postalcode, country, totaltni, totaltaxable, totalti,shipping,tax,amountpaid,
 			totalcost,totalweight,shippingmethod,shipped,shippeddate,trackingno,paymentmethod,
 			checkno,bankname,ccnumber,ccexpiration,ccverification,specialinstructions,printedinstructions,
 			taxareaid, taxpercentage, weborder,webconfirmationno,ponumber,requireddate,
@@ -337,12 +347,14 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["country"]."\", "; 
 
 				$totaltni=ereg_replace("\\\$|,","",$variables["totaltni"]);
+				$totaltaxable=ereg_replace("\\\$|,","",$variables["totaltaxable"]);
 				$totalti=ereg_replace("\\\$|,","",$variables["totalti"]);
 				$shipping=ereg_replace("\\\$|,","",$variables["shipping"]);
 				$tax=ereg_replace("\\\$|,","",$variables["tax"]);
 				$amountpaid=ereg_replace("\\\$|,","",$variables["amountpaid"]);
 
 			$querystatement.=$totaltni.", "; 
+			$querystatement.=$totaltaxable.", "; 
 			$querystatement.=$totalti.", "; 
 			$querystatement.=$shipping.", "; 
 			$querystatement.=$tax.", "; 

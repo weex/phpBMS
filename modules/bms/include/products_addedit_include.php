@@ -10,9 +10,9 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,type,
+	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,type,taxable,inactive,
 				unitprice,unitcost,unitofmeasure,weight,isprepackaged,isoversized,packagesperitem,webenabled,
-				keywords,thumbnailmime,picturemime,webdescription,
+				keywords,thumbnailmime,picturemime,webdescription,memo,
 
 				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
 				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
@@ -31,7 +31,9 @@ function setRecordDefaults(){
 	$therecord["id"]=NULL;
 	$therecord["categoryid"]=NULL;
 	
-	$therecord["type"]="Inventoried";
+	$therecord["inactive"]=0;
+	$therecord["taxable"]=1;
+	$therecord["type"]="Inventory";
 	$therecord["status"]="In Stock";
 
 	$therecord["partnumber"]="";
@@ -54,6 +56,8 @@ function setRecordDefaults(){
 	$therecord["picturemime"]="";
 	$therecord["webdescription"]=NULL;
 
+	$therecord["memo"]="";
+
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
 
@@ -73,6 +77,10 @@ function updateRecord($variables,$userid){
 			$querystatement.="partnumber=\"".$variables["partnumber"]."\", "; 
 			$querystatement.="partname=\"".$variables["partname"]."\", "; 
 			$querystatement.="description=\"".$variables["description"]."\", "; 
+
+			if(isset($variables["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
+			if(isset($variables["taxable"])) $querystatement.="taxable=1, "; else $querystatement.="taxable=0, ";
+			$querystatement.="memo=\"".$variables["memo"]."\", "; 
 		
 				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
 				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
@@ -152,7 +160,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO products ";
 	
-	$querystatement.="(partnumber,partname, description, unitprice,unitcost,unitofmeasure,type,status,categoryid,
+	$querystatement.="(partnumber,partname, description, inactive,taxable,memo, unitprice,unitcost,unitofmeasure,type,status,categoryid,
 						weight,isprepackaged,isoversized,packagesperitem,webenabled,keywords,webdescription,
 						thumbnail,thumbnailmime,picture,picturemime,
 						createdby,creationdate,modifiedby) VALUES (";
@@ -160,6 +168,10 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["partnumber"]."\", "; 
 			$querystatement.="\"".$variables["partname"]."\", "; 
 			$querystatement.="\"".$variables["description"]."\", "; 
+
+			if(isset($variables["inactive"])) $querystatement.="1, "; else $querystatement.="0, ";
+			if(isset($variables["taxable"])) $querystatement.="1, "; else $querystatement.="0, ";
+			$querystatement.="\"".$variables["memo"]."\", "; 
 		
 				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
 				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);

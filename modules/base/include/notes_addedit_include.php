@@ -28,6 +28,8 @@ function repeatTaskUpdate($parentid){
 	if(mysql_num_rows($queryresult)){
 		$therecord=mysql_fetch_array($queryresult);
 		repeatTask($therecord["id"]);
+	} else {
+		repeatTask($parentid);
 	}
 }
 

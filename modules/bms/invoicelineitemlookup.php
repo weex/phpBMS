@@ -30,9 +30,9 @@
 	
 	
 	if(!$prereqnotmet) {
-		$querystatement="Select id,partnumber,partname,unitprice,concat(\"\$\",format((unitprice),2)) as formatedprice, 
-						description, weight, unitcost
-						from products where id=".$id;
+		$querystatement="SELECT id,partnumber,partname,unitprice,concat(\"\$\",format((unitprice),2)) as formatedprice, 
+						description, weight, unitcost, taxable
+						FROM products WHERE id=".$id;
 		$queryresult= mysql_query($querystatement,$dblink);
 		$therecord=mysql_fetch_array($queryresult);
 	} else {
@@ -42,6 +42,7 @@
 		$therecord["unitprice"]="";
 		$therecord["formatedprice"]="";
 		$therecord["description"]="";
+		$therecord["taxable"]="";
 		$therecord["weight"]="";
 		$therecord["unitcost"]="";
 	}
@@ -61,6 +62,9 @@
 
 	<field>ds-partname</field>
 	<value><?php echo xmlEncode($therecord["partname"]) ?></value>
+
+	<field>taxable</field>
+	<value><?php echo xmlEncode($therecord["taxable"]) ?></value>
 
 	<field>memo</field>
 	<value><?php echo xmlEncode($therecord["description"]) ?></value>

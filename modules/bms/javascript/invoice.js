@@ -3,11 +3,9 @@ function returnFalse(){
 }
 
 function initializePage(){
-	var shippeddateB=getObjectFromID("shippeddateButton");
 	
-	SDBOC=shippeddateB.onclick;
-	setShipped();
 	calculateTotal();
+	showPaymentOptions();
 	var theid=getObjectFromID("id");
 	var clientid=getObjectFromID("clientid");
 	if(clientid.value!=""){
@@ -136,11 +134,12 @@ function estimateShipping(){
 			thevalue = response.getElementsByTagName('value')[0].firstChild.data; 
 		var theshipping=getObjectFromID("shipping");
 		if(thevalue==0){
-			var message="Estimate shipping returned a zero value. \n";
-			message   +="This may be caused because:\n\n";
-			message   +="1) The site UPS is not working or could not ship to the zip/postal code using the shipping method.\n";
-			message   +="2) The products on the invoice do not contain the proper shipping information.\n";
-			message   +="3) A unrecognized form of shipping was chosen. (non UPS)";
+			var message="<div class=\"important\">Estimate shipping returned a zero value.</div>";
+			message   +="<div>This may be caused because:</div><ol>";
+			message   +="<li>The UPS calculating site is not working.</li>";
+			message   +="<li>UPS could not ship to the zip/postal code using the shipping method.</li>";
+			message   +="<li>The products on the invoice do not contain the proper shipping information.</li>";
+			message   +="<li>An unrecognized form of shipping was chosen. (non UPS)</li></ol>";
 			alert(message);
 		}
 		theshipping.value=thevalue;
@@ -224,14 +223,19 @@ function deleteLine(thebutton){
 
 	var attribs;
 	if(thetd.firstChild.innerHTML)
-		attribs= thetd.firstChild.innerHTML.split("[//]",6);
+		attribs= thetd.firstChild.innerHTML.split("[//]",7);
 	else
-		attribs= thetd.childNodes[1].innerHTML.split("[//]",6);
+		attribs= thetd.childNodes[1].innerHTML.split("[//]",7);
 	
 	var unitcost= attribs[1];
 	var quantity= attribs[4];
 	var unitprice= attribs[3];
 	var unitweight= attribs[2];	
+	var taxable= attribs[6];	
+
+	//Update Total Taxable
+	var totaltaxable=getObjectFromID("totaltaxable");
+	totaltaxable.value=totaltaxable.value-(unitprice*quantity*taxable);
 
 	//Update Total Cost
 	var totalcost=getObjectFromID("totalcost");
@@ -242,8 +246,8 @@ function deleteLine(thebutton){
 	totalweight.value=Math.round((parseFloat(totalweight.value)-(parseFloat(unitweight)*parseFloat(quantity)))*1000)/1000;
 	
 	//Update Totals
-	var totaltni=getObjectFromID("totaltni");
-	totaltni.value=dollartoNumber(totaltni.value)-(unitprice*quantity);
+	var totalBD=getObjectFromID("totalBD");
+	totalBD.value=parseFloat(totalBD.value)-(unitprice*quantity);
 	calculateTotal();
 
 	// Remove The Line
@@ -268,6 +272,7 @@ function addLine(thetd){
 	var unitprice=getObjectFromID("price");
 	var quantity=getObjectFromID("qty");
 	var extended=getObjectFromID("extended");
+	var taxable=getObjectFromID("taxable");
 	var imgPath=getObjectFromID("imgpath");
 
 	if(unitcost.value=="")
@@ -342,7 +347,8 @@ function addLine(thetd){
 	content+=unitweight.value+"[//]";
 	content+=dollartoNumber(unitprice.value)+"[//]";
 	content+=quantity.value+"[//]";
-	content+=memo.value+"</span>";
+	content+=memo.value+"[//]";
+	content+=taxable.value+"</span>";
 	content+="<button type=\"button\" class=\"invisibleButtons\" onClick=\"return deleteLine(this)\"><img src=\""+imgPath.value+"/button-minus.png\" align=\"middle\" alt=\"-\" width=\"16\" height=\"16\" border=\"0\" /></button>";
 	temptd.innerHTML=content
 	thetr.appendChild(temptd);
@@ -357,9 +363,13 @@ function addLine(thetd){
 	var totalweight=getObjectFromID("totalweight");
 	totalweight.value=Math.round((parseFloat(totalweight.value)+(parseFloat(unitweight.value)*parseFloat(quantity.value)))*1000)/1000;
 	
+	//Update Total taxable
+	var totaltaxable=getObjectFromID("totaltaxable");
+	totaltaxable.value=parseFloat(totaltaxable.value)+(dollartoNumber(extended.value)*parseFloat(taxable.value));
+
 	//Update Totals
-	var totaltni=getObjectFromID("totaltni");
-	totaltni.value=dollartoNumber(totaltni.value)+dollartoNumber(extended.value);
+	var totalBD=getObjectFromID("totalBD");
+	totalBD.value=parseFloat(totalBD.value)+dollartoNumber(extended.value);
 	calculateTotal();
 	
 	//clear line
@@ -367,6 +377,7 @@ function addLine(thetd){
 	partnumber.value="";
 	partname.value="";
 	memo.value="";
+	taxable.value=1;
 	unitweight.value=0
 	unitcost.value=0
 	unitprice.value="$0.00"
@@ -435,23 +446,14 @@ function checkShipping(){
 
 //this function sets the default shipped date information for shipping appropriately
 function setShipped(){
-	var thecheckbox=getObjectFromID("shipped");
+	var thecheckbox=getObjectFromID("statusShipped");
 	var thedate=getObjectFromID("shippeddate");
-	var thedateB=getObjectFromID("shippeddateButton");
 
 	if(thecheckbox){
 		if(thecheckbox.checked && thecheckbox.disabled==false) {
 			var currentdate= new Date();
 			thedate.value=(currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-			thedate.removeAttribute("readonly");
-			thedate.className=null;
-			thedateB.onclick=SDBOC;		
-		} else {
-			thedate.value="";
-			thedate.setAttribute("readonly","readonly");
-			thedateB.onclick=returnFalse;
-			thedate.className="uneditable";
-		}
+		} 
 	}
 }
 
@@ -475,14 +477,25 @@ function calculatePaidDue(){
 
 //this function adds all the tax,shipping,subtotal, and totaling stuff
 function calculateTotal(){
+	var thetotalBD=getObjectFromID("totalBD");
 	var subtotal=getObjectFromID("totaltni");
+	var discount=getObjectFromID("discountamount");
 	var shipping=getObjectFromID("shipping"); 
 	var taxpercentage=getObjectFromID("taxpercentage");
 	var tax=getObjectFromID("tax");
 	var totalti=getObjectFromID("totalti");
+	var totaltaxable=getObjectFromID("totaltaxable");
 	
-	//first calculate and reformat subtotal
-	var numsubtotal=dollartoNumber(subtotal.value);
+	//calculate and reformat discount
+	var numDiscount=dollartoNumber(discount.value);
+	var discountValue=formatDollar(numDiscount);
+	discount.value=discountValue;
+
+	//calculate totaltaxable
+	var numTotalTaxable=parseFloat(totaltaxable.value)-numDiscount;
+	
+	//calculate and reformat subtotal
+	var numsubtotal=parseFloat(thetotalBD.value)-numDiscount;
 	var subtotalValue=formatDollar(numsubtotal);
 	subtotal.value=subtotalValue;
 
@@ -494,10 +507,10 @@ function calculateTotal(){
 	//next calculate and reformat tax
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
 	if (taxpercentagevalue!=0)
-		var numtax=numsubtotal*(taxpercentagevalue/100);
+		var numtax=numTotalTaxable*(taxpercentagevalue/100);
 	else {
 		var numtax=dollartoNumber(tax.value);
-		taxpercentagevalue=(numtax/numsubtotal)*100;
+		taxpercentagevalue=(numtax/numTotalTaxable)*100;
 		taxpercentage.value=taxpercentagevalue;
 		validatePercentage(taxpercentage,5);
 	}

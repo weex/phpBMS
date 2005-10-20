@@ -18,7 +18,8 @@ INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; backgro
 INPUT[disabled]:Active{border:1px outset black;}
 FORM{margin:0px;padding:0px;}
 DIV {padding:3px;}
-UL{margin:5px;padding-left:20px;}
+UL,OL{margin:5px;padding-left:20px; margin-bottom:0px;}
+LI{margin-bottom:5px;}
 
 A {	color : #455372; font-weight:bold; text-decoration:none;}
 A:Hover { text-decoration:underline;}
@@ -29,7 +30,7 @@ A:Hover { text-decoration:underline;}
 
 .uneditable,.uneditable:Focus {background-color:transparent;}
 .disabledtext{color:#CCCCCC;}
-.radiochecks ,.radiochecks:Focus{background-color:white;color:black; border:0;}
+.radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
 
 .Buttons,.smallButtons {
 	background-image:url(button-backs.png);
@@ -288,7 +289,7 @@ border-bottom-width:0px;
 }
 .qr2{background-color:white;}
 
-.qr1:hover, .qr2:Hover {background-color:#E4ECEC;}
+.qr1:hover, .qr2:Hover {background-color:#999999;}
 
 .qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
 .qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
@@ -550,3 +551,8 @@ border-bottom-width:0px;
 #modalContent{
 	padding:4px;
 }
+/* ============================================================================== */
+/*  Invoice                                                                       */
+/* ============================================================================== */
+
+.invoiceTotalLabels{padding-left:50px;}

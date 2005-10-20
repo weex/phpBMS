@@ -17,7 +17,7 @@
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="javascript/product.js"></script>
 </head>
-<body><?php include("../../menu.php")?>
+<body onLoad="init();"><?php include("../../menu.php")?>
 
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <?php product_tabs("General",$therecord["id"]);?><div class="bodyline">
@@ -25,136 +25,182 @@
 	<div style="float:right;width:160px;"><?php showSaveCancel(1); ?></div>
 	<h1 style="margin-right:162px;"><?php echo $pageTitle ?></h1>
 	
-	<fieldset style="clear:both;float:right;width:200px;margin-top:0px;">
-		<legend>attributes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">
-		</label>
-		<label for="ds-categoryid">
-			product category<br />
-			<?PHP autofill("categoryid",$therecord["categoryid"],7,"productcategories.id","productcategories.name","\"\"","",Array("size"=>"24","maxlength"=>"64","style"=>"width:98%"),1,"Category name cannot be blank.") ?>
-		</label>
-		<label for="status">
-			type<br />
-			<?PHP basic_choicelist("type",$therecord["type"],Array(Array("name"=>"Inventoried","value"=>"Inventoried"),Array("name"=>"Non-Inventoried","value"=>"Non-Inventoried"),Array("name"=>"Kit","value"=>"Kit"),Array("name"=>"Assembly","value"=>"Assembly"),Array("name"=>"Raw Material","value"=>"Raw Material"),Array("name"=>"Service","value"=>"Service")));?>
-		</label>
-		<label for="status">
-			status<br />
-			<?PHP basic_choicelist("status",$therecord["status"],Array(Array("name"=>"In Stock","value"=>"In Stock"),Array("name"=>"Out of Stock","value"=>"Out of Stock"),Array("name"=>"Backordered","value"=>"Backordered"),Array("name"=>"Available","value"=>"Available"),Array("name"=>"Discontinued","value"=>"DISCONTINUED")));?>
-		</label>
-	</fieldset>
-	
-	<fieldset>
-		<legend>general</legend>
-		<label for="partnumber" class="important">
-			part number <em>(must be unique)</em><br/>
-			<?PHP field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"24","maxlength"=>"32","class"=>"important","onChange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>
-			<script language="javascript">var thepn=getObjectFromID("partnumber");thepn.focus();</script>
-		</label>
-		<label for="partname" class="important">
-			part name<br>
-			<input name="partname" type="text" class="important" id="partname" value="<?php echo htmlQuotes($therecord["partname"])?>" size="34" maxlength="128" style="width:98%">			
-		</label>
-		<label for="description" style="margin-top:5px;">
-			description<br />
-			<input name="description" type="text" id="description" style="width:98%" value="<?php echo htmlQuotes($therecord["description"])?>" size="34" maxlength="255">
-		</label>
-		<div class="small"><em>The description will show by default in the memo field of invoice<br />
-								line items, but can be modified on the invoice.</em></div>
-	</fieldset>
-	
-	<fieldset style="clear:both;">
-		<legend>price / cost</legend>
-		<label for="unitcost">
-			unit cost<br />
-			<?PHP field_dollar("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32"))?>		
-			<script language="javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>
-		</label>		
-		<label for="markup">
-			mark-up percentage <br>
-			<?php 
-				$markup=0;
-				if($therecord["unitcost"]!=0){
-					$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
-				}				
-				field_percentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
-			?>
-			<input type="button" name="updateprice" value="update price" class="Buttons" onClick="calculatePrice()">
-		</label>
-		<label for="unitprice" class="important">
-			unit price<br>
-			<?PHP field_dollar("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important"))?>
-			<script language="javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>
-		</label>
-	</fieldset>
-	
-	<fieldset>
-		<legend>shipping information</legend>
-		<label for="unitofmeasure">
-			unit of measure<br>
-			<input name="unitofmeasure" type="text" id="unitofmeasure" value="<?php echo htmlQuotes($therecord["unitofmeasure"])?>" size="24" maxlength="32">
-		</label>
-		<label for="weight">
-			weight <em>(lbs.)</em><br />
-			<?PHP field_text("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"5","maxlength"=>"16")); ?>	
-		</label>
-		<label for="packagesperitem">
-			items per package<br />
-			<?php 
-				if ($therecord["packagesperitem"])
-					$itemsperpackage=1/$therecord["packagesperitem"];
-				else
-					$itemsperpackage=NULL;
-			?><?PHP field_text("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"5","maxlength"=>"16")); ?>	
-		</label>
-		<label for="isprepackaged">
-			<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"])?>pre-packaged <em>(Package is not packed with any other product.)</em>
-		</label>
-		<label for="isoversized">
-			<?PHP field_checkbox("isoversized",$therecord["isoversized"])?>oversized <em>(Package must be delivered in a oversized box.)</em>
-		</label>
-		</fieldset>
-	<fieldset>
-		<legend>web</legend>
-		<label for="webenabled">
-			<?PHP field_checkbox("webenabled",$therecord["webenabled"])?>web enabled
-		</label>
-		<label for="keywoards">
-			keywords <em>(comma separated key word list)</em><br />
-			<input type="text" id="keywords" name="keywords" value="<?php echo htmlQuotes($therecord["keywords"])?>" style="width:98%">
-		</label>
-		<label for="webdescription">
-			<div style="margin:0px;padding:0px;">web description <em>(HTML acceptable)</em></div>
-			<div style="clear:both;margin:0px;padding:0px;<?php if($therecord["webdescription"]) echo "display:none;"?>" id="webDescEdit">
-				<textarea id="webdescription" name="webdescription" cols="60" rows="6" style="width:98%"><?php echo $therecord["webdescription"] ?></textarea>
+	<div style="clear:both;float:right;width:200px;margin-top:0px;">
+		<fieldset>
+			<legend>attributes</legend>
+			<label for="id">
+				id<br />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">
+			</label>
+			<label for="inactive">
+				<?PHP field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"50"))?> inactive
+			</label>
+			<label for="inactive">
+				<?PHP field_checkbox("taxable",$therecord["taxable"],false,Array("tabindex"=>"60"))?> taxable
+			</label>
+			<div>
+				<strong>product type</strong><br />
+				<label for="typeInventory" style="padding-bottom:0px;"><input type="radio" name="type" id="typeInventory" value="Inventory" <?php if($therecord["type"]=="Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/> inventory</label>
+				<label for="typeNonInventory" style="padding-bottom:0px;"><input type="radio" name="type" id="typeNonInventory" value="Non-Inventory" <?php if($therecord["type"]=="Non-Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="80"/> non-inventory</label>
+				<label for="typeService" style="padding-bottom:0px;"><input type="radio" name="type" id="typeService" value="Kit" <?php if($therecord["type"]=="Service") echo "checked"?> class="radiochecks" align="baseline" tabindex="90"/> service</label>
+				<label for="typeKit" style="padding-bottom:0px;"><input type="radio" name="type" id="typeKit" value="Kit" <?php if($therecord["type"]=="Kit") echo "checked"?> class="radiochecks" align="baseline" tabindex="100"/> kit</label>
+				<label for="typeAssembly" style="padding-bottom:0px;"><input type="radio" name="type" id="typeAssembly" value="Kit" <?php if($therecord["type"]=="Assembly") echo "checked"?> class="radiochecks" align="baseline" tabindex="110"/> assembly</label>
 			</div>
-			<div style="clear:both;margin:0px;border:1px solid black; background-color:white;<?php if(!$therecord["webdescription"]) echo "display:none;"?>" id="webDescPreview">
-			<?php echo $therecord["webdescription"] ?>
-			</div>			
-			<div style="width:98%" align="right"><input type="button" class="Buttons" onClick="editPreviewWebDesc(this)" value="<?php if(!$therecord["webdescription"]) echo "preview"; else echo "edit"?>" style="width:75px;" /></div>
-		</label>
-		<label for="thumb" style="">
-			<?php if($therecord["thumbnailmime"]) {?>
-				<img id="thumbpic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=thumbnail&mf=thumbnailmime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
-			<?php } else {?>
-				<div style="margin:3px;border:1px solid black;background-color:white;color:#999999;width:75px;height:75px" class="tiny" align="center"><br/><br/>no thumbnail</div>
-			<?php } ?>
-			thumbnail <input type="hidden" id="thumbchange" name="thumbchange" value=""><br />
-			<div id="thumbdelete" style="padding:0px;display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onClick="deletePicture('thumb')"/></div>
-			<div id="thumbadd" style="padding:0px;display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onChange="updatePictureStatus('thumb','upload')" /></div>
-		</label>
-		<label for="picture" style="">
-			<?php if($therecord["picturemime"]) {?>
-				<img id="picturepic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=picture&mf=picturemime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
-			<?php } else {?>
-				<div style="margin:3px;border:1px solid black;background-color:white;color:#999999;width:150px;height:150px" class="tiny" align="center"><br/><br/><br/>no picture</div>
-			<?php } ?>
-			picture <input type="hidden" id="picturechange" name="picturechange" value=""><br />
-			<div id="picturedelete" style="padding:0px;display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onClick="deletePicture('picture')"/></div>
-			<div id="pictureadd" style="padding:0px;display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onChange="updatePictureStatus('picture','upload')" /></div>
-		</label>
-	</fieldset>
+			<div>
+				<strong>available status</strong><br />
+				<label for="statusInStock" style="padding-bottom:0px;"><input type="radio" name="status" id="statusInStock" value="In Stock" <?php if($therecord["status"]=="In Stock") echo "checked"?> class="radiochecks" align="baseline" tabindex="120"/> in stock / available</em></label>
+				<label for="statusOutOfStock" style="padding-bottom:0px;"><input type="radio" name="status" id="statusOutOfStock" value="Out of Stock" <?php if($therecord["status"]=="Out of Stock") echo "checked"?> class="radiochecks" align="baseline" tabindex="130"/> out of stock / unavailable</label>
+				<label for="statusBackordered" style="padding-bottom:0px;"><input type="radio" name="status" id="statusBackordered" value="Backordered" <?php if($therecord["status"]=="Backordered") echo "checked"?> class="radiochecks" align="baseline" tabindex="140"/> backordered</label>
+			</div>
+		</fieldset>
+		<FIELDSET>
+			<legend><label style="margin:0px;padding:0px;" for="memo">memo</label></legend>
+			<div style="padding-top:0px">
+				<textarea cols="10" rows="10" style="width:98%" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
+			</div>
+		</FIELDSET>
+	</div>
+	<div style="margin-right:200px;">
+		<fieldset>
+			<legend>product</legend>
+			<label for="partname" class="important">
+				name<br />
+				<input name="partname" type="text" class="important" id="partname" value="<?php echo htmlQuotes($therecord["partname"])?>" size="34" maxlength="128" style="width:98%" tabindex="10">			
+			</label>
+			<table border="0" cellspacing="0" cellpadding="0" width="99%">
+				<TR>
+					<TD width="100%">
+						<label for="partnumber" >
+							<strong>part number</strong> <em>(must be unique)</em><br/>
+							<?PHP field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"28","maxlength"=>"32","style"=>"width:98%","class"=>"important","tabindex"=>"20","onChange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>
+						</label>
+					</TD>
+					<TD valign="top" nowrap>
+						<label for="ds-categoryid" class="important">
+							category<br />
+							<?PHP autofill("categoryid",$therecord["categoryid"],7,"productcategories.id","productcategories.name","\"\"","",Array("size"=>"28","maxlength"=>"64","tabindex"=>"30"),1,"Category name cannot be blank.") ?>
+						</label>
+					</TD>
+				</TR>
+			</table>
+			<label for="description" style="">
+				description<br />
+				<input name="description" type="text" id="description" style="width:98%" value="<?php echo htmlQuotes($therecord["description"])?>" size="34" maxlength="255" tabindex="40" />
+			</label>
+			<div class="small"><em>The description will show by default in the memo field of invoice
+									line items, but can be modified on the invoice.</em></div>
+		</fieldset>
+		
+		<fieldset>
+			<legend>cost / weight</legend>
+			<TABLE border="0" cellspacing="0" cellpadding="0">
+				<TR>
+					<TD valign="middle">
+						<label for="unitcost" >
+							cost<br />
+							<?PHP field_dollar("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
+							<script language="javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>
+						</label>		
+					</TD>
+					<TD>
+						<label for="markup" style="padding-bottom:0px;">mark-up</label>
+						<div style="padding-top:0px;">
+							<?php 
+								$markup=0;
+								if($therecord["unitcost"]!=0){
+									$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
+								}				
+								field_percentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
+							?> <input type="button" name="updateprice" value="update price" class="Buttons" onClick="calculatePrice()" tabindex="160" />
+						</div>
+					</TD>
+					<td>
+						<label for="unitprice" class="important">
+							sell price<br />
+							<?PHP field_dollar("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
+							<script language="javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>
+						</label>
+					</td>
+				</TR>
+				<TR>
+					<TD>
+						<label for="weight">
+							weight<br />
+							<?PHP field_text("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","style"=>"text-align:right;","tabindex"=>"180")); ?>	
+						</label>
+					</TD>
+					<TD colspan="2">
+						<label for="unitofmeasure">
+							units (UOM)<br />
+							<input name="unitofmeasure" type="text" id="unitofmeasure" value="<?php echo htmlQuotes($therecord["unitofmeasure"])?>" size="24" maxlength="32" style="width:98%" tabindex="190"/>
+						</label>
+					</TD>
+				</TR>
+			</TABLE>
+			<div class="small"><em>Weight must be in lbs. in order for shipping to be estimated correctly.</em></div>
+		</fieldset>
+		
+		<fieldset>
+			<legend>shipping</legend>
+			<label for="packagesperitem">
+				items per package<br />
+				<?php 
+					if ($therecord["packagesperitem"])
+						$itemsperpackage=1/$therecord["packagesperitem"];
+					else
+						$itemsperpackage=NULL;
+				?><?PHP field_text("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"200")); ?>	
+			</label>
+			<label for="isprepackaged">
+				<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?>pre-packaged <em>(product is not packed with any other product.)</em>
+			</label>
+			<label for="isoversized">
+				<?PHP field_checkbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?>oversized <em>(product must be delivered in a oversized box.)</em>
+			</label>
+			</fieldset>
+		<fieldset>
+			<legend>web</legend>
+			<label for="webenabled">
+				<?PHP field_checkbox("webenabled",$therecord["webenabled"],false,Array("onClick"=>"showWeb(this)","tabindex"=>"220"))?>web enabled
+			</label>
+			<div style="padding:0px;margin:0px;<?php if(!$therecord["webenabled"]) echo "display:none;" ?>" id="webstuff">
+				<label for="keywoards">
+					keywords <em>(comma separated key word list)</em><br />
+					<input type="text" id="keywords" name="keywords" value="<?php echo htmlQuotes($therecord["keywords"])?>" tabindex="230" style="width:98%" />
+				</label>
+				<label for="webdescription">
+					<div style="margin:0px;padding:0px;">web description <em>(HTML acceptable)</em></div>
+					<div style="margin:0px;padding:0px;<?php if($therecord["webdescription"]) echo "display:none;"?>" id="webDescEdit">
+						<textarea id="webdescription" name="webdescription" cols="60" rows="6" style="width:98%" tabindex="240"><?php echo $therecord["webdescription"] ?></textarea>
+					</div>
+					<div style="margin:0px;border:1px solid black; background-color:white;<?php if(!$therecord["webdescription"]) echo "display:none;"?>" id="webDescPreview">
+					<?php echo $therecord["webdescription"] ?>
+					</div>			
+					<div style="width:98%" align="right"><input type="button" class="Buttons" onClick="editPreviewWebDesc(this)" value="<?php if(!$therecord["webdescription"]) echo "preview"; else echo "edit"?>" style="width:75px;" tabindex="250"/></div>
+				</label>
+				<label for="thumb" style="">
+					<?php if($therecord["thumbnailmime"]) {?>
+						<img id="thumbpic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=thumbnail&mf=thumbnailmime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+					<?php } else {?>
+						<div style="margin:3px;border:1px solid black;background-color:white;color:#999999;width:75px;height:75px" class="tiny" align="center"><br/><br/>no thumbnail</div>
+					<?php } ?>
+					thumbnail <input type="hidden" id="thumbchange" name="thumbchange" value=""><br />
+					<div id="thumbdelete" style="padding:0px;display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onClick="deletePicture('thumb')" tabindex="260"/></div>
+					<div id="thumbadd" style="padding:0px;display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onChange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
+				</label>
+				<label for="picture" style="">
+					<?php if($therecord["picturemime"]) {?>
+						<img id="picturepic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=picture&mf=picturemime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+					<?php } else {?>
+						<div style="margin:3px;border:1px solid black;background-color:white;color:#999999;width:150px;height:150px" class="tiny" align="center"><br/><br/><br/>no picture</div>
+					<?php } ?>
+					picture <input type="hidden" id="picturechange" name="picturechange" value=""><br />
+					<div id="picturedelete" style="padding:0px;display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onClick="deletePicture('picture')" tabindex="270"/></div>
+					<div id="pictureadd" style="padding:0px;display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onChange="updatePictureStatus('picture','upload')" tabindex="270"/></div>
+				</label>
+			</div>
+		</fieldset>
+	</div>
 	<?php include("../../include/createmodifiedby.php"); ?>	
 </div>
 <?php include("../../footer.php");?>

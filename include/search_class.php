@@ -537,7 +537,7 @@ function displayQueryButtons() {
 			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
 		}//end if numrows	
-		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png" align="middle" alt="show SQL" width="35" height="16" border="0" /></button><?PHP }//end accesslevel?>
+		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png" alt="show SQL" width="35" height="16" border="0" /></button><?PHP }//end accesslevel?>
 		</div><script language="javascript">
 	var editFile="<?php echo $this->thetabledef["addfile"]?>";
 	var editButtonImg=new Image();

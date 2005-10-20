@@ -1,6 +1,6 @@
 <?php 
-	require_once("../../include/session.php");
-	require_once("../../include/common_functions.php");
+	@ include_once("../../include/session.php");
+	@ include_once("../../include/common_functions.php");
 	
 	function updateTask($id,$completed,$type){
 		global $dblink;
@@ -29,14 +29,14 @@
 		if(!$queryresult) reportError(300,"Error Retrieving Parent Note ID: ".mysql_error($dblink)."<br />".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		
-		if($therecord["repeat"]){
+		if($therecord["repeat"]===1){
 			$therecord["parentid"]=$id;
 		}
 
 		if ($therecord["parentid"]){
 			$lastTaskdate=dateFromSQLDate($therecord["startdate"]);
 		
-			$querystatement="SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE id=".$id;
+			$querystatement="SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE id=".$therecord["parentid"];
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(300,"Error Retrieving Parent Note Repeat Options: ".mysql_error($dblink)."<br />".$querystatement);
 			$therecord=mysql_fetch_array($queryresult);
