@@ -33,10 +33,10 @@
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">
 			</label>
 			<label for="inactive">
-				<?PHP field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"50"))?> inactive
+				<?PHP field_checkbox("inactive",$therecord["inactive"],false,array("tabindex"=>"50"))?> inactive
 			</label>
-			<label for="inactive">
-				<?PHP field_checkbox("taxable",$therecord["taxable"],false,Array("tabindex"=>"60"))?> taxable
+			<label for="inactive"></label>
+				<?PHP field_checkbox("taxable",$therecord["taxable"],false,array("tabindex"=>"60"))?> taxable
 			</label>
 			<div>
 				<strong>product type</strong><br />
@@ -53,12 +53,12 @@
 				<label for="statusBackordered" style="padding-bottom:0px;"><input type="radio" name="status" id="statusBackordered" value="Backordered" <?php if($therecord["status"]=="Backordered") echo "checked"?> class="radiochecks" align="baseline" tabindex="140"/> backordered</label>
 			</div>
 		</fieldset>
-		<FIELDSET>
+		<fieldset>
 			<legend><label style="margin:0px;padding:0px;" for="memo">memo</label></legend>
 			<div style="padding-top:0px">
 				<textarea cols="10" rows="10" style="width:98%" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
 			</div>
-		</FIELDSET>
+		</fieldset>
 	</div>
 	<div style="margin-right:200px;">
 		<fieldset>
@@ -68,20 +68,20 @@
 				<input name="partname" type="text" class="important" id="partname" value="<?php echo htmlQuotes($therecord["partname"])?>" size="34" maxlength="128" style="width:98%" tabindex="10">			
 			</label>
 			<table border="0" cellspacing="0" cellpadding="0" width="99%">
-				<TR>
-					<TD width="100%">
+				<tr>
+					<td width="100%">
 						<label for="partnumber" >
 							<strong>part number</strong> <em>(must be unique)</em><br/>
 							<?PHP field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"28","maxlength"=>"32","style"=>"width:98%","class"=>"important","tabindex"=>"20","onChange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>
 						</label>
-					</TD>
-					<TD valign="top" nowrap>
+					</td>
+					<td valign="top" nowrap>
 						<label for="ds-categoryid" class="important">
 							category<br />
 							<?PHP autofill("categoryid",$therecord["categoryid"],7,"productcategories.id","productcategories.name","\"\"","",Array("size"=>"28","maxlength"=>"64","tabindex"=>"30"),1,"Category name cannot be blank.") ?>
 						</label>
-					</TD>
-				</TR>
+					</td>
+				</tr>
 			</table>
 			<label for="description" style="">
 				description<br />
@@ -93,16 +93,16 @@
 		
 		<fieldset>
 			<legend>cost / weight</legend>
-			<TABLE border="0" cellspacing="0" cellpadding="0">
-				<TR>
-					<TD valign="middle">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td valign="middle">
 						<label for="unitcost" >
 							cost<br />
 							<?PHP field_dollar("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
 							<script language="javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>
 						</label>		
-					</TD>
-					<TD>
+					</td>
+					<td>
 						<label for="markup" style="padding-bottom:0px;">mark-up</label>
 						<div style="padding-top:0px;">
 							<?php 
@@ -113,7 +113,7 @@
 								field_percentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
 							?> <input type="button" name="updateprice" value="update price" class="Buttons" onClick="calculatePrice()" tabindex="160" />
 						</div>
-					</TD>
+					</td>
 					<td>
 						<label for="unitprice" class="important">
 							sell price<br />
@@ -121,22 +121,22 @@
 							<script language="javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>
 						</label>
 					</td>
-				</TR>
-				<TR>
-					<TD>
+				</tr>
+				<tr>
+					<td>
 						<label for="weight">
 							weight<br />
 							<?PHP field_text("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","style"=>"text-align:right;","tabindex"=>"180")); ?>	
 						</label>
-					</TD>
-					<TD colspan="2">
+					</td>
+					<td colspan="2">
 						<label for="unitofmeasure">
 							units (UOM)<br />
 							<input name="unitofmeasure" type="text" id="unitofmeasure" value="<?php echo htmlQuotes($therecord["unitofmeasure"])?>" size="24" maxlength="32" style="width:98%" tabindex="190"/>
 						</label>
-					</TD>
-				</TR>
-			</TABLE>
+					</td>
+				</tr>
+			</table>
 			<div class="small"><em>Weight must be in lbs. in order for shipping to be estimated correctly.</em></div>
 		</fieldset>
 		

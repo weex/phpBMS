@@ -1,4 +1,17 @@
 <?PHP
+function getDiscount($id){
+	if(!$id) return "";
+	
+	global $dblink;
+	
+	$querystatement="SELECT if(discounts.type+0=1,concat(discounts.value,\"%\"),discounts.value) AS value FROM discounts WHERE id=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Discount".$querystatement." - ".mysql_error($dblink)));
+	$therecord=mysql_fetch_array($queryresult);
+	
+	return $therecord["value"];
+}
+
 function getLineItems($id){
 	if(!$id) return false;
 	global $dblink;
@@ -40,8 +53,6 @@ function addLineItems($values,$invoiceid,$userid){
 	$lineitems= explode("{[]}",$values);		
 	foreach($lineitems as $lineitem) {
 		$fields=explode("[//]",$lineitem);
-		var_dump($fields);
-		echo "<br>";
 		$querystatement="INSERT INTO lineitems (invoiceid,productid,quantity,unitcost,unitprice,unitweight,taxable,memo,createdby,creationdate,modifiedby) VALUES (";
 		$querystatement.=$invoiceid.", ";
 		if(trim($fields[0])!="" and trim($fields[0])!="0"){
@@ -103,7 +114,7 @@ function getRecords($id){
 					ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					address1,address2,city,state,postalcode, country, amountpaid, 
 					trackingno, taxareaid, taxpercentage, totalti-amountpaid as amountdue,
-					weborder,webconfirmationno,ccverification, totaltaxable, discountamount,
+					weborder,webconfirmationno,ccverification, totaltaxable, discountamount,discountid,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
@@ -144,6 +155,7 @@ function setRecordDefaults(){
 	$therecord["shippingmethod"]=NULL;
 	$therecord["tax"]=0;
 	$therecord["totalweight"]=0;
+	$therecord["discountid"]=0;
 	$therecord["discountamount"]=0;
 	$therecord["subtotal"]=0;
 	$therecord["totaltni"]=0;
@@ -172,6 +184,9 @@ function setRecordDefaults(){
 	$therecord["orderdate"]=date("n/d/Y");
 	$therecord["invoicedate"]=NULL;
 	$therecord["printedinstructions"]=$_SESSION["invoice_default_printinstruc"];
+
+	$therecord["ponumber"]="";
+	$therecord["requireddate"]=NULL;
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -179,9 +194,6 @@ function setRecordDefaults(){
 	$therecord["creationdate"]=NULL;
 	$therecord["modifieddate"]=NULL;
 	
-	$therecord["ponumber"]="";
-	$therecord["requireddate"]=NULL;
-
 	return $therecord;	
 }//end function
 
@@ -189,7 +201,10 @@ function updateRecord($variables,$userid){
 //========================================================================================	
 	global $dblink;
 	
-	if($variables["status"]=="VOID"){
+	if($variables["oldType"]=="Invoice")
+		return "Cannot save modifications to an invoice";
+		
+	if($variables["type"]=="VOID"){
 		$variables["totaltni"]=0;
 		$variables["totalti"]=0;
 		$variables["amountpaid"]=0;
@@ -199,6 +214,7 @@ function updateRecord($variables,$userid){
 			$querystatement.="clientid=\"".$variables["clientid"]."\", "; 
 			$querystatement.="leadsource=\"".$variables["leadsource"]."\", "; 
 
+			$querystatement.="type=\"".$variables["type"]."\", "; 
 			$querystatement.="status=\"".$variables["status"]."\", "; 
 			
 				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
@@ -208,6 +224,10 @@ function updateRecord($variables,$userid){
 					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
 				}
 			$querystatement.="orderdate=".$tempdate.", "; 
+
+				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
+			$querystatement.="discountamount=".$discountamount.", "; 				
+			$querystatement.="discountid=".$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
 				else{
@@ -245,8 +265,6 @@ function updateRecord($variables,$userid){
 
 			$querystatement.="shippingmethod=\"".$variables["shippingmethod"]."\", "; 
 
-			if(isset($variables["shipped"]) || ($variables["shippeddate"]!="" && $variables["shippeddate"]=="0/0/0000")) {$querystatement.="shipped=1, ";} 
-				else $querystatement.="shipped=0, ";
 			if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") 
 				{$tempdate="NULL";}
 			else{
@@ -257,12 +275,14 @@ function updateRecord($variables,$userid){
 			$querystatement.="shippeddate=".$tempdate.", "; 
 			$querystatement.="trackingno=\"".$variables["trackingno"]."\", "; 
 
-			$querystatement.="paymentmethod=\"".$variables["paymentmethod"]."\", "; 
-			$querystatement.="checkno=\"".$variables["checkno"]."\", "; 
-			$querystatement.="bankname=\"".$variables["bankname"]."\", "; 
-			$querystatement.="ccnumber=\"".$variables["ccnumber"]."\", "; 
-			$querystatement.="ccexpiration=\"".$variables["ccexpiration"]."\", "; 
-			$querystatement.="ccverification=\"".$variables["ccverification"]."\", "; 
+			if($_SESSION["userinfo"]["accesslevel"]>=20){
+				$querystatement.="paymentmethod=\"".$variables["paymentmethod"]."\", "; 
+				$querystatement.="checkno=\"".$variables["checkno"]."\", "; 
+				$querystatement.="bankname=\"".$variables["bankname"]."\", "; 
+				$querystatement.="ccnumber=\"".$variables["ccnumber"]."\", "; 
+				$querystatement.="ccexpiration=\"".$variables["ccexpiration"]."\", "; 
+				$querystatement.="ccverification=\"".$variables["ccverification"]."\", "; 
+			}
 
 			$querystatement.="specialinstructions=\"".$variables["specialinstructions"]."\", "; 
 			$querystatement.="printedinstructions=\"".$variables["printedinstructions"]."\", "; 
@@ -296,6 +316,8 @@ function updateRecord($variables,$userid){
 	
 	if($variables["lineitemschanged"]==1)
 		addLineItems($variables["thelineitems"],$variables["id"],$userid);
+		
+	return "Record Updated";
 }// end function
 
 
@@ -309,9 +331,9 @@ function insertRecord($variables,$userid){
 		$variables["amountpaid"]=0;
 	}
 	$querystatement="INSERT INTO invoices 
-			(clientid,leadsource,status,orderdate,
+			(clientid,leadsource,type,status,orderdate,discountamount,discountid,
 			invoicedate,address1,address2,city,state,postalcode, country, totaltni, totaltaxable, totalti,shipping,tax,amountpaid,
-			totalcost,totalweight,shippingmethod,shipped,shippeddate,trackingno,paymentmethod,
+			totalcost,totalweight,shippingmethod,shippeddate,trackingno,paymentmethod,
 			checkno,bankname,ccnumber,ccexpiration,ccverification,specialinstructions,printedinstructions,
 			taxareaid, taxpercentage, weborder,webconfirmationno,ponumber,requireddate,
 						createdby,creationdate,modifiedby) VALUES (";
@@ -319,6 +341,7 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["clientid"]."\", "; 
 			$querystatement.="\"".$variables["leadsource"]."\", "; 
 
+			$querystatement.="\"".$variables["type"]."\", "; 
 			$querystatement.="\"".$variables["status"]."\", "; 
 			
 				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
@@ -328,6 +351,10 @@ function insertRecord($variables,$userid){
 					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
 				}
 			$querystatement.=$tempdate.", "; 
+
+				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
+			$querystatement.=$discountamount.", "; 				
+			$querystatement.=$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
 				else{
@@ -365,7 +392,6 @@ function insertRecord($variables,$userid){
 
 			$querystatement.="\"".$variables["shippingmethod"]."\", "; 
 
-			if(isset($variables["shipped"])) $querystatement.="1, "; else $querystatement.="0, ";
 				if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") $tempdate="NULL";
 				else{
 					$shippeddate="/".ereg_replace(",.","/",$variables["shippeddate"]);
@@ -445,13 +471,12 @@ else
 		break;
 		case "save":
 			if($_POST["id"]) {
-				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
+				$statusmessage=updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);
 				$modifiedby=getUserName($therecord["modifiedby"]);
-				$statusmessage="Record Updated";
 			}
 			else {
 				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);

@@ -73,14 +73,13 @@ function updateRecord($variables,$userid){
 	global $dblink;
 	
 	$querystatement="UPDATE products SET ";
-	
+		if($_SESSION["userinfo"]["accesslevel"]>=20){
 			$querystatement.="partnumber=\"".$variables["partnumber"]."\", "; 
 			$querystatement.="partname=\"".$variables["partname"]."\", "; 
 			$querystatement.="description=\"".$variables["description"]."\", "; 
 
 			if(isset($variables["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
 			if(isset($variables["taxable"])) $querystatement.="taxable=1, "; else $querystatement.="taxable=0, ";
-			$querystatement.="memo=\"".$variables["memo"]."\", "; 
 		
 				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
 				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
@@ -90,16 +89,19 @@ function updateRecord($variables,$userid){
 			$querystatement.="unitofmeasure=\"".$variables["unitofmeasure"]."\", "; 
 
 			$querystatement.="type=\"".$variables["type"]."\", "; 
-			$querystatement.="status=\"".$variables["status"]."\", "; 
 			$querystatement.="categoryid=\"".$variables["categoryid"]."\", "; 
+		}			
 
-			$querystatement.="weight=".$variables["weight"].", "; 
-			if(isset($variables["isprepackaged"])) $querystatement.="isprepackaged=1, "; else $querystatement.="isprepackaged=0, ";
-			if(isset($variables["isoversized"])) $querystatement.="isoversized=1, "; else $querystatement.="isoversized=0, ";
-			if($variables["packagesperitem"])
-				$variables["packagesperitem"]=1/$variables["packagesperitem"];
-			$querystatement.="packagesperitem=".$variables["packagesperitem"].", "; 
+		$querystatement.="memo=\"".$variables["memo"]."\", "; 
+		$querystatement.="status=\"".$variables["status"]."\", "; 
+		$querystatement.="weight=".$variables["weight"].", "; 
+		if(isset($variables["isprepackaged"])) $querystatement.="isprepackaged=1, "; else $querystatement.="isprepackaged=0, ";
+		if(isset($variables["isoversized"])) $querystatement.="isoversized=1, "; else $querystatement.="isoversized=0, ";
+		if($variables["packagesperitem"])
+			$variables["packagesperitem"]=1/$variables["packagesperitem"];
+		$querystatement.="packagesperitem=".$variables["packagesperitem"].", "; 
 
+		if($_SESSION["userinfo"]["accesslevel"]>=20){
 			if(isset($variables["webenabled"])) $querystatement.="webenabled=1, "; else $querystatement.="webenabled=0, ";
 
 			$querystatement.="keywords=\"".$variables["keywords"]."\", "; 
@@ -137,6 +139,7 @@ function updateRecord($variables,$userid){
 					$querystatement.="picturemime=NULL, ";
 				}
 			}
+		}//end accesslevel check
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 

@@ -299,16 +299,19 @@ function sendInfo(name,thevalue,thedisplay){
 			global $dblink;
 		
 			$options=Array();
-			$querystatement="SELECT name,`option`,othercommand
+			$querystatement="SELECT name,`option`,othercommand,accesslevel
 								  FROM tableoptions WHERE tabledefid=".$id;
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)) {
-			if($therecord["othercommand"])
-				$options["othercommands"][$therecord["name"]]=$therecord["option"];
-			else
-				$options[$therecord["name"]]=$therecord["option"];
+				if($therecord["othercommand"]) {
+					$options["othercommands"][$therecord["name"]]["displayname"]=$therecord["option"];
+					$options["othercommands"][$therecord["name"]]["accesslevel"]=$therecord["accesslevel"];
+				}else{
+					$options[$therecord["name"]]["allowed"]=$therecord["option"];
+					$options[$therecord["name"]]["accesslevel"]=$therecord["accesslevel"];
+				}
 			}
 			return $options;
 		}//end getTableOptions
@@ -462,10 +465,22 @@ buttonDownDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?p
 	}//end function		
 		
 function displayQueryButtons() { 
-	if(!isset($this->tableoptions["new"])) $this->tableoptions["new"]=0;
-	if(!isset($this->tableoptions["select"])) $this->tableoptions["select"]=0;
-	if(!isset($this->tableoptions["edit"])) $this->tableoptions["edit"]=0;
-	if(!isset($this->tableoptions["printex"])) $this->tableoptions["printex"]=0;
+	if(!isset($this->tableoptions["new"])){
+		 $this->tableoptions["new"]["allowed"]=0;
+		 $this->tableoptions["new"]["accesslevel"]=0;
+	}
+	if(!isset($this->tableoptions["select"])) {
+		$this->tableoptions["select"]["allowed"]=0;
+		$this->tableoptions["select"]["accesslevel"]=0;
+	}
+	if(!isset($this->tableoptions["edit"])){
+		 $this->tableoptions["edit"]["allowed"]=0;
+		 $this->tableoptions["edit"]["accesslvel"]=0;
+	}
+	if(!isset($this->tableoptions["printex"])) {
+		$this->tableoptions["printex"]["allowed"]=0;
+		$this->tableoptions["printex"]["accesslevel"]=0;
+	}
 	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
 	if($_SESSION["userinfo"]["accesslevel"]>=90){?>
 	<div id="sqlstatement" style="display:none;padding:0px;" ><fieldset>
@@ -501,12 +516,12 @@ function displayQueryButtons() {
 		} ?></div><?php }?>	
 	
 		<div>
-		<?php if ($this->tableoptions["new"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="document.location='<?php echo $this->thetabledef["addfile"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
+		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="document.location='<?php echo $this->thetabledef["addfile"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
 		if($this->numrows) {
-			if ($this->tableoptions["edit"]) {
+			if ($this->tableoptions["edit"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["edit"]["accesslevel"]) {
 				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
 			}
-			if($this->tableoptions["printex"]){
+			if($this->tableoptions["printex"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["printex"]["accesslevel"]){
 				?><button id="print" name="doprint" accesskey="p" type="submit" disabled="true" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png"  alt="print" width="16" height="16" border="0" /></button><?php
 			}
 			if($this->thetabledef["deletebutton"] == "delete") {				
@@ -521,12 +536,14 @@ function displayQueryButtons() {
 				<?php } 
 				if($this->tableoptions["othercommands"]){
 					foreach($this->tableoptions["othercommands"] as $key => $value){
-						?><option value="<?php echo $key?>"><?php echo $value?></option><?php
+						if($_SESSION["userinfo"]["accesslevel"]>=$value["accesslevel"]){
+							?><option value="<?php echo $key?>"><?php echo $value["displayname"]?></option><?php
+						}
 					}
 				}
 				?></select><?php
 		}
-		if($this->tableoptions["select"]){?><select id="searchSelection" onChange="perfromToSelection(this)">
+		if($this->tableoptions["select"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["select"]["accesslevel"]){?><select id="searchSelection" onChange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
 				<option value="selectall">select all</option>

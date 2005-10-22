@@ -37,10 +37,10 @@ class salesHistoryReport{
 	function showSalesHistory($id){
 		global $dblink;
 
-		$thestatus="(invoices.status =\"";
+		$thestatus="(invoices.type =\"";
 		switch($this->view){
 			case "Orders/Invoices":
-				$thestatus.="Order\" or invoices.status=\"Invoice\")";
+				$thestatus.="Order\" or invoices.type=\"Invoice\")";
 				$searchdate="orderdate";
 			break;
 			case "Invoices":

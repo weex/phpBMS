@@ -23,12 +23,12 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
 <body onLoad="initializePage()"><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();if(validateForm(this)) return checkShipping(); else return false;"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
 <?php invoice_tabs("General",$therecord["id"]);?><div class="bodyline">
 	<div style="float:right;width:225px;margin-bottom:0px;padding-bottom:0px;">
 		  <?php if($therecord["id"]){?>
 			<div align="right" style="float:left;padding-left:0px;padding-right:0px;">
-				<input name="doprint" type="button" value="print" accesskey="p" onClick="doPrint(<?php echo $therecord["id"]?>)" class="Buttons" style="width:75px;"/>
+				<input name="doprint" type="button" value="print" accesskey="p" onClick="doPrint('<?php echo $_SESSION["app_path"]?>',<?php echo $therecord["id"]?>)" class="Buttons" style="width:75px;"/>
 			</div>
 		  <?php }//end if?>
 		<?php showSaveCancel(1); ?>
@@ -36,7 +36,7 @@
 	</div>
 	<div style="margin-right:<?php if($therecord["id"]) echo 230; else echo 160 ?>px;"><h1><?php echo $pageTitle ?></h1></div>		
 	
-	 <fieldset style="clear:both;float:right;width:220px;">
+	 <fieldset style="clear:both;float:right;width:250px;">
 		<legend>attributes</legend>
 		<div align="left" style="float:right;padding-top:0px;">
 			<label for="orderdate">
@@ -53,7 +53,7 @@
 			</label for="">
 			<label for="shippeddate">
 				shipped date<br />
-				<?PHP field_datepicker("shippeddate",$therecord["shippeddate"],0,"Shipped date must be a valid date.",Array("size"=>"11","maxlength"=>"11","tabindex"=>"35"),false); ?>
+				<?PHP field_datepicker("shippeddate",$therecord["shippeddate"],0,"Shipped date must be a valid date.",Array("size"=>"11","maxlength"=>"11","tabindex"=>"14"),false); ?>
 			</label>
 		</div>
 		<div align="left" style="padding-top:0px;">
@@ -64,10 +64,16 @@
 			<label for="type" class="important">
 				type<br />
 				<?PHP  if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice") {?>
-					<input name="status" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="true" class="uneditable" style="width:90px;font-weight:bold" tabindex=9 />
-				<?php }else 
-					basic_choicelist("type",$therecord["type"],Array(Array("name"=>"Quote","value"=>"Quote"),Array("name"=>"Order","value"=>"Order"),Array("name"=>"Invoice","value"=>"Invoice"),Array("name"=>"VOID","value"=>"VOID")),Array("onChange"=>"checkStatus(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
-				?>
+					<input name="type" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="true" class="uneditable" style="width:90px;font-weight:bold" tabindex=9 />
+				<?php }else {
+					$thechoices=array();
+					$thechoices[]=array("name"=>"Quote","value"=>"Quote");
+					$thechoices[]=array("name"=>"Order","value"=>"Order");
+					if($_SESSION["userinfo"]["accesslevel"]>=30) $thechoices[]=array("name"=>"Invoice","value"=>"Invoice");
+					$thechoices[]=array("name"=>"VOID","value"=>"VOID");
+					basic_choicelist("type",$therecord["type"],$thechoices,array("onChange"=>"checkType(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
+				}
+				?><input type="hidden" id="oldType" name="oldType" value="<?php echo $therecord["type"]?>"/>
 			</label>
 			<label for="ponumber">
 				client PO#<br />
@@ -76,10 +82,10 @@
 		</div>
 		<div style="padding-top:0px;">
 			<strong>order status</strong><br />
-			<label for="statusOpen" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusOpen" value="Open" <?php if($therecord["status"]=="Open") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/> open</label>
-			<label for="statusCommited" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusCommited" value="Committed" <?php if($therecord["status"]=="Committed") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/> committed</label>
-			<label for="statusPacked" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusPacked" value="Packed" <?php if($therecord["status"]=="Packed") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/> packed</label>
-			<label for="statusShipped" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusShipped" value="Shipped" <?php if($therecord["status"]=="Shipped") echo "checked"?> class="radiochecks" align="baseline" tabindex="70" onClick="setShipped()"/> shipped/invoice</label>
+			<label for="statusOpen" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusOpen" value="Open" <?php if($therecord["status"]=="Open") echo "checked"?> class="radiochecks" align="baseline" tabindex="13"/> open</label>
+			<label for="statusCommited" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusCommited" value="Committed" <?php if($therecord["status"]=="Committed") echo "checked"?> class="radiochecks" align="baseline" tabindex="13"/> committed</label>
+			<label for="statusPacked" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusPacked" value="Packed" <?php if($therecord["status"]=="Packed") echo "checked"?> class="radiochecks" align="baseline" tabindex="13"/> packed</label>
+			<label for="statusShipped" style="padding:0px;padding-left:4px;"><input type="radio" name="status" id="statusShipped" value="Shipped" <?php if($therecord["status"]=="Shipped") echo "checked"?> class="radiochecks" align="baseline" tabindex="13" onClick="setShipped()"/> shipped/invoice</label>
 		</div>
 		<div style="padding-bottom:4px;">
 			<label for="leadsource" style="text-align:left">
@@ -97,16 +103,16 @@
 				document.forms["record"]["clientid"].onchange=populateShipping;
 			  </script>
 			  <?php if($therecord["clientid"]){?>
-			  <input name="viewclient" type="button" value="view client" onClick="viewClient('<?php echo getAddEditFile(2) ?>')" class="Buttons" tabindex="2" />
+			  <input name="viewclient" type="button" value="view client" onClick="viewClient('<?php echo getAddEditFile(2) ?>')" class="Buttons" tabindex="1" />
 			  <?php }//end if?>
 		</div>
 	</fieldset>
 	<fieldset>
 		<legend><label for="address1">shipping address</label></legend>		
 		<div>
-		<input name="address1" id="address1" type="text" style=";margin-bottom:2px;" value="<?PHP echo htmlQuotes($therecord["address1"])?>" size="70" maxlength="128" tabindex=3 />
+		<input name="address1" id="address1" type="text" style=";margin-bottom:2px;" value="<?PHP echo htmlQuotes($therecord["address1"])?>" size="65" maxlength="128" tabindex=3 />
 		<br />
-		<input name="address2" id="address2" type="text"  value="<?PHP echo htmlQuotes($therecord["address2"])?>" size="70" maxlength="128" tabindex="4" />
+		<input name="address2" id="address2" type="text"  value="<?PHP echo htmlQuotes($therecord["address2"])?>" size="65" maxlength="128" tabindex="4" />
 		</div>
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
@@ -133,13 +139,13 @@
 	<fieldset>
 		<legend>web / confirmation number</legend>
 		<div>
-			<?PHP field_checkbox("weborder",$therecord["weborder"],0,array("tabindex"=>"31"));?>
-			<input name="webconfirmationno" type="text" value="<?PHP echo $therecord["webconfirmationno"] ?>" size="35" maxlength="64" tabindex="36" />
+			<?PHP field_checkbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
+			<input name="webconfirmationno" type="text" value="<?PHP echo $therecord["webconfirmationno"] ?>" size="41" maxlength="64" tabindex="14" />
 		</div>
 	</fieldset>
 	
 <fieldset style="clear:both;">
-	<legend>line items / tax</legend><input type="hidden" name="thelineitems" id="thelineitems" value="" />
+	<legend>line items</legend><input type="hidden" name="thelineitems" id="thelineitems" value="" />
 	<input id="lineitemschanged" name="lineitemschanged" type="hidden" value="0"/>
 	<input id="unitcost" name="unitcost" type="hidden" value="0" />
 	<input id="unitweight" name="unitweight" type="hidden" value="0"/>
@@ -198,23 +204,23 @@
 			</td>
 		</tr>
   <?PHP } } ?><tr id="LITotals">
-		<td colspan="2">&nbsp;</td>
-		<td >&nbsp;</td>
-		<td colspan="2" class="invoiceTotalLabels"><label for="discountamount" style="margin:0px;padding:0px;">discount</label><input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></td>
-		<td><input name="discountamount" id="discountamount" type="text" value="<?PHP echo $therecord["discountamount"]?>" size="8" maxlength="15" onChange="calculateTotal();" style="text-align:right;" tabindex="22"/></td>
-		<td>&nbsp;</td>  	
-  </tr><tr>
-		<td colspan="2" rowspan=4 valign="bottom">
+		<td colspan="2" rowspan=5 valign="bottom">
+			<label for="ds-discountid">
+				discount / promotion<br />
+				<?PHP autofill("discountid",$therecord["discountid"],25,"discounts.id","discounts.name"," if(discounts.type+0=1,concat(discounts.value,\"%\"),concat(\"$\",format(discounts.value,2)))","discounts.inactive=0",Array("size"=>"34","maxlength"=>"64","tabindex"=>"22"),0) ?>
+				<input type="hidden" id="discount" name="discount" value="<?php getDiscount($therecord["discountid"])?>" />
+			</label>
 			<label for="ds-taxareaid" style="padding-bottom:0px;">tax area</label>
 			<div style="padding-top:0px;">
 				<?PHP autofill("taxareaid",$therecord["taxareaid"],6,"tax.id","tax.name","concat(tax.percentage,\"%\")","",Array("size"=>"20","maxlength"=>"64","tabindex"=>"22"),0) ?>
 				<?PHP field_percentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"7","maxlength"=>"9","onChange"=>"changeTaxPercentage()","tabindex"=>"22")); ?>
-				<script language="JavaScript">document.forms["record"]["taxareaid"].onchange=getPercentage;</script>
-			</div>			
-			<label for="totalweight" style="padding-bottom:0px;">total weight <em>(lbs)</em><br />
-				<input id="totalweight" name="totalweight" type="text" value="<?PHP echo $therecord["totalweight"]?>" size="9" maxlength="15" readonly="true" class="uneditable" style="text-align:right;" />			
-			</label>
+			</div>
 		</td>
+		<td>&nbsp;</td>
+		<td colspan="2" class="invoiceTotalLabels"><label for="discountamount" style="margin:0px;padding:0px;">discount</label><input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></td>
+		<td><input name="discountamount" id="discountamount" type="text" value="<?PHP echo $therecord["discountamount"]?>" size="8" maxlength="15" onChange="clearDiscount();calculateTotal();" style="text-align:right;" tabindex="22"/></td>
+		<td>&nbsp;</td>  	
+  </tr><tr>
 		<td>&nbsp;</td>
 		<td colspan="2" class="invoiceTotalLabels"><label for="totaltni" style="margin:0px;padding:0px;">subtotal</label></td>
 		<td><input class="uneditable" name="totaltni" id="totaltni" type="text" value="<?PHP echo $therecord["totaltni"]?>" size="8" maxlength="15" readonly="true" onChange="calculateTotal();" style="text-align:right;" /></td>
@@ -227,13 +233,16 @@
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td rowspan=2>
+			<label for="totalweight">total weight <em>(lbs)</em><br/>
+				<input id="totalweight" name="totalweight" type="text" value="<?PHP echo $therecord["totalweight"]?>" size="8" maxlength="15" readonly="true" class="uneditable" style="text-align:right;" />			
+			</label>
+		</td>
 		<td colspan="2" class="invoiceTotalLabels"><label for="shipping" style="margin:0px;padding:0px;">shipping</label></td>
 		<td><input name="shipping" id="shipping" type="text" value="<?PHP echo $therecord["shipping"]?>" size="8" maxlength="15" onChange="calculateTotal();" style="text-align:right;" tabindex="23" /></td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
 		<td colspan="2" class="invoiceTotalLabels"><label for="totalti" style="margin:0px;padding:0px;" class=important>total</label></td>
 		<td>
 			<input class="uneditable" name="totalti" id="totalti" type="text" value="<?PHP echo $therecord["totalti"]?>" size="8" maxlength="15" onChange="calculateTotal();"  readonly="true" style="text-align:right;font-weight:bold"/ >
@@ -247,13 +256,14 @@
 <fieldset style="float:right;width:250px;margin-top:0px;padding-top:0px;">
 	<legend>payment</legend>
 	<label for="amountdue" class="important">amount due<br />
-		<input id="amountdue" name="amountdue" type="text" value="<?PHP echo $therecord["amountdue"] ?>" size="11" maxlength="11" onChange="calculatePaidDue();" style="text-align:right;" class="important" tabindex="32"/>
+		<input id="amountdue" name="amountdue" type="text" value="<?PHP echo $therecord["amountdue"] ?>" size="11" maxlength="11" onChange="calculatePaidDue();" style="text-align:right;" class="important" tabindex="24"/>
 	</label>
 	<label for="amountpaid" class="important" style="padding-bottom:0px;margin-bottom:0px;">amount paid</label>
 	<div style="padding-top:0px;margin-top:0px">
-		<input name="amountpaid" id="amountpaid" type="text" value="<?PHP echo $therecord["amountpaid"]?>" size="11" maxlength="11" onChange="calculatePaidDue();" style="text-align:right;" class="important" tabindex="30"/>
-		<input name="Button" type="button" class="Buttons" onClick="this.form['amountpaid'].value=this.form['totalti'].value;calculatePaidDue();" value="pay in full" style="margin-left:3px;" tabindex="31"/>
+		<input name="amountpaid" id="amountpaid" type="text" value="<?PHP echo $therecord["amountpaid"]?>" size="11" maxlength="11" onChange="calculatePaidDue();" style="text-align:right;" class="important" tabindex="24"/>
+		<input name="Button" type="button" class="Buttons" onClick="this.form['amountpaid'].value=this.form['totalti'].value;calculatePaidDue();" value="pay in full" style="margin-left:3px;" tabindex="24"/>
 	</div>
+	<?php if($_SESSION["userinfo"]["accesslevel"]>=20){ ?>
 	<label for="paymentmethod">
 		payment method<br />
 		<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",array("tabindex"=>"24")); ?>
@@ -287,13 +297,13 @@
 		<label for="ccverification">verification/pin<br />
 			<input id="ccverification" name="ccverification" type="text"  value="<?PHP echo htmlQuotes($therecord["ccverification"]) ?>" size="8" maxlength="7" tabindex="29" />
 		</label>		
-	</div>
+	</div><?php }// end if accesslevel?>
 </fieldset>
 <fieldset>
 	<legend>shipping</label></legend>
 	<label for="ds-shippingmethod"style="padding-top:0px;">ship via<br />
-	   <?PHP choicelist("shippingmethod",$therecord["shippingmethod"],"shippingmethod",array("tabindex"=>"26")); ?>&nbsp;
-	   <input name="estimate" type="button" class="Buttons" id="estimate" value="calculate shipping" onClick="estimateShipping()" tabindex="33"/>
+	   <?PHP choicelist("shippingmethod",$therecord["shippingmethod"],"shippingmethod",array("tabindex"=>"30")); ?>&nbsp;
+	   <input name="estimate" type="button" class="Buttons" id="estimate" value="calculate shipping" onClick="estimateShipping()" tabindex="30"/>
 	</label>
 	<div class="small"><em>
 		(The "calculate shipping" button will retrieve shipping costs for UPS only.  Modifying the UPS entry names in the ship via
@@ -301,7 +311,7 @@
 	</em></div>
 	<label for="trackingno" style="margin-top:8px;">
 		tracking number<br />
-		<input id="trackingno" name="trackingno" type="text" value="<?PHP echo htmlQuotes($therecord["trackingno"]) ?>" size="50" maxlength="64" tabindex="35" />
+		<input id="trackingno" name="trackingno" type="text" value="<?PHP echo htmlQuotes($therecord["trackingno"]) ?>" size="50" maxlength="64" tabindex="30" />
 	</label>
 </fieldset>
 	

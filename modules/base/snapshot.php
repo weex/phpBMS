@@ -38,23 +38,23 @@
 				<?php showSevenDays($_SESSION["userinfo"]["id"])?>
 				</div>
 			</td><td nowrap>&nbsp;</td>
-			<td width="45%" valign="top" class="box">
+			<td width="45%" valign="top" class="box" id="accordianContainer">
 					<div id="accordian" style="overflow:hidden;margin:0px;padding:0px;">
-					<div style="clear:both;float:right;cursor:pointer;cursor:hand;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg1" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
-					<h2 style="margin-top:4px;">Received Assignments</h2>
-					<div id="accordianSec1" style="overflow:hidden;margin:0px;padding:0px;">
-						<?php showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments")?>
-					</div>
-					<div style="clear:both;float:right;cursor:pointer;cursor:hand;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg2" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
-					<h2 style="margin-top:4px;">Given Assignments</h2>
-					<div id="accordianSec2" style="overflow:hidden;margin:0px;padding:0px;">
-						<?php showTasks($_SESSION["userinfo"]["id"],"GivenAssignments")?>
-					</div>
-					<div style="clear:both;float:right;cursor:pointer;cursor:hand;display:none;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg3" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
-					<h2 style="margin-top:4px;"><a href="../../search.php?id=23">Tasks</a></h2>
-					<div id="accordianSec3" style="display:block;overflow:hidden;margin:0px;padding:0px;">
-						<?php showTasks($_SESSION["userinfo"]["id"],"Tasks")?>
-					</div>
+						<div style="clear:both;float:right;cursor:pointer;cursor:hand;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg1" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
+						<h2 style="margin-top:4px;">Received Assignments</h2>
+						<div id="accordianSec1" style="margin:0px;padding:0px;">
+							<?php showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments")?>
+						</div>
+						<div style="clear:both;float:right;cursor:pointer;cursor:hand;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg2" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
+						<h2 style="margin-top:4px;">Given Assignments</h2>
+						<div id="accordianSec2" style="margin:0px;padding:0px;">
+							<?php showTasks($_SESSION["userinfo"]["id"],"GivenAssignments")?>
+						</div>
+						<div style="clear:both;float:right;cursor:pointer;cursor:hand;display:none;padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg3" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
+						<h2 style="margin-top:4px;"><a href="../../search.php?id=23">Tasks</a></h2>
+						<div id="accordianSec3" style="display:block;margin:0px;padding:0px;">
+							<?php showTasks($_SESSION["userinfo"]["id"],"Tasks")?>
+						</div>
 					</div>
 				</td>
 		</tr>
@@ -62,7 +62,7 @@
 	<?php if (checkForBMS() && $_SESSION["userinfo"]["accesslevel"]>=20) {?>
 	<div class="box" style="display:inline-block;">	
 		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'TodaysOrders')" width="16" height="16" border="0" /></div>
-		<h2 style="margin-top:4px;"><a href="../../search.php?id=3">Recent Quotes/Orders</a></h2>
+		<h2 style="margin-top:4px;"><a href="../../search.php?id=3">Recent Orders</a></h2>
 			<div id="TodaysOrders">
 				<?php 
 				if(date("d")=="Mon")

@@ -35,7 +35,7 @@
 					
 					var enteredlength=theitem.value.length
 					
-					var theURL=appPath+"autofill.php?l=" + encodeURI(theitem.value);
+					var theURL=appPath+"autofill.php?l=" + encodeURIComponent(theitem.value);
 					theURL=theURL+"&tid=" +tabledefid;
 					theURL=theURL+"&fl=" +displayfield;
 					theURL=theURL+"&xt=" +xtrafield;
@@ -123,7 +123,7 @@
 					var whereclause=autofill[basename]["wc"];
 					var getfield=autofill[basename]["gf"];
 				
-					var theURL=appPath+"autofill.php?l=" + encodeURI(theitem.value);
+					var theURL=appPath+"autofill.php?l=" + encodeURIComponent(theitem.value);
 					theURL=theURL+"&tid=" +tabledefid;
 					theURL=theURL+"&fl=" +displayfield;
 					theURL=theURL+"&xt=" +xtrafield;

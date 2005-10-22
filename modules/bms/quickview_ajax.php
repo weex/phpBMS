@@ -17,22 +17,17 @@ function showClient($clientid,$basepath){
 	if(!$queryresult) reportError(300,"Could Not Retrieve Client: ".mysql_error($dblink)." -- ".$querystatement);
 	$therecord=mysql_fetch_array($queryresult);
 	
-	$querystatement="SELECT invoices.id,invoices.status,
-					if(find_in_set(invoices.status,\"Quote,Order,Invoice,VOID\")>2,invoicedate,orderdate) as theDate,
-					if(invoices.status=\"Quote\",1,0) as theQuote,
-					if(invoices.status=\"Order\",1,0) as theOrder,
-					if(invoices.status=\"Invoice\",1,0) as theOrder,
-					DATE_FORMAT(invoices.invoicedate,\"%c/%e/%Y\") as idate,
-					DATE_FORMAT(invoices.orderdate,\"%c/%e/%Y\") as odate,
+	$querystatement="SELECT invoices.id,invoices.type,
+					if(invoices.type=\"Invoice\",DATE_FORMAT(invoices.invoicedate,\"%c/%e/%Y\"),DATE_FORMAT(invoices.orderdate,\"%c/%e/%Y\")) as thedate,
 					totalti
-					FROM invoices WHERE invoices.clientid=".$clientid." ORDER BY theQuote DESC,theOrder DESC, theDate DESC";
+					FROM invoices WHERE invoices.clientid=".$clientid." ORDER BY type,thedate";
 	$invoiceresult=mysql_query($querystatement,$dblink);
 	if(!$invoiceresult) reportError(300,"Could Not Retrieve Invoices: ".mysql_error($dblink)." -- ".$querystatement);
 
-	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category,
+	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category,if(notes.completed=1,\"X\",\"&middot;\") as completed,
 					ELT(notes.importance+3,\"&nbsp;\",\"&middot;\",\"-\",\"*\",\"!\",\"!!\")  as importance
 					FROM notes WHERE notes.attachedtabledefid=2 AND notes.attachedid=".$clientid." 
-					ORDER BY notes.category,notes.type,notes.importance DESC,notes.creationdate";
+					ORDER BY notes.completed,notes.category,notes.type,notes.importance DESC,notes.creationdate";
 	$noteresult=mysql_query($querystatement,$dblink);
 	if(!$noteresult) reportError(300,"Could Not Retrieve Notes: ".mysql_error($dblink)." -- ".$querystatement);
 ?>
@@ -99,20 +94,33 @@ function showClient($clientid,$basepath){
 				<div style="padding:0px;padding-right:5px;" align="right">
 					<button id="invoiceedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
 				</div>
-				<select style="width:99%" size="12" class="mono" id="invoice" onChange="selectEditEnable(this)">
+				<div style="height:188px;overflow:auto" class="smallQueryTableHolder">
 					<?php if(!mysql_num_rows($invoiceresult)) {?>
-						<option value="" class="choiceListBlank">No Records</option>
-					<?php } else while($invoicerecord=mysql_fetch_array($invoiceresult)) {
+						<div class="small"><em>no records</em></div>
+					<?php } else {?>
+					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+						<tr>
+							<th align="left">Type</th>
+							<th align="left">Date</th>
+							<th align="left">ID</th>
+							<th align="right" width="100%">Total</th>
+						</tr>
+					<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
 							if($invoicerecord["totalti"]<0)
 								$invoicerecord["totalti"]="-$".number_format($invoicerecord["totalti"],2);
 							else
 								$invoicerecord["totalti"]="$".number_format($invoicerecord["totalti"],2);
-							$thedisplay=sprintf("%s%'|11s%'|5d%'|20s",substr($invoicerecord["status"],0,1),$invoicerecord["odate"],$invoicerecord["id"],$invoicerecord["totalti"]);
-							$thedisplay=str_replace("|","&nbsp;",$thedisplay);			
-					?>
-						<option value="<?php echo $invoicerecord["id"]?>" class="selectListItems <?php echo $invoicerecord["status"]?>"><?php echo $thedisplay?></option>
-					<?php }?>
-				</select>
+							if($invoicerecord["type"]=="VOID")
+								$invoicerecord["totalti"]="----"
+					?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
+						<td><?php echo $invoicerecord["type"]?></td>
+						<td><?php echo $invoicerecord["thedate"]?></td>
+						<td><?php echo $invoicerecord["id"]?></td>
+						<td align="right"><?php echo $invoicerecord["totalti"]?></td>
+					</tr>
+					<?php }?></table><?php }?>
+	
+				</div>
 			</fieldset>
 			<?php }?>
 			<fieldset>
@@ -120,18 +128,32 @@ function showClient($clientid,$basepath){
 				<div style="padding:0px;padding-right:5px;" align="right">
 					<button id="noteedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
 				</div>
-				<select style="width:99%" size="9" id="note" onChange="selectEditEnable(this)">
+				<div style="height:140px;overflow:auto" class="smallQueryTableHolder">
 					<?php if(!mysql_num_rows($noteresult)) {?>
-						<option value="" class="choiceListBlank">No Records</option>
-					<?php } else while($noterecord=mysql_fetch_array($noteresult)) {
+						<div class="small"><em>no records</em></div>
+					<?php } else {?>
+					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+						<tr>
+							<th align="center">!</th>
+							<th align="left">type</th>
+							<th align="left">category</th>
+							<th align="left" width="100%">title</th>
+							<th align="center">done</th>
+						</tr>
+					<?php while($noterecord=mysql_fetch_array($noteresult)) {
 							if(strlen($noterecord["subject"])>17)
 								$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
-							$thedisplay=sprintf("%s %s %s %s",$noterecord["type"],$noterecord["category"],$noterecord["importance"],$noterecord["subject"]);
-							$thedisplay=str_replace("|","&nbsp;",$thedisplay);			
-					?>
-						<option value="<?php echo $noterecord["id"]?>" class="selectListItems" ><?php echo $thedisplay?></option>
-					<?php }?>
-				</select>		
+							if(strlen($noterecord["category"])>17)
+								$noterecord["category"]=substr($noterecord["category"],0,17)."...";
+					?><tr onClick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
+						<td align=center><?php echo $noterecord["importance"]?></td>
+						<td><?php echo $noterecord["type"]?></td>
+						<td><?php echo $noterecord["category"]?></td>
+						<td><?php echo $noterecord["subject"]?></td>
+						<td align="center"><?php echo $noterecord["completed"]?></td>
+					</tr>
+					<?php }?></table><?php }?>	
+				</div>
 			</fieldset>
 					</td>
 	</tr>

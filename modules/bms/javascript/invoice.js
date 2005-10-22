@@ -3,7 +3,12 @@ function returnFalse(){
 }
 
 function initializePage(){
-	
+	var taxid=getObjectFromID("taxareaid");
+	taxid.onchange=getPercentage;
+
+	var discountid=getObjectFromID("discountid");
+	discountid.onchange=getDiscount;
+
 	calculateTotal();
 	showPaymentOptions();
 	var theid=getObjectFromID("id");
@@ -29,7 +34,7 @@ function getPercentage(){
 	var base=document.URL;
 	base=base.substring(0,base.indexOf("invoices_addedit.php"));
 	if(taxareaid.value){
-		var theurl=base+"invoicetaxpercentage.php?id="+taxareaid.value;
+		var theurl=base+"invoices_tax_ajax.php?id="+taxareaid.value;
 		//need this to be synchronous, so the window does not close and 
 		//yack.
 		loadXMLDoc(theurl,null,false);
@@ -40,6 +45,33 @@ function getPercentage(){
 		theitem.value=thevalue+"%";
 	} else {
 		theitem=getObjectFromID("taxpercentage");
+		theitem.value="";
+	}
+	calculateTotal();
+	return true;
+}
+
+function getDiscount(){
+	var thevalue,repsponse;
+	var discountid =getObjectFromID("discountid");	
+
+	var base=document.URL;
+	base=base.substring(0,base.indexOf("invoices_addedit.php"));
+	var	theitem=getObjectFromID("discount");
+	if(discountid.value){
+		var theurl=base+"invoices_discount_ajax.php?id="+discountid.value;
+		//need this to be synchronous, so the window does not close and 
+		//yack.
+		loadXMLDoc(theurl,null,false);
+		if(!req.responseXML) {
+			alert(req.responseText);
+			return false;
+		}
+		response = req.responseXML.documentElement;
+		thevalue = response.getElementsByTagName('value')[0].firstChild.data;
+		
+		theitem.value=thevalue;
+	} else {
 		theitem.value="";
 	}
 	calculateTotal();
@@ -80,7 +112,7 @@ function populateShipping(){
 	base=base.substring(0,base.indexOf("invoices_addedit.php"));
 	
 	if(clientid.value!="") {
-		var theurl=base+"invoiceclientlookup.php?id="+clientid.value;
+		var theurl=base+"invoices_client_ajax.php?id="+clientid.value;
 		loadXMLDoc(theurl,null,false);
 		response = req.responseXML.documentElement;
 		for(i=0;i<response.getElementsByTagName('field').length;i++){
@@ -122,9 +154,9 @@ function estimateShipping(){
 	base=base.substring(0,base.indexOf("invoices_addedit.php"));
 
 	if(postalcode.value!="" && shippingmethod.value!="") {
-		var theurl=base+"invoiceestimateshipping.php?id="+theid.value;
+		var theurl=base+"invoices_shipping_ajax.php?id="+theid.value;
 		var theurl=theurl+"&postalcodeto="+postalcode.value;
-		var theurl=theurl+"&shipvia="+encodeURI(shippingmethod.value);
+		var theurl=theurl+"&shipvia="+encodeURIComponent(shippingmethod.value);
 
 		loadXMLDoc(theurl,null,false);
 		response = req.responseXML.documentElement;
@@ -149,12 +181,24 @@ function estimateShipping(){
 }
 
 //this function makes sure that amount due is 0 before allowing changing to an invoice
-function checkStatus(theitem){
-	if (theitem.value=="Invoice" && document.forms["record"]["amountdue"].value!="$0.00"){
-		theitem.value="Order";
-		document.forms["record"]["amountpaid"].focus();
-		alert("The order has not been fully paid. \n Check the 'amount paid' field.");
-	}
+function checkType(theitem){
+	if (theitem.value=="Invoice") {
+		var amountdue=getObjectFromID("amountdue");
+		var invoicedate=getObjectFromID("invoicedate");
+		var shipped=getObjectFromID("statusShipped");
+		if(amountdue.value!="$0.00"){
+			theitem.value="Order";
+			alert("The order has not been fully paid. \n Check the 'amount paid' field.");
+		} else{
+			if(invoicedate.value==""){
+				var currentdate= new Date();
+				invoicedate.value=(currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
+			}
+			shipped.checked=true;
+		}
+		
+	} 
+	
 }
 
 //this function opens a page in a new window that will lookup and populate the add line item info based on a choosen partnumber
@@ -170,7 +214,7 @@ function populateLineItem(){
 		var base=document.URL;
 		base=base.substring(0,base.indexOf("invoices_addedit.php"));
 
-		var theurl=base+"invoicelineitemlookup.php?id="+this.value;
+		var theurl=base+"invoices_lineitem_ajax.php?id="+this.value;
 		theurl=theurl+"&cid="+clientid.value;
 		
 		loadXMLDoc(theurl,null,false);
@@ -427,22 +471,6 @@ function setLineItems(){
 	}
 }
 
-function checkShipping(){
-	var thecheckbox=getObjectFromID("shipped");
-	var thedate=getObjectFromID("shippeddate");
-	var cancelclick=getObjectFromID("cancelclick");
-
-	if (cancelclick)
-		if (cancelclick.value!=0)
-			return true;
-	if(thecheckbox){
-		if(thecheckbox.checked && !thecheckbox.disabled && !thedate.value){
-				alert("A shipping date must be filled in \n if the shipped status is set.");
-				return false;
-		}
-	}
-	return true;
-}
 
 //this function sets the default shipped date information for shipping appropriately
 function setShipped(){
@@ -450,7 +478,7 @@ function setShipped(){
 	var thedate=getObjectFromID("shippeddate");
 
 	if(thecheckbox){
-		if(thecheckbox.checked && thecheckbox.disabled==false) {
+		if(thecheckbox.checked && thecheckbox.disabled==false && thedate.value=="") {
 			var currentdate= new Date();
 			thedate.value=(currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
 		} 
@@ -479,17 +507,28 @@ function calculatePaidDue(){
 function calculateTotal(){
 	var thetotalBD=getObjectFromID("totalBD");
 	var subtotal=getObjectFromID("totaltni");
-	var discount=getObjectFromID("discountamount");
+	var thediscount=getObjectFromID("discountamount");
 	var shipping=getObjectFromID("shipping"); 
 	var taxpercentage=getObjectFromID("taxpercentage");
 	var tax=getObjectFromID("tax");
 	var totalti=getObjectFromID("totalti");
 	var totaltaxable=getObjectFromID("totaltaxable");
+	var discountFromID=getObjectFromID("discount");
 	
 	//calculate and reformat discount
-	var numDiscount=dollartoNumber(discount.value);
-	var discountValue=formatDollar(numDiscount);
-	discount.value=discountValue;
+	var numDiscount,discountValue
+	if(discountFromID.value=="" || discountFromID.value=="0" || discountFromID.value=="0%"){
+		numDiscount=dollartoNumber(thediscount.value);
+	} else {
+		// compute discount from discount id
+		if(discountFromID.value.indexOf("%")!=-1){
+			numDiscount=parseFloat(thetotalBD.value)*parseFloat(discountFromID.value.substring(0,discountFromID.value.length-1))/100
+		} else {
+			numDiscount=parseFloat(discountFromID.value);
+		}
+	}
+	discountValue=formatDollar(numDiscount);
+	thediscount.value=discountValue;
 
 	//calculate totaltaxable
 	var numTotalTaxable=parseFloat(totaltaxable.value)-numDiscount;
@@ -506,11 +545,16 @@ function calculateTotal(){
 
 	//next calculate and reformat tax
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
-	if (taxpercentagevalue!=0)
+	if (taxpercentagevalue!=0){
 		var numtax=numTotalTaxable*(taxpercentagevalue/100);
+		if(numtax<0) numtax=0;
+	}
 	else {
 		var numtax=dollartoNumber(tax.value);
-		taxpercentagevalue=(numtax/numTotalTaxable)*100;
+		if(numTotalTaxable>0)
+			taxpercentagevalue=(numtax/numTotalTaxable)*100;
+		else
+			taxpercentagevalue=0;
 		taxpercentage.value=taxpercentagevalue;
 		validatePercentage(taxpercentage,5);
 	}
@@ -641,8 +685,8 @@ function viewClient(addeditfile){
 	}
 }
 
-function doPrint(id){
-		location.href=("../../print.php?backurl="+encodeURI(document.location));
+function doPrint(base,id){
+		location.href=(base+"print.php?backurl="+encodeURIComponent(document.location));
 }
 
 function disableSaves(theform){
@@ -660,4 +704,19 @@ function showWebConfirmationNum(theitem){
 		else
 			webdiv.style.display="none";
 			
+}
+
+function clearDiscount(){
+	var discountid=getObjectFromID("discountid");
+	var discountDisplay=getObjectFromID("ds-discountid");
+	var discount=getObjectFromID("discount");
+	discount.value="";
+	discountid.value="";
+	discountDisplay.value="";
+	autofill["discountid"]["ch"]="";
+	autofill["discountid"]["uh"]="";
+	autofill["discountid"]["vl"]="";	
+	autofill["discountid"]["ch"]="";
+	autofill["discountid"]["uh"]="";
+	autofill["discountid"]["vl"]="";	
 }

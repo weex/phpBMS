@@ -44,10 +44,27 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="javascript">
+	function init(){
+		switchType();
+	}
+	
+	function switchType(){
+		var oc1=getObjectFromID("oc1");
+		var pdFields=getObjectFromID("pdList");
+		var other=getObjectFromID("other");
+		if(oc1.checked){
+			pdFields.style.display="block";
+			other.style.display="none";
+		} else {
+			pdFields.style.display="none";
+			other.style.display="block";
+		}
+	}
+</script>
 </head>
-<body><?php include("../../menu.php")?>
+<body onLoad="init()"><?php include("../../menu.php")?>
 
 
 <?php tabledefs_tabs("Options",$_GET["id"]);?><div class="bodyline">
@@ -55,22 +72,38 @@
 	<h1><?php echo $pageTitle?></h1>
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
-	 <th nowrap class="queryheader" align="center">command list</td>
-	 <th nowrap class="queryheader" align="left">name / function name</td>
-	 <th nowrap class="queryheader" align="left" width="100%">option / function display name</td>
-	 <th nowrap class="queryheader">&nbsp;</td>
+	 <th nowrap class="queryheader" align="center">other</td>
+	 <th nowrap class="queryheader" align="left">name</td>
+	 <th nowrap class="queryheader" align="left">option / function</td>
+	 <th nowrap class="queryheader" align="center">restricted</td>	 
+	 <th nowrap class="queryheader" width="100%">&nbsp;</td>
 	</tr>
 
 	<?php 
+		$row=1;
 		while($therecord=mysql_fetch_array($optionsquery)){ 
+		if($row==1)$row=2;else $row=1;
 	?>
-	<tr class="qr2" style="cursor:auto">
-	 <td align="center" nowrap><?php if($therecord["othercommand"]) echo "<strong>X</strong>"; else echo "&nbsp;"; ?></td>
-	 <td nowrap><strong><?php echo $therecord["name"]?></strong></td>
-	 <td nowrap class="small"><?php echo $therecord["option"]?></td>
+	<tr class="qr<?php echo $row?>" style="cursor:auto">
+	 <td align="center" nowrap><?php if($therecord["othercommand"]) echo "X"; else echo "&middot;"; ?></td>
+	 <td nowrap><strong><?php 
+	 		if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?></strong>
+	</td>
+	 <td nowrap class="small"><?php 
+	 	if($therecord["othercommand"]) 
+			echo $therecord["name"]; 
+		else {
+			if($therecord["option"]==1)
+				echo "allowed";
+			else
+				echo "not allowed";				
+		}
+	?></td>
+	 <td nowrap align="center"><?php if ($therecord["accesslevel"]>10) echo "X"; else echo "&middot;";?></td>	
+	 
 	 <td nowrap valign="top">
-		 <input name="command" type="button" value="edit" style="margin-right:0px;"  class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&optionid=".$therecord["id"]?>';">
-		 <input name="command" type="button" value="delete" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&optionid=".$therecord["id"]?>';">
+		 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&optionid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
+		 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&optionid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
 	 </td>
 	</tr>	
 	<?php } ?>
@@ -82,40 +115,46 @@
 			<div>				
 				command type<br />
 				<label for="oc1" style="display:inline">
-				<input type="radio" id="oc1" name="othercommand" value="0" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked"?>> pre-defined
+				<input type="radio" id="oc1" name="othercommand" value="0" onClick="switchType()" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked"?>> pre-defined
 				</label>
 				<label for="oc2" style="display:inline">
-				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" <?php if($theoption["othercommand"]) echo "checked"?>>  command list
+				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" onClick="switchType()" <?php if($theoption["othercommand"]) echo "checked"?>>  other 
 				</label>
 			</div>
-			<label for="name">
-				name / function name <br />
-				<?PHP field_text("name",$theoption["name"],1,"Name cannot be blank","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
-			</label>
-			<label for="option">
-				option / function display name<br />
-				<?PHP field_text("option",$theoption["option"],1,"Option cannot be blank","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+			<div id="pdList" style="padding:0px;margin:0px;display:none;">
+				<label for="pdName">
+					function<br />
+					<?php basic_choicelist("pdName",$therecord["name"],array(array("value"=>"new","name"=>"new"),array("value"=>"select","name"=>"select"),array("value"=>"edit","name"=>"edit"),array("value"=>"printex","name"=>"printing")),Array("class"=>"important"));?>
+				</label>
+				<div>
+					option<br />
+					<label for="pdOptionAllowed" style="display:inline">
+						<input type="radio" class="radiochecks" id="pdOptionEnabled" name="pdOption" value="1" <?php if ($theoption["option"]!==0) echo "checked"?> /> allowed
+					</label>
+					<label for="pdOptionNot" style="display:inline">
+						<input type="radio" class="radiochecks" id="pdOptionNot" name="pdOption" value="0" <?php if ($theoption["option"]===0) echo "checked"?> /> not allowed
+					</label>
+				</div>
+			</div>
+			<div id="other" style="padding:0px;margin:0px;display:none;">
+				<label for="name">
+					function name <br />
+					<?PHP field_text("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+				</label>
+				<label for="option">
+					display name<br />
+					<?PHP field_text("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+				</label>
+			</div>
+			<label for="accesslevel">
+				access level<br />
+				<?php basic_choicelist("accesslevel",$theoption["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>			
 			</label>
 			<div align="left">
 				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">
 			</div>
 		</form>
 	</fieldset>
-	<fieldset>
-		<legend>notes</legend>
-		<div class=small>	
-			<strong>pre-defined:</strong><br>
-				new = 1,0 (is record creation possible: 1 for true, 0 for false)<br />
-				edit = 1,0 (is editing/viewing of records possible: 1 for true, 0 for false)<br />
-				select = 1,0 (is selection of records possible: 1 for true, 0 for false)<br />
-				printex = 1,0 (is printing of records possible: 1 for true, 0 for false)<br />&nbsp;<br />
-			<strong>command list:</strong><br />
-				command list options correspond to php functions specific to the table. 
-				function name references a php function defined in the &quot;include/tablename_search_functions.php&quot; file.<br /><br />
-				
-				The "function display name" is how the function is displayed to the end user in the command list drop down.
-		</div>					
-	</fieldset>	
 </div>
 </div>
 <?php include("../../footer.php"); ?>

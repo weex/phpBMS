@@ -145,4 +145,12 @@ function getAddEditFile($tabledefid,$addedit="edit"){
 	$therecord=mysql_fetch_array($queryresult);
 	return $_SESSION["app_path"].$therecord["thefile"];
 }
+
+function currencyFormat($number){
+	if($number <0)
+		$thenumber="-$".number_format(abs($number),2);
+	else
+		$thenumber="$".number_format($number,2);
+	return $thenumber;
+}
 ?>

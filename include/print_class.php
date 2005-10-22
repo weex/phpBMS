@@ -22,7 +22,7 @@
 			$this->maintable=$therecord["maintable"];
 
 			$querystatement="SELECT id,name,reportfile,type,description,displayorder FROM reports 
-							WHERE tabledefid=0 or tabledefid=".$this->tableid." and accesslevel <= ".$_SESSION["userinfo"]["accesslevel"]." ORDER BY tabledefid desc, displayorder desc,name";
+							WHERE (tabledefid=0 or tabledefid=".$this->tableid.") and accesslevel <= ".$_SESSION["userinfo"]["accesslevel"]." ORDER BY tabledefid desc, displayorder desc,name";
 			$queryresult=mysql_query($querystatement,$dblink);		
 			if(!$queryresult) reportError(500,"Error retreving reports.");
 			$this->reports=$queryresult;

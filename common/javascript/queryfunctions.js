@@ -64,7 +64,6 @@ function clickIt(theTR,theevent,disablectrl){
 		}
 		
 	} else {
-	
 		// need to find the checkbox that the TR contains
 		var newClass="";
 		var i;
@@ -72,7 +71,7 @@ function clickIt(theTR,theevent,disablectrl){
 			//highlighted... unhighlight it
 			newClass="qr"+theTR.className.charAt(theTR.className.length-1);
 			for(i=0;i<selIDs.length;i++)
-				if(selIDs[i]==theTR.id.substring(2)) selIDs.slice(i,1);
+				if(selIDs[i]==theTR.id.substring(2)) selIDs.splice(i,1);
 		} else {
 			//highlight it
 			newClass="qh"+theTR.className.charAt(theTR.className.length-1);
@@ -282,7 +281,7 @@ function switchSearchTabs(taba,base){
 				var tabledefid=getObjectFromID("tabledefid");
 				advancedTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 				advancedTab.style.display="block";			
-				theURL=base+"advancedsearch.php?cmd=show&base="+encodeURI(base)+"&tid="+tabledefid.value;
+				theURL=base+"advancedsearch.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
 				loadXMLDoc(theURL,null,false);
 				advancedTab.innerHTML=req.responseText;						
 				ASParams= [1];
@@ -294,7 +293,7 @@ function switchSearchTabs(taba,base){
 				var tabledefid=getObjectFromID("tabledefid");
 				loadTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 				loadTab.style.display="block";			
-				theURL=base+"loadsearch.php?cmd=show&base="+encodeURI(base)+"&tid="+tabledefid.value;
+				theURL=base+"loadsearch.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
 				loadXMLDoc(theURL,null,false);
 				loadTab.innerHTML=req.responseText;
 			} else
@@ -317,7 +316,7 @@ function switchSearchTabs(taba,base){
 				var tabledefid=getObjectFromID("tabledefid");
 				sortTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 				sortTab.style.display="block";			
-				theURL=base+"advancedsort.php?cmd=show&base="+encodeURI(base)+"&tid="+tabledefid.value;
+				theURL=base+"advancedsort.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
 				loadXMLDoc(theURL,null,false);
 				sortTab.innerHTML=req.responseText;						
 				SortParams= [1];
@@ -503,7 +502,7 @@ function saveMySearch(base){
 	searchstatus.style.display="block";
 	searchstatus.className="";
 	searchstatus.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
-	var theURL=base+"loadsearch.php?cmd=savesearch&name="+encodeURI(searchtext.value)+"&tid="+tabledefid.value;
+	var theURL=base+"loadsearch.php?cmd=savesearch&name="+encodeURIComponent(searchtext.value)+"&tid="+tabledefid.value;
 	loadXMLDoc(theURL,null,false);
 	searchstatus.innerHTML=req.responseText;
 	searchstatus.className="standout";	
@@ -702,7 +701,7 @@ function sortSave(base){
 	var sortName=getObjectFromID("sortSaveName");
 	var sql=getObjectFromID("sortSQL");
 	var tabledefid=getObjectFromID("tabledefid");
-	var theURL=base+"advancedsort.php?cmd=save&name="+encodeURI(sortName.value)+"&clause="+sql.value+"&tid="+tabledefid.value;
+	var theURL=base+"advancedsort.php?cmd=save&name="+encodeURIComponent(sortName.value)+"&clause="+sql.value+"&tid="+tabledefid.value;
 	loadXMLDoc(theURL,null,false);
 	closeModal();
 	if(req.responseText!="success")
@@ -711,7 +710,7 @@ function sortSave(base){
 
 function sortAskLoad(base){
 	var tabledefid=getObjectFromID("tabledefid");
-	var theURL=base+"advancedsort.php?cmd=showSaved&tid="+tabledefid.value+"&base="+encodeURI(base);
+	var theURL=base+"advancedsort.php?cmd=showSaved&tid="+tabledefid.value+"&base="+encodeURIComponent(base);
 	var text="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 	showModal(text,"Saved Sorts",350);
 	loadXMLDoc(theURL,null,false);
@@ -747,7 +746,7 @@ function sortSavedDelete(base){
 
 	if (req.responseText=="success"){
 		var tabledefid=getObjectFromID("tabledefid");
-		theURL=base+"advancedsort.php?cmd=showSaved&tid="+tabledefid.value+"&base="+encodeURI(base);
+		theURL=base+"advancedsort.php?cmd=showSaved&tid="+tabledefid.value+"&base="+encodeURIComponent(base);
 		loadXMLDoc(theURL,null,false);
 		modalContent.innerHTML=req.responseText;
 	} else 

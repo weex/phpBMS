@@ -74,9 +74,9 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		var adminName=getObjectFromID("username");
 		var adminPass=getObjectFromID("password");
 		var version=getObjectFromID("version");
-		theURL+="&u="+encodeURI(adminName.value);
-		theURL+="&p="+encodeURI(adminPass.value);
-		theURL+="&v="+encodeURI(version.value);
+		theURL+="&u="+encodeURIComponent(adminName.value);
+		theURL+="&p="+encodeURIComponent(adminPass.value);
+		theURL+="&v="+encodeURIComponent(version.value);
 
 		var responseText= getObjectFromID(command+"results");
 		loadXMLDoc(theURL,null,false);
@@ -96,8 +96,8 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			var theURL="../modules/"+themodule.value+"/install/update.php";
 			var adminName=getObjectFromID("username");
 			var adminPass=getObjectFromID("password");
-			theURL+="?u="+encodeURI(adminName.value);
-			theURL+="&p="+encodeURI(adminPass.value);
+			theURL+="?u="+encodeURIComponent(adminName.value);
+			theURL+="&p="+encodeURIComponent(adminPass.value);
 			
 			loadXMLDoc(theURL,null,false);
 			if(req.responseXML)

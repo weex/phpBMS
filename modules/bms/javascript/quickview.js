@@ -8,6 +8,8 @@ function pageInit(){
 		var focusobject=getObjectFromID("ds-namecid");
 		focusobject.focus();
 	}
+	selectedInvoice="";
+	selectedNote=""
 }
 
 function updateLookup(theselect){
@@ -63,46 +65,66 @@ function viewClient(base){
 	if (clientid.value!=""){
 		var clientrecord=getObjectFromID("clientrecord");
 		clientrecord.innerHTML="<div align=\"center\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";
-		var theURL=base+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURI(base);
+		var theURL=base+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURIComponent(base);
 		loadXMLDoc(theURL,null,false);
 		clientrecord.innerHTML=req.responseText;
 	}
 }
 
-function selectEditEnable(theselect){
-	var theditbutton=getObjectFromID(theselect.id+"edit");	
-	if (theselect.value=="")
-		theditbutton.firstChild.src=editButtonDisabled.src;
-	else
-		theditbutton.firstChild.src=editButton.src;
-}
-
 function addEditRecord(newedit,what,addeditfile){
-	var theselect=getObjectFromID(what);
 	var lookuptype=getObjectFromID("lookupby");
 	var clientid=getObjectFromID(lookuptype.value);	
 	var theURL=addeditfile;
 	var currentURL=""+document.location;
 	currentURL = currentURL.substring(0,currentURL.indexOf(".php")+4);
+	var theid="";
 	switch(what){
 		case "note":
+			theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
+			theid=selectedNote;
+		break;
 		case "invoice":
-			theURL+="?backurl="+encodeURI(currentURL+"?cid="+clientid.value)
+			theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
+			theid=selectedInvoice;
 		break;
 		case "client":
 			if(newedit=="edit")
-				theURL+="?backurl="+encodeURI(currentURL+"?cid="+clientid.value);
+				theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value);
 			else
-				theURL+="?backurl="+encodeURI(currentURL);
+				theURL+="?backurl="+encodeURIComponent(currentURL);
 		break;
 	}	
 	if(newedit=="edit")
-		if(theselect)
-			theURL+="&id="+theselect.value;
+		if(theid!="")
+			theURL+="&id="+theid;
 		else
 			theURL+="&id="+clientid.value;
 	else{
 		theURL+="&cid="+clientid.value;
 	}
 	document.location=theURL;
+}
+
+function selectEdit(thetr,id,noteinvoice){
+	var theeditbutton=getObjectFromID(noteinvoice+"edit");	
+	if(selectedInvoice==id){
+		theeditbutton.firstChild.src=editButtonDisabled.src;
+		if(noteinvoice="note")
+			selectedNote="";
+		else
+			selectedInvoice="";
+		thetr.className=""
+	} else {
+		for(var i=0; i<thetr.parentNode.childNodes.length;i++){
+			if(thetr.parentNode.childNodes[i].tagName)
+				if(thetr.parentNode.childNodes[i].tagName=="TR")
+					thetr.parentNode.childNodes[i].className=""
+		}
+		thetr.className="smallQueryTableSelected";
+		if(noteinvoice="note")
+			selectedNote=id;
+		else
+			selectedInvoice=id;
+		theeditbutton.firstChild.src=editButton.src;
+	}
 }

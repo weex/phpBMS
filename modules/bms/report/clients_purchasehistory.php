@@ -38,10 +38,10 @@ class purchaseHistoryReport{
 	function showPurchaseHistory($id){
 		global $dblink;
 
-		$thestatus="(invoices.status =\"";
+		$thestatus="(invoices.type =\"";
 		switch($this->view){
 			case "Orders/Invoices":
-				$thestatus.="Order\" or invoices.status=\"Invoice\")";
+				$thestatus.="Order\" or invoices.type=\"Invoice\")";
 				$searchdate="orderdate";
 			break;
 			case "Invoices":
@@ -60,50 +60,58 @@ class purchaseHistoryReport{
 		$temparray=explode("/",$this->todate);
 		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 			
-		$querystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
-		Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,invoices.status,
+	$querystatement="SELECT invoices.id,
+		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
+		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
+		invoices.type,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
 		lineitems.unitprice as price
 		FROM ((clients inner join invoices on clients.id=invoices.clientid) 
 				inner join lineitems on invoices.id=lineitems.invoiceid) 
 					inner join products on lineitems.productid=products.id
-		WHERE clients.id=".$id."   
-		and invoices.".$searchdate.">=".$mysqlfromdate."
-		and invoices.".$searchdate."<=".$mysqltodate."
+		WHERE clients.id=".$_GET["id"]."   
 		and ".$thestatus."		
-		ORDER BY invoices.invoicedate,invoices.orderdate,invoices.id;";
+		HAVING 
+		thedate >=".$mysqlfromdate."
+		and thedate <=".$mysqltodate."
+		ORDER BY thedate,invoices.id;";
 		$thequery=mysql_query($querystatement,$dblink);
 		if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
 		$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 ?>
-   <table border="0" cellpadding="0" cellspacing="0" >
-	<tr>
-	 <th align="center" nowrap >invc. id</td>
-	 <th align="center" nowrap >order date </td>
-	 <th align="center" nowrap >invc. date </td>
-	 <th nowrap align="left">part num. </td>
-	 <th width="100%" nowrap align="left">part name </td>
-	 <th align="right" nowrap >price</td>
-	 <th align="center" nowrap >qty.</td>
-	 <th align="right" nowrap >ext.</td>
-	</tr>
+	<table border="0" cellpadding="0" cellspacing="0" >
+		<TR>
+			<th align="left" nowrap colspan="3">invoice</th>
+			<th align="left" nowrap colspan="3">product</th>		
+			<th align="left" nowrap colspan="2">line item</th>
+		</TR>
+		<tr>
+			<th align="center" nowrap>id</td>
+			<th align="left" nowrap >type</td>
+			<th align="left" nowrap >date</td>
+			<th align="left" nowrap >part num. </td>
+			<th width="100%" nowrap align="left">name</td>
+			<th align="right" nowrap >price</td>
+			<th align="center" nowrap >qty.</td>
+			<th align="right" nowrap >ext.</td>
+		</tr>
     <?PHP 
 	$totalextended=0;		
 	while ($therecord=mysql_fetch_array($thequery)){
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
-	<tr >
-	 <td align="center" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
-	 <td nowrap><?PHP echo $therecord["partnumber"]?></td>
-	 <td nowrap><?PHP echo $therecord["partname"]?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+	<tr>
+		<td align="left" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?PHP echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
+		<td nowrap><?PHP echo $therecord["partname"]?></td>
+		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
+		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-    <?PHP }//end while ?>
+	<?PHP }//end while ?>
 	<tr>
 	 <td align="center" class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals">&nbsp;</td>

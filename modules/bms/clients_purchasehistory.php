@@ -29,19 +29,16 @@
 	else
 		$pageTitle.=$clientrecord["company"];
 	
-	$thestatus="(invoices.status =\"";
+	$thestatus="(invoices.type =\"";
 	switch($_POST["status"]){
 		case "Orders/Invoices":
-			$thestatus.="Order\" or invoices.status=\"Invoice\")";
-			$searchdate="orderdate";
+			$thestatus.="Order\" or invoices.type=\"Invoice\")";
 		break;
 		case "Invoices":
 			$thestatus.="Invoice\")";
-			$searchdate="invoicedate";
 		break;
 		case "Orders":
 			$thestatus.="Order\")";
-			$searchdate="orderdate";
 		break;
 	}
 
@@ -52,8 +49,10 @@
 	$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 
 	//get history
-	$querystatement="SELECT invoices.id,Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
-		Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,invoices.status,
+	$querystatement="SELECT invoices.id,
+		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
+		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
+		invoices.type,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
 		lineitems.unitprice as price
@@ -61,12 +60,13 @@
 				inner join lineitems on invoices.id=lineitems.invoiceid) 
 					inner join products on lineitems.productid=products.id
 		WHERE clients.id=".$_GET["id"]."   
-		and invoices.".$searchdate.">=".$mysqlfromdate."
-		and invoices.".$searchdate."<=".$mysqltodate."
 		and ".$thestatus."		
-		ORDER BY invoices.invoicedate,invoices.orderdate,invoices.id;";
+		HAVING 
+		thedate >=".$mysqlfromdate."
+		and thedate <=".$mysqltodate."
+		ORDER BY thedate,invoices.id;";
 	$queryresult=mysql_query($querystatement);
-	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history<br />".$querystatement);
+	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history: ".mysql_error($dblink)." --".$querystatement);
 
 	$numrows=mysql_num_rows($queryresult);
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -116,18 +116,22 @@
 		</div>
 	</form>
 	<div>
-   <table border="0" cellpadding="0" cellspacing="0" class="querytable">
-	<tr>
-	 <th align="center" nowrap class="queryheader">id</td>
-	 <th align="center" nowrap class="queryheader">order date </td>
-	 <th align="center" nowrap class="queryheader">invc. date </td>
-	 <th nowrap class="queryheader" align="left">part num. </td>
-	 <th width="100%" nowrap class="queryheader" align="left">part name </td>
-	 <th align="right" nowrap class="queryheader">price</td>
-	 <th align="center" nowrap class="queryheader">qty.</td>
-	 <th align="right" nowrap class="queryheader">ext.</td>
-	 <th align="center" nowrap class="queryheader">&nbsp;</td>
-	</tr>
+	<table border="0" cellpadding="0" cellspacing="0" class="querytable">
+		<TR>
+			<th align="left" nowrap class="queryheader" colspan="4">invoice</th>
+			<th align="left" nowrap class="queryheader" colspan="3">product</th>		
+			<th align="left" nowrap class="queryheader" colspan="2">line item</th>
+		</TR>
+		<tr>
+			<th align="center" nowrap class="queryheader" colspan=2>id</td>
+			<th align="left" nowrap class="queryheader">type</td>
+			<th align="left" nowrap class="queryheader">date</td>
+			<th nowrap class="queryheader" align="left">part num. </td>
+			<th width="100%" nowrap class="queryheader" align="left">name</td>
+			<th align="right" nowrap class="queryheader">price</td>
+			<th align="center" nowrap class="queryheader">qty.</td>
+			<th align="right" nowrap class="queryheader">ext.</td>
+		</tr>
     <?PHP 
 	$totalextended=0;		
 	$row=1;
@@ -136,24 +140,24 @@
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
 	<tr class="row<?php echo $row?>">
-		<td align="center" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-		<td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-		<td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
+		<td style="padding:0px;margin:0px;" nowrap>
+			<button type="button" class="invisibleButtons" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+		</td>
+		<td align="left" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?PHP echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
 		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
 		<td nowrap><?PHP echo $therecord["partname"]?></td>
 		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
 		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
 		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
-		<td style="padding:0px;margin:0px;" nowrap>
-			<button type="button" class="invisibleButtons" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
-		</td>
 	</tr>
     <?PHP }//end while ?>
     <?PHP  if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
-	 <td align="center" class="queryfooter">&nbsp;</td>
+	 <td align="center" class="queryfooter" colspan=2>&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td class="queryfooter">&nbsp;</td>
@@ -161,7 +165,6 @@
 	 <td align="right" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
 	</tr>
    </table>	
 	</div></div></body>

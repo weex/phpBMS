@@ -45,12 +45,12 @@ function mark_asinvoice($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.status=\"Invoice\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()) WHERE (".$whereclause.") AND (invoices.status!=\"Invoice\" OR invoices.status!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
+	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\",invoices.status=\"shipped\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()) WHERE (".$whereclause.") AND (invoices.status!=\"Invoice\" OR invoices.status!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(300,"Couldn't Mark As Paid In Full: ".mysql_error($dblink)." -- ".$querystatement);		
+	if (!$queryresult) reportError(300,"Could not convert to client: ".mysql_error($dblink)." -- ".$querystatement);		
 	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
-	$message.=" marked as invoice.";
+	$message.=" converted to invoice.";
 
 	return $message;
 }
@@ -62,7 +62,7 @@ function mark_asuninvoice($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.status=\"Order\"  WHERE (".$whereclause.") AND (invoices.status=\"Invoice\");";
+	$querystatement = "UPDATE invoices SET invoices.type=\"Order\"  WHERE (".$whereclause.") AND (invoices.status=\"Invoice\");";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Reset Invoice Status: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -79,7 +79,7 @@ function delete_record($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.status=\"VOID\" WHERE (".$whereclause.") AND invoices.status!=\"Invoice\";";
+	$querystatement = "UPDATE invoices SET invoices.type=\"VOID\" WHERE (".$whereclause.") AND invoices.status!=\"Invoice\";";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Void: ".mysql_error($dblink)." -- ".$querystatement);		
 	

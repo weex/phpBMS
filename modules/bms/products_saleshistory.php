@@ -17,10 +17,10 @@
 			$fromProduct=true;
 			require("report/products_saleshistory.php");
 	} else {
-	$thestatus="(invoices.status =\"";
+	$thestatus="(invoices.type =\"";
 	switch($_POST["status"]){
 		case "Orders/Invoices":
-			$thestatus.="Order\" or invoices.status=\"Invoice\")";
+			$thestatus.="Order\" or invoices.type=\"Invoice\")";
 			$searchdate="orderdate";
 		break;
 		case "Invoices":
@@ -43,22 +43,24 @@
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);
 	
-	$querystatement="select invoices.id as id, Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
-		Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,
+	$querystatement="SELECT invoices.id as id, 
+		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
+		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
 		if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
-		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
-		lineitems.unitprice as price, lineitems.unitcost as cost, lineitems.unitcost*lineitems.quantity as extendedcost
-		from ((products inner join lineitems on products.id=lineitems.productid) 
+		lineitems.quantity as qty, 
+		lineitems.unitprice*lineitems.quantity as extended,
+		lineitems.unitprice as price, lineitems.unitcost as cost, 
+		lineitems.unitcost*lineitems.quantity as extendedcost
+		FROM((products inner join lineitems on products.id=lineitems.productid) 
 				inner join invoices on lineitems.invoiceid=invoices.id) 
 					inner join clients on invoices.clientid=clients.id
-		where products.id=".$_GET["id"]." 
-		and invoices.".$searchdate.">=".$mysqlfromdate."
-		and invoices.".$searchdate."<=".$mysqltodate."
-		and ".$thestatus."
-		order by invoices.invoicedate, invoices.orderdate;";
-	$thequery=mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
-	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
+		WHERE products.id=".$_GET["id"]." 
+		AND ".$thestatus."
+		HAVING thedate >=".$mysqlfromdate."
+		and thedate <=".$mysqltodate." ORDER BY thedate";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,mysql_error($dblink)." ".$querystatement);
+	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;
 
 	$pageTitle="Product Sales History: ".$refrecord["partname"];	
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -110,7 +112,6 @@
 	<tr>
 	 <th align="center" nowrap class="queryheader">ID</td>
 	 <th align="center" nowrap class="queryheader">Order Date</td>
-	 <th align="center" nowrap class="queryheader">Invc. Date</td>
 	 <th nowrap class="queryheader" width="100%" align="left">Client</td>
 	 <th align="center" nowrap class="queryheader">Qty.</td>
 	 <th align="right" nowrap class="queryheader">Unit Cost</td>
@@ -125,7 +126,7 @@
 	$avgprice=0;
 	$avgcost=0;
 	$row=1;
-	while ($therecord=mysql_fetch_array($thequery)){
+	while ($therecord=mysql_fetch_array($queryresult)){
 		if($row==1) $row=2;else $row=1;
 		$avgcost+=$therecord["cost"];
 		$avgprice+=$therecord["price"];
@@ -135,8 +136,7 @@
 ?>
 	<tr class="row<?php echo $row?>">
 	 <td align="center" nowrap><?PHP echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
+	 <td align="center" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
 	 <td nowrap><?PHP echo $therecord["client"]?></td>
 	 <td align="center" nowrap><?PHP echo number_format($therecord["qty"],2)?></td>
 	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["cost"],2)?></td>
@@ -144,13 +144,12 @@
 	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
 	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-    <?PHP } if(!mysql_num_rows($thequery)) {?>
+    <?PHP } if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>
 	<tr>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td class="queryfooter">&nbsp;</td>
 	 <td class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter"><?PHP echo number_format($totalquantity,2)?></td>
 	 <td align="right" nowrap class="queryfooter">avg. = <?PHP $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>

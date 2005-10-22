@@ -2,11 +2,21 @@ function init(){
 	var acc1=getObjectFromID("accordianSec1");
 	var acc2=getObjectFromID("accordianSec2");
 	var acc3=getObjectFromID("accordianSec3");
-	var accContainer=getObjectFromID("accordian");
-	accordianHeight=Math.max(acc1.offsetHeight,acc2.offsetHeight,acc3.offsetHeight);
-	acc1.style.display="none";
-	acc2.style.display="none";
-	accContainer.style.height=accContainer.offsetHeight+"px";
+	var theaccordian=getObjectFromID("accordian");
+	var accordianContainter=getObjectFromID("accordianContainer");
+	
+	if(theaccordian.offsetHeight<accordianContainter.offsetHeight-10){
+		var tempheight=theaccordian.offsetHeight-(acc1.offsetHeight+acc2.offsetHeight+acc3.offsetHeight);
+		acc1.style.display="none";
+		acc2.style.display="none";
+		theaccordian.style.height=(accordianContainter.offsetHeight-6)+"px";
+		accordianHeight=theaccordian.offsetHeight-tempheight;
+	} else {
+		accordianHeight=Math.max(acc1.offsetHeight,acc2.offsetHeight,acc3.offsetHeight);
+		acc1.style.display="none";
+		acc2.style.display="none";
+	}	
+
 }
 
 function accordian(theimg,accordianName,numSlats){
@@ -31,8 +41,8 @@ function switchAccordian(toID,fromID,accordianName){
 	var toDiv=getObjectFromID(accordianName+"Sec"+toID);
 
 
-	if(toDiv.offsetHeight<accordianHeight){
-			var step=Math.round(accordianHeight/8);
+	var step=Math.round(accordianHeight/8);
+	if(toDiv.offsetHeight<=accordianHeight-step){
 			fromDiv.style.height=Math.abs(fromDiv.offsetHeight-step)+"px";
 			toDiv.style.height=Math.abs(toDiv.offsetHeight+step)+"px";
 			setTimeout("switchAccordian("+toID+","+fromID+",'"+accordianName+"')",40);

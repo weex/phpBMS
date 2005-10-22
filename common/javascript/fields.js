@@ -320,7 +320,7 @@ function getNumberFromPercentage(thenumber){
 
 function checkUnique(path,thevalue,thename,thetable,thefield,excludeid){
 	
-	var theurl=path+"checkunique.php?value="+encodeURI(thevalue);
+	var theurl=path+"checkunique.php?value="+encodeURIComponent(thevalue);
 	theurl=theurl+"&table="+thetable;
 	theurl=theurl+"&name="+thename;
 	theurl=theurl+"&field="+thefield;

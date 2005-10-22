@@ -36,7 +36,7 @@ function showUserInfo(base){
 	showModal(content,"Change Password",250);
 	var modalContent=getObjectFromID("modalContent");
 	
-	var theURL=base+"changepassword.php?cm=shw&base="+encodeURI(base);
+	var theURL=base+"changepassword.php?cm=shw&base="+encodeURIComponent(base);
 	loadXMLDoc(theURL,null,false);
 	modalContent.innerHTML=req.responseText;
 }

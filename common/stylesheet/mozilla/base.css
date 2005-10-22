@@ -234,7 +234,6 @@ border-bottom-width:0px;
 .row1{background-color:#D9DBE1;}
 .row2{background-color:white;}
 
-
 .dottedline { border-bottom: 2px #AAAAAA dotted;}
 
 .buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; 
@@ -307,8 +306,13 @@ border-bottom-width:0px;
 .lineitemsLeft{ border-left:1px solid #CCCCCC;}
 .lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
 
-
-
+.smallQueryTableHolder{overflow:auto;background-color:#CCCCCC;border:1px inset black;padding:0px;}
+.smallQueryTable, .smallQueryTable td{font-size:11px;}
+.smallQueryTable th{font-weight:bold;border-bottom:1px solid #999999; border-right:1px solid #999999; padding:2px; padding-left:4px; padding-right:4px;}
+.smallQueryTable td{background-color:white;border-bottom:1px solid #CCCCCC; border-right:1px solid #CCCCCC; padding:2px;padding-left:4px; padding-right:4px;cursor:pointer;}
+.smallQueryTable tr:Hover td{background-color:#999999;color:white;text-decoration:none;}
+.smallQueryTableSelected td{background-color:black;color:white}
+.smallQueryTable tr.smallQueryTableSelected:Hover  td{background-color:black;color:white}
 /* ============================================================================== */
 /* Auto Fill                                                                      */
 /* ============================================================================== */
@@ -498,12 +502,6 @@ border-bottom-width:0px;
 
 .eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
 .event{padding:4px;padding-bottom:6px;}
-
-.snapshotHeader{padding:0px;padding-left:2px; border-bottom:2px solid #999999; margin:0px; margin-left:3px;}
-.snapshotHeader div{padding-bottom:0px;}
-.snapshotRecords{margin-left:4px; border-bottom:1px solid #CCCCCC; display:block; font-weight:normal;clear:both;}
-.snapshotRecords div{padding-bottom:0px;}
-.snapshotRecords:Hover{background-color:black;color:white;text-decoration:none;}
 
 /* ============================================================================== */
 /*  Modal                                                                         */
