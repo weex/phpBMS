@@ -15,8 +15,8 @@ function getRecords($id){
 				id,maintable,displayname,querytable,addfile,editfile,deletebutton,type,moduleid,
 				defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM tabledefs
 				WHERE id=".$id;		
 	$thequery = mysql_query($querystatement,$dblink);

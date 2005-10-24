@@ -1,5 +1,6 @@
 <?PHP
 	require("../../../include/session.php");
+	require("../../../include/common_functions.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	
@@ -11,23 +12,22 @@
 	require("../../../fpdf/fpdf.php");
 	
 	//Generate the invoice Query
-	$querystatement="select invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
+	$querystatement="SELECT invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
 					shippingmethod, invoices.paymentmethod, checkno, bankname, invoices.ccnumber,
-					invoices.ccexpiration, invoices.specialinstructions, invoices.printedinstructions, 
-					invoices.tax, invoices.shipping, invoices.ccverification,
+					invoices.ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					clients.firstname, clients.lastname, clients.company,
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
 					invoices.address1 as shiptoaddress1,invoices.address2 as shiptoaddress2,invoices.city as shiptocity,
-					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, shipped, trackingno,
+					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
-					invoices.ponumber,
+					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					
 					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
 					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
-					from invoices inner join clients on invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
+					FROM invoices INNER JOIN  clients ON invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=mysql_query($querystatement,$dblink);
 	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$querystatement);
 	//===================================================================================================
@@ -160,10 +160,15 @@
 		
 		$tempnext2=$tempnext+$tempheight2+.06;
 		// Get line items and loop through them
-		$lineitemquery="select products.partname,products.partnumber,lineitems.quantity,
-						isprepackaged,isoversized,packagesperitem,
-						lineitems.unitweight,lineitems.quantity*lineitems.unitweight as extended,memo
-						from lineitems left join products on lineitems.productid=products.id where invoiceid=".$therecord["id"];
+		$lineitemquery="SELECT products.partname,
+						products.partnumber,
+						lineitems.quantity,
+						lineitems.unitprice,
+						lineitems.quantity*lineitems.unitprice as extended,
+						lineitems.taxable,
+						lineitems.memo
+						FROM lineitems LEFT JOIN products ON lineitems.productid=products.id 
+						WHERE invoiceid=".$therecord["id"];
 		$lineitems=mysql_query($lineitemquery,$dblink);
 		if(!$lineitems) die("bad line item query: ".$lineitemquery);
 	
@@ -241,7 +246,7 @@
 		$pdf->Cell($shippingmethodwidth,.15,$therecord["shippingmethod"],$border_debug,0,"L");
 		$pdf->Cell($estimatedboxeswidth,.15,$total_boxes,$border_debug,0,"C");
 		$pdf->Cell($totalweightwidth,.15,number_format($therecord["totalweight"],2),$border_debug,0,"C");
-		$pdf->Cell($shippingwidth,.15,"\$".number_format($therecord["shipping"],2),$border_debug,0,"R");
+		$pdf->Cell($shippingwidth,.15,currencyFormat($therecord["shipping"]),$border_debug,0,"R");
 		
 	}// end fetch_array while loop
 

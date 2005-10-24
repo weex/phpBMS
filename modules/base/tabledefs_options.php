@@ -76,7 +76,7 @@
 	 <th nowrap class="queryheader" align="left">name</td>
 	 <th nowrap class="queryheader" align="left">option / function</td>
 	 <th nowrap class="queryheader" align="center">restricted</td>	 
-	 <th nowrap class="queryheader" width="100%">&nbsp;</td>
+	 <th nowrap class="queryheader">&nbsp;</td>
 	</tr>
 
 	<?php 
@@ -85,7 +85,7 @@
 		if($row==1)$row=2;else $row=1;
 	?>
 	<tr class="qr<?php echo $row?>" style="cursor:auto">
-	 <td align="center" nowrap><?php if($therecord["othercommand"]) echo "X"; else echo "&middot;"; ?></td>
+	 <td align="center" nowrap><?php echo booleanFormat($therecord["othercommand"])?></td>
 	 <td nowrap><strong><?php 
 	 		if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?></strong>
 	</td>

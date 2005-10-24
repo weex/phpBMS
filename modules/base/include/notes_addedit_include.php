@@ -76,8 +76,8 @@ function getRecords($id){
 				time_format(starttime,\"%l:%i %p\") as starttime,date_Format(enddate,\"%c/%e/%Y\") as enddate, time_format(endtime,\"%l:%i %p\") as endtime,
 				assignedtoid,date_Format(assignedtodate,\"%c/%e/%Y\") as assignedtodate,time_format(assignedtotime,\"%l:%i %p\") as assignedtotime,assignedbyid,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM notes
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);

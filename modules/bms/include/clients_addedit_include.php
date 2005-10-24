@@ -34,8 +34,8 @@ function getRecords($id){
 				shiptopostalcode, email, webaddress, comments, paymentmethod, ccnumber, ccexpiration, 
 				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM clients
 				WHERE id=".$id;		
 	$thequery = mysql_query($querystatement,$dblink);

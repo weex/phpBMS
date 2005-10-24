@@ -27,11 +27,11 @@
 		break;
 		
 		case "add column":
-			$statusmessage=addColumn(addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage=addColumn(addSlashesToarray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit column":
-			$statusmessage=updateColumn(addSlashesToArray($_POST));
+			$statusmessage=updateColumn(addSlashesToarray($_POST));
 		break;
 		
 		case "moveup":
@@ -63,11 +63,11 @@
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
 	 <th nowrap class="queryheader">move</td>
-	 <th align="left" nowrap class="queryheader" width=100%>name</td>
-	 <th align="center" nowrap class="queryheader">align</td>
+	 <th align="left" nowrap class="queryheader">name</td>
+	 <th align="left" nowrap class="queryheader">align</td>
 	 <th align="center" nowrap class="queryheader">wrap</td>
-	 <th align="center" nowrap class="queryheader">size</td>
-	 <th align="center" nowrap class="queryheader">sort order</td>
+	 <th align="left" nowrap class="queryheader">size</td>
+	 <th align="left" nowrap class="queryheader">format</td>
 	 <th nowrap class="queryheader">&nbsp;</td>
 	</tr>
 	<?php 
@@ -84,13 +84,13 @@
 			<?php echo $therecord["displayorder"];?>
 		</td>
 		<td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
-		<td align="center" nowrap valign="top"><?php echo $therecord["align"]?></td>
-		<td align="center" nowrap valign="top"><?php if($therecord["wrap"]) echo "X"; else echo "&nbsp;";?></td>
-		<td align="center" nowrap valign="top"><?php if($therecord["size"]) echo $therecord["size"]; else echo "&nbsp;";?></td>
-		<td align="center" valign="top"><?php  if($therecord["sortorder"]) echo $therecord["sortorder"]; else  echo "&nbsp;"?></td>
+		<td nowrap valign="top"><?php echo $therecord["align"]?></td>
+		<td align="center" nowrap valign="top"><?php echo booleanFormat($therecord["wrap"])?></td>
+		<td nowrap valign="top"><?php if($therecord["size"]) echo $therecord["size"]; else echo "&nbsp;";?></td>
+		<td valign="top"><?php  if($therecord["format"]) echo $therecord["format"]; else  echo "&nbsp;"?></td>
 		<td nowrap valign="top">
-			<input name="command" type="button" value="edit" 	style="margin:0px;"  class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&columnid=".$therecord["id"]?>';">
-			<input name="command" type="button" value="delete"	style="margin:0px;"  class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&columnid=".$therecord["id"]?>';">
+			 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
+			 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
 		</td>
 	</tr>	
 	<?php } ?>
@@ -102,28 +102,32 @@
 		<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>" />
 		<label class="important" for="name">
 			name<br />
-			<?PHP field_text("name",$thecolumn["name"],1,"Column Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>
+			<?PHP field_text("name",$thecolumn["name"],1,"Column Name cannot be blank","",array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>
+		</label>
+		<label for="column">
+			field <em>(SQL clause)</em><br />
+			<textarea id="column" name="column" cols="64" rows="2" style="width:99%"><?php echo $thecolumn["column"] ?></textarea>
 		</label>
 		<label for="align">
 			text align<br />
-			<?PHP basic_choicelist("align",$thecolumn["align"],Array(Array("name"=>"left","value"=>"left"),Array("name"=>"center","value"=>"center"),Array("name"=>"right","value"=>"right")),Array("style"=>"width:170px;"));?>
+			<?PHP basic_choicelist("align",$thecolumn["align"],array(array("name"=>"left","value"=>"left"),array("name"=>"center","value"=>"center"),array("name"=>"right","value"=>"right")),array("style"=>"width:170px;"));?>
 		</label>
 		<label for="wrap"><?PHP field_checkbox("wrap",$thecolumn["wrap"])?>wrap text</label>
 		<label for="size">
 			column size<br />
 			<input id="size" name="size" type="text" value="<?php echo htmlQuotes($thecolumn["size"])?>" size="32" maxlength="128">
 		</label>
-		<label for="column">
-			field <em>(SQL clause)</em><br>
-			<textarea id="column" name="column" cols="64" rows="2" style="width:99%"><?php echo $thecolumn["column"] ?></textarea>
+		<label for="format">
+			format<br />
+			<?PHP basic_choicelist("format",$thecolumn["format"],array(array("name"=>"None","value"=>""),array("name"=>"Date","value"=>"date"),array("name"=>"Time","value"=>"time"),array("name"=>"Date and Time","value"=>"datetime"),array("name"=>"Currency","value"=>"currency"),array("name"=>"Boolean","value"=>"boolean")),array("style"=>"width:170px;"));?>						
 		</label>
 		<label for="sortorder">
-			sort order <em>(SQL clause)</em><br>
-			<input id="sortorder" name="sortorder" type="text" value="<?php echo htmlQuotes($thecolumn["sortorder"])?>" size="64" maxlength="128">
+			sort order <em>(SQL clause)</em><br />
+			<input id="sortorder" name="sortorder" type="text" value="<?php echo htmlQuotes($thecolumn["sortorder"])?>" size="64" maxlength="128" style="width:99%">
 		</label>
 		<div class="small"><em>leave sort order blank if it is exactly the same as the field</em></div>
 		<label for="footerquery">
-			footer <em>(SQL group function)</em><br>
+			footer <em>(SQL group function)</em><br />
 			<textarea id="footerquery" name="footerquery" cols="32" rows="2" style="width:99%"><?php echo $thecolumn["footerquery"] ?></textarea>
 		</label>
 		<div align="right">

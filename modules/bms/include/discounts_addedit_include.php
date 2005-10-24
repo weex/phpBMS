@@ -35,8 +35,8 @@ function getRecords($id){
 	
 	$querystatement="SELECT id, name, description, inactive, type, value,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM discounts
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);

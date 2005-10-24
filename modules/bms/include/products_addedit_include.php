@@ -14,8 +14,8 @@ function getRecords($id){
 				unitprice,unitcost,unitofmeasure,weight,isprepackaged,isoversized,packagesperitem,webenabled,
 				keywords,thumbnailmime,picturemime,webdescription,memo,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM products
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);

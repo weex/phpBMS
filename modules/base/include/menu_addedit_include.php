@@ -47,8 +47,8 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT id, name, link, parentid, displayorder, accesslevel,
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM menu
 				WHERE id=".$id;		
 	$thequery = mysql_query($querystatement,$dblink);

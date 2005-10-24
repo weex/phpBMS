@@ -16,8 +16,8 @@ function getRecords($id){
 				date_Format(lastlogin,\"%c/%e/%Y %T\") as lastlogin, revoked,
 				email,phone,department,employeenumber,
 
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				from users
 				where id=".$id;		
 	$thequery = mysql_query($querystatement,$dblink);

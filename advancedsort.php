@@ -128,8 +128,8 @@
 				</td>
 				<td valign=top><br/>
 					<div><input id="sortRunSort" type="button" onClick="performAdvancedSort(this)" class="Buttons" disabled="true" value="run sort" style="width:90px;" /></div>
-					<div><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load..." style="width:90px;" /></div>
-					<div><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save..." style="width:90px;" /></div>
+					<div><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></div>
+					<div><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save sort..." style="width:90px;" /></div>
 					<div><input id="sortClearSort" type="button" onClick="clearSort()" class="Buttons" disabled="true" value="clear sort" style="width:90px;" /></div>
 				</td>
 			</tr>

@@ -18,13 +18,13 @@ function showClient($clientid,$basepath){
 	$therecord=mysql_fetch_array($queryresult);
 	
 	$querystatement="SELECT invoices.id,invoices.type,
-					if(invoices.type=\"Invoice\",DATE_FORMAT(invoices.invoicedate,\"%c/%e/%Y\"),DATE_FORMAT(invoices.orderdate,\"%c/%e/%Y\")) as thedate,
+					if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
 					totalti
 					FROM invoices WHERE invoices.clientid=".$clientid." ORDER BY type,thedate";
 	$invoiceresult=mysql_query($querystatement,$dblink);
 	if(!$invoiceresult) reportError(300,"Could Not Retrieve Invoices: ".mysql_error($dblink)." -- ".$querystatement);
 
-	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category,if(notes.completed=1,\"X\",\"&middot;\") as completed,
+	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category, notes.completed,
 					ELT(notes.importance+3,\"&nbsp;\",\"&middot;\",\"-\",\"*\",\"!\",\"!!\")  as importance
 					FROM notes WHERE notes.attachedtabledefid=2 AND notes.attachedid=".$clientid." 
 					ORDER BY notes.completed,notes.category,notes.type,notes.importance DESC,notes.creationdate";
@@ -106,17 +106,13 @@ function showClient($clientid,$basepath){
 							<th align="right" width="100%">Total</th>
 						</tr>
 					<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
-							if($invoicerecord["totalti"]<0)
-								$invoicerecord["totalti"]="-$".number_format($invoicerecord["totalti"],2);
-							else
-								$invoicerecord["totalti"]="$".number_format($invoicerecord["totalti"],2);
 							if($invoicerecord["type"]=="VOID")
-								$invoicerecord["totalti"]="----"
+								$invoicerecord["totalti"]="-----"
 					?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
 						<td><?php echo $invoicerecord["type"]?></td>
-						<td><?php echo $invoicerecord["thedate"]?></td>
+						<td><?php echo dateFormat($invoicerecord["thedate"])?></td>
 						<td><?php echo $invoicerecord["id"]?></td>
-						<td align="right"><?php echo $invoicerecord["totalti"]?></td>
+						<td align="right"><?php echo currencyFormat($invoicerecord["totalti"])?></td>
 					</tr>
 					<?php }?></table><?php }?>
 	
@@ -150,7 +146,7 @@ function showClient($clientid,$basepath){
 						<td><?php echo $noterecord["type"]?></td>
 						<td><?php echo $noterecord["category"]?></td>
 						<td><?php echo $noterecord["subject"]?></td>
-						<td align="center"><?php echo $noterecord["completed"]?></td>
+						<td align="center"><?php echo booleanFormat($noterecord["completed"])?></td>
 					</tr>
 					<?php }?></table><?php }?>	
 				</div>

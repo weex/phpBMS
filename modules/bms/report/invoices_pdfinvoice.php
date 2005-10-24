@@ -170,14 +170,16 @@
 		$pdf->Line($leftmargin,$tempnext+$tempheight2,$paperwidth-$rightmargin,$tempnext+$tempheight2);	
 		$pdf->SetXY($leftmargin,$tempnext+.03);
 
-		$partnumberwidth=1.2;
-		$qtywidth=1;
-		$unitpricewidth=1;
-		$extendedwidth=1;
-		$partnamewidth=$paperwidth-$leftmargin-$rightmargin-$partnumberwidth-$qtywidth-$unitpricewidth-$extendedwidth;
+		$partnumberwidth=1.25;
+		$qtywidth=.75;
+		$unitpricewidth=.75;
+		$extendedwidth=.75;
+		$taxablewidth=.4;
+		$partnamewidth=$paperwidth-$leftmargin-$rightmargin-$partnumberwidth-$qtywidth-$unitpricewidth-$extendedwidth-$taxablewidth;
 
 		$pdf->Cell($partnumberwidth,.14,"Part Number/Memo",$border_debug,0,"L");
 		$pdf->Cell($partnamewidth,.14,"Part Name",$border_debug,0,"L");
+		$pdf->Cell($taxablewidth,.14,"Tax",$border_debug,0,"C");
 		$pdf->Cell($qtywidth,.14,"Qty",$border_debug,0,"C");
 		$pdf->Cell($unitpricewidth,.14,"Unit Price",$border_debug,0,"R");
 		$pdf->Cell($extendedwidth,.14,"Extended",$border_debug,0,"R");
@@ -204,9 +206,12 @@
 			$pdf->SetFont("Arial","",8);
 			$pdf->Cell($partnumberwidth,.13,$thelineitem["partnumber"],$border_debug,0,"L");
 			$pdf->Cell($partnamewidth,.13,$thelineitem["partname"],$border_debug,0,"L");
+			$thelineitem["taxable"]=booleanFormat($thelineitem["taxable"]);
+			if($thelineitem["taxable"]=="&middot;")$thelineitem["taxable"]=" ";
+			$pdf->Cell($taxablewidth,.13,$thelineitem["taxable"],$border_debug,0,"C");
 			$pdf->Cell($qtywidth,.13,number_format($thelineitem["quantity"],2),$border_debug,0,"C");
-			$pdf->Cell($unitpricewidth,.13,"\$".number_format($thelineitem["unitprice"],2),$border_debug,0,"R");
-			$pdf->Cell($extendedwidth,.13,"\$".number_format($thelineitem["extended"],2),$border_debug,1,"R");
+			$pdf->Cell($unitpricewidth,.13,currencyFormat($thelineitem["unitprice"]),$border_debug,0,"R");
+			$pdf->Cell($extendedwidth,.13,currencyFormat($thelineitem["extended"]),$border_debug,1,"R");
 			$pdf->SetX($leftmargin+.25);
 			$pdf->SetFont("Arial","i",8);
 			$thelineitem["memo"].="\n";

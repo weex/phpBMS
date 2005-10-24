@@ -168,9 +168,8 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 						attribute value.
 	*/
 
-	if(is_numeric($value)) $value="\$".number_format($value,2);
-	else $value="\$0.00";
-	$value=str_replace("\"","&quot;",$value);
+	if(!is_numeric($value)) $value=0;
+	$value=currencyFormat($value);
 	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";

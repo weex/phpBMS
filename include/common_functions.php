@@ -96,6 +96,25 @@ function dateFromSQLDate($sqlDate){
 	return $thedate;
 }
 
+function timeFromSQLTime($sqlTime){
+	$thetime="";
+	$temparray=explode(":",$sqlTime);
+	if(count($temparray)>1)
+		$thetime=mktime($temparray[0],$temparray[1],$temparray[2]);
+	return $thetime;
+}
+
+function dateFromSQLTimestamp ($datetime) {
+	settype($datetime, 'string');
+	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
+	array_shift ($matches);	
+	foreach (array('year','month','day','hour','minute','second') as
+$var) {
+		$$var = array_shift($matches);
+	}
+	return mktime($hour,$minute,$second,$month,$day,$year);
+}
+
 function addSlashesToArray($thearray){
 	foreach($thearray as $key=>$value)
 		$thearray[$key]=addslashes($value);
@@ -147,10 +166,77 @@ function getAddEditFile($tabledefid,$addedit="edit"){
 }
 
 function currencyFormat($number){
+	if(!is_numeric($number)) return $number;
 	if($number <0)
 		$thenumber="-$".number_format(abs($number),2);
 	else
 		$thenumber="$".number_format($number,2);
 	return $thenumber;
+}
+
+function booleanFormat($bool){
+	if($bool==1)
+		return "X";
+	else
+		return"&middot;";
+}
+
+function dateFormat($thedate){
+	if($thedate) {
+		$phpdate=dateFromSQLDate($thedate);
+		return strftime("%m/%d/%Y",$phpdate);
+	} else return "";
+}
+
+function timeFormat($thetime){
+	if($thetime) {
+		$phptime=timeFromSQLTime($thetime);
+		return strftime("%I:%M %p",$phptime);
+	} else return "";
+}
+
+function formatDateTime($thedatetime,$secs=false){
+	$temparray=explode(" ",$thedatetime);
+	$thereturn="";
+	if (isset($temparray[0])){
+		if($temparray[0]){
+			$phpdate=dateFromSQLDate($temparray[0]);
+			$thereturn.=strftime("%m/%d/%Y",$phpdate);
+		}
+	}
+	if (isset($temparray[1])){
+		$phptime=dateFromSQLDate($temparray[1]);
+		if($secs)
+			$thereturn.=" ".strftime("%I:%M:%S %p",$phptime);
+		else
+			$thereturn.=" ".strftime("%I:%M %p",$phptime);
+	}
+	return $thereturn;
+}
+
+function formatTimestamp($timestamp){
+	$phptimestamp=dateFromSQLTimestamp($timestamp);
+	return strftime("%m/%d/%Y %I:%M:%S %p",$phptimestamp);
+}
+
+function formatVariable($value,$format){
+	switch($format){
+		case "currency":
+			$value=currencyFormat($value);
+		break;
+		case "boolean":
+			$value=booleanFormat($value);
+		break;
+		case "date":
+			$value=dateFormat($value);
+		break;
+		case "time":
+			$value=timeFormat($value);
+		break;
+		case "datetime":
+			$value=formatDateTime($value);
+		break;
+	}
+	return $value;
 }
 ?>

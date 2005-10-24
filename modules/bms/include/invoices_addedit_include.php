@@ -121,8 +121,8 @@ function getRecords($id){
 					ponumber,
 					date_Format(requireddate,\"%c/%e/%Y\") as requireddate,
 					
-				createdby, date_Format(creationdate,\"%c/%e/%Y %T\") as creationdate, 
-				modifiedby, date_Format(modifieddate,\"%c/%e/%Y %T\") as modifieddate
+				createdby, creationdate, 
+				modifiedby, modifieddate
 				FROM invoices
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);

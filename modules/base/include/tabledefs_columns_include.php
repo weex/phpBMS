@@ -11,14 +11,15 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 		$therecord["column"]="";		
 		$therecord["align"]="left";		
 		$therecord["footerquery"]="";		
-		$therecord["sortorder"]="";		
+		$therecord["sortorder"]="";
+		$therecord["format"]="";
 
 		return $therecord;
 	}
 	
 	function getColumns($tabledefid,$columnid=false){
 		global $dblink;
-		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size
+		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size,format
 		FROM tablecolumns 
 		WHERE tabledefid=".$tabledefid;
 		if($columnid) $querystatement.=" AND id=".$columnid;
@@ -31,7 +32,7 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 
 	function addColumn($variables,$tabledefid){
 		global $dblink;
-		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,wrap)
+		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,format,wrap)
 		values (";
 		$querystatement.=$tabledefid.", ";
 		$querystatement.="\"".$variables["name"]."\", ";
@@ -41,6 +42,10 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 		$querystatement.="\"".$variables["sortorder"]."\", ";
 		$querystatement.="\"".$variables["displayorder"]."\", ";		
 		$querystatement.="\"".$variables["size"]."\", ";		
+		if($variables["format"])
+			$querystatement.="\"".$variables["format"]."\", ";
+		else
+			$querystatement.="NULL, ";
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
 		$querystatement.=" ".$variables["wrap"]." )";		
 
@@ -59,6 +64,10 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 		$querystatement.="sortorder=\"".$variables["sortorder"]."\", ";
 		$querystatement.="footerquery=\"".$variables["footerquery"]."\", ";		
 		$querystatement.="size=\"".$variables["size"]."\", ";		
+		if($variables["format"])
+			$querystatement.="format=\"".$variables["format"]."\", ";
+		else
+			$querystatement.="format=NULL, ";
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
 		$querystatement.="wrap=".$variables["wrap"]." ";		
 		$querystatement.="WHERE id=".$variables["columnid"];

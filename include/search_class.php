@@ -38,7 +38,7 @@
 			global $dblink;
 			
 			$thecolumns=Array();
-			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size
+			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size,format
 								  FROM tablecolumns WHERE tabledefid=".$id." ORDER BY displayorder";
 			$queryresult=mysql_query($querystatement,$dblink) ;
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
@@ -93,7 +93,7 @@ function displayQueryHeader(){
 				if ($rownum==1) $rownum++; else $rownum=1;
 				
 				foreach($this->thecolumns as $thecolumn){
-					?><td align="<?php echo $thecolumn["align"]?>" <?php if(!$thecolumn["wrap"]) echo "nowrap"?>><?php echo ($therecord[$thecolumn["name"]]?$therecord[$thecolumn["name"]]:"&nbsp;")?></td><?php
+					?><td align="<?php echo $thecolumn["align"]?>" <?php if(!$thecolumn["wrap"]) echo "nowrap"?>><?php echo (($therecord[$thecolumn["name"]]!=="")?formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"]):"&nbsp;")?></td><?php
 				}
 				?></tr><?php 
 			}
@@ -365,9 +365,9 @@ function sendInfo(name,thevalue,thedisplay){
 <div class="searchtabs">
 	<span id="basicSearchT" class="searchtabsSel"><a href="" onClick="switchSearchTabs(this);return false">basic</a></span>
 	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><span id="advancedSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></span><?php } //end accesslevel ?>
-	<span id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load</a></span>
-	<span id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save</a></span>
-	<span id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sort</a></span>
+	<span id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></span>
+	<span id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></span>
+	<span id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></span>
 </div><div class="box" style="margin:0px;margin-bottom:15px;display:inline-block;"><div id="basicSearchTab" style="padding:0px;margin:0px;">
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
@@ -592,7 +592,7 @@ function displayQueryFooter(){
 			if(!$queryresult) reportError(502,"Footer Query Invalid");
 			
 			$therecord=mysql_fetch_array($queryresult);
-			echo $therecord[0];
+			echo formatVariable($therecord[0],$therow["format"]);
 		} else {echo "&nbsp;";}?></td><?php 
 	}
 	//keep this in here to close the total table
@@ -709,6 +709,7 @@ function displayRelationships(){
 			$this->savedstartswithfield="";
 			$this->savedstartswith="";
 			$this->savedendswith="";
+			$this->queryjoinclause="";
 			
 			$this->loadQueryDefaults();
 		}

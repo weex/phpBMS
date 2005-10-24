@@ -1,5 +1,6 @@
 <?PHP
 	require("../../../include/session.php");
+	require("../../../include/common_functions.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	
@@ -11,22 +12,22 @@
 	require("../../../fpdf/fpdf.php");
 	
 	//Generate the invoice Query
-	$querystatement="select invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
+	$querystatement="SELECT invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
 					shippingmethod, invoices.paymentmethod, checkno, bankname, invoices.ccnumber,
 					invoices.ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					clients.firstname, clients.lastname, clients.company,
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
 					invoices.address1 as shiptoaddress1,invoices.address2 as shiptoaddress2,invoices.city as shiptocity,
-					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, shipped, trackingno,
+					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
-					invoices.ponumber,
+					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					
 					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
 					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
-					from invoices inner join clients on invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
+					FROM invoices INNER JOIN  clients ON invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=mysql_query($querystatement,$dblink);
 	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$querystatement);
 	//===================================================================================================
@@ -182,9 +183,15 @@
 		
 		$tempnext2=$tempnext+$tempheight2+.06;
 		// Get line items and loop through them
-		$lineitemquery="select products.partname,products.partnumber,lineitems.quantity,
-						lineitems.unitprice,lineitems.quantity*lineitems.unitprice as extended,memo
-						from lineitems left join products on lineitems.productid=products.id where invoiceid=".$therecord["id"];
+		$lineitemquery="SELECT products.partname,
+						products.partnumber,
+						lineitems.quantity,
+						lineitems.unitprice,
+						lineitems.quantity*lineitems.unitprice as extended,
+						lineitems.taxable,
+						lineitems.memo
+						FROM lineitems LEFT JOIN products ON lineitems.productid=products.id 
+						WHERE invoiceid=".$therecord["id"];
 		$lineitems=mysql_query($lineitemquery);
 		if(!$lineitems) die("bad line item query: ".$lineitemquery);
 	
@@ -213,6 +220,14 @@
 		$tempnext+=$tempheight+.125;
 		
 		// Next, Special Instructions
+		$instructions=$therecord["printedinstructions"];
+		if($therecord["discountid"]!=0){
+			$querystatement="SELECT description FROM discounts WHERE id=".$therecord["discountid"];
+			$discountresult=mysql_query($querystatement,$dblink);
+			if(!$discountresult) reportError(300,"Could Not Retrieve Discount Information: ".mysql_error($dblink)." -- ".$querystatement);
+			$discountrecord=mysql_fetch_array($discountresult);
+			$instructions.="\n".$discountrecord["description"];
+		}
 		$tempheight=.75;
 		$pdf->SetLineWidth(.02);		
 		$pdf->Rect($leftmargin,$tempnext,$paperwidth-$leftmargin-$rightmargin,$tempheight);
@@ -220,7 +235,7 @@
 		$pdf->SetXY($leftmargin,$tempnext+.02);
 		$pdf->Cell(2,.15,"Special Instructions",$border_debug,2);
 		$pdf->SetFont("Arial","",8);
-		$pdf->MultiCell($paperwidth-$leftmargin-$rightmargin,.13,$therecord["printedinstructions"],$border_debug);
+		$pdf->MultiCell($paperwidth-$leftmargin-$rightmargin,.13,$instructions,$border_debug);
 		$tempnext+=$tempheight+.125;
 		
 		// now totals...
@@ -230,23 +245,33 @@
 		$pdf->Line($leftmargin,$tempnext+.2,$paperwidth-$rightmargin,$tempnext+.2);
 
 		$taxwidth=.75;
+		if($therecord["discountamount"]!=0)
+			$discountwidth=.75;
+		else
+			$discountwidth=0;
 		$shippingwidth=.75;
 		$totalwidth=.75;
-		$totaltniwidth=$paperwidth-$leftmargin-$rightmargin-$totalwidth-$taxwidth-$shippingwidth-.03;	
+		$amountduewidth=1;
+		$totaltniwidth=$paperwidth-$leftmargin-$rightmargin-$totalwidth-$taxwidth-$shippingwidth-$amountduewidth-$discountwidth-0.03;	
 
 		$pdf->SetXY($leftmargin,$tempnext+.04);
-		$pdf->Cell($totaltniwidth,.13,"Total Before Tax & Shipping",$border_debug,0,"R");
+		if($therecord["discountamount"]!=0)
+			$pdf->Cell($discountwidth,.13,"Discount",$border_debug,0,"L");
+		$pdf->Cell($totaltniwidth,.13,"Subtotal",$border_debug,0,"R");
 		$pdf->Cell($taxwidth,.13,"Sales Tax",$border_debug,0,"R");
 		$pdf->Cell($shippingwidth,.13,"Shipping",$border_debug,0,"R");
 		$pdf->Cell($totalwidth,.13,"Total",$border_debug,0,"R");
+		$pdf->Cell($amountduewidth,.13,"Amount Due",$border_debug,0,"R");
 		
 		$pdf->SetFont("Arial","B",10);
 		$pdf->SetXY($leftmargin,$tempnext+.2+.03);
-		$pdf->Cell($totaltniwidth,.15,"\$".number_format($therecord["totaltni"],2),$border_debug,0,"R");
-		$pdf->Cell($taxwidth,.15,"\$".number_format($therecord["tax"],2),$border_debug,0,"R");
-		$pdf->Cell($shippingwidth,.15,"\$".number_format($therecord["shipping"],2),$border_debug,0,"R");
-		$pdf->Cell($totalwidth,.15,"\$".number_format($therecord["totalti"],2),$border_debug,0,"R");
-		
+		if($therecord["discountamount"]!=0)
+			$pdf->Cell($discountwidth,.15,currencyFormat($therecord["discountamount"]),$border_debug,0,"L");
+		$pdf->Cell($totaltniwidth,.15,currencyFormat($therecord["totaltni"]),$border_debug,0,"R");
+		$pdf->Cell($taxwidth,.15,currencyFormat($therecord["tax"]),$border_debug,0,"R");
+		$pdf->Cell($shippingwidth,.15,currencyFormat($therecord["shipping"]),$border_debug,0,"R");
+		$pdf->Cell($totalwidth,.15,currencyFormat($therecord["totalti"]),$border_debug,0,"R");
+		$pdf->Cell($amountduewidth,.15,currencyFormat($therecord["amountdue"]),$border_debug,0,"R");		
 		// If a tax area is defined, print the tax information
 		if($therecord["taxareaid"]) {
 			$taxstatement="select id, name, percentage from tax where id=".$therecord["taxareaid"];
@@ -255,7 +280,7 @@
 			$taxrecord=mysql_fetch_array($taxquery);
 			$pdf->SetFont("Arial","",8);
 			$pdf->SetXY($leftmargin,$tempnext+.2+.2);
-			$pdf->Cell($totaltniwidth+$taxwidth,.14,"(".$taxrecord["name"]." ".$taxrecord["percentage"]."%)",$border_debug,0,"R");
+			$pdf->Cell($totaltniwidth+$taxwidth+$discountwidth,.13,"(".$taxrecord["name"]." ".$taxrecord["percentage"]."%)",$border_debug,0,"R");
 		}
 
 		

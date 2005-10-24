@@ -83,10 +83,10 @@
 	 </td>
 	 <td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
 	 <td valign="top" class="small"><?php echo $therecord["search"]?></td>
-	 <td valign="top" align=center class="small"><?php if ($therecord["accesslevel"]>0) echo "X"; else echo "&nbsp;" ?></td>
+	 <td valign="top" align=center class="small"><?php echo booleanFormat($therecord["accesslevel"])?></td>
 	 <td nowrap valign="top">
-		 <input name="command" type="button" value="edit" style="margin-right:0px;"  class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&quicksearchid=".$therecord["id"]?>';">
-		 <input name="command" type="button" value="delete" class="smallButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&quicksearchid=".$therecord["id"]?>';">
+		 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
+		 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
 	 </td>
 	</tr>	
 	<?php } ?>
