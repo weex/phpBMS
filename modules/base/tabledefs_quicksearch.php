@@ -65,7 +65,7 @@
 			 <th nowrap class="queryheader">Move</td>
 			 <th nowrap class="queryheader" align="left">Name</td>
 			 <th width="100%" nowrap class="queryheader" align="left">Search</td>
-			 <th width="100%" nowrap class="queryheader" align="left">Restricted</td>
+			 <th width="100%" nowrap class="queryheader" align="left">Access Level</td>
 			 <th nowrap class="queryheader">&nbsp;</td>
 		</tr>
 	<?php 
@@ -83,7 +83,7 @@
 	 </td>
 	 <td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
 	 <td valign="top" class="small"><?php echo $therecord["search"]?></td>
-	 <td valign="top" align=center class="small"><?php echo booleanFormat($therecord["accesslevel"])?></td>
+	 <td valign="top" align=center class="small"><?php echo $therecord["accesslevel"]?></td>
 	 <td nowrap valign="top">
 		 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
 		 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>

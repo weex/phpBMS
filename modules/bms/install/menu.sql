@@ -1,0 +1,13 @@
+INSERT INTO menu VALUES (1,'Clients/Prospects','search.php?id=2',2,10,2,2,'0000-00-00 00:00:00',20051012120056,10);
+INSERT INTO menu VALUES (2,'Client','',0,0,2,2,'0000-00-00 00:00:00',20051021174922,20);
+INSERT INTO menu VALUES (3,'Check for Duplicates','search.php?id=18',2,20,2,2,'0000-00-00 00:00:00',20051012120049,10);
+INSERT INTO menu VALUES (6,'Sales','',0,1,2,2,'2004-04-08 14:17:54',20051012120012,10);
+INSERT INTO menu VALUES (7,'Orders/Invoices','search.php?id=3',6,0,2,2,'2004-04-08 14:19:54',20051012120012,10);
+INSERT INTO menu VALUES (8,'Item Analysis','search.php?id=5',6,1,2,2,'2004-04-08 14:28:35',20051006194014,30);
+INSERT INTO menu VALUES (9,'Tax Areas','search.php?id=6',6,20,2,2,'2004-04-08 14:28:55',20051021175119,50);
+INSERT INTO menu VALUES (10,'Product','',0,2,2,2,'2004-04-08 14:29:20',20051012120012,10);
+INSERT INTO menu VALUES (11,'Products','search.php?id=4',10,0,2,2,'2004-04-08 14:29:46',20051012120012,10);
+INSERT INTO menu VALUES (12,'Product Categories','search.php?id=7',10,1,2,2,'2004-04-08 14:30:02',20051021175150,30);
+INSERT INTO menu VALUES (13,'Prerequisites','search.php?id=8',10,2,2,2,'2004-04-08 14:30:21',20051021175206,20);
+INSERT INTO menu VALUES (21,'Quick View','modules/bms/quickview.php',2,0,2,2,'2005-10-12 11:58:55',20051012204127,20);
+INSERT INTO menu VALUES (23,'Discounts/Promotions','search.php?id=25',6,10,2,2,'2005-10-20 17:42:55',20051021175020,30);

@@ -131,7 +131,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<div style="float:right;width:40%;padding-top:0">
 		<h4 style="margin-left:0;margin-bottom:1px;">Results</h4>
 		<div>
-			<textarea name="results" id="testconnectionresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="4"></textarea>
+			<textarea name="results" id="testconnectionresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="4"></textarea>
 		</div>
 	</div>
 	<h4 style="margin-right:42%">Test the Database Connection</h4>
@@ -147,7 +147,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<div style="float:right;width:40%;padding-top:0">
 		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
 		<div>
-			<textarea name="results" id="createdatabaseresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
+			<textarea name="results" id="createdatabaseresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="8"></textarea>
 		</div>
 	</div>
 	
@@ -168,7 +168,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<div style="float:right;width:40%;padding-top:0;">
 		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
 		<div>
-			<textarea name="results" id="populatedataresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="15"></textarea>
+			<textarea name="results" id="populatedataresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
 		</div>
 	</div>
 	
@@ -204,7 +204,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<div style="float:right;width:40%;padding-top:0;">
 		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
 		<div>
-			<textarea name="results" id="moduleresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="12"></textarea>
+			<textarea name="results" id="moduleresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
 		</div>
 	</div>
 	<h3 style="margin-right:42%;">Step 4 - Install Additional Modules</h3>

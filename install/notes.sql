@@ -1,0 +1,1 @@
+INSERT INTO notes VALUES (0,8,2,'If you are reading this message, phpBMS has been successfully installed.\r\n\r\n - Kreotek, LLC \r\n www.kreotek.com',NULL,1,'phpBMS Successfully Installed','SM',2,NOW(),2,NOW(),0,NULL,NULL,NULL,0,0,NULL,NULL,'','','',0,NULL,1,'',NULL,NULL,NULL,0,0);

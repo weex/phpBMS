@@ -1,2 +1,0 @@
-'id','displayname','name','description','version'
-'1','Base','base','Minimum module require for phpBMS to work','0.51'

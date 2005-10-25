@@ -1,0 +1,1 @@
+INSERT INTO modules VALUES (2,'BMS Module','bms','The Business Magagement functionality of phpBMS.  This module includes clients/propsetcs, quote/order/invoice, and products sections.','0.6');

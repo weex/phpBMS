@@ -1,2 +1,0 @@
-'id','displayname','name','description','version'
-'2','Buisiness Magaement System','bms','The Business Magagement part of phpBMS.  This includes, clients/propsetcs, invoice, and products.','0.51'

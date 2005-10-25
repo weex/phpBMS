@@ -1,2 +1,0 @@
-'assignedtoid','attachedid','attachedtabledefid','beenread','content','followup','id','subject','type','createdby','creationdate','modifiedby','modifieddate','importance'
-'0','0','0','0','[ Administrator  - Tuesday, April 05, 2005 10:52:03 ]\n\nWelcome to phpBMS!  If you are viewing this message, you have successfully installed the application.\nEnjoy.\n\n-Kreotek Development Team','[NULL]','1','Welcome to phpBMS','system','2','2005-04-05 11:00:52','2','20050405110052','High'

@@ -416,7 +416,7 @@ function updateRepeatUntil(){
 function goParent(addeditfile){
 	var parentid=getObjectFromID("parentid");
 	var theback=getObjectFromID("thebackurl");
-	var theURL=addeditfile"?id="+parentid.value;
+	var theURL=addeditfile+"?id="+parentid.value;
 	if(theback.value!="")
 		theURL+="&backurl="+theback.value;
 	document.location=theURL;

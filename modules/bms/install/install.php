@@ -54,45 +54,34 @@ function createTables(){
 function importData($thetable){
 	global $dblink;
 	
-	$fcontents = @ file ($thetable.".txt"); 
-	$thereturn="Starting import of records for '".$thetable."'\n";
+	$tablefile = fopen($thetable.".sql","r");
+	if(!$tablefile) {
+		return "Could not open the file ".$thetable.".sql";
+	}
+	$thereturn="Importing records for '".$thetable."'\n";
+		$counter=0;
+		while(!feof($tablefile)) {
+			$sqlstatement=trim(fgets($tablefile,1024));
+			if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
+				$theresult=mysql_query($sqlstatement,$dblink);
+				if(!$theresult)
+					$thereturn.=mysql_error($dblink)."\n";
+				else
+					$counter++;
+				$sqlstatement="";
+			}//end if;
+		}//end while
 
-
-  for($i=0; $i<sizeof($fcontents); $i++) { 
-      $line = trim($fcontents[$i]); 
-      $arr = explode("','", $line);  
-	 
-	  $arr[0]=substr($arr[0],1);
-	  $arr[sizeof($arr)-1]=substr($arr[sizeof($arr)-1],0,strlen($arr[sizeof($arr)-1])-1);
-	  for($x=0;$x<sizeof($arr);$x++)
-	  	if($arr[$x]=="[NULL]")
-			$arr[$x]="Null";
-		else
-		  	$arr[$x]="'".addslashes(str_replace("\\n","\n",$arr[$x]))."'";
-	
-      #if your data is comma separated
-      # instead of tab separated, 
-      # change the '\t' below to ',' 
-     
-      $sql = "replace into ".$thetable." values (".implode(",",$arr) .")"; 
-	  
-	  if($i>0) {
-		  $queryresult=mysql_query($sql,$dblink);
-		  if(!$queryresult){
-			 $thereturn.=mysql_error($dblink)."\n";
-		}
-	  }
-	}//end for
-	$thereturn.="Done importing records for '".$thetable."'\n\n";
+	$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
 	return $thereturn;
 }//end function
 
 
 
-$thereturn ="+++++++++++++++++++++++++\n";
+$thereturn ="++++++++++++++++++++++++++\n";
 $thereturn.="   INSTALLING BUSINESS\n";
-$thereturn.="    MANAGEMENT SYSTEM\n";
-$thereturn.="+++++++++++++++++++++++++\n\n";
+$thereturn.=" MANAGEMENT SYSTEM MODULE\n";
+$thereturn.="++++++++++++++++++++++++++\n\n";
 $vars=loadSettings();
 if(!is_array($vars))
 	$thereturn.=$vars;
@@ -102,7 +91,7 @@ else{
 	
 	$tempreturn=createTables();
 	if(!$tempreturn)
-		$thereturn="Tables Successfully created\n===========================\n";
+		$thereturn="Done Creating Tables\n===========================\n";
 	else
 		$thereturn.=$tempreturn;
 	
@@ -119,7 +108,7 @@ else{
 	$thereturn.=importData("tablesearchablefields");
 	$thereturn.=importData("usersearches");
 
-	$thereturn.="==================\nDone Importing Data\n==================";
+	$thereturn.="Done Importing Data\n===========================\n";
 	
 }//end if
 
