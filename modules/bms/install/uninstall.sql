@@ -5,4 +5,4 @@ DROP TABLE `prerequisites`;
 DROP TABLE `productcategories`; 
 DROP TABLE `products`; 
 DROP TABLE `tax`; 
-DROP TABLE `templineitems`; 
+DROP TABLE `discounts`; 

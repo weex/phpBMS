@@ -20,6 +20,16 @@ INSTALLATION
 
 UPDATING AN INSTALLED VERSION OR MODULE
 =========================================================================
+
+ **NOTE BEFORE UPDATING**
+ Because of the extensive changes and database modifications in v0.6b, 
+ certain data will be replaced.  This should not affect your client,
+ product, or invoice records, but may affect saved searches and sorts,
+ displayable columns and report definitions.  If you wish to save these
+ records, you may need to integrate the updates by hand. The 
+ updatexml.php files give a general walkthrough on what changes are 
+ needed
+ 
  1. If you are updating or upgrading your current installation of phpBMS
  from a web browser point to the update.php file located in the install 
  directory. (e.g. if you installed phpBMS to the root web

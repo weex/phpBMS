@@ -19,9 +19,9 @@ function getRecords($id){
 				FROM products
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Select Failed: ".mysql_error($dblink)." -- ".$querystatement);
-
+	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
 	$therecord = mysql_fetch_array($queryresult);
+	if(!$therecord) reportError(300,"No record for id ".$id);
 	return $therecord;
 }//end function
 
@@ -250,7 +250,7 @@ function insertRecord($variables,$userid){
 //==================================================================
 if(!isset($_POST["command"])){
 	if(isset($_GET["id"]))
-		$therecord=getRecords($_GET["id"]);
+		$therecord=getRecords((integer) $_GET["id"]);
 	else
 		$therecord=setRecordDefaults();
 	$createdby=getUserName($therecord["createdby"]);

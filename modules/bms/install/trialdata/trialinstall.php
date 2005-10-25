@@ -26,41 +26,30 @@ function loadSettings() {
 }
 
 
-function importData($thetable){
-	global $dblink;
-	
-	$fcontents = @ file ($thetable.".txt"); 
-	$thereturn="Starting import of records for '".$thetable."'\n";
-
-
-  for($i=0; $i<sizeof($fcontents); $i++) { 
-      $line = trim($fcontents[$i]); 
-      $arr = explode("','", $line);  
-	 
-	  $arr[0]=substr($arr[0],1);
-	  $arr[sizeof($arr)-1]=substr($arr[sizeof($arr)-1],0,strlen($arr[sizeof($arr)-1])-1);
-	  for($x=0;$x<sizeof($arr);$x++)
-	  	if($arr[$x]=="[NULL]")
-			$arr[$x]="Null";
-		else
-		  	$arr[$x]="'".addslashes(str_replace("\\n","\n",$arr[$x]))."'";
-	
-      #if your data is comma separated
-      # instead of tab separated, 
-      # change the '\t' below to ',' 
-     
-      $sql = "replace into ".$thetable." values (".implode(",",$arr) .")"; 
-	  
-	  if($i>0) {
-		  $queryresult=mysql_query($sql,$dblink);
-		  if(!$queryresult){
-			 $thereturn.=mysql_error($dblink)."\n";
+	function importData($thetable){
+		global $dblink;
+		
+		$tablefile = fopen($thetable.".sql","r");
+		if(!$tablefile) {
+			return "Could not open the file ".$thetable.".sql";
 		}
-	  }
-	}//end for
-	$thereturn.="Done importing records for '".$thetable."'\n\n";
-	return $thereturn;
-}//end function
+		$thereturn="Importing records for '".$thetable."'\n";
+			$counter=0;
+			while(!feof($tablefile)) {
+				$sqlstatement=trim(fgets($tablefile,1024));
+				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
+					$theresult=mysql_query($sqlstatement,$dblink);
+					if(!$theresult)
+						$thereturn.=mysql_error($dblink)."\n";
+					else
+						$counter++;
+					$sqlstatement="";
+				}//end if;
+			}//end while
+	
+		$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
+		return $thereturn;
+	}//end function
 
 
 
@@ -76,13 +65,15 @@ else{
 	
 	
 	$thereturn.=importData("clients");
+	$thereturn.=importData("discounts");
 	$thereturn.=importData("invoices");
 	$thereturn.=importData("lineitems");
 	$thereturn.=importData("productcategories");
 	$thereturn.=importData("products");
 	$thereturn.=importData("tax");
+	$thereturn.=importData("Users");
 
-	$thereturn.="==================\nDone Importing Data\n==================";
+	$thereturn.="Done Importing Data\n==================";
 	
 }//end if
 

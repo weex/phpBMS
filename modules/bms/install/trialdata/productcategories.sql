@@ -1,0 +1,4 @@
+INSERT INTO productcategories VALUES (2,'2005-03-25 17:33:05','',1,2,20050405141109,'Parts',0,'');
+INSERT INTO productcategories VALUES (2,'2005-03-26 10:50:59','Various amker of bicycle tires for mountain and street.',2,2,20050405141109,'Bikes',0,'');
+INSERT INTO productcategories VALUES (2,'2005-03-26 10:51:47','Apparel includes item like gloves, helmet, jerseys, shorts and other items of clothing.',3,2,20050405141109,'Apparel',0,'');
+INSERT INTO productcategories VALUES (2,'2005-03-29 09:47:52','Services includes itme such as flat tire repair, cleaning, installation, and tuning.',4,2,20051025170042,'Repairs',0,'');

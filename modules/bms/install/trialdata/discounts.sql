@@ -1,0 +1,2 @@
+INSERT INTO discounts VALUES (3,'Good Customer',0,'amount',15,'Select customers are eligable for $15.00 off.',2,2,20051025165428,'2005-10-25 16:54:28');
+INSERT INTO discounts VALUES (2,'New Customer',0,'percent',10,'Select new customers are eligable for 10% off their total order',2,2,20051025165312,'2005-10-25 16:53:12');

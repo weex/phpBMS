@@ -157,7 +157,7 @@ function insertRecord($variables,$userid){
 //==================================================================
 if(!isset($_POST["command"])){
 	if(isset($_GET["id"]))
-		$therecord=getRecords($_GET["id"]);
+		$therecord=getRecords((integer) $_GET["id"]);
 	else
 		$therecord=setRecordDefaults();
 	$createdby=getUserName($therecord["createdby"]);

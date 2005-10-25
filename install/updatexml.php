@@ -25,6 +25,88 @@
 		} else return "Cannot open setting.php file";
 	}
 
+	function importData($thetable){
+		global $dblink;
+		
+		$tablefile = fopen($thetable.".sql","r");
+		if(!$tablefile) {
+			return "Could not open the file ".$thetable.".sql";
+		}
+		$thereturn="Importing records for '".$thetable."'\n";
+			$counter=0;
+			while(!feof($tablefile)) {
+				$sqlstatement=trim(fgets($tablefile,1024));
+				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
+					$theresult=mysql_query($sqlstatement,$dblink);
+					if(!$theresult)
+						$thereturn.=mysql_error($dblink)."\n";
+					else
+						$counter++;
+					$sqlstatement="";
+				}//end if;
+			}//end while
+	
+		$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
+		return $thereturn;
+	}//end function
+	
+	function processSQLfile($filename){
+		global $dblink;
+		
+		$thefile = fopen($filename,"r");
+		if(!$thefile) {
+			return "Could not open the file ".$filename.".";
+		}
+		$thereturn="Processing SQL from file '".$filename."'\n";
+			while(!feof($thefile)) {
+				$sqlstatement=trim(fgets($thefile,1024));
+				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
+					$theresult=mysql_query($sqlstatement,$dblink);
+					if(!$theresult)
+						$thereturn.=mysql_error($dblink)."\n";
+					$sqlstatement="";
+				}//end if;
+			}//end while
+	
+		$thereturn.="Done processing SQL from file '".$filename."'. \n\n";
+		return $thereturn;
+	}//end function
+		
+
+	function write_settings($settings) {
+		$settingsfile = fopen("../settings.php","r") or die ("Couldn't open Settings File");
+		//create an array of all lines
+		while( !feof($settingsfile)) {
+			$newfile[]=fgets($settingsfile,1024);
+		}
+		fclose($settingsfile);
+		
+		$newfile[]="\n";
+		foreach($settings as $settingname=>$settingvalue) {
+			$infile=false;
+			//next loop through the file, and if the setting is there, replace it
+			for($i=0;$i<count($newfile);$i++){
+				if (strpos(($newfile[$i]),$settingname)===0) {
+					$tabnumber=intval(5-strlen($settingvalue)/8);
+					$newfile[$i]=$settingname.str_repeat(chr(9),$tabnumber)."= \"".str_replace(chr(10),"\\n",$settingvalue)."\"\n";
+					$infile=true;
+					break;
+				}
+			}//
+			if(!$infile) {
+				$tabnumber=intval(5-strlen($settingname)/8);
+				$newfile[]=$settingname.str_repeat(chr(9),$tabnumber)."= \"".str_replace(chr(10),"\\n",$settingvalue)."\"\n";
+			}
+		}
+		if(end($newfile)=="\n") array_pop($newfile);
+		//now write the new file
+		$settingsfile = fopen("../settings.php","w") or die ("Couldn't open Settings File");
+		for($i=0;$i<count($newfile);$i++){
+			 fwrite($settingsfile,$newfile[$i],1024);
+		}
+		fclose($settingsfile);	
+	}//end function	
+	
 	function verifyAdminLogin($user,$pass){
 		global $dblink;
 		global $vars;
@@ -61,25 +143,39 @@
 					$queryresult=mysql_query($querystatement,$dblink);
 					$thereturn.=" - modified base record in modules table\n";
 					
-					$thereturn.="Update to 0.51 Successful\n\n";
+					$thereturn.="Update to 0.51 Finieshed\n\n";
 					$currentVersion="0.51";
 				break;
 				// ================================================================================================
 				case "0.51":
 					$thereturn.="Updating Base Module to 0.52\n";
+										
+					//Processing Data Structure Changes
+					$thereturn.=processSQLfile("updatev0.6.sql");
 					
+					//Inputind new records for new structure
+					$thereturn.=importData("choices");
+					$thereturn.=importData("menu");
+					$thereturn.=importData("reports");
+					$thereturn.=importData("tablecolumns");
+					$thereturn.=importData("tabledefs");
+					$thereturn.=importData("tablefindoptions");
+					$thereturn.=importData("tableoptions");
+					$thereturn.=importData("tablesearchablefields");
+					
+					//Setting the new default load page
+					$newSettings["default_load_page"]="modules/base/snapshot.php";
+					write_settings($newSettings);
+					$thereturn.=" - modified default start page in settings\n";					
+										
 					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.52\" WHERE name=\"base\";";
+					$querystatement="UPDATE modules SET version=\"0.6\" WHERE name=\"base\";";
 					$queryresult=mysql_query($querystatement,$dblink);
 					$thereturn.=" - modified base record in modules table\n";
-					
-					//Dropping selected field in choices table
-					$querystatement="ALTER TABLE choices DROP selected";
-					$queryresult=mysql_query($querystatement,$dblink);
-					$thereturn.=" - dropped selected field from choices table\n";
 
-					$thereturn.="Update to 0.52 Successful\n\n";
-					$currentVersion="0.52";
+					$thereturn.="Update to 0.6 Finished\n\n";
+					
+					$currentVersion="0.6";
 				break;
 			}//end switch
 		}//end while

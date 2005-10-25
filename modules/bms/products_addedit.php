@@ -42,9 +42,9 @@
 				<strong>product type</strong><br />
 				<label for="typeInventory" style="padding-bottom:0px;"><input type="radio" name="type" id="typeInventory" value="Inventory" <?php if($therecord["type"]=="Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/> inventory</label>
 				<label for="typeNonInventory" style="padding-bottom:0px;"><input type="radio" name="type" id="typeNonInventory" value="Non-Inventory" <?php if($therecord["type"]=="Non-Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="80"/> non-inventory</label>
-				<label for="typeService" style="padding-bottom:0px;"><input type="radio" name="type" id="typeService" value="Kit" <?php if($therecord["type"]=="Service") echo "checked"?> class="radiochecks" align="baseline" tabindex="90"/> service</label>
+				<label for="typeService" style="padding-bottom:0px;"><input type="radio" name="type" id="typeService" value="Service" <?php if($therecord["type"]=="Service") echo "checked"?> class="radiochecks" align="baseline" tabindex="90"/> service</label>
 				<label for="typeKit" style="padding-bottom:0px;"><input type="radio" name="type" id="typeKit" value="Kit" <?php if($therecord["type"]=="Kit") echo "checked"?> class="radiochecks" align="baseline" tabindex="100"/> kit</label>
-				<label for="typeAssembly" style="padding-bottom:0px;"><input type="radio" name="type" id="typeAssembly" value="Kit" <?php if($therecord["type"]=="Assembly") echo "checked"?> class="radiochecks" align="baseline" tabindex="110"/> assembly</label>
+				<label for="typeAssembly" style="padding-bottom:0px;"><input type="radio" name="type" id="typeAssembly" value="Assembly" <?php if($therecord["type"]=="Assembly") echo "checked"?> class="radiochecks" align="baseline" tabindex="110"/> assembly</label>
 			</div>
 			<div>
 				<strong>available status</strong><br />

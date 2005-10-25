@@ -15,8 +15,10 @@ function getRecords($id){
 				
 				FROM modules
 				WHERE id=".$id;		
-	$thequery = mysql_query($querystatement,$dblink);
-	$therecord = mysql_fetch_array($thequery);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
+	$therecord = mysql_fetch_array($queryresult);
+	if(!$therecord) reportError(300,"No record for id ".$id);
 	return $therecord;
 }//end function
 
@@ -34,7 +36,7 @@ function setRecordDefaults(){
 if(!isset($_POST["command"])){
 	if(isset($_GET["id"])){
 		//get record
-		$therecord=getRecords($_GET["id"]);
+		$therecord=getRecords((integer)$_GET["id"]);
 	}
 }
 else

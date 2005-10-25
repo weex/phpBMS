@@ -3,7 +3,8 @@
 	require_once("include/search_class.php");
 	require_once("include/common_functions.php");	
 	
-	if(!isset($_GET["id"])) reportError(100,"Table ID Required");
+	if(!isset($_GET["id"])) reportError(100,"Passed Parameter not present.");
+	$_GET["id"]= (integer) $_GET["id"];
 	
 	$displayTable= new displaySearchTable;	
 

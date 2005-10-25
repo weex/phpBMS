@@ -1,3 +1,7 @@
+phpBMS v0.6/ BMS module v0.6
+==============================
+
+
 phpBMS v0.51/ BMS module v0.51
 ==============================
 - Fixed issue with invoice line items not able to enter/fill correctly

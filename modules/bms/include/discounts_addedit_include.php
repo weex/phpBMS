@@ -40,8 +40,9 @@ function getRecords($id){
 				FROM discounts
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Select Failed: ".mysql_error($dblink)." -- ".$querystatement);
-	$therecord = mysql_fetch_array($queryresult );
+	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
+	$therecord = mysql_fetch_array($queryresult);
+	if(!$therecord) reportError(300,"No record for id ".$id);
 	return $therecord;
 }//end function
 
@@ -114,7 +115,7 @@ function insertRecord($variables,$userid){
 			
 			$querystatement.="\"".$variables["type"]."\", "; 
 			if($variables["type"]=="percent"){
-				$variables["percentvalue"]=str_replace("%","",$variables["percentage"]);
+				$variables["percentvalue"]=str_replace("%","",$variables["percentvalue"]);
 				if($variables["percentvalue"]=="")
 					$variables["percentvalue"]="0";
 				$querystatement.=$variables["percentvalue"].", "; 
@@ -140,7 +141,7 @@ function insertRecord($variables,$userid){
 //==================================================================
 if(!isset($_POST["command"])){
 	if(isset($_GET["id"]))
-		$therecord=getRecords($_GET["id"]);
+		$therecord=getRecords((integer) $_GET["id"]);
 	else
 		$therecord=setRecordDefaults();
 	$stats=getTotals($therecord["id"]);

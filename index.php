@@ -54,7 +54,7 @@
  <div align="center">
  	<div style="width:250px;">
 	<div class="bodyline" style="margin-top:100px;padding:0px;" align="left">
-		<div align="right"  class="box" style="margin:1px;border-style:none; background-color:white;"><a href="http://kreotek.com/products/phpbms"><img src="/common/image/logo.png" width="85" height="22" border="0"></a></div>
+		<div align="right"  class="box" style="margin:1px;border-style:none; background-color:white;"><a href="http://kreotek.com/products/phpbms"><img src="common/image/logo.png" width="85" height="22" border="0"></a></div>
 		<h2 style="text-transform:none;margin:4px;">
 			<?PHP echo $_SESSION["application_name"];?>			
 		<div class=tiny style="padding:0px;">Business Management Web Application</div>

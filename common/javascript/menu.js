@@ -1,6 +1,21 @@
 function showHelp(base){
 	window.open(base+"help");
 }
+
+function checkExpand(theitem){
+	var i,tempDiv;
+	var showid=theitem.id.substring(4);
+	var doswitch=false
+	for(i=0;i<subMenuArray.length;i++){
+		tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
+		if(tempdiv.style.display!="none" && subMenuArray[i]!=showid)
+			doswitch=true;
+	}
+	if(doswitch)
+		expandMenu(theitem);
+	
+}
+
 function expandMenu(theitem){
 	var i;
 	var tempdiv;

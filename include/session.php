@@ -38,9 +38,20 @@ function loadSettings() {
 	} else reportError(500,"Settings file could not be opened");
 }
 
-function reportError($id,$extras){
-	echo $extras;
-	die();
+function reportError($id,$extras,$format=true,$path="",$die=true){
+	if($path=="" && isset($_SESSION["app_path"]))
+		$path=$_SESSION["app_path"];
+	if($format) {?>	
+		<link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">		
+		<div class="bodyline">
+			<h1>phpBMS Error: <?php echo $id?></h1>
+			<div class="box">
+				<?php echo $extras ?>
+			</div>
+		</div>
+	<?php }else
+		echo $extras;
+	if($die) die();
 }
 
 function xmlEncode($str){
@@ -68,9 +79,11 @@ function xmlEncode($str){
 
 		// OPEN DATABASE IF NOT OPENED
 		if(!isset($dblink)){
-			$dblink = mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
-			if (!$dblink) { session_destroy(); die("Error: No Link to MySQL possible"); }
-			if (!mysql_select_db($_SESSION["mysql_database"])) {session_destroy(); die("Error: Couldn't open database: ".mysql_error($dblink)); }
+			$dblink = @ mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
+			if (!$dblink) 
+				reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
+			if (!mysql_select_db($_SESSION["mysql_database"])) 
+				reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);
 		}	
 	}//end if
 	

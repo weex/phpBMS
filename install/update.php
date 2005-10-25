@@ -114,14 +114,12 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	<h1>phpBMS v<?php echo $version ?> Update Instructions</h1>
 	<h2>Before updating</h2>
 	<div style="margin-left:10px;">
-	It is always a good idea to backup all of your data before running any updates. By downloading and decompressing this update, you may have already replaced the scropt files from th e the previous version of phpBMS. If you have decompressed these files to a separate directory and have made custom changes directly to the system we recommend backing up those files before continuing. 
+	It is always a good idea to backup all of your data and files before running any updates. By downloading and decompressing this update, you may have already replaced script files from the previous version of phpBMS. If you have decompressed these files to a separate directory and have made custom changes directly to the system we recommend backing up those files before continuing. 
 	</div>
 	<div style="margin-left:10px;">
-	Check the <a href="./changelog.txt">changelog.txt</a> file for a list of all changes that have taken place
-	</div>
+	Check the <a href="./changelog.txt">changelog.txt</a> file for a list of all changes that have taken place.	</div>
 	<div style="margin-left:10px;">
-	For the latest information and source code, including links to the up to date SVN project please check the <a href="http://sourceforge.net/projects/phpbms/">Sourceforge project page
-    </a>	</div>
+	For the latest information and source code, including links to the up to date SVN project please check the <a href="http://sourceforge.net/projects/phpbms/">Sourceforge project page</a>.	</div>
 	
 	<h2>Updating the base system</h2>
 	<div class="box">
@@ -134,8 +132,10 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		
 		<div style="margin-right:42%">
 	    	<h3 >Step 1 - Check Database Connection and Enter Administrator Log In Information </h3>
-			<div style="margin-left:10px;">Only users with administrative rights can run the update procedure.  Enter the log in name of and administrator and click the verify
-	both the database connection and the administrative log in.
+			<div style="margin-left:10px;">Only users with administrative rights can run the update procedure.<br>  
+				Enter the log in name of and administrator and verify
+	both the database <br>
+	connection and the administrative log in.
 				<p>
 					name<br>
 					<input name="name" type="text" id="username" size="32" maxlength="64">
@@ -162,28 +162,32 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		<div style="margin-right:42%">
 		    	<h3 >Step 2 - Check The Base Module for Updates </h3>
     			<div style="margin-left:10px;">
-	    		 If the administrative login was successful, compare this version to the installed version.</div>
+	    		 If the administrative login was successful, <br>
+	    		 compare this version to the database version.</div>
     			<div>
     				<input type="button" value="Check For Update" class="Buttons" onClick="runCommand('checkBaseUpdate')">
 	   			</div>
    		</div>
 	</div>
 
-<div class="box">
-    	<div style="float:right;width:40%;padding-top:0">
-    		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
-    		<div>
-    			<textarea name="results" id="updateBaseVersionresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="3"></textarea>
-   			</div>
-   		</div>
-		<div style="margin-right:42%">
+<div class="box" style="clear:both;">
+		<div style="float:left;width:58%">
 	    	<h3 >Step 3 - Run the base update </h3>
 			<div style="margin-left:10px;">
-			If phpBMS needs to be updated, click the &quot;Update Base Module&quot; button to update the phpBMS core. This may make changes to the database records and design. </div>
+			If phpBMS needs to be updated, click the &quot;Update Base Module&quot; <br>
+			button to update the phpBMS core. <br>
+			<br>
+			This may make changes to the database records and design. </div>
 			<div>
 				<input type="button" value="Update Base Module" class="Buttons" onClick="runCommand('updateBaseVersion')">
 			</div>
 		</div>
+    	<div style="margin-left:60%;padding-top:0px">
+    		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
+    		<div>
+    			<textarea name="results" id="updateBaseVersionresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
+   			</div>
+   		</div>
 	</div>
 	
 	<h2>Updating Installed modules</h2>
@@ -196,7 +200,8 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	</div><h3 style="margin-right:42%">Step 4 - Update Additional Modules </h3>
 	<div style="margin-left:10px;margin-right:42%">
 		<div>
-			<div>Below is a list of additional installed modules that can be updated. To update a module, select the module from the list, and click the &quot;update module &quot; button. </div>
+			<div>Below is a list of additional installed modules that can be updated. <br>
+				To update a module, select the module from the list, and click the &quot;update module &quot; button. </div>
 			<div> Select a module to update <br>
                 	<select size="6" id="modules" name="modules" style="width:400px;font-size:12px;" >
                 		<?php showModules()?>
@@ -210,7 +215,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		
 	</div>	
 	<h2>Complete the update</h2>
-	<div>If phpBMS and any applicable modules updated successfully, go to the log in screen.</div>
+	<div>If phpBMS and any applicable modules updated successfully, go to the log in screen. Your browser's cache (temporary internet files) might not flush some of the javascript or stylesheet files correctly. Mae sure to refresh your cache after logging in. </div>
 	<div><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onClick="document.location='../'"></div>
 
 </div></body>
