@@ -1,2 +1,2 @@
-INSERT INTO users VALUES (1,'nologin','T·Ä-GÛ','EXTERNAL','','2004-03-02 15:56:20',0,-10,2,2,'0000-00-00 00:00:00',20050209124121,'','','','');
-INSERT INTO users VALUES (2,'admin','ÔÜõ˛¯ê','Administrator','','2004-03-01 14:26:50',0,90,2,2,'2005-10-24 11:45:38',20051011144524,'','','','');
+INSERT INTO users VALUES (1,'nologin','T·Ä-GÛ','EXTERNAL','',NOW(),0,-10,2,2,Now(),Now(),'','','','');
+INSERT INTO users VALUES (2,'admin',encode('phpbms','freeble'),'Administrator','',Now(),0,90,2,2,Now(),Now(),'','','','');
