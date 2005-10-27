@@ -80,39 +80,32 @@ function addEditRecord(newedit,what,addeditfile){
 	var theid="";
 	switch(what){
 		case "note":
-			theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
 			theid=selectedNote;
 		break;
 		case "invoice":
-			theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
 			theid=selectedInvoice;
 		break;
 		case "client":
-			if(newedit=="edit")
-				theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value);
-			else
-				theURL+="?backurl="+encodeURIComponent(currentURL);
+			theid=clientid.value;
 		break;
 	}	
+	theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
 	if(newedit=="edit")
-		if(theid!="")
-			theURL+="&id="+theid;
-		else
-			theURL+="&id="+clientid.value;
-	else{
-		theURL+="&cid="+clientid.value;
-	}
+		theURL+="&id="+theid;
 	document.location=theURL;
 }
 
 function selectEdit(thetr,id,noteinvoice){
 	var theeditbutton=getObjectFromID(noteinvoice+"edit");	
-	if(selectedInvoice==id){
+	var theSelected;
+	if(noteinvoice=="note")
+		theSelected=selectedNote;
+	else
+		theSelected=selectedInvoice;
+	
+	if(theSelected==id){
 		theeditbutton.firstChild.src=editButtonDisabled.src;
-		if(noteinvoice="note")
-			selectedNote="";
-		else
-			selectedInvoice="";
+		theSelected="";
 		thetr.className=""
 	} else {
 		for(var i=0; i<thetr.parentNode.childNodes.length;i++){
@@ -121,10 +114,12 @@ function selectEdit(thetr,id,noteinvoice){
 					thetr.parentNode.childNodes[i].className=""
 		}
 		thetr.className="smallQueryTableSelected";
-		if(noteinvoice="note")
-			selectedNote=id;
-		else
-			selectedInvoice=id;
+		theSelected=id;
 		theeditbutton.firstChild.src=editButton.src;
 	}
+	if(noteinvoice=="note")
+		selectedNote=theSelected;
+	else
+		selectedInvoice=theSelected;
+	
 }
