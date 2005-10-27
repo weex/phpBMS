@@ -51,11 +51,13 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
+<script language="javascript">
+	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
+</script>
 </head>
 <body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
-	<H1><?php echo $pageTitle ?></H1>
+	<h1><?php echo $pageTitle ?></h1>
 	<div>
 		<form name="search" id="searchform" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
 		<input name="theids" type="hidden" value="">

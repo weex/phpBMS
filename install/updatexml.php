@@ -143,12 +143,12 @@
 					$queryresult=mysql_query($querystatement,$dblink);
 					$thereturn.=" - modified base record in modules table\n";
 					
-					$thereturn.="Update to 0.51 Finieshed\n\n";
+					$thereturn.="Update to 0.51 Finished\n\n";
 					$currentVersion="0.51";
 				break;
 				// ================================================================================================
 				case "0.51":
-					$thereturn.="Updating Base Module to 0.52\n";
+					$thereturn.="Updating Base Module to 0.6\n";
 										
 					//Processing Data Structure Changes
 					$thereturn.=processSQLfile("updatev0.6.sql");
@@ -177,6 +177,19 @@
 					
 					$currentVersion="0.6";
 				break;
+				// ================================================================================================
+				case "0.6":
+					$thereturn.="Updating Base Module to 0.601\n";
+					
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.601\" WHERE name=\"base\";";
+					$queryresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - modified base record in modules table\n";
+					
+					$thereturn.="Update to 0.601 Finished\n\n";
+					$currentVersion="0.601";
+				break;
+				
 			}//end switch
 		}//end while
 		return $thereturn;

@@ -157,6 +157,7 @@ function loadSettings() {
 					}
 					$thereturn.=" - set intitial client becamclient field\n";
 					
+
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.6\" WHERE name=\"bms\";";
 					$updateresult=mysql_query($querystatement,$dblink);
@@ -165,6 +166,28 @@ function loadSettings() {
 					$thereturn.="Update to 0.6 Finished\n\n";
 			
 					$ver["version"]="0.6";
+				break;
+				// ================================================================================================
+				case "0.6";
+					$thereturn.="Updating BMS Module to 0.601\n";
+
+					$querystatement="SELECT invoices.id,tax.percentage FROM invoices INNER JOIN tax on invoices.taxareaid=tax.id";
+					$queryresult=mysql_query($querystatement,$dblink);
+					if(!$queryresult) return (mysql_error($dblink)." --".$querystatement);
+					while($therecord=mysql_fetch_array($queryresult,$dblink)){
+						$querystatement="UPDATE invoices SET taxpercentage=".$therecord["percentage"]."WHERE id=".$therecord["id"];
+						$updateresult=mysql_query($querystatement,$dblink);
+					}
+					$thereturn.=" - set taxpercentage on invoices\n";
+
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.601\" WHERE name=\"bms\";";
+					$updateresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - modified bms record in modules table\n";
+
+					$thereturn.="Update to 0.601 Finished\n\n";
+			
+					$ver["version"]="0.601";				
 				break;
 			}//end switch
 		}//end while

@@ -516,7 +516,7 @@ function displayQueryButtons() {
 		} ?></div><?php }?>	
 	
 		<div>
-		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="document.location='<?php echo $this->thetabledef["addfile"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
+		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="addRecord()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["edit"]["accesslevel"]) {
 				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
@@ -556,7 +556,8 @@ function displayQueryButtons() {
 		}//end if numrows	
 		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png" alt="show SQL" width="35" height="16" border="0" /></button><?PHP }//end accesslevel?>
 		</div><script language="javascript">
-	var editFile="<?php echo $this->thetabledef["addfile"]?>";
+	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
+	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";
 	var editButtonImg=new Image();
 		editButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png";
 	var editButtonImgDisabled=new Image();

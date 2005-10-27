@@ -142,6 +142,7 @@ function setButtonStatus(disabledstatus){
 
 //double click on row
 function editThis(therow){
+	var connector
 	if(therow){
 		// the row is used for doubleclicking
 		var therownum=therow.id.substr(2);
@@ -149,11 +150,25 @@ function editThis(therow){
 		selIDs[0]=therownum;
 	}
 	if (editFile.indexOf("?")>=0)
-		editFile+="&";
+		connector="&";
 	else
-		editFile+="?";
-	editFile+="id="+selIDs[0];
+		connector="?";
+	editFile+=connector+"id="+selIDs[0];
+	if(typeof xtraParamaters != "undefined")
+		editFile+="&"+(xtraParamaters);
+	
 	document.location=editFile;
+}
+
+function addRecord(){
+	var connector;
+	if (addFile.indexOf("?")>=0)
+		connector="&";
+	else
+		connector="?";
+	if(typeof xtraParamaters != "undefined")
+		addFile+=connector+(xtraParamaters);
+	document.location=addFile;
 }
 
 
