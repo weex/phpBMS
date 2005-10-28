@@ -83,7 +83,18 @@ function formatToSQLTime($thetime,$allownull=true){
 		else
 			$temptime="\"00:00:00\"";
 	} else{
-		$temptime="\"".$thetime."\"";
+		if(strpos($thetime,"AM")!==false){
+			str_replace(" AM","",$thetime);
+			$addtime=0;
+		}
+		else {
+			str_replace(" PM","",$thetime);
+			$addtime=12;
+		}
+		$timearray=explode(":",$thetime);
+		if($timearray[0]!="12")
+			$timearray[0]= ((integer) $timearray[0]) + $addtime;
+		$temptime="\"".$timearray[0].":".$timearray[1].":00\"";
 	}	
 	return $temptime;
 }

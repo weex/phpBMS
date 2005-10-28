@@ -4,6 +4,7 @@ phpBMS v0.602/ BMS module v0.602
 - Fixed reference to images on menu edit screen.
 - Fixed menu search functions.
 - Fixed importing of initial menu display columns, and searchable fields.
+- Fixed saving of times to database incomaptibility with some MySQL versions.
 
 phpBMS v0.601/ BMS module v0.601
 ==================================
