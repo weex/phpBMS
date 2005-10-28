@@ -14,8 +14,8 @@ function delete_record($theids){
 	global $dblink;
 	
 	//passed variable is array of user ids to be revoked
-	$whereclause=buildWhereClause($theids,"notes.id");
-	$verifywhereclause=buildWhereClause($theids,"menu.parentid.id");
+	$whereclause=buildWhereClause($theids,"menu.id");
+	$verifywhereclause=buildWhereClause($theids,"menu.parentid");
 	
 	$querystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;
 	$queryresult = mysql_query($querystatement,$dblink);

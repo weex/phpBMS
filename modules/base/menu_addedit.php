@@ -52,19 +52,19 @@
 				<td valign="top" width="33%">
 					<label for="type1"><input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked" ?> name="radio" onClick="showTypeDetails();"  class="radiochecks" /> category</label>
 					<div>
-					<img src="/modules/base/menu-example-category.png" width="150" height="72" style="border:2px inset #999999;">
+					<img src="menu-example-category.png" width="150" height="72" style="border:2px inset #999999;">
 					</div>
 				</td>
 				<td valign="top" width="33%">
 					<label for="type2"><input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /> table definition search</label>
 					<div>
-					<img src="/modules/base/menu-example-tabledef.png" width="150" height="72" style="border:spx inset #999999;">
+					<img src="menu-example-tabledef.png" width="150" height="72" style="border:spx inset #999999;">
 					</div>
 				</td>
 				<td valign="top" width="33%">
 					<label for="type3"><input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /> page link</label>
 					<div>
-					<img src="/modules/base/menu-example-link.png" width="150" height="72" style="border:2px inset #999999;">
+					<img src="menu-example-link.png" width="150" height="72" style="border:2px inset #999999;">
 					</div>
 				</td>
 			</tr>		

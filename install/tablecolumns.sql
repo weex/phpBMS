@@ -49,3 +49,7 @@ INSERT INTO tablecolumns VALUES (128,24,'location','notes.category','left','',8,
 INSERT INTO tablecolumns VALUES (129,24,'rpt.','if(notes.repeat,\"X\",\" \")','center','',1,'notes.repeat',0,'',NULL);
 INSERT INTO tablecolumns VALUES (130,23,'due date','if(notes.endtime is not null,concat(notes.enddate,\" \",notes.endtime),notes.enddate)','left','',6,'',0,'','datetime');
 INSERT INTO tablecolumns VALUES (131,12,'type','concat(\"<B>\",notes.type,\"</B>\")','center','',2,'',0,'',NULL);
+INSERT INTO tablecolumns VALUES (82,19,'id','menu.id','center','',0,'',0,'',NULL);
+INSERT INTO tablecolumns VALUES (84,19,'link','menu.link','left','',2,'',1,'',NULL);
+INSERT INTO tablecolumns VALUES (88,19,'access level','concat(\" \",menu.accesslevel)','center','',3,'menu.accesslevel',0,'',NULL);
+INSERT INTO tablecolumns VALUES (86,19,'Item','concat(if(parentmenu.name is null,\"\",concat(parentmenu.name,\" :: \")),menu.name)','left','',1,'',0,'100%',NULL);

@@ -1,3 +1,10 @@
+phpBMS v0.602/ BMS module v0.602
+==================================
+- Fixed issue with saving new taxarea not stripping out percentage sign
+- Fixed reference to images on menu edit screen.
+- Fixed menu search functions.
+- Fixed importing of initial menu display columns, and searchable fields.
+
 phpBMS v0.601/ BMS module v0.601
 ==================================
 - Fixed compatiablity error with older php versions (during update)

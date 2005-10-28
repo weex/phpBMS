@@ -27,3 +27,6 @@ INSERT INTO tablesearchablefields VALUES (89,24,'notes.subject','title',0,'field
 INSERT INTO tablesearchablefields VALUES (90,24,'notes.category','category',1,'field');
 INSERT INTO tablesearchablefields VALUES (91,24,'notes.content','content',2,'field');
 INSERT INTO tablesearchablefields VALUES (94,24,'notes.id','id',5,'field');
+INSERT INTO tablesearchablefields VALUES (67,19,'menu.name','name',0,'field');
+INSERT INTO tablesearchablefields VALUES (68,19,'parentmenu.name','parent name',1,'field');
+INSERT INTO tablesearchablefields VALUES (69,19,'menu.id','id',2,'field');
