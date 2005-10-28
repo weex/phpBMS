@@ -1,3 +1,11 @@
+phpBMS v0.601/ BMS module v0.601
+==================================
+- Fixed compatiablity error with older php versions (during update)
+- Fixed with quickview not being able to add or edit invoices.
+- Fixed invoice search function to use new table schema.
+- Updated invoice tax percentages.
+- Fixed bu with note views from within a record (associated records)
+
 phpBMS v0.6/ BMS module v0.6
 ==============================
 - New install and update routines.
