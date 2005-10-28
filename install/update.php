@@ -28,7 +28,7 @@
 	
 	function getNewVersion($dir="."){
 		$file =  @ fopen($dir."/version.txt","r");
-		$version=fgets($file);
+		$version=fgets($file,1024);
 		@ fclose($file);
 		return $version;
 	}

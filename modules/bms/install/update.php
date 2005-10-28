@@ -100,7 +100,7 @@ function loadSettings() {
 		}
 			
 		$file =  @ fopen("./version.txt","r");
-		$newVersion=fgets($file);
+		$newVersion=fgets($file,1024);
 		@ fclose($file);
 		
 		$querystatement="SELECT version FROM modules WHERE name=\"bms\"";
