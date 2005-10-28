@@ -92,6 +92,8 @@ function addEditRecord(newedit,what,addeditfile){
 	theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
 	if(newedit=="edit")
 		theURL+="&id="+theid;
+	else
+		theURL+="&cid="+clientid.value;
 	document.location=theURL;
 }
 
