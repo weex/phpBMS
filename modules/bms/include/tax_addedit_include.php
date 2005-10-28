@@ -71,6 +71,7 @@ function insertRecord($variables,$userid){
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
+			$variables["percentage"]=str_replace("%","",$variables["percentage"]);
 			if($variables["percentage"]=="")
 				$variables["percentage"]="0";
 			$querystatement.=$variables["percentage"].", "; 
