@@ -155,12 +155,12 @@
 		<tr id="LIHeader">
 			<th nowrap class="queryheader" align="left">part number</td>
 			<th nowrap class="queryheader" align="left">name</td>
-			<th nowrap class="queryheader" align="left">memo</td>
+			<th nowrap class="queryheader" align="left" width="90%">memo</td>
 			<th align="right" nowrap class="queryheader">price</td>
 			<th align="center" nowrap class="queryheader">qty.</td>
 			<th align="right" nowrap class="queryheader">extended</td>
 			<th nowrap class="queryheader">&nbsp;</td>
-		</tr>
+		</tr><?php if($therecord["type"]!="Invoice"){?>
 		<tr id="LIAdd">
 			<td nowrap class="lineitemsLeft">
 			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"11","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
@@ -178,7 +178,8 @@
 			<td align="right" nowrap><input name="price" type="text" id="price" value="$0.00" size="8" maxlength="16" onChange="calculateExtended()" style="text-align:right;" tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="2" maxlength="16" onChange="calculateExtended()" style="text-align:center; border-left:0px;border-right:0px;" tabindex="19"  /></td>
 			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable" value="$0.00" size="8" maxlength="16" readonly="true" style="text-align:right;" /></td>
-			<td nowrap align="center" class="lineitemsRight lineitemsBottom"><button type="button" class="invisibleButtons" onClick="addLine(this.parentNode);" tabindex="20" ><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button></td></tr><?PHP 
+			<td nowrap align="center" class="lineitemsRight lineitemsBottom"><button type="button" class="invisibleButtons" onClick="addLine(this.parentNode);" tabindex="20" ><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button></td>
+		</tr><?PHP }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);
 		
 	if($lineitemsresult) {
@@ -200,7 +201,7 @@
 					<?PHP echo $lineitem["memo"]?>[//]
 					<?PHP echo $lineitem["taxable"]?>
 				</span>
-				<button type="button" class="invisibleButtons" onClick="return deleteLine(this)" tabindex="21"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png" align="middle" alt="-" width="16" height="16" border="0" /></button>
+				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="invisibleButtons" onClick="return deleteLine(this)" tabindex="21"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png" align="middle" alt="-" width="16" height="16" border="0" /></button><?php } ?>
 			</td>
 		</tr>
   <?PHP } } ?><tr id="LITotals">
