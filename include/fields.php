@@ -208,8 +208,11 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 						attribute value.
 	*/
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-date.png" align="absmiddle" alt="pick date" width="16" height="16" border="0" /></button>
+	if ($attributes) 
+		foreach($attributes as $attribute => $tvalue) 
+			if($attribute!="onChange") 
+				echo " ".$attribute."=\"".$tvalue."\"";				
+	?> onChange="formatDateField(this);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"]?>" /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-date.png" align="absmiddle" alt="pick date" width="16" height="16" border="0" /></button>
 	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $messsage?>');</script><?php }//end if
 	?><script language="JavaScript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function

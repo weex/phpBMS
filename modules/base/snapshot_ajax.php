@@ -29,11 +29,13 @@
 		if(!$queryresult) reportError(300,"Error Retrieving Parent Note ID: ".mysql_error($dblink)."<br />".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		
-		if($therecord["repeat"]===1){
+
+		if($therecord["repeat"]==1){
 			$therecord["parentid"]=$id;
 		}
 
 		if ($therecord["parentid"]){
+
 			$lastTaskdate=dateFromSQLDate($therecord["startdate"]);
 		
 			$querystatement="SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE id=".$therecord["parentid"];
@@ -45,6 +47,7 @@
 			$repeatuntil=dateFromSQLDate($therecord["repeatuntildate"]);
 			$nextdate=$startdate;
 			$rpTimes=1;
+
 			switch($therecord["repeattype"]){
 				case "repeatDaily":
 					while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
@@ -183,20 +186,33 @@
 		$querystatement.="\"".$therecord["subject"]."\", ";
 		$querystatement.="\"".$therecord["content"]."\", ";
 		$querystatement.="\"".$therecord["status"]."\", ";
-		$querystatement.="\"".$therecord["starttime"]."\", ";
+		if($therecord["starttime"])
+			$querystatement.="\"".$therecord["starttime"]."\", ";
+		else
+			$querystatement.="NULL, ";
+		
 		$querystatement.=$therecord["private"].", ";
 		$querystatement.=$therecord["modifiedby"].", ";
 		$querystatement.="\"".$therecord["location"]."\", ";
 		$querystatement.="\"".$therecord["importance"]."\", ";
-		$querystatement.="\"".$therecord["endtime"]."\", ";
+		if($therecord["endtime"])
+			$querystatement.="\"".$therecord["endtime"]."\", ";
+		else
+			$querystatement.="NULL, ";
 		$querystatement.="\"".$therecord["creationdate"]."\", ";
 		$querystatement.=$therecord["createdby"].", ";
 		$querystatement.="\"".$therecord["category"]."\", ";
 		$querystatement.=$therecord["attachedtabledefid"].", ";
 		$querystatement.=$therecord["attachedid"].", ";
 		$querystatement.=$therecord["assignedtoid"].", ";
-		$querystatement.="\"".$therecord["assignedtodate"]."\", ";
-		$querystatement.="\"".$therecord["assignedtotime"]."\", ";
+		if($therecord["assignedtodate"])
+			$querystatement.="\"".$therecord["assignedtodate"]."\", ";
+		else
+			$querystatement.="NULL, ";			
+		if($therecord["assignedtotime"])
+			$querystatement.="\"".$therecord["assignedtotime"]."\", ";
+		else
+			$querystatement.="NULL, ";
 		$querystatement.=$therecord["assignedbyid"].") ";
 		
 		$queryresult=mysql_query($querystatement,$dblink);

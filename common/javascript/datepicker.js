@@ -23,13 +23,12 @@ function showDP(base,dateFieldID){
 	if(dateField.value){
 		selDate=stringToDate(dateField.value);
 		year=selDate.getFullYear();
-		month=selDate.getMonth()
-	} else{
-		
+		month=selDate.getMonth()+1;
+	} else{		
 		selDate=null;
 		tdate=new Date();
 		year=tdate.getFullYear();
-		month=tdate.getUTCMonth()+1;
+		month=tdate.getMonth()+1;
 	}
 	loadMonth(base,month,year,dateField.value);
 	hideSelectBoxes();
@@ -44,7 +43,7 @@ function loadMonth(base,month,year,selectedDate){
 	theURL+="&y="+encodeURIComponent(year);
 	if (selectedDate){
 		tempdate=stringToDate(selectedDate);
-		theURL+="&sd="+encodeURIComponent(tempdate.getFullYear()+"-"+tempdate.getMonth()+"-"+tempdate.getDate());
+		theURL+="&sd="+encodeURIComponent(tempdate.getFullYear()+"-"+(tempdate.getMonth()+1)+"-"+tempdate.getDate());
 	}
 	loadXMLDoc(theURL,null,false);
 	showDP.box.innerHTML=req.responseText;	
@@ -60,7 +59,8 @@ function closeDPBox(){
 
 function dpClickDay(year,month,day){
 	var thefield=getObjectFromID(showDP.datefieldID);
-	thefield.value=month+"/"+day+"/"+year;
+	var thedate=new Date(parseInt(year),parseInt(month)-1,parseInt(day));
+	thefield.value=dateToString(thedate);
 	if(thefield.onchange) thefield.onchange.call(thefield);
 	closeDPBox();
 }
@@ -71,12 +71,19 @@ function dpHighlightDay(year,month,day){
 	displayinfo.innerHTML=months[month-1]+" "+day+", "+year;
 }
 
+function dpUnhighlightDay(){
+	var displayinfo=getObjectFromID("dpExp");
+	displayinfo.innerHTML=displayLongDate;
+}
+
 function stringToDate(sDate){
 	var sep="/";
 	var month=sDate.substring(0,sDate.indexOf(sep))
 	var day=sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1))
 	var year=sDate.substring(sDate.lastIndexOf(sep)+1);
-	return new Date(year,month,day);
+	year=parseInt(year);
+	if(year<100) year+=2000;
+	return new Date(year,parseInt(month)-1,parseInt(day));
 }
 
 function mysqlstringToDate(sDate){
@@ -86,4 +93,18 @@ function mysqlstringToDate(sDate){
 	var day=sDate.substring(sDate.lastIndexOf(sep)+1);
 	
 	return Date(year,month,day);
+}
+
+function dateToString(thedate){
+	var sep="/";
+	return (thedate.getMonth()+1)+sep+thedate.getDate()+sep+thedate.getFullYear();
+}
+
+function formatDateField(thefield){
+	if(validateDate(thefield.value)){
+		thefield.value=thefield.value.replace(/\-/g,"/");
+		var thedate=stringToDate(thefield.value);
+		thefield.value=dateToString(thedate);
+	} else
+	thefield.value="";
 }

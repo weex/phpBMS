@@ -167,7 +167,7 @@
 				<span id="woa" style="padding-right:10px;"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked"?> class="radiochecks" />Sat</span>
 			</div>
 			<div id="monthlyoptions" style=" <?php if (substr($therecord["repeattype"],0,13)!="repeatMonthly"){?>display:none;<?php }?>margin-bottom:5px;">
-				<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)!="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br />
+				<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)=="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br />
 				<input type="radio" class="radiochecks" name="rpmo" id="rpmobda" value="byDay" <?php if (substr($therecord["repeattype"],13)=="byDay"){?>checked<?php }?>/><span id="rpmobyday"></span> of the month.
 			</div>
 			<div id="rpuntilforever">

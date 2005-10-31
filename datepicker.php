@@ -1,26 +1,25 @@
 <?php
 	require_once("include/session.php");
-	
-	function sqlToUnixTimestamp($mysqldate){
-		$month=substr($mysqldate,strpos($mysqldate,"-")+1,strlen($mysqldate)-strrpos($mysqldate,"-")-1);
-		$day=substr($mysqldate,strrpos($mysqldate,"-")+1);
-		$unixtimestamp=mktime(0,0,0,$month,$day,substr($mysqldate,0,4));
-		return $unixtimestamp;
-	}
-		
+	require_once("include/common_functions.php");
+			
 	function displayBox($month,$year,$selectedDate){
 		global $dblink;
 		
 		$thedate=mktime(0,0,0,$month,1,$year);
 		$today=mktime(0,0,0);
 		$todayArray=getdate($today);
-		if($selectedDate!="0000-00-00") 
-			$selDate=sqlToUnixTimestamp($selectedDate);
-		else
+		if($selectedDate!="0000-00-00"){
+			$selDate=dateFromSQLDate($selectedDate);
+			$tempDate=getdate($selDate);
+			$displayLongDate=$tempDate["month"]." ".$tempDate["mday"].", ".$tempDate["year"];
+		}
+		else {
 			$selDate=NULL;
-		
-?>
-<table class="dp" cellspacing="0" cellpadding="0" border=0>
+			$displayLongDate="Click a Date";
+		}		
+?><script language="javascript">displayLongDate="<?php echo $displayLongDate ?>";</script>
+	<?php 
+	?><table class="dp" cellspacing="0" cellpadding="0" border=0>
 	<tr>
 		<td colspan=6 class="dpHead"><?php echo date("F, Y",$thedate)?></td>
 		<td class="dpHead"><button type="buttton" class="invisibleButtons" id="DPCancel" onClick="closeDPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>
@@ -57,7 +56,7 @@
 			if($thedate==$selDate) $dayclass="dpSelected";
 			elseif($thedate==$today) $dayclass="dpToday";
 			
-			echo "<TD class=\"".$dayclass."\" onMouseOver=\"dpHighlightDay(".$mydate["year"].",".date("n",$thedate).",".$mydate["mday"].")\" onClick=\"dpClickDay(".$mydate["year"].",".date("n",$thedate).",".$mydate["mday"].")\">".$mydate["mday"]."</TD>";
+			echo "<TD class=\"".$dayclass."\" onMouseOut=\"dpUnhighlightDay();\" onMouseOver=\"dpHighlightDay(".$mydate["year"].",".date("n",$thedate).",".$mydate["mday"].")\" onClick=\"dpClickDay(".$mydate["year"].",".date("n",$thedate).",".$mydate["mday"].")\">".$mydate["mday"]."</TD>";
 			
 			if($mydate["wday"]==6) echo "</tr>";
 			$thedate=strtotime("tomorrow",$thedate);
@@ -70,14 +69,7 @@
 			echo "</TR";
 		}
 	?>
-	<tr><td id="dpExp" class="dpExplanation" colspan="7"><?php 
-		if($selDate){
-			$tempDate=getdate($selDate);
-			echo $tempDate["month"]." ".$tempDate["mday"].", ".$tempDate["year"];
-		}
-		else
-		echo "Click a Date";
-	?></td></tr>	
+	<tr><td id="dpExp" class="dpExplanation" colspan="7"><?php echo $displayLongDate ?></td></tr>	
 </table>
 <?php	}//end function
 

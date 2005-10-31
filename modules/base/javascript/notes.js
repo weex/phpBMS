@@ -265,8 +265,13 @@ function doRepeat(){
 			}
 			if(rpType.value=="Weekly")
 				rpWO.style.display="block";
-			else if(rpType.value=="Monthly")
-				rpMO.style.display="block";			
+			else if(rpType.value=="Monthly"){
+				rpMO.style.display="block";	
+				var rpMOdate = getObjectFromID("rpmobdt");
+				var rpMOday = getObjectFromID("rpmobda");
+				if(!rpMOdate.checked && !rpMOday.checked)
+					rpMOdate.checked=true;
+			}
 		} else
 		{
 			rpspan.className="disabledtext";			
@@ -307,6 +312,10 @@ function changeRepeatType(){
 			setEnglishDates();
 			rpWO.style.display="none";
 			rpMO.style.display="block";
+			var rpMOdate = getObjectFromID("rpmobdt");
+			var rpMOday = getObjectFromID("rpmobda");
+			if(!rpMOdate.checked && !rpMOday.checked)
+				rpMOdate.checked=true;
 		break;
 		case "Yearly":
 			rpWO.style.display="none";
