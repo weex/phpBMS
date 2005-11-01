@@ -13,9 +13,10 @@ phpBMS v0.602/ BMS module v0.602
 - Fixed datepicker rollover behavior.
 - Removed Ability to "pretend to" add/remove lineitems from invoices.
 - Refined Snapshot searches for tasks and assignments to one week.
-- Fixed errors when print screen has no reports to show (due to access levels)
+- Fixed errors when print screen has no reports to show (due to access levels).
 - Fixed marking repeatable tasks as complete from command drop down.
-- Added modifiedby stamp to several command drop down commands 
+- Added modifiedby stamp to several command drop down commands.
+- Fixed grammar error when dispolay monthly repeat options via javascript.
 
 phpBMS v0.601/ BMS module v0.601
 ==================================

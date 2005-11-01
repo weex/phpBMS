@@ -333,9 +333,19 @@ function setEnglishDates(){
 	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")));
 	
 	var dayending="th";
-	if(thedate.getDate()==3) dayending="rd";
-	if(thedate.getDate()==2) dayending="nd";
-	if(thedate.getDate()==1) dayending="st";
+	switch(thedate.getDate()){
+		case 1:
+		case 21:
+		case 31:
+			dayending="st";
+		break;
+		case 2:
+		case 22:
+			dayending="nd";
+		case 3:
+		case 23:
+			dayending="rd";
+	}
 	
 	byDateText.innerHTML=thedate.getDate()+dayending;
 	
