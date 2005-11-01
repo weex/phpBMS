@@ -30,7 +30,7 @@
 		$therecord=mysql_fetch_array($queryresult);
 		
 
-		if($therecord["repeat"]==1){
+		if($therecord["repeat"]==1 && $therecord["parentid"]==""){
 			$therecord["parentid"]=$id;
 		}
 
@@ -67,17 +67,11 @@
 				break;
 				case "repeatMonthlybyDate":
 					while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-						$datearray=getdate($nextdate);
-						if($datearray["mday"]<29)
-							$nextdate=strtotime($therecord["repeatfrequency"]." months",$nextdate);
-						else{
-							$temparray=getdate(strtotime($therecord["repeatfrequency"]." months",$nextdate));
-							if($temparray["mday"]==$datearray["mday"]){
-								$nextdate=strtotime($therecord["repeatfrequency"]." months",$nextdate);
-							} else {
-								$nextdate=mktime(0,0,0,((integer) date("n",$nextdate))+$therecord["repeatfrequency"]+1,0,date("Y",$nextdate));
-							}							
-						}
+						$tempdate=strtotime($therecord["repeatfrequency"]." months",$nextdate);
+						if(date("d",$startdate)==date("d",$tempdate))
+							$nextdate=$tempdate;
+						else
+							$nextdate=mktime(0,0,0,((integer) date("n",$nextdate))+$therecord["repeatfrequency"]+1,0,date("Y",$nextdate));						
 						$rpTimes++;
 					}
 					if($nextdate>$lastTaskdate && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil))

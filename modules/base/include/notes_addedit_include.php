@@ -2,8 +2,9 @@
 
 function checkForNewerRepeats($parentid,$id){
 	global $dblink;
-	if ($parentid=="NULL") return true;
-	
+	if ($parentid=="NULL")
+		$parentid=$id;
+		
 	$querystatement="SELECT creationdate FROM notes WHERE id=".$id;
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,("Error retrieving creationdate lookup".mysql_error($dblink)." ".$querystatement));
@@ -12,7 +13,7 @@ function checkForNewerRepeats($parentid,$id){
 	$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".$parentid." AND creationdate > \"".$therecord["creationdate"]."\"";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,("Error retrieving  last child record".mysql_error($dblink)." ".$querystatement));
-	if(mysql_num_rows($queryresult)) return false; else return true;
+	if(mysql_num_rows($queryresult)) return true; else return false;
 }
 
 function repeatTaskUpdate($parentid){
@@ -233,20 +234,19 @@ function updateRecord($variables,$userid){
 		
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
-		
-	// if this has been changed to a repeatable task, we need to redo uncompleted tasks.
-	if(isset($variables["repeat"]) && $variables["typeCheck"]=="TS"){
-		if($variables["repeatChanges"]!=$repeatChanges){
+	
+	// update repeat options where applicable.
+	if($variables["typeCheck"]=="TS" && (isset($variables["repeat"]) && $variables["parentid"]=="NULL"))
+		if(checkForNewerRepeats($variables["id"],$variables["id"]))
 			repeatTaskUpdate($variables["id"]);
-		}
-	}
-
-	//repeat task where applicable
-	if((isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $variables["parentid"]!="NULL"))) {
-		if(checkForNewerRepeats($variables["parentid"],$variables["id"])){
+			
+	//repeat task when completed (children only)
+	if(isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $variables["parentid"]!="NULL")) {
+		if(!checkForNewerRepeats($variables["parentid"],$variables["id"])){
 			repeatTask($variables["id"]);
 		}
 	}
+		
 }// end function
 
 
