@@ -12,6 +12,7 @@ phpBMS v0.602/ BMS module v0.602
 - Fixed datepicker problems caused by javascript getmonth() function.
 - Fixed datepicker rollover behavior.
 - Removed Ability to "pretend to" add/remove lineitems from invoices.
+- Refined Snapshot searches for tasks and assignments to one week. 
 
 phpBMS v0.601/ BMS module v0.601
 ==================================

@@ -54,8 +54,10 @@ function showTasks($userid,$type="Tasks"){
 				WHERE ";
 	switch($type){
 		case "Tasks":
-			$querystatement.=" type=\"TS\" AND (private=0 or (private=1 and createdby=".$userid.")) AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
-			$querystatement.=" AND (assignedtoid is null or assignedtoid=0)";
+			$querystatement.=" type=\"TS\" AND (private=0 or (private=1 and createdby=".$userid.")) 
+							   AND (completed=0 or (completed=1 and completeddate=CURDATE()))
+							   AND (assignedtoid is null or assignedtoid=0)";
+							   
 		break;
 		case "ReceivedAssignments":
 			$querystatement.=" assignedtoid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
@@ -64,6 +66,12 @@ function showTasks($userid,$type="Tasks"){
 			$querystatement.=" assignedbyid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
 		break;
 	}
+	$querystatement.="AND (
+					(startdate is null AND enddate is null) OR
+					(startdate is not null AND startdate <= DATE_ADD(CURDATE(),INTERVAL 7 DAY)) OR
+					(enddate is not null AND enddate <= DATE_ADD(CURDATE(),INTERVAL 7 DAY)) 
+				   )";
+
 	$querystatement.=" ORDER BY importance DESC,notes.enddate DESC,notes.endtime DESC,notes.startdate DESC,notes.starttime DESC,notes.creationdate DESC";
 
 	
@@ -106,12 +114,12 @@ function showTodaysClients($interval="1 DAY"){
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);	
 	if(mysql_num_rows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<TR>
-				<TH align="left">ID</TH>
-				<TH align="left">Type</TH>
-				<TH align="left" width="100%">Name</TH>
+			<tr>
+				<th align="left">ID</th>
+				<th align="left">Type</th>
+				<th align="left" width="100%">Name</th>
 				<th nowrap align="right">City, State/Prov Zip/Postal</th>
-			</TR>
+			</tr>
 		<?php 	
 		while($therecord=mysql_fetch_array($queryresult)){
 			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
@@ -119,10 +127,10 @@ function showTodaysClients($interval="1 DAY"){
 			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?><tr onClick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'">
-			<TD><?php echo $therecord["id"]?></TD>
-			<TD><?php echo $therecord["type"]?></TD>
-			<TD><?php echo $therecord["thename"]?></TD>
-			<TD align="right"><?php echo $displayCSZ?></TD>
+			<td><?php echo $therecord["id"]?></td>
+			<td><?php echo $therecord["type"]?></td>
+			<td><?php echo $therecord["thename"]?></td>
+			<td align="right"><?php echo $displayCSZ?></td>
 		</tr><?php }?></table><?php
 	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
 	}
@@ -144,21 +152,21 @@ function showTodaysOrders($interval="1 DAY"){
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<TR>
-				<TH align="left">ID</TH>
-				<TH align="left">Status</TH>
-				<TH width="100%" align="left">Name</TH>
+			<tr>
+				<th align="left">ID</th>
+				<th align="left">Status</th>
+				<th width="100%" align="left">Name</th>
 				<th align="right">Total</th>
 				<th align="right">Due</th>
-			</TR>
+			</tr>
 		<?php 
 		while($therecord=mysql_fetch_array($queryresult)){				
 		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'">
-			<TD><?php echo $therecord["id"]?></TD>
-			<TD><?php echo $therecord["status"]?></TD>
-			<TD><?php echo $therecord["thename"]?></TD>
-			<TD align="right"><?php echo $therecord["total"]?></TD>
-			<TD align="right"><?php echo $therecord["amtdue"]?></TD>
+			<td><?php echo $therecord["id"]?></td>
+			<td><?php echo $therecord["status"]?></td>
+			<td><?php echo $therecord["thename"]?></td>
+			<td align="right"><?php echo $therecord["total"]?></td>
+			<td align="right"><?php echo $therecord["amtdue"]?></td>
 		</tr><?php }?>
 		</table><?php
 	} else {?><div class="small disabledtext">no orders entered in last day</div><?php
