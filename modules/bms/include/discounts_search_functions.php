@@ -9,7 +9,7 @@ function delete_record($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"products.id");
 	
-	$querystatement = "UPDATE discounts SET inactive=1 WHERE ".$whereclause.";";
+	$querystatement = "UPDATE discounts SET inactive=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause.";";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 

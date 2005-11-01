@@ -55,34 +55,38 @@
 		}
 		
 		function showJavaScriptArray(){
-			mysql_data_seek($this->reports,0);
+			if(mysql_num_rows($this->reports)){
+				mysql_data_seek($this->reports,0);
 
-			echo "<script language=\"JavaScript\">\n";
-			while($therecord=mysql_fetch_array($this->reports)){
-				echo "theReport[theReport.length]=new Array(".$therecord["id"].",\"".$therecord["reportfile"]."\",\"".$therecord["name"]."\",\"".$therecord["type"]."\",\"".addcslashes(addslashes($therecord["description"]),"\n,\r")."\");\n";
-			 }	 
-			echo "</script>\n";
-			
+				?><script language="JavaScript"><?php 
+				while($therecord=mysql_fetch_array($this->reports)){
+					?>theReport[theReport.length]=new Array(<?php echo $therecord["id"]?>,"<?php echo $therecord["reportfile"]?>","<?php echo addslashes($therecord["name"])?>","<?php echo $therecord["type"]?>","<?php echo addcslashes(addslashes($therecord["description"]),"\r\n")?>");<?php 
+				 }	 
+				?></script><?php 
+			} else { ?><script language="JavaScript">theReport[theReport.length]=new Array(0,"","No Reports Available","","");</script><?php 
+			}
 		}
 		
 		function displayReportList(){
-			mysql_data_seek($this->reports,0);
-		?>
-	   <select name="choosereport[]" id="choosereport" size="12" multiple style="width:205px;" onChange="switchReport(this)">
-	    <?PHP
-		 $diplayorder=-1;
-	   	 while($therecord=mysql_fetch_array($this->reports)){
-		 	if ($displayorder!=$therecord["displayorder"]){
-				if($displayorder>0)
-				 	echo "<OPTION value=\"\">----------------------------------------------------------------</option>\n";
-				$displayorder=$therecord["displayorder"];
-			}
-		 	echo "<OPTION value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
-		 }
-	   ?>
-	   </select>
-	   <script>var thechoice=getObjectFromID("choosereport");thechoice.focus();thechoice.options[0].selected=true;</script>
-		<?php
+			?>
+		   <select name="choosereport[]" id="choosereport" size="12" multiple style="width:205px;" onChange="switchReport(this)">
+			<?PHP
+				if(mysql_num_rows($this->reports)){
+					mysql_data_seek($this->reports,0);
+					$diplayorder=-1;
+					while($therecord=mysql_fetch_array($this->reports)){
+						if ($displayorder!=$therecord["displayorder"]){
+							if($displayorder>0)
+								echo "<OPTION value=\"\">----------------------------------------------------------------</option>\n";
+							$displayorder=$therecord["displayorder"];
+						}
+						echo "<OPTION value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
+					}
+				} else {?><OPTION value="0">No Reports Available</OPTION><?php }
+		   ?>
+		   </select>
+		   <script>var thechoice=getObjectFromID("choosereport");thechoice.focus();thechoice.options[0].selected=true;</script>
+			<?php
 		}
 
 	function showSaved($thequery,$selectname){

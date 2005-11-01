@@ -107,7 +107,18 @@ if (isset($_POST["command"])){
 	<input type="hidden" name="backurl" value="<?php echo $_GET["backurl"]?>">
 	<fieldset style="float:right;width:300px;margin-top:0px;">
 		<legend>report information</legend>
-		<?PHP mysql_data_seek($tablePrinter->reports,0); $therecord=mysql_fetch_array($tablePrinter->reports) ?>
+		<?PHP 
+			if (mysql_num_rows($tablePrinter->reports)){
+				mysql_data_seek($tablePrinter->reports,0); 
+				$therecord=mysql_fetch_array($tablePrinter->reports);
+			} else {
+				$therecord["id"]=0;
+				$therecord["reportfile"]="";
+				$therecord["name"]="";
+				$therecord["type"]="";
+				$therecord["description"]="";
+			}
+		?>
 		<label for="name">
 			name<br />
 			<input name="reportid" type="hidden" value="<?PHP echo $therecord["id"] ?>" />
@@ -129,7 +140,7 @@ if (isset($_POST["command"])){
 		</div>
 	</fieldset>
 
-	<div align="left" style="padding-top:0px;padding-left:10px;"><a href="" onclick="showMoreOptions(this);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" id="moreOptionsGraphic" align="absmiddle" alt="show"  width="16" height="16" border="0" /> more options</a></div>
+	<div align="left" style="padding-top:0px;padding-left:10px;"><a href="" onClick="showMoreOptions(this);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" id="moreOptionsGraphic" align="absmiddle" alt="show"  width="16" height="16" border="0" /> more options</a></div>
 	<div id="moreoptions" style="margin:0px;padding:0px;display:none;">
 	<fieldset>
 		<legend>data</legend>

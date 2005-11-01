@@ -9,7 +9,7 @@ function mark_asclient($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"clients.id");	
 
-	$querystatement = "update clients set clients.type=\"client\" where (".$whereclause.");";
+	$querystatement = "UPDATE clients SET clients.type=\"client\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.");";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark as Client: ".mysql_error($dblink)." -- ".$querystatement);		
 	

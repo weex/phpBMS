@@ -10,7 +10,7 @@ function mark_ashipped($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.status=\"Shipped\",invoices.shippeddate=Now() WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" or invoices.type!=\"VOID\");";
+	$querystatement = "UPDATE invoices SET invoices.status=\"Shipped\",invoices.shippeddate=Now(),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" or invoices.type!=\"VOID\");";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark As Shipped: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -28,7 +28,7 @@ function mark_aspaid($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.amountpaid=invoices.totalti WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\")";
+	$querystatement = "UPDATE invoices SET invoices.amountpaid=invoices.totalti,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\")";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark As Paid In Full: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -45,7 +45,7 @@ function mark_asinvoice($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\",invoices.status=\"shipped\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()) WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
+	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\",invoices.status=\"shipped\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Could not convert to client: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -62,7 +62,7 @@ function mark_asuninvoice($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.type=\"Order\"  WHERE (".$whereclause.") AND (invoices.type=\"Invoice\");";
+	$querystatement = "UPDATE invoices SET invoices.type=\"Order\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\"  WHERE (".$whereclause.") AND (invoices.type=\"Invoice\");";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Reset Invoice Status: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -79,7 +79,7 @@ function delete_record($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"invoices.id");
 	
-	$querystatement = "UPDATE invoices SET invoices.type=\"VOID\" WHERE (".$whereclause.") AND invoices.type!=\"Invoice\";";
+	$querystatement = "UPDATE invoices SET invoices.type=\"VOID\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND invoices.type!=\"Invoice\";";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Void: ".mysql_error($dblink)." -- ".$querystatement);		
 	

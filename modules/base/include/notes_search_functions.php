@@ -9,12 +9,23 @@ function mark_asread($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"notes.id");
 	
-	$querystatement = "UPDATE notes SET notes.completed=1 WHERE (".$whereclause.") AND type!=\"SY\";";
+	$querystatement = "UPDATE notes SET notes.completed=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND type!=\"SY\";";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark as Read/Completed: ".mysql_error($dblink)." -- ".$querystatement);		
-	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 	$message.=" marked as completed/read.";
+	
+	//for repeatable tasks, need to repeat dem!
+	$querystatement="SELECT id FROM notes WHERE type=\"TS\" AND ((parentid IS NOT NULL AND parentid!=0 ) OR repeat=1) AND (".$whereclause.")";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Could not retrieve repeatable tasks for repeat: ".mysql_error($dblink)." -- ".$querystatement);		
+	if (mysql_num_rows($queryresult)){
+		require("modules/base/snapshot_ajax.php");
+		while($therecord=mysql_fetch_array($queryresult))
+			repeatTask($therecord["id"]);
+	}
+
+	
 	return $message;
 }
 
