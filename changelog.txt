@@ -17,6 +17,7 @@ phpBMS v0.602/ BMS module v0.602
 - Fixed marking repeatable tasks as complete from command drop down.
 - Added modifiedby stamp to several command drop down commands.
 - Fixed grammar error when dispolay monthly repeat options via javascript.
+- Fixed repeat options for "end of month" (e.g. repeat on 31st of every month) scenarios.
 
 phpBMS v0.601/ BMS module v0.601
 ==================================
