@@ -1,3 +1,11 @@
+phpBMS v0.603/ BMS module v0.603
+==================================
+- Fixed display errors with dateTime column format
+- Added Dude Date to tasks on snapshot view
+- Reversed sort order of tasks on snapshot view
+- Added Checks for prexisting repeatable tasks before creating
+- Fixed date formating
+
 phpBMS v0.602/ BMS module v0.602
 ==================================
 - Fixed issue with saving new taxarea not stripping out percentage sign
@@ -19,7 +27,7 @@ phpBMS v0.602/ BMS module v0.602
 - Fixed grammar error when dispolay monthly repeat options via javascript.
 - Fixed repeat options for "end of month" (e.g. repeat on 31st of every month) scenarios.
 - Fixed repeating for tasks from edit screen.
-- Fixed changing of repeat options of tasks from edit scren.
+- Fixed changing of repeat options of tasks from edit screen.
 
 phpBMS v0.601/ BMS module v0.601
 ==================================

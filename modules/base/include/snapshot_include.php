@@ -49,7 +49,7 @@ function showSystemMessages(){
 
 function showTasks($userid,$type="Tasks"){
 	global $dblink;
-	$querystatement="SELECT id,type,subject, completed, if(enddate < CURDATE(),1,0) as ispastdue, startdate, private, assignedbyid, assignedtoid
+	$querystatement="SELECT id,type,subject, completed, if(enddate < CURDATE(),1,0) as ispastdue, startdate, enddate, private, assignedbyid, assignedtoid
 				FROM notes
 				WHERE ";
 	switch($type){
@@ -72,7 +72,7 @@ function showTasks($userid,$type="Tasks"){
 					(enddate is not null AND enddate <= DATE_ADD(CURDATE(),INTERVAL 7 DAY)) 
 				   )";
 
-	$querystatement.=" ORDER BY importance DESC,notes.enddate DESC,notes.endtime DESC,notes.startdate DESC,notes.starttime DESC,notes.creationdate DESC";
+	$querystatement.=" ORDER BY importance DESC,notes.enddate,notes.endtime,notes.startdate DESC,notes.starttime DESC,notes.creationdate DESC";
 
 	
 	$queryresult=mysql_query($querystatement,$dblink);
@@ -92,6 +92,7 @@ function showTasks($userid,$type="Tasks"){
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
 		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
 		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a>
+		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo dateFormat($therecord["enddate"]) ?>)</em><?php } ?>
 		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo getUserName($tid)?>)</em><?php } ?>
 	</div>
 	<?php } } else {

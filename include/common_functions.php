@@ -216,7 +216,7 @@ function formatDateTime($thedatetime,$secs=false){
 		}
 	}
 	if (isset($temparray[1])){
-		$phptime=dateFromSQLDate($temparray[1]);
+		$phptime=timeFromSQLTime($temparray[1]);		
 		if($secs)
 			$thereturn.=" ".strftime("%I:%M:%S %p",$phptime);
 		else

@@ -83,7 +83,7 @@ function stringToDate(sDate){
 	var year=sDate.substring(sDate.lastIndexOf(sep)+1);
 	year=parseInt(year);
 	if(year<100) year+=2000;
-	return new Date(year,parseInt(month)-1,parseInt(day));
+	return new Date(year,parseInt(month,10)-1,parseInt(day,10));
 }
 
 function mysqlstringToDate(sDate){

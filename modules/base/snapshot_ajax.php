@@ -164,11 +164,8 @@
 	}
 	
 	function createChildTask($parentid,$newdate,$startdate,$enddate){
-		global $dblink;
-		
-		
-		//START HERE!
-		
+		global $dblink;		
+				
 		$newenddate="NULL";
 		if($enddate)			
 			$newenddate="\"".strftime("%Y-%m-%d",$newdate+($enddate-$startdate))."\"";
@@ -177,8 +174,15 @@
 					attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid
 					FROM notes WHERE id=".$parentid;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);		
+		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);				
 		$therecord=mysql_fetch_array($queryresult);
+	
+		$querystatement="SELECT id FROM notes WHERE parentid=".$parentid." AND completed=0 AND startdate=\"".strftime("%Y-%m-%d",$newdate)."\"";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);				
+		if(mysql_num_rows($queryresult))
+			return false;		
+		
 		if(!$therecord["assignedtoid"])
 			$therecord["assignedtoid"]="NULL";
 					
@@ -221,7 +225,7 @@
 		
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,"Error Inserting Note: ".mysql_error($dblink)."<br />".$querystatement);		
-
+		return true;
 	}
 
 	//=================================================================================================
