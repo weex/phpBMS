@@ -1,4 +1,12 @@
 <?php
+if(!isset($_SERVER['REQUEST_URI'])) {
+	$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
+
+	// Append the query string if it exists and isn't null
+	if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
+		$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
+}
+
 //This function loads any variables written
 // in settings.php into session variables.
 //=========================================

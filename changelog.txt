@@ -1,10 +1,16 @@
 phpBMS v0.603/ BMS module v0.603
 ==================================
-- Fixed display errors with dateTime column format
-- Added Dude Date to tasks on snapshot view
-- Reversed sort order of tasks on snapshot view
-- Added Checks for prexisting repeatable tasks before creating
-- Fixed date formating
+- Fixed display errors with dateTime column format.
+- Added Dude Date to tasks on snapshot view.
+- Reversed sort order of tasks on snapshot view.
+- Added Checks for prexisting repeatable tasks before creating.
+- Fixed date formating in Javascript.
+- Fixed shipping charge fill in problem.
+- Added footer to notes and user add/edit screens.
+- Fixed syntax error on required datepicker fields.
+- Removed uneeded code from notes timestamp button.
+- Added check for magic quotes php setting before adding slashes.
+- Added workaround for IIS systems that do not have REQUEST_URI variable.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

@@ -539,7 +539,7 @@ function calculateTotal(){
 	subtotal.value=subtotalValue;
 
 	//next calculate and reformat shipping
-	var numshipping=dollartoNumber(shipping);
+	var numshipping=dollartoNumber(shipping.value);
 	shippingValue=formatDollar(numshipping);
 	shipping.value=shippingValue;
 

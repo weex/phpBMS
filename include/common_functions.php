@@ -116,6 +116,9 @@ function timeFromSQLTime($sqlTime){
 }
 
 function dateFromSQLTimestamp ($datetime) {
+	if($datetime=="")
+		return mktime();
+
 	settype($datetime, 'string');
 	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
 	array_shift ($matches);	
@@ -127,8 +130,9 @@ $var) {
 }
 
 function addSlashesToArray($thearray){
-	foreach($thearray as $key=>$value)
-		$thearray[$key]=addslashes($value);
+	if(!get_magic_quotes_runtime() && !get_magic_quotes_gpc())
+		foreach($thearray as $key=>$value)
+			$thearray[$key]=addslashes($value);
 	return $thearray;
 }
 
@@ -225,9 +229,12 @@ function formatDateTime($thedatetime,$secs=false){
 	return $thereturn;
 }
 
+
 function formatTimestamp($timestamp){
-	$phptimestamp=dateFromSQLTimestamp($timestamp);
-	return strftime("%m/%d/%Y %I:%M:%S %p",$phptimestamp);
+	if($timestamp){
+		$phptimestamp=dateFromSQLTimestamp($timestamp);
+		return strftime("%m/%d/%Y %I:%M:%S %p",$phptimestamp);
+	}
 }
 
 function formatVariable($value,$format){

@@ -100,6 +100,7 @@
 
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
+<?php include("../../footer.php")?>
 </form>
 </body>
 </html>
