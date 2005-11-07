@@ -1,21 +1,23 @@
 <h1 style="clear:both;">Module: Business Management System</h1>
-<div style="clear:both;float:left;width:44%;padding:0px;margin:0px;">
-	<fieldset>
-		<legend>shipping</legend>
-		<label for="sshipping_markup">
-			shipping multiplier <em>(markup)</em><br />
-			<?PHP field_text("sshipping_markup",$_SESSION["shipping_markup"],1,"Shipping multiplier cannot be blank and must be a valid number.","real",Array("size"=>"10","maxlength"=>"10")); ?>
-		</label>
-		<div class="small">
-			<em>Enter the number to multiply the calculated shipping cost. For example to mark up shipping costs by 10%, enter 1.1 </em>
-		</div>
-		<label for="sshipping_postalcode">
-			shipping zip/postal code<br />
-			<?PHP field_text("sshipping_postalcode",$_SESSION["shipping_postalcode"],1,"Zaip/Postal code cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>
-		</label>
-	</fieldset>
-</div>
-<div style="padding:0px;margin:0px;margin-left:45%;">
+<fieldset>
+	<legend>shipping</legend>
+	<div class="small important"><em>
+		The shipping information below is used when connecting to UPS to calculate shipping costs for product.
+		Current tests show that the UPS shipping calculator only works when shipping to and from the Unites States.
+	</em></div>
+	<label for="sshipping_markup">
+		shipping multiplier <em>(markup)</em><br />
+		<?PHP field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?>
+	</label>
+	<div class="small">
+		<em>Enter the number to multiply the calculated shipping cost. For example to mark up shipping costs by 10%, enter 1.1 </em>
+	</div>
+	<label for="sshipping_postalcode">
+		shipping zip/postal code<br />
+		<?PHP field_text("sshipping_postalcode",$_SESSION["shipping_postalcode"],0,"","",Array("size"=>"32","maxlength"=>"128")); ?>
+	</label>
+</fieldset>
+<div style="">
 	<fieldset>
 		<legend>clients</legend>
 		<label for="mngclientemail">

@@ -13,6 +13,7 @@ phpBMS v0.603/ BMS module v0.603
 - Added workaround for IIS systems that do not have REQUEST_URI variable.
 - Fixed snapshot day interval for Mondays.
 - Fixed undefined variabl problem with prerequisites.
+- Fixed admin page requiments for shipping multiplier and zip code.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
