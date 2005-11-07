@@ -65,7 +65,7 @@
 		<h2 style="margin-top:4px;"><a href="../../search.php?id=3">Recent Orders</a></h2>
 			<div id="TodaysOrders">
 				<?php 
-				if(date("d")=="Mon")
+				if(date("D")=="Mon")
 					$interval="3 DAY";
 				else
 					$interval="1 DAY";

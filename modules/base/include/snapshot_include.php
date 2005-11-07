@@ -148,7 +148,7 @@ function showTodaysOrders($interval="1 DAY"){
 					WHERE invoices.creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") AND (invoices.type=\"Order\")
 					ORDER BY invoices.creationdate DESC LIMIT 0,50
 	";
-
+	
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){
