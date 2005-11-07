@@ -16,7 +16,7 @@ if(isset($_POST["command"])){
 			$theresult=mysql_query($thequery);
 		break;
 		case"add":
-			if($partnumber!=$id && $partnumber!=""){
+			if($_POST["partnumber"]!=$_GET["id"] && $_POST["partnumber"]!=""){
 				$thequery="insert into prerequisites (parentid,childid) VALUES(".$_GET["id"].",\"".$_POST["partnumber"]."\");";
 				$theresult=mysql_query($thequery);
 			}

@@ -11,7 +11,8 @@ phpBMS v0.603/ BMS module v0.603
 - Removed uneeded code from notes timestamp button.
 - Added check for magic quotes php setting before adding slashes.
 - Added workaround for IIS systems that do not have REQUEST_URI variable.
-- Fixed snapshot day interval for Mondays
+- Fixed snapshot day interval for Mondays.
+- Fixed undefined variabl problem with prerequisites.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
