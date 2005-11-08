@@ -16,6 +16,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed admin page requiments for shipping multiplier and zip code.
 - Fixed label for module in table definitions edit screen.
 - Fixed choicelist undefined variable problem.
+- Fixed Syntax error (spelling) with getUserName common function.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

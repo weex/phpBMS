@@ -52,8 +52,8 @@ function clean_pdf_reports($dir,$sectime=3600)
 function getUserName($id=0){
 	global $dblink;
 	if($id=="") $id=0;
-	$querystatment="select concat(firstname,\" \",lastname) as name from users where id=".$id;
-	$queryresult = mysql_query($querystatment,$dblink);
+	$querystatement="select concat(firstname,\" \",lastname) as name from users where id=".$id;
+	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
 	$tempinfo = mysql_fetch_array($queryresult);
 	return trim($tempinfo["name"]);
