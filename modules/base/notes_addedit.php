@@ -30,7 +30,7 @@
 		<label for="id" style="float:right">id <br/>
 			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable"/>
 			<input name="parentid" id="parentid" type="hidden" value="<?php echo $therecord["parentid"]; ?>" />
-			<input name="thebackurl" id="thebackurl" type="hidden" value="<?php if($_GET["backurl"]) echo $_GET["backurl"]; ?>" />
+			<input name="thebackurl" id="thebackurl" type="hidden" value="<?php if(isset($_GET["backurl"])) echo $_GET["backurl"]; ?>" />
 		</label>
 		<label for="type" class="important">type<br />
 			<?php basic_choicelist("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onChange"=>"changeType();","style"=>"width:150px;"));?>

@@ -17,6 +17,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed label for module in table definitions edit screen.
 - Fixed choicelist undefined variable problem.
 - Fixed Syntax error (spelling) with getUserName common function.
+- Fixed undefined variables problem in notes edit page.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
