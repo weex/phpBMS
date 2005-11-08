@@ -15,6 +15,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed undefined variabl problem with prerequisites.
 - Fixed admin page requiments for shipping multiplier and zip code.
 - Fixed label for module in table definitions edit screen.
+- Fixed choicelist undefined variable problem.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

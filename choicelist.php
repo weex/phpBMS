@@ -31,10 +31,6 @@
 				$display="&lt;".$blankvalue."&gt;";
 				$theclass=" class=\"choiceListBlank\" ";
 			}
-			if($therecord["thevalue"]==$value){
-				$inlist=true;
-			}
-			if($value=="" and $therecord["thevalue"])
 			?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?>><?php echo $display?></option><?php
 		}//end while
 	
