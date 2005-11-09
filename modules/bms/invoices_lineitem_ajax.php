@@ -32,7 +32,7 @@
 	if(!$prereqnotmet) {
 		$querystatement="SELECT id,partnumber,partname,unitprice,concat(\"\$\",format((unitprice),2)) as formatedprice, 
 						description, weight, unitcost, taxable
-						FROM products WHERE id=".$id;
+						FROM products WHERE id=".$_GET["id"];
 		$queryresult= mysql_query($querystatement,$dblink);
 		$therecord=mysql_fetch_array($queryresult);
 	} else {

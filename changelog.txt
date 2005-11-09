@@ -18,6 +18,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed choicelist undefined variable problem.
 - Fixed Syntax error (spelling) with getUserName common function.
 - Fixed undefined variables problem in notes edit page.
+- Fixed undefined variable problem with line item autofill.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
