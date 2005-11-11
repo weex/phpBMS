@@ -231,7 +231,7 @@ function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-time.png" align="absmiddle" alt="pick time" width="16" height="16" border="0" /></button>
 	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $messsage?>');</script><?php }//end if
-	?><script language="JavaScript">dateArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
+	?><script language="JavaScript">timeArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function
 
 

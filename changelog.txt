@@ -19,6 +19,8 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed Syntax error (spelling) with getUserName common function.
 - Fixed undefined variables problem in notes edit page.
 - Fixed undefined variable problem with line item autofill.
+- Fixed link to mYSQL database error.
+- Fixed validation of time fields.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

@@ -90,7 +90,7 @@ function xmlEncode($str){
 			$dblink = @ mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
 			if (!$dblink) 
 				reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
-			if (!mysql_select_db($_SESSION["mysql_database"])) 
+			if (!mysql_select_db($_SESSION["mysql_database"],$dblink)) 
 				reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);
 		}	
 	}//end if

@@ -67,7 +67,7 @@ function validateForm(theform){
 	//next times
 	for(i=0;i<timeArray.length;i++){
 		var thetime=theform[timeArray[i][0]].value;
-		if(thedate!="" && !validateTime(thetime)) {
+		if(thetime!="" && !validateTime(thetime)) {
 			errorMessage+="<LI>"+timeArray[i][1]+"</LI>";
 			thereturn=false;
 		}
