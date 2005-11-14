@@ -169,7 +169,7 @@
 			</script>
 			</td>
 			<td nowrap>
-			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"64","style"=>"border-left-width:0px;","tabindex"=>"16"),false,"") ?>
+			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","style"=>"border-left-width:0px;","tabindex"=>"16"),false,"") ?>
 			<script language="JavaScript">
 					document.forms["record"]["partname"].onchange=populateLineItem;
 			</script>
