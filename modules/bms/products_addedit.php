@@ -92,7 +92,7 @@
 		<fieldset>
 			<legend><label style="margin:0px;padding:0px;" for="memo">memo</label></legend>
 			<div style="padding-top:0px">
-				<textarea cols="10" rows="10" style="width:98%" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
+				<textarea cols="10" rows="11" style="width:98%" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
 			</div>
 		</fieldset>
 	</div>
@@ -119,6 +119,10 @@
 					</td>
 				</tr>
 			</table>
+			<label for="upc" style="">
+				UPC<br />
+				<input name="upc" type="text" id="upc" style="width:98%" value="<?php echo htmlQuotes($therecord["upc"])?>" size="34" maxlength="128" tabindex="40" />
+			</label>
 			<label for="description" style="">
 				description<br />
 				<input name="description" type="text" id="description" style="width:98%" value="<?php echo htmlQuotes($therecord["description"])?>" size="34" maxlength="255" tabindex="40" />

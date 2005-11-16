@@ -26,6 +26,7 @@ phpBMS v0.603/ BMS module v0.603
 - Added greater flexibility with phone validation (country codes, extensions etc.).
 - Added license to the top of every page with code.
 - Consolidated currency functions.
+- Added UPC to products.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

@@ -48,7 +48,7 @@ function getRecords($id){
 	
 	$querystatement="SELECT id, partnumber, partname, description, status, categoryid,type,taxable,inactive,
 				unitprice,unitcost,unitofmeasure,weight,isprepackaged,isoversized,packagesperitem,webenabled,
-				keywords,thumbnailmime,picturemime,webdescription,memo,
+				keywords,thumbnailmime,picturemime,webdescription,memo,upc,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -74,6 +74,7 @@ function setRecordDefaults(){
 
 	$therecord["partnumber"]="";
 	$therecord["partname"]="";
+	$therecord["upc"]="";
 	$therecord["description"]="";
 
 	$therecord["unitofmeasure"]=NULL;
@@ -112,6 +113,7 @@ function updateRecord($variables,$userid){
 		if($_SESSION["userinfo"]["accesslevel"]>=20){
 			$querystatement.="partnumber=\"".$variables["partnumber"]."\", "; 
 			$querystatement.="partname=\"".$variables["partname"]."\", "; 
+			$querystatement.="upc=\"".$variables["upc"]."\", "; 
 			$querystatement.="description=\"".$variables["description"]."\", "; 
 
 			if(isset($variables["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
@@ -199,13 +201,15 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO products ";
 	
-	$querystatement.="(partnumber,partname, description, inactive,taxable,memo, unitprice,unitcost,unitofmeasure,type,status,categoryid,
-						weight,isprepackaged,isoversized,packagesperitem,webenabled,keywords,webdescription,
+	$querystatement.="(partnumber,partname, upc, description, inactive,taxable,memo, unitprice,unitcost,
+						unitofmeasure,type,status,categoryid, weight,isprepackaged,isoversized,
+						packagesperitem,webenabled,keywords,webdescription,
 						thumbnail,thumbnailmime,picture,picturemime,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["partnumber"]."\", "; 
 			$querystatement.="\"".$variables["partname"]."\", "; 
+			$querystatement.="\"".$variables["upc"]."\", "; 
 			$querystatement.="\"".$variables["description"]."\", "; 
 
 			if(isset($variables["inactive"])) $querystatement.="1, "; else $querystatement.="0, ";
