@@ -122,29 +122,29 @@
 				<tr>
 					<td nowrap>
 						<label for="workphone">work phone<br>
-							<?PHP field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br /><em>(example: 505-896-3522)</em>","phone",Array("tabindex"=>"6","size"=>"22","maxlength"=>"64")); ?>
+							<?PHP field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>
 						</label>
 					</td>
 					<td nowrap>
 						<label for="homephone">home phone<br>
-							<?PHP field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br /><em>(example: 505-896-3522)</em>)","phone",Array("tabindex"=>"7","size"=>"22","maxlength"=>"64")); ?>
+							<?PHP field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br /><em>(example: 505-994-6388)</em>)","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>
 						</label>
 					</td>
 				</tr><tr>
 					<td nowrap>
 						<label for="mobilephone">mobile phone<br>
-							<?PHP field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br /><em>(example: 505-896-3522)</em>","phone",Array("tabindex"=>"8","size"=>"22","maxlength"=>"64")); ?>
+							<?PHP field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>
 						</label>
 					</td>
 					<td>
 						<label for="fax">fax number <br>
-							<?PHP field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br /><em>(example: 505-896-3522)</em>","phone",Array("tabindex"=>"9","size"=>"22","maxlength"=>"64")); ?>
+							<?PHP field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>
 						</label>
 					</td>
 				</tr>
 			</table>
 			<label for="otherphone">other phone<br>
-				<?PHP field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br /><em>(example: 505-896-3522)</em>","phone",Array("tabindex"=>"10","size"=>"22","maxlength"=>"64")); ?>
+				<?PHP field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>
 			</label>
 			<label for="email" style="margin-top:10px;">e-mail address <br>
 				<?PHP field_email("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>

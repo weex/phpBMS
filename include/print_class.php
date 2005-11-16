@@ -73,7 +73,7 @@
 			<?PHP
 				if(mysql_num_rows($this->reports)){
 					mysql_data_seek($this->reports,0);
-					$diplayorder=-1;
+					$displayorder=-1;
 					while($therecord=mysql_fetch_array($this->reports)){
 						if ($displayorder!=$therecord["displayorder"]){
 							if($displayorder>0)
@@ -82,7 +82,7 @@
 						}
 						echo "<OPTION value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
 					}
-				} else {?><OPTION value="0">No Reports Available</OPTION><?php }
+				} else {?><option value="0">No Reports Available</option><?php }
 		   ?>
 		   </select>
 		   <script>var thechoice=getObjectFromID("choosereport");thechoice.focus();thechoice.options[0].selected=true;</script>

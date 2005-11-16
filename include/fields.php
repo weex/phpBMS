@@ -173,7 +173,7 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> onChange="validateDollar(this);" style="text-align:right;" /><?php
+	?> onChange="validateCurrency(this);" style="text-align:right;" /><?php
 	if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 

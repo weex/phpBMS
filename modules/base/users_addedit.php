@@ -84,7 +84,7 @@
 			e-mail address<br />
 			<?PHP field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>			
 		</label>
-		<label for="phane">
+		<label for="phone">
 			phone/extension<br />
 			<input type="text" id="phone" name="phone" value="<?php echo htmlQuotes($therecord["phone"]) ?>" size="32" maxlength="32" />
 		</label>

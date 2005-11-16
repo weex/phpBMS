@@ -21,7 +21,9 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed undefined variable problem with line item autofill.
 - Fixed link to mYSQL database error.
 - Fixed validation of time fields.
-- Fixed autofill of part name on invoices and problem with very long part names
+- Fixed autofill of part name on invoices and problem with very long part names.
+- Fixed undefined variable bug with printing.
+- Added greater flexibility with phone validation (country codes, extensions etc.).
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

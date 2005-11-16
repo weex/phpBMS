@@ -171,16 +171,8 @@ function validateReal(thevalue){
 
 // validate phone number
 function validatePhone(thevalue){
-    if (thevalue.length != 12)
-        return false;
-
-	//check to make sure all numbers are integers
-	if(!validateInteger(thevalue.substring(0,3))) return false;
-	if(!validateInteger(thevalue.substring(4,7))) return false;
-	if(!validateInteger(thevalue.substring(8,12))) return false;
-	if (thevalue.charAt(3) != "-") return false;
-	if (thevalue.charAt(7) != "-") return false;
-	return true;
+	var pattern= /^(?:[\+]?(?:[\d]{1,3})?(?:\s*[\(\.-]?(\d{3})[\)\.-])?\s*(\d{3})[\.-](\d{4}))(?:(?:[ ]+(?:[xX]|(?:[eE][xX][tT][\.]?)))[ ]?[\d]{1,5})?$/;
+	return !(pattern.exec(thevalue)==null);
 }
 
 //look for a valid email address
@@ -222,7 +214,7 @@ function openWebpage(thefieldname){
 }
 
 // checks and formats a field to dollars
-function validateDollar(theitem){
+function validateCurrency(theitem){
 	var thedollar=theitem.value;
 	var i;
 	var thenumber="";
