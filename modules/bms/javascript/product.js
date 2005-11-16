@@ -70,15 +70,8 @@ function calculateMarkUp(){
 	var unitcost="";
 	var unitprice="";
 	
-	for(i=0;i<thecost.value.length;i++){
-		if (thecost.value.charAt(i)!="$" && thecost.value.charAt(i)!="+" && thecost.value.charAt(i)!=",") unitcost+=thecost.value.charAt(i);
-	}
-	unitcost=parseFloat(unitcost);
-
-	for(i=0;i<theprice.value.length;i++){
-		if (theprice.value.charAt(i)!="$" && theprice.value.charAt(i)!="+" && theprice.value.charAt(i)!=",") unitprice+=theprice.value.charAt(i);
-	}
-	unitprice=parseFloat(unitprice);
+	unitcost=currencyToNumber(thecost.value);
+	unitprice=currencyToNumber(theprice.value);
 
 	if(unitcost!=0 && unitprice!=0){
 		
@@ -96,12 +89,9 @@ function calculatePrice(){
 	
 	var markup=getNumberFromPercentage(themarkup.value);
 	
-	for(i=0;i<thecost.value.length;i++){
-		if (thecost.value.charAt(i)!="$" && thecost.value.charAt(i)!="+" && thecost.value.charAt(i)!=",") unitcost+=thecost.value.charAt(i);
-	}
-	unitcost=parseFloat(unitcost);
+	unitcost=currencyToNumber(thecost.value);
 	var newnumber=(Math.round((unitcost+(markup*unitcost/100))*100)/100).toString();
-	theprice.value=formatDollar(newnumber);	
+	theprice.value=formatCurrency(newnumber);	
 }
 
 function updatePictureStatus(pic,status){

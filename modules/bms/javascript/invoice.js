@@ -222,7 +222,7 @@ function checkType(theitem){
 		var amountdue=getObjectFromID("amountdue");
 		var invoicedate=getObjectFromID("invoicedate");
 		var shipped=getObjectFromID("statusShipped");
-		if(amountdue.value!="$0.00"){
+		if(currencyToNumber(amountdue.value)!=0){
 			theitem.value="Order";
 			alert("The order has not been fully paid. \n Check the 'amount paid' field.");
 		} else{
@@ -401,7 +401,7 @@ function addLine(thetd){
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
 	temptd.className="small";
-	temptd.innerHTML=(unitprice.value=="")?"$0.00":unitprice.value;
+	temptd.innerHTML=(unitprice.value=="")?formatCurrency(0):unitprice.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
@@ -415,7 +415,7 @@ function addLine(thetd){
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
 	temptd.className="small";
-	temptd.innerHTML=(extended.value=="")?"$0.00":extended.value;
+	temptd.innerHTML=(extended.value=="")?formatCurrency(0):extended.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
@@ -425,7 +425,7 @@ function addLine(thetd){
 	content+=productid.value+"[//]";
 	content+=unitcost.value+"[//]";
 	content+=unitweight.value+"[//]";
-	content+=dollartoNumber(unitprice.value)+"[//]";
+	content+=currencyToNumber(unitprice.value)+"[//]";
 	content+=quantity.value+"[//]";
 	content+=memo.value+"[//]";
 	content+=taxable.value+"</span>";
@@ -445,11 +445,11 @@ function addLine(thetd){
 	
 	//Update Total taxable
 	var totaltaxable=getObjectFromID("totaltaxable");
-	totaltaxable.value=parseFloat(totaltaxable.value)+(dollartoNumber(extended.value)*parseFloat(taxable.value));
+	totaltaxable.value=parseFloat(totaltaxable.value)+(currencyToNumber(extended.value)*parseFloat(taxable.value));
 
 	//Update Totals
 	var totalBD=getObjectFromID("totalBD");
-	totalBD.value=parseFloat(totalBD.value)+dollartoNumber(extended.value);
+	totalBD.value=parseFloat(totalBD.value)+currencyToNumber(extended.value);
 	calculateTotal();
 	
 	//clear line
@@ -460,9 +460,9 @@ function addLine(thetd){
 	taxable.value=1;
 	unitweight.value=0
 	unitcost.value=0
-	unitprice.value="$0.00"
+	unitprice.value=formatCurrency(0);
 	quantity.value="1";
-	extended.value="$0.00"
+	extended.value=formatCurrency(0);
 	autofill["partname"]["ch"]="";
 	autofill["partname"]["uh"]="";
 	autofill["partname"]["vl"]="";	
@@ -527,14 +527,14 @@ function calculatePaidDue(){
 	var total=document.forms["record"]["totalti"].value;
 
 	//first calculate and reformat amountpaid
-	var numpaid=dollartoNumber(paid);
-	paid=formatDollar(numpaid);
+	var numpaid=currencyToNumber(paid);
+	paid=formatCurrency(numpaid);
 	document.forms["record"]["amountpaid"].value=paid;
 
 	//Next Calculate Amount Due
-	var numtotal=dollartoNumber(total);
+	var numtotal=currencyToNumber(total);
 	var due=numtotal-numpaid;
-	due=formatDollar(due);
+	due=formatCurrency(due);
 	
 	document.forms["record"]["amountdue"].value=due;
 }
@@ -554,7 +554,7 @@ function calculateTotal(){
 	//calculate and reformat discount
 	var numDiscount,discountValue
 	if(discountFromID.value=="" || discountFromID.value=="0" || discountFromID.value=="0%"){
-		numDiscount=dollartoNumber(thediscount.value);
+		numDiscount=currencyToNumber(thediscount.value);
 	} else {
 		// compute discount from discount id
 		if(discountFromID.value.indexOf("%")!=-1){
@@ -563,7 +563,7 @@ function calculateTotal(){
 			numDiscount=parseFloat(discountFromID.value);
 		}
 	}
-	discountValue=formatDollar(numDiscount);
+	discountValue=formatCurrency(numDiscount);
 	thediscount.value=discountValue;
 
 	//calculate totaltaxable
@@ -571,12 +571,12 @@ function calculateTotal(){
 	
 	//calculate and reformat subtotal
 	var numsubtotal=parseFloat(thetotalBD.value)-numDiscount;
-	var subtotalValue=formatDollar(numsubtotal);
+	var subtotalValue=formatCurrency(numsubtotal);
 	subtotal.value=subtotalValue;
 
 	//next calculate and reformat shipping
-	var numshipping=dollartoNumber(shipping.value);
-	shippingValue=formatDollar(numshipping);
+	var numshipping=currencyToNumber(shipping.value);
+	shippingValue=formatCurrency(numshipping);
 	shipping.value=shippingValue;
 
 	//next calculate and reformat tax
@@ -586,7 +586,7 @@ function calculateTotal(){
 		if(numtax<0) numtax=0;
 	}
 	else {
-		var numtax=dollartoNumber(tax.value);
+		var numtax=currencyToNumber(tax.value);
 		if(numTotalTaxable>0)
 			taxpercentagevalue=(numtax/numTotalTaxable)*100;
 		else
@@ -594,12 +594,12 @@ function calculateTotal(){
 		taxpercentage.value=taxpercentagevalue;
 		validatePercentage(taxpercentage,5);
 	}
-	taxValue=formatDollar(numtax);
+	taxValue=formatCurrency(numtax);
 	tax.value=taxValue;
 
 	//last calculate and format the grand total
 	var thetotal=numsubtotal+numshipping+numtax;
-	thetotal=formatDollar(thetotal);
+	thetotal=formatCurrency(thetotal);
 	totalti.value=thetotal;
 	
 	calculatePaidDue();
@@ -611,80 +611,26 @@ function calculateExtended(){
 	//=================================
 	// First, Check and format the price
 	//=================================
-	var thedollar=document.forms["record"]["price"].value;
-	theprice=dollartoNumber(thedollar);
-	newdollar=formatDollar(theprice);
+	var thecurrency=document.forms["record"]["price"].value;
+	theprice=currencyToNumber(thecurrency);
+	newdollar=formatCurrency(theprice);
 	document.forms["record"]["price"].value=newdollar;
 		
 	//==================================
 	// Next verify that qty is a number
 	//=================================	
 	var theqty=document.forms["record"]["qty"].value;
-	theqty=dollartoNumber(theqty)
+	theqty=currencyToNumber(theqty)
 	document.forms["record"]["qty"].value=theqty
 
 	//=============================================
 	// Last, figure extended and reformat to dollar
 	//=============================================
 	var extended=(theqty*theprice).toString();
-	extended=formatDollar(extended);
+	extended=formatCurrency(extended);
 	document.forms["record"]["extended"].value=extended;
 }
 
-function formatDollar(thenumber){
-	var newdollar;
-	thenumber=thenumber.toString();
-	
-	// add the dollar sign... remember that if it is a negative number, the minus sign goes in front
-	if(thenumber.charAt(0)=="-") {
-			newdollar="-$";
-			thenumber=thenumber.substring(1,thenumber.length);
-		} else newdollar="$";
-
-	var big_string = ""+(Math.round(100*(Math.abs(thenumber))))  //rounding the absolute value times 100
-	var biglen = big_string.length                            //how the string gets handled depends on its length
-	if (biglen == 0)                   //null
-		{retval = "0.00"} 
-	else if (biglen == 1)              //1 to 9 (.01 to .09 cents)
-		{retval = "0.0"+big_string}
-	else if (biglen == 2)              //10 to 99 (.10 to .99 cents)
-		{retval = "0."+big_string}
-	else  { 						  //all cases above 100 ($1.00)
-			//The substring method returns all characters in the string
-			// starting with and including the the first argument,
-			// up to but not including the second argument.  
-			var hundredths_digit = big_string.substring(biglen-1,biglen)  
-			var tenths_digit = big_string.substring(biglen-2,biglen-1)    
-			var integer_digits = big_string.substring(0,biglen-2)
-			// commafy,  borrowed from Danny Goodman, "Javascript Bible"
-			var re = /(-?\d+)(\d{3})/
-			while (re.test(integer_digits))  {
-				integer_digits = integer_digits.replace(re, "$1,$2")
-			}
-			retval = integer_digits + "." + tenths_digit + hundredths_digit
-	}  
-    newdollar = newdollar+retval;
-	return newdollar;
-}
-
-function dollartoNumber(thedollar){
-	var i;
-	var thenumber="";
-	for(i=0;i<thedollar.length;i++){
-		if (thedollar.charAt(i)!="$" && thedollar.charAt(i)!="+" && thedollar.charAt(i)!=",") thenumber=thenumber+thedollar.charAt(i);
-	}
-	//if the first number is a ".", add a 0
-	if (thenumber.charAt(0)==".") thenumber="0"+thenumber;
-
-	//get rid of trailing zeros and possibly "."
-	while(thenumber.charAt(thenumber.length-1)=="0" && thenumber.indexOf(".")!=-1) thenumber=thenumber.substring(0,thenumber.length-1);
-	if(thenumber.charAt(thenumber.length-1)==".") thenumber=thenumber.substring(0,thenumber.length-1);
-	
-	if (isNaN(parseFloat(thenumber)) || thenumber.length!=((parseFloat(thenumber)).toString()).length) thenumber="0.00";	
-	
-	thenumber=parseFloat(thenumber);
-	return thenumber;
-}
 
 function showPaymentOptions(){
 	var theform=document.forms["record"];

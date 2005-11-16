@@ -44,7 +44,7 @@ function displayTables($fieldname,$selectedid){
 	$thequery=mysql_query($querystatement,$dblink);
 	
 		
-	echo "<select id=\"$fieldname\" name=\"".$fieldname."\" tabindex=\"20\">\n";
+	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\" tabindex=\"20\">\n";
 
 	echo "<option value=\"0\" ";
 	if ($selectedid=="0") echo "selected";

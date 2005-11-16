@@ -178,8 +178,8 @@ function showTodaysOrders($interval="1 DAY"){
 	$querystatement="SELECT invoices.id,
 					invoices.status,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
-					if(invoices.totalti>=0,concat(\"$\",format(invoices.totalti,2)),concat(\"-$\",format(abs(invoices.totalti),2))) as total,
-					if(invoices.totalti-invoices.amountpaid>=0,concat(\"$\",format((invoices.totalti-invoices.amountpaid),2)),concat(\"-$\",format(abs(invoices.totalti-invoices.amountpaid),2))) as amtdue
+					invoices.totalti as total,
+					invoices.totalti-invoices.amountpaid as amtdue
 					FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 					WHERE invoices.creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") AND (invoices.type=\"Order\")
 					ORDER BY invoices.creationdate DESC LIMIT 0,50
@@ -202,8 +202,8 @@ function showTodaysOrders($interval="1 DAY"){
 			<td><?php echo $therecord["id"]?></td>
 			<td><?php echo $therecord["status"]?></td>
 			<td><?php echo $therecord["thename"]?></td>
-			<td align="right"><?php echo $therecord["total"]?></td>
-			<td align="right"><?php echo $therecord["amtdue"]?></td>
+			<td align="right"><?php echo currencyFormat($therecord["total"])?></td>
+			<td align="right"><?php echo currencyFormat($therecord["amtdue"])?></td>
 		</tr><?php }?>
 		</table><?php
 	} else {?><div class="small disabledtext">no orders entered in last day</div><?php

@@ -251,13 +251,13 @@ function openWebpage(thefieldname){
 
 // checks and formats a field to dollars
 function validateCurrency(theitem){
-	var thedollar=theitem.value;
+	var theCurrency=theitem.value;
 	var i;
 	var thenumber="";
 	var newdollar;
 	
-	for(i=0;i<thedollar.length;i++){
-		if (thedollar.charAt(i)!="$" && thedollar.charAt(i)!="+" && thedollar.charAt(i)!=",") thenumber=thenumber+thedollar.charAt(i);
+	for(i=0;i<theCurrency.length;i++){
+		if (theCurrency.charAt(i)!="$" && theCurrency.charAt(i)!="+" && theCurrency.charAt(i)!=",") thenumber=thenumber+theCurrency.charAt(i);
 	}
 	//if the first number is a ".", add a 0
 	if (thenumber.charAt(0)==".") thenumber="0"+thenumber;
@@ -266,7 +266,7 @@ function validateCurrency(theitem){
 	while(thenumber.charAt(thenumber.length-1)=="0" && thenumber.indexOf(".")!=-1) thenumber=thenumber.substring(0,thenumber.length-1);
 	if(thenumber.charAt(thenumber.length-1)==".") thenumber=thenumber.substring(0,thenumber.length-1);
 
-	theitem.value=formatDollar(thenumber);
+	theitem.value=formatCurrency(thenumber);
 	
 	//in case the field has an additional onChange code to be run
 	if (theitem.thechange) theitem.thechange();
@@ -279,7 +279,7 @@ function validatePercentage(thefield,precision){
 	thefield.value+="%";
 }
 
-function formatDollar(thenumber){
+function formatCurrency(thenumber){
 	var newdollar,retval
 	
 	//check for number		
@@ -316,6 +316,26 @@ function formatDollar(thenumber){
 	
 	return newdollar;
 }
+
+function currencyToNumber(thecurrency){
+	var i;
+	var thenumber="";
+	for(i=0;i<thecurrency.length;i++){
+		if (thecurrency.charAt(i)!="$" && thecurrency.charAt(i)!="+" && thecurrency.charAt(i)!=",") thenumber=thenumber+thecurrency.charAt(i);
+	}
+	//if the first number is a ".", add a 0
+	if (thenumber.charAt(0)==".") thenumber="0"+thenumber;
+
+	//get rid of trailing zeros and possibly "."
+	while(thenumber.charAt(thenumber.length-1)=="0" && thenumber.indexOf(".")!=-1) thenumber=thenumber.substring(0,thenumber.length-1);
+	if(thenumber.charAt(thenumber.length-1)==".") thenumber=thenumber.substring(0,thenumber.length-1);
+	
+	if (isNaN(parseFloat(thenumber)) || thenumber.length!=((parseFloat(thenumber)).toString()).length) thenumber="0.00";	
+	
+	thenumber=parseFloat(thenumber);
+	return thenumber;
+}
+
 
 function  processUniqueReqChange(){
 	 if (req.readyState == 4) {

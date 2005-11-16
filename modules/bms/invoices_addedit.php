@@ -211,9 +211,9 @@
 			</script>
 			</td>
 			<td width="90%"><input name="memo" type="text" id="memo" size="12" maxlength="255" style="width:100%;border-left-width:0px;" tabindex="17" /></td>
-			<td align="right" nowrap><input name="price" type="text" id="price" value="$0.00" size="8" maxlength="16" onChange="calculateExtended()" style="text-align:right;" tabindex="18"  /></td>
+			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo currencyFormat(0)?>" size="8" maxlength="16" onChange="calculateExtended()" style="text-align:right;" tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="2" maxlength="16" onChange="calculateExtended()" style="text-align:center; border-left:0px;border-right:0px;" tabindex="19"  /></td>
-			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable" value="$0.00" size="8" maxlength="16" readonly="true" style="text-align:right;" /></td>
+			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable" value="<?php echo currencyFormat(0)?>" size="8" maxlength="16" readonly="true" style="text-align:right;" /></td>
 			<td nowrap align="center" class="lineitemsRight lineitemsBottom"><button type="button" class="invisibleButtons" onClick="addLine(this.parentNode);" tabindex="20" ><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button></td>
 		</tr><?PHP }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);
@@ -244,7 +244,7 @@
 		<td colspan="2" rowspan=5 valign="bottom">
 			<label for="ds-discountid">
 				discount / promotion<br />
-				<?PHP autofill("discountid",$therecord["discountid"],25,"discounts.id","discounts.name"," if(discounts.type+0=1,concat(discounts.value,\"%\"),concat(\"$\",format(discounts.value,2)))","discounts.inactive=0",Array("size"=>"34","maxlength"=>"64","tabindex"=>"22"),0) ?>
+				<?PHP autofill("discountid",$therecord["discountid"],25,"discounts.id","discounts.name"," if(discounts.type+0=1,concat(discounts.value,\"%\"),format(discounts.value,2))","discounts.inactive=0",Array("size"=>"34","maxlength"=>"64","tabindex"=>"22"),0) ?>
 				<input type="hidden" id="discount" name="discount" value="<?php getDiscount($therecord["discountid"])?>" />
 			</label>
 			<label for="ds-taxareaid" style="padding-bottom:0px;">tax area</label>
