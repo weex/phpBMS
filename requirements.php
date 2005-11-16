@@ -47,7 +47,7 @@
 
 <body><div class="bodyline" style="width:700px;">	
 	<h1>phpBMS Client Browser Requirements</h1>
-	<div class="box" style="float:right;background-color:white;"><img src="/common/image/logo-large.png" width="250" height="57" /></div>
+	<div class="box" style="float:right;background-color:white;"><img src="common/image/logo-large.png" width="250" height="57" /></div>
 	<div>
 	<ul>
     	<li><strong class="large">JavaScript v2.0</strong><br />
