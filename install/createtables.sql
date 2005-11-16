@@ -52,7 +52,7 @@ CREATE TABLE notes (
   location varchar(128) default NULL,
   category varchar(128) default NULL,
   repeattype varchar(20) default NULL,
-  repeat tinyint(4) NOT NULL default '0',
+  `repeat` tinyint(4) NOT NULL default '0',
   repeatuntildate date default NULL,
   repeatfrequency smallint(6) default NULL,
   repeatdays varchar(7) default NULL,

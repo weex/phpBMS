@@ -265,7 +265,7 @@ function getRepeatableInTime($fromdate,$todate,$userid){
 		$theday=strtotime("tomorrow",$theday);
 	}
 	
-	$querystatement="SELECT id,startdate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE repeat=1 AND type=\"EV\" AND (private=0 or (private=1 and createdby=".$userid."))";
+	$querystatement="SELECT id,startdate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE `repeat`=1 AND type=\"EV\" AND (private=0 or (private=1 and createdby=".$userid."))";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving Repeatable Events: ".mysql_error($dblink)."<br />".$querystatement);
 	

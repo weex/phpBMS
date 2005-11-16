@@ -52,7 +52,7 @@ function mark_asread($theids){
 	$message.=" marked as completed/read.";
 	
 	//for repeatable tasks, need to repeat dem!
-	$querystatement="SELECT id FROM notes WHERE type=\"TS\" AND ((parentid IS NOT NULL AND parentid!=0 ) OR repeat=1) AND (".$whereclause.")";
+	$querystatement="SELECT id FROM notes WHERE type=\"TS\" AND ((parentid IS NOT NULL AND parentid!=0 ) OR `repeat`=1) AND (".$whereclause.")";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Could not retrieve repeatable tasks for repeat: ".mysql_error($dblink)." -- ".$querystatement);		
 	if (mysql_num_rows($queryresult)){
@@ -78,7 +78,7 @@ function delete_record($theids){
 	$repeatqueryresult = mysql_query($querystatement,$dblink);
 	if (!$repeatqueryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
 
-	$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["accesslevel"]." >=90)) and (".$whereclause.") and (notes.repeat!=1);";
+	$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["accesslevel"]." >=90)) and (".$whereclause.") and (notes.`repeat`!=1);";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
 

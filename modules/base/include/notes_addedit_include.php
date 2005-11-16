@@ -107,7 +107,7 @@ function getRecords($id){
 	$querystatement="SELECT
 				id, subject, assignedtoid, type, content, importance, category,
 				attachedtabledefid, attachedid, parentid,location,private,status,
-				repeat,repeatfrequency,repeattype,repeatdays,repeattimes,repeat,date_Format(repeatuntildate,\"%c/%e/%Y\") as repeatuntildate,
+				repeat,repeatfrequency,repeattype,repeatdays,repeattimes,`repeat`,date_Format(repeatuntildate,\"%c/%e/%Y\") as repeatuntildate,
 				completed,date_Format(completeddate,\"%c/%e/%Y\") as completeddate,date_Format(startdate,\"%c/%e/%Y\") as startdate,
 				time_format(starttime,\"%l:%i %p\") as starttime,date_Format(enddate,\"%c/%e/%Y\") as enddate, time_format(endtime,\"%l:%i %p\") as endtime,
 				assignedtoid,date_Format(assignedtodate,\"%c/%e/%Y\") as assignedtodate,time_format(assignedtotime,\"%l:%i %p\") as assignedtotime,assignedbyid,
@@ -219,7 +219,7 @@ function updateRecord($variables,$userid){
 			if(isset($variables["repeat"])) {
 				$querystatement.="repeat=1, "; 
 				$querystatement.="repeatfrequency=".$variables["repeatfrequency"].", "; 					
-				$tempRepeatType="repeat".$variables["repeattype"];
+				$tempRepeatType="`repeat`".$variables["repeattype"];
 				if($variables["repeattype"]=="Monthly")
 					$tempRepeatType.=$variables["rpmo"];
 				$querystatement.="repeattype=\"".$tempRepeatType."\",";
@@ -244,7 +244,7 @@ function updateRecord($variables,$userid){
 					
 				$repeatChanges=$tempRepeatDays."*".$variables["repeatfrequency"]."*".$variables["repeattimes"]."*".$tempRepeatType."*".$variables["repeatuntildate"];
 			}else {
-				$querystatement.="repeat=0, repeattimes=0,repeatdays=\"\",repeatfrequency=1,repeattype=\"\",repeatuntildate=NULL, ";
+				$querystatement.="`repeat`=0, repeattimes=0,repeatdays=\"\",repeatfrequency=1,repeattype=\"\",repeatuntildate=NULL, ";
 			}
 
 			if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
@@ -295,7 +295,7 @@ function insertRecord($variables,$userid){
 	$querystatement.="completed,completeddate, ";
 	$querystatement.="enddate,endtime, ";
 	$querystatement.="startdate,starttime, ";
-	$querystatement.="repeat,repeatfrequency,repeattype,repeatdays,repeattimes,repeatuntildate, ";
+	$querystatement.="`repeat`,repeatfrequency,repeattype,repeatdays,repeattimes,repeatuntildate, ";
 	$querystatement.="assignedtoid,assignedtodate,assignedtotime,assignedbyid, ";
 	$querystatement.="attachedtabledefid,attachedid,";
 	$querystatement.="createdby,creationdate,modifiedby) values (";

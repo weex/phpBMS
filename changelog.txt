@@ -27,6 +27,7 @@ phpBMS v0.603/ BMS module v0.603
 - Added license to the top of every page with code.
 - Consolidated currency functions.
 - Added UPC to products.
+- Fixed compatibilty problem with MySQL 5 and reserved words.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

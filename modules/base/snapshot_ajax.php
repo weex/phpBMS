@@ -60,7 +60,7 @@
 	function repeatTask($id){
 		global $dblink;
 		
-		$querystatement="SELECT parentid,startdate,repeat FROM notes WHERE id=".$id;
+		$querystatement="SELECT parentid,startdate,`repeat` FROM notes WHERE id=".$id;
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,"Error Retrieving Parent Note ID: ".mysql_error($dblink)."<br />".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
@@ -222,7 +222,7 @@
 		if(!$therecord["assignedtoid"])
 			$therecord["assignedtoid"]="NULL";
 					
-		$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,repeat,repeatfrequency,repeattype,repeattimes,
+		$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,`repeat`,repeatfrequency,repeattype,repeattimes,
 					type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,creationdate,createdby,category,
 					attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid) VALUES (
 					".$therecord["id"].", \"".strftime("%Y-%m-%d",$newdate)."\",".$newenddate.", 0, NULL,0,1,\"repeatDaily\",0,";
