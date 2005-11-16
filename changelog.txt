@@ -24,6 +24,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed autofill of part name on invoices and problem with very long part names.
 - Fixed undefined variable bug with printing.
 - Added greater flexibility with phone validation (country codes, extensions etc.).
+- Added license to the top of every page with code.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

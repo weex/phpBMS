@@ -1,4 +1,40 @@
 <?php 
+/*
+ +-------------------------------------------------------------------------+
+ | Copyright (c) 2005, Kreotek LLC                                         |
+ | All rights reserved.                                                    |
+ +-------------------------------------------------------------------------+
+ |                                                                         |
+ | Redistribution and use in source and binary forms, with or without      |
+ | modification, are permitted provided that the following conditions are  |
+ | met:                                                                    |
+ |                                                                         |
+ | - Redistributions of source code must retain the above copyright        |
+ |   notice, this list of conditions and the following disclaimer.         |
+ |                                                                         |
+ | - Redistributions in binary form must reproduce the above copyright     |
+ |   notice, this list of conditions and the following disclaimer in the   |
+ |   documentation and/or other materials provided with the distribution.  |
+ |                                                                         |
+ | - Neither the name of Kreotek LLC nor the names of its contributore may |
+ |   be used to endorse or promote products derived from this software     |
+ |   without specific prior written permission.                            |
+ |                                                                         |
+ | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS     |
+ | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT       |
+ | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A |
+ | PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
+ | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,   |
+ | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT        |
+ | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,   |
+ | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY   |
+ | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT     |
+ | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE   |
+ | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    |
+ |                                                                         |
+ +-------------------------------------------------------------------------+
+*/
+
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
@@ -28,8 +64,8 @@
 		<h1><?php echo $pageTitle ?></h1>
 	</div>
 
-	<FIELDSET style="float:right;clear:both;width:200px">
-		<LEGEND>Attributes</LEGEND>
+	<fieldset style="float:right;clear:both;width:200px">
+		<legend>Attributes</legend>
 		<label for="id">
 			id<br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:170px" />
@@ -51,9 +87,9 @@
 			access level<br>
 			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important","tabindex"=>"30"));?>
 		</label>
-	</FIELDSET>
-	<FIELDSET>
-		<LEGEND>name / file / description</LEGEND>
+	</fieldset>
+	<fieldset>
+		<legend>name / file / description</legend>
 		<label for="name" class="important">
 			name<br />
 			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>
@@ -66,7 +102,7 @@
 			description<br />
 			<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?PHP echo $therecord["description"]?></textarea>
 		</label>
-	</FIELDSET>
+	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php");?>
