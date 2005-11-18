@@ -35,15 +35,6 @@
  +-------------------------------------------------------------------------+
 */
 
-function checkForBMS(){
-	global $dblink;
-
-	$querystatement="SELECT id FROM modules WHERE name=\"bms\" ";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving Module Information: ".mysql_error($dblink)."<br />".$querystatement);
-	if (mysql_num_rows($queryresult)) return true; else return false;
-}
-
 function showSystemMessages(){
 	global $dblink;
 	
@@ -135,86 +126,6 @@ function showTasks($userid,$type="Tasks"){
 	?><div class="small disabledtext">no <?php if($type=="Tasks") echo "tasks"; else echo "assignments"?></div><?php
 	}
 }
-
-
-
-function showTodaysClients($interval="1 DAY"){
-	global $dblink;
-	$querystatement="SELECT id,
-					clients.type, clients.city,clients.state,clients.postalcode,
-					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
-					FROM clients
-					WHERE creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") 
-					ORDER BY creationdate DESC LIMIT 0,50
-	";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);	
-	if(mysql_num_rows($queryresult)){
-		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<tr>
-				<th align="left">ID</th>
-				<th align="left">Type</th>
-				<th align="left" width="100%">Name</th>
-				<th nowrap align="right">City, State/Prov Zip/Postal</th>
-			</tr>
-		<?php 	
-		while($therecord=mysql_fetch_array($queryresult)){
-			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
-			$displayType=ucwords(str_replace(".","&nbsp;",$displayType));
-			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
-			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
-		?><tr onClick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'">
-			<td><?php echo $therecord["id"]?></td>
-			<td><?php echo $therecord["type"]?></td>
-			<td><?php echo $therecord["thename"]?></td>
-			<td align="right"><?php echo $displayCSZ?></td>
-		</tr><?php }?></table><?php
-	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
-	}
-}
-
-function showTodaysOrders($interval="1 DAY"){
-	global $dblink;
-	$querystatement="SELECT invoices.id,
-					invoices.status,
-					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
-					invoices.totalti as total,
-					invoices.totalti-invoices.amountpaid as amtdue
-					FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
-					WHERE invoices.creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") AND (invoices.type=\"Order\")
-					ORDER BY invoices.creationdate DESC LIMIT 0,50
-	";
-	
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
-	if(mysql_num_rows($queryresult)){
-		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<tr>
-				<th align="left">ID</th>
-				<th align="left">Status</th>
-				<th width="100%" align="left">Name</th>
-				<th align="right">Total</th>
-				<th align="right">Due</th>
-			</tr>
-		<?php 
-		while($therecord=mysql_fetch_array($queryresult)){				
-		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'">
-			<td><?php echo $therecord["id"]?></td>
-			<td><?php echo $therecord["status"]?></td>
-			<td><?php echo $therecord["thename"]?></td>
-			<td align="right"><?php echo currencyFormat($therecord["total"])?></td>
-			<td align="right"><?php echo currencyFormat($therecord["amtdue"])?></td>
-		</tr><?php }?>
-		</table><?php
-	} else {?><div class="small disabledtext">no orders entered in last day</div><?php
-	}
-}
-
-
-
-
-
-
 
 function showSevenDays($userid){
 	

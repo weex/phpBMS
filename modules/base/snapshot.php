@@ -95,26 +95,15 @@
 				</td>
 		</tr>
 	</table>
-	<?php if (checkForBMS() && $_SESSION["userinfo"]["accesslevel"]>=20) {?>
-	<div class="box" style="display:inline-block;">	
-		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'TodaysOrders')" width="16" height="16" border="0" /></div>
-		<h2 style="margin-top:4px;"><a href="../../search.php?id=3">Recent Orders</a></h2>
-			<div id="TodaysOrders">
-				<?php 
-				if(date("D")=="Mon")
-					$interval="3 DAY";
-				else
-					$interval="1 DAY";
-				showTodaysOrders($interval) 
-				?>
-			</div>
-			
-		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'TodaysClients')" width="16" height="16" border="0" /></div>
-		<h2 style="margin-top:4px;"><a href="../../search.php?id=2">Recently Added Clients/Propects</a></h2>
-			<div id="TodaysClients"><?php showTodaysClients($interval)?></div>
+	<?php 
+	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
+	$modulequery=mysql_query($querystatement,$dblink);
+	
+	while($modulerecord=mysql_fetch_array($modulequery)){
+		@ include "../".$modulerecord["name"]."/snapshot.php";
+	}//end while 
+	?>
 	</div>
-	<?php }?>				
-</div>
 <?php include("../../footer.php")?>
 </body>
 </html>

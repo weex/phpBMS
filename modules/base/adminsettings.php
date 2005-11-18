@@ -177,7 +177,7 @@ require_once("include/adminsettings_include.php");
 	$modulequery=mysql_query($querystatement,$dblink);
 	
 	while($modulerecord=mysql_fetch_array($modulequery)){
-		include "../".$modulerecord["name"]."/adminsettings.php";
+		@ include "../".$modulerecord["name"]."/adminsettings.php";
 	}//end while 
 	?>
 	<div class="box" style="clear:both;" align=right><input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" /></div>
