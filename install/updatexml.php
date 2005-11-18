@@ -87,7 +87,7 @@
 	
 	function processSQLfile($filename){
 		global $dblink;
-		
+				
 		$thefile = fopen($filename,"r");
 		if(!$thefile) {
 			return "Could not open the file ".$filename.".";
@@ -165,6 +165,7 @@
 	
 	function runUpdate($currentVersion,$newVersion){
 		global $dblink;
+		global $vars;
 		
 		$thereturn="";
 		while($currentVersion!=$newVersion){
@@ -247,6 +248,14 @@
 					$querystatement="UPDATE modules SET version=\"0.61\" WHERE name=\"base\";";
 					$queryresult=mysql_query($querystatement,$dblink);
 					$thereturn.=" - modified base record in modules table\n";
+					
+					foreach($vars as $key=>$value){
+						if (strpos($key,"mysql_")!==0){
+							$querystatement="INSERT INTO settings (name,value) VALUES (\"".$key."\",\"".$value."\")";
+							$queryresult=mysql_query($querystatement,$dblink);
+						}
+					}
+					$thereturn.="Moved non-mysql settings to new settings table.\n";
 					
 					$thereturn.="Update to 0.61 Finished\n\n";
 					$currentVersion="0.61";

@@ -95,71 +95,40 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 </head>
 
 <body>
-<div class="bodyline" style="padding:4px;">
+<div align="center"><div class="bodyline" style="width:740px" align="left">
 	<h1>phpBMS Installation Instructions</h1>
 	<h2>Application Requirements</h2>
+	<div class="box">
 	<ul>
 		<li>MySQL 3.23.58 or higher</li>
 		<li>PHP 4.1.2 or higher</li>
 		<li>Web Server (Tested using Apache and IIS.)</li>
 	</ul>
+	</div>
 	
 
 
-	<h2>Setting Up The Database</h2>
+	<h2>Set Up The Database</h2>
 	
 	<div class="box">
 	<h3>Step 1 - Set Database Connection Information</h3>
 	<div style="margin-left:10px;">
-		There are two ways to provide the connection information phpBMS will need to interact with the MySQL database.
-		Providing the information by filling in the fields below can be quicker, but if phpBMS is not being hosted securely, 
-		the MySQL login information can be compromised.</div>
+		This step will require you to manually create the settings file. that is used by PHP to connect to your MySQL database. </div>
 
-	<div style="float:right;width:40%;padding-top:0">
-		<h4 style="margin-left:0;margin-bottom:1px;">Results</h4>
-		<div>
-			<textarea name="results" id="updatesettingsresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="12"></textarea>
-		</div>
-	</div>
-	<h4 style="margin-right:42%">A) Enter Connection Information</h4>
 	
-	<div style="margin-left:25px;margin-right:42%;">
-		<div>Enter The mySQL connection information and then click the &quot;Create Settings&quot; button. This will create the settings file required to run phpBMS. It will also copy some other default files used throughout the program (logo picture used on reports, etc..)</div>
-		<div><em style="color:red;">(insecure if not done through SSL)</em></div>
-		<div>
-			MySQL Server<br>
-			<input type="text" name="mysqlserver" id="mysqlserver" size="32" value="localhost">
-		</div>
-		<div>
-			MySQL Database<br>
-			<input type="text" name="mysqldb" id="mysqldb" size="32" value="phpbms"><br>
-			<em class=small>(If the database has not been created yet, it will be in step two.)</em>
-		</div>
-		<div>
-			MySQL User<br>
-			<input type="text" name="mysqluser" id="mysqluser" size="32" value="">
-		</div>
-		<div>
-			MySQL Password<br>
-			<input type="password" name="mysqluserpass" id="mysqluserpass" size="32" value="">
-		</div>
-		<div><input type="button" value="Create Settings" class="Buttons" onClick="runCommand('updatesettings')"></div>
-	</div>
 	
-	<h4>B) Or, Manually Create the settings.php File</h4>
+	<h4> Create the settings.php File</h4>
 	<div style="margin-left:25px;">		
-	Copy the file <strong>defaultsettings.php</strong> and create the file <strong>settings.php</strong>. Make sure to modify the MySQL settings in the <strong>settings.php</strong> file. You can also modify any other settings at this time but the four
-	settings that are essential to connecting to the database are:
+	Make a copy the file <strong>defaultsettings.php</strong> (located in the web application root) and name the new file <strong>settings.php</strong>. Next, modify the following prarameters:
 	<ul class="small">
-		<li><strong>mysql_server</strong>: the mysql server location (in most cases, this should be the same location as the web server, or &quot;localhost &quot;)<br><br>
-			<em style="color:red;">Note:  If your database server is different then your web server,  data security issues can occur.</em><br>
-			&nbsp;
+		<li><strong>mysql_server</strong>: the mysql server location (in most cases, this should be the same location as the web server, or &quot;localhost&quot;)<br>
+			<div class="small" style=" color:#DF0005"><strong>Note:</strong> If your database server is different then your web server,  make sure you take any necessary security precautions.</div>
 			</li>
-		<li><strong>mysql_database</strong>: the name of the database to be used by phpBMS. If it has not been created yet, step two will create it.<br>
+		<li><strong>mysql_database</strong>: the name of the database to be used by phpBMS. If it has not been created yet, step two will create it if your mysql user has rights o create the database. <br>
 			&nbsp;</li>
 		<li><strong>mysql_user</strong>: the name of the user PHP will use to access the database.<br>
 			&nbsp;</li>
-		<li><strong>mysql_userpass</strong>:	the	password for the user used	to access the database.</li>
+		<li><strong>mysql_userpass</strong>:	the	password for the user that access the database.</li>
 	</ul>
 	</div>
 
@@ -171,12 +140,12 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	</div>
 	<h4 style="margin-right:42%">Test the Database Connection</h4>
 	<div style="margin-left:25px;margin-right:42%">
-		Once the database connection information has been entered, test the connection.  If connection fails, check
-		to make sure the settings are correct.
+		Once the <strong>settings.php</strong> file has been created and the database connection information has been entered, test the connection.  If connection fails, check
+		to make sure the <strong>settings.php</strong> is setup correctly.
 	</div>
 	<div style="margin-left:25px;margin-right:42%"><input type="button" value="Test Connection" class="Buttons" onClick="runCommand('testconnection')"><br>&nbsp;</div>
 	</div>
-
+	<div>&nbsp;</div>
 
 	<div class="box">
 	<div style="float:right;width:40%;padding-top:0">
@@ -191,26 +160,27 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 		<div>
 			If you have already created the MySQL database, skip to step three.  If not, click the "Create Database" button.  
 			This will attempt to create the database set above.
-		</div>
+The	user that you specified in the settings.php file must have rights to create the database. </div>
 		<div><input type="button" value="Create Database" class="Buttons" onClick="runCommand('createdatabase')"></div>
-		<div class=small><strong>Note:</strong> Some ISPs limit the number of mySQL databases you are allowed, or control database creation through a web application, or on a request basis. If you have any questions, contact your ISP.</div>
+		<div class="small" style=" color:#DF0005"><strong>Note:</strong> Some ISPs limit the number of mySQL databases you are allowed, or control database creation through a web application, or on a request basis. If you have any questions, contact your ISP.</div>
 		<div>&nbsp;</div>		
 		<div>&nbsp;</div>
 	</div>
 	</div>	
-	
+		<div>&nbsp;</div>
+
 	<div class="box" style="clear:right">
 	<div style="float:right;width:40%;padding-top:0;">
 		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
 		<div>
-			<textarea name="results" id="populatedataresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
+			<textarea name="results" id="populatedataresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="12"></textarea>
 		</div>
 	</div>
 	
-	<h3 style="margin-right:42%">Step 3 - Create Base Tables and Populate Default Information </h3>
+	<h3 style="margin-right:42%">Step 3 - Create Default Information </h3>
 	<div style="margin-left:10px;margin-right:42%">
 		<div>
-			Next, phpBMS needs to create the base level tables and populate the tables with the basic information needed to 
+			Next, phpBMS needs to create the base level tables and populate the tables with the basic information that phpBMS needs to 
 			work.
 		</div>
 		<div><input type="button" value="Create Tables and Populate Default Information" class="Buttons" onClick="runCommand('populatedata')"></div>
@@ -222,29 +192,26 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			username: <strong>admin</strong><br>
 			password: <strong>phpbms</strong>
 		</div>
-		<div><em style="color:red;"><strong>Note:</strong> Change the password after the first successful login.</em></div>
+		<div class="small" style=" color:#DF0005"><strong>Note:</strong> Make sure to change the encryptions seed and password after the first successful login.</div>
 		<div>&nbsp;</div>
 	</div>
 	</div>	
 	
 	
-	<h2 style="clear:both;">Installing Additional Modules </h2>
-	<div>
-		The base phpBMS system contains only the basic framework, administration and notes capabilities. 
-		Client and product management, invoicing and mass emailing capabilities are contained in a separate
-		BMS module.  Modules are stored in the "modules" folder. To install the BMS module, proceed to step 4.
-	</div>
-	
+	<h2 style="clear:both;">Install Additional Modules </h2>
 	<div class="box">
+<div>
+		The base phpBMS system contains <strong>only</strong> the bare framework, administration, and note/task/event capabilities. 
+		Additional modules will add functionality such as client/prospect and product management, quote/order/invoice control, and mass e-mailing. The modules are installed separately in the next step. </div>	
 	<div style="float:right;width:40%;padding-top:0;">
 		<h3 style="margin-left:0;margin-bottom:1px;">Results</h3>
 		<div>
-			<textarea name="results" id="moduleresults" style="width:100%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
+			<textarea name="results" id="moduleresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="10"></textarea>
 		</div>
 	</div>
 	<h3 style="margin-right:42%;">Step 4 - Install Additional Modules</h3>
 	<div style="margin-left:10px;margin-right:42%">
-		<div>To install a module, choose the module form the list and click the "Install Module" button.</div>
+		<div>To install a module, highlight the module form the list and click the "Install Module" button.</div>
 		<div>
 			Select a module to install<br>
 			<select size="5" id="modules" name="modules" style="width:200px;font-size:12px;" >
@@ -258,14 +225,16 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 	</div>
 	</div>
 
-	<h2>Securing The Application</h2>
-	<div>
+	<h2>Secure The Application</h2>
+	<div class="box">
 		phpBMS can contain sensitive information, log in information and sensitive credit card information that could be exposed to the internet insecurely.
 		We recommend performing the following actions to secure phpBMS
-		    <ul>
+:		    
+			<ul>
 			<li>
 				<strong>Delete Installation/Disable Folders</strong> - Once the installation process has been completed for the base system and the BMS modules,
-				Either delete the installation folders, or make them inaccessible from the web server.<br>&nbsp;
+				Either delete the installation folders, or make them inaccessible by the web server and php.<br>
+				&nbsp;
 			</li>
 			<li>
 				<strong>Run phpBMS On a Secure Connection (SSL)</strong> - To make sure that usernames, passwords, credit card and potentially 
@@ -274,10 +243,13 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			</li>
 		</ul>
 	</div>
-	<h2>Completing The Installation</h2>
-	<div>If phpBMS was installed successfully, go to the log in screen, use the administrative user name password to log in and complete the installation process</div>
-	<div><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onClick="document.location='../'"></div>
+	<h2>Complete the Installation</h2>
+	<div class="box">
+		If all of the above actions completed successfully, phpBMS was installed successfully. Go to the log in screen, use the administrative user name password (above) and log in to finish the installation process. After logging in, you may want to go to the administration section, and set up the basic settings for your application as well as change the admininstrative username and password.
+			<div><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onClick="document.location='../'"></div>
+	</div>
 	
-</div>
+	
+</div></div>
 </body>
 </html>

@@ -10,3 +10,5 @@ UPDATE tabledefs SET defaultwhereclause="notes.type='EV' AND notes.createdby = {
 UPDATE tablefindoptions SET search ="" WHERE id=
 UPDATE tablefindoptions SET search ="notes.type='EV' AND notes.createdby = {{$_SESSION['userinfo']['id']}} AND ((notes.startdate = curdate()) OR notes.`repeat`=1)" WHERE id=88
 UPDATE tablefindoptions SET search ="notes.type='EV' AND notes.createdby = {{$_SESSION['userinfo']['id']}} AND ((notes.startdate = date_sub(curdate(),INTERVAL 1 DAY)) OR notes.`repeat`=1)" WHERE id=89
+
+CREATE TABLE `settings` (`id` int(11) NOT NULL auto_increment, `name` varchar(64) NOT NULL default '',`value` varchar(255) default '', PRIMARY KEY  (`id`)) TYPE=MyISAM; 

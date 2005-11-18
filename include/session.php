@@ -43,10 +43,21 @@ if(!isset($_SERVER['REQUEST_URI'])) {
 		$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
 }
 
+function loadSettings(){
+	global $dblink;
+	
+	$querystatement="SELECT name,value FROM settings";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Could not retrieve settings. If you have not ran the update script for phpBMS, 
+										please run it before logging in. Error Details:<br />".mysql_error($dblink)." ".$querystatement));
+	while($therecord=mysql_fetch_array($queryresult))
+		$_SESSION[$therecord["name"]]=$therecord["value"];
+}
+
 //This function loads any variables written
 // in settings.php into session variables.
 //=========================================
-function loadSettings() {
+function loadMysqlSettings() {
 	
 	$path="";
 	$count=1;
@@ -70,7 +81,8 @@ function loadSettings() {
 					$endpos=strrpos($value,"\"");
 					if($endpos!=false)
 						$value=substr($value,$startpos+1,$endpos-$startpos-1);
-					$_SESSION[$key]=$value;
+					if(strpos($key,"mysql_")===0)
+						$_SESSION[$key]=$value;
 				}
 			}
 			$line=NULL;
@@ -109,7 +121,7 @@ function xmlEncode($str){
 //=================================================================================================================
 	session_start();
 	error_reporting(E_ALL);
-	if (!isset($_SESSION["app_path"])) $mainpath=loadSettings();
+	if (!isset($_SESSION["app_path"])) $mainpath=loadMysqlSettings();
 	else $mainpath=$_SESSION["app_path"];
 	
 	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
@@ -128,7 +140,9 @@ function xmlEncode($str){
 				reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
 			if (!mysql_select_db($_SESSION["mysql_database"],$dblink)) 
 				reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);
-		}	
+		}
+		if(!isset($_SESSION["app_name"]))
+			loadSettings();
 	}//end if
 	
 ?>

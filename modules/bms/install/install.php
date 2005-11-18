@@ -143,6 +143,7 @@ else{
 	$thereturn.=importData("tableoptions");
 	$thereturn.=importData("tablesearchablefields");
 	$thereturn.=importData("usersearches");
+	$thereturn.=importData("settings");
 
 	$thereturn.="Done Importing Data\n===========================\n";
 	

@@ -114,66 +114,12 @@ function loadSettings() {
 	} else return "Cannot open setting.php file";
 }
 
-function writeSettings($server,$database,$user,$userpass){
-	$settings["mysql_server"]=$server;
-	$settings["mysql_database"]=$database;	
-	$settings["mysql_user"]=$user;	
-	$settings["mysql_userpass"]=$userpass;	
-
-	$settingsfile = @ fopen("../settings.php","r");
-	if(!$settingsfile) return "Could not open settings.php file for reading"; 
-
-	//create an array of all lines
-	while( !feof($settingsfile)) {
-		$newfile[]=fgets($settingsfile,1024);
-	}
-	fclose($settingsfile);
-	
-	$newfile[]="\n";
-	foreach($settings as $settingname=>$settingvalue) {
-		$infile=false;
-		//next loop through the file, and if the setting is their, replace it
-		for($i=0;$i<count($newfile);$i++){
-			if (strpos(("D".$newfile[$i]),$settingname)==1) {
-				$tabnumber=intval(5-strlen($settingname)/8);
-				$newfile[$i]=$settingname.str_repeat(chr(9),$tabnumber)."= \"".str_replace(chr(10),"\\n",$settingvalue)."\"\n";
-				$infile=true;
-				break;
-			}
-		}
-	}
-	if(end($newfile)=="\n") array_pop($newfile);
-	//now write the new file
-	$settingsfile=NULL;
-	$settingsfile = @ fopen("../settings.php","w");
-	if(!$settingsfile) return "Could not open settings file for writing.";
-	for($i=0;$i<count($newfile);$i++){
-		 fwrite($settingsfile,$newfile[$i],1024);
-	}
-	//fclose($settingsfile);
-	
-	return "settings.php file updated successfully";
-}//end function
-
-function createDefaultFiles(){
-	$thereturn="Copying Default Files Successful\n";
-	if(!copy("../defaultsettings.php","../settings.php"))
-		$thereturn="Error Copying Default Settings File.";
-	if(!copy("../report/defaultlogo.png","../report/logo.png"))
-		$thereturn="Error Copying Default Logo Picture File.";
-	return $thereturn;
-}
 
 		$thereturn="Error Processing: No Command Given";
 		if(isset($_GET["command"])){
 			$vars=loadSettings();
 
 			switch($_GET["command"]){
-				case "updatesettings":
-					$thereturn=createDefaultFiles();
-					$thereturn.=writeSettings($_GET["ms"],$_GET["mdb"],$_GET["mu"],$_GET["mup"]);
-				break;
-
 
 				case "testconnection":
 					$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
@@ -221,6 +167,7 @@ function createDefaultFiles(){
 					$thereturn.=importData("tableoptions");
 					$thereturn.=importData("tablesearchablefields");
 					$thereturn.=importData("users");
+					$thereturn.=importData("settings");
 					$thereturn.="\nDone Importing Data\n===========================\n";
 			
 				break;

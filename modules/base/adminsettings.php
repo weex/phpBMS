@@ -99,23 +99,23 @@ require_once("include/adminsettings_include.php");
 	<fieldset>
 		<legend>My<span style="text-transform:capitalize;">SQL</span></legend>
 		<div class="small important">
-			<em>Changing the MySQL settings may break the web application. Be very careful when changing these settings.</em>
+			<em>MysSQL settings must be updated manually by editing the settings.php file</em>
 		</div>
 		<label for="smysql_server">
-			server name <em>(usually localhost)</em><br />
-			<?PHP field_text("smysql_server",$_SESSION["mysql_server"],1,"mySQL server name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>
+			server name<br />
+			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_server"])?>" readonly class="uneditable"/>
 		</label>
 		<label for="smysql_database">
-			database name <em>(usually phpbms)</em><br />
-			<?PHP field_text("smysql_database",$_SESSION["mysql_database"],1,"mySQL database name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>
+			database name<br />
+			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_database"])?>" readonly class="uneditable"/>
 		</label>
 		<label for="smysql_user">
 			mysql username<br />
-			<input id="smysql_user" name="smysql_user" type="text" size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_user"])?>" />
+			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_user"])?>" readonly class="uneditable"/>
 		</label>
 		<label for="smysql_userpass">
 			mysql user password<br />
-			<input id="smysql_userpass" name="smysql_userpass" type="text" size="32" maxlength="128" value="<?php echo $_SESSION["mysql_userpass"] ?>" />
+			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_userpass"])?>" readonly class="uneditable"/>
 		</label>
 	</fieldset>
 

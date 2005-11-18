@@ -203,3 +203,10 @@ CREATE TABLE usersearches (
   KEY thetype (type),
   KEY user (userid)
 ) TYPE=MyISAM;
+
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `value` varchar(255) default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM; 

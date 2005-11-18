@@ -28,6 +28,8 @@ phpBMS v0.603/ BMS module v0.603
 - Consolidated currency functions.
 - Added UPC to products.
 - Fixed compatibilty problem with MySQL 5 and reserved words.
+- Modified Snapshot to load snapshot sections from each individual module.
+- Moved non MySQL settings to new settings table.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

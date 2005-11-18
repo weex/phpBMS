@@ -41,7 +41,7 @@
 
 		$querystatement="DELETE FROM choices WHERE listname=\"".$listname."\" ";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$querystatement) 
+		if(!$queryresult) 
 			reportError(100,"SQL Statement Could not be executed.");
 		else
 			echo "ok";
