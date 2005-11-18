@@ -59,7 +59,7 @@
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			
-			if (mysql_num_rows($queryresult)<1) reportError(1,"table definition not found. ".$queryresult);
+			if (mysql_num_rows($queryresult)<1) reportError(1,"table definition not found: ".$id);
 			
 			$therecord=mysql_fetch_array($queryresult);
 			

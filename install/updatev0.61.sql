@@ -12,3 +12,7 @@ UPDATE tablefindoptions SET search ="notes.type='EV' AND notes.createdby = {{$_S
 UPDATE tablefindoptions SET search ="notes.type='EV' AND notes.createdby = {{$_SESSION['userinfo']['id']}} AND ((notes.startdate = date_sub(curdate(),INTERVAL 1 DAY)) OR notes.`repeat`=1)" WHERE id=89
 
 CREATE TABLE `settings` (`id` int(11) NOT NULL auto_increment, `name` varchar(64) NOT NULL default '',`value` varchar(255) default '', PRIMARY KEY  (`id`)) TYPE=MyISAM; 
+
+CREATE TABLE `files` (`id` int(11) NOT NULL auto_increment,`name` varchar(128) NOT NULL default '',`accesslevel` int(11) NOT NULL default '0',`servename` varchar(64) NOT NULL default '',`file` longblob,`type` varchar(100) default '',`createdby` int(11) default '0',`creationdate` datetime default '0000-00-00 00:00:00',`modifiedby` int(11) default '0',`modifieddate` timestamp(14) NOT NULL,PRIMARY KEY  (`id`)) TYPE=MyISAM; 
+
+CREATE TABLE `filetorecord` (`id` int(11) NOT NULL auto_increment,`fileid` int(11) NOT NULL default '0',`tabledefid` int(11) NOT NULL default '0',`recordid` int(11) NOT NULL default '0',`createdby` int(11) default '0',`creationdate` datetime default '0000-00-00 00:00:00',`modifiedby` int(11) default '0',`modifieddate` timestamp(14) NOT NULL,PRIMARY KEY  (`id`),KEY `therecord` (`recordid`),KEY `thetable` (`tabledefid`),KEY `thefile` (`fileid`)) TYPE=MyISAM;

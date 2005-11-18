@@ -240,8 +240,9 @@ The	user that you specified in the settings.php file must have rights to create 
 				<strong>Run phpBMS On a Secure Connection (SSL)</strong> - To make sure that usernames, passwords, credit card and potentially 
 				other sensitive information are not passed in clear text over the internet, running phpBMS over a secure socket layer is highly recommended.  
 				Even if phpBMS is not exposed to the Internet, and is setup on a local LAN, we recommend running it over SSL.
-			</li>
-		</ul>
+</li>
+		    <li><strong>Restrict access to the settings.php file -</strong> Make sure that only php can read the settings.php file, and that php does not access to write to the file. </li>
+			</ul>
 	</div>
 	<h2>Complete the Installation</h2>
 	<div class="box">
@@ -250,6 +251,7 @@ The	user that you specified in the settings.php file must have rights to create 
 	</div>
 	
 	
-</div></div>
+</div>
+</div>
 </body>
 </html>

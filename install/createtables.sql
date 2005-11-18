@@ -114,28 +114,27 @@ CREATE TABLE tablecolumns (
   KEY displayorder (displayorder)
 ) TYPE=MyISAM;
 
-CREATE TABLE tabledefs (
-  editfile varchar(128) default NULL,
-  displayname varchar(64) default NULL,
-  id int(11) NOT NULL auto_increment,
-  maintable varchar(64) NOT NULL default '',
-  createdby int(11) NOT NULL default '0',
-  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
-  modifiedby int(11) default NULL,
-  modifieddate timestamp(14) NOT NULL,
-  querytable varchar(255) NOT NULL default '',
-  addfile varchar(100) default '',
-  deletebutton varchar(32) default '',
-  defaultwhereclause varchar(128) default '',
-  defaultsortorder varchar(255) default '',
-  defaultsearchtype varchar(64) default '',
-  defaultcriteriafindoptions varchar(128) default '',
-  defaultcriteriaselection varchar(128) default '',
-  type varchar(16) NOT NULL default 'table',
-  moduleid int(11) NOT NULL default '0',
-  UNIQUE KEY theid (id)
-) TYPE=MyISAM PACK_KEYS=0;
-
+CREATE TABLE `tabledefs` (
+  `editfile` varchar(128) default NULL,
+  `displayname` varchar(64) default NULL,
+  `id` int(11) NOT NULL auto_increment default 1000,
+  `maintable` varchar(64) NOT NULL default '',
+  `createdby` int(11) NOT NULL default '0',
+  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default NULL,
+  `modifieddate` timestamp(14) NOT NULL,
+  `querytable` varchar(255) NOT NULL default '',
+  `addfile` varchar(100) default '',
+  `deletebutton` varchar(32) default '',
+  `defaultwhereclause` varchar(255) default NULL,
+  `defaultsortorder` varchar(255) default '',
+  `defaultsearchtype` varchar(64) default '',
+  `defaultcriteriafindoptions` varchar(128) default '',
+  `defaultcriteriaselection` varchar(128) default '',
+  `type` varchar(16) NOT NULL default 'table',
+  `moduleid` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+) TYPE=MyISAM;
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
@@ -209,4 +208,33 @@ CREATE TABLE `settings` (
   `name` varchar(64) NOT NULL default '',
   `value` varchar(255) default '',
   PRIMARY KEY  (`id`)
+) TYPE=MyISAM; 
+
+CREATE TABLE `files` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(128) NOT NULL default '',
+  `accesslevel` int(11) NOT NULL default '0', 
+  `servename` varchar(64) NOT NULL default '',
+  `file` longblob,
+  `type` varchar(100) default '',
+  `createdby` int(11) default '0',
+  `creationdate` datetime default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default '0',
+  `modifieddate` timestamp(14) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM; 
+
+CREATE TABLE `filetorecord` (
+  `id` int(11) NOT NULL auto_increment,
+  `fileid` int(11) NOT NULL default '0',
+  `tabledefid` int(11) NOT NULL default '0',
+  `recordid` int(11) NOT NULL default '0',
+  `createdby` int(11) default '0',
+  `creationdate` datetime default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default '0',
+  `modifieddate` timestamp(14) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `therecord` (`recordid`),
+  KEY `thetable` (`tabledefid`),
+  KEY `thefile` (`fileid`)
 ) TYPE=MyISAM; 

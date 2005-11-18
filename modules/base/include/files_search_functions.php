@@ -35,67 +35,34 @@
  +-------------------------------------------------------------------------+
 */
 
-// access level to admin area
-if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html"); else{
-	global $admintabs;
-	$admintabs=array(
-		array(
-			"name"=>"Settings",
-			"href"=>$_SESSION["app_path"]."modules/base/adminsettings.php"
-		),
-		array(
-			"name"=>"Modules",
-			"href"=>$_SESSION["app_path"]."search.php?id=21"
-		),
-		array(
-			"name"=>"Nav. Menu",
-			"href"=>$_SESSION["app_path"]."search.php?id=19"
-		),
-		array(
-			"name"=>"Tables",
-			"href"=>$_SESSION["app_path"]."search.php?id=16"
-		),
-		array(
-			"name"=>"Files",
-			"href"=>$_SESSION["app_path"]."search.php?id=26"
-		),
-		array(
-			"name"=>"Users",
-			"href"=>$_SESSION["app_path"]."search.php?id=9"
-		)
-	);
+include("modules/base/include/admin_functions.php");
 
-	global $tabletabs;
-	$tabletabs=array(
-		array(
-			"name"=>"Reports",
-			"href"=>$_SESSION["app_path"]."search.php?id=16"
-		),
-		array(
-			"name"=>"Relationships",
-			"href"=>$_SESSION["app_path"]."search.php?id=10"
-		),
-		array(
-			"name"=>"Saved Searches/Sorts",
-			"href"=>$_SESSION["app_path"]."search.php?id=17"
-		),
-		array(
-			"name"=>"Table Definitions",
-			"href"=>$_SESSION["app_path"]."search.php?id=11"
-		)
-	);
+//=============================================
+//functions
+//=============================================
+
+//delete reports
+function delete_record($theids){
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"reports.id");
+
+	$querystatement = "DELETE FROM reports WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" delete.";
+	return $message;
 }
 
-//format tabs for user admin.
-function admin_tabs($selected="none") {
-	global $admintabs;
-	$_SESSION["admintab"]=$selected;
-	create_tabs($admintabs,$selected);
-}//end function
 
-function admin_table_tabs($selected="none") {
-	global $tabletabs;
-	$_SESSION["tabletab"]=$selected;
-	create_tabs($tabletabs,$selected);
-}
+//Need to set this so that we can include tabs in the header for this one.
+global $has_header;
+$has_header=true;
+function display_header(){
+	admin_tabs("Tables");
+	echo "<table width='100%' cellspacing=0 cellpadding=0 class='bodyline' style='border-bottom:0px;margin-bottom:0px;background-image:none;padding-top:3px;-moz-border-radius-bottomleft:0px;-moz-border-radius-bottomright:0px;'><tr><td>";
+	admin_table_tabs("Reports");
+	echo "</td></tr></table>";	
+};
 ?>
