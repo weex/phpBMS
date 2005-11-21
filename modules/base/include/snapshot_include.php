@@ -84,13 +84,18 @@ function showTasks($userid,$type="Tasks"){
 			$querystatement.=" type=\"TS\" AND (private=0 or (private=1 and createdby=".$userid.")) 
 							   AND (completed=0 or (completed=1 and completeddate=CURDATE()))
 							   AND (assignedtoid is null or assignedtoid=0)";
-							   
+			$title="Tasks";
+			$sec=3;
 		break;
 		case "ReceivedAssignments":
 			$querystatement.=" assignedtoid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
+			$title="Received Assignments";
+			$sec=1;
 		break;
 		case "GivenAssignments":
 			$querystatement.=" assignedbyid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
+			$title="Given Assignments";
+			$sec=2;
 		break;
 	}
 	$querystatement.="AND (
@@ -101,9 +106,15 @@ function showTasks($userid,$type="Tasks"){
 
 	$querystatement.=" ORDER BY importance DESC,notes.enddate,notes.endtime,notes.startdate DESC,notes.starttime DESC,notes.creationdate DESC";
 
-	
+
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
+	
+	?> <div style="clear:both;float:right;cursor:pointer;cursor:hand;<?php if($sec==3)echo "display:none;"?>padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg<?php echo $sec?>" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
+	<h2 style="margin-top:4px;"><?php echo $title; if(mysql_num_rows($queryresult)) {?> <span class="small">(<?php echo mysql_num_rows($queryresult)?>)</span><?php } ?></h2>
+	<div id="accordianSec<?php echo $sec?>" style="margin:0px;padding:0px;display:block;">
+	<?php
+	
 	if(mysql_num_rows($queryresult)){ 	
 		while($therecord=mysql_fetch_array($queryresult)) {
 		$className="task";		
@@ -124,7 +135,7 @@ function showTasks($userid,$type="Tasks"){
 	</div>
 	<?php } } else {
 	?><div class="small disabledtext">no <?php if($type=="Tasks") echo "tasks"; else echo "assignments"?></div><?php
-	}
+	}?></div> <?php 
 }
 
 function showSevenDays($userid){

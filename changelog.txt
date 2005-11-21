@@ -30,6 +30,7 @@ phpBMS v0.603/ BMS module v0.603
 - Fixed compatibilty problem with MySQL 5 and reserved words.
 - Modified Snapshot to load snapshot sections from each individual module.
 - Moved non MySQL settings to new settings table.
+- Added record number to tasks/assignments on snapshot.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
