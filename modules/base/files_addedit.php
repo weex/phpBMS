@@ -96,9 +96,9 @@
 			name<br />
 			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"width:98%","class"=>"important","tabindex"=>"5")); ?>
 		</label>
-		<label for="name" class="important">
+		<label for="servename" class="important">
 			serve name<br />
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>
+			<?PHP field_text("servename",$therecord["servename"],1,"Serve name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>
 		</label>
 		<div class="small" style="padding-top:6px;padding-bottom:6px;"><em>
 			Serve name is the file name, including extension that will be used when the file is sent through the web server to the client.  
@@ -112,7 +112,7 @@
 			type <em>(MIME)</em><br />
 			<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="40" maxlength="100" readonly="true" class="uneditable" style="" />
 		</label>
-		<div><button type="button" class="Buttons">view file</button></div>
+		<div><button type="button" class="Buttons" onClick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">view file</button></div>
 		<?php } ?>
 		<label for="upload">
 			<?php if(!$therecord["nofile"]) echo "change file"; else echo "upload file"?><br />

@@ -49,7 +49,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				id,name,servname,type,accesslevel,ISNULL(file) as nofile,
+				id,name,servename,type,accesslevel,ISNULL(file) as nofile,
 				
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -90,12 +90,18 @@ function updateRecord($variables,$userid){
 	$querystatement="UPDATE files SET ";
 	
 			$querystatement.="name=\"".$variables["name"]."\", "; 
-			$querystatement.="type=\"".$variables["type"]."\", "; 
-			$querystatement.="tabledefid=".$variables["tabledefid"].", "; 
-			$querystatement.="reportfile=\"".$variables["reportfile"]."\", "; 
-			$querystatement.="description=\"".$variables["description"]."\", "; 
-			$querystatement.="displayorder=".$variables["displayorder"].", "; 
+			$querystatement.="servename=\"".$variables["servename"]."\", "; 
 			$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
+			if($_FILES['upload']["name"]){
+				if (function_exists('file_get_contents')) {
+					$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
+				} else {
+					// If using PHP < 4.3.0 use the following:
+					$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+				}
+				$querystatement.="type=\"".$_FILES['upload']['type']."\", ";
+				$querystatement.="file=\"".$file."\", ";
+			}
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -110,24 +116,32 @@ function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
+	if(!$_FILES['upload']["name"])
+		return -1;
+	
+	if (function_exists('file_get_contents')) {
+		$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
+	} else {
+		// If using PHP < 4.3.0 use the following:
+		$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+	}
+
 	$querystatement="INSERT INTO files ";
 	
-	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,accesslevel
+	$querystatement.="(name,servename,accesslevel,type,file,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
-			$querystatement.="\"".$variables["type"]."\", "; 
-			$querystatement.=$variables["tabledefid"].", "; 
-			$querystatement.="\"".$variables["reportfile"]."\", "; 
-			$querystatement.="\"".$variables["description"]."\", "; 
-			$querystatement.=$variables["displayorder"].", "; 
+			$querystatement.="\"".$variables["servename"]."\", "; 
 			$querystatement.=$variables["accesslevel"].", "; 
+			$querystatement.="\"".$_FILES['upload']['type']."\", ";
+			$querystatement.="\"".$file."\", ";
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
 	$querystatement.=$userid.")"; 
-	
+
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 	return mysql_insert_id($dblink);

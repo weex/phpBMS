@@ -168,6 +168,7 @@ function loadSettings() {
 					$thereturn.=importData("tablesearchablefields");
 					$thereturn.=importData("users");
 					$thereturn.=importData("settings");
+					$thereturn.=importData("files");
 					$thereturn.="\nDone Importing Data\n===========================\n";
 			
 				break;

@@ -117,7 +117,7 @@ CREATE TABLE tablecolumns (
 CREATE TABLE `tabledefs` (
   `editfile` varchar(128) default NULL,
   `displayname` varchar(64) default NULL,
-  `id` int(11) NOT NULL auto_increment default 1000,
+  `id` int(11) NOT NULL auto_increment default '1000',
   `maintable` varchar(64) NOT NULL default '',
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',

@@ -110,23 +110,9 @@
 			$they+=$labelheight;
 			$rowcount++;
 		}// end fetch_array while loop
-	
-		
-		if($border_debug==1){
-			$pdf->Output();
-		}
-		else {
-			//write the frickin thing! Need to write to a temp file and then you know...
-			chdir("../../../report");
-			$file=basename(tempnam(getcwd(),'tmp'));
-			chmod($file,0664);		
-			rename($file,$file.'.pdf');
-			$file.='.pdf';
-		
-			// write to file and then output
-			$pdf->Output($file);
-			echo "<HTML><SCRIPT>document.location='../../../report/".$file."';</SCRIPT></HTML>";
-		}
+			
+		$pdf->Output();
+		exit();
 	} else {
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

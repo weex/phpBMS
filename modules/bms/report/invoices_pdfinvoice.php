@@ -34,9 +34,9 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
-	require("../../../include/session.php");
-	require("../../../include/common_functions.php");
+	session_cache_limiter('private');
+	require_once("../../../include/session.php");
+	require_once("../../../include/common_functions.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	
@@ -46,7 +46,8 @@
 	else
 		$sortorder=" ORDER BY invoices.id";
 
-	require("../../../fpdf/fpdf.php");
+	require_once("../../../fpdf/fpdf.php");
+	require_once("../../../fpdf/mem_image.php");
 	
 	//Generate the invoice Query
 	$querystatement="SELECT invoices.id, totalweight, totaltni, totalti, totalcost, taxareaid,
@@ -78,7 +79,7 @@
 	$paperlength=11;
 	
 	//define the documents and margins
-	$pdf=new FPDF("P","in","Letter");
+	$pdf=new MEM_IMAGE("P","in","Letter");
 	$pdf->SetMargins($leftmargin,$topmargin,$rightmargin);
 	$pdf->Open();
 
@@ -97,7 +98,16 @@
 		$tempwidth=1;
 		$cname=$_SESSION["company_name"];
 		$caddress=$_SESSION["company_address"]."\n".$_SESSION["company_csz"]."\n".$_SESSION["company_phone"];
-		$pdf->Image("../../../report/logo.png",$leftmargin,$topmargin,$tempwidth);
+		
+		
+		// Image from DB, so we need to retieve it and then add it to pdf
+		// through the extended memImage function (instead of the image function, that wants a file, not data)
+			$querystatement="SELECT file FROM files WHERE id=1";
+			$pictureresult=mysql_query($querystatement,$dblink);
+			if(!$pictureresult) reportError(300,"Error Retrieving Logo Graphic");
+			$thepicture=mysql_fetch_array($pictureresult);
+			
+		$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth);	
 		
 		//next company name
 		$pdf->SetXY($tempwidth+$leftmargin,$topmargin);
@@ -329,21 +339,8 @@
 		
 		
 	}// end fetch_array while loop
+	
+	$pdf->Output();
+	exit();
 
-	
-	if($border_debug==1){
-		$pdf->Output();
-	}
-	else {
-		//write the frickin thing! Need to write to a temp file and then you know...
-		chdir("../../../report");
-		$file=basename(tempnam(getcwd(),'tmp'));
-		chmod($file,0664);
-		rename($file,$file.'.pdf');
-		$file.='.pdf';
-	
-		// write to file and then output
-		$pdf->Output($file);
-		echo "<HTML><SCRIPT>document.location='../../../report/".$file."';</SCRIPT></HTML>";
-	}
 ?>

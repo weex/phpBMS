@@ -73,8 +73,18 @@ function processSettings($variables,$files){
 	
 	// deal with logo graphic.
 	if(isset($files["printedlogo"]))
-		if($files["printedlogo"]["type"]=="image/png")
-			copy($files["printedlogo"]["tmp_name"],$_SERVER["DOCUMENT_ROOT"].$_SESSION["app_path"]."report/logo.png");
+		if($files["printedlogo"]["type"]=="image/png"){
+			if (function_exists('file_get_contents')) {
+				$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
+			} else {
+				// If using PHP < 4.3.0 use the following:
+				$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+			}
+			$querystatement="UPDATE files SET file=\"".$file."\" WHERE id=1";
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult) reportError(300,"Error Uploading Graphic File");
+		}
+	}
 			
 	return true;
 }

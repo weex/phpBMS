@@ -48,11 +48,7 @@
 			//next update record's lastlogin time
 			$result = mysql_query("UPDATE users set modifieddate=modifieddate, lastlogin=Now() where id = ".$_SESSION["userinfo"]["id"],$dblink);
 			if  (!$result)die ("update users query failed:".mysql_error($dblink));			
-			
-			//anytime anyone logs in, clean temp PDF files older than an hour
-			include("include/common_functions.php");
-			clean_pdf_reports("report/");
-			
+						
 			header("Location: ".$_SESSION["default_load_page"]);
 			
 			//register table settings

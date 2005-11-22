@@ -67,18 +67,6 @@
 		$pdf->SetY($pdf->GetY()+.25);
 	}// end fetch_array while loop
 
-	if($border_debug==1){
-		$pdf->Output();
-	}
-	else {
-		//write the frickin thing! Need to write to a temp file and then you know...
-		chdir("../../../report");
-		$file=basename(tempnam(getcwd(),'tmp'));
-		rename($file,$file.'.pdf');
-		$file.='.pdf';
-	
-		// write to file and then output
-		$pdf->Output($file);
-		echo "<HTML><SCRIPT>document.location='../../../report/".$file."';</SCRIPT></HTML>";
-	}
+	$pdf->Output();
+	exit();
 ?>

@@ -104,12 +104,15 @@ if (isset($_POST["command"])){
 				$tablePrinter->openwindows="<script language=\"JavaScript\">\n";
 				for($i=0;$i<count($_POST["choosereport"]);$i++){
 					if($_POST["choosereport"][$i]){
-						$querystatement="SELECT reportfile from reports where id=".$_POST["choosereport"][$i].";";
+						$querystatement="SELECT reportfile,type from reports where id=".$_POST["choosereport"][$i].";";
 						$queryresult=mysql_query($querystatement,$dblink);
 						if(!$queryresult) reportError(100,"Could not Retreive Report Information");				
 						$reportrecord=mysql_fetch_array($queryresult);	
+						$fakeExtForIE="";
+						if($reportrecord["type"]=="PDF Report")
+							$fakeExtForIE="&ext=.pdf";
 						//javascript open each report in new window
-						$tablePrinter->openwindows.="window.open('".$_SESSION["app_path"].$reportrecord["reportfile"]."?tabledefid=".urlencode($tablePrinter->tableid)."','print".$i."');\n";
+						$tablePrinter->openwindows.="window.open('".$_SESSION["app_path"].$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$fakeExtForIE."','print".$i."');\n";
 					}
 				}
 				$tablePrinter->openwindows.="</script>\n";
@@ -134,7 +137,6 @@ if (isset($_POST["command"])){
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>
 <body>
-<?PHP 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>
 <div class="bodyline" style="width:550px;margin-top:2px;">
 	<h1><?php echo $pageTitle ?><a name="top"></a></h1>
 	
@@ -235,4 +237,4 @@ if (isset($_POST["command"])){
 </div>
 <div style="margin:0px;padding:0px;width:550px;"><?php include("footer.php")?></div>
 </body>
-</html>
+</html><?PHP 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>

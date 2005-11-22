@@ -65,25 +65,6 @@ function create_tabs($tabarray,$selected="none") {
 	<?php
 }
 
-// Clean our temp PDF report files
-//====================================================================
-function clean_pdf_reports($dir,$sectime=3600)
-{
-    //Delete temporary files
-    $t=time();
-    $h=opendir($dir);
-    while($file=readdir($h))
-    {
-        if(substr($file,0,3)=='tmp' and substr($file,-4)=='.pdf')
-        {
-            $path=$dir.'/'.$file;
-            if($t-filemtime($path)>$sectime)
-                @unlink($path);
-        }
-    }
-    closedir($h);
-}
-
 //=====================================================================
 function getUserName($id=0){
 	global $dblink;

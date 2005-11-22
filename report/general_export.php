@@ -46,7 +46,7 @@
 	header("Content-type: text/plain");
 	header('Content-Disposition: attachment; filename="export.txt"');
 	
-	$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tabledefid"];
+	$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tid"];
 	$thequery=mysql_query($querystatement,$dblink);                   
 	if(!$thequery)	reportError(100,"Could not retrieve table information");
 	$therecord=mysql_fetch_array($thequery);
