@@ -383,6 +383,7 @@ function insertRecord($variables,$userid){
 	
 	$thequery = mysql_query($querystatement,$dblink);
 	if(!$thequery) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
+
 	return mysql_insert_id($dblink);
 }
 

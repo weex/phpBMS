@@ -101,11 +101,11 @@ function formatToSQLTime($thetime,$allownull=true){
 			$temptime="\"00:00:00\"";
 	} else{
 		if(strpos($thetime,"AM")!==false){
-			str_replace(" AM","",$thetime);
+			$thetime=str_replace(" AM","",$thetime);
 			$addtime=0;
 		}
 		else {
-			str_replace(" PM","",$thetime);
+			$thetime=str_replace(" PM","",$thetime);
 			$addtime=12;
 		}
 		$timearray=explode(":",$thetime);

@@ -31,6 +31,9 @@ phpBMS v0.603/ BMS module v0.603
 - Modified Snapshot to load snapshot sections from each individual module.
 - Moved non MySQL settings to new settings table.
 - Added record number to tasks/assignments on snapshot.
+- Moved logo to database.
+- PDF reports are now printed directly, instead of writing to a temp file.
+- Fixed recording of times in database.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================
