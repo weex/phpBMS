@@ -84,7 +84,7 @@ function showTasks($userid,$type="Tasks"){
 			$querystatement.=" type=\"TS\" AND (private=0 or (private=1 and createdby=".$userid.")) 
 							   AND (completed=0 or (completed=1 and completeddate=CURDATE()))
 							   AND (assignedtoid is null or assignedtoid=0)";
-			$title="Tasks";
+			$title="<a href=\"".$_SESSION["app_path"]."search.php?id=23\">Tasks</a>";
 			$sec=3;
 		break;
 		case "ReceivedAssignments":

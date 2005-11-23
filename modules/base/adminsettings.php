@@ -121,7 +121,7 @@ require_once("include/adminsettings_include.php");
 		<legend>Display / Print</legend>
 		<div>Printed Logo</div>
 		<div style="border:1px solid black; height:150px;width:400px;overflow:scroll;">
-			<img src="../../report/logo.png">
+			<img src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&f=file&mf=type&r=1">
 		</div>
 		<label for="printedlogo">
 			upload new logo file <em>(png format)</em><br />

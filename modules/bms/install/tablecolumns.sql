@@ -42,11 +42,6 @@ INSERT INTO tablecolumns VALUES (77,18,'company / name','if(clients.lastname!=\"
 INSERT INTO tablecolumns VALUES (79,18,'city','clients.city','left','',3,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (80,18,'state','clients.state','center','',4,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (81,18,'postal code','clients.postalcode','left','',5,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (82,19,'id','menu.id','center','',0,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (84,19,'link','menu.link','left','',2,'',1,'',NULL);
-INSERT INTO tablecolumns VALUES (88,19,'access level','concat(\" \",menu.accesslevel)','center','',3,'menu.accesslevel',0,'',NULL);
-INSERT INTO tablecolumns VALUES (86,19,'Item','concat(if(parentmenu.name is null,\"\",concat(parentmenu.name,\" :: \")),menu.name)','left','',1,'',0,'100%',NULL);
-INSERT INTO tablecolumns VALUES (94,16,'table','if(tabledefs.displayname is null,\"<b>global</b>\",tabledefs.displayname)','left','',1,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (102,2,'e-mail','clients.email','left','',3,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (103,22,'name','clientemailprojects.name','left','',2,'',0,'100%',NULL);
 INSERT INTO tablecolumns VALUES (104,22,'user','if(clientemailprojects.userid=0,\"<b>global</b>\",concat(users.lastname,\", \",users.firstname))','left','',1,'',0,'',NULL);

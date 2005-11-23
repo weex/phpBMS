@@ -19,3 +19,14 @@ CREATE TABLE `settings` (`id` int(11) NOT NULL auto_increment, `name` varchar(64
 CREATE TABLE `files` (`id` int(11) NOT NULL auto_increment,`name` varchar(128) NOT NULL default '',`description` text,`file` longblob,`type` varchar(100) default '',`createdby` int(11) default '0',`creationdate` datetime default '0000-00-00 00:00:00',`modifiedby` int(11) default '0',`modifieddate` timestamp(14) NOT NULL,`accesslevel` int(11) NOT NULL default '0',PRIMARY KEY  (`id`)) TYPE=MyISAM; 
 
 CREATE TABLE `filetorecord` (`id` int(11) NOT NULL auto_increment,`fileid` int(11) NOT NULL default '0',`tabledefid` int(11) NOT NULL default '0',`recordid` int(11) NOT NULL default '0',`createdby` int(11) default '0',`creationdate` datetime default '0000-00-00 00:00:00',`modifiedby` int(11) default '0',`modifieddate` timestamp(14) NOT NULL,PRIMARY KEY  (`id`),KEY `therecord` (`recordid`),KEY `thetable` (`tabledefid`),KEY `thefile` (`fileid`)) TYPE=MyISAM;
+
+INSERT INTO tabledefs VALUES ('modules/base/files_addedit.php','Files',26,'files',2,'2005-11-17 21:44:07',2,20051117214436,'files','modules/base/files_addedit.php','delete','files.id=-1','files.name','search','','','table',1);
+INSERT INTO tabledefs VALUES ('modules/base/files_addedit.php','Attachments',27,'attachments',2,'2005-11-22 11:38:15',2,20051122125549,'(attachments INNER JOIN files on attachments.fileid=files.id)','modules/base/files_addedit.php','delete','attachments.id!=0','attachments.creationdate DESC','search','','','table',1);
+INSERT INTO tablefindoptions VALUES (108,26,'All Records','files.id!=0',0,-10);
+INSERT INTO tableoptions VALUES (83,26,'new','1',0,-10);
+INSERT INTO tableoptions VALUES (84,26,'select','1',0,-10);
+INSERT INTO tableoptions VALUES (85,26,'edit','1',0,-10);
+INSERT INTO tableoptions VALUES (86,27,'new','1',0,-10);
+INSERT INTO tableoptions VALUES (87,27,'select','1',0,-10);
+INSERT INTO tableoptions VALUES (88,27,'edit','1',0,-10);
+INSERT INTO tablesearchablefields VALUES (96,26,'files.name','name',0,'field');

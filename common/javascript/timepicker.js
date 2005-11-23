@@ -98,7 +98,7 @@ function tpClickHour(hour){
 	if (hour==0) hour=12;
 	
 	timeField.value=hour+":"+minutes+ampm;
-	
+	if(timeField.onchange) timeField.onchange();
 }
 function tpClickMinute(thetd){
 	var minutes=thetd.innerHTML;
@@ -108,6 +108,7 @@ function tpClickMinute(thetd){
 	var hours=timeField.value.substring(0,timeField.value.indexOf(":"));
 	var ampm=timeField.value.substr(timeField.value.indexOf(" "));
 	timeField.value=hours+minutes+ampm;
+	if(timeField.onchange) timeField.onchange();
 	closeTPBox();
 }
 

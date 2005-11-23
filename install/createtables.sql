@@ -133,7 +133,7 @@ CREATE TABLE `tabledefs` (
   `defaultcriteriaselection` varchar(128) default '',
   `type` varchar(16) NOT NULL default 'table',
   `moduleid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY  (`id`)
 ) TYPE=MyISAM;
 
 CREATE TABLE tablefindoptions (
@@ -224,7 +224,7 @@ CREATE TABLE `files` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM; 
 
-CREATE TABLE `filetorecord` (
+CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,
   `fileid` int(11) NOT NULL default '0',
   `tabledefid` int(11) NOT NULL default '0',

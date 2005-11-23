@@ -38,6 +38,7 @@ phpBMS v0.603/ BMS module v0.603
 - Added attachment sections to invoices, product, and clients.
 - Fixed caching problem with graphics.
 - Added default tax area to client.
+- End time is update when start time is set after end time.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

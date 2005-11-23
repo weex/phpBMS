@@ -211,7 +211,7 @@ function insertRecord($variables,$userid){
 	$querystatement.="(firstname,lastname,company,homephone,workphone,mobilephone,fax,otherphone,email,webaddress,";
 	$querystatement.="type,becameclient,category,inactive,salesmanagerid,leadsource,address1,address2,city,state,postalcode,country,shiptoaddress1,";
 	$querystatement.="shiptoaddress2,shiptocity,shiptostate,shiptopostalcode,shiptocountry,";
-	$querystatement.="paymentmethod,ccnumber,ccexpiration,comments,taxareaid
+	$querystatement.="paymentmethod,ccnumber,ccexpiration,comments,taxareaid,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["firstname"]."\", "; 

@@ -40,14 +40,14 @@ error_reporting(E_ALL);
 function importData($thetable){
 	global $dblink;
 	
-	$tablefile = fopen($thetable.".sql","r");
+	$tablefile = fopen($thetable.".sql","rb");
 	if(!$tablefile) {
 		return "Could not open the file ".$thetable.".sql";
 	}
 	$thereturn="Importing records for '".$thetable."'\n";
 		$counter=0;
 		while(!feof($tablefile)) {
-			$sqlstatement=trim(fgets($tablefile,1024));
+			$sqlstatement=trim(fgets($tablefile,8184));
 			if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
 				$theresult=mysql_query($sqlstatement,$dblink);
 				if(!$theresult)

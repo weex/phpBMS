@@ -45,7 +45,7 @@ function mark_asread($theids){
 	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"notes.id");
 	
-	$querystatement = "UPDATE notes SET notes.completed=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND type!=\"SY\";";
+	$querystatement = "UPDATE notes SET notes.completed=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND type!=\"SM\";";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark as Read/Completed: ".mysql_error($dblink)." -- ".$querystatement);		
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));

@@ -94,7 +94,7 @@
 						<label for="startdate" id="starttext" style="padding:0px;padding-left:30px;">start</label>
 						<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
 						&nbsp;<?PHP field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"checkEndDate();setEnglishDates()"));?>	
-						&nbsp;<?PHP field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+						&nbsp;<?PHP field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"checkEndDate()"));?>
 					</div>
 					<div>
 						<label for="enddate" id="endtext" style="padding:0px;padding-left:30px;">end</label>
