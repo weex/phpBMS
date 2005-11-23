@@ -9,9 +9,9 @@ INSERT INTO tablecolumns VALUES (45,3,'type','invoices.type','left','',1,'',0,''
 INSERT INTO tablecolumns VALUES (134,3,'status','invoices.status','left','',2,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (46,3,'date','if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate)','left','',4,'',0,'','date');
 INSERT INTO tablecolumns VALUES (47,3,'client name / company','concat(\"<strong>\",if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\")','left','',5,'concat(clients.lastname,clients.firstname,clients.company)',0,'100%',NULL);
-INSERT INTO tablecolumns VALUES (48,3,'total','if(invoices.type!=\"VOID\",invoices.totalti,\"-----\")','right','sum(if(invoices.type!=\"VOID\",invoices.totalti,0))',6,'',0,'','currency');
 INSERT INTO tablecolumns VALUES (139,5,'id','lineitems.id','left','',0,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (49,3,'due','if(invoices.type!=\"VOID\",invoices.totalti-invoices.amountpaid,\"-----\")','right','sum(if(invoices.type!=\"VOID\",(invoices.totalti-invoices.amountpaid),0))',7,'',0,'','currency');
+INSERT INTO tablecolumns VALUES (48,3,'total','if(invoices.type!=\"VOID\",invoices.totalti,\"-----\")','right','sum(if(invoices.type!=\"VOID\",invoices.totalti,0))',6,'if(invoices.type!=\"VOID\",invoices.totalti,0)',0,'','currency');
+INSERT INTO tablecolumns VALUES (49,3,'due','if(invoices.type!=\"VOID\",invoices.totalti-invoices.amountpaid,\"-----\")','right','sum(if(invoices.type!=\"VOID\",(invoices.totalti-invoices.amountpaid),0))',7,'if(invoices.type!=\"VOID\",invoices.totalti-invoices.amountpaid,0)',0,'','currency');
 INSERT INTO tablecolumns VALUES (51,5,'invoice id','lineitems.invoiceid','left','',1,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (52,5,'part #','products.partnumber','left','',4,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (53,5,'name','products.partname','left','',5,'',1,'100%',NULL);

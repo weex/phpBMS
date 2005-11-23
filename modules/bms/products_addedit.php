@@ -107,7 +107,7 @@
 				<tr>
 					<td width="100%">
 						<label for="partnumber" >
-							<strong>part number</strong> <em>(must be unique)</em><br/>
+							<strong>part number</strong> <span class="notes"><em>(must be unique)</em></span><br/>
 							<?PHP field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"28","maxlength"=>"32","style"=>"width:98%","class"=>"important","tabindex"=>"20","onChange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>
 						</label>
 					</td>
@@ -127,8 +127,8 @@
 				description<br />
 				<input name="description" type="text" id="description" style="width:98%" value="<?php echo htmlQuotes($therecord["description"])?>" size="34" maxlength="255" tabindex="40" />
 			</label>
-			<div class="small"><em>The description will show by default in the memo field of invoice
-									line items, but can be modified on the invoice.</em></div>
+			<div class="notes"><strong>Note:</strong> The description will show by default in the memo field of invoice
+									line items, but can be modified on the invoice.</div>
 		</fieldset>
 		
 		<fieldset>
@@ -177,7 +177,7 @@
 					</td>
 				</tr>
 			</table>
-			<div class="small"><em>Weight must be in lbs. in order for shipping to be estimated correctly.</em></div>
+			<div class="notes"><strong>Note:</strong> Weight must be in lbs. in order for shipping to be estimated correctly.</div>
 		</fieldset>
 		
 		<fieldset>
@@ -192,10 +192,10 @@
 				?><?PHP field_text("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"200")); ?>	
 			</label>
 			<label for="isprepackaged">
-				<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?>pre-packaged <em>(product is not packed with any other product.)</em>
+				<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?>pre-packaged <span class="notes"><em>(product is not packed with any other product.)</em></span>
 			</label>
 			<label for="isoversized">
-				<?PHP field_checkbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?>oversized <em>(product must be delivered in a oversized box.)</em>
+				<?PHP field_checkbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?>oversized <span class="notes"><em>(product must be delivered in a oversized box.)</em></span>
 			</label>
 			</fieldset>
 		<fieldset>
