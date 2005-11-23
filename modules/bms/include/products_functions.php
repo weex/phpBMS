@@ -44,6 +44,11 @@ function product_tabs($selected="none",$id=0) {
 	$thequery=mysql_query($querystatement,$dblink);
 	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 
+	$querystatement="SELECT id FROM attachments where 
+						tabledefid=4 and recordid=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult? $numfilerows=mysql_num_rows($queryresult): $numfilerows=0;
+
 	$thetabs=array(
 		array(
 			"name"=>"General",
@@ -63,7 +68,13 @@ function product_tabs($selected="none",$id=0) {
 			"disabled"=>(($id)?false:true)
 		));}
 		array_push($thetabs,array(
-			"name"=>"Notes/Messages",
+			"name"=>"Attachments",
+			"href"=>(($id)?"products_attachments.php?refid=".$id:"N/A"),
+			"disabled"=>(($id)?false:true),
+			"notify"=>($numfilerows?true:false)
+		));
+		array_push($thetabs,array(
+			"name"=>"Notes/Tasks/Events",
 			"href"=>(($id)?"products_notes.php?refid=".$id:"N/A"),
 			"disabled"=>(($id)?false:true),
 			"notify"=>($numrows?true:false)

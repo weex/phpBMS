@@ -41,8 +41,14 @@ function client_tabs($selected="none",$id=0) {
 	
 	$querystatement="select id from notes where 
 						attachedtabledefid=2 and attachedid=".$id;
-	$thequery=mysql_query($querystatement,$dblink);
-	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
+	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;
+
+	$querystatement="SELECT id FROM attachments where 
+						tabledefid=2 and recordid=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult? $numfilerows=mysql_num_rows($queryresult): $numfilerows=0;
+
 
 	$thetabs=array(
 		array(
@@ -55,7 +61,13 @@ function client_tabs($selected="none",$id=0) {
 			"disabled"=>(($id)?false:true)
 		),
 		array(
-			"name"=>"Notes",
+			"name"=>"Attachments",
+			"href"=>(($id)?"clients_attachments.php?refid=".$id:"N/A"),
+			"disabled"=>(($id)?false:true),
+			"notify"=>($numfilerows?true:false)
+		),
+		array(
+			"name"=>"Notes/Tasks/Events",
 			"href"=>(($id)?"clients_notes.php?refid=".$id:"N/A"),
 			"disabled"=>(($id)?false:true),
 			"notify"=>($numrows?true:false)

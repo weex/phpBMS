@@ -281,9 +281,10 @@ function validatePercentage(thefield,precision){
 
 function formatCurrency(thenumber){
 	var newdollar,retval
-	
+	thenumber=thenumber.toString();	
 	//check for number		
 	if (isNaN(parseFloat(thenumber)) || thenumber.length!=((parseFloat(thenumber)).toString()).length) thenumber="0.00";
+
 	// add the dollar sign... remember that if it is a negative number, the minus sign goes in front
 	if(thenumber.charAt(0)=="-") {
 			newdollar="-$";

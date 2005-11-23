@@ -37,7 +37,7 @@
 
 	$displayTable= new displaySearchTable;	
 	$displayTable->base=$base;
-	$displayTable->initialize(12);	
+	$displayTable->initialize(27);	
 	$displayTable->querywhereclause=$whereclause;
 	$displayTable->tableoptions["printex"]=0;
 	$displayTable->tableoptions["othercommands"]=false;
@@ -68,10 +68,8 @@
 		}
 		$_POST["startnum"]=1;		
 	} elseif($_POST["desc"]!="")  $displayTable->querysortorder.=" DESC";
-
-	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
 	
-		$displayTable->issueQuery();		
+	$displayTable->issueQuery();		
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -80,7 +78,7 @@
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
 <script language="javascript">
-	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
+	xtraParamaters="<?php echo "backurl=".$backurl."&tabledefid=".$tabledefid."&refid=".$refid ?>";
 </script>
 </head>
 <body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
@@ -102,4 +100,4 @@
 	</div>
 </div>
 </body>
-</html><?php }//endif?>
+</html>

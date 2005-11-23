@@ -163,7 +163,7 @@
 			<th align="left" nowrap class="queryheader">type</td>
 			<th align="left" nowrap class="queryheader">date</td>
 			<th nowrap class="queryheader" align="left">part num. </td>
-			<th width="100%" nowrap class="queryheader" align="left">name</td>
+			<th width="100%" class="queryheader" align="left">name</td>
 			<th align="right" nowrap class="queryheader">price</td>
 			<th align="center" nowrap class="queryheader">qty.</td>
 			<th align="right" nowrap class="queryheader">ext.</td>
@@ -183,7 +183,7 @@
 		<td align="left" nowrap><?PHP echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
 		<td align="left" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
 		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
-		<td nowrap><?PHP echo $therecord["partname"]?></td>
+		<td ><?PHP echo $therecord["partname"]?></td>
 		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
 		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
 		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>

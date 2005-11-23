@@ -42,7 +42,7 @@
 	include("include/invoices_functions.php");
 	include("include/invoices_addedit_include.php");
 	
-	$pageTitle="Order/Invoice";
+	$pageTitle=$therecord["type"];
 	
 	$_SESSION["printing"]["tableid"]=3;
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
@@ -342,10 +342,10 @@
 	   <?PHP choicelist("shippingmethod",$therecord["shippingmethod"],"shippingmethod",array("tabindex"=>"30")); ?>&nbsp;
 	   <input name="estimate" type="button" class="Buttons" id="estimate" value="calculate shipping" onClick="estimateShipping()" tabindex="30"/>
 	</label>
-	<div class="small"><em>
-		(The "calculate shipping" button will retrieve shipping costs for UPS only.  Modifying the UPS entry names in the ship via
-		will disable the shipping calculator.)
-	</em></div>
+	<div class="notes">
+		<strong>Note:</strong> The "calculate shipping" button will retrieve shipping costs for UPS only.<br />
+		Modifying the UPS entry names in the ship via will disable the shipping calculator.)
+	</div>
 	<label for="trackingno" style="margin-top:8px;">
 		tracking number<br />
 		<input id="trackingno" name="trackingno" type="text" value="<?PHP echo htmlQuotes($therecord["trackingno"]) ?>" size="50" maxlength="64" tabindex="30" />
@@ -355,7 +355,7 @@
 <fieldset style="clear:both">
 <legend>instructions</legend>
 	<label for="specialinstructions">
-		special instructions <em>(will not print on invoice)</em><br />
+		special instructions <span class="notes"><em>(will not print on invoice)</em></span><br />
 		<textarea id="specialinstructions" name="specialinstructions" cols="45" rows="3" style="width:99%" tabindex="37"><?PHP echo $therecord["specialinstructions"]?></textarea>	
 	</label>
 	<label for="printedinstructions">

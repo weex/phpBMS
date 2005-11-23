@@ -35,15 +35,19 @@
  +-------------------------------------------------------------------------+
 */
 
+session_cache_limiter('private');
 require_once("include/session.php");
-if(!isset($_GET["i"])) die("Invalid Paramater");
-$querystatement="SELECT file,type,servename FROM files WHERE id=".((integer)$_GET["i"]);
-$queryresult=mysql_query($querystatement,$dblink);
-if(!$queryresult) die("bad query: ".$querystatement);
-if(mysql_num_rows($queryresult)){
-	$therecord=mysql_fetch_array($queryresult);
-	header("Content-type: ".$therecord["type"]);
-	header("Content-Disposition: attachment; filename=\"".$therecord["servename"]."\"");
-
-	echo $therecord["file"];
-}?>
+if(isset($_GET["i"]) && isset($_SESSION["userinfo"]["accesslevel"])) {
+	$querystatement="SELECT file,type,name FROM files WHERE id=".((integer)$_GET["i"])." AND accesslevel<=".$_SESSION["userinfo"]["accesslevel"];
+	@ $queryresult=mysql_query($querystatement,$dblink);
+	if($queryresult) {
+		if(mysql_num_rows($queryresult)){
+			$therecord=mysql_fetch_array($queryresult);
+			header("Content-type: ".$therecord["type"]);
+			header("Content-Disposition: attachment; filename=\"".rawurlencode($therecord["name"])."\"");
+		
+			echo $therecord["file"];
+		}
+	}
+}
+?>

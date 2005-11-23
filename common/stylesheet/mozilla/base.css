@@ -80,11 +80,13 @@ cursor: hand;
 
 .huge{font-size : 17px;}
 .large{font-size : 16px;}
-.small { font-size : 11px;}
+.small,.notes { font-size : 11px;}
 .tiny { font-size : 10px}
 .mono {font-family:'Courier New', Courier, mono;}
 
 .standout,#statusmessage{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
+
+.notes {color:#DF0005}
 
 .important {font-weight:bold;}
 
@@ -292,6 +294,8 @@ border-bottom-width:0px;
 
 .qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
 .qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
+.qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
+.qh1 a, .qh2 a{color:white;}
 
 
 .lineitems td{
@@ -311,7 +315,9 @@ border-bottom-width:0px;
 .smallQueryTable th{font-weight:bold;border-bottom:1px solid #999999; border-right:1px solid #999999; padding:2px; padding-left:4px; padding-right:4px;}
 .smallQueryTable td{background-color:white;border-bottom:1px solid #CCCCCC; border-right:1px solid #CCCCCC; padding:2px;padding-left:4px; padding-right:4px;cursor:pointer;}
 .smallQueryTable tr:Hover td{background-color:#999999;color:white;text-decoration:none;}
+.smallQueryTable tr:Hover td a{color:white;}
 .smallQueryTableSelected td{background-color:black;color:white}
+.smallQueryTableSelected a{color:white}
 .smallQueryTable tr.smallQueryTableSelected:Hover  td{background-color:black;color:white}
 /* ============================================================================== */
 /* Auto Fill                                                                      */

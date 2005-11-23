@@ -43,18 +43,20 @@
 
 	//set the table passing stuff
 	$reftableid=4;
-  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$_GET["refid"];
+	$refid=(integer) $_GET["refid"];
+  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
 	$backurl="../bms/products_notes.php";
 	$base="../../";
 
-	$refquery="select partnumber,partname from products where id=".$_GET["refid"];
+	$refquery="select partnumber,partname from products where id=".$refid;
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);	
 	
-	$pageTitle="Product Notes: ".$refrecord["partname"];
+	$pageTitle="Notes/Tasks/Events: ".$refrecord["partname"];
 
 	function doTabs(){
-		product_tabs("Notes/Messages",$_GET["refid"]);
+		global $refid;
+		product_tabs("Notes/Tasks/Events",$refid);
 	}
 	
 	include("../base/notes_records.php");

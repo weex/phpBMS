@@ -44,7 +44,6 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 function delete_record($theids){
 	global $dblink;
 
-	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"clientemailprojects.id");
 
 	$querystatement = "DELETE FROM clientemailprojects WHERE ".$whereclause.";";

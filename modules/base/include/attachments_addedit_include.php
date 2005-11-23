@@ -35,26 +35,32 @@
  +-------------------------------------------------------------------------+
 */
 
-if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
 
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
 
 //set table id
-$tableid=26;
+$tableid=27;
+if(!isset($_GET["backurl"])) 
+	$backurl=$_SESSION["app_path"]."search.php?id=".$tableid; 
+else{ 
+	$backurl=$_GET["backurl"];
+	if(isset($_GET["refid"]))
+		$backurl.="?refid=".$_GET["refid"];
+}
 
 function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
 	$querystatement="SELECT
-				id,name,description,type,accesslevel,
+				files.id,attachments.id as attachmentid,name,description,type,accesslevel,ISNULL(file) as nofile,
 				
-				createdby, creationdate, 
-				modifiedby, modifieddate
-				FROM files
-				WHERE id=".$id;		
+				attachments.createdby, attachments.creationdate, 
+				attachments.modifiedby, attachments.modifieddate
+				FROM attachments INNER JOIN files on attachments.fileid=files.id
+				WHERE attachments.id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
 	$therecord = mysql_fetch_array($queryresult);
@@ -117,26 +123,46 @@ function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
-	if(!$_FILES['upload']["name"])
-		return -1;
 	
-	if (function_exists('file_get_contents')) {
-		$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
-	} else {
-		// If using PHP < 4.3.0 use the following:
-		$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
-	}
+	if($variables["newexisting"]=="new"){
+		if(!$_FILES['upload']["name"])
+			return -1;
+		
+		if (function_exists('file_get_contents')) {
+			$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
+		} else {
+			// If using PHP < 4.3.0 use the following:
+			$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+		}
 
-	$querystatement="INSERT INTO files ";
-	
-	$querystatement.="(name,description,accesslevel,type,file,
+		$querystatement="INSERT INTO files ";
+		
+		$querystatement.="(name,description,accesslevel,type,file,
+							createdby,creationdate,modifiedby) VALUES (";
+		
+				$querystatement.="\"".$_FILES['upload']["name"]."\", "; 
+				$querystatement.="\"".$variables["description"]."\", "; 
+				$querystatement.=$variables["accesslevel"].", "; 
+				$querystatement.="\"".$_FILES['upload']['type']."\", ";
+				$querystatement.="\"".$file."\", ";
+					
+		//==== Almost all records should have this =========
+		$querystatement.=$userid.", "; 
+		$querystatement.="Now(), ";
+		$querystatement.=$userid.")"; 
+
+		$queryresult = mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
+		
+		$variables["fileid"]=mysql_insert_id($dblink);
+	}
+	$querystatement="INSERT INTO attachments ";	
+	$querystatement.="(fileid,tabledefid,recordid,
 						createdby,creationdate,modifiedby) VALUES (";
 	
-			$querystatement.="\"".$_FILES['upload']["name"]."\", "; 
-			$querystatement.="\"".$variables["description"]."\", "; 
-			$querystatement.=$variables["accesslevel"].", "; 
-			$querystatement.="\"".$_FILES['upload']['type']."\", ";
-			$querystatement.="\"".$file."\", ";
+		$querystatement.=$variables["fileid"].", "; 
+		$querystatement.=$variables["tabledefid"].", "; 
+		$querystatement.=$variables["recordid"].", "; 
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
@@ -145,6 +171,7 @@ function insertRecord($variables,$userid){
 
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	
 	return mysql_insert_id($dblink);
 }
 
@@ -169,12 +196,12 @@ else
 			// if we needed to do any clean up (deleteing temp line items)
 			if(!isset($_POST["id"])) $_POST["id"]=0;
 			$theid=$_POST["id"];
-			header("Location: ../../search.php?id=".$tableid."#".$theid);
+			header("Location: ".$backurl."#".$theid);
 		break;
 		case "save":
 			if($_POST["id"]) {
 				updateRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
-				$theid=$_POST["id"];
+				$theid=$_POST["attachmentid"];
 				//get record
 				$therecord=getRecords($theid);
 				$createdby=getUserName($therecord["createdby"]);

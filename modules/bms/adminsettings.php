@@ -1,16 +1,16 @@
 <h1 style="clear:both;">Module: Business Management System</h1>
 <fieldset>
 	<legend>shipping</legend>
-	<div class="small important"><em>
-		The shipping information below is used when connecting to UPS to calculate shipping costs for product.
+	<div class="notes">
+		<strong>Note:</strong> The shipping information below is used when connecting to UPS to calculate shipping costs for product.
 		Current tests show that the UPS shipping calculator only works when shipping to and from the Unites States.
 	</em></div>
 	<label for="sshipping_markup">
 		shipping multiplier <em>(markup)</em><br />
 		<?PHP field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?>
 	</label>
-	<div class="small">
-		<em>Enter the number to multiply the calculated shipping cost. For example to mark up shipping costs by 10%, enter 1.1 </em>
+	<div class="notes">
+		<strong>Example:</strong> Enter the number to multiply the calculated shipping cost. For example to mark up shipping costs by 10%, enter 1.1
 	</div>
 	<label for="sshipping_postalcode">
 		shipping zip/postal code<br />

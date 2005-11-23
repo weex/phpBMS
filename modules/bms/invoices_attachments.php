@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
@@ -36,39 +35,38 @@
  +-------------------------------------------------------------------------+
 */
 
-//=============================================
-//functions
-//=============================================
+	include("../../include/session.php");
+	include("../../include/common_functions.php");
+	include("include/invoices_functions.php");
 
-function mark_asread($theids){
-	//passed variable is array of user ids to be revoked
-	global $dlink;
+	require_once("../../include/search_class.php");
+	require_once("../../include/common_functions.php");	
+
+	//set the table passing stuff
+	$tabledefid=3;
+	$refid=(integer) $_GET["refid"];
+	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid." AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"];
+	$backurl="../bms/invoices_attachments.php";
+	$base="../../";
+
+	$refquery="select firstname,lastname,company from clients where id=".$refid;
+	$refquery=mysql_query($refquery,$dblink);
+	$refrecord=mysql_fetch_array($refquery);
+
+	$refquery="SELECT
+			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name 
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
+			   WHERE invoices.id=".$refid;
+	$refquery=mysql_query($refquery,$dblink);
+	$refrecord=mysql_fetch_array($refquery);	
 	
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or notes.id=".$theid;
+	$pageTitle="Attachments: ".$refrecord["id"].", ".$refrecord["name"];
+
+	function doTabs(){
+		global $refid;
+		invoice_tabs("Attachments",$refid);	
 	}
-	$whereclause=substr($whereclause,3);
 	
-	$thequery = "update notes set notes.beenread=1 where (".$whereclause.") and type!=\"System\";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as read: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$thequery."]");		
-}
-
-
-//delete notes
-function delete_record($theids){
-	global $dblink;
+	include("../base/attachments_records.php");
 	
-	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);		
-	$querystatement = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$whereclause.");";
-	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(1,"Couldn't Update: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
-}
-
 ?>

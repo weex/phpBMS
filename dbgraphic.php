@@ -34,6 +34,7 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+	session_cache_limiter('private');
 	require_once("include/session.php");
 	if(!isset($_GET["t"]) or !isset($_GET["r"]) or !isset($_GET["f"]) or !isset($_GET["mf"])) die("Invlaid Paramateers Set");
 	

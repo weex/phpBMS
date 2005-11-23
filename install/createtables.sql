@@ -97,21 +97,21 @@ CREATE TABLE reports (
 ) TYPE=MyISAM PACK_KEYS=0;
 
 
-CREATE TABLE tablecolumns (
-  id int(11) NOT NULL auto_increment,
-  tabledefid int(11) NOT NULL default '0',
-  name varchar(64) NOT NULL default '',
+CREATE TABLE `tablecolumns` (
+  `id` int(11) NOT NULL auto_increment,
+  `tabledefid` int(11) NOT NULL default '0',
+  `name` varchar(64) NOT NULL default '',
   `column` varchar(255) NOT NULL default '',
-  align varchar(16) NOT NULL default '',
-  footerquery varchar(255) default '',
-  displayorder int(11) NOT NULL default '0',
-  sortorder varchar(128) default '',
-  wrap tinyint(1) NOT NULL default '0',
-  size varchar(16) NOT NULL default '',
-  format enum('date','time','currency','boolean','datetime') default NULL,
-  PRIMARY KEY  (id),
-  KEY tabledef (tabledefid),
-  KEY displayorder (displayorder)
+  `align` varchar(16) NOT NULL default '',
+  `footerquery` varchar(255) default '',
+  `displayorder` int(11) NOT NULL default '0',
+  `sortorder` varchar(128) default '',
+  `wrap` tinyint(1) NOT NULL default '0',
+  `size` varchar(16) NOT NULL default '',
+  `format` enum('date','time','currency','boolean','datetime','filelink') default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `tabledef` (`tabledefid`),
+  KEY `displayorder` (`displayorder`)
 ) TYPE=MyISAM;
 
 CREATE TABLE `tabledefs` (
@@ -213,14 +213,14 @@ CREATE TABLE `settings` (
 CREATE TABLE `files` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(128) NOT NULL default '',
-  `accesslevel` int(11) NOT NULL default '0', 
-  `servename` varchar(64) NOT NULL default '',
+  `description` text,
   `file` longblob,
   `type` varchar(100) default '',
   `createdby` int(11) default '0',
   `creationdate` datetime default '0000-00-00 00:00:00',
   `modifiedby` int(11) default '0',
   `modifieddate` timestamp(14) NOT NULL,
+  `accesslevel` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM; 
 

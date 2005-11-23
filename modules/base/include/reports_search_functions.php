@@ -43,7 +43,8 @@ include("modules/base/include/admin_functions.php");
 
 //delete reports
 function delete_record($theids){
-	//passed variable is array of user ids to be revoked
+	global $dblink;
+
 	$whereclause=buildWhereClause($theids,"reports.id");
 
 	$querystatement = "DELETE FROM reports WHERE ".$whereclause.";";

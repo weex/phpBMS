@@ -115,7 +115,7 @@ function displayQueryHeader(){
 			$rownum=1;
 			mysql_data_seek($this->queryresult,0);
 			while($therecord = mysql_fetch_array($this->queryresult)){
-				?><tr class="qr<?php echo $rownum?>" id="r-<?php echo $therecord["id"]?>" <?php
+				?><tr class="qr<?php echo $rownum?>" id="r-<?php echo $therecord["theid"]?>" <?php
 
 				if ($this->options["select"]) {
 					?> onClick="clickIt(this,event,'<?php echo $this->isselect?>')" <?php 
@@ -688,7 +688,7 @@ function displayRelationships(){
 			$querycolumns=substr($querycolumns,2);
 						
 			$this->therecords=$this->thetabledef["querytable"]." ".$this->queryjoinclause." WHERE ".$this->querywhereclause." ORDER BY ".$this->querysortorder;
-			$this->querystatement = "SELECT DISTINCT ".$querycolumns." FROM ".$this->therecords;
+			$this->querystatement = "SELECT DISTINCT ".$this->thetabledef["maintable"].".id as theid,".$querycolumns." FROM ".$this->therecords;
 
 			parent::issueQuery();
 		}//end function

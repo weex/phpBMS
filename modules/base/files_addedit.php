@@ -39,9 +39,23 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/files_addedit_include.php");
-
-	$pageTitle="File";
+	if(!isset($_GET["backurl"])){
+		include("include/files_addedit_include.php");
+		$pageTitle="File";
+	} else {
+		include("include/attachments_addedit_include.php");
+		$pageTitle="File Attachment";
+	}
+	
+	function getAttachments($id){
+		global $dblink;
+		$querystatement="SELECT tabledefs.displayname, attachments.recordid, attachments.creationdate, tabledefs.editfile
+						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.id 
+						WHERE fileid=".$id;
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(300,"Error Retrieving Attachments: ".mysql_error($dblink)." -- ".$querystatement);
+		return $queryresult;
+	}
 
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -49,8 +63,10 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-
+<script language="JavaScript" src="../../common/javascript/common.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<script language="JavaScript" src="../base/javascript/file.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
@@ -70,7 +86,7 @@
 			id<br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:99%" />
 		</label>
-		<label for="accesslevel">
+		<label for="accesslevel" id="accesslevellabel">
 			minimum access level<br />
 			<?php 
 				$choices=array();
@@ -91,35 +107,87 @@
 		</label>
 	</fieldset>
 	<fieldset>
-		<legend>names</legend>
-		<label for="name" class="important">
-			name<br />
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"width:98%","class"=>"important","tabindex"=>"5")); ?>
-		</label>
-		<label for="servename" class="important">
-			serve name<br />
-			<?PHP field_text("servename",$therecord["servename"],1,"Serve name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>
-		</label>
-		<div class="small" style="padding-top:6px;padding-bottom:6px;"><em>
-			Serve name is the file name, including extension that will be used when the file is sent through the web server to the client.  
-			If the extension does not match the type (mime file type) the client browser may misinterpret the file.
-		</em></div>
-	</fieldset>
-	<fieldset style="clear:both">
 		<legend>file</legend>
-		<?php if(!$therecord["nofile"]){?>
-		<label for="type">
-			type <em>(MIME)</em><br />
-			<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="40" maxlength="100" readonly="true" class="uneditable" style="" />
-		</label>
-		<div><button type="button" class="Buttons" onClick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">view file</button></div>
-		<?php } ?>
-		<label for="upload">
-			<?php if(!$therecord["nofile"]) echo "change file"; else echo "upload file"?><br />
-			<input id="upload" name="upload" type="file" size="40" tabindex="260" />
-		</label>
+		<?php if(isset($_GET["tabledefid"])){?>
+			<input id="attachmentid" name="attachmentid" type="hidden" value="<?php echo $therecord["attachmentid"]?>">
+			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo (integer) $_GET["tabledefid"]?>">
+			<input id="recordid" name="recordid" type="hidden" value="<?php echo (integer) $_GET["refid"]?>">
+		<?php }?>
 		
+		<?php if($therecord["id"]) {?>
+			<button  type="button" class="Buttons" onClick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
+			<label for="name" class="important">
+				name<br />
+				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?>
+			</label>
+			<div class="small"><em>If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</em></div>
+			<label for="type">
+				type <em>(MIME)</em><br />
+				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="true" class="uneditable" style="" />
+			</label>
+			<label for="upload">
+				replace file<br />
+				<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
+			</label>
+		<?php } else {?>
+			<?php if(isset($_GET["tabledefid"])){?>
+				<div>
+					<label for="newfile" style="display:inline"><input class="radiochecks" type="radio" name="newexisting" id="newfile" value="new" checked onClick="switchFile()"> new file</label>
+					<label for="existingfile" style="display:inline"><input type="radio"  class="radiochecks" name="newexisting" id="existingfile" value="existing" onClick="switchFile()"> existing file</label>
+				</div>
+				<label for="fileid-ds" id="fileidlabel" style="display:none;">
+					existing file<br />
+					<?PHP autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>					
+				</label>
+				<label for="upload" id="uploadlabel" style="display:block;">
+					upload new file<br />
+					<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
+				</label>
+			<?php } else {?>
+				<label for="upload">
+					upload file<br />
+					<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
+				</label>
+			<?php } ?>
+		<?php } ?>
+		<label for="servename" id="descriptionlabel">
+			description<br />
+			<textarea name="description" cols="45" rows="4" id="content" style="width:98%"><?PHP echo $therecord["description"]?></textarea>
+		</label>
 	</fieldset>
+	<?php 
+	if($therecord["id"]) {
+		$attchmentsquery=getAttachments($therecord["id"]);
+		if(mysql_num_rows($attchmentsquery)){
+		?>
+		<fieldset style="margin-right:185px;">
+			<legend>attachments</legend>
+		<div style="" class="smallQueryTableHolder">
+		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+			<tr>
+				<th align="left">table</th>
+				<th align="left" nowrap>ID</th>
+				<th align="right" width="99%">attached</th>
+				<th align="left" nowrap>&nbsp;</th>
+			</tr>
+		<?php
+			while($attachmentrecord=mysql_fetch_array($attchmentsquery)){
+	?>
+			<TR>
+				<TD nowrap><?php echo $attachmentrecord["displayname"] ?></TD>
+				<TD><?php echo $attachmentrecord["recordid"] ?></TD>
+				<TD align="right"><?php echo formatDateTime($attachmentrecord["creationdate"]) ?></TD>
+				<TD>
+					<a href="<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>">
+						<img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" />
+					</a>
+				</TD>
+			</TR>
+	<?php 
+			} ?></table></div></fieldset><?php
+		} 
+	}?>
+
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php");?>

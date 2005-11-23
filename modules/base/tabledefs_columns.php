@@ -155,7 +155,7 @@
 		</label>
 		<label for="format">
 			format<br />
-			<?PHP basic_choicelist("format",$thecolumn["format"],array(array("name"=>"None","value"=>""),array("name"=>"Date","value"=>"date"),array("name"=>"Time","value"=>"time"),array("name"=>"Date and Time","value"=>"datetime"),array("name"=>"Currency","value"=>"currency"),array("name"=>"Boolean","value"=>"boolean")),array("style"=>"width:170px;"));?>						
+			<?PHP basic_choicelist("format",$thecolumn["format"],array(array("name"=>"None","value"=>""),array("name"=>"Date","value"=>"date"),array("name"=>"Time","value"=>"time"),array("name"=>"Date and Time","value"=>"datetime"),array("name"=>"Currency","value"=>"currency"),array("name"=>"Boolean","value"=>"boolean"),array("name"=>"File Link","value"=>"filelink")),array("style"=>"width:170px;"));?>						
 		</label>
 		<label for="sortorder">
 			sort order <em>(SQL clause)</em><br />

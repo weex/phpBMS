@@ -75,7 +75,6 @@ function stamp_infosent($theids){
 function delete_record($theids){
 	global $dblink;
 
-	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"clients.id");
 
 	$querystatement = "UPDATE clients SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE ".$whereclause.";";

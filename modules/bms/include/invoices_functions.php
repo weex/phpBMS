@@ -43,13 +43,24 @@ function invoice_tabs($selected="none",$id=0) {
 	$thequery=mysql_query($querystatement,$dblink);
 	$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
 
+	$querystatement="SELECT id FROM attachments where 
+						tabledefid=3 and recordid=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult? $numfilerows=mysql_num_rows($queryresult): $numfilerows=0;
+
 	$thetabs=array(
 		array(
 			"name"=>"General",
 			"href"=>($id)?"invoices_addedit.php?id=".$id:"invoices_addedit.php"
 		),
 		array(
-			"name"=>"Notes/Messages",
+			"name"=>"Attachments",
+			"href"=>(($id)?"invoices_attachments.php?refid=".$id:"N/A"),
+			"disabled"=>(($id)?false:true),
+			"notify"=>($numfilerows?true:false)
+		),
+		array(
+			"name"=>"Notes/Tasks/Events",
 			"href"=>(($id)?"invoices_notes.php?refid=".$id:"N/A"),
 			"disabled"=>(($id)?false:true),
 			"notify"=>($numrows?true:false)

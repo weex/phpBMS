@@ -157,8 +157,13 @@ function populateShipping(){
 			thevalue="";
 			if(response.getElementsByTagName('value')[i].firstChild)
 				thevalue=response.getElementsByTagName('value')[i].firstChild.data;
+			if(!theitem)
+				alert("<b>Error</b><br /> Could not find field: "+response.getElementsByTagName('field')[i].firstChild.data);
+			else{
 			theitem.value=thevalue;
 			if(theitem.onchange) theitem.onchange();
+			if(theitem.onblur) theitem.onblur();
+			}
 		}
 	} else {
 		//blank out current shipping
@@ -552,7 +557,7 @@ function calculateTotal(){
 	var discountFromID=getObjectFromID("discount");
 	
 	//calculate and reformat discount
-	var numDiscount,discountValue
+	var numDiscount,discountValue;
 	if(discountFromID.value=="" || discountFromID.value=="0" || discountFromID.value=="0%"){
 		numDiscount=currencyToNumber(thediscount.value);
 	} else {

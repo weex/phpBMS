@@ -56,7 +56,7 @@ function create_tabs($tabarray,$selected="none") {
 		if ($theitem["name"]==$selected || $theitem["disabled"]) echo $theitem["name"];
 		else echo "<a href=\"".$theitem["href"]."\">".$theitem["name"]."</a>";
 		if ($theitem["notify"]) {
-		?><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-note.png" alt="*" align="absmiddle" width="16" height="16" border="0"><?php
+		?> <img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-note.png" alt="*" align="absmiddle" width="16" height="16" border="0"><?php
 		}
 		?></td><?php 
 	}
@@ -271,6 +271,8 @@ function formatVariable($value,$format){
 		case "datetime":
 			$value=formatDateTime($value);
 		break;
+		case "filelink":
+			$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
 	}
 	return $value;
 }

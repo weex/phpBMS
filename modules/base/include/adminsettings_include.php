@@ -84,7 +84,6 @@ function processSettings($variables,$files){
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(300,"Error Uploading Graphic File");
 		}
-	}
 			
 	return true;
 }

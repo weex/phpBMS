@@ -44,15 +44,16 @@
 
 	//set the table passing stuff
 	$reftableid=2;
-  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$_GET["refid"];
+	$refid=(integer) $_GET["refid"];
+  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
 	$backurl="../bms/clients_notes.php";
 	$base="../../";
 
-	$refquery="select firstname,lastname,company from clients where id=".$_GET["refid"];
+	$refquery="select firstname,lastname,company from clients where id=".$refid;
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);
 
-	$pageTitle="Client Notes: ";
+	$pageTitle="Notes/Tasks/Events: ";
 	if($refrecord["company"]=="")
 		$pageTitle.=$refrecord["firstname"]." ".$refrecord["lastname"];
 	else
@@ -60,7 +61,8 @@
 
 
 	function doTabs(){
-		client_tabs("Notes",$_GET["refid"]);	
+		global $refid;
+		client_tabs("Notes/Tasks/Events",$refid);	
 	}
 	
 	include("../base/notes_records.php");

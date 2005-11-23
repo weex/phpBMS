@@ -76,15 +76,16 @@ require_once("include/adminsettings_include.php");
 			application name<br/>
 			<?PHP field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>				
 		</label>
-		<div class="small">
-			<em>Replace this with your comapny name + BMS (e.g. "Kreotek BMS")</em>
+		<div class="notes">
+			<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
 		</div>
 		<label for="sencryption_seed">
 			encryption seed<br />
 			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>				
 		</label>
-		<div class="small important">
-			<em>Changing the encryption seed will void all current passwords. They will need to be reset immediately before logging out.</em>
+		<div class="notes">
+			<strong>Note:</strong>
+			Changing the encryption seed will void all current passwords. They will need to be reset immediately before logging out.
 		</div>
 		<label for="srecord_limit">
 			record display limit<br />
@@ -96,29 +97,6 @@ require_once("include/adminsettings_include.php");
 		</label>
 	</fieldset>
 		
-	<fieldset>
-		<legend>My<span style="text-transform:capitalize;">SQL</span></legend>
-		<div class="small important">
-			<em>MysSQL settings must be updated manually by editing the settings.php file</em>
-		</div>
-		<label for="smysql_server">
-			server name<br />
-			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_server"])?>" readonly class="uneditable"/>
-		</label>
-		<label for="smysql_database">
-			database name<br />
-			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_database"])?>" readonly class="uneditable"/>
-		</label>
-		<label for="smysql_user">
-			mysql username<br />
-			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_user"])?>" readonly class="uneditable"/>
-		</label>
-		<label for="smysql_userpass">
-			mysql user password<br />
-			<input size="32" maxlength="128" value="<?php echo htmlQuotes($_SESSION["mysql_userpass"])?>" readonly class="uneditable"/>
-		</label>
-	</fieldset>
-
 	<fieldset>
 		<legend>company</legend>
 		<label for="scompany_name">
@@ -149,8 +127,10 @@ require_once("include/adminsettings_include.php");
 			upload new logo file <em>(png format)</em><br />
 			<input id="printedlogo" name="printedlogo" type="file" size="40" accept="image/x-png" />
 		</label>
-		<div class="small important">
-			This graphic is used on some reports.  On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.
+		<div class="notes">
+			<strong>Note:</strong> This graphic is used on some reports.  On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.
+			PNG must be gray scale on at most 8 bits (256 levels), indexed color, or true color (24 bits). PNG cannot 
+			contain an alpha channel, or interlacing.
 		</div>
 		<label for="sstylesheet">
 			style<br>

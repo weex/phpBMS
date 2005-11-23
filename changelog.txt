@@ -34,6 +34,10 @@ phpBMS v0.603/ BMS module v0.603
 - Moved logo to database.
 - PDF reports are now printed directly, instead of writing to a temp file.
 - Fixed recording of times in database.
+- Added DB file system.
+- Added attachment sections to invoices, product, and clients.
+- Fixed caching problem with graphics.
+- Added default tax area to client.
 
 phpBMS v0.602/ BMS module v0.602
 ==================================

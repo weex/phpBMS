@@ -1,5 +1,4 @@
 <?php
-
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
@@ -36,39 +35,47 @@
  +-------------------------------------------------------------------------+
 */
 
+include("modules/base/include/admin_functions.php");
+
 //=============================================
 //functions
 //=============================================
 
-function mark_asread($theids){
-	//passed variable is array of user ids to be revoked
-	global $dlink;
-	
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or notes.id=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
-	
-	$thequery = "update notes set notes.beenread=1 where (".$whereclause.") and type!=\"System\";";
-	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as read: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$thequery."]");		
-}
-
-
-//delete notes
+//delete
 function delete_record($theids){
 	global $dblink;
 	
-	//passed variable is array of user ids to be revoked
-	$whereclause="";
-	foreach($theids as $theid){
-		$whereclause.=" or id=".$theid;
+	$whereclause=buildWhereClause($theids,"attachments.id");
+	
+	$rowsdeleted=0;
+	foreach($theids as $id){
+		$querystatement = "SELECT fileid FROM attachments WHERE id=".$id;
+		$queryresult = mysql_query($querystatement,$dblink);
+		if (!$queryresult) reportError(300,"Couldn't retrieve file info: ".mysql_error($dblink)." -- ".$querystatement);		
+		$therecord=mysql_fetch_array($queryresult);
+		
+		$querystatement = "DELETE FROM attachments WHERE id=".$id.";";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if (!$queryresult) reportError(300,"Couldn't Delete Attachment: ".mysql_error($dblink)." -- ".$querystatement);		
+		$rowsdeleted++;
+		
+		$querystatement = "SELECT id FROM attachments WHERE fileid=".$therecord["fileid"].";";
+		$queryresult = mysql_query($querystatement,$dblink);
+		if (!$queryresult) reportError(300,"Couldn't retrieve file info: ".mysql_error($dblink)." -- ".$querystatement);		
+		if(!mysql_num_rows($queryresult)){
+			$querystatement = "DELETE FROM files WHERE id=".$therecord["fileid"].";";
+			$queryresult = mysql_query($querystatement,$dblink);
+			if (!$queryresult) reportError(300,"Couldn't Delete File: ".mysql_error($dblink)." -- ".$querystatement);		
+		}
+		
 	}
-	$whereclause=substr($whereclause,3);		
-	$querystatement = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$whereclause.");";
-	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(1,"Couldn't Update: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
-}
 
+	$querystatement = "DELETE FROM attachments WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
+	
+	$message=buildStatusMessage($rowsdeleted,count($theids));
+	$message.=" deleted.";
+	return $message;
+}
 ?>

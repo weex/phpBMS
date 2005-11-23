@@ -36,12 +36,13 @@
 */
 
 	include("../../include/session.php");
-	$querystatement="SELECT address1, address2, city, state, postalcode, country,
+	$querystatement="SELECT address1, address2, city, state, postalcode, country, tax.name as taxname,
 						shiptoaddress1, shiptoaddress2, shiptocity, shiptostate, shiptopostalcode, shiptocountry,
 						paymentmethod,ccnumber,ccexpiration
-						from clients where id=".$_GET["id"];
+						FROM clients LEFT JOIN tax on clients.taxareaid=tax.id 
+						WHERE clients.id=".((integer)$_GET["id"]);
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reporError(500,"Cannot retrieve Client info");
+	if(!$queryresult) reportError(500,"Cannot retrieve Client info: ".mysql_error($dblink)." <br/><br/> ".$querystatement);
 	
 	if(mysql_num_rows($queryresult)) {
 		$therecord=mysql_fetch_array($queryresult);
@@ -72,6 +73,7 @@
 		$therecord["paymentmethod"]="";
 		$therecord["ccnumber"]="";
 		$therecord["ccexpiration"]="";
+		$therecord["taxname"]="";
 	}
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
@@ -103,4 +105,7 @@
 
   <field>ccexpiration</field>
   <value><?php echo xmlEncode($therecord["ccexpiration"]) ?></value>
+
+  <field>ds-taxareaid</field>
+  <value><?php echo xmlEncode($therecord["taxname"]) ?></value>
 </response>

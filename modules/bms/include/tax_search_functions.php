@@ -42,7 +42,6 @@
 function delete_record($theids){
 	global $dblink;
 
-	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"tax.id");
 	
 	$querystatement = "select invoices.id from invoices inner join tax on invoices.taxareaid=tax.id where ".$whereclause.";";

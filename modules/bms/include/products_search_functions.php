@@ -42,7 +42,6 @@
 function delete_record($theids){
 	global $dblink;
 
-	//passed variable is array of user ids to be revoked
 	$whereclause=buildWhereClause($theids,"products.id");
 	
 	$querystatement = "UPDATE products SET inactive=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause.";";
