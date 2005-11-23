@@ -573,7 +573,7 @@ function calculateTotal(){
 
 	//calculate totaltaxable
 	var numTotalTaxable=parseFloat(totaltaxable.value)-numDiscount;
-	
+
 	//calculate and reformat subtotal
 	var numsubtotal=parseFloat(thetotalBD.value)-numDiscount;
 	var subtotalValue=formatCurrency(numsubtotal);

@@ -29,7 +29,7 @@ function loadSettings() {
 	function importData($thetable){
 		global $dblink;
 		
-		$tablefile = fopen($thetable.".sql","r");
+		@ $tablefile = fopen($thetable.".sql","r");
 		if(!$tablefile) {
 			return "Could not open the file ".$thetable.".sql";
 		}
@@ -71,7 +71,7 @@ else{
 	$thereturn.=importData("productcategories");
 	$thereturn.=importData("products");
 	$thereturn.=importData("tax");
-	$thereturn.=importData("Users");
+	$thereturn.=importData("users");
 
 	$thereturn.="Done Importing Data\n==================";
 	

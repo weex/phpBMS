@@ -218,7 +218,7 @@
 		
 		<fieldset>
 			<legend><label for="shiptoaddress1">shipping address</label></legend>
-			<div class="notes" style="padding:0px;">(if different from billing/main address)</div>
+			<div class="notes" style="padding-top:0px;padding-bottom:0px;">(if different from billing/main address)</div>
 			<div>
 				<input id="shiptoaddress1" name="shiptoaddress1" type="text" size="71" maxlength="128" value="<?PHP echo htmlQuotes($therecord["shiptoaddress1"])?>" tabindex="19" /><br />
 				<input id="shiptoaddress2" name="shiptoaddress2" type="text" size="71" maxlength="128" style="margin-top:2px;" value="<?PHP echo htmlQuotes($therecord["shiptoaddress2"])?>" tabindex="20"/>
@@ -246,12 +246,7 @@
 		</fieldset>
 		<fieldset>
 			<legend><label for="comments">memo</label></legend>
-			<div style="padding-top:0px;"><?php 
-					$rows=15;
-					if(isset($_GET["invoiceid"])) $rows-=3;
-					if($therecord["type"]=="client") $rows-=3;
-				
-				?><textarea name="comments" cols="20" rows="<?php  echo $rows?>" id="comments" style="width:98%" tabindex="30"><?php echo $therecord["comments"]?></textarea>
+			<div style="padding-top:0px;"><textarea name="comments" cols="20" rows="8" id="comments" style="width:98%" tabindex="30"><?php echo $therecord["comments"]?></textarea>
 			</div>
 		</fieldset>
 		

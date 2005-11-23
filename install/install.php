@@ -138,6 +138,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			<textarea name="results" id="testconnectionresults" style="width:98%;font-family:'Courier New', Courier, mono;font-size:11px;" rows="4"></textarea>
 		</div>
 	</div>
+	
 	<h4 style="margin-right:42%">Test the Database Connection</h4>
 	<div style="margin-left:25px;margin-right:42%">
 		Once the <strong>settings.php</strong> file has been created and the database connection information has been entered, test the connection.  If connection fails, check

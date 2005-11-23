@@ -257,18 +257,18 @@
 					}
 					$thereturn.="Moved non-mysql settings to new settings table.\n";
 					
-					$filename="../../logo.png";
+					$filename="../report/logo.png";
 					if (function_exists('file_get_contents')) {
-						$file = addslashes(file_get_contents($filename));
+						@ $file = addslashes(file_get_contents($filename));
 					} else {
 						// If using PHP < 4.3.0 use the following:
-						$file = addslashes(fread(fopen($filename, 'r'), filesize($filename)));
+						@ $file = addslashes(fread(fopen($filename, 'r'), filesize($filename)));
 					}
-					$querystatement="INSERT INTO files (id,name,servename,type,accesslevel,file,createdby,creationdate,modifiedby) 
-									VALUES (1,\"Printed Logo\",\"logo.png\",\"image/png\",90,\"".$file."\"2,Now(),2)";
+					$querystatement="INSERT INTO files (id,name,description,type,accesslevel,file,createdby,creationdate,modifiedby) 
+									VALUES (1,\"logo.png\",\"Company Logo Used in PDF reports\",\"image/png\",90,\"".$file."\",2,Now(),2)";
 					$queryresult=mysql_query($querystatement,$dblink);
 					if(!$queryresult)
-						$thereturn.="Error moving logo to database.\n";
+						$thereturn.="Error moving logo to database.\n ";
 					else
 						$thereturn.="Moved logo to database.\n";
 
