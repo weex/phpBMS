@@ -114,27 +114,27 @@ CREATE TABLE `tablecolumns` (
   KEY `displayorder` (`displayorder`)
 ) TYPE=MyISAM;
 
-CREATE TABLE `tabledefs` (
-  `editfile` varchar(128) default NULL,
-  `displayname` varchar(64) default NULL,
-  `id` int(11) NOT NULL auto_increment default '1000',
-  `maintable` varchar(64) NOT NULL default '',
-  `createdby` int(11) NOT NULL default '0',
-  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp(14) NOT NULL,
-  `querytable` varchar(255) NOT NULL default '',
-  `addfile` varchar(100) default '',
-  `deletebutton` varchar(32) default '',
-  `defaultwhereclause` varchar(255) default NULL,
-  `defaultsortorder` varchar(255) default '',
-  `defaultsearchtype` varchar(64) default '',
-  `defaultcriteriafindoptions` varchar(128) default '',
-  `defaultcriteriaselection` varchar(128) default '',
-  `type` varchar(16) NOT NULL default 'table',
-  `moduleid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+CREATE TABLE `tabledefs` (  
+`editfile` varchar(128) default NULL,  
+`displayname` varchar(64) default NULL,  
+`id` int(11) NOT NULL auto_increment,  
+`maintable` varchar(64) NOT NULL default '',  
+`createdby` int(11) NOT NULL default '0',  
+`creationdate` datetime NOT NULL default '0000-00-00 00:00:00',  
+`modifiedby` int(11) default NULL,  
+`modifieddate` timestamp(14) NOT NULL,  
+`querytable` varchar(255) NOT NULL default '',  
+`addfile` varchar(100) default '',  
+`deletebutton` varchar(32) default '',  
+`defaultwhereclause` varchar(255) default NULL,  
+`defaultsortorder` varchar(255) default '',  
+`defaultsearchtype` varchar(64) default '',  
+`defaultcriteriafindoptions` varchar(128) default '',  
+`defaultcriteriaselection` varchar(128) default '',  
+`type` varchar(16) NOT NULL default 'table',  
+`moduleid` int(11) NOT NULL default '0',  
+PRIMARY KEY (`id`)  
+) TYPE=MyISAM AUTO_INCREMENT=1000; 
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,

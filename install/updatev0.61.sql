@@ -1,7 +1,7 @@
 UPDATE tablecolumns SET `column`="if(notes.starttime,concat(notes.startdate,\" \",notes.starttime),notes.startdate)" WHERE id=116;
 UPDATE tablecolumns SET `column`="if(notes.endtime,concat(notes.enddate,\" \",notes.endtime),notes.enddate)" WHERE id=117;
-UPDATE tablecolumns SET `column`="notes`.repeat`+if(notes.parentid is null, 0,1)" WHERE id=124;
-UPDATE tablecolumns SET `column`="notes.`repeat`",format="boolean" WHERE id=129;
+UPDATE tablecolumns SET `column`="notes.repeat+if(notes.parentid is null, 0,1)" WHERE id=124;
+UPDATE tablecolumns SET `column`="notes.repeat",format="boolean" WHERE id=129;
 
 ALTER TABLE tabledefs CHANGE defaultwhereclause defaultwhereclause varchar(255);
 ALTER TABLE tabledefs CHANGE `id` `id` int(11) NOT NULL auto_increment default '1000';

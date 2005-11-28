@@ -214,10 +214,10 @@
 		$pdf->Line($leftmargin,$tempnext+$tempheight2,$paperwidth-$rightmargin,$tempnext+$tempheight2);	
 		$pdf->SetXY($leftmargin,$tempnext+.03);
 
-		$partnumberwidth=1.2;
-		$qtywidth=1;
-		$unitpricewidth=1;
-		$extendedwidth=1;
+		$partnumberwidth=1.1;
+		$qtywidth=.5;
+		$unitpricewidth=.6;
+		$extendedwidth=.6;
 		$partnamewidth=$paperwidth-$leftmargin-$rightmargin-$partnumberwidth-$qtywidth-$unitpricewidth-$extendedwidth;
 
 		$pdf->Cell($partnumberwidth,.14,"Part Number/Memo",$border_debug,0,"L");
@@ -247,11 +247,15 @@
 			
 			$pdf->SetFont("Arial","",8);
 			$pdf->Cell($partnumberwidth,.13,$thelineitem["partnumber"],$border_debug,0,"L");
-			$pdf->Cell($partnamewidth,.13,$thelineitem["partname"],$border_debug,0,"L");
+			if(strlen($thelineitem["partname"])>90)
+				$partname=substr($thelineitem["partname"],0,90)."...";
+			else 
+				$partname=$thelineitem["partname"];
+			$pdf->Cell($partnamewidth,.13,$partname,$border_debug,0,"L");
 			$pdf->Cell($qtywidth,.13,number_format($thelineitem["quantity"],2),$border_debug,0,"C");
 			$pdf->Cell($unitpricewidth,.13,"\$".number_format($thelineitem["unitprice"],2),$border_debug,0,"R");
 			$pdf->Cell($extendedwidth,.13,"\$".number_format($thelineitem["extended"],2),$border_debug,1,"R");
-			$pdf->SetX($leftmargin+.25);
+			$pdf->SetX($leftmargin+.125);
 			$pdf->SetFont("Arial","i",8);
 			$thelineitem["memo"].="\n";
 			$pdf->MultiCell($paperwidth-$leftmargin-$rightmargin-.25,.13,$thelineitem["memo"],$border_debug);

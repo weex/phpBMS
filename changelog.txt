@@ -1,4 +1,10 @@
-phpBMS v0.603/ BMS module v0.603
+phpBMS v0.611/ BMS module v0.611
+==================================
+- Fixed tasks display problem.
+- Adjusted widths/truncation onf invoice PDF reports for line items.
+
+
+phpBMS v0.61/ BMS module v0.61
 ==================================
 - Fixed display errors with dateTime column format.
 - Added Dude Date to tasks on snapshot view.
