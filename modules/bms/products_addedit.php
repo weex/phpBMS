@@ -71,7 +71,7 @@
 			<label for="inactive">
 				<?PHP field_checkbox("inactive",$therecord["inactive"],false,array("tabindex"=>"50"))?> inactive
 			</label>
-			<label for="inactive"></label>
+			<label for="taxable">
 				<?PHP field_checkbox("taxable",$therecord["taxable"],false,array("tabindex"=>"60"))?> taxable
 			</label>
 			<div>

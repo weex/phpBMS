@@ -158,7 +158,7 @@ function htmlQuotes($string){
 }
 
 function showSaveCancel($ids=1){
-	?><div align="right"><input <?php if($ids==1) {?>accesskey="s"<?php }?> id="saveButton<?php echo $ids?>" name="command" type="submit" value="save" class="Buttons" style="width:68px;margin-right:3px;" /><input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" style="width:68px;" onClick="this.form.cancelclick.value=true;" <?php if($ids==1) {?>accesskey="x"<?php }?> /></div><?php
+	?><div align="right"><input <?php if($ids==1) {?>accesskey="s"<?php }?> title="(alt+s)" id="saveButton<?php echo $ids?>" name="command" type="submit" value="save" class="Buttons" style="width:68px;margin-right:3px;" /><input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" style="width:68px;" onClick="this.form.cancelclick.value=true;" <?php if($ids==1) {?>accesskey="x" <?php }?> title="(alt+x)" /></div><?php
 }
 
 function buildStatusMessage($affected,$selected){

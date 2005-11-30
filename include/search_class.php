@@ -403,7 +403,7 @@ function sendInfo(name,thevalue,thedisplay){
 	<span id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></span>
 	<span id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></span>
 	<span id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></span>
-</div><div class="box" style="margin:0px;margin-bottom:15px;display:inline-block;"><div id="basicSearchTab" style="padding:0px;margin:0px;">
+</div><div class="box" style="margin:0px;margin-bottom:15px;/* display:inline-block; */"><div id="basicSearchTab" style="padding:0px;margin:0px;">
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
 			<td nowrap valign=top>
@@ -460,12 +460,12 @@ function sendInfo(name,thevalue,thedisplay){
 				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "checked"?>>remove from result</option>
 				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "checked"?>>narrow result</option>
 			</select></label>
-			<td align="left" valign=top nowrap ><label><input name="command" type="submit" id="reset" class="smallButtons" value="reset" style="width:90px;" accesskey="t" /></label></td>
+			<td align="left" valign=top nowrap ><label><input name="command" type="submit" id="reset" class="smallButtons" value="reset" style="width:90px;" accesskey="t" title="(alt+t)"/></label></td>
 		</tr>				
 	</table>
 </div><?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;padding:0px;margin:0px;"></div><?php } //end accesslevel ?>
 <div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
-<div id="saveSearchTab" style="display:none;margin:padding:0px;margin:0px;">
+<div id="saveSearchTab" style="display:none;margin:0px;padding:0px;margin:0px;">
 	<div id="saveSearchReults" style="display:none"></div>
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
@@ -551,16 +551,16 @@ function displayQueryButtons() {
 		} ?></div><?php }?>	
 	
 		<div>
-		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="addRecord()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
+		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="addRecord()" title="new (alt+n)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["edit"]["accesslevel"]) {
-				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
+				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()" title="edit (alt+e)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
 			}
 			if($this->tableoptions["printex"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["printex"]["accesslevel"]){
-				?><button id="print" name="doprint" accesskey="p" type="submit" disabled="true" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png"  alt="print" width="16" height="16" border="0" /></button><?php
+				?><button id="print" name="doprint" accesskey="p" title="print (alt+p)" type="submit" disabled="true" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png"  alt="print" width="16" height="16" border="0" /></button><?php
 			}
 			if($this->thetabledef["deletebutton"] == "delete") {				
-				?><button id="delete" name="dodelete" accesskey="d" type="button" disabled="true" onClick="confirmDelete('delete')" class="invisibleButtons" style="border-style:solid"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png" alt="print" width="16" height="16" border="0" /></button><?php
+				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="true" onClick="confirmDelete('delete')" class="invisibleButtons" style="border-style:solid"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png" alt="print" width="16" height="16" border="0" /></button><?php
 			}
 	
 			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
@@ -578,14 +578,14 @@ function displayQueryButtons() {
 				}
 				?></select><?php
 		}
-		if($this->tableoptions["select"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["select"]["accesslevel"]){?><select id="searchSelection" onChange="perfromToSelection(this)">
+		if($this->tableoptions["select"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["select"]["accesslevel"]){?> <select id="searchSelection" onChange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
-				<option value="selectall">select all</option>
-				<option value="selectnone">select none</option>
+				<option value="selectall" title="(alt+a)">select all</option>
+				<option value="selectnone" title="(alt+x)">select none</option>
 				<option value="">_____________</option>
-				<option value="keepselected">keep selected</option>
-				<option value="omitselected">omit selected</option>
+				<option value="keepselected" title="(alt+k)">keep selected</option>
+				<option value="omitselected" title="(alt+o)" >omit selected</option>
 			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
 		}//end if numrows	

@@ -112,7 +112,7 @@ CREATE TABLE `tablecolumns` (
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
-) TYPE=MyISAM;
+) TYPE=MyISAM AUTO_INCREMENT=5000;
 
 CREATE TABLE `tabledefs` (  
 `editfile` varchar(128) default NULL,  
@@ -145,7 +145,7 @@ CREATE TABLE tablefindoptions (
   accesslevel int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) TYPE=MyISAM;
+) TYPE=MyISAM AUTO_INCREMENT=2000; 
 
 CREATE TABLE tableoptions (
   id int(11) NOT NULL auto_increment,
@@ -156,7 +156,7 @@ CREATE TABLE tableoptions (
   accesslevel int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) TYPE=MyISAM;
+) TYPE=MyISAM AUTO_INCREMENT=2000; 
 
 CREATE TABLE tablesearchablefields (
   id int(11) NOT NULL auto_increment,
@@ -166,7 +166,7 @@ CREATE TABLE tablesearchablefields (
   displayorder int(11) NOT NULL default '0',
   type varchar(16) NOT NULL default 'field',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) TYPE=MyISAM AUTO_INCREMENT=2000;
 
 CREATE TABLE users (
   id int(11) NOT NULL auto_increment,
@@ -208,7 +208,7 @@ CREATE TABLE `settings` (
   `name` varchar(64) NOT NULL default '',
   `value` varchar(255) default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM; 
+) TYPE=MyISAM AUTO_INCREMENT=1000;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL auto_increment,
@@ -222,7 +222,7 @@ CREATE TABLE `files` (
   `modifieddate` timestamp(14) NOT NULL,
   `accesslevel` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM; 
+) TYPE=MyISAM AUTO_INCREMENT=100; 
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,

@@ -35,6 +35,7 @@
  +-------------------------------------------------------------------------+
 */
 	require("include/session.php");
+	require("include/common_functions.php");
 
 	function getAutofillXML($what,$displayfield,$xtrafield,$tabledefid,$thefield,$whereclause){
 		global $dblink;
@@ -52,9 +53,9 @@
 			$querystatement.=" (".stripslashes($whereclause).") AND ";
 		$querystatement.=stripslashes($displayfield)." ";
 		if($thefield)
-				$querystatement.="=\"".addslashes($what)."\"";
+				$querystatement.="=\"".$what."\"";
 		else 
-				$querystatement.="LIKE \"".addslashes($what)."%\"";
+				$querystatement.="LIKE \"".$what."%\"";
 		$querystatement.="ORDER BY ".stripslashes($displayfield);
 		if($thefield)
 			$querystatement.=" LIMIT 1";			
@@ -90,6 +91,7 @@
 	}//end function
 
 	if(isset($_GET["l"])){
+		$_GET=addSlashesToArray($_GET);
 		if(!isset($_GET["gf"]))$_GET["gf"]="";
 		if(!isset($_GET["wc"]))$_GET["wc"]="";
 		getAutofillXML($_GET["l"],$_GET["fl"],$_GET["xt"],$_GET["tid"],$_GET["gf"],$_GET["wc"]);

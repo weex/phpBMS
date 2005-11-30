@@ -1,5 +1,6 @@
 phpBMS v0.611/ BMS module v0.611
 ==================================
+- Fixed table creation script (install only)
 - Fixed tasks display problem.
 - Adjusted widths/truncation onf invoice PDF reports for line items.
 

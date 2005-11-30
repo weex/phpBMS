@@ -219,11 +219,11 @@ if (isset($_POST["command"])){
 	</fieldset>
 	<fieldset class="small">
 		<legend>Notes</legend>
-		<div>
+		<div class="notes">
 			<strong>Window Pop-ups<br/></strong>Each report will display in its own window. If you have disabled
 			pop-ups within your browser's options or are running a third-party pop-up blocker, the report will not appear.
 		</div>
-		<div><strong>Need More Reports?</strong><br/>
+		<div class="notes"><strong>Need More Reports?</strong><br/>
 		Need more reports, or want to cuztomize an existing report to meet your specific needs?  Contact <a href="http://www.kreotek.com" target="_blank">kreotek</a> for more information.
 		</div>
 	</fieldset>

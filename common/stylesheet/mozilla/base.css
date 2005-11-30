@@ -69,7 +69,6 @@ border-width:0px;
 color:#0B63A2;
 vertical-align:middle;
 cursor: pointer; 
-cursor: hand;
 }
 
 .smallButtons{font-size:10px}
@@ -156,7 +155,10 @@ FIELDSET,.bodyline,.tabselected,.tabs,.tabbottoms,.box,#modalBox{
 background-image:none;
 }
 
-.bodyline{display:inline-block; padding:4px;margin-top:0px;}
+.bodyline{
+	display:inline-block;
+	padding:4px;margin-top:0px;
+}
 
 FIELDSET,.box{
 	border-color:#455372;
@@ -286,15 +288,14 @@ border-bottom-width:0px;
 
 .qr1,.qr2{background-color:#D9DBE1;
 			cursor: pointer; 
-            cursor: hand;
 }
 .qr2{background-color:white;}
 
 .qr1:hover, .qr2:Hover {background-color:#999999;}
 
-.qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
+.qh1, .qh2{background-color:black; cursor: pointer; }
 .qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
-.qh1, .qh2{background-color:black; cursor: pointer; cursor: hand;}
+.qh1, .qh2{background-color:black; cursor: pointer; }
 .qh1 a, .qh2 a{color:white;}
 
 
@@ -327,7 +328,7 @@ border-bottom-width:0px;
 		background-image:url(magnify.gif);
 		background-repeat:no-repeat;
 		background-position:right;
-		background-origin: border;
+		/* background-origin: border; Commented out as of firefox 1.5*/
 	}
 	.autofillDropDown{
 		border: 1px solid black;
@@ -396,7 +397,7 @@ border-bottom-width:0px;
 
 	#menuBar {
 		background-image:url(menubar.png);
-		repeat:repeat-x;
+		background-repeat:repeat-x;
 		background-color:#697388;
 		border-top:1px solid #8693ae;
 		border-bottom:2px solid #444a58;
