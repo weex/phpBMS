@@ -7,6 +7,8 @@ phpBMS v0.611/ BMS module v0.611
 - Updated styleshet to be more firefox 1.5 friendly.
 - Fixed error with inactive text box.
 - Added title attributes with keyboard shortcuts to several areas.
+- Updated Date and Time parsign via javascript.
+- Fixed Invoice problem with blank discount ids.
 
 
 phpBMS v0.61/ BMS module v0.61
@@ -23,7 +25,7 @@ phpBMS v0.61/ BMS module v0.61
 - Added check for magic quotes php setting before adding slashes.
 - Added workaround for IIS systems that do not have REQUEST_URI variable.
 - Fixed snapshot day interval for Mondays.
-- Fixed undefined variabl problem with prerequisites.
+- Fixed undefined variable problem with prerequisites.
 - Fixed admin page requiments for shipping multiplier and zip code.
 - Fixed label for module in table definitions edit screen.
 - Fixed choicelist undefined variable problem.

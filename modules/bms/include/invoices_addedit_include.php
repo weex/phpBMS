@@ -263,7 +263,8 @@ function updateRecord($variables,$userid){
 			$querystatement.="orderdate=".$tempdate.", "; 
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
-			$querystatement.="discountamount=".$discountamount.", "; 				
+			$querystatement.="discountamount=".$discountamount.", ";
+			if($variables["discountid"]="")$variables["discountid"]="NULL";
 			$querystatement.="discountid=".$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
@@ -391,6 +392,7 @@ function insertRecord($variables,$userid){
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
 			$querystatement.=$discountamount.", "; 				
+			if($variables["discountid"]="")$variables["discountid"]="NULL";
 			$querystatement.=$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
