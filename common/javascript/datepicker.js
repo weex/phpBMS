@@ -95,7 +95,7 @@ function closeDPBox(){
 
 function dpClickDay(year,month,day){
 	var thefield=getObjectFromID(showDP.datefieldID);
-	var thedate=new Date(parseInt(year),parseInt(month)-1,parseInt(day));
+	var thedate=new Date(parseInt(year,10),parseInt(month,10)-1,parseInt(day,10));
 	thefield.value=dateToString(thedate);
 	if(thefield.onchange) thefield.onchange.call(thefield);
 	closeDPBox();
@@ -117,7 +117,7 @@ function stringToDate(sDate){
 	var month=sDate.substring(0,sDate.indexOf(sep))
 	var day=sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1))
 	var year=sDate.substring(sDate.lastIndexOf(sep)+1);
-	year=parseInt(year);
+	year=parseInt(year,10);
 	if(year<100) year+=2000;
 	return new Date(year,parseInt(month,10)-1,parseInt(day,10));
 }

@@ -34,15 +34,19 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 if(!isset($_SERVER['REQUEST_URI'])) {
+	// This following code is for windows boxen, because they lack some server varables as well
+	// formating options for the strftime function
 	$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
+	
+	define("HOUR_FORMAT","%I");
 
 	// Append the query string if it exists and isn't null
 	if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
 		$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
-}
-
+} else
+	define("HOUR_FORMAT","%l");
+	
 function loadSettings(){
 	global $dblink;
 	

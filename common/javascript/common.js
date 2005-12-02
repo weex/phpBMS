@@ -162,17 +162,17 @@ function englishDate(thedate){
 }
 
 function dateFromField(englishdate,englishtime){
-	var theyear= parseInt(englishdate.substring(englishdate.lastIndexOf("/")+1));
-	var themonth= parseInt(englishdate.substring(0,englishdate.indexOf("/")))-1;
-	var theday= parseInt(englishdate.substring(englishdate.indexOf("/")+1,englishdate.lastIndexOf("/")));
+	var theyear= parseInt(englishdate.substring(englishdate.lastIndexOf("/")+1),10);
+	var themonth= parseInt(englishdate.substring(0,englishdate.indexOf("/")),10)-1;
+	var theday= parseInt(englishdate.substring(englishdate.indexOf("/")+1,englishdate.lastIndexOf("/")),10);
 	var thedate= new Date(theyear,themonth,theday);
 	if(englishtime){
-		var thehour=parseInt(englishtime.substring(0,englishtime.indexOf(":")));
-		var theminute=parseInt(englishtime.substring(englishtime.indexOf(":")+1,englishtime.indexOf(" ")));;
+		var thehour=parseInt(englishtime.substring(0,englishtime.indexOf(":")),10);
+		var theminute=parseInt(englishtime.substring(englishtime.indexOf(":")+1,englishtime.indexOf(" ")),10);
 		var AMPM=englishtime.substring(englishtime.indexOf(" ")+1);
-		if(AMPM=="PM")
+		if(AMPM=="PM" && thehour!=12)
 			thehour+=12;
-		else if (thehour==12)
+		else if (AMPM=="AM" && thehour==12)
 			thehour=0;
 		thedate.setHours(thehour,theminute);
 	}

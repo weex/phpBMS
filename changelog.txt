@@ -3,6 +3,10 @@ phpBMS v0.611/ BMS module v0.611
 - Fixed table creation script (install only)
 - Fixed tasks display problem.
 - Adjusted widths/truncation onf invoice PDF reports for line items.
+- Fixed autofill function and conflict with magic quotes.
+- Updated styleshet to be more firefox 1.5 friendly.
+- Fixed error with inactive text box.
+- Added title attributes with keyboard shortcuts to several areas.
 
 
 phpBMS v0.61/ BMS module v0.61

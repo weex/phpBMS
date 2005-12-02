@@ -366,7 +366,7 @@ function setEnglishDates(){
 	var startdate= getObjectFromID("startdate");
 	if(startdate.value=="") return false;
 	var thedate= dateFromField(startdate.value)
-	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")));
+	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")),10);
 	
 	var dayending="th";
 	switch(thedate.getDate()){

@@ -223,7 +223,7 @@ function dateFormat($thedate){
 function timeFormat($thetime){
 	if($thetime) {
 		$phptime=timeFromSQLTime($thetime);
-		return strftime("%I:%M %p",$phptime);
+		return strftime(HOUR_FORMAT.":%M %p",$phptime);
 	} else return "";
 }
 
@@ -239,9 +239,9 @@ function formatDateTime($thedatetime,$secs=false){
 	if (isset($temparray[1])){
 		$phptime=timeFromSQLTime($temparray[1]);		
 		if($secs)
-			$thereturn.=" ".strftime("%I:%M:%S %p",$phptime);
+			$thereturn.=" ".strftime(HOUR_FORMAT.":%M:%S %p",$phptime);
 		else
-			$thereturn.=" ".strftime("%I:%M %p",$phptime);
+			$thereturn.=" ".strftime(HOUR_FORMAT.":%M %p",$phptime);
 	}
 	return $thereturn;
 }
@@ -250,7 +250,7 @@ function formatDateTime($thedatetime,$secs=false){
 function formatTimestamp($timestamp){
 	if($timestamp){
 		$phptimestamp=dateFromSQLTimestamp($timestamp);
-		return strftime("%m/%d/%Y %I:%M:%S %p",$phptimestamp);
+		return strftime("%m/%d/%Y ".HOUR_FORMAT.":%M:%S %p",$phptimestamp);
 	}
 }
 
