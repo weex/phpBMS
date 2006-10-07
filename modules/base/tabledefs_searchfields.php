@@ -71,11 +71,11 @@
 		break;
 		
 		case "moveup":
-			$statusmessage=moveSearchfield($_GET["searchfieldid"],"up");
+			$statusmessage=moveSearchfield($_GET["columnid"],"up");
 		break;
 		
 		case "movedown":
-			$statusmessage=moveSearchfield($_GET["searchfieldid"],"down");
+			$statusmessage=moveSearchfield($_GET["columnid"],"down");
 		break;
 	}//end switch
 	

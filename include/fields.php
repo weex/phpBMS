@@ -169,7 +169,7 @@ function field_email($name,$value,$attributes){
 	$value=str_replace("\"","&quot;",$value);	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" style="vertical-align:middle;" class="invisibleButtons" onClick="openEmail('<?php echo $name?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-email.png" align="absmiddle" alt="send email" width="16" height="16" border="0" /></button>
+	?> /><button id="<?php echo $name?>Button" type="button" style="vertical-align:middle;" class="invisibleButtons" onClick="openEmail('<?php echo $name?>')" title="Send E-Mail"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-email.png" align="absmiddle" alt="send email" width="16" height="16" border="0" /></button>
 	<script language="JavaScript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
 }
 
@@ -186,7 +186,7 @@ function field_web($name,$value="http://",$attributes=""){
 	$value=str_replace("\"","&quot;",$value);	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="openWebpage('<?php echo $name?>')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-www.png" align="absmiddle" alt="link" width="16" height="16" border="0" /></button>
+	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="openWebpage('<?php echo $name?>')" title="Open in New Window"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-www.png" align="absmiddle" alt="link" width="16" height="16" border="0" /></button>
 	<script language="JavaScript">wwwArray[wwwArray.length]=new Array('<?php echo $name?>','One or more web page fields are invalid.');</script>	
 	<?php
 }
@@ -318,7 +318,7 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 		autofill["<?php echo $fieldname?>"]["vl"]="<?php echo htmlQuotes($displayresult["display"]) ?>";
 		appPath="<?php echo $_SESSION["app_path"]?>";
 	</script>
-	<input autocomplete="off" type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>" <?php 
+	<input autocomplete="off" type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>"  title="Use '%' for wildcard." <?php 
 		if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> value="<?php echo htmlQuotes($displayresult["display"]) ?>" onKeyUp="autofillChange(this);return true;" onBlur="blurAutofill(this)"  onKeyDown="captureKey(event)" class="autofillField" />
 	<div id="dd-<?php echo $fieldname?>" class="autofillDropDown" style="position:absolute;white-space:nowrap;display:none;"></div>

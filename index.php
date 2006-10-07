@@ -90,13 +90,12 @@
 		<div class=tiny style="padding:0px;">Business Management Web Application</div>
 		</h2>
 		
-		<div>name<br />
-    	<input name="name" type="text" id="username" size="25" maxlength="64" style="width:97%">
-		<script>setMainFocus();</script>
-		</div>
-		<div>password<br />
-    	<input name="password" type="password" id="password" size="25" maxlength="24" style="width:97%"></div>
-		<div align=right style="padding-bottom:15px;"><input name="command" type="submit" class="Buttons" value="Log On" style="width:75px;"></div>
+		<label for="username">name<br />
+    	<input name="name" type="text" id="username" size="25" maxlength="64" style="width:97%" />
+		<script>setMainFocus();</script></label>
+		<label for="password">password<br />
+    	<input name="password" type="password" id="password" size="25" maxlength="24" style="width:97%" /></label>
+		<div align=right style="padding-bottom:15px;"><input name="command" type="submit" class="Buttons" value="Log On" style="width:75px;" /></div>
 		
 		<?php if (isset($failed)) {?>
 			<div class="standout" align="center"><?php echo $failed?></div>

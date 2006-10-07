@@ -77,10 +77,10 @@ if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_p
 	function updateSearchfield($variables){
 		global $dblink;
 		$querystatement="UPDATE tablesearchablefields set ";
-		$querystatement.="field=\"".$_POST["field"]."\", ";
-		$querystatement.="type=\"".$_POST["type"]."\", ";
-		$querystatement.="name=\"".$_POST["name"]."\" ";
-		$querystatement.="WHERE id=".$_POST["searchfieldid"];
+		$querystatement.="field=\"".$variables["field"]."\", ";
+		$querystatement.="type=\"".$variables["type"]."\", ";
+		$querystatement.="name=\"".$variables["name"]."\" ";
+		$querystatement.="WHERE id=".$variables["searchfieldid"];
 		if(mysql_query($querystatement)) $thereturn ="Search Field Updated"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
 		
 		return $thereturn;

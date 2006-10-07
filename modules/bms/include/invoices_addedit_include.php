@@ -160,7 +160,7 @@ function getRecords($id){
 				createdby, creationdate, 
 				modifiedby, modifieddate
 				FROM invoices
-				WHERE id=".$id;		
+				WHERE invoices.id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
 	$therecord = mysql_fetch_array($queryresult);
@@ -264,7 +264,7 @@ function updateRecord($variables,$userid){
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
 			$querystatement.="discountamount=".$discountamount.", ";
-			if($variables["discountid"]="")$variables["discountid"]="NULL";
+			if($variables["discountid"]=="")$variables["discountid"]="NULL";
 			$querystatement.="discountid=".$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
@@ -392,7 +392,7 @@ function insertRecord($variables,$userid){
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
 			$querystatement.=$discountamount.", "; 				
-			if($variables["discountid"]="")$variables["discountid"]="NULL";
+			if($variables["discountid"]=="")$variables["discountid"]="NULL";
 			$querystatement.=$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
@@ -475,7 +475,7 @@ function insertRecord($variables,$userid){
 	$querystatement.=$userid.")"; 
 	
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)."\n<br \>\n".$querystatement);
 
 	$newid= mysql_insert_id($dblink);
 	if($variables["lineitemschanged"]==1)

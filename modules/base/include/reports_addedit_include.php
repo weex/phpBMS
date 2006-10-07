@@ -137,7 +137,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO reports ";
 	
-	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,accesslevel
+	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,accesslevel,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
