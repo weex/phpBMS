@@ -75,7 +75,7 @@
 	}
 
 	session_cache_limiter('private');
-s	require_once("../../../include/session.php");
+	require_once("../../../include/session.php");
 	require_once("../../../fpdf/fpdf.php");
 	require("../../../report/general_labels.php");
 ?>
