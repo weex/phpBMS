@@ -300,8 +300,7 @@
 			$discountwidth=0;
 		$shippingwidth=.75;
 		$totalwidth=.75;
-		$amountduewidth=1;
-		$totaltniwidth=$paperwidth-$leftmargin-$rightmargin-$totalwidth-$taxwidth-$shippingwidth-$amountduewidth-$discountwidth-0.03;	
+		$totaltniwidth=$paperwidth-$leftmargin-$rightmargin-$totalwidth-$taxwidth-$shippingwidth-$discountwidth-0.03;	
 
 		$pdf->SetXY($leftmargin,$tempnext+.04);
 		if($therecord["discountamount"]!=0)
@@ -310,7 +309,6 @@
 		$pdf->Cell($taxwidth,.13,"Sales Tax",$border_debug,0,"R");
 		$pdf->Cell($shippingwidth,.13,"Shipping",$border_debug,0,"R");
 		$pdf->Cell($totalwidth,.13,"Total",$border_debug,0,"R");
-		$pdf->Cell($amountduewidth,.13,"Amount Due",$border_debug,0,"R");
 		
 		$pdf->SetFont("Arial","B",10);
 		$pdf->SetXY($leftmargin,$tempnext+.2+.03);
@@ -320,7 +318,6 @@
 		$pdf->Cell($taxwidth,.15,currencyFormat($therecord["tax"]),$border_debug,0,"R");
 		$pdf->Cell($shippingwidth,.15,currencyFormat($therecord["shipping"]),$border_debug,0,"R");
 		$pdf->Cell($totalwidth,.15,currencyFormat($therecord["totalti"]),$border_debug,0,"R");
-		$pdf->Cell($amountduewidth,.15,currencyFormat($therecord["amountdue"]),$border_debug,0,"R");		
 		// If a tax area is defined, print the tax information
 		if($therecord["taxareaid"]) {
 			$taxstatement="select id, name, percentage from tax where id=".$therecord["taxareaid"];
