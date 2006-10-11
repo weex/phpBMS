@@ -41,7 +41,7 @@
 function delete_record($theids){
 	global $dblink;
 
-	$whereclause=buildWhereClause($theids,"products.id");
+	$whereclause=buildWhereClause($theids,"discounts.id");
 	
 	$querystatement = "UPDATE discounts SET inactive=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause.";";
 	$queryresult = mysql_query($querystatement,$dblink);
