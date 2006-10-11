@@ -1,0 +1,2 @@
+This file will contain all the people who have contributed to phpBMS
+====================================================================
