@@ -74,13 +74,13 @@
 	</div>
 	<div style="width:300px;padding-bottom:0px;">
 		<div class="small">
-			Copyright &copy; 2004 -2005 kreotek, llc. All Rights Reserved.
+			Copyright &copy; 2004 -2007 kreotek, llc. All Rights Reserved.
 			phpBMS, and the phpBMS logo are trademarks of kreotek, llc.
 		</div>
 		<div style="padding:10px; padding-bottom:0px;">
 			<div class="large important">Kreotek, LLC</div>
 			<div style="" class="small">
-				481 Rio Rancho Blvd.<br />
+				610 Quantum<br />
 				Rio Rancho, NM 87124
 			</div>		
 			<div  class="important" style="padding-bottom:0px;">Contact Information</div>
@@ -95,7 +95,7 @@
 	<div style="padding-top:0px;">
 		<h2>Source Code</h2>
 		<ul>
-			<li><strong>phpBMS</strong> - Commercial Open Source Business Management Web Appllication (<a href="http://www.kreotek.com">www.kreotek.com</a>)</li>
+			<li><strong>phpBMS</strong> - Commercial Open Source Business Management Web Appllication (<a href="http://www.kreotek.com">www.phpbms.org</a>)</li>
 			<li><strong>fpdf</strong> - A PHP class which allows to generate PDF files with pure PHP (<a href="http://www.fpdf.org">www.fpdf.org</a>)</li>
 		</ul>
 		<h2>Technologies</h2>
