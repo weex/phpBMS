@@ -219,7 +219,7 @@ function updateRecord($variables,$userid){
 			if(isset($variables["repeat"])) {
 				$querystatement.="repeat=1, "; 
 				$querystatement.="repeatfrequency=".$variables["repeatfrequency"].", "; 					
-				$tempRepeatType="`repeat`".$variables["repeattype"];
+				$tempRepeatType="repeat".$variables["repeattype"];
 				if($variables["repeattype"]=="Monthly")
 					$tempRepeatType.=$variables["rpmo"];
 				$querystatement.="repeattype=\"".$tempRepeatType."\",";
