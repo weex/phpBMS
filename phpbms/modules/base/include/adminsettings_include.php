@@ -75,10 +75,10 @@ function processSettings($variables,$files){
 	if(isset($files["printedlogo"]))
 		if($files["printedlogo"]["type"]=="image/png"){
 			if (function_exists('file_get_contents')) {
-				$file = addslashes(file_get_contents($_FILES['upload']['tmp_name']));
+				$file = addslashes(file_get_contents($_FILES['printedlogo']['tmp_name']));
 			} else {
 				// If using PHP < 4.3.0 use the following:
-				$file = addslashes(fread(fopen($_FILES['upload']['tmp_name'], 'r'), filesize($_FILES['thumbnailupload']['tmp_name'])));
+				$file = addslashes(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
 			}
 			$querystatement="UPDATE files SET file=\"".$file."\" WHERE id=1";
 			$queryresult=mysql_query($querystatement,$dblink);
