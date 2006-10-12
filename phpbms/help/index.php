@@ -8,30 +8,25 @@
 <title>phpBMS Resources</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-	<style>li{margin-bottom:10px;}</style>
+	<style>
+	li{margin-bottom:10px;}
+	</style>
 </head>
 
 <body>
 <div class="bodyline" style="width:700px;">
 	<h1>phpBMS Resources</h1>
 	<ul>
-		<li><a href="reference"><strong>Using phpBMS</strong></a>
-			<div class=small>User and Administrator How-tos, tips, and reference.</div>
+		<li><a href="http://phpbms.org/wiki/PhpbmsGuide"><strong>PhpbmsGuide</strong></a> (at phpbms.org)
+			<div class=small>User and Administrator Guide.</div>
 		</li>
 		<li>
 			<a href="http://www.kreotek.com/products/phpbms/tutorials"><strong>Tutorials</strong></a> <em>(at kreotek.com)</em>
 			<div class=small>Step by step examples on how to perform common tasks inside phpBMS.</div>
 		</li>
 		<li>
-			<a href="customize.php"><strong>Customizing phpBMS</strong></a>
-			<div class=small>
-				Maganger/Administation information and contacts for obtaining customization
-				services as well as develeloper and programmer resources for modifing and adding to phpBMS.
-			</div>
-		</li>
-		<li>
-			<strong>Frequently Asked Questions (FAQs)</strong>
-			<div class=small>coming soon</div>
+			<strong><a href="http://phpbms.org/wiki/PhpbmsFaq">PhpbmsFaq</a></strong> <em>(at phpbms.org)</em>
+			<div class=small>Frequently Asked Questions </div>
 		</li>
 		<li>
 			<a href="shortcuts.php"><strong>Keyboard Shortcuts</strong></a>
