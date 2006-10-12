@@ -222,9 +222,9 @@
 	?><tr id="LISep"><td colspan="7" style="font-size:1px;padding:0px;" class="dottedline lineitemsRight lineitemsLeft">&nbsp;</td></tr><?php 
 	while($lineitem=mysql_fetch_array($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
-			<td nowrap class="small lineitemsLeft" valign="top"><strong><?PHP if($lineitem["partnumber"]) echo $lineitem["partnumber"]; else echo "&nbsp;";?></strong></td>
-			<td class="small" valign="top"><strong><?PHP if($lineitem["partname"]) echo $lineitem["partname"]; else echo "&nbsp;";?></strong></td>
-			<td class="tiny" valign="top"><?PHP if($lineitem["memo"]) echo $lineitem["memo"]; else echo "&nbsp;"?></td>
+			<td nowrap class="small lineitemsLeft" valign="top"><strong><?PHP if($lineitem["partnumber"]) echo htmlentities($lineitem["partnumber"]); else echo "&nbsp;";?></strong></td>
+			<td class="small" valign="top"><strong><?PHP if($lineitem["partname"]) echo htmlentities($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
+			<td class="tiny" valign="top"><?PHP if($lineitem["memo"]) echo htmlentities($lineitem["memo"]); else echo "&nbsp;"?></td>
 			<td align="right" nowrap class="small" valign="top"><?PHP echo $lineitem["unitprice"]?></td>
 			<td align="center" nowrap class="small" valign="top"><?PHP echo $lineitem["quantity"]?></td>
 			<td align="right" nowrap class="small" valign="top"><?PHP echo $lineitem["extended"]?></td>
@@ -234,7 +234,7 @@
 					<?PHP echo $lineitem["unitweight"]?>[//]
 					<?PHP echo $lineitem["numprice"]?>[//]
 					<?PHP echo $lineitem["quantity"]?>[//]
-					<?PHP echo $lineitem["memo"]?>[//]
+					<?PHP echo htmlentities($lineitem["memo"])?>[//]
 					<?PHP echo $lineitem["taxable"]?>
 				</span>
 				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="invisibleButtons" onClick="return deleteLine(this)" tabindex="21"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png" align="middle" alt="-" width="16" height="16" border="0" /></button><?php } ?>

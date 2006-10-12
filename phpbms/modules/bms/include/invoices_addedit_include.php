@@ -89,7 +89,9 @@ function addLineItems($values,$invoiceid,$userid){
 	$lineitems= explode("{[]}",$values);		
 	foreach($lineitems as $lineitem) {
 		$fields=explode("[//]",$lineitem);
-		$querystatement="INSERT INTO lineitems (invoiceid,productid,quantity,unitcost,unitprice,unitweight,taxable,memo,createdby,creationdate,modifiedby) VALUES (";
+		$querystatement="INSERT INTO lineitems 
+						(invoiceid, productid, quantity, unitcost, unitprice,
+						unitweight, taxable, memo, createdby, creationdate, modifiedby) VALUES (";
 		$querystatement.=$invoiceid.", ";
 		if(trim($fields[0])!="" and trim($fields[0])!="0"){
 			$querystatement.=trim($fields[0]).", ";
@@ -116,7 +118,7 @@ function addLineItems($values,$invoiceid,$userid){
 			$querystatement.=trim($fields[6]).", ";
 		else
 			$querystatement.="0, ";
-		$querystatement.="\"".trim($fields[5])."\",";
+		$querystatement.="\"".trim(html_entity_decode($fields[5]))."\",";
 		$querystatement.=$userid.", NOW(), ".$userid." )";
 
 		$queryresult=mysql_query($querystatement,$dblink);
