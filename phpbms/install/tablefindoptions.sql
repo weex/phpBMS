@@ -1,5 +1,5 @@
 INSERT INTO tablefindoptions VALUES (3,9,'All Users','users.id!=0',1,0);
-INSERT INTO tablefindoptions VALUES (4,9,'Revokes Users','users.revoked=1',1,0);
+INSERT INTO tablefindoptions VALUES (4,9,'Revoked Users','users.revoked=1',1,0);
 INSERT INTO tablefindoptions VALUES (13,10,'All Records','relationships.id !=0',1,0);
 INSERT INTO tablefindoptions VALUES (5,11,'All Records','tabledefs.id !=0',1,0);
 INSERT INTO tablefindoptions VALUES (70,12,'Unread Notes Assigned By Me','notes.type=\'NT\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0',3,0);

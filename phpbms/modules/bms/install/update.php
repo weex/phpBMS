@@ -252,6 +252,21 @@ function loadSettings() {
 			
 					$ver["version"]="0.61";
 				break;
+				// ================================================================================================
+				case "0.61";
+					$thereturn.="Updating BMS Module to 0.62\n";
+
+					//$thereturn.=processSQLfile("updatev0.62.sql");
+
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.62\" WHERE name=\"bms\";";
+					$updateresult=mysql_query($querystatement,$dblink);
+					$thereturn.=" - modified bms record in modules table\n";
+
+					$thereturn.="Update to 0.62 Finished\n\n";
+			
+					$ver["version"]="0.62";
+				break;
 			}//end switch
 		}//end while
 		return $thereturn;
