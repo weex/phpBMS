@@ -1,4 +1,5 @@
 = phpBMS - README =
+-------------------
 
 
 === SERVER REQUIREMENTS ===
@@ -23,6 +24,7 @@ Your server must be running at least:
 
  '''NOTE BEFORE UPDATING'''
  
+ 
  Because of the extensive changes and database modifications in v0.6b, 
  certain data will be replaced.  This should not affect your client,
  product, or invoice records, but may affect saved searches and sorts,
@@ -39,5 +41,6 @@ Your server must be running at least:
     http://www.mytest.com/install/update.php
 	
  * Follow the instructions on the update page
+ 
  
  - phpbms project development team (http://www.phpbms.org)
