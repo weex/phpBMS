@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
@@ -34,49 +34,39 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require_once("include/session.php");
-	require_once("include/common_functions.php");
-	require_once("include/login_include.php");
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title><?PHP echo $_SESSION["application_name"]; ?> - Login Page</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/login.css" rel="stylesheet" type="text/css" />
-	<script language="javascript" src="common/javascript/common.js"></script>
-	<script language="javascript" src="common/javascript/login.js"></script>
-</head>
-
-<body onload="setMainFocus()">
-
-	<div class="bodyline" id="loginbox">
-		<h1 class="box">
-			<a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a>
-		</h1>
-		<h2><?PHP echo $_SESSION["application_name"];?></h2>
-		<h3>Business Management Web Application</h3>
-		<?php if ($failed) {?><div class="standout" id="failed"><?php echo $failed?></div><?php } ?>
-
-		<form name="form1" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>">
-			<p>
-				<label for="username">name</label><br />
-				<input name="name" type="text" id="username" size="25" maxlength="64" value="<?php echo $_POST["name"]?>"/>
-			</p>
+	function verifyLogin($username,$password,$seed,$dblink){
+		$thereturn="Login Failed";
+		
+		$querystatement="SELECT id, firstname, lastname, accesslevel, email, phone, department, employeenumber 
+						FROM users 
+						WHERE login=\"".$username."\" and password=ENCODE(\"".$password."\",\"".$seed."\") and revoked=0 and accesslevel>=10";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult)
+			reportError(300,"Error verifing user record");
+		if(mysql_num_rows($queryresult)){
+			//We found a record that matches in the database
+			// populate the session and go in
+			$_SESSION["userinfo"]=mysql_fetch_array($queryresult);
 			
-			<p>
-				<label for="password">password</label><br />
-				<input name="password" type="password" id="password" size="25" maxlength="24"/>
-			</p>
-			
-			<p><input id="command" name="command" type="submit" class="Buttons" value="Log On"/></p>
-		</form>
+			// set application location (web, not physical)
+			$pathrev=strrev($_SERVER["PHP_SELF"]);
+			$_SESSION["app_path"]=strrev(substr($pathrev,(strpos($pathrev,"/"))));
+
+			$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult)
+				reportError(300,"Error uUpdating login time.");
+
+			$_SESSION["tableparams"]="";
+			goURL($_SESSION["default_load_page"]);
+		} else 		
+		return "Login Failed";
+	}
 	
-		<p class="tiny" id="moreinfo">
-			<a href="requirements.php">browser requirements</a> |
-			<a href="info.php">program info</a>
-		</p>
-	</div>
-
-</body>
-</html>
+	$failed="";
+	if (isset($_POST["name"])) {
+		$variables=addSlashesToArray($_POST);
+		$failed=verifyLogin($variables["name"],$variables["password"],$_SESSION["encryption_seed"],$dblink);
+	} else 
+		$_POST["name"]="";
+?>

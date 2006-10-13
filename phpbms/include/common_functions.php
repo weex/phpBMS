@@ -39,6 +39,13 @@
 //Most Common Functions of the Application go here.
 //=================================================
 
+function goURL($url){
+	if(headers_sent())
+		reportError("450","Could not redirect to: ".$url);
+	header("Location: ".$url);
+	exit;
+}
+
 //Create Tabs
 //===================================
 function create_tabs($tabarray,$selected="none") {
