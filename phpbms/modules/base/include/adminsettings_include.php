@@ -37,9 +37,7 @@
 // This function writes to the settings.php file
 // any settings you want saved
 //=========================================
-function updateSettings($settings) {
-	global $dblink;
-	
+function updateSettings($settings,$dblink) {	
 	foreach($settings as $key=>$value){
 		$querystatement="UPDATE settings set value=\"".$value."\" WHERE name=\"".$key."\"";
 		$queryresult=mysql_query($querystatement,$dblink);
@@ -48,10 +46,9 @@ function updateSettings($settings) {
 }//end function
 
 function processSettings($variables,$files){
-	global $dblink;
 	$writesettings=Array();
 	foreach($variables as $key=>$value){
-		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0){
+		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0 && $key!="changeseed" && $key!="currentpassword" && $key!="sencryption_seed" && $key!="doencryptionupdate"){
 			if($_SESSION[substr($key,1)]!=$value){
 				$writesettings[substr($key,1)]=$value;
 				$_SESSION[substr($key,1)]=stripslashes($value);
@@ -69,7 +66,7 @@ function processSettings($variables,$files){
 
 	// if changes, process settings
 	if(count($writesettings)>0)
-		updateSettings($writesettings);
+		updateSettings($writesettings,$dblink);
 	
 	// deal with logo graphic.
 	if(isset($files["printedlogo"]))
@@ -88,11 +85,46 @@ function processSettings($variables,$files){
 	return true;
 }
 
+function updateEncyptionSeed($newseed,$currpassword,$userid,$currseed,$dblink){
+	//first let's make sure the password matches
+	$querystatement="SELECT id FROM users WHERE id=".$userid." AND password=ENCODE(\"".$currpassword."\",\"".$currseed."\")";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult)
+		return "Error retrieving current user information: ".mysql_error($dblink);
+	if(!mysql_num_rows($queryresult))
+		return "Invalid Password";
+	
+	//let's update the encryption seed then
+	$querystatement="UPDATE settings SET value=\"".$newseed."\" WHERE name=\"encryption_seed\"";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult)
+		return "Error updateing seed: ".mysql_error($dblink);
+
+	//update the current session information
+	$_SESSION["encryption_seed"]=$newseed;
+	
+	//last, reencode the current password
+	$querystatement="UPDATE users SET password=ENCODE(\"".$currpassword."\",\"".$newseed."\") WHERE id=".$userid;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult)
+		return "Error updateing user with new seed: ".mysql_error($dblink);
+		
+	return "Encryption Seed Updated. All other user passwords are now invalid.";
+}
 
 //process commands
 if (isset($_POST["command"])) {
-	if(processSettings(addSlashesToArray($_POST),$_FILES))
-		$statusmessage="Settings Updated";
+	switch($_POST["command"]){
+		case "Update Settings":
+			if(processSettings(addSlashesToArray($_POST),$_FILES,$dblink))
+				$statusmessage="Settings Updated";				
+		break;
+		
+		case "Update Encryption Seed":
+			$_POST=addSlashesToArray($_POST);
+			$statusmessage = updateEncyptionSeed($_POST["sencryption_seed"],$_POST["currentpassword"],$_SESSION["userinfo"]["id"],$_SESSION["encryption_seed"],$dblink);
+		break;
+	}
 }
 
 ?>

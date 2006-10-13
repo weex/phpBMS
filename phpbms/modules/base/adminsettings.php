@@ -43,24 +43,25 @@ require_once("include/admin_functions.php");
 require_once("include/adminsettings_include.php");
 ?>
 
-<?PHP $pageTitle="Settings"?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<?PHP $pageTitle="Settings"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 <script language="JavaScript" src="../../common/javascript/timepicker.js"></script>
+<script language="JavaScript" src="javascript/adminsettings.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <?php admin_tabs("Settings");?><div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);">
+	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return processForm(this);">
 
 	<div style="float:right;width:150px;" align="right">
-			<input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings">	
+			<input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" />	
 	</div>
 	<h1 style="margin-right:155px;"><?php echo $pageTitle ?></h1>
 	<div class="box" style="background-color:white;height:40px;" align="right">
@@ -79,14 +80,6 @@ require_once("include/adminsettings_include.php");
 		<div class="notes">
 			<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
 		</div>
-		<label for="sencryption_seed">
-			encryption seed<br />
-			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>				
-		</label>
-		<div class="notes">
-			<strong>Note:</strong>
-			Changing the encryption seed will void all current passwords. They will need to be reset immediately before logging out.
-		</div>
 		<label for="srecord_limit">
 			record display limit<br />
 			<?PHP field_text("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
@@ -95,6 +88,32 @@ require_once("include/adminsettings_include.php");
 			default load page<br />
 			<?PHP field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>
 		</label>
+	</fieldset>
+	
+	<fieldset>
+		<legend>encryption seed</legend>
+		<div class="notes">
+			<strong>Note:</strong>
+			The encryption seed is used to encrypt all passwords before storing them in the database. 
+			Changing the encryption seed will void all current passwords. By entering your admin password,
+			your password will be reencrypted with the new seed.  All other users passwords will be voided
+			and need to be reentered.
+		</div>
+		<label for="changeseed">
+			<input type="checkbox" value="1" name="changeseed" id="changeseed" onchange="toggleEncryptionEdit(this)" class="radiochecks"/> change seed
+		</label>
+		<label for="sencryption_seed">
+			encryption seed<br />
+			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>				
+		</label>
+		<label for="currentpassword">
+			current password<br />
+			<input type="password" name="currentpassword" id="currentpassword" size="32" readonly="readonly" class="uneditable"/>
+		</label>
+		<div>
+			<input type="hidden" id="doencryptionupdate" name="doencryptionupdate" value=""/>
+			<input type="submit" id="updateSettings3" name="command" class="Buttons" value="Update Encryption Seed" disabled="true" onclick="this.form['doencryptionupdate'].value=1"/>	
+		</div>
 	</fieldset>
 		
 	<fieldset>
@@ -133,7 +152,7 @@ require_once("include/adminsettings_include.php");
 			contain an alpha channel, or interlacing.
 		</div>
 		<label for="sstylesheet">
-			style<br>
+			style<br />
 			<select id="sstylesheet" name="sstylesheet">
 			<?php 
 				$thedir="../../common/stylesheet";
