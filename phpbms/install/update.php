@@ -157,7 +157,7 @@ h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25
 			those files before continuing. 
 		</div>
 		<div>
-			Check the <a href="./changelog.txt">changelog.txt</a> file for a complete listing  of all 
+			Check the <strong>ChangeLog</strong> file for a complete listing  of all 
 			modifications.
 		</div>
 		<div>
