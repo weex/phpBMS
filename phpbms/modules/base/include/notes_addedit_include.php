@@ -105,12 +105,12 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				id, subject, assignedtoid, type, content, importance, category,
-				attachedtabledefid, attachedid, parentid,location,private,status,
-				repeat,repeatfrequency,repeattype,repeatdays,repeattimes,`repeat`,date_Format(repeatuntildate,\"%c/%e/%Y\") as repeatuntildate,
-				completed,date_Format(completeddate,\"%c/%e/%Y\") as completeddate,date_Format(startdate,\"%c/%e/%Y\") as startdate,
-				time_format(starttime,\"%l:%i %p\") as starttime,date_Format(enddate,\"%c/%e/%Y\") as enddate, time_format(endtime,\"%l:%i %p\") as endtime,
-				assignedtoid,date_Format(assignedtodate,\"%c/%e/%Y\") as assignedtodate,time_format(assignedtotime,\"%l:%i %p\") as assignedtotime,assignedbyid,
+				id, subject, assignedtoid, `type`, content, importance, category,
+				attachedtabledefid, attachedid, parentid, location, private, `status`,
+				repeatfrequency, repeattype, repeatdays,repeattimes,`repeat`, date_Format(repeatuntildate,'%c/%e/%Y') as repeatuntildate,
+				completed,date_Format(completeddate,'%c/%e/%Y') as completeddate,date_Format(startdate,'%c/%e/%Y') as startdate,
+				time_format(starttime,'%l:%i %p') as starttime,date_Format(enddate,'%c/%e/%Y') as enddate, time_format(endtime,'%l:%i %p') as endtime,
+				assignedtoid,date_Format(assignedtodate,'%c/%e/%Y') as assignedtodate,time_format(assignedtotime,'%l:%i %p') as assignedtotime,assignedbyid,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -217,7 +217,7 @@ function updateRecord($variables,$userid){
 			}
 			
 			if(isset($variables["repeat"])) {
-				$querystatement.="repeat=1, "; 
+				$querystatement.="`repeat`=1, "; 
 				$querystatement.="repeatfrequency=".$variables["repeatfrequency"].", "; 					
 				$tempRepeatType="repeat".$variables["repeattype"];
 				if($variables["repeattype"]=="Monthly")
