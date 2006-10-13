@@ -1,14 +1,14 @@
 = phpBMS - README =
 
 
-== SERVER REQUIREMENTS ==
+=== SERVER REQUIREMENTS ===
 
 Your server must be running at least:
  * MySQL 3.2358+
  * PHP 4.1.2+ with MySQL support enabled. 
 
 
-== INSTALLATION ==
+=== INSTALLATION ===
 
  * To install, from a web broswer, point to the install.php file located 
    in the install directory. (e.g. if you installed phpBMS to the root 
@@ -19,7 +19,7 @@ Your server must be running at least:
  * Follow the instructions on the installation page
 
 
-== UPDATING AN INSTALLED VERSION OR MODULE ==
+=== UPDATING AN INSTALLED VERSION OR MODULE ===
 
  '''NOTE BEFORE UPDATING'''
  
@@ -39,3 +39,5 @@ Your server must be running at least:
     http://www.mytest.com/install/update.php
 	
  * Follow the instructions on the update page
+ 
+ - phpbms project development team (http://www.phpbms.org)
