@@ -54,7 +54,7 @@ function processSettings($variables,$files){
 		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0){
 			if($_SESSION[substr($key,1)]!=$value){
 				$writesettings[substr($key,1)]=$value;
-				$_SESSION[substr($key,1)]=$value;
+				$_SESSION[substr($key,1)]=stripslashes($value);
 			}
 		}
 	}
