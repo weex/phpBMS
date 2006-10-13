@@ -63,7 +63,7 @@ function deleteTables(){
 		if(strpos($deletestatement,";")){
 			$theresult=mysql_query(trim($deletestatement),$dbtlink); 
 			if(!$theresult){
-				echo "<div style=\"font-size:10px;\">".mysql_error($dblink)." -- '".$deletestatement."'<br>&nbsp;</div>";
+				echo "<div style=\"font-size:10px;\">".mysql_error($dbtlink)." -- '".$deletestatement."'<br>&nbsp;</div>";
 				$thereturn="false";
 			}
 			$deletestatement="";
