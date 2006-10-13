@@ -1,0 +1,17 @@
+.SysMessageContent	{
+	margin-left:15px;
+	margin-bottom:5px;
+	display:none;
+	border:1px solid #CCCCCC;
+}
+
+.task a,.taskCompleted a,.taskPastDue a,.taskPrivate a{ font-weight:normal;}
+.taskPrivate a{ font-weight:bold;}
+
+.taskCompleted { text-decoration:line-through; color:#CCCCCC;}
+.taskCompleted a{color:#CCCCCC;}
+
+.taskPastDue a{color:#FF0000;}
+
+.eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
+.event{padding:4px;padding-bottom:6px;}

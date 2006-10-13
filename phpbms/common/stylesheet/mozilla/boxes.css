@@ -1,0 +1,32 @@
+LABEL{display:block;padding:2px;}
+FIELDSET,.bodyline,.tabselected,.tabs,.tabbottoms,.box,#modalBox{ 
+	-moz-border-radius:8px;
+	border: 1px #E4ECEC outset; 
+	padding:0px;
+	margin-bottom:5px;
+}
+.bodyline,.tabselected,#modalBox{
+	background-color: #E4ECEC; 
+	background-image:url(bodyline.png);
+	background-repeat:repeat-x;
+	background-position:bottom left
+}
+.tabselected{
+background-image:none;
+}
+
+.bodyline{
+	display:inline-block;
+	padding:4px;margin-top:0px;
+}
+
+FIELDSET,.box{
+	border-color:#455372;
+	border-style:inset;
+	border-width:1px;
+	margin:3px;
+	margin-bottom:7px;
+	padding:3px; 		
+}
+FIELDSET{padding-top:0px}
+.box{background-color:#EFF9F9;}

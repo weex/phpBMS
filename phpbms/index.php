@@ -47,10 +47,8 @@
 	<script language="javascript" src="common/javascript/common.js"></script>
 	<script language="javascript" src="common/javascript/login.js"></script>
 </head>
-
 <body onload="setMainFocus()">
-
-	<div class="bodyline" id="loginbox">
+	<div id="loginbox" class="bodyline" >
 		<h1 class="box">
 			<a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a>
 		</h1>

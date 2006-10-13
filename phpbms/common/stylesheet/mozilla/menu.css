@@ -1,0 +1,102 @@
+	#menu{
+		clear:both;
+		padding:0px;
+		margin-bottom:15px;
+		background:url(image/menu.png);
+		color:white;
+		height:75px;
+	}
+	#menu a, #topMenu a:hover{color:white;}
+	#menu a{text-decoration:none;}
+	#menu a:hover{text-decoration:underline;}
+
+	#menu h1{
+		background:none;
+		float:left;
+		margin:0;
+		padding:10px;
+		padding-left:15px;
+		font-weight:bold;
+		font-size:20px;
+		border:0;
+	}
+	
+	#menuRighthandButtons{
+		font-size:11px;
+		float:right;
+		padding:9px 10px 0 0;
+	}
+	#menuRighthandButtons button{margin-left:5px;}
+
+
+
+	#menuBar {
+		display:block;
+		margin:0;
+		clear:both;
+		background:#697388 url("image/menubar.png") repeat-x;
+		border-top:1px solid #8693ae;
+		border-bottom:2px solid #444a58;
+		text-transform:lowercase;
+		padding:6px 0 0 15px;
+		height:22px;
+	}
+	#menuBar li{ display:inline;}
+	#menuBar a{
+		background-image: url("image/menulinks.png");
+		background-position:0px 0px;
+		border-right:1px solid #5a6375;
+		font-size:12px;
+		color:white;
+		padding:6px;
+		padding-left:8px;
+		padding-right:8px;
+	}
+	#menuBar a:hover{ 
+		background-position:0px 27px;
+		text-decoration:none; 
+		background-color:#747F96;
+	}
+	
+	.submenuitems{
+		display:none;
+		margin-top:0px;
+		padding:0px;
+		padding-top:1px;
+		position:absolute;
+		background-color:#E0E9E9;
+		border:1px outset #E0E9E9;
+	}
+	#menuBar .submenuitems a{
+		background-image:none;
+		margin:0px;
+		display:block; 
+		background-color:#EDF2F2;
+		border-top:1px solid white;
+		border-bottom:1px solid #DDDDDD;
+		margin-bottom:1px;
+		padding:3px;
+		padding-left:5px;
+		font-size:11px;
+		color:#663366;
+	}
+	#menuBar .submenuitems a:hover{text-decoration:none; background-color:#663366;color:white;
+	-moz-border-radius:0px;
+        border-top:1px solid white;
+        border-bottom:1px solid #DDDDDD;
+	}
+	
+	#statusmessage{
+		background-image: url("image/statusmessage.png");
+		background-repeat:no-repeat;
+		background-position:7px 5px;
+		margin:15px;
+		margin-bottom:15px;
+		margin-top:-15px;
+		padding-left:30px;
+		padding-bottom:6px;
+		vertical-align:middle;
+		-moz-border-radius-bottomleft:8px;
+		-moz-border-radius-bottomright:8px;
+		
+	}	

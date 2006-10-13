@@ -1,0 +1,52 @@
+/* ============================================================================== */
+/* Font size/standouts headers                                                    */
+/* ============================================================================== */
+
+.huge{font-size : 17px;}
+.large{font-size : 16px;}
+.small,.notes { font-size : 11px;}
+.tiny { font-size : 10px}
+.mono {font-family:'Courier New', Courier, mono;}
+
+.standout,#statusmessage{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
+
+.notes {color:#DF0005}
+
+.important {font-weight:bold;}
+
+H1 {
+	font-family: Arial, Helvitica, sans-serif;
+	border-bottom: 1px solid #ccc;
+	font-size:20px;
+	margin:3px;
+	padding-left:24px;
+	margin-bottom:8px;
+	font-weight:normal;
+	background-image:url(h1graphic.png);
+	background-position:4px 4px;
+	background-repeat:no-repeat;
+}
+LEGEND,H2{	
+	font-weight:bold;
+	font-size:15px; 
+	color:#455372;
+        text-transform:capitalize;
+        font-family: Arial, Helvitica, sans-serif;
+}
+LEGEND {margin-top:0px;}
+H2{
+	border-bottom: 1px solid #ccc;
+	padding:2px;
+	padding-left:3px;
+	padding-bottom:0px;
+	margin:0px;
+	margin-top:30px; 
+	margin-bottom:5px;
+}
+H3{
+	font-size:14px;
+	font-weight:bold;
+	margin:2px;
+	margin-top:10px;
+    font-family: Arial, Helvitica, sans-serif;
+}

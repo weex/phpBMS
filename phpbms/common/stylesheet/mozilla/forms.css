@@ -1,0 +1,56 @@
+
+SELECT, INPUT, TEXTAREA, .uneditable, .fieldtext { 
+	border: 1px solid #9097A2;
+	font-size: 11px; padding: 2px;  background-color: #D9DBE1; vertical-align: middle; font-style:normal;
+}
+SELECT{padding:0px;}
+TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:white;}
+INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; background-image:none;}
+INPUT[disabled]:Active{border:1px outset black;}
+FORM{margin:0px;padding:0px;}
+
+
+.uneditable,.uneditable:Focus {background-color:transparent;}
+.disabledtext{color:#CCCCCC;}
+.radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
+
+.Buttons,.smallButtons {
+	background-image:url(button-backs.png);
+	background-position:0px 0px;
+	padding:2px;
+	font-size:11px;
+	
+	background-color:#617389;color:#FFFFFF; font-size: 11px;  font-weight:bold; 
+	border: 1px outset #617389;
+	cursor:pointer;
+}
+.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
+	border:1px solid #F99809;
+	background-position:0px 20px;
+	background-color:#697388;
+}
+.Buttons[disabled]:Hover,.smallButtons[disabled]:Hover{
+	/* first three entries are from disabled, the last are from standard buttons */
+	/* this disables hover for disabled buttons */
+	background-color:#AAAAAA;color:#EFEFEF; background-image:none;
+	border: 1px solid black;
+	border-top-color:#999999;
+	border-left-color:#999999;
+}
+.Buttons:Active,.smallButtons:Active{
+	border: 1px inset #617389; 
+}
+.invisibleButtons,.invisibleTextField{
+border-style:none;
+background-color:transparent;
+}
+.invisibleButtons{
+padding:0px;
+font-size:9px;
+border-width:0px;
+color:#0B63A2;
+vertical-align:middle;
+cursor: pointer; 
+}
+
+.smallButtons{font-size:10px}

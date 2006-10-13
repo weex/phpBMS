@@ -63,16 +63,18 @@ function getSubItems($parentid){
 <script language="JavaScript" >
 	var spinner=new Image;spinner.src=+"<?php echo $_SESSION["app_path"] ?>common/image/spinner.gif";
 	var upArrow=new Image;upArrow.src="<?php echo $_SESSION["app_path"] ?>common/image/up_arrow.gif";
-        var downArrow=new Image;downArrow.src="<?php echo $_SESSION["app_path"] ?>common/image/down_arrow.gif";
+	var downArrow=new Image;downArrow.src="<?php echo $_SESSION["app_path"] ?>common/image/down_arrow.gif";
 </script>
-<div id="menu">
-	<div id="menuLogout" class="small">
-		<a href="/click for information/"  name="toptop" id="loggedinuser" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a> 	
-		<input id="lo" name="lo" type="button" class="smallButtons" value="log out" style="margin-left:3px;margin-right:3px;" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')">
-		<input id="help" name="help" type="button" class="smallButtons" value="?" style="" onClick="showHelp('<?php echo $_SESSION["app_path"]?>')">
+<div id="menu" >
+	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
+
+	<div id="menuRighthandButtons">
+		<a href="/click for information/"  name="toptop" id="loggedinuser" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a>		
+		<button name="menuLogout" type="button" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')" title="log out" class="smallButtons">log out</button>
+		<button name="menuHelp" type="button" onClick="showHelp('<?php echo $_SESSION["app_path"]?>')" title="Help" class="smallButtons">?</button>
 	</div>
-	<div id="menuAppname"><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>"><?php echo $_SESSION["application_name"];?></a></div>
-	<div id="menuBar" style="clear:both;">
+		
+	<ul id="menuBar">
 	<?php 	
 		$submenustring="";
 		while($menurecord=mysql_fetch_array($menus)){
@@ -80,9 +82,9 @@ function getSubItems($parentid){
 				if($menurecord["link"]) {
 					if(strpos($menurecord["link"],"http")!==0)
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
-					?><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a><?php 
+					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}
-				else { ?><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"  onMouseOver="checkExpand(this)"><?php echo $menurecord["name"]; ?>&nbsp;<img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" id="menuImage<?php echo $menurecord["id"]?>" width=10 height=10 border="0" ></a><div class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
+				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"  onMouseOver="checkExpand(this)"><?php echo $menurecord["name"]; ?>&nbsp;<img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" id="menuImage<?php echo $menurecord["id"]?>" width=10 height=10 border="0" ></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
 					$submenustring.=$menurecord["id"].",";
 					$subitemsquery=getSubItems($menurecord["id"]);
 					if($subitemsquery){
@@ -90,15 +92,15 @@ function getSubItems($parentid){
 							if($_SESSION["userinfo"]["accesslevel"]>=$subrecord["accesslevel"]){
 								if(strpos($subrecord["link"],"http")!==0)
 									$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
-							?><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a><?php }//end if
+							?><li><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php }//end if
 						}//end while
 					}//end if
-					echo "</div>";
+					echo "</ul>";
 				}//end if
 			}//end if
 		}//end while
 		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
-	?></div></div><script language="JavaScript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
+	?></ul></div><script language="JavaScript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
 <?PHP if (isset($statusmessage)) {?>
 <div id="statusmessage"><?PHP echo $statusmessage ?></div>
 <?PHP } // end if ?>

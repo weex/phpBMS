@@ -1,0 +1,34 @@
+	.dp td, .tpHour td, .tpMinute td{padding:2px; font-size:10px;}
+	.dpHead,.tpHead,.tpHour td:Hover .tpHead{ 
+		font-weight:bold;
+		background-color:#0B63A2;
+		color:white; 
+		font-size:11px;
+		cursor:auto;
+	}
+	.dpButtons,.tpButtons {
+		text-align:center;
+		background-color:#617389;color:#FFFFFF; font-weight:bold; 
+		border: 1px outset black;
+		cursor:pointer;	
+	}
+	.dpButtons:Active,.tpButtons:Active{border: 1px outset black;}
+	.dpDayNames td,.dpExplanation {background-color:#D9DBE1; font-weight:bold; text-align:center; font-size:11px;}
+	.dpExplanation{ font-weight:normal; font-size:11px;}
+	.dpWeek td{text-align:center}
+	.dpWeek:Hover{background-color:#CCCCCC;}
+	
+	.dpToday,.dpReg,.dpSelected{
+		cursor:pointer;
+	}
+	.dpToday{font-weight:bold; color:#0B63A2; background-color:#BBBBBB;}
+	.dpReg:Hover,.dpToday:Hover{background-color:black;color:white}
+	.dpSelected{background-color:#0B63A2;color:white;font-weight:bold; }
+	
+	.tpHour{border-top:1px solid #DDDDDD; border-right:1px solid #DDDDDD;}
+	.tpHour td {border-left:1px solid #DDDDDD; border-bottom:1px solid #DDDDDD; cursor:pointer;}
+	.tpHour td:Hover {background-color:black;color:white;}
+
+	.tpMinute {margin-top:5px;}
+	.tpMinute td:Hover {background-color:black; color:white; }
+	.tpMinute td {background-color:#D9DBE1; text-align:center; cursor:pointer;}

@@ -45,6 +45,7 @@
 <title><?php echo $_SESSION["application_name"] ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/snapshot.css" rel="stylesheet" type="text/css">
 <!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
 	 work properly -->
 <script language="JavaScript" src="../../common/javascript/common.js" type="text/javascript" ></script>
