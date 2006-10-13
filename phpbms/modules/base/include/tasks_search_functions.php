@@ -42,7 +42,7 @@
 
 function mark_asread($theids){
 	//passed variable is array of user ids to be revoked
-	global $dlink;
+	global $dblink;
 	
 	$whereclause="";
 	foreach($theids as $theid){

@@ -45,7 +45,7 @@ function updateSettings($settings,$dblink) {
 	}
 }//end function
 
-function processSettings($variables,$files){
+function processSettings($variables,$files,$dblink){
 	$writesettings=Array();
 	foreach($variables as $key=>$value){
 		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0 && $key!="changeseed" && $key!="currentpassword" && $key!="sencryption_seed" && $key!="doencryptionupdate"){
