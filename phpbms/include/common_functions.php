@@ -148,7 +148,7 @@ function dateFromSQLTimestamp ($datetime) {
 	array_shift ($matches);	
 	foreach (array('year','month','day','hour','minute','second') as
 $var) {
-		$$var = array_shift($matches);
+		$$var = (int) array_shift($matches);
 	}
 	return mktime($hour,$minute,$second,$month,$day,$year);
 }
