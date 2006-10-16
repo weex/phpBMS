@@ -36,7 +36,8 @@
 */
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
-	require("include/session.php");
+	require_once("include/session.php");
+	require_once("include/common_functions.php");
 	
 	if(isset($dblink)){
 		$querystatement="SELECT displayname,version from modules ORDER BY id";
