@@ -95,15 +95,15 @@
 						WHERE tabledefid=".$tabledefid." AND type=\"SRT\" AND (userid=0 OR userid=\"".$userid."\") ORDER BY userid, name";
 		$queryresult = mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(500,"Cannot retrieve saved sort infromation");
-		?><label for="sortSavedList">
-			saved sorts<br />
+		?><p><label for="sortSavedList">saved sorts</label><br />
 			<?php displaySavedSortList($queryresult,$basepath)?>
-		</label>				
-		<div align="right">
+		
+		</p>
+		<p align="right" class="buttonsRight">
 			<input type="button" class="Buttons" style="width:75px;" id="sortSavedDeleteButton" value="delete" disabled="true" onClick="sortSavedDelete('<?php echo $basepath ?>')"/>
 			<input type="button" class="Buttons" style="width:75px;" id="sortSavedLoadButton" value="load" disabled="true" onClick="sortSavedLoad('<?php echo $basepath ?>')"/>
 			<input type="button" class="Buttons" style="width:75px;" id="sortSavedCancelButton" value="cancel" onClick="closeModal()"/>
-		</div>
+		</p>
 		<?php
 	}
 
@@ -139,7 +139,7 @@
 		?><table border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td valign=top width="99%">
-					<div id="theSorts" style="margin:0px;padding:0px;">
+					<div id="theSorts">
 						<div id="Sort1">
 							<select id="Sort1Field" onChange="updateSort()">
 								<?php 
@@ -150,22 +150,25 @@
 								 <option value="ASC" selected="selected">Ascending</option>
 								 <option value="DESC">Descending</option>
 							</select>
-							<button type="button" id="Sort1Up" class="invisibleButtons" onClick="sortMove(this,'up')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up-disabled.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
-							<button type="button" id="Sort1Down" class="invisibleButtons" onClick="sortMove(this,'down')"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down-disabled.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
-							<button type="button" id="Sort1Minus" class="invisibleButtons" onClick="sortRemoveLine(this)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus-disabled.png" align="middle" alt="-" width="16" height="16" border="0" /></button>
-							<button type="button" id="Sort1Plus" class="invisibleButtons" onClick="sortAddLine()"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button>
+							<button type="button" id="Sort1Up" class="graphicButtons buttonUpDisabled" onclick="sortMove(this,'up')"><span>up</span></button>
+							<button type="button" id="Sort1Down" class="graphicButtons buttonDownDisabled" onclick="sortMove(this,'down')"><span>down</span></button>
+							<button type="button" id="Sort1Minus" class="graphicButtons buttonMinusDisabled" onclick="sortRemoveLine(this)"><span>-</span></button>
+							<button type="button" id="Sort1Plus" class="graphicButtons buttonPlus" onclick="sortAddLine()"><span>+</span></button>
 						</div>
 					</div>
-					<div>
+					<p>
 						sql order by clause<br/>
 						<textarea id="sortSQL" style="width:98%;height:75px;" cols="57" rows="4" onKeyUp="sortEnableButtons(this)" ></textarea>		
-					</div>
+					</p>
 				</td>
-				<td valign=top><br/>
-					<div><input id="sortRunSort" type="button" onClick="performAdvancedSort(this)" class="Buttons" disabled="true" value="run sort" style="width:90px;" /></div>
-					<div><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></div>
-					<div><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save sort..." style="width:90px;" /></div>
-					<div><input id="sortClearSort" type="button" onClick="clearSort()" class="Buttons" disabled="true" value="clear sort" style="width:90px;" /></div>
+				<td valign=top>
+					<div style="float:right">
+				    <br/>
+					<p><input id="sortRunSort" type="button" onClick="performAdvancedSort(this)" class="Buttons" disabled="true" value="run sort" style="width:90px;" /></p>
+					<p><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></p>
+					<p><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save sort..." style="width:90px;" /></p>
+					<p><input id="sortClearSort" type="button" onClick="clearSort()" class="Buttons" disabled="true" value="clear sort" style="width:90px;" /></p>
+					</div>
 				</td>
 			</tr>
 		</table>

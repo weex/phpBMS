@@ -191,20 +191,18 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 	
 	
 	$displayTable->issueQuery();
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $displayTable->thetabledef["displayname"] ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
-	 work properly -->
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="common/javascript/common.js" type="text/javascript" ></script>
 <script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
 </head>
 <body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
-	<div>
 <?PHP  
 		//Search//select
 			$displayTable->displaySearch();
@@ -219,7 +217,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 			
 			$displayTable->displayRelationships();
 			$displayTable->saveQueryParameters();
-	?></div>
+	?>
 </div>
 <?php include("footer.php")?>
 </body>

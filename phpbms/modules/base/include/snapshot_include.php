@@ -49,7 +49,7 @@ function showSystemMessages(){
 	if(mysql_num_rows($queryresult)){ 
 	?>
 	<div class="box">		
-		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'systemMessages')" width="16" height="16" border="0" /></div>
+		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'systemMessages')" width="16" height="16" border="0" /></div>
 		<h2 style="margin-top:4px;">System Messages</h2>
 		<div id="systemMessages" style="margin:0px;padding:0px">
 		<?php while($therecord=mysql_fetch_array($queryresult)) {
@@ -110,7 +110,7 @@ function showTasks($userid,$type="Tasks"){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	
-	?> <div style="clear:both;float:right;cursor:pointer;cursor:hand;<?php if($sec==3)echo "display:none;"?>padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg<?php echo $sec?>" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
+	?> <div style="clear:both;float:right;cursor:pointer;cursor:hand;<?php if($sec==3)echo "display:none;"?>padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg<?php echo $sec?>" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
 	<h2 style="margin-top:4px;"><?php echo $title; if(mysql_num_rows($queryresult)) {?> <span class="small">(<?php echo mysql_num_rows($queryresult)?>)</span><?php } ?></h2>
 	<div id="accordianSec<?php echo $sec?>" style="margin:0px;padding:0px;display:block;">
 	<?php

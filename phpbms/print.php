@@ -130,9 +130,9 @@ if (isset($_POST["command"])){
 <script language="JavaScript" src="common/javascript/print.js"></script>
 <script language="JavaScript" >
  var buttonUp=new Image();
- buttonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png";
+ buttonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png";
  var buttonDown=new Image();
- buttonDown.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png";
+ buttonDown.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png";
 </script>
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>
@@ -177,7 +177,7 @@ if (isset($_POST["command"])){
 		</div>
 	</fieldset>
 
-	<div align="left" style="padding-top:0px;padding-left:10px;"><a href="" onClick="showMoreOptions(this);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" id="moreOptionsGraphic" align="absmiddle" alt="show"  width="16" height="16" border="0" /> more options</a></div>
+	<div align="left" style="padding-top:0px;padding-left:10px;"><a href="" onClick="showMoreOptions(this);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png" id="moreOptionsGraphic" align="absmiddle" alt="show"  width="16" height="16" border="0" /> more options</a></div>
 	<div id="moreoptions" style="margin:0px;padding:0px;display:none;">
 	<fieldset>
 		<legend>data</legend>

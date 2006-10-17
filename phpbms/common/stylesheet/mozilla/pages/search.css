@@ -1,0 +1,23 @@
+/* The following lines is put in  until the site is reformatted*/
+LABEL{display:inline;margin:0;padding:0}
+DIV{padding:0;margin:0;}
+P{margin:0;padding:0 5px 10px;}
+.alt{display:none;}
+.bodyline{display:block}
+/* The following lines is put in  until the site is reformatted*/
+
+#searchBox{clear:both;margin:0 0 15px 0;padding:10px 5px 5px 5px;}
+#searchbutton,#reset,#LSLoad,#LSDelete,#saveSearch,#ASsearchbutton,
+#sortRunSort,#sortLoadSort,#sortSaveSort,#sortClearSort{width:90px;}
+#startswith{width:99%}
+
+#theASCs div,#theSorts div{padding:2px 8px;}
+
+#LSSelectedSearch,#LSSQL,#saveSearchName{width:99%}
+#LSSQL{height:123px;}
+
+#numCount{margin:0;padding:0 0 2px 0;float:right;text-align:right;}
+#numCount div{margin:0;padding:0; text-align:left;}
+#recordCommands{padding:0 0 2px 0;}
+
+#sortSavedDeleteButton,#sortSavedLoadButton,#sortSavedCancelButton{width:75px;}

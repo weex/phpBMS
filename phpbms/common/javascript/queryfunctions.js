@@ -161,15 +161,15 @@ function setButtonStatus(disabledstatus){
 		
 	if(editButton){
 		editButton.disabled=disabledstatus;
-		editButton.firstChild.src=(disabledstatus)?editButtonImgDisabled.src:editButtonImg.src;
+		editButton.className="graphicButtons buttonEdit"+((disabledstatus)?"Disabled":"");
 	}
 	if(printButton){
 		printButton.disabled=disabledstatus;
-		printButton.firstChild.src=(disabledstatus)?printButtonImgDisabled.src:printButtonImg.src;
+		printButton.className="graphicButtons buttonPrint"+((disabledstatus)?"Disabled":"");
 	}
 	if(deleteButton){
 		deleteButton.disabled=disabledstatus;
-		deleteButton.firstChild.src=(disabledstatus)?deleteButtonImgDisabled.src:deleteButtonImg.src;
+		deleteButton.className="graphicButtons buttonDelete"+((disabledstatus)?"Disabled":"");
 	}
 	if(otherCommands) otherCommands.disabled=disabledstatus;
 	if(relationship) relationship.disabled=disabledstatus;
@@ -293,7 +293,7 @@ function changeSelection(optionValue){
 }
 
 function switchSearchTabs(taba,base){
-	if(taba.parentNode.className=="searchtabsSel")
+	if(taba.parentNode.className=="tabsSel")
 		return false;
 		
 	var basicTab=getObjectFromID("basicSearchT");
@@ -308,7 +308,7 @@ function switchSearchTabs(taba,base){
 	saveTab.className="";
 	sortTab.className="";
 	
-	taba.parentNode.className="searchtabsSel";
+	taba.parentNode.className="tabsSel";
 
 	basicTab=getObjectFromID("basicSearchTab");
 	advancedTab=getObjectFromID("advancedSearchTab");
@@ -382,10 +382,10 @@ function showSQL(thebutton){
 		var sqlSpan=getObjectFromID("sqlstatement");
 		if (sqlSpan.style.display=="block"){
 			sqlSpan.style.display="none";
-			thebutton.firstChild.src=sqlButtonUp.src
+			thebutton.className="graphicButtons buttonShowSQLDown";
 		} else{
 			sqlSpan.style.display="block";
-			thebutton.firstChild.src=sqlButtonDn.src
+			thebutton.className="graphicButtons buttonShowSQLUp";
 		}
 }
 
@@ -394,7 +394,7 @@ function updateAS(){
 	var tempMinus;	
 	if(ASParams.length>1){
 		tempMinus=getObjectFromID("ASC"+ASParams[0]+"minus")
-		tempMinus.firstChild.src=buttonMinusEnabled.src;
+		tempMinus.className="graphicButtons buttonMinus";
 	}
 	var tempText;
 	var tempField;
@@ -429,8 +429,9 @@ function ASEnableSave(thetextarea){
 
 function addlineAS(){
 	var tempMinus=getObjectFromID("ASC"+ASParams[0]+"minus");
-	if(tempMinus.firstChild.src==buttonMinusDisabled.src)
-		tempMinus.firstChild.src=buttonMinusEnabled.src;
+	if(tempMinus.className=="graphicButtons buttonMinusDisabled"){
+		tempMinus.className="graphicButtons buttonMinus";
+	}
 	var tempDiv=getObjectFromID("ASC"+ASParams[0]);
 	var tempContent=tempDiv.innerHTML;
 	var REcriteria = new RegExp("ASC"+ASParams[0],"g")
@@ -449,7 +450,7 @@ function addlineAS(){
 }
 
 function removeLineAS(thebutton){
-	if(thebutton.firstChild.src==buttonMinusDisabled.src)
+	if(thebutton.className=="graphicButtons buttonMinusDisabled")
 		return false;
 	
 	var theDiv=thebutton.parentNode;
@@ -466,7 +467,7 @@ function removeLineAS(thebutton){
 	}
 	if(ASParams.length==1){
 		var tempButton=getObjectFromID("ASC"+ASParams[0]+"minus");
-		tempButton.firstChild.src=buttonMinusDisabled.src
+		tempButton.className="graphicButtons buttonMinusDisabled";
 	}
 	updateAS();
 }
@@ -597,9 +598,9 @@ function updateSort(){
 	var tempMinus;	
 	if(SortParams.length>1){
 		tempMinus=getObjectFromID("Sort"+SortParams[0]+"Minus")
-		tempMinus.firstChild.src=buttonMinusEnabled.src;
+		tempMinus.className="graphicButtons buttonMinus";
 		tempMinus=getObjectFromID("Sort"+SortParams[0]+"Down")
-		tempMinus.firstChild.src=buttonDownEnabled.src;
+		tempMinus.className="graphicButtons buttonDown";
 	}
 	var tempField;
 	var tempOrder;
@@ -618,21 +619,21 @@ function updateSort(){
 
 function sortAddLine(){
 	var tempMinus=getObjectFromID("Sort"+SortParams[0]+"Minus");
-	if(tempMinus.firstChild.src==buttonMinusDisabled.src)
-		tempMinus.firstChild.src=buttonMinusEnabled.src;
+	if(tempMinus.className=="graphicButtons buttonMinusDisabled")
+		tempMinus.className="graphicButtons buttonMinus";
 
 	var tempUp=getObjectFromID("Sort"+SortParams[0]+"Up");
 	var tempDown=getObjectFromID("Sort"+SortParams[0]+"Down");
-	tempDown.firstChild.src=buttonDownDisabled.src;
-	tempUp.firstChild.src=buttonUpEnabled.src;
+	tempDown.className="graphicButtons buttonDownDisabled";
+	tempUp.className="graphicButtons buttonUp";
 
 	var tempDiv=getObjectFromID("Sort"+SortParams[0]);
 	var tempContent=tempDiv.innerHTML;
 	var REcriteria = new RegExp("Sort"+SortParams[0],"g")
 	tempContent=tempContent.replace(REcriteria,"Sort"+(SortParams[SortParams.length-1]+1))
 
-	tempDown.firstChild.src=buttonDownEnabled.src;
-	tempUp.firstChild.src=buttonUpDisabled.src;
+	tempDown.className="graphicButtons buttonDown";
+	tempUp.className="graphicButtons buttonUpDisabled";
 		
 	var newDiv=document.createElement("div");
 	newDiv.id="Sort"+(SortParams[SortParams.length-1]+1);
@@ -644,13 +645,13 @@ function sortAddLine(){
 	SortParams[SortParams.length]=SortParams[SortParams.length-1]+1;
 	for(var i=1;i<SortParams.length-1;i++){
 		tempDown=getObjectFromID("Sort"+SortParams[i]+"Down");
-		tempDown.firstChild.src=buttonDownEnabled.src;		
+		tempDown.className="graphicButtons buttonDown";
 	}
 	updateSort();
 }
 
 function sortRemoveLine(thebutton){
-	if(thebutton.firstChild.src==buttonMinusDisabled.src)
+	if(thebutton.className=="graphicButtons buttonMinusDisabled")
 		return false;
 	
 	var theDiv=thebutton.parentNode;
@@ -667,18 +668,18 @@ function sortRemoveLine(thebutton){
 	}
 	if(SortParams.length==1){
 		var tempButton=getObjectFromID("Sort"+SortParams[0]+"Minus");
-		tempButton.firstChild.src=buttonMinusDisabled.src
+		tempButton.className="graphicButtons buttonMinusDisabled"
 		tempButton=getObjectFromID("Sort"+SortParams[0]+"Up");
-		tempButton.firstChild.src=buttonUpDisabled.src
+		tempButton.className="graphicButtons buttonUpDisabled";
 	}
 	var tempDown=getObjectFromID("Sort"+SortParams[SortParams.length-1]+"Down");
-	tempDown.firstChild.src=buttonDownDisabled.src;		
+	tempDown.className="graphicButtons buttonDownDisabled";
 
 	updateSort();
 }
 
 function sortMove(thebutton,direction){
-	if(thebutton.firstChild.src==buttonUpDisabled.src || thebutton.firstChild.src==buttonDownDisabled.src)
+	if(thebutton.className=="graphicButtons buttonUpDisabled" || thebutton.className=="graphicButtons buttonDownDisabled")
 		return false;
 	if(direction=="up")
 		direction=-1;
@@ -710,20 +711,20 @@ function sortMove(thebutton,direction){
 	
 	var tempUp=getObjectFromID("Sort"+SortParams[0]+"Up");
 	var tempDown=getObjectFromID("Sort"+SortParams[0]+"Down");
-	tempUp.firstChild.src=buttonUpDisabled.src;
-	tempDown.firstChild.src=buttonDownEnabled.src;
+	tempUp.className="graphicButtons buttonUpDisabled";
+	tempDown.className="graphicButtons buttonDown";
 	
 	for(var i=1;i<SortParams.length-1;i++){
 		tempUp=getObjectFromID("Sort"+SortParams[i]+"Up");
 		tempDown=getObjectFromID("Sort"+SortParams[i]+"Down");
-		tempUp.firstChild.src=buttonUpEnabled.src;
-		tempDown.firstChild.src=buttonDownEnabled.src;
+		tempUp.className="graphicButtons buttonUp";
+		tempDown.className="graphicButtons buttonDown";
 	}
 	
 	tempUp=getObjectFromID("Sort"+SortParams[SortParams.length-1]+"Up");
 	tempDown=getObjectFromID("Sort"+SortParams[SortParams.length-1]+"Down");
-	tempUp.firstChild.src=buttonUpEnabled.src;
-	tempDown.firstChild.src=buttonDownDisabled.src;
+	tempUp.className="graphicButtons buttonUp";
+	tempDown.className="graphicButtons buttonDownDisabled";
 	
 }
 
@@ -742,9 +743,9 @@ function sortEnableSave(thetext){
 		savebutton.disabled=false;
 }
 function sortAskSaveName(base){
-	var text="<div>name<br /><input id=\"sortSaveName\" type=\"text\" maxlength=\"128\" length=\"40\" onKeyUp=\"sortEnableSave(this)\" style=\"width:98%\" /></div>";
-	text+="<div align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"sortDoSave\" onClick=\"sortSave('"+base+"')\" value=\"save\" style=\"width:75px\" disabled=\"true\"/>";
-	text+="<input type=\"button\" class=\"Buttons\" onClick=\"closeModal()\" value=\"cancel\" style=\"margin-left:5px;width:75px\"/></div>"
+	var text="<p>name<br /><input id=\"sortSaveName\" type=\"text\" maxlength=\"128\" length=\"40\" onKeyUp=\"sortEnableSave(this)\" style=\"width:98%\" /></p>";
+	text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"sortDoSave\" onClick=\"sortSave('"+base+"')\" value=\"save\" style=\"width:75px\" disabled=\"true\"/>";
+	text+="<input type=\"button\" class=\"Buttons\" onClick=\"closeModal()\" value=\"cancel\" style=\"margin-left:5px;width:75px\"/></p>"
 	showModal(text,"Save Sort As...",250);
 }
 

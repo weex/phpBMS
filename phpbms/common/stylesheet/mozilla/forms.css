@@ -15,7 +15,7 @@ FORM{margin:0px;padding:0px;}
 .radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
 
 .Buttons,.smallButtons {
-	background-image:url(button-backs.png);
+	background-image: url("image/button-backs.png");
 	background-position:0px 0px;
 	padding:2px;
 	font-size:11px;
@@ -45,12 +45,47 @@ border-style:none;
 background-color:transparent;
 }
 .invisibleButtons{
+display:inline;
+margin:0;
+border:0;
 padding:0px;
 font-size:9px;
-border-width:0px;
 color:#0B63A2;
 vertical-align:middle;
 cursor: pointer; 
 }
+.buttonsRight{
+	text-align:right
+}
 
 .smallButtons{font-size:10px}
+
+.graphicButtons{
+margin:0 0 0 3px;
+border:0;
+padding:0px;
+cursor: pointer; 
+width:16px;height:16px;
+vertical-align:middle;
+}
+.graphicButtons span{display:none}
+
+.buttonRew{background:url(image/button-rew.png) 0 0 no-repeat;}
+.buttonFF{background:url(image/button-ff.png) 0 0 no-repeat;}
+.buttonNew{background:url(image/button-new.png) 0 0 no-repeat;}
+.buttonEdit{background:url(image/button-edit.png) 0 0 no-repeat;}
+.buttonEditDisabled{background:url(image/button-edit-disabled.png) 0 0 no-repeat;}
+.buttonPrint{background:url(image/button-print.png) 0 0 no-repeat;}
+.buttonPrintDisabled{background:url(image/button-print-disabled.png) 0 0 no-repeat;}
+.buttonDelete{background:url(image/button-delete.png) 0 0 no-repeat;}
+.buttonDeleteDisabled{background:url(image/button-delete-disabled.png) 0 0 no-repeat;}
+.buttonPlus{background:url(image/button-plus.png) 0 0 no-repeat;}
+.buttonMinus{background:url(image/button-minus.png) 0 0 no-repeat;}
+.buttonMinusDisabled{background:url(image/button-minus-disabled.png) 0 0 no-repeat;}
+.buttonUp{background:url(image/button-up.png) 0 0 no-repeat;}
+.buttonUpDisabled{background:url(image/button-up-disabled.png) 0 0 no-repeat;}
+.buttonDown{background:url(image/button-down.png) 0 0 no-repeat;}
+.buttonDownDisabled{background:url(image/button-down-disabled.png) 0 0 no-repeat;}
+
+.buttonShowSQLUp{width:35px;background:url(image/button-sql-up.png) 0 0 no-repeat;}
+.buttonShowSQLDown{width:35px;background:url(image/button-sql-down.png) 0 0 no-repeat;}

@@ -14,7 +14,7 @@
 
 #modalBox {
 	border-top-width:0px;
-	padding:0px;
+	padding:4px;
 	border-width:2px;
 	position: absolute;
 	z-index: 201;
@@ -24,19 +24,13 @@
 #modalTitle{
 	font-weight: bold;
 	font-size:14px;
-	padding: 2px;
+	padding: 4px;
 	padding-left:4px;
+	margin:0;
 
 	background-color:#0B63A2;
 	color:white; 
-	border-right:1px #021746 solid;
-	border-left:1px #61B5CD solid;
-	border-top:1px #61B5CD solid;
-	border-bottom:2px #021746 solid;
-	z-index: 203;
-	-moz-border-radius:8px;
-	-moz-border-radius-bottomleft:0px;
-	-moz-border-radius-bottomright:0px;
+	border:0;
 }
 #modalContent{
 	padding:4px;

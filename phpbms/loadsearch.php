@@ -118,23 +118,23 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
-				<label for="LSList" style="float:left;">
-					saved searches<br />
-					<?php displaySavedSearchList($queryresult,$basepath)?>
-				</label>				
+				<p>
+				<label for="LSList">saved searches</label><br />
+					<?php displaySavedSearchList($queryresult,$basepath)?>				
+				</p>
 				</td>
 				<td valign="top" width="100%">
-					<label>
-						name<br>
-						<input type="text" id="LSSelectedSearch" size="10" style="width:98%" readonly="readonly" class="uneditable" />
-					</label>
-					<label for="LSSQL" style="">
-						<textarea id="LSSQL" rows="8" cols="10" style="width:98%;height:127px;" <?php if($_SESSION["userinfo"]["accesslevel"]<30) echo " readonly=\"readonly\""?>></textarea>
-					</label>
+					<p>
+					<label for="LSSelectedSearch">name</label><br />
+						<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />					
+					</p>
+					<p>
+						<textarea id="LSSQL" rows="8" cols="10" <?php if($_SESSION["userinfo"]["accesslevel"]<30) echo " readonly=\"readonly\""?>></textarea>
+					</p>
 				</td>
-				<td valign="top"><br>
-					<div><input id="LSLoad" type="button" onClick="LSRunSearch()" class="Buttons" disabled="true" value="run search" style="width:90px;"/></div>
-					<div><input id="LSDelete" type="button" onClick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="true" value="delete" style="width:90px;"/></div>
+				<td valign="top">
+					<p><br/><input id="LSLoad" type="button" onClick="LSRunSearch()" class="Buttons" disabled="true" value="run search"/></p>
+					<p><input id="LSDelete" type="button" onClick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="true" value="delete"/></p>
 					<div id="LSResults">&nbsp;</div>
 				</td>
 			</tr>

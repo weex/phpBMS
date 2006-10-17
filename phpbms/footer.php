@@ -1,6 +1,4 @@
 <div id="footer">
-	<div style="float:right;"><a href="#toptop">top</a></div>
-	<div>
-	phpBMS &copy; <a href="http://www.kreotek.com" target="_blank">Kreotek, LLC</a> all rights reserved
-	</div>
+	<p id="footerAbout"><a href="http://www.phpbms.org" target="_blank">phpBMS</a> By <a href="http://www.kreotek.com" target="_blank">Kreotek, LLC</a></p>
+	<p id="footerTop"><a href="#toptop">top</a></p>
 </div>

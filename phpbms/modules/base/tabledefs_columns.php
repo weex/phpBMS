@@ -115,8 +115,8 @@
 	?>
 	<tr class="qr<?php echo $row?>" style="cursor:auto">
 		<td nowrap valign="top">
-		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
-		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
+		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
+		 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
 			<?php echo $therecord["displayorder"];?>
 		</td>
 		<td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
@@ -125,8 +125,8 @@
 		<td nowrap valign="top"><?php if($therecord["size"]) echo $therecord["size"]; else echo "&nbsp;";?></td>
 		<td valign="top"><?php  if($therecord["format"]) echo $therecord["format"]; else  echo "&nbsp;"?></td>
 		<td nowrap valign="top">
-			 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
-			 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
+			 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
+			 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&columnid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
 		</td>
 	</tr>	
 	<?php } ?>

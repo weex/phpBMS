@@ -165,7 +165,7 @@
 				<fieldset>
 					<legend><label for="content" style="padding:0px;">memo</label></legend>
 					<div align="right" style="padding:0px;padding-right:5px;">
-						<button id="timeStampButton" type="button" class="invisibleButtons" onClick="timeStamp();">timestamp <img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-timestamp.png" align="absmiddle" alt="timestamp" width="16" height="16" border="0" /></button>
+						<button id="timeStampButton" type="button" class="invisibleButtons" onClick="timeStamp();">timestamp <img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-timestamp.png" align="absmiddle" alt="timestamp" width="16" height="16" border="0" /></button>
 					</div>
 					<div style="padding-top:0px;">
 						<textarea name="content" cols="45" rows="23" id="content" style="width:98%"><?PHP echo $therecord["content"]?></textarea>

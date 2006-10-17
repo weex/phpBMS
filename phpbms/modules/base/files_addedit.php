@@ -179,7 +179,7 @@
 				<TD align="right"><?php echo formatDateTime($attachmentrecord["creationdate"]) ?></TD>
 				<TD>
 					<a href="<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>">
-						<img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" />
+						<img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" />
 					</a>
 				</TD>
 			</TR>

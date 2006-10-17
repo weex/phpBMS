@@ -68,7 +68,7 @@ function showClient($clientid,$basepath){
 	if(!$noteresult) reportError(300,"Could Not Retrieve Notes: ".mysql_error($dblink)." -- ".$querystatement);
 ?>
 <div class="bodyline" style="margin-top:15px;">
-<h1><?php echo htmlQuotes($therecord["name"])?> <button type="button" class="invisibleButtons" onClick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button></h1>
+<h1><?php echo htmlQuotes($therecord["name"])?> <button type="button" class="invisibleButtons" onClick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button></h1>
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td valign=top>
@@ -128,7 +128,7 @@ function showClient($clientid,$basepath){
 			<fieldset style="">
 				<legend>quotes / orders / Invoices</legend>
 				<div style="padding:0px;padding-right:5px;" align="right">
-					<button id="invoiceedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
+					<button id="invoiceedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
 				</div>
 				<div style="height:188px;overflow:auto" class="smallQueryTableHolder">
 					<?php if(!mysql_num_rows($invoiceresult)) {?>
@@ -158,7 +158,7 @@ function showClient($clientid,$basepath){
 			<fieldset>
 				<legend>notes / tasks / events</legend>
 				<div style="padding:0px;padding-right:5px;" align="right">
-					<button id="noteedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
+					<button id="noteedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
 				</div>
 				<div style="height:140px;overflow:auto" class="smallQueryTableHolder">
 					<?php if(!mysql_num_rows($noteresult)) {?>

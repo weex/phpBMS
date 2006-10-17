@@ -54,9 +54,9 @@
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="javascript">
 editButton = new Image();
-editButton.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png";
+editButton.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png";
 editButtonDisabled = new Image();
-editButtonDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png";
+editButtonDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png";
 </script>
 </head>
 <body onLoad="pageInit()">

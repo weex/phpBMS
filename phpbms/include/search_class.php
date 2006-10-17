@@ -83,7 +83,7 @@
 						
 function displayQueryHeader(){
 	?>
-	<input name="newsort" type="hidden" value=""><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults" style="clear:both;"><tr>
+	<input name="newsort" type="hidden" value=""><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults"><tr>
 	<script language="javascript">selIDs=new Array();</script>
 	<?php
 	$columncount=count($this->thecolumns);
@@ -394,35 +394,39 @@ function sendInfo(name,thevalue,thedisplay){
 		$temptype=$this->querytype;
 		if($temptype=="advanced search")
 			$temptype="advanced or saved search";
-		echo "<div><i>(currently showing ".$temptype.")</i></div>";
+		echo "<p><i>(currently showing ".$temptype.")</i></p>";
 	}
 ?>
-<div class="searchtabs">
-	<span id="basicSearchT" class="searchtabsSel"><a href="" onClick="switchSearchTabs(this);return false">basic</a></span>
-	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><span id="advancedSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></span><?php } //end accesslevel ?>
-	<span id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></span>
-	<span id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></span>
-	<span id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></span>
-</div><div class="box" style="margin:0px;margin-bottom:15px;/* display:inline-block; */"><div id="basicSearchTab" style="padding:0px;margin:0px;">
-	<table cellpadding="0" cellspacing="0" border="0">
-		<tr>
-			<td nowrap valign=top>
-				<label for="find">find<br />
-				<select name="find" id="find">
-					<?PHP 											
-						for($i=0;$i<count($this->findoptions);$i++) {
-							if($this->findoptions[$i]["accesslevel"]<=$_SESSION["userinfo"]["accesslevel"]){
-								?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
-									if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
-								?>><?php echo $this->findoptions[$i]["name"]?></option><?php
+<ul class="tabs">
+	<li id="basicSearchT" class="tabsSel"><a href="" onClick="switchSearchTabs(this);return false">basic</a></li>
+	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
+	<li id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
+	<li id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
+	<li id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
+</ul>
+<div class="box" id="searchBox">
+	<div id="basicSearchTab">
+		<table cellpadding="0" cellspacing="0" border="0">
+			<tr>
+				<td nowrap valign="top">
+					<p>
+						<label for="find">find</label><br />					
+						<select name="find" id="find">
+						<?PHP 											
+							for($i=0;$i<count($this->findoptions);$i++) {
+								if($this->findoptions[$i]["accesslevel"]<=$_SESSION["userinfo"]["accesslevel"]){
+									?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
+										if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
+									?>><?php echo $this->findoptions[$i]["name"]?></option><?php
+								}
 							}
-						}
-					?>
-				</select>				  
-				</label></td>
+						?>
+						</select>
+					</p>
+				</td>
 			<td nowrap valign=top>
-				<label for="startswithfield">
-					where<br />
+				<p>
+				<label for="startswithfield">where</label><br />
 					<select name="startswithfield" id="startswithfield">
 						<?PHP 
 							for($i=0;$i<count($this->searchablefields);$i++) {
@@ -436,67 +440,52 @@ function sendInfo(name,thevalue,thedisplay){
 							}
 						?>
 					</select>
-				</label>
+				</p>
 			</td>
-			<td width="100%" nowrap valign=top >
-				<label for="startswith">
-					starts with<br />
-					<input id="startswith" name="startswith" type="text" style="width:99%;" value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="javascript">setMainFocus()</script>
-				</label>
+			<td width="100%" nowrap valign="top" >
+				<p><label for="startswith">starts with</label><br />
+					<input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="javascript">setMainFocus()</script>
+				</p>
 			</td>
 			<td align="left" valign="top" nowrap class="small">
-				<label>
-					<br>
-					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search" style="width:90px;"/>
-				</label>
+				<p>
+					<br />
+					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search"/>
+				</p>
 			</td>
 		</tr>
 		<tr>
 			<td colspan="3" align="left" valign=middle nowrap>
-			<label style="padding-right:0px;">
+			<p>
 			<select name="Selection">
 				<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected"?> >new result</option>
 				<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected"?>>add to result</option>
 				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "checked"?>>remove from result</option>
 				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "checked"?>>narrow result</option>
-			</select></label>
-			<td align="left" valign=top nowrap ><label><input name="command" type="submit" id="reset" class="smallButtons" value="reset" style="width:90px;" accesskey="t" title="(alt+t)"/></label></td>
+			</select></p>
+			<td align="left" valign=top nowrap ><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(alt+t)"/></p></td>
 		</tr>				
 	</table>
-</div><?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;padding:0px;margin:0px;"></div><?php } //end accesslevel ?>
+</div><?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end accesslevel ?>
 <div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
 <div id="saveSearchTab" style="display:none;margin:0px;padding:0px;margin:0px;">
 	<div id="saveSearchReults" style="display:none"></div>
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
 			<td width="100%">
-				<label for="saveSearchName">
-					save current search as<br />
-					<input id="saveSearchName" name="saveSearchName" type="text" style="width:99%;" value="" size="35" maxlength="128" onKeyUp="enableSave(this)" />
-				</label>			
+				<p><label for="saveSearchName">save current search as</label>
+					<br />
+					<input id="saveSearchName" name="saveSearchName" type="text"  value="" size="35" maxlength="128" onKeyUp="enableSave(this)" />
+				</p>
 			</td>
 			<td align="right">
-				<label>
-					<br>
-					<input id="saveSearch" onClick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="true" type="button" class="Buttons" value="save search" style="width:90px;" />
-				</label>
+				<p>
+					<br />
+					<input id="saveSearch" onClick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="true" type="button" class="Buttons" value="save search" />
+				</p>
 			</td>
 		</tr>
-	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div>
-<script language="javascript">
-buttonMinusEnabled=new Image();
-buttonMinusEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png";
-buttonMinusDisabled=new Image();
-buttonMinusDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus-disabled.png";						
-buttonUpEnabled=new Image();
-buttonUpEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up.png";
-buttonUpDisabled=new Image();
-buttonUpDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-up-disabled.png";						
-buttonDownEnabled=new Image();
-buttonDownEnabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down.png";
-buttonDownDisabled=new Image();
-buttonDownDisabled.src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-down-disabled.png";						
-</script><?PHP 				
+	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div><?PHP 				
 	}//end function		
 		
 function displayQueryButtons() { 
@@ -528,9 +517,9 @@ function displayQueryButtons() {
 	</fieldset><?php }?></div>
 	<?php }
 	if($this->numrows){
-		?><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><div style="float:right" align="right" class="small"><?php
+		?><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><div id="numCount" align="right" class="small"><?php
 		if ($this->truecount<=$_SESSION["record_limit"]) 
-			echo "<div style=\"padding:0px;padding-top:8px;\">records:&nbsp;".$this->numrows."</div>";
+			echo "<div>records:&nbsp;".$this->numrows."</div>";
 		else {?>			
 			<input name="offset" type="hidden" value=""><select name="offsetselector" onChange="this.form.offset.value=this.value;this.form.submit();">
 			  	<?php
@@ -542,25 +531,32 @@ function displayQueryButtons() {
 				?>
 			  </select> of <?php echo $this->truecount;
 			if($this->recordoffset>0){
-				?><button type="button" class="invisibleButtons" onClick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-rew.png" align="absmiddle" alt="prev"  width="16" height="16" border="0" /></button><?php
+				?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();"><span>prev.</span></button><?php
 			}
 			if(($this->numrows+$this->recordoffset)<$this->truecount){
-				?><button type="button" class="invisibleButtons" onClick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-ff.png" align="absmiddle" alt="next"  width="16" height="16" border="0" /></button><?php
+				?><button type="button" class="graphicButtons buttonFF" onClick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><span>next</span></button><?php
 			}
 						  
 		} ?></div><?php }?>	
 	
-		<div>
-		<?php if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) {?><button type="button" accesskey="n" class="invisibleButtons" onClick="addRecord()" title="new (alt+n)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-new.png" alt="new" width="16" height="16" border="0" /></button><?php } 
+		<div id="recordCommands">
+		<?php 
+		if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) 
+			{
+		?><button type="button" accesskey="n" class="graphicButtons buttonNew" onClick="addRecord()" title="new (alt+n)"><span>new</span></button><?php 
+			} 
+			
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["edit"]["accesslevel"]) {
-				?><button id="edit" accesskey="e" type="button" disabled="true" class="invisibleButtons" onClick="editThis()" title="edit (alt+e)"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png" alt="edit" width="16" height="16" border="0" /></button><?php
+				?><button id="edit" accesskey="e" type="button" disabled="true" class="graphicButtons buttonEditDisabled" onClick="editThis()" title="edit (alt+e)"><span>edit</span></button><?php
 			}
+		
 			if($this->tableoptions["printex"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["printex"]["accesslevel"]){
-				?><button id="print" name="doprint" accesskey="p" title="print (alt+p)" type="submit" disabled="true" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png"  alt="print" width="16" height="16" border="0" /></button><?php
+				?><button id="print" accesskey="p" type="submit" disabled="true" class="graphicButtons buttonPrintDisabled" name="doprint"  title="print (alt+p)"><span>print</span></button><?php
 			}
+
 			if($this->thetabledef["deletebutton"] == "delete") {				
-				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="true" onClick="confirmDelete('delete')" class="invisibleButtons" style="border-style:solid"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png" alt="print" width="16" height="16" border="0" /></button><?php
+				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="true" onClick="confirmDelete('delete')" class="graphicButtons buttonDeleteDisabled"><span>delete</span></button><?php
 			}
 	
 			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
@@ -589,26 +585,26 @@ function displayQueryButtons() {
 			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
 		}//end if numrows	
-		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png" alt="show SQL" width="35" height="16" border="0" /></button><?PHP }//end accesslevel?>
+		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>
 		</div><script language="javascript">
 	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
 	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";
 	var editButtonImg=new Image();
-		editButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit.png";
+		editButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png";
 	var editButtonImgDisabled=new Image();
-		editButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-edit-disabled.png";
+		editButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png";
 	var printButtonImg=new Image();
-		printButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print.png";
+		printButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-print.png";
 	var printButtonImgDisabled=new Image();
-		printButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-print-disabled.png";
+		printButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-print-disabled.png";
 	var deleteButtonImg=new Image();
-		deleteButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete.png";
+		deleteButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete.png";
 	var deleteButtonImgDisabled=new Image();
-		deleteButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-delete-disabled.png";
+		deleteButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete-disabled.png";
 	var sqlButtonUp=new Image();
-		sqlButtonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-up.png";
+		sqlButtonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-sql-up.png";
 	var sqlButtonDn=new Image();
-		sqlButtonDn.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-sql-down.png";
+		sqlButtonDn.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-sql-down.png";
 	</script><?php	
 }//end function
 			

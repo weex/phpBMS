@@ -50,25 +50,25 @@ function goURL($url){
 //===================================
 function create_tabs($tabarray,$selected="none") {
 	?>
-	<table cellspacing=0 cellpadding=0 border=0><tr>
+	<ul class="tabs">
 	<?php
 	foreach($tabarray as $theitem){
 		if(!isset($theitem["disabled"])) $theitem["disabled"]=false;
 		if(!isset($theitem["notify"])) $theitem["notify"]=false;
 		
-		if ($theitem["name"]==$selected) $theclass="tabselected"; else $theclass="tabs";
+		if ($theitem["name"]==$selected) $theclass="tabsSel"; else $theclass="tabs";
 		
-		?><td class="tabbottoms">&nbsp;</td><td class="<?php echo $theclass?>" align="center" nowrap><?php
+		?><li <?php if($theitem["name"]==$selected) echo "class=\"tabsSel\"" ?>><?php
 
-		if ($theitem["name"]==$selected || $theitem["disabled"]) echo $theitem["name"];
+		if ($theitem["name"]==$selected || $theitem["disabled"]) echo "<span>".$theitem["name"]."</span>";
 		else echo "<a href=\"".$theitem["href"]."\">".$theitem["name"]."</a>";
 		if ($theitem["notify"]) {
-		?> <img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-note.png" alt="*" align="absmiddle" width="16" height="16" border="0"><?php
+		?> <img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-note.png" alt="*" align="absmiddle" width="16" height="16" border="0"><?php
 		}
-		?></td><?php 
+		?></li><?php 
 	}
 	?>
-<td width="100%" class="tabbottoms">&nbsp;</td></tr></table>
+	</ul>
 	<?php
 }
 
@@ -279,7 +279,7 @@ function formatVariable($value,$format){
 			$value=formatDateTime($value);
 		break;
 		case "filelink":
-			$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
+			$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
 	}
 	return $value;
 }

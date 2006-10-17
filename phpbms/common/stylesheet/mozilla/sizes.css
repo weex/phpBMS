@@ -22,7 +22,7 @@ H1 {
 	padding-left:24px;
 	margin-bottom:8px;
 	font-weight:normal;
-	background-image:url(h1graphic.png);
+	background-image: url("image/h1graphic.png");
 	background-position:4px 4px;
 	background-repeat:no-repeat;
 }

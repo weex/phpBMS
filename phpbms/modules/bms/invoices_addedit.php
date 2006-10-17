@@ -52,7 +52,7 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/invoice.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="javascript/invoice.js"></script>
@@ -186,7 +186,7 @@
 	<input id="unitcost" name="unitcost" type="hidden" value="0" />
 	<input id="unitweight" name="unitweight" type="hidden" value="0"/>
 	<input id="taxable" name="taxable" type="hidden" value="1"/>
-	<input id="imgpath" name="imgpath" type="hidden" value="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>" />
+	<input id="imgpath" name="imgpath" type="hidden" value="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image" />
 	<table border="0" cellpadding="0" cellspacing="0"  style="border:0px;padding:0px;clear:both;">
 		<tr id="LIHeader">
 			<th nowrap class="queryheader" align="left">part number</td>
@@ -214,7 +214,7 @@
 			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo currencyFormat(0)?>" size="8" maxlength="16" onChange="calculateExtended()" style="text-align:right;" tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="2" maxlength="16" onChange="calculateExtended()" style="text-align:center; border-left:0px;border-right:0px;" tabindex="19"  /></td>
 			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable" value="<?php echo currencyFormat(0)?>" size="8" maxlength="16" readonly="true" style="text-align:right;" /></td>
-			<td nowrap align="center" class="lineitemsRight lineitemsBottom"><button type="button" class="invisibleButtons" onClick="addLine(this.parentNode);" tabindex="20" ><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button></td>
+			<td nowrap align="center" class="lineitemsRight lineitemsBottom"><button type="button" class="invisibleButtons" onClick="addLine(this.parentNode);" tabindex="20" ><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-plus.png" align="middle" alt="+" width="16" height="16" border="0" /></button></td>
 		</tr><?PHP }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);
 		
@@ -237,7 +237,7 @@
 					<?PHP echo htmlentities($lineitem["memo"])?>[//]
 					<?PHP echo $lineitem["taxable"]?>
 				</span>
-				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="invisibleButtons" onClick="return deleteLine(this)" tabindex="21"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/button-minus.png" align="middle" alt="-" width="16" height="16" border="0" /></button><?php } ?>
+				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="invisibleButtons" onClick="return deleteLine(this)" tabindex="21"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-minus.png" align="middle" alt="-" width="16" height="16" border="0" /></button><?php } ?>
 			</td>
 		</tr>
   <?PHP } } ?><tr id="LITotals">
