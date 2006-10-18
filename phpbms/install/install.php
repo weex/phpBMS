@@ -37,7 +37,7 @@
 	function showModules(){
 		$thedir= @ opendir("../modules/");
 		while($entry=readdir($thedir))
-			if($entry!="base" and $entry!="." and $entry !=".." and is_dir("../modules/".$entry))
+			if($entry!="base" and $entry!="." and $entry !=".." and is_dir("../modules/".$entry) and $entry!=".svn")
 				echo "<option value=\"".$entry."\">".$entry."</option>";
 		
 	}
