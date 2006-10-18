@@ -84,7 +84,7 @@ function getSubItems($parentid){
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}
-				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"  onMouseOver="checkExpand(this)"><?php echo $menurecord["name"]; ?>&nbsp;<img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" id="menuImage<?php echo $menurecord["id"]?>" width=10 height=10 border="0" ></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
+				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"  onMouseOver="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
 					$submenustring.=$menurecord["id"].",";
 					$subitemsquery=getSubItems($menurecord["id"]);
 					if($subitemsquery){

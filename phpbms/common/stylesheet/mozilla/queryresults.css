@@ -1,5 +1,5 @@
-.row1{background-color:#D9DBE1;}
-.row2{background-color:white;}
+.row1{background-color:white;}
+.row2{background-color:#D9DBE1;}
 
 .dottedline { border-bottom: 2px #AAAAAA dotted;}
 
@@ -11,53 +11,46 @@
 .buttonSection{border-top:0;  padding-top:0; padding-bottom:1px; 	-moz-border-radius:0px;
 }
 
-.box{margin-bottom:3px;}
-.norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; }
+.norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; border-bottom:1px solid #999999;}
 
 .querytable{ 
-	border: 1px black inset; 
-	-moz-border-radius:8px;
-
+	border-collapse:collapse;
 }
+
 .querytable td, .queryrow1 td, .queryrow2 td{ 
-				border-top:0px;
-				border-right: 1px #CCCCCC solid; 
+				border:1px solid #999999;
+				border-bottom-width:0;
+				border-top-width:0;
 				font-size: 11px;
 				padding:4px;
-				padding-bottom:2px
+				padding-bottom:2px;
 			}
-
-.queryheader{
-	font-weight:bold;
-	background-color:#0B63A2;
-	color:white; 
-	border-right:1px #021746 solid;
-	border-left:1px #61B5CD solid;
-	border-bottom:2px #021746 solid;
-	padding:4px;
-	padding-bottom:2px;
+.querytable th{
+	background:#455372;
+	border:1px solid #999999;
+	padding:3px 9px;
+	color:white;
 }
 
-.queryheader A{color: white;}
-.queryheader A:hover{color: white;}
-.queryheader A:active{color: white;}
-.queryheader A:visited{color: white;}
-.querytable td.queryfooter, .queryfooter{
-	background-color:#0B63A2; color:white; 
-	font-weight:bold; 
-	border-top: 2px #021746 solid; 
-	border-left:1px solid #61B5CD; 
-	border-right: 1px solid #021746;}
+.querytable th A{color: white;}
+.querytable th A:hover{color: white;}
 
-.qr1,.qr2{background-color:#D9DBE1;
+.querytable td.queryfooter, .queryfooter{
+	background:#BBBBBB;
+	border:1px solid #999999;
+	padding:5px;
+}
+
+.qr1,.qr2{background-color:white;
 			cursor: pointer; 
 }
-.qr2{background-color:white;}
+.qr2{background-color:#EAEDF1}
 
-.qr1:hover, .qr2:Hover {background-color:#999999;}
+.qr1:hover, .qr2:Hover {background-color:#97A7BA}
+.qr1:hover td, .qr2:Hover td {color:white}
 
 .qh1, .qh2{background-color:black; cursor: pointer; }
-.qh1 td, .qh2 td{color:white; border-right-color: white; border-bottom-color: white;}
+.qh1 td, .qh2 td{color:white;}
 .qh1, .qh2{background-color:black; cursor: pointer; }
 .qh1 a, .qh2 a{color:white;}
 

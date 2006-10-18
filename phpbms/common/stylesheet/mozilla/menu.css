@@ -48,9 +48,7 @@
 		border-right:1px solid #5a6375;
 		font-size:12px;
 		color:white;
-		padding:6px;
-		padding-left:8px;
-		padding-right:8px;
+		padding:6px 10px;
 	}
 	#menuBar a:hover{ 
 		background-position:0px 27px;
@@ -60,30 +58,25 @@
 	
 	.submenuitems{
 		display:none;
-		margin-top:0px;
-		padding:0px;
-		padding-top:1px;
+		margin-top:3px;
+		padding:2px 2px 4px 2px;
 		position:absolute;
-		background-color:#E0E9E9;
-		border:1px outset #E0E9E9;
+		background-color:white;
+		border:1px solid #999999;
 	}
 	#menuBar .submenuitems a{
+		border:0;
 		background-image:none;
 		margin:0px;
 		display:block; 
-		background-color:#EDF2F2;
-		border-top:1px solid white;
-		border-bottom:1px solid #DDDDDD;
-		margin-bottom:1px;
-		padding:3px;
-		padding-left:5px;
+		padding:3px 25px 3px 10px;
 		font-size:11px;
 		color:#663366;
 	}
-	#menuBar .submenuitems a:hover{text-decoration:none; background-color:#663366;color:white;
-	-moz-border-radius:0px;
-        border-top:1px solid white;
-        border-bottom:1px solid #DDDDDD;
+	#menuBar .submenuitems a:hover{
+		text-decoration:none; 
+		background-color:#663366;
+		color:white;
 	}
 	
 	#statusmessage{

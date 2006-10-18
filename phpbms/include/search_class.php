@@ -90,7 +90,7 @@ function displayQueryHeader(){
 	$i=1;
 
 	foreach ($this->thecolumns as $therow){ ?>
-<th nowrap class="queryheader" align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" "; if($i==$columncount) echo "style=\"border-right:0px;\"";?> >
+<th nowrap align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
 	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>">
 	<a href="" onClick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
 	<?php

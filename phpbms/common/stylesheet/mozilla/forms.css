@@ -1,45 +1,53 @@
 
 SELECT, INPUT, TEXTAREA, .uneditable, .fieldtext { 
-	border: 1px solid #9097A2;
-	font-size: 11px; padding: 2px;  background-color: #D9DBE1; vertical-align: middle; font-style:normal;
+	border: 1px solid #ABB1B1;
+	font-size: 11px; padding: 2px;  
+	background-color: #F7FAFA;
+	vertical-align: middle; font-style:normal;
 }
 SELECT{padding:0px;}
-TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:white;}
+TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:white;border-color:black;}
 INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; background-image:none;}
 INPUT[disabled]:Active{border:1px outset black;}
 FORM{margin:0px;padding:0px;}
 
 
-.uneditable,.uneditable:Focus {background-color:transparent;}
+.uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1;color:#666666;}
 .disabledtext{color:#CCCCCC;}
 .radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
 
 .Buttons,.smallButtons {
-	background-image: url("image/button-backs.png");
-	background-position:0px 0px;
-	padding:2px;
-	font-size:11px;
-	
-	background-color:#617389;color:#FFFFFF; font-size: 11px;  font-weight:bold; 
-	border: 1px outset #617389;
-	cursor:pointer;
+	color:white;
+	font-weight:bold;
+	font-size:12px;
+	padding: 2px 6px;
+	cursor: pointer;
+	vertical-align: middle;
+	border:1px solid #454A59;
+	border-bottom-color:#2F333D;
+	border-top-color:#626876;
+	background:#7A8193 url(image/button-back.png) repeat-x;
+	height:26px;
 }
+.smallButtons{font-size:10px;height:23px;background-position:0 -3px;}
 .Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
-	border:1px solid #F99809;
-	background-position:0px 20px;
-	background-color:#697388;
+	border-color:#94DA78;
+	border:1px solid #BBBBBB;
+	border-bottom-color:#6AB948;
+	border-top-color:#AEDF9A;
+	color:#AEDF9A;
 }
 .Buttons[disabled]:Hover,.smallButtons[disabled]:Hover{
-	/* first three entries are from disabled, the last are from standard buttons */
+	/* first two entries are from disabled, the last are from standard buttons */
 	/* this disables hover for disabled buttons */
-	background-color:#AAAAAA;color:#EFEFEF; background-image:none;
-	border: 1px solid black;
-	border-top-color:#999999;
-	border-left-color:#999999;
+	background:#AAAAAA;
+	color:#EFEFEF;
+	
+	border:3px double #454A59;
+	border-bottom-color:#2F333D;
+	border-top-color:#626876;
 }
-.Buttons:Active,.smallButtons:Active{
-	border: 1px inset #617389; 
-}
+
 .invisibleButtons,.invisibleTextField{
 border-style:none;
 background-color:transparent;
@@ -58,7 +66,7 @@ cursor: pointer;
 	text-align:right
 }
 
-.smallButtons{font-size:10px}
+
 
 .graphicButtons{
 margin:0 0 0 3px;

@@ -55,14 +55,12 @@ function checkExpand(theitem){
 function expandMenu(theitem){
 	var i;
 	var tempdiv;
-	var tempImage;
 	var showid=theitem.id.substring(4);
 	var specificdiv=getObjectFromID("submenu"+showid);
-	var menuImage=getObjectFromID("menuImage"+showid)
 	if(specificdiv.style.display)
 		if(specificdiv.style.display=="block"){
 			specificdiv.style.display="none";
-			menuImage.src=downArrow.src;
+			displaySelectBoxes();
 			return false;
 		}
 
@@ -70,8 +68,6 @@ function expandMenu(theitem){
 		if(subMenuArray[i]!=showid){
 			tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
 			tempdiv.style.display="none";
-			tempImage=getObjectFromID("menuImage"+subMenuArray[i])
-			tempImage.src=downArrow.src;
 		}
 	}
 	var thetop=getTop(theitem);
@@ -79,7 +75,7 @@ function expandMenu(theitem){
 	specificdiv.style.top=(thetop+theitem.offsetHeight)+"px";
 	specificdiv.style.left=theleft+"px";
 	specificdiv.style.display="block";
-	menuImage.src=upArrow.src;
+	hideSelectBoxes()
 }
 
 function showUserInfo(base){
