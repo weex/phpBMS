@@ -34,51 +34,32 @@
  +-------------------------------------------------------------------------+
 */
 
-
-var initArray=new Array();
-
 initArray[initArray.length]=function(){
-	//SystemMessage Accordian
-	//we define two arrays, containing our toggles and divs.
-	var systemMessageDivs = document.getElementsByClassName('systemMessages');
-	var systemMessageLinks = document.getElementsByClassName('systemMessageLinks');
+	var todaysOrdersDivs = new Array();
+	todaysOrdersDivs[todaysOrdersDivs.length]=getObjectFromID("todaysOrders");
 
-	var taskDivs = document.getElementsByClassName('tasksDivs');
-	var taskLinks = document.getElementsByClassName('tasksLinks');
+	var todaysOrdersLinks = new Array();
+	todaysOrdersLinks[todaysOrdersLinks.length]=getObjectFromID("todaysOrdersLink");
 
-	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: false, duration:100});
-	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: false, duration:100});
-	taskAccordion.showThisHideOpen(taskDivs[2]);
+
+	var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: false, duration:100, onComplete:function(){switchArrows("todaysOrdersLink")}});
+	todaysOrdersAccordion.showThisHideOpen(todaysOrdersDivs[0]);
+
+
+	var todaysClientsDivs = new Array();
+	todaysClientsDivs[todaysClientsDivs.length]=getObjectFromID("todaysClients");
+
+	var todaysClientsLinks = new Array();
+	todaysClientsLinks[todaysClientsLinks.length]=getObjectFromID("todaysClientsLink");
+
+	var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: false, duration:100, onComplete:function(){switchArrows("todaysClientsLink")}});
+	todaysClientsAccordion.showThisHideOpen(todaysClientsDivs[0]);
 }
 
-window.onload= function() {
-	var i;
-	for(i=0;i<initArray.length;i++)
-		initArray[i].call();
-}
-
-
-function checkTask(id,type){
-	var thediv=getObjectFromID("TS"+id);
-	var thecheckbox=getObjectFromID("TSC"+id);
-	var isprivate=getObjectFromID("TSprivate"+id);
-	var ispastdue=getObjectFromID("TSispastdue"+id);
-	
-	var theURL="snapshot_ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
-	if(thecheckbox.checked){
-		theURL+="1";
-		thediv.className="small taskCompleted";
-	} else {
-		theURL+="0";
-		var classname=" small task";
-		if(isprivate.value==1)
-			classname+=" taskPrivate";
-		if(ispastdue.value==1)
-			classname="small taskPastDue";
-		thediv.className=classname;
-	}
-	loadXMLDoc(theURL,null,false);
-	if(req.responseText!="success")
-		alert("Error: <br>"+req.responseText);	
-	
+function switchArrows(arrowid){
+	var thearrow=getObjectFromID(arrowid);
+	if(thearrow.className=="graphicButtons buttonUp")
+		thearrow.className="graphicButtons buttonDown";
+	else
+		thearrow.className="graphicButtons buttonUp";
 }

@@ -39,7 +39,7 @@ function showSystemMessages(){
 	global $dblink;
 	
 	$querystatement="SELECT notes.id,subject,content,concat(users.firstname,\" \",users.lastname) as createdby,
-					date_format(notes.creationdate,\"%c/%e/%Y\") as creationdate
+					notes.creationdate
 					FROM notes INNER JOIN users ON notes.createdby=users.id
 					WHERE type=\"SM\" ORDER BY importance DESC,notes.creationdate";
 					
@@ -48,27 +48,16 @@ function showSystemMessages(){
 	
 	if(mysql_num_rows($queryresult)){ 
 	?>
-	<div class="box">		
-		<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'systemMessages')" width="16" height="16" border="0" /></div>
-		<h2 style="margin-top:4px;">System Messages</h2>
-		<div id="systemMessages" style="margin:0px;padding:0px">
+	<div class="box" id="systemMessageContainer">	
+		<h2>System Messages</h2>
 		<?php while($therecord=mysql_fetch_array($queryresult)) {
 				$therecord["content"]=str_replace("\n","<br />",$therecord["content"]);
 		?>
-		<div>
-			<a href="/Show Content" onClick="showContent(<?php echo $therecord["id"]?>);return false;">
-			<?php if($therecord["content"]) {?>
-			<img src="../../common/image/left_arrow.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />
-			<?php } else {?>
-			<img src="../../common/image/spacer.gif" width="10" height="10" border="0" id="SMG<?php echo $therecord["id"]?>" />				
-			<?php }?><em style="font-weight:normal;"><?php echo $therecord["creationdate"]?> <?php echo $therecord["createdby"]?></em> - <?php echo $therecord["subject"]?></a>
-		</div>
-		<?php if($therecord["content"]) {?>
-		<div class="small SysMessageContent"  id="SMT<?php echo $therecord["id"]?>">
-			<?php echo $therecord["content"]?>
-		</div>			
-		<?php } } ?>
-		</div>
+		<h3 class="systemMessageLinks"><?php echo $therecord["subject"]?> <span>[ <?php echo formatDateTime($therecord["creationdate"])?> <?php echo $therecord["createdby"]?>]</span></h3>			
+		<div class="systemMessages">
+			<p><?php echo $therecord["content"]?></p>
+		</div>						
+		<?php }//end while ?>
 	</div>
 	<?php } 
 }
@@ -84,7 +73,7 @@ function showTasks($userid,$type="Tasks"){
 			$querystatement.=" type=\"TS\" AND (private=0 or (private=1 and createdby=".$userid.")) 
 							   AND (completed=0 or (completed=1 and completeddate=CURDATE()))
 							   AND (assignedtoid is null or assignedtoid=0)";
-			$title="<a href=\"".$_SESSION["app_path"]."search.php?id=23\">Tasks</a>";
+			$title="Tasks";
 			$sec=3;
 		break;
 		case "ReceivedAssignments":
@@ -110,9 +99,9 @@ function showTasks($userid,$type="Tasks"){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	
-	?> <div style="clear:both;float:right;cursor:pointer;cursor:hand;<?php if($sec==3)echo "display:none;"?>padding-bottom:0px;margin-bottom:0px;"><img id="accordianImg<?php echo $sec?>" src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-moveupdn.png" align="absmiddle" alt="hide" onClick="accordian(this,'accordian',3)" width="16" height="16" border="0" /></div>
-	<h2 style="margin-top:4px;"><?php echo $title; if(mysql_num_rows($queryresult)) {?> <span class="small">(<?php echo mysql_num_rows($queryresult)?>)</span><?php } ?></h2>
-	<div id="accordianSec<?php echo $sec?>" style="margin:0px;padding:0px;display:block;">
+	?>
+	<h3 class="tasksLinks"><?php echo $title; if(mysql_num_rows($queryresult)) {?> <span class="small">(<?php echo mysql_num_rows($queryresult)?>)</span><?php } ?></h3>
+	<div class="tasksDivs"><div>
 	<?php
 	
 	if(mysql_num_rows($queryresult)){ 	
@@ -125,17 +114,17 @@ function showTasks($userid,$type="Tasks"){
 		if($therecord["private"]) $className.=" taskPrivate";
 		
 	?>
-	<div id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>">
+	<p id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>">
 		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
 		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
 		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo $therecord["subject"]?></a>
 		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo dateFormat($therecord["enddate"]) ?>)</em><?php } ?>
 		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo getUserName($tid)?>)</em><?php } ?>
-	</div>
+	</p>
 	<?php } } else {
-	?><div class="small disabledtext">no <?php if($type=="Tasks") echo "tasks"; else echo "assignments"?></div><?php
-	}?></div> <?php 
+	?><p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
+	}?></div></div> <?php 
 }
 
 function showSevenDays($userid){

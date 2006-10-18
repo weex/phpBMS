@@ -38,6 +38,9 @@
 	require_once("../../include/session.php");
 	require_once("../../include/common_functions.php");	
 	require_once("./include/snapshot_include.php");
+
+	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
+	$modulequery=mysql_query($querystatement,$dblink);
 	
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -46,50 +49,55 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/snapshot.css" rel="stylesheet" type="text/css">
-<!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
-	 work properly -->
+
 <script language="JavaScript" src="../../common/javascript/common.js" type="text/javascript" ></script>
 <script language="JavaScript" src="./javascript/snapshot.js" type="text/javascript" ></script>
 <script language="JavaScript" >
  var chevronup=new Image();
- chevronup.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png";
+ chevronup.src="/common/stylesheet/kreotek/button-up.png";
  var chevrondown=new Image();
- chevrondown.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png";
+ chevrondown.src="/common/stylesheet/kreotek/button-down.png";
 </script>
+
+<script language="JavaScript" src="../../common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
+<?php 
+	while($modulerecord=mysql_fetch_array($modulequery)){
+		?><script language="JavaScript" src="<?php echo "../".$modulerecord["name"]."/javascript/snapshot.js";?>" type="text/javascript" ></script><?php
+	}//end while 
+?>
 </head>
-<body onLoad="init()">
+<body>
 <?php include("../../menu.php");?>
 <div class="bodyline">
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
-	<?php showSystemMessages() ?>	
-	<table border="0" cellpadding="0" cellspacing="4" width="100%">
+
+	<?php showSystemMessages() ?>
+	
+	<table cellpadding="0" cellspacing="4" border="0" width="100%">
 		<tr>
-			<td width="55%" valign="top" class="box">
-				<div class="tiny" style="float:right;margin-top:2px;">
-					<?php echo strftime("%A, %b. %e, %Y")?>
-				</div>
-				<h2 style="margin-top:4px;">
-					<a href="../../search.php?id=24">This week's Events</a>
-				</h2>
-				<div id="theEvents" style="overflow:auto;">
-				<?php showSevenDays($_SESSION["userinfo"]["id"])?>
-				</div>
-			</td><td nowrap>&nbsp;</td>
-			<td width="45%" valign="top" class="box" id="accordianContainer">
-					<div id="accordian" style="overflow:hidden;margin:0px;padding:0px;">
-							<?php 
-								showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
-								showTasks($_SESSION["userinfo"]["id"],"GivenAssignments");
-								showTasks($_SESSION["userinfo"]["id"],"Tasks");
-							?>
-					</div>
-				</td>
+			<td id="eventsBox" class="box" width="55%">
+				<p id="todaysDate" class="tiny"><?php echo strftime("%A, %b. %e, %Y")?></p>
+				<h2><a href="../../search.php?id=24">This week's Events</a></h2>
+				<?php showSevenDays($_SESSION["userinfo"]["id"])?>			
+			</td>
+			<td class="tiny">&nbsp;</td>
+			<td class="box" id="tasksBox" width="45%">
+				<h2>Assignments/Tasks</h2>
+				<?php 
+					showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
+					showTasks($_SESSION["userinfo"]["id"],"GivenAssignments");
+					showTasks($_SESSION["userinfo"]["id"],"Tasks");
+				?>
+			</td>
 		</tr>
 	</table>
-	<?php 
-	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-	$modulequery=mysql_query($querystatement,$dblink);
-	
+
+	<div style="clear:both;"></div>
+
+	<?php 	
+	mysql_data_seek($modulequery,0);	
 	while($modulerecord=mysql_fetch_array($modulequery)){
 		@ include "../".$modulerecord["name"]."/snapshot.php";
 	}//end while 

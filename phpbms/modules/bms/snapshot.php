@@ -47,25 +47,34 @@ function showTodaysClients($interval="1 DAY"){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);	
 	if(mysql_num_rows($queryresult)){
-		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
-				<th align="left">ID</th>
-				<th align="left">Type</th>
+				<th align="center">ID</th>
+				<th align="center">Type</th>
 				<th align="left" width="100%">Name</th>
 				<th nowrap align="right">City, State/Prov Zip/Postal</th>
 			</tr>
-		<?php 	
+		<?php 
+		$i=1;
 		while($therecord=mysql_fetch_array($queryresult)){
+			if($i==1) $i=2; else $i=1;		
 			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
 			$displayType=ucwords(str_replace(".","&nbsp;",$displayType));
 			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
-		?><tr onClick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'">
-			<td><?php echo $therecord["id"]?></td>
-			<td><?php echo $therecord["type"]?></td>
+		?><tr onclick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
+			<td align="center"><?php echo $therecord["id"]?></td>
+			<td align="center"><?php echo $therecord["type"]?></td>
 			<td><?php echo $therecord["thename"]?></td>
 			<td align="right"><?php echo $displayCSZ?></td>
-		</tr><?php }?></table><?php
+		</tr><?php }?>
+		<tr class="queryfooter">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td align="right"><?php $reccount=mysql_num_rows($queryresult);echo $reccount?> record<?php if($reccount!=1) echo "s"?></td>
+		</tr>
+		</table><?php
 	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
 	}
 }
@@ -85,33 +94,51 @@ function showTodaysOrders($interval="1 DAY"){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
 	if(mysql_num_rows($queryresult)){
-		?><table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
 				<th align="left">ID</th>
-				<th align="left">Status</th>
+				<th align="center">Status</th>
 				<th width="100%" align="left">Name</th>
 				<th align="right">Total</th>
 				<th align="right">Due</th>
 			</tr>
 		<?php 
+		$i=1;
+		$total=0;
+		$totaldue=0;
 		while($therecord=mysql_fetch_array($queryresult)){				
-		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'">
+			if($i==1) $i=2; else $i=1;
+			$total+=$therecord["total"];
+			$totaldue+=$therecord["amtdue"];
+		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td><?php echo $therecord["id"]?></td>
-			<td><?php echo $therecord["status"]?></td>
+			<td align=center><?php echo $therecord["status"]?></td>
 			<td><?php echo $therecord["thename"]?></td>
 			<td align="right"><?php echo currencyFormat($therecord["total"])?></td>
 			<td align="right"><?php echo currencyFormat($therecord["amtdue"])?></td>
 		</tr><?php }?>
+		<tr class="queryfooter">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td align="right"><?php echo currencyFormat($total)?></td>
+			<td align="right"><?php echo currencyFormat($totaldue)?></td>
+		</tr>
 		</table><?php
 	} else {?><div class="small disabledtext">no orders entered in last day</div><?php
 	}
 }
 
 if ($_SESSION["userinfo"]["accesslevel"]>=20) {?>
-<div class="box" style="display:inline-block;">	
-	<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'TodaysOrders')" width="16" height="16" border="0" /></div>
-	<h2 style="margin-top:4px;"><a href="../../search.php?id=3">Recent Orders</a></h2>
-		<div id="TodaysOrders">
+<style>
+	#bmsBox button{display:block;float:right;margin:2px 2px 0 0;}
+	#bmsBox h2{margin:0 0 4px;}
+</style>
+<div class="box" id="bmsBox">
+	<button class="graphicButtons buttonDown" id="todaysOrdersLink"><span>Up</span></button>	
+	<h2><a href="../../search.php?id=3">Recent Orders</a></h2>
+	<div id="todaysOrders">
+		<div class="fauxP">
 			<?php 
 			if(date("D")=="Mon")
 				$interval="3 DAY";
@@ -120,9 +147,10 @@ if ($_SESSION["userinfo"]["accesslevel"]>=20) {?>
 			showTodaysOrders($interval) 
 			?>
 		</div>
+	</div>
 		
-	<div style="float:right;cursor:pointer;cursor:hand;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="absmiddle" alt="hide" onClick="hideSection(this,'TodaysClients')" width="16" height="16" border="0" /></div>
-	<h2 style="margin-top:4px;"><a href="../../search.php?id=2">Recently Added Clients/Propects</a></h2>
-		<div id="TodaysClients"><?php showTodaysClients($interval)?></div>
+	<button class="graphicButtons buttonDown" id="todaysClientsLink"><span>Up</span></button>	
+	<h2><a href="../../search.php?id=2">Recently Added Clients/Propects</a></h2>
+		<div id="todaysClients"><div class="fauxP"><?php showTodaysClients($interval)?></div></div>
 </div>
 <?php }?>				

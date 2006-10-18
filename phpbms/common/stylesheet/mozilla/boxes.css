@@ -6,10 +6,7 @@ FIELDSET,.bodyline,.box,#modalBox{
 	margin-bottom:5px;
 }
 .bodyline,#modalBox{
-	background-color: #E4ECEC; 
-	background-image: url("image/bodyline.png");
-	background-repeat:repeat-x;
-	background-position:bottom left
+	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
 }
 
 .bodyline{

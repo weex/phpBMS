@@ -99,3 +99,8 @@ vertical-align:middle;
 .fieldCurrency{text-align:right;}
 
 #dontSubmit{position:absolute;display:none;}
+
+#createmodifiedby{clear:both}
+#savecancel2{float:right;padding:17px 17px 0 0;}
+.fieldCreateModify{width:135px;margin-bottom:2px;}
+#createdbydiv{float:left;padding:0px 2px 0 0;}

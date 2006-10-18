@@ -1,9 +1,36 @@
-.SysMessageContent	{
-	margin-left:15px;
-	margin-bottom:5px;
-	display:none;
-	border:1px solid #CCCCCC;
+/* The following lines is put in  until the site is reformatted*/
+LABEL{display:inline;margin:0;padding:0}
+DIV{padding:0;margin:0;}
+P,.fauxP{margin:0;padding:0 5px 10px;}
+.alt{display:none;}
+.bodyline{display:block;}
+/* The following lines is put in  until the site is reformatted*/
+
+
+#systemMessageContainer h2{margin:0 0 5px 0;padding:0 0 0px 0;}
+.systemMessageLinks{font-size:12px; border-bottom:1px dotted #CCCCCC; cursor:pointer; margin:5px 5px 0px; padding:3px;}
+.systemMessageLinks:hover{background-color:#DDDDDD}
+.systemMessageLinks span{color:#666666; font-size:11px; padding:0 0 0 4px;}
+.systemMessages p{border:1px dotted #CCCCCC;border-top:0;padding:8px;margin:0 5px 5px;background:white;}
+
+
+#eventsBox{vertical-align:top}
+#eventsBox h2{margin:0; padding:0}
+#todaysDate{float:right;padding:2px 0 0 0;margin:0;}
+
+#tasksBox{vertical-align:top}
+#tasksBox h2{margin:0 0 5px; padding:0}
+#tasksBox h3{
+	margin:0;
+	cursor:pointer;font-size:13px;background:#EEEEEE url(../image/button-moveupdn.png) 99% no-repeat;
+	padding:4px;
+	border-bottom:1px solid #BBBBBB;
+	
 }
+#tasksBox h3:hover{background-color:#DDDDDD}
+
+.tasksDivs div{padding:5px 0;background:white;border-top:0;margin:0 5px;}
+.tasksDivs p{margin:0; padding:4px 4px 4px 8px; border-bottom:1px dotted #EEEEEE;}
 
 .task a,.taskCompleted a,.taskPastDue a,.taskPrivate a{ font-weight:normal;}
 .taskPrivate a{ font-weight:bold;}

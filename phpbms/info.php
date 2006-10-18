@@ -63,7 +63,9 @@
 <title>phpBMS Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-	<style>li{margin-bottom:4px;}</style>
+	<style>
+	li{margin-bottom:4px;}
+	</style>
 </head>
 
 <body><?php if(isset($_SESSION["app_path"])) include("menu.php")?>
@@ -98,6 +100,7 @@
 		<ul>
 			<li><strong>phpBMS</strong> - Commercial Open Source Business Management Web Appllication (<a href="http://www.kreotek.com">www.phpbms.org</a>)</li>
 			<li><strong>fpdf</strong> - A PHP class which allows to generate PDF files with pure PHP (<a href="http://www.fpdf.org">www.fpdf.org</a>)</li>
+		    <li><strong>moo.fx</strong> - Super lightweight javascript effects library (<a href="http://moofx.mad4milk.net/">moofx.mad4milk.net</a>) </li>
 		</ul>
 		<h2>Technologies</h2>
 		<ul>

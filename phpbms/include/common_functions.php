@@ -127,7 +127,7 @@ function dateFromSQLDate($sqlDate){
 	$thedate="";
 	$temparray=explode("-",$sqlDate);
 	if(count($temparray)>1)
-		$thedate=mktime(0,0,0,$temparray[1],$temparray[2],$temparray[0]);
+		$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
 	return $thedate;
 }
 

@@ -3,7 +3,7 @@ LABEL{display:inline;margin:0;padding:0}
 DIV{padding:0;margin:0;}
 P{margin:0;padding:0 5px 10px;}
 .alt{display:none;}
-.bodyline{display:block;padding:5px}
+.bodyline{display:block;}
 /* The following lines is put in  until the site is reformatted*/
 
 .bodyline{display:block;padding:5px}
@@ -13,8 +13,8 @@ P{margin:0;padding:0 5px 10px;}
 }
 #loginbox h1{margin:0;padding:5px;background:none;height:22px;}
 #loginbox h1 a{display:block;width:85px;height:22px;float:right;background:url(../../../image/logo.png);}
-#loginbox h2{text-transform:none;margin:0; padding:5px 4px 0; border:0;}
-#loginbox h3{padding:0 4px;margin:0;border:0;font-weight:normal;font-size:9px; border:0;}
+#loginbox h2{text-transform:none;margin:0; padding:5px 10px 0; border:0;}
+#loginbox h3{padding:0 10px;margin:0;border:0;font-weight:normal;font-size:9px; border:0;}
 
 #loginbox .box{
 	margin:1px;
@@ -23,9 +23,9 @@ P{margin:0;padding:0 5px 10px;}
 	text-align:right;
 }
 
-#loginbox form{padding:10px;margin:0;}
+#loginbox form{padding:10px 5px 0;margin:0;}
 
 #username,#password{width:100%;}
 #command{width:75px;}
 #failed{text-align:center;margin-top:5px;}
-#moreinfo{text-align:center; padding:4px;}
+#moreinfo{text-align:center; padding:0 0 4px;}
