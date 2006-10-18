@@ -13,6 +13,7 @@ FIELDSET,.bodyline,.box,#modalBox{
 }
 
 .bodyline{
+	clear:both;
 	border-color:#ABB1B1;
 	border-style:solid;
 	-moz-border-radius:0;

@@ -434,7 +434,7 @@ function addLine(thetd){
 	content+=quantity.value+"[//]";
 	content+=memo.value+"[//]";
 	content+=taxable.value+"</span>";
-	content+="<button type=\"button\" class=\"invisibleButtons\" onClick=\"return deleteLine(this)\"><img src=\""+imgPath.value+"/button-minus.png\" align=\"middle\" alt=\"-\" width=\"16\" height=\"16\" border=\"0\" /></button>";
+	content+="<button type=\"button\" onClick=\"return deleteLine(this)\" class=\"graphicButtons buttonMinus\"><span>-</span></button>";
 	temptd.innerHTML=content
 	thetr.appendChild(temptd);
 

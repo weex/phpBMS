@@ -63,9 +63,6 @@
 	border-bottom:1px solid #CCCCCC;
 }
 
-.lineitemsRight{ border-right:1px solid #CCCCCC;}
-.lineitemsLeft{ border-left:1px solid #CCCCCC;}
-.lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
 
 .smallQueryTableHolder{overflow:auto;background-color:#CCCCCC;border:1px inset black;padding:0px;}
 .smallQueryTable, .smallQueryTable td{font-size:11px;}

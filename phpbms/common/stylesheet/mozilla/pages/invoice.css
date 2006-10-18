@@ -1,1 +1,57 @@
-.invoiceTotalLabels{padding-left:50px;}
+/* The following lines is put in  until the site is reformatted*/
+LABEL{display:inline;margin:0;padding:0}
+DIV{padding:0;margin:0;}
+P,.fauxP{margin:0;padding:0 5px 10px;}
+.alt{display:none;}
+.bodyline{display:block}
+/* The following lines is put in  until the site is reformatted*/
+
+#h1WithPrint{margin-right:230px;}
+#h1WithoutPrint{margin-right:160px;}
+
+#topButtons{float:right;width:217px;}
+#printButton{ text-align:right;float:left;}
+#printButton input{width:75px;}
+
+#fsAttributes{clear:both;float:right;width:250px;}
+#attributesRight{float:right;padding-top:0px;}
+#type{width:90px}
+#leadsource,#bankname{width:98%}
+
+#fsTops,#fsShipping{margin-right:275px;}
+#address1{margin-bottom:2px;}
+.cszP{float:left;}
+#countryP{clear:left;}
+
+#fsLineItems{clear:both;}
+
+#LITable{}
+#LIHeader th{
+	background:#455372;
+	border:1px solid #999999;
+	padding:3px 9px;
+	color:white;
+}
+#LISep td{ height:2px;font-size:1px;padding:0px;}
+.LIRealInfo{display:none;}
+
+#ds-partnumber{width:90px;}
+#ds-partname{width:120px;}
+#price{width:60px;}
+#memo{width:100%}
+#qty{text-align:center;width:50px;}
+#extended,.fieldTotal{width:75px;}
+
+.lineitemsRight{ border-right:1px solid #CCCCCC;}
+.lineitemsLeft{ border-left:1px solid #CCCCCC;}
+.lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
+.invoiceTotalLabels{padding-left:65px;height:23px;}
+
+#fsPayment{float:right;width:250px;margin-top:0px;padding-top:0px;}
+
+#ccpaymentinfo,#checkpaymentinfo{display:none;}
+#fieldCCNumber,#fieldCCExpiration{float:left;}
+
+#fsInstructions{clear:both;}
+#specialinstructions,#printedinstructions{width:99%}
+

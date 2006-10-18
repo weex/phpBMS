@@ -66,8 +66,6 @@ cursor: pointer;
 	text-align:right
 }
 
-
-
 .graphicButtons{
 margin:0 0 0 3px;
 border:0;
@@ -97,3 +95,7 @@ vertical-align:middle;
 
 .buttonShowSQLUp{width:35px;background:url(image/button-sql-up.png) 0 0 no-repeat;}
 .buttonShowSQLDown{width:35px;background:url(image/button-sql-down.png) 0 0 no-repeat;}
+
+.fieldCurrency{text-align:right;}
+
+#dontSubmit{position:absolute;display:none;}

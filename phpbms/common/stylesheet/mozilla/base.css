@@ -63,3 +63,10 @@
 	.Quote{ font-style:italic;}
 	.Invoice{ background-color:#EEEEEE;}
 	.VOID{ color:blue; background-color:#EEEEEE;}
+
+/* ============================================================================== */
+/* Save/Cancels                                                                   */
+/* ============================================================================== */
+	.saveCancels{text-align:right;}
+	#saveButton1,#saveButton2{width:68px;margin-right:3px;}
+	#cancelButton1,#cancelButton2{width:68px;}
