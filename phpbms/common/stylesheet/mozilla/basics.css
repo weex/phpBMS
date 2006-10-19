@@ -8,7 +8,9 @@ BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI, BUTTON {
 	font-family : Arial,Helvitica,sans-serif;
 	color : black; }
 	
-DIV {padding:3px;}
+P,.fauxP{margin:0;padding:0 5px 10px;}
+.alt{display:none;}
+
 UL,OL{margin:5px;padding-left:20px; margin-bottom:0px;}
 LI{margin-bottom:5px;}
 

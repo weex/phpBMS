@@ -507,14 +507,16 @@ function displayQueryButtons() {
 	}
 	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
 	if($_SESSION["userinfo"]["accesslevel"]>=90){?>
-	<div id="sqlstatement" style="display:none;padding:0px;" ><fieldset>
-		<legend><span style="text-transform:capitalize">SQL</span> Statement</legend>
+	<div id="sqlstatement">
+	<fieldset>
+		<legend>SQL Statement</legend>
 		<div class="mono small" style="height:150px; overflow:auto;"><?php echo stripslashes(htmlspecialchars($this->querystatement))?></div>
 	</fieldset><?php if($this->sqlerror) {?>
 	<fieldset>
 		<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
 		<div><?php echo $this->sqlerror?></div>
-	</fieldset><?php }?></div>
+	</fieldset><?php }?>
+	</div>
 	<?php }
 	if($this->numrows){
 		?><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><div id="numCount" align="right" class="small"><?php
@@ -585,26 +587,10 @@ function displayQueryButtons() {
 			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
 		}//end if numrows	
-		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" onClick="showSQL(this);" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>
+		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>
 		</div><script language="javascript">
 	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
 	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";
-	var editButtonImg=new Image();
-		editButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png";
-	var editButtonImgDisabled=new Image();
-		editButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png";
-	var printButtonImg=new Image();
-		printButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-print.png";
-	var printButtonImgDisabled=new Image();
-		printButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-print-disabled.png";
-	var deleteButtonImg=new Image();
-		deleteButtonImg.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete.png";
-	var deleteButtonImgDisabled=new Image();
-		deleteButtonImgDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete-disabled.png";
-	var sqlButtonUp=new Image();
-		sqlButtonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-sql-up.png";
-	var sqlButtonDn=new Image();
-		sqlButtonDn.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-sql-down.png";
 	</script><?php	
 }//end function
 			

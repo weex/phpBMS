@@ -132,7 +132,11 @@ fx.Accordion.prototype = {
 	showThisHideOpen: function(toShow){
 		this.elements.each(function(el, j){
 			if (el.offsetHeight > 0 && el != toShow) this.clearAndToggle(el, j);
-			if (el == toShow ) setTimeout(function(){this.clearAndToggle(toShow, j);}.bind(this), this.options.delay);
+			//BAR -modified so that clicking on an open tab closes it
+			if (el == toShow ) {
+				el.style.display="block";
+				setTimeout(function(){this.clearAndToggle(toShow, j);}.bind(this), this.options.delay);
+			}
 		}.bind(this));
 	},
 

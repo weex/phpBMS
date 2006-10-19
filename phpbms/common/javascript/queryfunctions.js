@@ -33,6 +33,25 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+window.onload=function(){
+
+	var sqlDivs = new Array();
+	sqlDivs[sqlDivs.length]=getObjectFromID("sqlstatement");
+
+	var sqlLinks = new Array();
+	sqlLinks[sqlLinks.length]=getObjectFromID("showSQLButton");
+
+	var todaysClientsAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: false, duration:200, onComplete:function(){switchSqlButtons()}});
+	
+}
+function switchSqlButtons(){
+	var sqlbutton=getObjectFromID("showSQLButton");
+	if (sqlbutton.className=="graphicButtons buttonShowSQLDown")
+		sqlbutton.className="graphicButtons buttonShowSQLUp"
+	else
+		sqlbutton.className="graphicButtons buttonShowSQLDown";
+}
+
 
 function openWindow(theURL,winName,features) {
 	  window.open(theURL,winName,features);
@@ -378,16 +397,6 @@ function switchSearchTabs(taba,base){
 	}
 }
 
-function showSQL(thebutton){
-		var sqlSpan=getObjectFromID("sqlstatement");
-		if (sqlSpan.style.display=="block"){
-			sqlSpan.style.display="none";
-			thebutton.className="graphicButtons buttonShowSQLDown";
-		} else{
-			sqlSpan.style.display="block";
-			thebutton.className="graphicButtons buttonShowSQLUp";
-		}
-}
 
 // Advanced Search Functions ==========================================
 function updateAS(){

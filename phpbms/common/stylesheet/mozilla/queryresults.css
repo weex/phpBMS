@@ -54,6 +54,7 @@
 .qh1, .qh2{background-color:black; cursor: pointer; }
 .qh1 a, .qh2 a{color:white;}
 
+#sqlstatement{display:none}
 
 .lineitems td{
 	background-color:white;
