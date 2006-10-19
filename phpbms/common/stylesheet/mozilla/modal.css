@@ -12,10 +12,9 @@
 	background-color: #AAAAAA; */
 }
 
-#modalBox {
-	border-top-width:0px;
-	padding:4px;
-	border-width:2px;
+#modalBox {	
+	border:1px solid #ABB1B1;
+	padding:0px;
 	position: absolute;
 	z-index: 201;
 	top: 0px;
@@ -26,12 +25,10 @@
 	font-size:14px;
 	padding: 4px;
 	padding-left:4px;
-	margin:0;
-
 	background-color:#0B63A2;
+	border-bottom:1px solid #ABB1B1;
 	color:white; 
-	border:0;
 }
 #modalContent{
-	padding:4px;
+	padding:10px;
 }

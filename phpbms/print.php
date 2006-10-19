@@ -130,9 +130,9 @@ if (isset($_POST["command"])){
 <script language="JavaScript" src="common/javascript/common.js"></script>
 <script language="JavaScript" src="common/javascript/print.js"></script>
 
-<script language="JavaScript" src="../../common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
-<script language="JavaScript" src="../../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
-<script language="JavaScript" src="../../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
+<script language="JavaScript" src="common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
+<script language="JavaScript" src="common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
+<script language="JavaScript" src="common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
 
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>

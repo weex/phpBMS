@@ -1,0 +1,18 @@
+#topButtons{float:right;width:160px;}
+#topTitle{margin-right:160px;}
+
+#rightsideDiv{clear:both;float:right;width:200px;margin:0;padding:0;}
+#id{width:98%}
+#memo{width:98%;height:255px;}
+
+#leftsideDiv{margin-right:208px;padding-top:1px;}
+#description{width:99%}
+.costsP{float:left;padding-top:3px;}
+
+#webstuff{display:none}
+#keywords,#webdescription{width:98%}
+#webDescPreview{margin:0px;border:1px solid #CCCCCC; background-color:white;padding:2px;height:115px;overflow:auto;width:98%}
+#buttonWebPreview{width:75px;margin-top:2px;}
+
+#noThumb{margin:3px;border:1px solid black;background-color:white;color:#999999;width:75px;height:43px;padding-top:32px;}
+#noPicture{margin:3px;border:1px solid black;background-color:white;color:#999999;width:150px;height:78px;padding-top:70px;}

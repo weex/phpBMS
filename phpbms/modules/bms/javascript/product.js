@@ -33,10 +33,39 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+window.onload=function(){
+	
+	var webDivs = new Array();
+	webDivs[webDivs.length]=getObjectFromID("webstuff");
 
-function init(){
+	var webLinks = new Array();
+	webLinks[webLinks.length]=getObjectFromID("webenabled");
+
+	var webAccordion = new fx.Accordion(webLinks, webDivs,{opacity: false, duration:200});	
+	if(webLinks[0].checked)
+		webAccordion.showThisHideOpen(webDivs[0]);
+
 	var thepn=getObjectFromID("partname");
-	thepn.focus();
+		thepn.focus();
+		
+	if(numcats==0){
+		var title="No Product Categories Created";
+		var content="You need to assign new products to a product category. Currently, there ";
+		content+="are no product categories created.<br /><br />";
+		content+="<strong>Would you like to create a product category now?</strong><br /><br />";
+		content+="<div align=\"right\"><button class=\"Buttons\" type=\"button\" style=\"width:75px;margin-right:2px;\" onclick=\"goProductCategories()\"><span>yes</span></button>";
+		content+="<button class=\"Buttons\" type=\"button\" style=\"width:75px;\" onclick=\"noProductCategories()\"><span>no</span></button></div>";
+		showModal(content,title,"300");
+	}
+}
+function goProductCategories(){
+	closeModal();
+	document.location="productcategories_addedit.php";
+}
+function noProductCategories(){
+	closeModal();
+	var cancelButton=getObjectFromID("cancelButton1");
+	cancelButton.click();
 }
 
 function showWeb(thecheckbox){

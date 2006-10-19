@@ -34,6 +34,12 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+function checkNumberCategories($dblink){
+	$querystatement="SELECT count(id) AS thecount FROM productcategories";
+	$queryresult=mysql_query($querystatement,$dblink);
+	$therecord=mysql_fetch_array($queryresult);
+	return $therecord["thecount"];
+}
 
 // These following functions and processing are similar for all pages
 //========================================================================================
