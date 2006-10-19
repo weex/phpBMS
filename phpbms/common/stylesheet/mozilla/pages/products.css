@@ -22,3 +22,11 @@
 /* ------------------------ */
 .preqAdd{float:left;}
 #addButtonP{padding-top:2px;}
+
+/* ------------------------ */
+/* sales history            */
+/* ------------------------ */
+.timelineP{float:left}
+#printP{float:right;}
+#print{width:80px;}
+#changeTimelineP{}

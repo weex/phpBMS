@@ -150,5 +150,6 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
    </fieldset>
 	</form>
 </div>
+<?php include("../../footer.php");?>
 </body>
 </html>

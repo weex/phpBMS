@@ -98,51 +98,45 @@
 	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;
 
 	$pageTitle="Product Sales History: ".$refrecord["partname"];	
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css">
 
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
-	<h1><?php echo $pageTitle ?></h1>
+	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
-		<div class="box" style="vertical-align:middle;">
-			<table border=0 cellspacing="0" cellpadding="0">
-				<tr>
-					<td style="padding-right:20px;">
-					   invoice status<br>
-					   <select name="status" style="">
-							<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
-							<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
-							<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected"?>>Orders</option>
-					   </select>					
-					</td>
-					<td nowrap>
-					   from<br>
-					   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:5px;" nowrap>
-						to<br>
-						<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:20px;"><br>
-				       <input name="command" type="submit" value="change timeframe/view" class="smallButtons" style="">					
-					</td>
-					<td width="100%" align="right">
-						<br>
-						<input name="command" type="submit" value="print" class="Buttons" style="width:80px;">	
-					</td>
-				</tr>
-			</table>			
-		   
-		</div>
-   
+		<div class="box">
+		<p class="timelineP">
+		   <label for="status">invoice status</label><br />
+		   <select name="status" id="status">
+				<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
+				<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
+				<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected"?>>Orders</option>
+		   </select>								
+		</p>
+		
+		<p class="timelineP">
+		   <label for="fromdate">from</label><br />
+		   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+		</p>
+
+		<p class="timelineP">
+			to<br />
+			<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+		</p>
+		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
+		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" style=""></p>
+	</div>
+
+   <div class="fauxP">   
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
 	 <th align="center" nowrap class="queryheader">ID</td>
@@ -192,7 +186,8 @@
 	 <td align="right" nowrap class="queryfooter">avg. = <?PHP $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
 	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
 	</tr>
-   </table>	</form>	
+   </table></div></form>	
 </div>
+<?php include("../../footer.php");?>
 </body>
 </html><?php }?>
