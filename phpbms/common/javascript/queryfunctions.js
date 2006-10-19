@@ -204,15 +204,17 @@ function editThis(therow){
 		selIDs=new Array();
 		selIDs[0]=therownum;
 	}
-	if (editFile.indexOf("?")>=0)
-		connector="&";
-	else
-		connector="?";
-	editFile+=connector+"id="+selIDs[0];
-	if(typeof xtraParamaters != "undefined")
-		editFile+="&"+(xtraParamaters);
-	
-	document.location=editFile;
+	if(editFile!="/N/A"){
+		if (editFile.indexOf("?")>=0)
+			connector="&";
+		else
+			connector="?";
+		editFile+=connector+"id="+selIDs[0];
+		if(typeof xtraParamaters != "undefined")
+			editFile+="&"+(xtraParamaters);
+		
+		document.location=editFile;
+	}
 }
 
 function addRecord(){
