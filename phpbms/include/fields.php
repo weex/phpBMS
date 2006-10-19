@@ -169,7 +169,7 @@ function field_email($name,$value,$attributes){
 	$value=str_replace("\"","&quot;",$value);	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" style="vertical-align:middle;" class="invisibleButtons" onClick="openEmail('<?php echo $name?>')" title="Send E-Mail"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-email.png" align="absmiddle" alt="send email" width="16" height="16" border="0" /></button>
+	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonEmail" onclick="openEmail('<?php echo $name?>')" title="Send E-Mail"><span>send e-mail</span></button>
 	<script language="JavaScript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
 }
 
@@ -186,7 +186,7 @@ function field_web($name,$value="http://",$attributes=""){
 	$value=str_replace("\"","&quot;",$value);	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="openWebpage('<?php echo $name?>')" title="Open in New Window"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-www.png" align="absmiddle" alt="link" width="16" height="16" border="0" /></button>
+	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonWWW" onclick="openWebpage('<?php echo $name?>')" title="Visit site in new window"><span>visit site</span></button>
 	<script language="JavaScript">wwwArray[wwwArray.length]=new Array('<?php echo $name?>','One or more web page fields are invalid.');</script>	
 	<?php
 }

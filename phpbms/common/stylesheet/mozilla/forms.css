@@ -79,6 +79,7 @@ vertical-align:middle;
 .buttonRew{background:url(image/button-rew.png) 0 0 no-repeat;}
 .buttonFF{background:url(image/button-ff.png) 0 0 no-repeat;}
 .buttonNew{background:url(image/button-new.png) 0 0 no-repeat;}
+.buttonEmail{background:url(image/button-email.png) 0 0 no-repeat;}
 .buttonEdit{background:url(image/button-edit.png) 0 0 no-repeat;}
 .buttonEditDisabled{background:url(image/button-edit-disabled.png) 0 0 no-repeat;}
 .buttonPrint{background:url(image/button-print.png) 0 0 no-repeat;}
@@ -92,6 +93,7 @@ vertical-align:middle;
 .buttonUpDisabled{background:url(image/button-up-disabled.png) 0 0 no-repeat;}
 .buttonDown{background:url(image/button-down.png) 0 0 no-repeat;}
 .buttonDownDisabled{background:url(image/button-down-disabled.png) 0 0 no-repeat;}
+.buttonWWW{background:url(image/button-www.png) 0 0 no-repeat;}
 
 .buttonShowSQLUp{width:35px;background:url(image/button-sql-up.png) 0 0 no-repeat;}
 .buttonShowSQLDown{width:35px;background:url(image/button-sql-down.png) 0 0 no-repeat;}

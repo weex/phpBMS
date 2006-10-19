@@ -7,10 +7,7 @@
 <head>
 <title>phpBMS Resources</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-	<style>
-	li{margin-bottom:10px;}
-	</style>
+<?php require("head.php")?>
 </head>
 
 <body>

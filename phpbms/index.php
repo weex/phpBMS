@@ -37,12 +37,15 @@
 	require_once("include/session.php");
 	require_once("include/common_functions.php");
 	require_once("include/login_include.php");
+	
+	if(!isset($_SESSION["app_path"]))
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title><?PHP echo $_SESSION["application_name"]; ?> - Login Page</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
+
+	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />	
 	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/login.css" rel="stylesheet" type="text/css" />
 	<script language="javascript" src="common/javascript/common.js"></script>
 	<script language="javascript" src="common/javascript/login.js"></script>

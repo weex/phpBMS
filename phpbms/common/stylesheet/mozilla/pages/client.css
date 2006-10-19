@@ -1,0 +1,15 @@
+#topButtons{float:right;width:200px;}
+#h1Title{margin-right:208px;}
+
+#rightSideDiv{clear:both;float:right;width:200px;}
+#leftSideDiv{padding-top:1px;margin-right:208px;}
+
+#id, #becameclient, #ds-salesmanagerid, #ccnumber, #ds-taxareaid, #comments{width:98%}
+#type, #category, #leadsource, #paymentmethod{width:99%}
+
+#firstnameP{float:left;}
+
+.phonelefts{float:left}
+#address1,#shiptoaddress1{margin-bottom:2px;}
+
+.csz{float:left}

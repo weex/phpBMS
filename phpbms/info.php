@@ -62,10 +62,7 @@
 <head>
 <title>phpBMS Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-	<style>
-	li{margin-bottom:4px;}
-	</style>
+<?php require("head.php")?>
 </head>
 
 <body><?php if(isset($_SESSION["app_path"])) include("menu.php")?>
