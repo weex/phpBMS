@@ -46,7 +46,7 @@
 
 if(isset($_POST["command"])){
 	switch($_POST["command"]){
-		case"del":
+		case"delete":
 			$thequery="delete from prerequisites where id=".$_POST["deleteid"];
 			$theresult=mysql_query($thequery);
 		break;
@@ -65,12 +65,13 @@ if(isset($_POST["command"])){
 	$prereqresult=mysql_query($prerequstatement,$dblink);
 	$prereqresult? $numrows=mysql_num_rows($prereqresult): $numrows=0;
 
-$pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+$pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
@@ -78,66 +79,74 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE HTML PUB
 </head>
 <body><?php include("../../menu.php")?>
 <?php product_tabs("Prerequisites",$_GET["id"]);?><div class="bodyline">
-	<h1><?php echo $pageTitle ?></h1>
+	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
-		<input name="deleteid" type="hidden" value="0" />
-		<div><table border="0" cellpadding="3" cellspacing="0" class="querytable">
-	<tr>
-	 <th align="left" nowrap class="queryheader">Part Number</td>
-	 <th align="left" nowrap class="queryheader">Name</td>
-	 <th align="left" width=100% class="queryheader">Description</td>
-	 <th align="center" nowrap class="queryheader">&nbsp;</td>
-	</tr>
-    <?PHP 	
-	if($numrows){
-		while ($prereq=mysql_fetch_array($prereqresult)){
-?>
-	<tr>
-		<td align="left" nowrap><?PHP echo $prereq["partnumber"] ?></td>
-		<td align="left" nowrap><?PHP echo $prereq["partname"] ?></td>
-		<td align="left" width="100%"><?PHP echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
-	    <td align="center"><input name="command" type="submit" class="Buttons" value="del" style="width:40px;" onClick="return deleteLine(<?PHP echo $prereq["id"] ?>,this)"></td>
-	</tr>
-    <?PHP }//end while
-	} else {?>
-	<tr><td colspan="4" align=center style="padding:0px;"><div class="norecords">No Prerequisites to Display</div></td></tr>
-	<?php
-	}//end if
+	<input id="deleteid" name="deleteid" type="hidden" value="0" />
+	<input id="command" name="command" type="hidden" value="" />
+	<div class="fauxP">
+		<table border="0" cellpadding="3" cellspacing="0" class="querytable">
+		<tr>
+		 <th align="left" nowrap class="queryheader">Part Number</td>
+		 <th align="left" nowrap class="queryheader">Name</td>
+		 <th align="left" width=100% class="queryheader">Description</td>
+		 <th align="center" nowrap class="queryheader">&nbsp;</td>
+		</tr>
+		<?PHP 	
+		if($numrows){
+			while ($prereq=mysql_fetch_array($prereqresult)){
 	?>
-   </table></div>
-   <fieldset>
-   	<legend>add prerequisite</legend>
-   <table  border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td align="left" nowrap>
-			<div>
-			part number<br>
+		<tr>
+			<td align="left" nowrap><?PHP echo $prereq["partnumber"] ?></td>
+			<td align="left" nowrap><?PHP echo $prereq["partname"] ?></td>
+			<td align="left" width="100%"><?PHP echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
+			<td align="center">
+				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?PHP echo $prereq["id"] ?>)"><span>-</span></button> 
+			</td>
+		</tr>
+		<?PHP }//end while
+		?>
+		<tr class="queryfooter">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<?php
+		} else {?>
+		<tr><td colspan="4" align=center style="padding:0px;"><div class="norecords">No Prerequisites to Display</div></td></tr>
+		<?php
+		}//end if
+		?>
+	   </table>
+	</div>
+
+	<fieldset>
+		<legend>add new prerequisite product</legend>
+		<div class="preqAdd fauxP">
+			<label for="ds-partnumber">part number</label><br />
 			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
-			</div>
-		</td>
-		<td align="left" nowrap>
-			<div>
-			part name<br>
+		</div>
+		<div class="preqAdd fauxP">
+			<label for="ds-partname">part name</label><br />
 			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
-			</div>
-		</td>
-		<td align="right"><div><br>
-		<input name="command" type="submit" class="Buttons" value="add" style="width:40px;" /></div></td>
-	</tr>
-	</table>
+		</div>
+		<p id="addButtonP"><br />
+			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button> 
+		</p>
    </fieldset>
+   
    <fieldset>
-   	<legend>notes</legend>
-	<div class="small">
-		Prerequisites are products that must be purchased by the client
-		on a prior order before this product can be purchased.
-	</div>
-	<div class="small">
-		For example, if you run a membership organization, a membership (product) might be required
-		before any other products (membership magazine, patches) can be bought.
-	</div>
+		<legend>notes</legend>
+		<p class="notes">
+			Prerequisites are products that must be purchased by the client
+			on a prior order before this product can be purchased.
+		</p>
+		<p class="notes">
+			For example, if you run a membership organization, a membership (product) might be required
+			before any other products (membership magazine, patches) can be bought.
+		</p>
    </fieldset>
 	</form>
 </div>

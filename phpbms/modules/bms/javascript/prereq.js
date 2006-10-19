@@ -56,8 +56,20 @@ function populateLineItem(){
 }
 
 //This function set the line item to be deleted
-function deleteLine(theid,theitem){
-	var theform=theitem.form;
-	theform["deleteid"].value=theid;
+function deleteLine(theid){
+	var deleteid=getObjectFromID("deleteid");
+	var thecommand=getObjectFromID("command");
+	
+	deleteid.value=theid;
+	thecommand.value="delete";
+	thecommand.form.submit();
+	return true;
+}
+
+function addLine(){
+	var thecommand=getObjectFromID("command");
+	
+	thecommand.value="add";
+	thecommand.form.submit();
 	return true;
 }
