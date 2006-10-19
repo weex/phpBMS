@@ -45,10 +45,9 @@
 <head>
 <title><?php echo $pagetitle?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<?php require("../../head.php")?>
 <!-- These Javscript files and scripts are required for the query_searchdisplay and query_function files to
 	 work properly -->
-<script language="JavaScript" src="../../common/javascript/common.js" type="text/javascript" ></script>
 <script language="JavaScript" src="./javascript/quickview.js" type="text/javascript" ></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>

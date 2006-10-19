@@ -196,14 +196,10 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 <head>
 <title><?php echo $displayTable->thetabledef["displayname"] ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="common/javascript/common.js" type="text/javascript" ></script>
-<script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
+<?php require("head.php")?>
 
-<script language="JavaScript" src="common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
-<script language="JavaScript" src="common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
-<script language="JavaScript" src="common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
+<script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
 </head>
 <body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>

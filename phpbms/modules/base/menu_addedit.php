@@ -46,9 +46,8 @@
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<?php require("../../head.php")?>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="javascript/menu.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>

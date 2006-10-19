@@ -113,6 +113,15 @@ function removeEvent(obj, evType, fn, useCapture){
   }
 }
 
+function getChildHeights(theObj){
+	var totalHeight=0;
+	var i;
+	for(i=0;i<theObj.childNodes.length;i++)
+		if(theObj.childNodes[i].offsetHeight)
+			totalHeight+=theObj.childNodes[i].offsetHeight;
+	return totalHeight;	
+}
+
 function getViewportHeight() {
 	if (window.innerHeight!=window.undefined) {
 		return window.innerHeight;
@@ -209,17 +218,33 @@ function showModal(content,title,thewidth,thetop){
         tempDiv.innerHTML=content;
         showModal.box.appendChild(tempDiv);
 
-	document.body.appendChild(showModal.box);
-	document.body.appendChild(showModal.mask);
-	centerModal();
 	hideSelectBoxes();
+	showModal.boxFade=new fx.Opacity(showModal.box,{duration:100});
+	showModal.maskFade=new fx.Opacity(showModal.mask,{duration:100,onComplete:function(){showModal.boxFade.custom(0,1)}});
 
+	showModal.maskFadeOut=new fx.Opacity(showModal.mask,{duration:75,onComplete:function(){cleanupModal()}});
+	showModal.boxFadeOut=new fx.Opacity(showModal.box,{duration:75,onComplete:function(){showModal.maskFadeOut.custom(.7,0)}});
+
+	showModal.maskFade.setOpacity(0);
+	document.body.appendChild(showModal.mask);
+	
+	showModal.boxFade.setOpacity(0);
+	document.body.appendChild(showModal.box);
+	
+	showModal.maskFade.custom(0,0.7);
+			
+	centerModal();
+	
 	addEvent(window, "resize", centerModal);
 	window.onscroll=centerModal;
 }
 
 
 function closeModal(){
+	showModal.boxFadeOut.custom(1,0);
+}
+
+function cleanupModal(){
 	removeEvent(window,"resize",centerModal,true);
 	window.onscroll=null;
 

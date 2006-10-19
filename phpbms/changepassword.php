@@ -59,20 +59,23 @@ function updatePassword($newpassword,$id){
 		
 function showUserInfo($base){
 ?>
-<div>
-<div class=small>
-	current password<br>
+<p>
+	<label for="userCurPass">current password</label><br />
 	<input type="password" id="userCurPass" name="userCurPass" maxlength="32" style="width:99%"/>
-</div>
+</p>
 
-<div class=small>
-	new password<br>
-	<input type="password" id="userNewPass" name="userNewPass" maxlength="32" style="width:99%"/>
-	re-type new password<br>
-	<input type="password" id="userNew2Pass" name="userNew2Pass" maxlength="32" style="width:99%"/>
-</div>
-<div id="cpStatus" align="center" style="font-size:10px;">&nbsp;</div>
-<div align=right><input class="smallButtons" type="button" value="change password" onClick="changePassword('<?php echo $base?>')"/><input id="userCP" class="smallButtons" type="button" value="done" style="margin-left:3px;" onClick="closeModal()" /></div>
+<p>
+	<label for="userNewPass">new password</label><br />
+	<input type="password" id="userNewPass" name="userNewPass" maxlength="32" style="width:99%" />
+</p>
+<p>
+	<label for="userNew2Pass">re-type new password</label><br />
+	<input type="password" id="userNew2Pass" name="userNew2Pass" maxlength="32" style="width:99%" />
+</p>
+<p id="cpStatus" class="important">&nbsp;</p>
+<div align="right" class="box">
+	<input class="smallButtons" type="button" value="change" onClick="changePassword('<?php echo $base?>')"/>
+	<input id="userCP" class="smallButtons" type="button" value="done" onClick="closeModal()" />
 </div>
 <?php
 }// end funtion

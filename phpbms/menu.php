@@ -58,10 +58,8 @@ function getSubItems($parentid){
 	$menus=getMenu();
 	$nummenus=mysql_num_rows($menus);
 
-?><script language="JavaScript" src="<?php echo $_SESSION["app_path"]?>common/javascript/menu.js" type="text/javascript" ></script>
-<script language="JavaScript" src="<?php echo $_SESSION["app_path"]?>common/javascript/common.js" type="text/javascript" ></script>
-<script language="JavaScript" >var spinner=new Image;spinner.src=+"<?php echo $_SESSION["app_path"] ?>common/image/spinner.gif";</script>
-<div id="menu" >
+?>
+<div id="menu">
 	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
 
 	<div id="menuRighthandButtons">

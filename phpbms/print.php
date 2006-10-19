@@ -125,14 +125,9 @@ if (isset($_POST["command"])){
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<?php require("head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="common/javascript/common.js"></script>
 <script language="JavaScript" src="common/javascript/print.js"></script>
-
-<script language="JavaScript" src="common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
-<script language="JavaScript" src="common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
-<script language="JavaScript" src="common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
 
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>

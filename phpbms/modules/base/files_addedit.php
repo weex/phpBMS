@@ -62,8 +62,7 @@
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/common.js"></script>
+<?php require("../../head.php")?>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="../base/javascript/file.js"></script>
