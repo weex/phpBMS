@@ -55,6 +55,17 @@
 	.choiceListBlank{ font-style:italic;}
 	.choiceListModify{ background-color:#999999; font-weight:bold;}
 
+	#MLListP{float:left;padding-right:0}
+	#MLList{}
+	#MLAddDelP{float:right;padding-left:0}
+	#MLDelete, #MLInsert, #MLaddeditbutton{width:55px;}
+	#MLDelete{margin-bottom:2px;}
+	#MLlist, #MLaddedit{width:200px;}
+	#MLAddTextP{clear:both;float:left;padding-right:0}
+	#MLAddP{float:right;padding-left:0}
+	#MLStatus{clear:both;text-align:center}
+	
+
 /* ============================================================================== */
 /* Quick View                                                                     */
 /* ============================================================================== */

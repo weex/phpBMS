@@ -113,7 +113,7 @@
 <?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
-		<div class="box">
+	<div class="box">
 		<p class="timelineP">
 		   <label for="status">invoice status</label><br />
 		   <select name="status" id="status">
@@ -133,7 +133,7 @@
 			<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 		</p>
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
-		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" style=""></p>
+		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
 	</div>
 
    <div class="fauxP">   

@@ -105,13 +105,13 @@
 	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history: ".mysql_error($dblink)." --".$querystatement);
 
 	$numrows=mysql_num_rows($queryresult);
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <?php require("../../head.php")?>
-
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
 </head>
@@ -120,38 +120,30 @@
 	<h1><?php echo $pageTitle ?></h1>
 
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
-		<div class="box" style="vertical-align:middle;">
-			<table border=0 cellspacing="0" cellpadding="0">
-				<tr>
-					<td style="padding-right:20px;">
-					   status<br />
-					   <select name="status" style="">
-							<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
-							<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
-							<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected"?>>Orders</option>
-					   </select>					
-					</td>
-					<td nowrap>
-					   from<br />
-					   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:5px;" nowrap>
-						to<br />
-						<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:5px;"><br />
-				       <input name="command" type="submit" value="change view" class="smallButtons" style="">					
-					</td>
-					<td width="100%" align="right">
-						<br />
-						<input name="command" type="submit" value="print" class="Buttons" style="width:80px;">	
-					</td>
-				</tr>
-			</table>			
-		   
+		<div class="box">
+			<p class="timelineP">
+			   <label for="status">invoice status</label><br />
+			   <select name="status" id="status">
+					<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
+					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
+					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected"?>>Orders</option>
+			   </select>								
+			</p>
+			
+			<p class="timelineP">
+			   <label for="fromdate">from</label><br />
+			   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+			</p>
+	
+			<p class="timelineP">
+				to<br />
+				<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			</p>
+			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
+			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
 		</div>
 	</form>
-	<div>
+	<div class="fauxP">
 	<table border="0" cellpadding="0" cellspacing="0" class="querytable">
 		<tr>
 			<th align="left" nowrap class="queryheader" colspan="4">invoice</th>
@@ -203,5 +195,5 @@
 	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table>	
-	</div></div></body>
+	</div></div><?php include("../../footer.php")?></body>
 </html><?php }?>

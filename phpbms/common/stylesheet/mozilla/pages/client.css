@@ -13,3 +13,11 @@
 #address1,#shiptoaddress1{margin-bottom:2px;}
 
 .csz{float:left}
+
+/* ------------------------ */
+/* sales history            */
+/* ------------------------ */
+.timelineP{float:left}
+#printP{float:right;}
+#print{width:80px;}
+#changeTimelineP{}
