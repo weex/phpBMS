@@ -105,7 +105,7 @@
 		
 		function displayReportList(){
 			?>
-		   <select name="choosereport[]" id="choosereport" size="12" multiple style="width:205px;" onChange="switchReport(this)">
+		   <select name="choosereport[]" id="choosereport" size="12" multiple onchange="switchReport(this)">
 			<?PHP
 				if(mysql_num_rows($this->reports)){
 					mysql_data_seek($this->reports,0);
@@ -128,7 +128,7 @@
 	function showSaved($thequery,$selectname){
 		$numrows=mysql_num_rows($thequery);
 		?>
-		<select name="<?php echo $selectname?>" <?php if ($numrows<1) echo "disabled" ?> style="width:100%;">
+		<select name="<?php echo $selectname?>" id="<?php echo $selectname?>" <?php if ($numrows<1) echo "disabled" ?>>
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
 			<?php 

@@ -1,0 +1,25 @@
+#mainbody{width:585px;margin:0 auto;padding:0}
+
+#fsReportInformation{float:right;width:300px;margin-top:0px;}
+#name,#type{width:98%;color:black}
+#description{width:98%;height:72px;color:black;}
+
+#selectReportsDiv{margin-right:0;width:235px}
+
+#showoptions{width:100px}
+#showoptions span{display:inline;padding-left:15px;	color : #455372; 
+	font-weight:bold; }
+#showoptions:hover span{text-decoration:underline;}
+
+#moreoptions{display:none;}
+#therecords,#thesort{width:200px;}
+#showsavedsearches{display:none;float:right;width:320px}
+#savedsearches,#savedsort{width:98%}
+
+#savedsortdiv{display:none;float:right;width:320px;}
+#singlesortdiv{display:none;float:right;width:320px;}
+
+
+#printFooter{text-align:right}
+#print,#cancel{width:75px;}
+#choosereport{width:205px;height:170px;}

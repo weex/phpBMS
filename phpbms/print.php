@@ -120,29 +120,31 @@ if (isset($_POST["command"])){
 		break;
 	}
 }
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="common/javascript/common.js"></script>
 <script language="JavaScript" src="common/javascript/print.js"></script>
-<script language="JavaScript" >
- var buttonUp=new Image();
- buttonUp.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png";
- var buttonDown=new Image();
- buttonDown.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png";
-</script>
+
+<script language="JavaScript" src="../../common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
+
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>
 <body>
-<div class="bodyline" style="width:550px;margin-top:2px;">
+<div id="mainbody">
+<div class="bodyline">
 	<h1><?php echo $pageTitle ?><a name="top"></a></h1>
 	
 <form action="print.php" method="post" name="print">
 	<input type="hidden" name="backurl" value="<?php echo $_GET["backurl"]?>">
-	<fieldset style="float:right;width:300px;margin-top:0px;">
+
+	<fieldset id="fsReportInformation" >
 		<legend>report information</legend>
 		<?PHP 
 			if (mysql_num_rows($tablePrinter->reports)){
@@ -156,85 +158,104 @@ if (isset($_POST["command"])){
 				$therecord["description"]="";
 			}
 		?>
-		<label for="name">
+		<p>
 			name<br />
 			<input name="reportid" type="hidden" value="<?PHP echo $therecord["id"] ?>" />
 			<input name="reportfile" type="hidden" value="<?PHP echo htmlQuotes($therecord["reportfile"]) ?>" />
-			<input name="name" type="text" class="uneditable" id="name" style="font-weight:bold; width:98%" value="<?PHP echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="true" />
-		</label>
-		<label for="id">
+			<input name="name" type="text" class="uneditable important" id="name" value="<?PHP echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="true" />		
+		</p>
+		
+		<p>
 			type<br />
-			<input name="type" type="text" class="uneditable" id="type" value="<?PHP echo $therecord["type"] ?>" size="20" maxlength="64" readonly="true" style="width:98%" />
-		</label>
-		<label>
-		   description<br>
-		   <textarea name="description" cols="45" rows="3" readonly="readonly" id="description" style="width:98%;height:71px;" class="uneditable"><?PHP echo stripcslashes($therecord["description"]) ?></textarea>
-		</label>		
-	</fieldset><fieldset>
-		<legend>select report(<span style="text-transform:lowercase">s</span>)</legend>
-		<div>
+			<input name="type" type="text" class="uneditable" id="type" value="<?PHP echo $therecord["type"] ?>" size="20" maxlength="64" readonly="true" />
+		</p>
+		<p>
+			description<br />
+			<textarea name="description" cols="45" rows="3" readonly="readonly" id="description" class="uneditable"><?PHP echo stripcslashes($therecord["description"]) ?></textarea>
+		</p>
+	</fieldset>
+
+	<div id="selectReportsDiv">
+	<fieldset>
+		<legend>select report(s)</legend>
+		<p>available reports<br />
 			<?php $tablePrinter->displayReportList()?>
-		</div>
+		</p>
 	</fieldset>
+	</div>
 
-	<div align="left" style="padding-top:0px;padding-left:10px;"><a href="" onClick="showMoreOptions(this);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png" id="moreOptionsGraphic" align="absmiddle" alt="show"  width="16" height="16" border="0" /> more options</a></div>
-	<div id="moreoptions" style="margin:0px;padding:0px;display:none;">
-	<fieldset>
-		<legend>data</legend>
-		<label id="showsavedsearches" style="display:none;float:right;width:320px">
-			load saved search...<br />
-			<?php $tablePrinter->showSaved($tablePrinter->savedSearches,"savedsearches");?>
-		</label>
-		<label class="important" for="therecords">
-		from<br />
-		<select id="therecords" name="therecords" onChange="showSavedSearches(this);" style="width:200px;">
-			<option value="selected">selected records (<?php echo count($tablePrinter->theids) ?> record<?php if(count($tablePrinter->theids)>1) echo "s"?>)</option>
-			<option value="savedsearch">saved search...</option>
-			<?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><option value="all">all records in table</option><?php }?>
-		</select>
-		</label>
-	</fieldset>
-	<fieldset>
-		<legend>sort</legend>
-		<div id="savedsortdiv" style="display:none;float:right;width:320px;">
-			saved sort...<br />
-			<?php $tablePrinter->showSaved($tablePrinter->savedSorts,"savedsorts");?>
-		</div>
-		<div id="singlesortdiv" style="display:none;float:right;width:320px;">
-			field<br>
-			<?php $tablePrinter->showFieldSort()?>
-			<select name="order">
-				<option value="ASC" selected>Ascending</option>
-				<option value="DESC">Descending</option>
-			</select>			
-		</div>
-		<div class="important">
-			by<br />
-			<select name="thesort" onChange="showSortOptions(this)" style="width:200px;">
-				<option value="default" selected>report default</option>
-				<option value="single">single field</option>
-				<option value="savedsort">saved sort...</option>
-			</select>
-		</div>
-	</fieldset>
-	<fieldset class="small">
-		<legend>Notes</legend>
-		<div class="notes">
-			<strong>Window Pop-ups<br/></strong>Each report will display in its own window. If you have disabled
-			pop-ups within your browser's options or are running a third-party pop-up blocker, the report will not appear.
-		</div>
-		<div class="notes"><strong>Need More Reports?</strong><br/>
-		Need more reports, or want to cuztomize an existing report to meet your specific needs?  Contact <a href="http://www.kreotek.com" target="_blank">kreotek</a> for more information.
-		</div>
-	</fieldset>
+	<p><button id="showoptions" class="graphicButtons buttonDown" type="button"><span>more options</span></button></p>
+	
+	<div id="moreoptions">
+		<fieldset>
+			<legend>data</legend>
+			<p id="showsavedsearches">
+				<label for="savedsearches">load saved search...</label><br />
+				<?php $tablePrinter->showSaved($tablePrinter->savedSearches,"savedsearches");?>
+			</p>
+
+			<p>
+				<label class="important" for="therecords">from</label><br />
+				<select id="therecords" name="therecords" onChange="showSavedSearches(this);">
+					<option value="selected">selected records (<?php echo count($tablePrinter->theids) ?> record<?php if(count($tablePrinter->theids)>1) echo "s"?>)</option>
+					<option value="savedsearch">saved search...</option>
+					<?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><option value="all">all records in table</option><?php }?>
+				</select>
+			</p>
+		</fieldset>
+		
+		<fieldset>
+			<legend>sort</legend>
+			
+			<p id="savedsortdiv">
+				<label for="savedsorts">saved sort...</label><br />
+				<?php $tablePrinter->showSaved($tablePrinter->savedSorts,"savedsorts");?>
+			</p>
+			
+			<p id="singlesortdiv">
+				<label for="sortfield">field</label><br />
+				<?php $tablePrinter->showFieldSort()?>
+				<select name="order">
+					<option value="ASC" selected>Ascending</option>
+					<option value="DESC">Descending</option>
+				</select>			
+			</p>
+			<p class="important">
+				<label for="thesort">by</label><br />
+				<select id="thesort" name="thesort" onChange="showSortOptions(this)">
+					<option value="default" selected>report default</option>
+					<option value="single">single field</option>
+					<option value="savedsort">saved sort...</option>
+				</select>
+			</p>
+		</fieldset>
+		<fieldset>
+			<legend>customizng reports</legend>
+			<p class="notes">
+			Many reports feature a logo and your company infromation.  These can be set in the admin settings area. 
+			</p>
+			<p class="notes">
+			Need more reports, or want to cuztomize an existing report to meet your specific needs? <br />
+			if you are unfamiliar with PHP, or programming phpBMS, you can try visiting the
+			<a href="http://www.phpbms.org">phpBMS project site</a>, or visit <a href="http://kreotek.com">Kreotek's website</a> for more information.
+			</p>
+		</fieldset>
 	</div>	
+	<fieldset class="small">
+		<legend>Pop-Up Windows</legend>
+		<p class="notes">
+			Each report will display in its own window. If you have disabled
+			pop-ups within your browser's options or are running a third-party pop-up blocker, the report may not show.
+		</p>
+	</fieldset>
 
-    <div align="right" class="box">
-	 <input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-	 <input name="command" type="submit" class="Buttons" id="cancel" value="done" style="width:75px;">	 
-	 </div>
+	<p id="printFooter" class="box">
+		<input name="command" type="submit" class="Buttons" id="print" value="print" accesskey="p" title="print (alt+p)">
+		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)">	 
+	</p>
    </form>
 </div>
-<div style="margin:0px;padding:0px;width:550px;"><?php include("footer.php")?></div>
+<?php include("footer.php")?>
+</div>
 </body>
 </html><?PHP 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>

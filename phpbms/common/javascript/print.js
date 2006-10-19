@@ -33,10 +33,30 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 //Set up all switching array
 theReport=new Array();
 
+
+window.onload=function(){
+	var optionsDivs = new Array();
+	optionsDivs[optionsDivs.length]=getObjectFromID("moreoptions");
+
+	var optionsLinks = new Array();
+	optionsLinks[optionsLinks.length]=getObjectFromID("showoptions");
+
+	var optionsAccordion = new fx.Accordion(optionsLinks, optionsDivs, {opacity: false, duration:100, onComplete:function(){switchOptions()}});	
+}
+
+function switchOptions(){
+	var switchButton=getObjectFromID("showoptions");
+	if(switchButton.className=="graphicButtons buttonDown"){
+		switchButton.className="graphicButtons buttonUp"
+		switchButton.firstChild.innerHTML="less options";
+	} else {
+		switchButton.className="graphicButtons buttonDown"
+		switchButton.firstChild.innerHTML="more options";
+	}
+}
 function switchReport(theitem){
 	var theform=theitem.form;
 	for(var i=0;i<theReport.length;i++){
