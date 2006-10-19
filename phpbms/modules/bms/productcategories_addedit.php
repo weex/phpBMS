@@ -42,49 +42,56 @@
 	include("include/productcategories_addedit_include.php");
 	
 	$pageTitle="Product Category";
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">
-
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/productcategories.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
-	<div style="float:right;width:160px;">
+	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
-	<div style="margin-right:160px;">
-		<h1><?php echo $pageTitle ?></h1>
-	</div>
+	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	
-	<fieldset style="clear:both;float:right;width:150px;">
+	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" style="">
-		</label>
-		<label for="webenabled" style="text-align:center;margin-top:15px;"><?PHP field_checkbox("webenabled",$therecord["webenabled"])?>web enabled</label>
-		<label for="webdisplayname" style="margin-top:5px;">
-			web display name<br />
-			<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="22" maxlength="64" style="">
-		</label>
+		<p>
+			<label for="id">id</label><br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="">
+		</p>
+		
 	</fieldset>
-	<div style="margin:0px;margin-right:155px;padding:0px;">
+	
+	<div id="nameDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<div style="padding-top:0px;">
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important","style"=>"width:98%")); ?>
-			</div>
+			<p><br />
+				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+			</p>			
 		</fieldset>
-		<fieldset>
-			<legend><label for="description">description</label></legend>
-			<div style="padding-top:0px;"><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?PHP echo $therecord["description"]?></textarea></div>
-		</fieldset>
-		</div>
+	</div>
+
+	<fieldset id="fsDescription">
+		<legend><label for="description">description</label></legend>
+		<p><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?PHP echo $therecord["description"]?></textarea></p>
+	</fieldset>
+	
+	<fieldset>
+		<legend>web</legend>
+		<p>
+			<?PHP field_checkbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
+		</p>
+		<p>
+			<label for="webdisplayname">web display name</label><br />
+			<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64">
+		</p>
+	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
 	</form>
 </div>
