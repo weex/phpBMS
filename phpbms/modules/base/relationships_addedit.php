@@ -38,8 +38,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/admin_functions.php");
-
 	include("include/relationships_addedit_include.php");
 	
 	$pageTitle="Relationship";

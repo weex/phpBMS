@@ -1,0 +1,21 @@
+#topButtons{float:right;width:150px; text-align:right;}
+#h1Title{margin-right:155px}
+
+#phpbmsSplash{clear:both;background-color:white;height:40px;}
+#phpbmslogo{float:right;padding-top:9px;padding-right:14px;}
+#phpbmslogo a{
+	display:block;width:85px;height:22px;
+	background:url(../../../image/logo.png) no-repeat;
+}
+#phpbmslogo a span{display:none}
+#splashTitle{margin-right:100px;padding:3px 0 0 5px;}
+#splashTitle h2{padding:0;margin:0;border:0;}
+
+#graphicHolder{border:1px solid black; height:150px;width:400px;overflow:scroll;}
+#sstylesheet{width:150px;}
+
+.newModule{clear:both}
+
+#invoice_default_printinstruc{width:98%}
+
+#footerbox{text-align:right;clear:both;}

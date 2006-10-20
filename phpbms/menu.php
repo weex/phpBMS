@@ -78,15 +78,22 @@ function getSubItems($parentid){
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}
-				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onClick="expandMenu(this);return false;"  onMouseOver="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
+				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onclick="expandMenu(this);return false;" onmouseover="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
 					$submenustring.=$menurecord["id"].",";
 					$subitemsquery=getSubItems($menurecord["id"]);
 					if($subitemsquery){
+						$sep=false;
 						while($subrecord=mysql_fetch_array($subitemsquery)){
-							if($_SESSION["userinfo"]["accesslevel"]>=$subrecord["accesslevel"]){
-								if(strpos($subrecord["link"],"http")!==0)
-									$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
-							?><li><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php }//end if
+							if($subrecord["name"]=="----")
+								$sep=true;
+							else{
+								if($_SESSION["userinfo"]["accesslevel"]>=$subrecord["accesslevel"]){
+									if(strpos($subrecord["link"],"http")!==0)
+										$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
+								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php 
+									$sep=false;
+								}//end if
+							}//end if
 						}//end while
 					}//end if
 					?></ul><?php ;

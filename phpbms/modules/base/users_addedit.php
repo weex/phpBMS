@@ -38,7 +38,6 @@
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
-	include("include/admin_functions.php");
 	include("include/users_addedit_include.php");
 	
 	$pageTitle="User";

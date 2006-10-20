@@ -41,7 +41,7 @@
 		padding:6px 0 0 15px;
 		height:22px;
 	}
-	#menuBar li{ display:inline;}
+	#menuBar li{float:left;list-style-type:none;margin:0;padding:0;}
 	#menuBar a{
 		background-image: url("image/menulinks.png");
 		background-position:0px 0px;
@@ -55,8 +55,9 @@
 		text-decoration:none; 
 		background-color:#747F96;
 	}
-	
+	#menuBar .submenuitems li{float:none;}
 	.submenuitems{
+		clear:left;
 		display:none;
 		margin-top:3px;
 		padding:2px 2px 4px 2px;
@@ -73,6 +74,8 @@
 		font-size:11px;
 		color:#663366;
 	}
+	#menuBar .submenuitems .menuSep {border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;}
+	
 	#menuBar .submenuitems a:hover{
 		text-decoration:none; 
 		background-color:#663366;

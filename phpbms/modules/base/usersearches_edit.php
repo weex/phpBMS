@@ -39,8 +39,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/admin_functions.php");
-
 	include("include/usersearches_edit_include.php");
 	
 	$pageTitle="Saved Searches";

@@ -39,7 +39,6 @@ require_once("../../include/session.php");
 require_once("../../include/common_functions.php");
 require_once("../../include/fields.php");
 
-require_once("include/admin_functions.php");
 require_once("include/adminsettings_include.php");
 ?>
 
@@ -49,6 +48,7 @@ require_once("include/adminsettings_include.php");
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <?php require("../../head.php")?>
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
@@ -56,103 +56,119 @@ require_once("include/adminsettings_include.php");
 <script language="JavaScript" src="../../common/javascript/timepicker.js"></script>
 <script language="JavaScript" src="javascript/adminsettings.js"></script>
 </head>
-<body><?php include("../../menu.php")?>
-<?php admin_tabs("Settings");?><div class="bodyline">
+<body><?php include("../../menu.php")?><div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return processForm(this);">
 
-	<div style="float:right;width:150px;" align="right">
-			<input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" />	
-	</div>
-	<h1 style="margin-right:155px;"><?php echo $pageTitle ?></h1>
-	<div class="box" style="background-color:white;height:40px;" align="right">
-		<div style="float:right;padding-top:9px;padding-right:14px;"><a href="../../info.php"><img src="../../common/image/logo.png" width="85" height="22" border="0" /></a></div>
-		<div align="left">
-			<div style="padding:0px;" class="large important">phpBMS</div>
-			<div style="padding:0px;" class="small">Business Management Web Application</div>						
+	<div id="topButtons"><input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" /></div>
+	
+	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	
+	<div id="phpbmsSplash" class="box">
+		<div id="phpbmslogo">
+			<a href="../../info.php"><span>phpBMS logo</span></a>
+		</div>
+		<div id="splashTitle" class="small">
+			<h2>phpBMS</h2>
+			Business Management Web Application
 		</div>
 	</div>
+	
 	<fieldset>
 		<legend>general</legend>
-		<label for="sapplication_name">
-			application name<br/>
-			<?PHP field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>				
-		</label>
-		<div class="notes">
-			<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
-		</div>
-		<label for="srecord_limit">
-			record display limit<br />
+		
+		<p>		
+			<label for="sapplication_name">application name</label><br/>
+			<?PHP field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
+			<span class="notes">
+				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
+			</span>
+		</p>
+
+		<p>
+			<label for="srecord_limit">record display limit</label><br />
 			<?PHP field_text("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
-		</label>
-		<label for="sdefault_load_page">
-			default load page<br />
-			<?PHP field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>
-		</label>
+		</p>
+		
+		<p>
+			<label for="sdefault_load_page">default page</label><br />
+			<?PHP field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
+		</p>
 	</fieldset>
 	
 	<fieldset>
 		<legend>encryption seed</legend>
-		<div class="notes">
+		<p class="notes"><br />
 			<strong>Note:</strong>
-			The encryption seed is used to encrypt all passwords before storing them in the database. 
-			Changing the encryption seed will void all current passwords. By entering your admin password,
-			your password will be reencrypted with the new seed.  All other users passwords will be voided
+			The encryption seed is used to encrypt all passwords before storing them in the database.<br />
+			Changing the encryption seed will void all current passwords. By entering your admin password,<br />
+			your password will be reencrypted with the new seed.  All other users passwords will be voided<br />
 			and need to be reentered.
-		</div>
-		<label for="changeseed">
-			<input type="checkbox" value="1" name="changeseed" id="changeseed" onchange="toggleEncryptionEdit(this)" class="radiochecks"/> change seed
-		</label>
-		<label for="sencryption_seed">
-			encryption seed<br />
-			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>				
-		</label>
-		<label for="currentpassword">
-			current password<br />
+		</p>
+
+		<p>
+			<input type="checkbox" value="1" name="changeseed" id="changeseed" onchange="toggleEncryptionEdit(this)" class="radiochecks"/><label for="changeseed">change seed</label>
+		</p>
+
+		<p>
+			<label for="sencryption_seed">encryption seed</label><br />
+			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
+		</p>
+
+		<p>
+			<label for="currentpassword">current password</label><br />
 			<input type="password" name="currentpassword" id="currentpassword" size="32" readonly="readonly" class="uneditable"/>
-		</label>
-		<div>
+		</p>
+
+		<p>
 			<input type="hidden" id="doencryptionupdate" name="doencryptionupdate" value=""/>
 			<input type="submit" id="updateSettings3" name="command" class="Buttons" value="Update Encryption Seed" disabled="true" onclick="this.form['doencryptionupdate'].value=1"/>	
-		</div>
+		</p>
 	</fieldset>
 		
 	<fieldset>
 		<legend>company</legend>
-		<label for="scompany_name">
-			company name<br />
+		<p>		
+			<label for="scompany_name">company name</label><br />
 			<input id="scompany_name" name="scompany_name" type="text" size="40" maxlength="128" value="<?php echo htmlQuotes($_SESSION["company_name"]) ?>" />
-		</label>
-		<label for="scompany_address">
-			address<br />
+		</p>
+
+		<p>
+			<label for="scompany_address">address</label><br />
 			<input id="scompany_address" name="scompany_address" type="text" value="<?php echo htmlQuotes($_SESSION["company_address"]) ?>" size="40" maxlength="128" />
-		</label>
-		<label for="scompany_csz">
-			city, state/province and zip/postal code<br />
+		</p>
+		
+		<p>
+			<label for="scompany_csz">city, state/province and zip/postal code</label><br />
 			<input id="scompany_csz" name="scompany_csz" type="text" size="40" maxlength="128"  value="<?php echo htmlQuotes($_SESSION["company_csz"]) ?>" />
-		</label>
-		<label for="scompany_phone">
-			phone number<br />
+		</p>
+		
+		<p>
+			<label for="scompany_phone">phone number</label><br />
 			<input id="scompany_phone" name="scompany_phone" type="text" value="<?php echo htmlQuotes($_SESSION["company_phone"]) ?>" size="40" maxlength="128" />
-		</label>
+		</p>
 	</fieldset>
 	
 	<fieldset>
 		<legend>Display / Print</legend>
-		<div>Printed Logo</div>
-		<div style="border:1px solid black; height:150px;width:400px;overflow:scroll;">
-			<img src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&f=file&mf=type&r=1">
+
+		<div class="fauxP">
+			<br />Printed Logo
+			<div id="graphicHolder"><img src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&f=file&mf=type&r=1"></div>
 		</div>
-		<label for="printedlogo">
-			upload new logo file <em>(png format)</em><br />
-			<input id="printedlogo" name="printedlogo" type="file" size="40" accept="image/x-png" />
-		</label>
-		<div class="notes">
-			<strong>Note:</strong> This graphic is used on some reports.  On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.
-			PNG must be gray scale on at most 8 bits (256 levels), indexed color, or true color (24 bits). PNG cannot 
-			contain an alpha channel, or interlacing.
-		</div>
-		<label for="sstylesheet">
-			style<br />
+		
+		<p>
+			<label for="printedlogo">upload new logo file</label><em>(png format)</em><br />
+			<input id="printedlogo" name="printedlogo" type="file" size="64" accept="image/x-png" /><br />
+			<span class="notes">
+				<strong>Note:</strong> This graphic is used on some reports. <br />
+				On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.<br />
+				The file <strong>must be an 8-bit (256 color) non-interlaced PNG</strong>.
+			</span>
+		</p>
+		
+		
+		<p>
+			<label for="sstylesheet">web style set (stylesheets)</label><br />
 			<select id="sstylesheet" name="sstylesheet">
 			<?php 
 				$thedir="../../common/stylesheet";
@@ -167,8 +183,8 @@ require_once("include/adminsettings_include.php");
 				}
 					
 			?>
-			</select>
-		</label>
+			</select>		
+		</p>
 	</fieldset>
 
 	<?php 
@@ -179,7 +195,9 @@ require_once("include/adminsettings_include.php");
 		@ include "../".$modulerecord["name"]."/adminsettings.php";
 	}//end while 
 	?>
-	<div class="box" style="clear:both;" align=right><input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" /></div>
+	<div class="box" id="footerbox">
+		<input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" />
+	</div>
 	</form>
 </div>
 <?php include("../../footer.php"); ?></body>

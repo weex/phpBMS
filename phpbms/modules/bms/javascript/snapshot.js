@@ -42,7 +42,7 @@ initArray[initArray.length]=function(){
 	todaysOrdersLinks[todaysOrdersLinks.length]=getObjectFromID("todaysOrdersLink");
 
 
-	var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: false, duration:100, onComplete:function(){switchArrows("todaysOrdersLink")}});
+	var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysOrdersLink")}});
 	todaysOrdersAccordion.showThisHideOpen(todaysOrdersDivs[0]);
 
 
@@ -52,7 +52,7 @@ initArray[initArray.length]=function(){
 	var todaysClientsLinks = new Array();
 	todaysClientsLinks[todaysClientsLinks.length]=getObjectFromID("todaysClientsLink");
 
-	var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: false, duration:100, onComplete:function(){switchArrows("todaysClientsLink")}});
+	var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysClientsLink")}});
 	todaysClientsAccordion.showThisHideOpen(todaysClientsDivs[0]);
 }
 

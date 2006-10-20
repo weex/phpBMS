@@ -46,8 +46,8 @@ initArray[initArray.length]=function(){
 	var taskDivs = document.getElementsByClassName('tasksDivs');
 	var taskLinks = document.getElementsByClassName('tasksLinks');
 
-	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: false, duration:100});
-	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: false, duration:100});
+	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: true, duration:150});
+	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: true, duration:300});
 	taskAccordion.showThisHideOpen(taskDivs[2]);
 }
 
