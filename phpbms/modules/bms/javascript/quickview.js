@@ -34,7 +34,7 @@
  +-------------------------------------------------------------------------+
 */
 
-function pageInit(){
+window.onload= function(){
 	var namecid=getObjectFromID("namecid");
 	if(namecid.value!=""){
 		var viewButton=getObjectFromID("dolookup");
@@ -45,7 +45,11 @@ function pageInit(){
 		focusobject.focus();
 	}
 	selectedInvoice="";
-	selectedNote=""
+	selectedNote="";
+
+	var clientrecord=getObjectFromID("clientrecord");
+	comboFX=new fx.Combo(clientrecord,{height:true,opacity:true,duration:300})
+
 }
 
 function updateLookup(theselect){
@@ -103,7 +107,11 @@ function viewClient(base){
 		clientrecord.innerHTML="<div align=\"center\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";
 		var theURL=base+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURIComponent(base);
 		loadXMLDoc(theURL,null,false);
+		//clientrecord.style.visibility="hidden";
 		clientrecord.innerHTML=req.responseText;
+		var goalHeight=clientrecord.offsetHeight;
+		comboFX.hide();
+		comboFX.toggle();
 	}
 }
 

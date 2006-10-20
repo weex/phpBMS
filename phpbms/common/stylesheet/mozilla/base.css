@@ -37,6 +37,27 @@
 		background-position:right;
 		/* background-origin: border; Commented out as of firefox 1.5*/
 	}
+
+	.AFDropDowns{
+		position:absolute;
+		padding:2px 2px 4px 2px;
+		background-color:white;
+		border:1px solid #999999;
+	}
+	.AFDropDowns UL{margin:0;padding:0}
+	.AFDropDowns LI{margin:0;padding:0;list-style-type:none;}
+	.AFDropDowns a{
+		color:#663366;
+		white-space:nowrap;
+		display:block;
+		padding:3px 25px 3px 10px;
+		font-size:11px;
+	}
+	.AFDropDowns a:hover, .AFDropDowns a.AFDropDownItems{text-decoration:none;background:#663366;color:white;}
+	.AFDropDowns a span{font-size:10px;color:#999999;font-weight:normal;margin-left:5px;}
+
+
+	
 	.autofillDropDown{
 		border: 1px solid black;
 		padding:1px;

@@ -38,11 +38,12 @@
 		border-top:1px solid #8693ae;
 		border-bottom:2px solid #444a58;
 		text-transform:lowercase;
-		padding:6px 0 0 15px;
-		height:22px;
+		padding:0 0 0 15px;
+		height:27px;
 	}
 	#menuBar li{float:left;list-style-type:none;margin:0;padding:0;}
 	#menuBar a{
+		display:block;
 		background-image: url("image/menulinks.png");
 		background-position:0px 0px;
 		border-right:1px solid #5a6375;
@@ -73,6 +74,7 @@
 		padding:3px 25px 3px 10px;
 		font-size:11px;
 		color:#663366;
+		white-space:nowrap;
 	}
 	#menuBar .submenuitems .menuSep {border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;}
 	
