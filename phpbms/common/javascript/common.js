@@ -306,7 +306,7 @@ function displaySelectBoxes() {
 function modalAlert(text){
 	text=""+text;
 	text.replace("\n","<br />");
-	text+="<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
+	text+="<DIV align=\"right\"><button id=\"modalOK\" accesskey=\"o\" type=\"button\" class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	showModal(text,"Alert",250);
 }
 window.alert = function(txt) {modalAlert(txt);}

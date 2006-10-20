@@ -60,7 +60,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
 <?php product_tabs("General",$therecord["id"]);?><div class="bodyline">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>

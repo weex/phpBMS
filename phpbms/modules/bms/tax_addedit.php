@@ -51,7 +51,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div style="position:absolute;display:none;"><input type="submit" value=" " onClick="return false;" style="background-color:transparent;border:0;position:absolute;"></div>
+	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
 		<div style="float:right;width:160px;">
 			  <?php showSaveCancel(1); ?>
 		</div>

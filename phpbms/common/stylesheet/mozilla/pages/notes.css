@@ -1,0 +1,27 @@
+#topButtons{float:right;width:160px;}
+#topTitle{margin-right:170px;}
+
+#fsTop{clear:both;}
+#idP{float:right;}
+#thetype{width:150px;}
+#subject{width:99%}
+
+#leftSideDiv{float:left;width:320px;}
+#rightSideDiv{margin-left:328px;}
+
+#private{margin-left:15px;}
+
+#starttext,#endtext{padding-left:30px;}
+
+#thecompleted{padding:10px 7px 0px;}
+#ds-assignedtoid{width:96%}
+#assignedbydisplay{width:96%}
+
+#theassociated{display:none;}
+#assocarea,#location{width:98%}
+#category{width:95%}
+
+#repeatoptions{display:inline}
+.repeatWeekChecks{margin-right:10px;}
+#rpmobdt{margin-bottom:5px;}
+

@@ -34,17 +34,7 @@
  +-------------------------------------------------------------------------+
 */
 
-function returnFalse(){
-	return false;
-}
-
-function timeStamp(){
-	var theDate= new Date()
-	var theform=document.forms["record"]
-	theform["content"].value=theform["content"].value+"[ "+theform["username"].value+" - "+theDate.toLocaleString()+" ]"
-}
-
-function initialize(){
+window.onload=function(){
 	initializeOnClicks();
 	changeType()
 	completedCheck();
@@ -66,13 +56,22 @@ function initialize(){
 	if (thetitle.value=="") thetitle.focus();
 }
 
+function returnFalse(){
+	return false;
+}
+
+function timeStamp(){
+	var theDate= new Date()
+	var theform=document.forms["record"]
+	theform["content"].value=theform["content"].value+"[ "+theform["username"].value+" - "+theDate.toLocaleString()+" ]"
+}
+
 function changeType(){
 	var thetype=getObjectFromID("thetype");
 
 	var thestatus=getObjectFromID("thestatus");
 	var endtext=getObjectFromID("endtext");
 	var datediv=getObjectFromID("thedates");
-	var content=getObjectFromID("content");
 	var comptext=getObjectFromID("completedtext");
 	var compdiv=getObjectFromID("thecompleted");
 	var startcheck=getObjectFromID("startcheck");
@@ -86,7 +85,6 @@ function changeType(){
 		case "NT":
 			datediv.style.display="none";
 			compdiv.style.display="block";
-			content.rows=16;
 			comptext.innerHTML="read";
 			thestatus.style.display="none";
 			repeatdiv.style.display="none";
@@ -96,7 +94,6 @@ function changeType(){
 		case "TS":
 			datediv.style.display="block";
 			compdiv.style.display="block";
-			content.rows=24;
 			comptext.innerHTML="completed";
 			startcheck.disabled=false;
 			endcheck.disabled=false;
@@ -113,7 +110,6 @@ function changeType(){
 		case "EV":
 			datediv.style.display="block";
 			compdiv.style.display="block";
-			content.rows=27;
 			comptext.innerHTML="done";
 			startcheck.checked=true;
 			endcheck.checked=true;			
@@ -134,11 +130,16 @@ function changeType(){
 			datediv.style.display="none";
 			compdiv.style.display="none";
 			repeatdiv.style.display="none";			
-			content.rows=13;			
 			prviatecheck.disabled=true;
 			if(!theid.value) prviatecheck.checked=false;
 		break;
 	}
+	var leftside=getObjectFromID("leftSideDiv");
+	var timestamp=getObjectFromID("timeStampDiv");
+	var content=getObjectFromID("content");
+	var newHeight=leftside.offsetHeight-timestamp.offsetHeight-38;
+	content.style.height=newHeight+"px"
+	
 	dateChecked("start");
 	dateChecked("end");
 
