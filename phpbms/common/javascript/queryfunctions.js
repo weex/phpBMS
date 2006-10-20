@@ -41,7 +41,7 @@ window.onload=function(){
 	var sqlLinks = new Array();
 	sqlLinks[sqlLinks.length]=getObjectFromID("showSQLButton");
 
-	var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: false, duration:200, onComplete:function(){switchSqlButtons()}});
+	var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: true, duration:250, onComplete:function(){switchSqlButtons()}});
 	
 }
 function switchSqlButtons(){

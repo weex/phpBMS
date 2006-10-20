@@ -248,7 +248,7 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 		foreach($attributes as $attribute => $tvalue) 
 			if($attribute!="onChange") 
 				echo " ".$attribute."=\"".$tvalue."\"";				
-	?> onChange="formatDateField(this);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"]?>" /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-date.png" align="absmiddle" alt="pick date" width="16" height="16" border="0" /></button>
+	?> onchange="formatDateField(this);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"]?>" /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick date</span></button>
 	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
 	?><script language="JavaScript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function
@@ -265,7 +265,7 @@ function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
 	*/
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";				
-	?> /><button id="<?php echo $name?>Button" type="button" class="invisibleButtons" onClick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-time.png" align="absmiddle" alt="pick time" width="16" height="16" border="0" /></button>
+	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick time</span></button>
 	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
 	?><script language="JavaScript">timeArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function

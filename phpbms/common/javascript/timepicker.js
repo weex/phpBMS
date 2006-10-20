@@ -49,7 +49,8 @@ function showTP(base,timeFieldID){
 
 	showTP.box=document.createElement("div");
 	showTP.box.className="bodyline";
-	showTP.box.style.siplay="block";
+	showTP.box.style.diplay="block";
+	showTP.box.style.padding="0";
 	showTP.box.style.position="absolute";
 	showTP.box.style.top=thetop + "px";
 	showTP.box.style.left=theleft + "px";

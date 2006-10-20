@@ -57,7 +57,7 @@
 	?><table class="dp" cellspacing="0" cellpadding="0" border=0>
 	<tr>
 		<td colspan=6 class="dpHead"><?php echo date("F, Y",$thedate)?></td>
-		<td class="dpHead"><button type="buttton" class="invisibleButtons" id="DPCancel" onClick="closeDPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>
+		<td class="dpHead"><button type="button" class="graphicButtons buttonX" id="DPCancel" onclick="closeDPBox();"><span>x</span></button></td>
 	</tr>
 	<tr>
 		<td class="dpButtons" onClick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo $month?>','<?php echo $year-1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;&lt;</td>

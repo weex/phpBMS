@@ -44,7 +44,7 @@ window.onload=function(){
 	var optionsLinks = new Array();
 	optionsLinks[optionsLinks.length]=getObjectFromID("showoptions");
 
-	var optionsAccordion = new fx.Accordion(optionsLinks, optionsDivs, {opacity: false, duration:100, onComplete:function(){switchOptions()}});	
+	var optionsAccordion = new fx.Accordion(optionsLinks, optionsDivs, {opacity: true, duration:250, onComplete:function(){switchOptions()}});	
 }
 
 function switchOptions(){
