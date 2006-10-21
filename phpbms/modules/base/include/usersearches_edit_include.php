@@ -161,7 +161,8 @@ else
 				if(!$username) $username="global";
 				$createdby="";
 				$modifiedby="";
-				$statusmessage="Record Created";
+				$statusmessage="<div style=\"float:right;margin-top:-3px;\"><button type=\"button\" class=\"smallButtons\" onclick=\"document.location='".$_SERVER["REQUEST_URI"]."'\">add new</button></div>";
+				$statusmessage.="Record Created";
 			}
 		break;
 	}
