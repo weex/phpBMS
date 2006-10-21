@@ -39,7 +39,7 @@
 	require_once("./include/quickview_include.php");
 	require_once("../../include/fields.php");
 	
-	$pagetitle="Quick View";
+	$pagetitle="Client/Prospect Quick View";
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -50,12 +50,6 @@
 <script language="JavaScript" src="./javascript/quickview.js" type="text/javascript" ></script>
 <script language="JavaScript" src="../../common/javascript/fields.js"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js"></script>
-<script language="javascript">
-editButton = new Image();
-editButton.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png";
-editButtonDisabled = new Image();
-editButtonDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png";
-</script>
 </head>
 <body>
 <?php include("../../menu.php");?>
@@ -63,10 +57,8 @@ editButtonDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?ph
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
 
-	<fieldset>
-		<legend>Look Up Client/Prospect</legend>
 			<p id="lookupByP">
-				<label for="lookupby">by</label><br />
+				<label for="lookupby">look up by</label><br />
 				<select id="lookupby" onchange="updateLookup(this)" tabindex="5">
 					<option value="namecid">name</option>
 					<option value="emailcid">e-mail address</option>
@@ -118,7 +110,6 @@ editButtonDisabled.src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?ph
 					<script language="JavaScript">document.forms["record"]["mainaddresscid"].onchange=updateViewButton;</script>
 				</p>
 			</div>
-	</fieldset>
 </div>
 <div id="clientrecord"></div>
 </form>

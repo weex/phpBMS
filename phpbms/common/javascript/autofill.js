@@ -167,7 +167,6 @@
 					theURL=theURL+"&xt=" +xtrafield;
 					theURL=theURL+"&gf=" +getfield;
 					theURL=theURL+"&wc=" +whereclause;
-										
 					loadXMLDoc(theURL,null,false);
 					if(req.responseXML)
 						response = req.responseXML.documentElement;
@@ -194,8 +193,8 @@
 				if(thediv){
 					if(thediv.hasfocus){
 						// this means the focus is in the dropdown
-						setTimeout("removeDropDown(\""+basename+"\")",2000)
-					}
+						setTimeout("removeDropDown(\""+basename+"\")",1000);
+					} else
 					removeDropDown(basename);
 				} 
 
@@ -246,9 +245,9 @@
 					theA.href=displays[i];
 					theA.onclick=function(){dropDownItemClick(this);return false;}
 					theA.onmouseover=function(){dropDownItemOver(this)}
-					theInner=displays[i];
+					theInner=displays[i].htmlEntities();
 					if(extras[i])
-						theInner+="<br /><span>"+extras[i]+"</span>"
+						theInner+="<br /><span>"+extras[i].htmlEntities()+"</span>"
 					theA.innerHTML=theInner;
 
 					theLI.appendChild(theA)

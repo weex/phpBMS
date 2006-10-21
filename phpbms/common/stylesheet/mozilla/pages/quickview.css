@@ -4,3 +4,28 @@
 #lookupWhatP{margin:0 154px 0 108px;}
 .lookupWhats{width:99%}
 .disabledP{display:none;}
+
+#theDetails{margin-top:15px;}
+#rightSideDiv{float:right;width:300px;margin-top:0;}
+#leftSideDiv{margin-right:328px;padding-top:1px;}
+
+H2{margin-top:5px;}
+
+.RDNames{float:left; width:100px;text-align:right;}
+.RDData{margin-left:120px;}
+.Uppers{font-size:15px;}
+#RDMemo{height:100px;overflow:auto;}
+
+#editClient{display:block;width:75px;float:right;}
+
+#endClient{clear:both;}
+
+.salesNotesButtons{
+	float:right;
+	margin-top:4px;
+	width:46px;
+	text-align:left;
+}
+
+#salesTable{height:190px;overflow:auto;}
+#notesTable{height:150px;overflow:auto;}

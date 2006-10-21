@@ -40,11 +40,12 @@
 
 	.AFDropDowns{
 		position:absolute;
+	}
+	.AFDropDowns UL{margin:0;
 		padding:2px 2px 4px 2px;
 		background-color:white;
 		border:1px solid #999999;
 	}
-	.AFDropDowns UL{margin:0;padding:0}
 	.AFDropDowns LI{margin:0;padding:0;list-style-type:none;}
 	.AFDropDowns a{
 		color:#663366;

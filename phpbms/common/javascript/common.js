@@ -34,6 +34,28 @@
  +-------------------------------------------------------------------------+
 */
 
+// php equivilant to htmlEntitties
+String.prototype.htmlEntities = function()
+{	
+	newString = this;
+	var chars = new Array();
+	var charCode
+	for(i=0;i<newString.length;i++){
+	  charCode=newString.charCodeAt(i);
+	  if(charCode==38 || charCode==60 || charCode==62 || charCode==96 || charCode>125)
+		chars[chars.length]=newString[i]
+	}
+	
+	for (var i = 0; i < chars.length; i++)
+	{
+		myRegExp = new RegExp();
+		myRegExp.compile(chars[i],'g')
+		newString = newString.replace (myRegExp, '&#' + chars[i].charCodeAt(0) + ';');
+	}	
+	
+	return newString;
+}
+
 //Returns an object given an id
 function getObjectFromID(id){
 	var theObject;

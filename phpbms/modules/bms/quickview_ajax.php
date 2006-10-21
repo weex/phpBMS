@@ -42,11 +42,12 @@ require("../../include/fields.php");
 function showClient($clientid,$basepath){
 	global $dblink;
 	
-	$querystatement="SELECT clients.id, clients.firstname,
+	$querystatement="SELECT clients.id, clients.firstname, clients.lastname, clients.company,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
 					clients.type, clients.inactive, clients.category,
-					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
-					clients.workphone,clients.homephone,clients.mobilephone,clients.email,clients.webaddress,clients.comments
+					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,clients.country,
+					clients.shiptoaddress1,clients.shiptoaddress2,clients.shiptocity,clients.shiptostate,clients.shiptopostalcode,clients.shiptocountry,
+					clients.workphone,clients.homephone,clients.mobilephone,clients.fax, clients.email,clients.webaddress,clients.comments
 					FROM clients WHERE id=".$clientid;
 					
 	$queryresult=mysql_query($querystatement,$dblink);
@@ -67,131 +68,182 @@ function showClient($clientid,$basepath){
 	$noteresult=mysql_query($querystatement,$dblink);
 	if(!$noteresult) reportError(300,"Could Not Retrieve Notes: ".mysql_error($dblink)." -- ".$querystatement);
 ?>
-<div class="bodyline" style="margin-top:15px;">
-<h1><?php echo htmlQuotes($therecord["name"])?> <button type="button" class="invisibleButtons" onClick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button></h1>
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr>
-		<td valign=top>
-			<fieldset>
-				<legend>attributes</legend>
-				<label for="detailsCategory" style="float:right">
-					category<br />
-					<input id="detailsCategory" type="text" size="35" readonly="readonly" class="uneditable" value="<?php echo htmlQuotes($therecord["category"])?>">					
-				</label>
-				<label for="detailsType" >type<br />
-					<?php if ($therecord["inactive"]) $therecord["type"]="inactive ".$therecord["type"];?>
-					<input id="detailsType" type="text" size="20" readonly="readonly" class="uneditable important" value="<?php echo $therecord["type"]?>">					
-				</label>				
-			</fieldset>
-			<fieldset>
-				<legend><label for="detailsAddress" style="padding:0px;">address</label></legend>
-				<?php 
-					$theaddress=$therecord["address1"]."\n";
-					if($therecord["address2"]) $theaddress.=$therecord["address2"]."\n";
-					if($therecord["city"]) $theaddress.=$therecord["city"].", ";
-					$theaddress.=$therecord["state"]." ";
-					$theaddress.=$therecord["postalcode"];		
-				?>
-				<textarea id="detailsAddress" readonly="readonly" class="uneditable" rows="3" cols="40" style="width:97%"><?php echo $theaddress?></textarea>
-			</fieldset>
-			<fieldset>
-				<legend>contact</legend>
-				<label for="detailsWorkPhone" style="float:left;">
-					work phone<br />
-			<input id="detailsWorkPhone" type="text" size="18" readonly="readonly" class="uneditable" value="<?php echo htmlQuotes($therecord["workphone"])?>">
-		</label>
-		<label for="detailsHomePhone" style="float:left;">
-			home phone<br />
-			<input id="detailsHomePhone" type="text" size="18" readonly="readonly" class="uneditable" value="<?php echo htmlQuotes($therecord["homephone"])?>">		
-		</label>
-		<label for="detailsMobilePhone" style="">
-			mobile phone<br />
-			<input id="detailsMobilePhone" type="text" size="18" readonly="readonly" class="uneditable" value="<?php echo htmlQuotes($therecord["mobilephone"])?>">		
-		</label>
-		<label for="detailsEmail" style="">
-			e-mail address<br />
-			<?PHP field_email("detailsEmail",$therecord["email"],Array("readonly"=>"readonly","size"=>"63","class"=>"uneditable")); ?>
-		</label>
-		<label for="detailsWeb" style="">
-			web address<br />
-			<?PHP field_web("detailsWeb",$therecord["webaddress"],Array("readonly"=>"readonly","size"=>"63","class"=>"uneditable")); ?>
-		</label>
-		
-	</fieldset>
-	<fieldset>
-		<legend><label for="detailsMemo" style="padding:0px;">Memo</label></legend>
-		<textarea id="detailsMemo" readonly="readonly" class="uneditable" rows="5" cols="40" style="width:97%"><?php echo $therecord["comments"]?></textarea>
-	</fieldset>
-		</td>
-		<td valign=top width="300px;">
-			<?php if($therecord["type"]!="prospect") {?>
-			<fieldset style="">
-				<legend>quotes / orders / Invoices</legend>
-				<div style="padding:0px;padding-right:5px;" align="right">
-					<button id="invoiceedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
-				</div>
-				<div style="height:188px;overflow:auto" class="smallQueryTableHolder">
-					<?php if(!mysql_num_rows($invoiceresult)) {?>
-						<div class="small"><em>no records</em></div>
-					<?php } else {?>
-					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-						<tr>
-							<th align="left">Type</th>
-							<th align="left">Date</th>
-							<th align="left">ID</th>
-							<th align="right" width="100%">Total</th>
-						</tr>
-					<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
-							if($invoicerecord["type"]=="VOID")
-								$invoicerecord["totalti"]="-----"
-					?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
-						<td><?php echo $invoicerecord["type"]?></td>
-						<td><?php echo dateFormat($invoicerecord["thedate"])?></td>
-						<td><?php echo $invoicerecord["id"]?></td>
-						<td align="right"><?php echo currencyFormat($invoicerecord["totalti"])?></td>
-					</tr>
-					<?php }?></table><?php }?>
+<div class="bodyline" id="theDetails">
+<h1><?php echo htmlQuotes($therecord["name"])?></h1>
+
+<div id="rightSideDiv" class="box">
+	<?php if($therecord["type"]!="prospect") {?>
+
+	<div class="salesNotesButtons">
+		<button id="invoiceedit" type="button" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><span>edit</span></button>
+		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><span>new</span></button>			
+	</div>
 	
-				</div>
-			</fieldset>
-			<?php }?>
-			<fieldset>
-				<legend>notes / tasks / events</legend>
-				<div style="padding:0px;padding-right:5px;" align="right">
-					<button id="noteedit" type="button" class="invisibleButtons" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit-disabled.png" align="absmiddle" alt="edit" width="16" height="16" border="0" /></button><button type="button" class="invisibleButtons" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-plus.png" align="absmiddle" alt="new" width="16" height="16" border="0" /></button>
-				</div>
-				<div style="height:140px;overflow:auto" class="smallQueryTableHolder">
-					<?php if(!mysql_num_rows($noteresult)) {?>
-						<div class="small"><em>no records</em></div>
-					<?php } else {?>
-					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-						<tr>
-							<th align="center">!</th>
-							<th align="left">type</th>
-							<th align="left">category</th>
-							<th align="left" width="100%">title</th>
-							<th align="center">done</th>
-						</tr>
-					<?php while($noterecord=mysql_fetch_array($noteresult)) {
-							if(strlen($noterecord["subject"])>17)
-								$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
-							if(strlen($noterecord["category"])>17)
-								$noterecord["category"]=substr($noterecord["category"],0,17)."...";
-					?><tr onClick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
-						<td align=center><?php echo $noterecord["importance"]?></td>
-						<td><?php echo $noterecord["type"]?></td>
-						<td><?php echo $noterecord["category"]?></td>
-						<td><?php echo $noterecord["subject"]?></td>
-						<td align="center"><?php echo booleanFormat($noterecord["completed"])?></td>
-					</tr>
-					<?php }?></table><?php }?>	
-				</div>
-			</fieldset>
-					</td>
-	</tr>
-</table>
+	<h2>Sales</h2>
+	
+	<div class="fauxP">
+	<div id="salesTable" class="smallQueryTableHolder">
+		<?php if(!mysql_num_rows($invoiceresult)) {?>
+			<div class="small"><em>no records</em></div>
+		<?php } else {?>
+		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+			<tr>
+				<th align="left">ID</th>
+				<th align="left">Type</th>
+				<th align="left">Date</th>
+				<th align="right" width="100%">Total</th>
+			</tr>
+		<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
+				if($invoicerecord["type"]=="VOID")
+					$invoicerecord["totalti"]="-----"
+		?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
+			<td><?php echo $invoicerecord["id"]?></td>
+			<td><?php echo $invoicerecord["type"]?></td>
+			<td><?php echo dateFormat($invoicerecord["thedate"])?></td>
+			<td align="right"><?php echo currencyFormat($invoicerecord["totalti"])?></td>
+		</tr>
+		<?php }?></table><?php }?>	
+	</div>
+	</div>
+	<?php }?>
+	
+	
+	
+	<div class="salesNotesButtons">
+		<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><span>edit</span></button>
+		<button type="button" class="graphicButtons buttonNew" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><span>new</span></button>
+	</div>
+	
+	<h2>Notes</h2>
+	
+	<div class="fauxP">
+	<div id="notesTable"  class="smallQueryTableHolder">
+		<?php if(!mysql_num_rows($noteresult)) {?>
+			<div class="small"><em>no records</em></div>
+		<?php } else {?>
+		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+			<tr>
+				<th align="center">!</th>
+				<th align="left">type</th>
+				<th align="left">category</th>
+				<th align="left" width="100%">title</th>
+				<th align="center">done</th>
+			</tr>
+		<?php while($noterecord=mysql_fetch_array($noteresult)) {
+				if(strlen($noterecord["subject"])>17)
+					$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
+				if(strlen($noterecord["category"])>17)
+					$noterecord["category"]=substr($noterecord["category"],0,17)."...";
+		?><tr onClick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
+			<td align=center><?php echo $noterecord["importance"]?></td>
+			<td><?php echo $noterecord["type"]?></td>
+			<td><?php echo $noterecord["category"]?></td>
+			<td><?php echo $noterecord["subject"]?></td>
+			<td align="center"><?php echo booleanFormat($noterecord["completed"])?></td>
+		</tr>
+		<?php }?></table><?php }?>
+	</div>
+	</div>
+</div>
+
+<div id="leftSideDiv" class="box">
+		
+		<h2>Name</h2>
+		<button id="editClient" type="button" onclick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')" class="Buttons">edit</button>
+		<?php if($therecord["firstname"] || $therecord["lastname"]) {?>
+		<p class="RDNames">name:</p>
+		<p class="RDData Uppers important"><?php echo htmlentities($therecord["firstname"]." ".$therecord["lastname"])?></p>
+		<?php } ?>
+		<?php if($therecord["company"]){?>
+		<p class="RDNames">company:</p>
+		<p class="RDData Uppers important"><?php echo htmlentities($therecord["company"])?></p>
+		<?php } ?>
+
+		<p class="RDNames"><br/>type:</p>
+		<p class="RDData important"><br/><?php echo htmlentities($therecord["type"])?></p>
+
+		<?php if($therecord["category"]){?>
+		<p class="RDNames">category:</p>
+		<p class="RDData important"><?php echo htmlentities($therecord["category"])?></p>
+		<?php } ?>
+
+		<h2>Address</h2>
+		<p class="RDNames">main:</p>
+		<p class="RDData important"><?php 
+		
+			$theaddress=htmlentities($therecord["address1"])."<br />";
+			if($therecord["address2"]) $theaddress.=htmlentities($therecord["address2"])."<br />";
+			if($therecord["city"]) $theaddress.=htmlentities($therecord["city"]).", ";
+			$theaddress.=htmlentities($therecord["state"])." ";
+			$theaddress.=htmlentities($therecord["postalcode"])." ";
+			$theaddress.=htmlentities($therecord["country"]);
+			
+			echo $theaddress?>
+		</p>
+		
+		<?php 
+		
+		$theaddress=htmlentities($therecord["shiptoaddress1"])."<br />";
+		if($therecord["shiptoaddress2"]) $theaddress.=htmlentities($therecord["address2"])."<br />";
+		if($therecord["shiptocity"]) $theaddress.=htmlentities($therecord["city"]).", ";
+		$theaddress.=htmlentities($therecord["shiptostate"])." ";
+		$theaddress.=htmlentities($therecord["shiptopostalcode"])." ";
+		$theaddress.=htmlentities($therecord["shiptocountry"]);
+
+		if($theaddress!="<br />  "){?>
+		<p class="RDNames">shipping:</p>
+		<p class="RDData important"><?php echo $theaddress?></p>
+		<?php } ?>
+
+		<h2>Contact</h2>
+
+		<?php if($therecord["workphone"]){?>
+		<p class="RDNames">work phone:</p>
+		<p class="RDData important"><?php echo htmlentities($therecord["workphone"])?></p>
+		<?php } ?>
+
+		<?php if($therecord["homephone"]){?>
+		<p class="RDNames">home phone:</p>
+		<p class="RDData important"><?php echo htmlentities($therecord["homephone"])?></p>
+		<?php } ?>
+
+		<?php if($therecord["mobilephone"]){?>
+		<p class="RDNames">mobile phone:</p>
+		<p class="RDData important"><?php echo htmlentities($therecord["mobilephone"])?></p>
+		<?php } ?>
+
+		<?php if($therecord["fax"]){?>
+		<p class="RDNames">fax:</p>
+		<p class="RDData important"><?php echo htmlentities($therecord["fax"])?></p>
+		<?php } ?>
+		
+		<p>&nbsp;</p>
+		
+		<?php if($therecord["email"]){?>
+		<p class="RDNames">e-mail addres:</p>
+		<p class="RDData important">
+			<button type="button" class="graphicButtons buttonEmail" onclick="document.location='mailto:<?php echo $therecord["email"]?>'"><span>send email</span></button>
+			&nbsp;<a href="mailto:<?php echo $therecord["email"]?>"><?php echo htmlentities($therecord["email"])?></a>
+		</p>
+		<?php } ?>
+
+		<?php if($therecord["webaddress"]){?>
+		<p class="RDNames">web site:</p>
+		<p class="RDData important">
+			<button type="button" class="graphicButtons buttonWWW" onclick="window.open('<?php echo $therecord["webaddress"]?>')"><span>visit site</span></button>
+			&nbsp;<a href="<?php echo $therecord["webaddress"]?>" target="_blank"><?php echo htmlentities($therecord["webaddress"])?></a>
+		</p>
+		<?php } ?>
+
+		<?php if($therecord["comments"]){?>
+		<h2>Memo</h2>
+		<p id="RDMemo"><?php echo str_replace("\n","<br />",htmlentities($therecord["comments"]))?></p>
+		<?php } ?>
+	</div>
+	<div id="endClient"></div>
 </div>
 <?php 
+include("../../footer.php");
 }//end function
 
 	//=================================================================================================

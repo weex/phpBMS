@@ -150,7 +150,7 @@ function selectEdit(thetr,id,noteinvoice){
 		theSelected=selectedInvoice;
 	
 	if(theSelected==id){
-		theeditbutton.firstChild.src=editButtonDisabled.src;
+		theeditbutton.className="graphicButtons buttonEditDisabled";
 		theSelected="";
 		thetr.className=""
 	} else {
@@ -161,7 +161,7 @@ function selectEdit(thetr,id,noteinvoice){
 		}
 		thetr.className="smallQueryTableSelected";
 		theSelected=id;
-		theeditbutton.firstChild.src=editButton.src;
+		theeditbutton.className="graphicButtons buttonEdit";
 	}
 	if(noteinvoice=="note")
 		selectedNote=theSelected;
