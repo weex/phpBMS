@@ -8,7 +8,7 @@
 .tiny { font-size : 10px}
 .mono {font-family:'Courier New', Courier, mono;}
 
-.standout,#statusmessage{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
+.standout{ background-color:#0B63A2; color:white; font-weight:bold; font-size:15px; padding:4px;}
 
 .notes {color:#DF0005}
 

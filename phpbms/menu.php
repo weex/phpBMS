@@ -103,6 +103,19 @@ function getSubItems($parentid){
 		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
 	?></ul></div><script language="JavaScript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
 <?PHP if (isset($statusmessage)) {?>
-<div id="statusmessage"><?PHP echo $statusmessage ?></div>
+<div id="statusmessage">
+	<div id="SMLeft">
+		<div id="SMText">
+			<?PHP echo $statusmessage ?>
+		</div>
+	</div>
+</div>
+<script language="javascript">
+	var statusM=getObjectFromID("statusmessage");
+	var SMAni=new fx.Combo(statusM,{opacity:false,duration:500});
+	SMAni.hide();
+	statusM.style.display="block";
+	SMAni.toggle();
+</script>
 <?PHP } // end if ?>
 	

@@ -56,20 +56,6 @@
 	.AFDropDowns a:hover, .AFDropDowns a.AFDropDownItems{text-decoration:none;background:#663366;color:white;}
 	.AFDropDowns a span{font-size:10px;color:#999999;font-weight:normal;margin-left:5px;}
 
-
-	
-	.autofillDropDown{
-		border: 1px solid black;
-		padding:1px;
-		position:absolute;
-		background-color:white;		
-	}
-	.autofillDropDown td{font-size:11px; padding:1px;}
-	.af-choice{font-weight:bold}
-	.af-extra{color:#999999;}
-	.af-highlighted{background-color:#666666;}
-	.af-highlighted td{color:white;}
-
 /* ============================================================================== */
 /* Choice List                                                                    */
 /* ============================================================================== */
