@@ -59,7 +59,7 @@
 <html>
 <head>
 <title><?php echo $therecord["displayname"]?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 <!--
 BODY,TH,TD{

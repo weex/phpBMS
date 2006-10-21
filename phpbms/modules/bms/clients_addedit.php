@@ -49,7 +49,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="javascript/client.js"></script>

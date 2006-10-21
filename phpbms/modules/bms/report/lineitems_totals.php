@@ -210,7 +210,7 @@ class totalReport{
 	?>
 <head>
 <title>Invoice Totals</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 <!--
 BODY,TH,TD,H1,H2{
@@ -277,7 +277,7 @@ if(isset($_POST["command"])){
 <html>
 <head>
 	<title>Line Item Totals</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<?php require("../../../head.php")?>
 	<script language="javascript">
 		function moveItem(id,direction,theform){

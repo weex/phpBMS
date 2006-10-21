@@ -257,7 +257,7 @@ function displayQueryHeader(){
 <html>
 <head>
 <title>Choose</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <script language="JavaScript">
 function sendInfo(name,thevalue,thedisplay){
 	//stupid browser incompatibilities

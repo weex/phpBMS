@@ -43,12 +43,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title><?PHP echo $_SESSION["application_name"]; ?> - Login Page</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />	
 	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/login.css" rel="stylesheet" type="text/css" />
-	<script language="javascript" src="common/javascript/common.js"></script>
-	<script language="javascript" src="common/javascript/login.js"></script>
+	<script language="javascript" src="common/javascript/common.js" type="text/javascript"></script>
+	<script language="javascript" src="common/javascript/login.js" type="text/javascript"></script>
 </head>
 <body onload="setMainFocus()">
 	<div id="loginbox" class="bodyline" >

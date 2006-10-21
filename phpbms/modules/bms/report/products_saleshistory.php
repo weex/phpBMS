@@ -168,7 +168,7 @@ class salesHistoryReport{
 	?>
 <head>
 <title>Product Sales History</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 <!--
 BODY,TH,TD,H1,H2,h3{
@@ -250,7 +250,7 @@ if(isset($_POST["command"])){
 <html>
 <head>
 	<title>Product Sales History </title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<?php require("../../../head.php")?>
 	<script language="javascript" src="../../../common/javascript/common.js"></script>
 <script language="javascript" src="../../../common/javascript/fields.js"></script>
