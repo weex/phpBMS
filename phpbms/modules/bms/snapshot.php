@@ -150,7 +150,7 @@ if ($_SESSION["userinfo"]["accesslevel"]>=20) {?>
 	</div>
 		
 	<button class="graphicButtons buttonDown" id="todaysClientsLink"><span>Up</span></button>	
-	<h2><a href="../../search.php?id=2">Recently Added Clients/Propects</a></h2>
+	<h2><a href="../../search.php?id=2">Recently Added Clients/Prospects</a></h2>
 		<div id="todaysClients"><div class="fauxP"><?php showTodaysClients($interval)?></div></div>
 </div>
 <?php }?>				
