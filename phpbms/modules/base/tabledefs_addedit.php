@@ -74,15 +74,15 @@
 		</label>
 		<label for="type">
 			type<br />
-			<?PHP basic_choicelist("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>
+			<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>
 		</label>
 		<label for="ds-moduleid">
 			module<br />
-			<?PHP autofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32","style"=>"width:98%",true,"Module is requred.")) ?>
+			<?php autofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32","style"=>"width:98%",true,"Module is requred.")) ?>
 		</label>
 		<label for="deletebutton">
 			delete button name<br />
-			<input id="deletebutton" name="deletebutton" type="text" value="<?PHP echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20">
+			<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20">
 		</label>		
 	</fieldset>
 
@@ -90,18 +90,18 @@
 		<fieldset>
 			<legend><label for="displayname">display name</label></legend>
 			<label>
-				<?PHP field_text("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"width:98%","class"=>"important")); ?>
+				<?php field_text("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"width:98%","class"=>"important")); ?>
 			</label>
 		</fieldset>
 		<fieldset>
 			<legend>sql</legend>
 			<label for="maintable">
 				primary table<br />
-				<?PHP field_text("maintable",$therecord["maintable"],1,"Main Table cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"")); ?>			
+				<?php field_text("maintable",$therecord["maintable"],1,"Main Table cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"")); ?>			
 			</label>
 			<label for="querytable">
 				sql query table <em>(SQL FROM clause)</em><br />
-				<?PHP field_text("querytable",$therecord["querytable"],1,"Query Table cannot be blank.","",Array("size"=>"32","maxlength"=>"255","style"=>"width:98%")); ?>
+				<?php field_text("querytable",$therecord["querytable"],1,"Query Table cannot be blank.","",Array("size"=>"32","maxlength"=>"255","style"=>"width:98%")); ?>
 			</label>
 			<div class=small>
 				<em>The sql query table represents the FROM clause of the sql statement.  
@@ -113,11 +113,11 @@
 		<legend>file references</legend>
 		<label for="addfile">
 			add file<br />
-			<?PHP field_text("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
+			<?php field_text("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
 		</label>
 		<label for="editfile">
 			edit file<br />
-			<?PHP field_text("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
+			<?php field_text("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
 		</label>		
 	</fieldset>
 	
@@ -133,7 +133,7 @@
 		</label>
 		<label for="defaultsearchtype">
 			search type<br />
-			<?PHP basic_choicelist("defaultsearchtype",$therecord["defaultsearchtype"],Array(Array("name"=>"none","value"=>""),Array("name"=>"search","value"=>"search")));?>
+			<?php basic_choicelist("defaultsearchtype",$therecord["defaultsearchtype"],Array(Array("name"=>"none","value"=>""),Array("name"=>"search","value"=>"search")));?>
 		</label>
 		<label for="defaultcriteriafindoptions">
 			critera: selected find option <em>(quick search)</em><br/>

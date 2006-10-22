@@ -44,7 +44,7 @@
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title><?PHP echo $_SESSION["application_name"]; ?> - Login Page</title>
+	<title><?php echo $_SESSION["application_name"]; ?> - Login Page</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 	<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />	
@@ -57,7 +57,7 @@
 		<h1 class="box">
 			<a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a>
 		</h1>
-		<h2><?PHP echo $_SESSION["application_name"];?></h2>
+		<h2><?php echo $_SESSION["application_name"];?></h2>
 		<h3>Business Management Web Application</h3>
 		<?php if ($failed) {?><div class="standout" id="failed"><?php echo $failed?></div><?php } ?>
 

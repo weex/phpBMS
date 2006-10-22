@@ -85,7 +85,7 @@
 				
 			<p>
 				<label for="type" class="important">type</label><br />
-				<?PHP 
+				<?php 
 					$disabled="noDisable";
 					if($therecord["type"]=="client")
 						if(checkForInvoices($therecord["id"]))
@@ -95,7 +95,7 @@
 			</p>
 			
 			<p>
-				<?PHP field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive" class="important">inactive</label>
+				<?php field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive" class="important">inactive</label>
 			</p>
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
@@ -105,7 +105,7 @@
 			
 			<p>
 				<label for="category">category</label><br />
-				<?PHP choicelist("category",$therecord["category"],"clientcategories",array("tabindex"=>"5")); ?>
+				<?php choicelist("category",$therecord["category"],"clientcategories",array("tabindex"=>"5")); ?>
 			</p>
 			
 		</fieldset>
@@ -114,12 +114,12 @@
 			<legend>sales</legend>
 			<div class="fauxP">
 				<label for="ds-salesmanagerid">sales manager</label><br />
-				<?PHP autofill("salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0 AND users.id > 1",Array("maxlength"=>"64","tabindex"=>"25")) ?>
+				<?php autofill("salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0 AND users.id > 1",Array("maxlength"=>"64","tabindex"=>"25")) ?>
 			</div>
 			
 			<p>
 				<label for="leadsource">lead source</label><br />
-				<?PHP choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"26","class"=>"small")); ?>
+				<?php choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"26","class"=>"small")); ?>
 			</p>
 		</fieldset>
 				
@@ -127,22 +127,22 @@
 			<legend>defaults</legend>
 			<p>
 				<label for="paymentmethod">payment type</label><br />
-				<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("tabindex"=>"27")); ?>			
+				<?php choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("tabindex"=>"27")); ?>			
 			</p>
 
 			<p>
 				<label for="ccnumber">credit card number</label><br />
-				<input id="ccnumber" name="ccnumber" type="text" value="<?PHP echo htmlQuotes($therecord["ccnumber"]) ?>" size="22" maxlength="32" tabindex="28"/>
+				<input id="ccnumber" name="ccnumber" type="text" value="<?php echo htmlQuotes($therecord["ccnumber"]) ?>" size="22" maxlength="32" tabindex="28"/>
 			</p>
 			
 			<p>
 				<label for="ccexpiration">credit card expiration</label><br />
-				<input id="ccexpiration" name="ccexpiration" type="text"  value="<?PHP echo htmlQuotes($therecord["ccexpiration"]) ?>" size="7" maxlength="7" tabindex="29"/>
+				<input id="ccexpiration" name="ccexpiration" type="text"  value="<?php echo htmlQuotes($therecord["ccexpiration"]) ?>" size="7" maxlength="7" tabindex="29"/>
 			</p>
 
 			<div class="fauxP">
 				<label for="ds-taxareaid">tax area</label><br />
-				<?PHP autofill("taxareaid",$therecord["taxareaid"],6,"tax.id","tax.name","concat(tax.percentage,\"%\")","",Array("size"=>"20","maxlength"=>"64","tabindex"=>"25"),0) ?>
+				<?php autofill("taxareaid",$therecord["taxareaid"],6,"tax.id","tax.name","concat(tax.percentage,\"%\")","",Array("size"=>"20","maxlength"=>"64","tabindex"=>"25"),0) ?>
 			</div>
 		</fieldset>	
 	</div>
@@ -169,45 +169,45 @@
 			<legend>contact</legend>
 			<p class="phonelefts">
 				<label for="workphone">work phone</label><br />
-				<?PHP field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
+				<?php field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
 			</p>
 			
 			<p>
 				<label for="homephone">home phone</label><br />
-				<?PHP field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
+				<?php field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p class="phonelefts">
 				<label for="mobilephone">mobile phone</label><br />
-				<?PHP field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
+				<?php field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
 			</p>
 
 			<p>
 				<label for="fax">fax number</label><br />
-					<?PHP field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
+					<?php field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="otherphone">other phone</label><br />
-				<?PHP field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
+				<?php field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?PHP field_email("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>
+				<?php field_email("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>
 			</p>
 			
 			<p>
 				<label for="webaddress">web site</label><br />
-				<?PHP field_web("webaddress",$therecord["webaddress"],Array("tabindex"=>"12","size"=>"68","maxlength"=>"128")); ?>
+				<?php field_web("webaddress",$therecord["webaddress"],Array("tabindex"=>"12","size"=>"68","maxlength"=>"128")); ?>
 			</p>
 		</fieldset>
 		
 		<fieldset>
 			<legend><label for="address1">billing / main address</label></legend>
 			<p><br />
-				<input id="address1" name="address1" type="text" size="71" maxlength="128" value="<?PHP echo htmlQuotes($therecord["address1"])?>" tabindex="13"/><br />
-				<input id="address2" name="address2" type="text" size="71" maxlength="128" value="<?PHP echo htmlQuotes($therecord["address2"])?>" tabindex="14"/>
+				<input id="address1" name="address1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address1"])?>" tabindex="13"/><br />
+				<input id="address2" name="address2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address2"])?>" tabindex="14"/>
 			</p>
 
 			<p class="csz">
@@ -225,7 +225,7 @@
 			</p>
 			<p>
 				<label for="country">country</label><br />
-				<input id="country" name="country" type="text" value="<?PHP echo htmlQuotes($therecord["country"])?>" size="44" maxlength="128" tabindex="18"/>
+				<input id="country" name="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="44" maxlength="128" tabindex="18"/>
 			</p>
 			
 		</fieldset>
@@ -234,8 +234,8 @@
 			<legend><label for="shiptoaddress1">shipping address</label></legend>
 			<p>
 				<span class="notes">(if different from billing/main address)</span><br />
-				<input id="shiptoaddress1" name="shiptoaddress1" type="text" size="71" maxlength="128" value="<?PHP echo htmlQuotes($therecord["shiptoaddress1"])?>" tabindex="19" /><br />
-				<input id="shiptoaddress2" name="shiptoaddress2" type="text" size="71" maxlength="128" value="<?PHP echo htmlQuotes($therecord["shiptoaddress2"])?>" tabindex="20" />
+				<input id="shiptoaddress1" name="shiptoaddress1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["shiptoaddress1"])?>" tabindex="19" /><br />
+				<input id="shiptoaddress2" name="shiptoaddress2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["shiptoaddress2"])?>" tabindex="20" />
 			</p>
 
 			<p class="csz">
@@ -254,7 +254,7 @@
 			</p>
 			<p>
 				<label for="shiptocountry">country</label><br />
-				<input id="shiptocountry" name="shiptocountry" type="text" value="<?PHP echo htmlQuotes($therecord["shiptocountry"])?>" size="44" maxlength="128" tabindex="24"/>				
+				<input id="shiptocountry" name="shiptocountry" type="text" value="<?php echo htmlQuotes($therecord["shiptocountry"])?>" size="44" maxlength="128" tabindex="24"/>				
 			</p>
 		</fieldset>
 		

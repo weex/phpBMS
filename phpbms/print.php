@@ -131,7 +131,7 @@ if (isset($_POST["command"])){
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="common/javascript/print.js" type="text/javascript"></script>
 
-<?PHP  $tablePrinter->showJavaScriptArray();?>
+<?php  $tablePrinter->showJavaScriptArray();?>
 </head>
 <body>
 <div id="mainbody">
@@ -143,7 +143,7 @@ if (isset($_POST["command"])){
 
 	<fieldset id="fsReportInformation" >
 		<legend>report information</legend>
-		<?PHP 
+		<?php 
 			if (mysql_num_rows($tablePrinter->reports)){
 				mysql_data_seek($tablePrinter->reports,0); 
 				$therecord=mysql_fetch_array($tablePrinter->reports);
@@ -157,18 +157,18 @@ if (isset($_POST["command"])){
 		?>
 		<p>
 			name<br />
-			<input name="reportid" type="hidden" value="<?PHP echo $therecord["id"] ?>" />
-			<input name="reportfile" type="hidden" value="<?PHP echo htmlQuotes($therecord["reportfile"]) ?>" />
-			<input name="name" type="text" class="uneditable important" id="name" value="<?PHP echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="true" />		
+			<input name="reportid" type="hidden" value="<?php echo $therecord["id"] ?>" />
+			<input name="reportfile" type="hidden" value="<?php echo htmlQuotes($therecord["reportfile"]) ?>" />
+			<input name="name" type="text" class="uneditable important" id="name" value="<?php echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="true" />		
 		</p>
 		
 		<p>
 			type<br />
-			<input name="type" type="text" class="uneditable" id="type" value="<?PHP echo $therecord["type"] ?>" size="20" maxlength="64" readonly="true" />
+			<input name="type" type="text" class="uneditable" id="type" value="<?php echo $therecord["type"] ?>" size="20" maxlength="64" readonly="true" />
 		</p>
 		<p>
 			description<br />
-			<textarea name="description" cols="45" rows="3" readonly="readonly" id="description" class="uneditable"><?PHP echo stripcslashes($therecord["description"]) ?></textarea>
+			<textarea name="description" cols="45" rows="3" readonly="readonly" id="description" class="uneditable"><?php echo stripcslashes($therecord["description"]) ?></textarea>
 		</p>
 	</fieldset>
 
@@ -255,4 +255,4 @@ if (isset($_POST["command"])){
 <?php include("footer.php")?>
 </div>
 </body>
-</html><?PHP 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>
+</html><?php 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>

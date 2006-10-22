@@ -70,7 +70,7 @@
 			id<br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" style="width:99%">
 		</label>
-		<label for="inactive" style="text-align:center;"><?PHP field_checkbox("inactive",$therecord["inactive"])?> inactive</label>
+		<label for="inactive" style="text-align:center;"><?php field_checkbox("inactive",$therecord["inactive"])?> inactive</label>
 	</fieldset>
 	<fieldset >
 		<legend>statistics</legend>
@@ -88,7 +88,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<div style="padding-top:0px;">
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important","style"=>"width:98%")); ?>
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important","style"=>"width:98%")); ?>
 			</div>
 		</fieldset>
 		<fieldset>
@@ -103,12 +103,12 @@
 			</label>
 			<label for="amountvalue" id="aValue">
 				value<br />
-				<?PHP field_dollar("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
+				<?php field_dollar("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
 			</label>
 		</fieldset>
 		<fieldset>
 			<legend><label for="description">description</label></legend>
-			<div style="padding-top:0px;"><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?PHP echo $therecord["description"]?></textarea></div>
+			<div style="padding-top:0px;"><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?php echo $therecord["description"]?></textarea></div>
 			<div class="small"><em>(description is used on invoice reports)</em></div>
 		</fieldset>
 		</div>

@@ -134,22 +134,22 @@ class purchaseHistoryReport{
 			<th align="center" nowrap >qty.</td>
 			<th align="right" nowrap >ext.</td>
 		</tr>
-    <?PHP 
+    <?php 
 	$totalextended=0;		
 	while ($therecord=mysql_fetch_array($thequery)){
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
 	<tr>
-		<td align="left" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?PHP echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
-		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
-		<td nowrap><?PHP echo $therecord["partname"]?></td>
-		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
-		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="left" nowrap><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+		<td nowrap><?php echo $therecord["partnumber"]?></td>
+		<td nowrap><?php echo $therecord["partname"]?></td>
+		<td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap><?php echo $therecord["qty"]?></td>
+		<td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-	<?PHP }//end while ?>
+	<?php }//end while ?>
 	<tr>
 	 <td align="center" class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals">&nbsp;</td>
@@ -158,7 +158,7 @@ class purchaseHistoryReport{
 	 <td class="grandtotals">&nbsp;</td>
 	 <td align="right" class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals">&nbsp;</td>
-	 <td align="right" class="grandtotals"><?PHP echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table>	<?php
 	}//end fucntion showSalesHistory($id)
@@ -263,11 +263,11 @@ if(isset($_POST["command"])){
 				<tr>
 					<td nowrap>
 					   from<br>
-					   <?PHP field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+					   <?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
 						to<br>
-						<?PHP field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+						<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 				</tr>
 			</table>

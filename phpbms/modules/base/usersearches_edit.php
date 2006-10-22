@@ -70,7 +70,7 @@
 		</label>
 		<label for="type">
 			type<br />
-			<?PHP basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true","style"=>"width:98%")); ?>
+			<?php basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true","style"=>"width:98%")); ?>
 		</label>
 		<label for="tabledefid">
 			table<br />
@@ -93,7 +93,7 @@
 		<legend>name / sql</legend>
 		<label for="name">
 			name<br />
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"")); ?>
+			<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"")); ?>
 		</label>
 		<label for="sqlclause">
 			sql clause<br />

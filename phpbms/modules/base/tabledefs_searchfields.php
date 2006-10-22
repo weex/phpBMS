@@ -137,15 +137,15 @@
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
 			<label for="name">
 				name<br />
-				<?PHP field_text("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
+				<?php field_text("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
 			</label>
 			<label for="type">
 				type<br />
-				<?PHP basic_choicelist("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")),Array("style"=>"width:180px;"));?>
+				<?php basic_choicelist("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")),Array("style"=>"width:180px;"));?>
 			</label>
 			<label for="field">
 				field name / SQL where clause<br>
-				<?PHP field_text("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255","style"=>"width:99%")); ?>
+				<?php field_text("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255","style"=>"width:99%")); ?>
 			</label>
 			<div align="right">
 				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">		

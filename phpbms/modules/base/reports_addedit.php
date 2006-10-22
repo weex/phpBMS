@@ -75,7 +75,7 @@
 		<p>
 			<label for="displayorder">
 			display order</label><br />
-			<?PHP field_text("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
+			<?php field_text("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
 			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
 		<p>
@@ -88,21 +88,21 @@
 			<legend>details</legend>
 			<p>
 				<label for="name" class="important">name</label><br />
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
 			</p>
 			<p>
 				<label for="type">type</label><br />
-				<?PHP basic_choicelist("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
+				<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
 			</p>
 			<p>
 				<label for="reportfile">report file</label><br />
-				<?PHP field_text("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
+				<?php field_text("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
 				<span class="notes">Note: file name should include path</span>
 			</p>
 			
 			<p>
 				<label for="description">description</label><br />
-				<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?PHP echo htmlQuotes($therecord["description"])?></textarea>
+				<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
 	</div>

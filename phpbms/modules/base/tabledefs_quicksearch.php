@@ -136,7 +136,7 @@
 		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>" />
 		<label for="name" class="important">
 			name<br/>
-			<?PHP field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
+			<?php field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
 		</label>
 		<label for="accesslevel">
 			access level<br />

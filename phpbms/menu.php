@@ -104,11 +104,11 @@ function getSubItems($parentid){
 		}//end while
 		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
 	?></ul></div><script language="JavaScript" type="text/javascript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
-<?PHP if (isset($statusmessage)) {?>
+<?php if (isset($statusmessage)) {?>
 <div id="statusmessage">
 	<div id="SMLeft">
 		<div id="SMText">
-			<?PHP echo $statusmessage ?>
+			<?php echo $statusmessage ?>
 		</div>
 	</div>
 </div>
@@ -119,5 +119,5 @@ function getSubItems($parentid){
 	statusM.style.display="block";
 	SMAni.toggle();
 </script>
-<?PHP } // end if ?>
+<?php } // end if ?>
 	

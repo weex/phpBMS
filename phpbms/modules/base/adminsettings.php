@@ -44,7 +44,7 @@ require_once("../../include/fields.php");
 require_once("include/adminsettings_include.php");
 ?>
 
-<?PHP $pageTitle="Settings"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?php $pageTitle="Settings"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
@@ -81,7 +81,7 @@ require_once("include/adminsettings_include.php");
 		
 		<p>		
 			<label for="sapplication_name">application name</label><br/>
-			<?PHP field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
+			<?php field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
 			<span class="notes">
 				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
 			</span>
@@ -89,12 +89,12 @@ require_once("include/adminsettings_include.php");
 
 		<p>
 			<label for="srecord_limit">record display limit</label><br />
-			<?PHP field_text("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
+			<?php field_text("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
 		</p>
 		
 		<p>
 			<label for="sdefault_load_page">default page</label><br />
-			<?PHP field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
+			<?php field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
 		</p>
 	</fieldset>
 	
@@ -114,7 +114,7 @@ require_once("include/adminsettings_include.php");
 
 		<p>
 			<label for="sencryption_seed">encryption seed</label><br />
-			<?PHP field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
+			<?php field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
 		</p>
 
 		<p>

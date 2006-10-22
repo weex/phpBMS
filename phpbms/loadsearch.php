@@ -91,7 +91,7 @@
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
-				<?PHP
+				<?php
 					}//end if
 					$userqueryline=true;
 					while($therecord=mysql_fetch_array($queryresult)){

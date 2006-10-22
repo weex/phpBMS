@@ -152,7 +152,7 @@
 		<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>" />
 		<p>
 			<label class="important" for="name">name</label><br />
-			<?PHP field_text("name",$thecolumn["name"],1,"Column Name cannot be blank","",array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>		
+			<?php field_text("name",$thecolumn["name"],1,"Column Name cannot be blank","",array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>		
 		</p>
 		
 		<p>
@@ -163,10 +163,10 @@
 		
 		<p>
 		<label for="align">text align</label><br />
-			<?PHP basic_choicelist("align",$thecolumn["align"],array(array("name"=>"left","value"=>"left"),array("name"=>"center","value"=>"center"),array("name"=>"right","value"=>"right")));?>
+			<?php basic_choicelist("align",$thecolumn["align"],array(array("name"=>"left","value"=>"left"),array("name"=>"center","value"=>"center"),array("name"=>"right","value"=>"right")));?>
 		</p>
 		
-		<p><?PHP field_checkbox("wrap",$thecolumn["wrap"])?><label for="wrap">wrap text</label></p>
+		<p><?php field_checkbox("wrap",$thecolumn["wrap"])?><label for="wrap">wrap text</label></p>
 		
 		<p>
 			<label for="size">column size</label><br />
@@ -175,7 +175,7 @@
 		</p>
 		<p>
 			<label for="format">format</label><br />
-			<?PHP basic_choicelist("format",$thecolumn["format"],array(array("name"=>"None","value"=>""),array("name"=>"Date","value"=>"date"),array("name"=>"Time","value"=>"time"),array("name"=>"Date and Time","value"=>"datetime"),array("name"=>"Currency","value"=>"currency"),array("name"=>"Boolean","value"=>"boolean"),array("name"=>"File Link","value"=>"filelink"),array("name"=>"No Encoding (HTML acceptable)","value"=>"noencoding")),array("style"=>"width:170px;"));?><br />
+			<?php basic_choicelist("format",$thecolumn["format"],array(array("name"=>"None","value"=>""),array("name"=>"Date","value"=>"date"),array("name"=>"Time","value"=>"time"),array("name"=>"Date and Time","value"=>"datetime"),array("name"=>"Currency","value"=>"currency"),array("name"=>"Boolean","value"=>"boolean"),array("name"=>"File Link","value"=>"filelink"),array("name"=>"No Encoding (HTML acceptable)","value"=>"noencoding")),array("style"=>"width:170px;"));?><br />
 			<span class="notes">if you are using HTML code in your field, you will want to choose the no-encoding option, but special character in the database may not display correctly.</span>
 		</p>
 		<p>

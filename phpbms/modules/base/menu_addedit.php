@@ -70,7 +70,7 @@
 		
 		<p>
 			<label for="displayorder">display order</label><br />
-			 <?PHP field_text("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br>
+			 <?php field_text("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br>
 			 <span class="notes"><strong>Note:</strong> Lower numbers are displayed first.</span>
 		</p>
 		
@@ -84,7 +84,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
 			</p>
 		</fieldset>
 

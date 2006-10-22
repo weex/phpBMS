@@ -42,7 +42,7 @@
 	include("../../include/fields.php");
 
 	include("include/clientemailprojects_edit_include.php");
-?><?PHP $pageTitle="Client E-mail Project"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?><?php $pageTitle="Client E-mail Project"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
@@ -68,7 +68,7 @@
 
 	<fieldset>
 		<legend><label for="name">name</label></legend>
-		<div style="padding-top:0px;"><?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","style"=>"width:99%")); ?></div>
+		<div style="padding-top:0px;"><?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","style"=>"width:99%")); ?></div>
 	</fieldset>
 	
 	<fieldset>

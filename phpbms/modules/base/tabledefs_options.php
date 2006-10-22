@@ -177,11 +177,11 @@
 			<div id="other" style="padding:0px;margin:0px;display:none;">
 				<label for="name">
 					function name <br />
-					<?PHP field_text("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+					<?php field_text("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
 				</label>
 				<label for="option">
 					display name<br />
-					<?PHP field_text("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
+					<?php field_text("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64","style"=>"")); ?>
 				</label>
 			</div>
 			<label for="accesslevel">

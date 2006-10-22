@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$

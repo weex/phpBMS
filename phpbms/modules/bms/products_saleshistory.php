@@ -114,7 +114,7 @@
 <body><?php include("../../menu.php")?>
 <?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
 	<h1><span><?php echo $pageTitle ?></span></h1>
-	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
+	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
 	<div class="box">
 		<p class="timelineP">
 		   <label for="status">invoice status</label><br />
@@ -127,12 +127,12 @@
 		
 		<p class="timelineP">
 		   <label for="fromdate">from</label><br />
-		   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+		   <?php field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
 		</p>
 
 		<p class="timelineP">
 			to<br />
-			<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 		</p>
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
@@ -150,7 +150,7 @@
 	 <th align="right" nowrap class="queryheader">Unit Price</td>
 	 <th align="right" nowrap class="queryheader">Price Ext.</td>
 	</tr>
-    <?PHP 	
+    <?php 	
 	$totalextended=0;
 	$totalcostextended=0;
 	$totalquantity=0;
@@ -166,27 +166,27 @@
 		$totalcostextended+=$therecord["extendedcost"];
 ?>
 	<tr class="row<?php echo $row?>">
-	 <td align="center" nowrap><?PHP echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
-	 <td nowrap><?PHP echo $therecord["client"]?></td>
-	 <td align="center" nowrap><?PHP echo number_format($therecord["qty"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["cost"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extendedcost"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+	 <td align="center" nowrap><?php echo $therecord["id"]?></td>
+	 <td align="center" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+	 <td nowrap><?php echo $therecord["client"]?></td>
+	 <td align="center" nowrap><?php echo number_format($therecord["qty"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["cost"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-    <?PHP } if(!mysql_num_rows($queryresult)) {?>
+    <?php } if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>
 	<tr>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter"><?PHP echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap class="queryfooter">avg. = <?PHP $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
-	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalcostextended,2)?></td>
-	 <td align="right" nowrap class="queryfooter">avg. = <?PHP $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
-	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
+	 <td align="center" class="queryfooter"><?php echo number_format($totalquantity,2)?></td>
+	 <td align="right" nowrap class="queryfooter">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
+	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalcostextended,2)?></td>
+	 <td align="right" nowrap class="queryfooter">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
+	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table></div></form>	
 </div>

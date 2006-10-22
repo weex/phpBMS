@@ -274,7 +274,7 @@ function sendInfo(name,thevalue,thedisplay){
 </script>
 </head>
 <body>
-<?PHP echo "<script language=\"JavaScript\">sendInfo('".$this->fieldname."','".addslashes($value)."','".addslashes($display)."');</SCRIPT>";?>
+<?php echo "<script language=\"JavaScript\">sendInfo('".$this->fieldname."','".addslashes($value)."','".addslashes($display)."');</SCRIPT>";?>
 </body>
 </html>	<?php
 		}//end function
@@ -387,7 +387,7 @@ function sendInfo(name,thevalue,thedisplay){
 		function displaySearch(){
 
 		?>
-<form name="search" id="search" method="post" action="<?PHP echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
+<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
 <input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" />
 <input id="theids" name="theids" type="hidden" value="" />
 <input id="advancedsearch" name="advancedsearch" type="hidden" value="" />
@@ -401,7 +401,7 @@ function sendInfo(name,thevalue,thedisplay){
 ?>
 <ul class="tabs">
 	<li id="basicSearchT" class="tabsSel"><a href="/" onClick="switchSearchTabs(this);return false">basic</a></li>
-	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
+	<?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
 	<li id="loadSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
 	<li id="saveSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
 	<li id="advancedSortT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
@@ -414,7 +414,7 @@ function sendInfo(name,thevalue,thedisplay){
 					<p>
 						<label for="find">find</label><br />					
 						<select name="find" id="find">
-						<?PHP 											
+						<?php 											
 							for($i=0;$i<count($this->findoptions);$i++) {
 								if($this->findoptions[$i]["accesslevel"]<=$_SESSION["userinfo"]["accesslevel"]){
 									?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
@@ -430,7 +430,7 @@ function sendInfo(name,thevalue,thedisplay){
 				<p>
 				<label for="startswithfield">where</label><br />
 					<select name="startswithfield" id="startswithfield">
-						<?PHP 
+						<?php 
 							for($i=0;$i<count($this->searchablefields);$i++) {
 								echo "<option value=\"".$this->searchablefields[$i]["id"]."\" ";
 									if(!isset($this->savedstartswithfield)){
@@ -468,7 +468,7 @@ function sendInfo(name,thevalue,thedisplay){
 			<td align="left" valign=top nowrap ><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(alt+t)"/></p></td>
 		</tr>				
 	</table>
-</div><?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end accesslevel ?>
+</div><?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end accesslevel ?>
 <div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
 <div id="saveSearchTab" style="display:none;margin:0px;padding:0px;margin:0px;">
 	<div id="saveSearchReults" style="display:none"></div>
@@ -487,7 +487,7 @@ function sendInfo(name,thevalue,thedisplay){
 				</p>
 			</td>
 		</tr>
-	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div><?PHP 				
+	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div><?php 				
 	}//end function		
 		
 function displayQueryButtons() { 
@@ -589,7 +589,7 @@ function displayQueryButtons() {
 			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
 		
 		}//end if numrows	
-		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>
+		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?php }//end accesslevel?>
 		</div><script language="JavaScript" type="text/javascript">
 	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
 	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";

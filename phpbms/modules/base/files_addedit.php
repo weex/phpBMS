@@ -119,7 +119,7 @@
 			<button  type="button" class="Buttons" onClick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
 			<label for="name" class="important">
 				name<br />
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?>
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?>
 			</label>
 			<div class="small"><em>If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</em></div>
 			<label for="type">
@@ -138,7 +138,7 @@
 				</div>
 				<label for="fileid-ds" id="fileidlabel" style="display:none;">
 					existing file<br />
-					<?PHP autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>					
+					<?php autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>					
 				</label>
 				<label for="upload" id="uploadlabel" style="display:block;">
 					upload new file<br />
@@ -153,7 +153,7 @@
 		<?php } ?>
 		<label for="servename" id="descriptionlabel">
 			description<br />
-			<textarea name="description" cols="45" rows="4" id="content" style="width:98%"><?PHP echo $therecord["description"]?></textarea>
+			<textarea name="description" cols="45" rows="4" id="content" style="width:98%"><?php echo $therecord["description"]?></textarea>
 		</label>
 	</fieldset>
 	<?php 

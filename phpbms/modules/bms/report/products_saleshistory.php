@@ -126,7 +126,7 @@ class salesHistoryReport{
 	 <th align="right" nowrap >Unit Price</td>
 	 <th align="right" nowrap >Price Ext.</td>
 	</tr>
-    <?PHP 	
+    <?php 	
 	$totalextended=0;
 	$totalcostextended=0;
 	$totalquantity=0;
@@ -140,27 +140,27 @@ class salesHistoryReport{
 		$totalcostextended+=$therecord["extendedcost"];
 ?>
 	<tr>
-	 <td align="center" nowrap><?PHP echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?PHP echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
-	 <td nowrap><?PHP echo $therecord["client"]?></td>
-	 <td align="center" nowrap><?PHP echo number_format($therecord["qty"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["cost"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extendedcost"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+	 <td align="center" nowrap><?php echo $therecord["id"]?></td>
+	 <td align="center" nowrap><?php echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
+	 <td align="center" nowrap><?php echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
+	 <td nowrap><?php echo $therecord["client"]?></td>
+	 <td align="center" nowrap><?php echo number_format($therecord["qty"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["cost"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
+	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-    <?PHP } ?>
+    <?php } ?>
 	<tr>
 	 <td align="center" class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals">&nbsp;</td>
 	 <td class="grandtotals">&nbsp;</td>
 	 <td class="grandtotals">&nbsp;</td>
-	 <td align="center" class="grandtotals"><?PHP echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap class="grandtotals">avg. = <?PHP $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
-	 <td align="right" class="grandtotals"><?PHP echo "\$".number_format($totalcostextended,2)?></td>
-	 <td align="right" nowrap class="grandtotals">avg. = <?PHP $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
-	 <td align="right" class="grandtotals"><?PHP echo "\$".number_format($totalextended,2)?></td>
+	 <td align="center" class="grandtotals"><?php echo number_format($totalquantity,2)?></td>
+	 <td align="right" nowrap class="grandtotals">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
+	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalcostextended,2)?></td>
+	 <td align="right" nowrap class="grandtotals">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
+	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table>
 <?php
@@ -269,11 +269,11 @@ if(isset($_POST["command"])){
 				<tr>
 					<td nowrap>
 					   from<br>
-					   <?PHP field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+					   <?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 					<td style="padding-left:5px;" nowrap>
 						to<br>
-						<?PHP field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+						<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 					</td>
 				</tr>
 			</table>

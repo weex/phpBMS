@@ -9,14 +9,14 @@
 	
 	<p>
 		<label for="sshipping_markup">markup</label><br />
-		<?PHP field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?><br>
+		<?php field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?><br>
 		<span class="notes"><strong>Note:</strong> Enter the number to multiply the calculated shipping cost. <br>
 		For example to mark up shipping costs by 10%, enter 1.1</span>
 	</p>
 	
 	<p>
 		<label for="sshipping_postalcode">shipping orginiation zip/postal code</label><br />
-		<?PHP field_text("sshipping_postalcode",$_SESSION["shipping_postalcode"],0,"","",Array("size"=>"32","maxlength"=>"128")); ?>
+		<?php field_text("sshipping_postalcode",$_SESSION["shipping_postalcode"],0,"","",Array("size"=>"32","maxlength"=>"128")); ?>
 	</p>
 </fieldset>
 

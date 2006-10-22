@@ -205,7 +205,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 </head>
 <body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
-<?PHP  
+<?php  
 		//Search//select
 			$displayTable->displaySearch();
 			$displayTable->displayQueryButtons();

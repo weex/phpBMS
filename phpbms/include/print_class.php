@@ -108,7 +108,7 @@
 		function displayReportList(){
 			?>
 		   <select name="choosereport[]" id="choosereport" size="12" multiple onchange="switchReport(this)">
-			<?PHP
+			<?php
 				if(mysql_num_rows($this->reports)){
 					mysql_data_seek($this->reports,0);
 					$displayorder=-1;
@@ -142,7 +142,7 @@
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
-				<?PHP
+				<?php
 					}//end if
 					$userqueryline=true;
 					while($therecord=mysql_fetch_array($thequery)){

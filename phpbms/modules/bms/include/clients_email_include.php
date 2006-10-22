@@ -57,7 +57,7 @@
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
-				<?PHP
+				<?php
 					}//end if
 					$userqueryline=true;
 					while($therecord=mysql_fetch_array($thequery)){
@@ -111,7 +111,7 @@
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
-				<?PHP
+				<?php
 					}//end if
 					$userqueryline=true;
 					while($therecord=mysql_fetch_array($thequery)){

@@ -108,7 +108,7 @@
 	}
 	
 	
-?><?PHP $pageTitle="Client/Prospect E-Mail"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?><?php $pageTitle="Client/Prospect E-Mail"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
@@ -147,7 +147,7 @@
 			</label>
 			<label for="email">
 				from<br />
-				<?PHP 
+				<?php 
 				if(is_numeric($therecord["emailfrom"]))
 					$theid=$therecord["emailfrom"];
 				else

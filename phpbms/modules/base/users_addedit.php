@@ -82,7 +82,7 @@
 			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>		
 		</p>
 		
-		<p><?PHP field_checkbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
+		<p><?php field_checkbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
 	</fieldset>
 	
 	<div id="leftSideDiv">
@@ -90,11 +90,11 @@
 			<legend>name</legend>
 			<p id="firstnameP">
 				<label for="firstname" class="important" >first name</label><br />
-				<?PHP field_text("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
+				<?php field_text("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />
-				<?PHP field_text("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
+				<?php field_text("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
 			</p>
 		</fieldset>
 
@@ -102,7 +102,7 @@
 			<legend>log in</legend>
 			<p>
 				<label for="login" class="important">name</label><br />
-				<?PHP field_text("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
+				<?php field_text("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
 			</p>
 
 			<p>
@@ -125,7 +125,7 @@
 			<legend>contact / user information</legend>
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?PHP field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>						
+				<?php field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>						
 			</p>
 			<p>
 				<label for="phone">phone/extension</label><br />
@@ -133,7 +133,7 @@
 			</p>
 			<p>
 			<label for="department">department</label><br />
-				<?PHP choicelist("department",$therecord["department"],"department"); ?>			
+				<?php choicelist("department",$therecord["department"],"department"); ?>			
 			</p>
 			<p>
 				<label for="employeenumber">employee number</label><br />

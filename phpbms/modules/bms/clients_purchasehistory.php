@@ -121,7 +121,7 @@
 <?php client_tabs("Purchase History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
 	<h1><?php echo $pageTitle ?></h1>
 
-	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
+	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 		<div class="box">
 			<p class="timelineP">
 			   <label for="status">invoice status</label><br />
@@ -134,12 +134,12 @@
 			
 			<p class="timelineP">
 			   <label for="fromdate">from</label><br />
-			   <?PHP field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+			   <?php field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
 			</p>
 	
 			<p class="timelineP">
 				to<br />
-				<?PHP field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
 			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
@@ -162,7 +162,7 @@
 			<th align="center" nowrap class="queryheader">qty.</td>
 			<th align="right" nowrap class="queryheader">ext.</td>
 		</tr>
-    <?PHP 
+    <?php 
 	$totalextended=0;		
 	$row=1;
 	while ($therecord=mysql_fetch_array($queryresult)){
@@ -173,17 +173,17 @@
 		<td style="padding:0px;margin:0px;" nowrap>
 			<button type="button" class="invisibleButtons" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
 		</td>
-		<td align="left" nowrap><?PHP echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?PHP echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?PHP echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
-		<td nowrap><?PHP echo $therecord["partnumber"]?></td>
-		<td ><?PHP echo $therecord["partname"]?></td>
-		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["price"],2)?></td>
-		<td align="center" nowrap><?PHP echo $therecord["qty"]?></td>
-		<td align="right" nowrap><?PHP echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="left" nowrap><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+		<td nowrap><?php echo $therecord["partnumber"]?></td>
+		<td ><?php echo $therecord["partname"]?></td>
+		<td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap><?php echo $therecord["qty"]?></td>
+		<td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
-    <?PHP }//end while ?>
-    <?PHP  if(!mysql_num_rows($queryresult)) {?>
+    <?php }//end while ?>
+    <?php  if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
@@ -194,7 +194,7 @@
 	 <td class="queryfooter">&nbsp;</td>
 	 <td align="right" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="right" class="queryfooter"><?PHP echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table>	
 	</div></div><?php include("../../footer.php")?></body>

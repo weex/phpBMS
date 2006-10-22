@@ -74,11 +74,11 @@
 		<legend>name / percentage</legend>
 		<label for="name" class="important">
 			name<br />
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
+			<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
 		</label>
 		<label for="percentage">
 			percentage<br />
-			<?PHP field_percentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>
+			<?php field_percentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>
 		</label>
 	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>	

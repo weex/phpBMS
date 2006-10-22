@@ -74,20 +74,20 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
 			</p>			
 		</fieldset>
 	</div>
 
 	<fieldset id="fsDescription">
 		<legend><label for="description">description</label></legend>
-		<p><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?PHP echo $therecord["description"]?></textarea></p>
+		<p><textarea name="description" cols="38" rows="4" id="description" style="width:98%"><?php echo $therecord["description"]?></textarea></p>
 	</fieldset>
 	
 	<fieldset>
 		<legend>web</legend>
 		<p>
-			<?PHP field_checkbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
+			<?php field_checkbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
 		</p>
 		<p>
 			<label for="webdisplayname">web display name</label><br />

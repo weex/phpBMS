@@ -82,7 +82,7 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 <body><?php include("../../menu.php")?>
 <?php product_tabs("Prerequisites",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
-	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
+	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<input id="deleteid" name="deleteid" type="hidden" value="0" />
 	<input id="command" name="command" type="hidden" value="" />
 	<div class="fauxP">
@@ -93,19 +93,19 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		 <th align="left" width=100% class="queryheader">Description</td>
 		 <th align="center" nowrap class="queryheader">&nbsp;</td>
 		</tr>
-		<?PHP 	
+		<?php 	
 		if($numrows){
 			while ($prereq=mysql_fetch_array($prereqresult)){
 	?>
 		<tr>
-			<td align="left" nowrap><?PHP echo $prereq["partnumber"] ?></td>
-			<td align="left" nowrap><?PHP echo $prereq["partname"] ?></td>
-			<td align="left" width="100%"><?PHP echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
+			<td align="left" nowrap><?php echo $prereq["partnumber"] ?></td>
+			<td align="left" nowrap><?php echo $prereq["partname"] ?></td>
+			<td align="left" width="100%"><?php echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
 			<td align="center">
-				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?PHP echo $prereq["id"] ?>)"><span>-</span></button> 
+				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?php echo $prereq["id"] ?>)"><span>-</span></button> 
 			</td>
 		</tr>
-		<?PHP }//end while
+		<?php }//end while
 		?>
 		<tr class="queryfooter">
 			<td>&nbsp;</td>
@@ -126,12 +126,12 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		<legend>add new prerequisite product</legend>
 		<div class="preqAdd fauxP">
 			<label for="ds-partnumber">part number</label><br />
-			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
+			<?php autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
 		</div>
 		<div class="preqAdd fauxP">
 			<label for="ds-partname">part name</label><br />
-			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
+			<?php autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
 		</div>
 		<p id="addButtonP"><br />

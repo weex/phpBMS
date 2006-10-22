@@ -82,13 +82,13 @@ TH {
 <body>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-<?PHP 
+<?php 
 	for($i=0;$i<$num_fields;$i++){
 		echo "<th>".mysql_field_name($thequery,$i)."</th>";
 	}
 ?>
 </tr>
-<?PHP 
+<?php 
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "<TR>\n";
 		for($i=0;$i<$num_fields;$i++){
