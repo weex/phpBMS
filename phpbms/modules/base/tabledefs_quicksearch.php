@@ -89,22 +89,22 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tablequicksearch.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
 
 <?php tabledefs_tabs("Quick Search",$_GET["id"]);?><div class="bodyline">
-<div>
-	<h1><?php echo $pageTitle?></h1>
-	<table border="0" cellpadding="3" cellspacing="0" class="querytable" style="margin-bottom:15px;">
+	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
+	<div class="fauxP">
+	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
 		<tr>
-			 <th nowrap class="queryheader">Move</td>
-			 <th nowrap class="queryheader" align="left">Name</td>
-			 <th width="100%" nowrap class="queryheader" align="left">Search</td>
-			 <th width="100%" nowrap class="queryheader" align="left">Access Level</td>
-			 <th nowrap class="queryheader">&nbsp;</td>
+			 <th nowrap>Move</th>
+			 <th nowrap align="left">Name</th>
+			 <th width="100%" nowrap align="left">Search</th>
+			 <th width="100%" nowrap class="queryheader" align="left">Access Level</th>
+			 <th nowrap>&nbsp;</th>
 		</tr>
 	<?php 
 		$topdisplayorder=-1;
@@ -113,45 +113,53 @@
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
-	<tr class="qr<?php echo $row?>" style="cursor:auto">
+	<tr class="qr<?php echo $row?> noselects">
 	 <td nowrap valign="top">
-	 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&quicksearchid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
-	 	<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&quicksearchid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
+	 	<button type="button" class="graphicButtons buttonUp" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=moveup&amp;quicksearchid=".$therecord["id"]?>';"><span>up</span></button>
+	 	<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;quicksearchid=".$therecord["id"]?>';"><span>dn</span></button>
 		 <?php echo $therecord["displayorder"]?>
 	 </td>
-	 <td nowrap valign="top"><strong><?php echo $therecord["name"]?></strong></td>
-	 <td valign="top" class="small"><?php echo $therecord["search"]?></td>
-	 <td valign="top" align=center class="small"><?php echo $therecord["accesslevel"]?></td>
+	 <td nowrap valign="top"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
+	 <td valign="top" class="small"><?php echo htmlQuotes($therecord["search"])?></td>
+	 <td valign="top" align=center class="small"><?php echo htmlQuotes($therecord["accesslevel"])?></td>
 	 <td nowrap valign="top">
-		 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
-		 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&quicksearchid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
+		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
+		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
 	 </td>
 	</tr>	
 	<?php } ?>
+	<tr class="queryfooter">
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
 	</table>
+	</div>
 	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<input name="quicksearchid" type="hidden" value="<?php echo $thequicksearch["id"]?>" />
 		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>" />
-		<label for="name" class="important">
-			name<br/>
-			<?php field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
-		</label>
-		<label for="accesslevel">
-			access level<br />
+		<p>
+			<label for="name" class="important">name</label><br/>
+			<?php field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64")); ?>
+		</p>
+		<p>
+			<label for="accesslevel">access level</label><br />
 			<?php basic_choicelist("accesslevel",$thequicksearch["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")));?>
-		</label>
-		<label for="search">
-			search (SQL where clause)<br>
-			<textarea id="search" name="search" cols="32" rows="2" style="width:99%"><?php echo htmlQuotes($thequicksearch["search"]) ?></textarea>
-		</label>
-		<div align="right">
-			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">
-		</div>
+		</p>
+		<p>
+			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />
+			<textarea id="search" name="search" cols="32" rows="2"><?php echo htmlQuotes($thequicksearch["search"]) ?></textarea>
+		</p>
+		
+		<p>
+			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+		</p>
 	</fieldset>
 	</form>
-</div>
 </div>
 <?php include("../../footer.php")?>
 </body>

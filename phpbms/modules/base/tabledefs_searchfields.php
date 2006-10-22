@@ -89,23 +89,23 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tablequicksearch.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
 
 <?php tabledefs_tabs("Search Fields",$_GET["id"]);?><div class="bodyline">
-<div>
-	<h1><?php echo $pageTitle?></h1>
-
+	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
+	
+	<div class="fauxP">
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
-	 <th align="left" nowrap class="queryheader">move</td>		
-	 <th align="center" nowrap class="queryheader">type</td>
-	 <th align="left" nowrap class="queryheader">name</td>
-	 <th align="left" width="100%"  nowrap class="queryheader">field</td>
-	 <th nowrap class="queryheader">&nbsp;</td>
+	 <th align="left" nowrap class="queryheader">move</th>		
+	 <th align="center" nowrap class="queryheader">type</th>
+	 <th align="left" nowrap class="queryheader">name</th>
+	 <th align="left" width="100%"  nowrap class="queryheader">field</th>
+	 <th nowrap class="queryheader">&nbsp;</th>
 	</tr>
 	<?php 
 		$topdisplayorder=-1;
@@ -114,45 +114,54 @@
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
-	<tr class="qr<?php echo $row?>" style="cursor:auto">
+	<tr class="qr<?php echo $row?> noselects">
 		<td nowrap valign="top" class="small">
-			<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=moveup&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-up.png" align="middle" alt="up" width="16" height="16" border="0" /></button>
-			<button type="button" class="invisibleButtons" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=movedown&columnid=".$therecord["id"]?>';"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-down.png" align="middle" alt="dn" width="16" height="16" border="0" /></button>
+			<button type="button" class="graphicButtons buttonUp" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=moveup&amp;columnid=".$therecord["id"]?>';"><span>up</span></button>
+			<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;columnid=".$therecord["id"]?>';"><span>dn</span></button>
 			<?php echo $therecord["displayorder"]?>
 		</td>
-		<td nowrap valign="top" class="small" align="center"><strong><?php echo $therecord["type"] ;?></strong></td>
-		<td nowrap valign="top" class="small"><strong><?php echo $therecord["name"]?></strong></td>
-		<td valign="top"><?php echo $therecord["field"]?></td>
+		<td nowrap valign="top" class="small" align="center"><strong><?php echo htmlQuotes($therecord["type"]);?></strong></td>
+		<td nowrap valign="top" class="small"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
+		<td valign="top"><?php echo htmlQuotes($therecord["field"])?></td>
 		<td nowrap valign="top">
-			 <button id="edit" name="doedit" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=edit&searchfieldid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" alt="edit" width="16" height="16" border="0" /></button>
-			 <button id="delete" name="dodelete" type="button" onClick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&command=delete&searchfieldid=".$therecord["id"]?>';" class="invisibleButtons"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-delete.png" alt="delete" width="16" height="16" border="0" /></button>
+			 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
+			 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
 		</td>
 	</tr>	
 	<?php } ?>
-	</table>
-	<fieldset style="margin-top:15px;">
+	<tr class="queryfooter">
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	</table></div>
+	
+	<fieldset>
 		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
 			<input id="searchfieldid" name="searchfieldid" type="hidden" value="<?php echo $thesearchfield["id"]?>" />
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
-			<label for="name">
-				name<br />
-				<?php field_text("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64","style"=>"")); ?>
-			</label>
-			<label for="type">
-				type<br />
-				<?php basic_choicelist("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")),Array("style"=>"width:180px;"));?>
-			</label>
-			<label for="field">
-				field name / SQL where clause<br>
-				<?php field_text("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255","style"=>"width:99%")); ?>
-			</label>
-			<div align="right">
-				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" style="">		
-			</div>				
+			<p>
+				<label for="name">name</label><br />
+				<?php field_text("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64")); ?>
+			</p>
+			<p>
+				<label for="type">type</label><br />
+				<?php basic_choicelist("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")));?>
+			</p>
+			
+			<p>
+				<label for="field">field name / SQL where clause</label><br />
+				<?php field_text("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255")); ?>
+			
+			</p>
+			<p>
+				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+			</p>				
 		</form>
 	</fieldset>
-</div>
 </div>
 <?php include("../../footer.php");?>
 </body>
