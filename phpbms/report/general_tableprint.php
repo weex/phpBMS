@@ -36,15 +36,14 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	if(!isset($_GET["tabledefid"])) reportError(200,"URL variable missing: tabledefid");
-	if(!is_numeric($_GET["tabledefid"])) reportError(300,"URL variable invalid type: tabledefid");
+	require("../include/session.php");
+	if(!isset($_GET["tid"])) reportError(200,"URL variable missing: tid");
+	if(!is_numeric($_GET["tid"])) reportError(300,"URL variable invalid type: tid");
 	
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
 	else
 		$sortorder="";
-	
-	require("../include/session.php");
 	
 	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".$_GET["tid"];
 	$thequery=mysql_query($querystatement,$dblink);                   
