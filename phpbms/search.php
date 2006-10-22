@@ -200,7 +200,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("head.php")?>
 
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
 </head>
 <body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">

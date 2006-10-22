@@ -61,7 +61,7 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body onLoad="initializePage()"><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <?php invoice_tabs("General",$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
@@ -104,7 +104,7 @@
 			<p>
 				<label for="id">id</label>
 				<br />
-				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" tabindex="-1">			
+				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" tabindex="0">			
 			</p>
 			
 			<p>

@@ -54,7 +54,7 @@ function showTodaysClients($interval="1 DAY"){
 				<th align="center">ID</th>
 				<th align="center">Type</th>
 				<th align="left" width="100%">Name</th>
-				<th nowrap align="right">City, State/Prov Zip/Postal</th>
+				<th nowrap align="right">Location</th>
 			</tr>
 		<?php 
 		$i=1;

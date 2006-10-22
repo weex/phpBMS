@@ -54,7 +54,7 @@
 <script language="JavaScript" src="javascript/menu.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>

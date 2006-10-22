@@ -63,7 +63,7 @@
 </script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return (validateForm(this) && checkPassword(this));"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return (validateForm(this) && checkPassword(this));"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
 	<div style="float:right;width:160px;"><?php showSaveCancel(1); ?></div>
 	<div style="margin-right:170px;">

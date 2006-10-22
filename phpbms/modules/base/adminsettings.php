@@ -159,12 +159,12 @@ require_once("include/adminsettings_include.php");
 		</div>
 		
 		<p>
-			<label for="printedlogo">upload new logo file</label><em>(png format)</em><br />
-			<input id="printedlogo" name="printedlogo" type="file" size="64" accept="image/x-png" /><br />
+			<label for="printedlogo">upload new logo file</label><br /><span class="notes">(PNG ot JPEG format)</span>
+			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
 			<span class="notes">
 				<strong>Note:</strong> This graphic is used on some reports. <br />
 				On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.<br />
-				The file <strong>must be an 8-bit (256 color) non-interlaced PNG</strong>.
+				If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
 			</span>
 		</p>
 		

@@ -124,7 +124,7 @@ function addLineItems($values,$invoiceid,$userid){
 		$querystatement.=$userid.", NOW(), ".$userid." )";
 
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(100,"Could Not Add Line Item: ".mysql_error($dblink)."<br \><br \>".$querystatement);
+		if(!$queryresult) reportError(100,"Could Not Add Line Item: ".mysql_error($dblink)."<br /><br />".$querystatement);
 
 	}//end foreach
 	}//end if
@@ -479,7 +479,7 @@ function insertRecord($variables,$userid){
 	$querystatement.=$userid.")"; 
 	
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)."\n<br \>\n".$querystatement);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)."\n<br />\n".$querystatement);
 
 	$newid= mysql_insert_id($dblink);
 	if($variables["lineitemschanged"]==1)

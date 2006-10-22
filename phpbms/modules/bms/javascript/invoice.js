@@ -266,9 +266,9 @@ function populateLineItem(){
 		if(response.getElementsByTagName('value')[0].firstChild)
 			if(response.getElementsByTagName('value')[0].firstChild.data=="Prerequisite Not Met"){
 				// did not meet prerequisites
-				var message="The product you entered has prerequisite products that must have<br \>";
-				message+=	"been purchased by the client prior to ordering this product.<br \><br \>";
-				message+= 	"Make sure the client has been entered and that they have purchased<br \>";
+				var message="The product you entered has prerequisite products that must have<br />";
+				message+=	"been purchased by the client prior to ordering this product.<br /><br />";
+				message+= 	"Make sure the client has been entered and that they have purchased<br />";
 				message+= 	"any prerequiste products before adding this product.";
 				message+=	"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
 

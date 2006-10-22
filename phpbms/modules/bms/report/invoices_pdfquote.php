@@ -102,12 +102,15 @@
 
 		// Image from DB, so we need to retieve it and then add it to pdf
 		// through the extended memImage function (instead of the image function, that wants a file, not data)
-			$querystatement="SELECT file FROM files WHERE id=1";
+			$querystatement="SELECT file,upper(`type`)as `type` FROM files WHERE id=1";
 			$pictureresult=mysql_query($querystatement,$dblink);
 			if(!$pictureresult) reportError(300,"Error Retrieving Logo Graphic");
 			$thepicture=mysql_fetch_array($pictureresult);
-			
-		$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth);	
+		
+		if($thepicture["type"]=="IMAGE/JPEG")			
+			$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth,0,"JPEG");	
+		elseif($thepicture["type"]=="IMAGE/PNG")
+			$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth);	
 		
 		//next company name
 		$pdf->SetXY($tempwidth+$leftmargin,$topmargin);

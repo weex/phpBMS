@@ -85,22 +85,22 @@
 						
 function displayQueryHeader(){
 	?>
-	<input name="newsort" type="hidden" value=""><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults"><tr>
 	<script language="JavaScript" type="text/javascript">selIDs=new Array();</script>
+	<input name="newsort" type="hidden" value="" /><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults"><tr>
 	<?php
 	$columncount=count($this->thecolumns);
 	$i=1;
 
 	foreach ($this->thecolumns as $therow){ ?>
 <th nowrap align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
-	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>">
+	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>" />
 	<a href="/" onClick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
 	<?php
 		// If sorting on this column give the option to reverse the sort order.
 		if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
-	{?>&nbsp;<a href="/" onClick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" width=10 height=10 border=0></a><input name="desc" type="hidden" value="">
+	{?>&nbsp;<a href="/" onClick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
 <?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
-{?> &nbsp;<a href="/" onClick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" width=10 height=10 border=0></a>
+{?> &nbsp;<a href="/" onClick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
 <?php }	?></th><?php
 		$i++;
 	}//end foreach
@@ -387,11 +387,11 @@ function sendInfo(name,thevalue,thedisplay){
 		function displaySearch(){
 
 		?>
-<form name="search" id="searchform" method="post" action="<?PHP echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
-<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" \>
-<input id="theids" name="theids" type="hidden" value="" \>
-<input id="advancedsearch" name="advancedsearch" type="hidden" value="" \>
-<input id="advancedsort" name="advancedsort" type="hidden" value="" \>
+<form name="search" id="search" method="post" action="<?PHP echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
+<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" />
+<input id="theids" name="theids" type="hidden" value="" />
+<input id="advancedsearch" name="advancedsearch" type="hidden" value="" />
+<input id="advancedsort" name="advancedsort" type="hidden" value="" />
 <?php if ($this->querytype!="" and $this->querytype!="search") {
 		$temptype=$this->querytype;
 		if($temptype=="advanced search")
@@ -586,7 +586,7 @@ function displayQueryButtons() {
 				<option value="">_____________</option>
 				<option value="keepselected" title="(alt+k)">keep selected</option>
 				<option value="omitselected" title="(alt+o)" >omit selected</option>
-			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
+			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
 		
 		}//end if numrows	
 		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>

@@ -53,15 +53,15 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="javascript/client.js"></script>
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="javascript/client.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["REQUEST_URI"]; if(isset($_GET["invoiceid"])) echo "&invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"]; if(isset($_GET["invoiceid"])) echo "&invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <?php client_tabs("General",$therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
@@ -80,7 +80,7 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" tabindex="-1" />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" tabindex="0" />
 			</p>
 				
 			<p>
@@ -100,7 +100,7 @@
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
 				<label for="becameclient">became a client</label><br />
-				<input type="text" id="becameclient" name="becameclient" readonly="true" class="uneditable" value="<?php echo $therecord["becameclient"]?>" size="8">
+				<input type="text" id="becameclient" name="becameclient" readonly="true" class="uneditable" value="<?php echo $therecord["becameclient"]?>" size="8" />
 			</p>
 			
 			<p>
@@ -152,16 +152,16 @@
 			<legend>name / company</legend>
 			<p id="firstnameP">
 				<label for="firstname" class="important">first name</label><br />
-				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" tabindex=1;/>
+				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" tabindex="1" />
 				<script language="JavaScript" type="text/javascript">var thefirstname=getObjectFromID("firstname");thefirstname.focus()</script>
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />
-				<input id="lastname" name="lastname" type="text" value="<?php echo htmlQuotes($therecord["lastname"])?>" size="32" maxlength="65" class="important" tabindex=2 />				
+				<input id="lastname" name="lastname" type="text" value="<?php echo htmlQuotes($therecord["lastname"])?>" size="32" maxlength="65" class="important" tabindex="2" />				
 			</p>
 			<p>
 				<label for="company" class="important">company</label><br />
-				<input name="company" type="text" id="company" value="<?php echo htmlQuotes($therecord["company"])?>" size="71" maxlength="128" class="important" tabindex=3 />
+				<input name="company" type="text" id="company" value="<?php echo htmlQuotes($therecord["company"])?>" size="71" maxlength="128" class="important" tabindex="3" />
 			</p>
 		</fieldset>	
 							
@@ -169,27 +169,27 @@
 			<legend>contact</legend>
 			<p class="phonelefts">
 				<label for="workphone">work phone</label><br />
-				<?PHP field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
+				<?PHP field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
 			</p>
 			
 			<p>
 				<label for="homephone">home phone</label><br />
-				<?PHP field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br /><em>(example: 505-994-6388)</em>)","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
+				<?PHP field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p class="phonelefts">
 				<label for="mobilephone">mobile phone</label><br />
-				<?PHP field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
+				<?PHP field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
 			</p>
 
 			<p>
 				<label for="fax">fax number</label><br />
-					<?PHP field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
+					<?PHP field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="otherphone">other phone</label><br />
-				<?PHP field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br /><em>(example: 505-994-6388)</em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
+				<?PHP field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
