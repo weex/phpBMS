@@ -40,7 +40,6 @@
 //=================================================
 //Most Common Functions of the Application go here.
 //=================================================
-
 function goURL($url){
 	if(headers_sent())
 		reportError("450","Could not redirect to: ".$url);
@@ -166,6 +165,12 @@ function htmlQuotes($string){
 	return str_replace("\"","&quot;",$string);
 }
 
+function htmlFormat($string,$quotes=false){
+	$trans = get_html_translation_table(HTML_ENTITIES);
+	$encoded = strtr($string, $trans);
+	return $encoded;
+}
+
 function showSaveCancel($ids=1){
 	?><div class="saveCancels"><input <?php if($ids==1) {?>accesskey="s"<?php }?> title="Save (alt+s)" id="saveButton<?php echo $ids?>" name="command" type="submit" value="save" class="Buttons" /><input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" onClick="this.form.cancelclick.value=true;" <?php if($ids==1) {?>accesskey="x" <?php }?> title="(alt+x)" /></div><?php
 }
@@ -282,6 +287,12 @@ function formatVariable($value,$format){
 		break;
 		case "filelink":
 			$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
+		break;
+		case "noencoding":
+			$value=$value;
+		break;
+		default:
+			$value=htmlspecialchars($value);
 	}
 	return $value;
 }

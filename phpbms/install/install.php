@@ -57,7 +57,7 @@ h3{ font-size:18px; border-bottom:1px solid #666666; padding:2px; margin-left:10
 h4{ font-size:14px; border-bottom:1px solid #666666; padding:2px; margin-left:25px; color:#0B63A2;}
 </style>
 <script language="JavaScript" src="../common/javascript/common.js"></script>
-<script language="javascript">	
+<script language="JavaScript" type="text/javascript">	
 	function runCommand(command){
 		var theURL="installxml.php?command="+command;
 		if(command=="updatesettings"){

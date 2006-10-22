@@ -37,6 +37,9 @@
 */
 
 window.onload= function(){
+	var clientrecord=getObjectFromID("clientrecord");
+	document.comboFX=new fx.Combo(clientrecord,{height:true,opacity:true,duration:300})
+
 	var namecid=getObjectFromID("namecid");
 	if(namecid.value!=""){
 		var viewButton=getObjectFromID("dolookup");
@@ -48,9 +51,6 @@ window.onload= function(){
 	}
 	selectedInvoice="";
 	selectedNote="";
-
-	var clientrecord=getObjectFromID("clientrecord");
-	comboFX=new fx.Combo(clientrecord,{height:true,opacity:true,duration:300})
 
 }
 
@@ -112,8 +112,10 @@ function viewClient(base){
 		//clientrecord.style.visibility="hidden";
 		clientrecord.innerHTML=req.responseText;
 		var goalHeight=clientrecord.offsetHeight;
-		comboFX.hide();
-		comboFX.toggle();
+		if(document.comboFX){
+			document.comboFX.hide();
+			document.comboFX.toggle();
+		}
 	}
 }
 

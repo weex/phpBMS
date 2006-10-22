@@ -58,10 +58,11 @@
 		background-color:#747F96;
 	}
 	#menuBar .submenuitems li{float:none;}
+	.submenusli{padding:0;margin:0;}
 	.submenuitems{
 		clear:left;
 		display:none;
-		margin-top:3px;
+		margin-top:1px;
 		padding:2px 2px 4px 2px;
 		position:absolute;
 		background-color:white;

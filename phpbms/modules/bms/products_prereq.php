@@ -74,9 +74,9 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/prereq.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
@@ -127,12 +127,12 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		<div class="preqAdd fauxP">
 			<label for="ds-partnumber">part number</label><br />
 			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
+			<script language="JavaScript" type="text/javascript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
 		</div>
 		<div class="preqAdd fauxP">
 			<label for="ds-partname">part name</label><br />
 			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
+			<script language="JavaScript" type="text/javascript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
 		</div>
 		<p id="addButtonP"><br />
 			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button> 

@@ -54,11 +54,11 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/invoice.js"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body onLoad="initializePage()"><?php include("../../menu.php")?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;"></div>
@@ -149,7 +149,7 @@
 			<legend><label for="ds-clientid">client</label></legend>
 			<div class="important fauxP">
 				  <?PHP autofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"45","maxlength"=>"128","style"=>"","style"=>"font-weight:bold","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
-				  <script language="JavaScript">
+				  <script language="JavaScript" type="text/javascript">
 					document.forms["record"]["clientid"].onchange=populateShipping;
 				  </script>
 				  <?php if($therecord["clientid"]){?>
@@ -215,13 +215,13 @@
 		<tr id="LIAdd">
 			<td nowrap>
 			<?PHP autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"16","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
-			<script language="JavaScript">
+			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partnumber"].onchange=populateLineItem;
 			</script>
 			</td>
 			<td nowrap>
 			<?PHP autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","tabindex"=>"16"),false,"") ?>
-			<script language="JavaScript">
+			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partname"].onchange=populateLineItem;
 			</script>
 			</td>
@@ -237,9 +237,9 @@
 	?><tr id="LISep"><td colspan="7"></td></tr><?php 
 	while($lineitem=mysql_fetch_array($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
-			<td nowrap class="small" valign="top"><strong><?PHP if($lineitem["partnumber"]) echo htmlentities($lineitem["partnumber"]); else echo "&nbsp;";?></strong></td>
-			<td class="small" valign="top"><strong><?PHP if($lineitem["partname"]) echo htmlentities($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
-			<td class="tiny" valign="top"><?PHP if($lineitem["memo"]) echo htmlentities($lineitem["memo"]); else echo "&nbsp;"?></td>
+			<td nowrap class="small" valign="top"><strong><?PHP if($lineitem["partnumber"]) echo htmlspecialchars($lineitem["partnumber"]); else echo "&nbsp;";?></strong></td>
+			<td class="small" valign="top"><strong><?PHP if($lineitem["partname"]) echo htmlspecialchars($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
+			<td class="tiny" valign="top"><?PHP if($lineitem["memo"]) echo htmlspecialchars($lineitem["memo"]); else echo "&nbsp;"?></td>
 			<td align="right" nowrap class="small" valign="top"><?PHP echo $lineitem["unitprice"]?></td>
 			<td align="center" nowrap class="small" valign="top"><?PHP echo $lineitem["quantity"]?></td>
 			<td align="right" nowrap class="small" valign="top"><?PHP echo $lineitem["extended"]?></td>
@@ -249,7 +249,7 @@
 					<?PHP echo $lineitem["unitweight"]?>[//]
 					<?PHP echo $lineitem["numprice"]?>[//]
 					<?PHP echo $lineitem["quantity"]?>[//]
-					<?PHP echo htmlentities($lineitem["memo"])?>[//]
+					<?PHP echo htmlspecialchars($lineitem["memo"])?>[//]
 					<?PHP echo $lineitem["taxable"]?>
 				</span>
 				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="graphicButtons buttonMinus" onClick="return deleteLine(this)" tabindex="21" title="Remove line item"><span>-</span></button><?php } ?>
@@ -323,7 +323,7 @@
 	<p>
 		<label for="paymentmethod">payment method</label><br />
 		<?PHP choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",array("tabindex"=>"24")); ?>
-		<script language="JavaScript">document.forms["record"]["paymentmethod"].onchange2=new Function("showPaymentOptions()");</script>
+		<script language="JavaScript" type="text/javascript">document.forms["record"]["paymentmethod"].onchange2=new Function("showPaymentOptions()");</script>
 	</p>
 	<div id="checkpaymentinfo">
 		<p>
@@ -383,7 +383,7 @@
 </fieldset>		
 <?php include("../../include/createmodifiedby.php"); ?>
 <?PHP if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice"){?>
-<script language="JavaScript">disableSaves(document.forms["record"]);</script>
+<script language="JavaScript" type="text/javascript">disableSaves(document.forms["record"]);</script>
 <?PHP }// end if ?>
 </div><?php include("../../footer.php");?>
 </form></body>

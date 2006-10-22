@@ -114,8 +114,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <?php client_tabs("Purchase History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">

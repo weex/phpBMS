@@ -71,7 +71,7 @@ function showClient($clientid,$basepath){
 	if(!$noteresult) reportError(300,"Could Not Retrieve Notes: ".mysql_error($dblink)." -- ".$querystatement);
 ?>
 <div class="bodyline" id="theDetails">
-<h1><?php echo htmlQuotes($therecord["name"])?></h1>
+<h1><?php echo htmlspecialchars($therecord["name"])?></h1>
 
 <div id="rightSideDiv" class="box">
 	<?php if($therecord["type"]!="prospect") {?>
@@ -154,43 +154,43 @@ function showClient($clientid,$basepath){
 		<button id="editClient" type="button" onclick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')" class="Buttons">edit</button>
 		<?php if($therecord["firstname"] || $therecord["lastname"]) {?>
 		<p class="RDNames">name:</p>
-		<p class="RDData Uppers important"><?php echo htmlentities($therecord["firstname"]." ".$therecord["lastname"])?></p>
+		<p class="RDData Uppers important"><?php echo htmlspecialchars($therecord["firstname"]." ".$therecord["lastname"])?></p>
 		<?php } ?>
 		<?php if($therecord["company"]){?>
 		<p class="RDNames">company:</p>
-		<p class="RDData Uppers important"><?php echo htmlentities($therecord["company"])?></p>
+		<p class="RDData Uppers important"><?php echo htmlspecialchars($therecord["company"])?></p>
 		<?php } ?>
 
 		<p class="RDNames"><br/>type:</p>
-		<p class="RDData important"><br/><?php echo htmlentities($therecord["type"])?></p>
+		<p class="RDData important"><br/><?php echo htmlspecialchars($therecord["type"])?></p>
 
 		<?php if($therecord["category"]){?>
 		<p class="RDNames">category:</p>
-		<p class="RDData important"><?php echo htmlentities($therecord["category"])?></p>
+		<p class="RDData important"><?php echo htmlspecialchars($therecord["category"])?></p>
 		<?php } ?>
 
 		<h2>Address</h2>
 		<p class="RDNames">main:</p>
 		<p class="RDData important"><?php 
 		
-			$theaddress=htmlentities($therecord["address1"])."<br />";
-			if($therecord["address2"]) $theaddress.=htmlentities($therecord["address2"])."<br />";
-			if($therecord["city"]) $theaddress.=htmlentities($therecord["city"]).", ";
-			$theaddress.=htmlentities($therecord["state"])." ";
-			$theaddress.=htmlentities($therecord["postalcode"])." ";
-			$theaddress.=htmlentities($therecord["country"]);
+			$theaddress=htmlspecialchars($therecord["address1"])."<br />";
+			if($therecord["address2"]) $theaddress.=htmlspecialchars($therecord["address2"])."<br />";
+			if($therecord["city"]) $theaddress.=htmlspecialchars($therecord["city"]).", ";
+			$theaddress.=htmlspecialchars($therecord["state"])." ";
+			$theaddress.=htmlspecialchars($therecord["postalcode"])." ";
+			$theaddress.=htmlspecialchars($therecord["country"]);
 			
 			echo $theaddress?>
 		</p>
 		
 		<?php 
 		
-		$theaddress=htmlentities($therecord["shiptoaddress1"])."<br />";
-		if($therecord["shiptoaddress2"]) $theaddress.=htmlentities($therecord["address2"])."<br />";
-		if($therecord["shiptocity"]) $theaddress.=htmlentities($therecord["city"]).", ";
-		$theaddress.=htmlentities($therecord["shiptostate"])." ";
-		$theaddress.=htmlentities($therecord["shiptopostalcode"])." ";
-		$theaddress.=htmlentities($therecord["shiptocountry"]);
+		$theaddress=htmlspecialchars($therecord["shiptoaddress1"])."<br />";
+		if($therecord["shiptoaddress2"]) $theaddress.=htmlspecialchars($therecord["address2"])."<br />";
+		if($therecord["shiptocity"]) $theaddress.=htmlspecialchars($therecord["city"]).", ";
+		$theaddress.=htmlspecialchars($therecord["shiptostate"])." ";
+		$theaddress.=htmlspecialchars($therecord["shiptopostalcode"])." ";
+		$theaddress.=htmlspecialchars($therecord["shiptocountry"]);
 
 		if($theaddress!="<br />  "){?>
 		<p class="RDNames">shipping:</p>
@@ -201,22 +201,22 @@ function showClient($clientid,$basepath){
 
 		<?php if($therecord["workphone"]){?>
 		<p class="RDNames">work phone:</p>
-		<p class="RDData important"><?php echo htmlentities($therecord["workphone"])?></p>
+		<p class="RDData important"><?php echo htmlspecialchars($therecord["workphone"])?></p>
 		<?php } ?>
 
 		<?php if($therecord["homephone"]){?>
 		<p class="RDNames">home phone:</p>
-		<p class="RDData important"><?php echo htmlentities($therecord["homephone"])?></p>
+		<p class="RDData important"><?php echo htmlspecialchars($therecord["homephone"])?></p>
 		<?php } ?>
 
 		<?php if($therecord["mobilephone"]){?>
 		<p class="RDNames">mobile phone:</p>
-		<p class="RDData important"><?php echo htmlentities($therecord["mobilephone"])?></p>
+		<p class="RDData important"><?php echo htmlspecialchars($therecord["mobilephone"])?></p>
 		<?php } ?>
 
 		<?php if($therecord["fax"]){?>
 		<p class="RDNames">fax:</p>
-		<p class="RDData important"><?php echo htmlentities($therecord["fax"])?></p>
+		<p class="RDData important"><?php echo htmlspecialchars($therecord["fax"])?></p>
 		<?php } ?>
 		
 		<p>&nbsp;</p>
@@ -225,7 +225,7 @@ function showClient($clientid,$basepath){
 		<p class="RDNames">e-mail addres:</p>
 		<p class="RDData important">
 			<button type="button" class="graphicButtons buttonEmail" onclick="document.location='mailto:<?php echo $therecord["email"]?>'"><span>send email</span></button>
-			&nbsp;<a href="mailto:<?php echo $therecord["email"]?>"><?php echo htmlentities($therecord["email"])?></a>
+			&nbsp;<a href="mailto:<?php echo $therecord["email"]?>"><?php echo htmlspecialchars($therecord["email"])?></a>
 		</p>
 		<?php } ?>
 
@@ -233,13 +233,13 @@ function showClient($clientid,$basepath){
 		<p class="RDNames">web site:</p>
 		<p class="RDData important">
 			<button type="button" class="graphicButtons buttonWWW" onclick="window.open('<?php echo $therecord["webaddress"]?>')"><span>visit site</span></button>
-			&nbsp;<a href="<?php echo $therecord["webaddress"]?>" target="_blank"><?php echo htmlentities($therecord["webaddress"])?></a>
+			&nbsp;<a href="<?php echo $therecord["webaddress"]?>" target="_blank"><?php echo htmlspecialchars($therecord["webaddress"])?></a>
 		</p>
 		<?php } ?>
 
 		<?php if($therecord["comments"]){?>
 		<h2>Memo</h2>
-		<p id="RDMemo"><?php echo str_replace("\n","<br />",htmlentities($therecord["comments"]))?></p>
+		<p id="RDMemo"><?php echo str_replace("\n","<br />",htmlspecialchars($therecord["comments"]))?></p>
 		<?php } ?>
 	</div>
 	<div id="endClient"></div>

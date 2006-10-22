@@ -108,8 +108,8 @@
 <?php require("../../head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css">
 
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">

@@ -82,7 +82,7 @@
 <?php require("../../head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
 	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
 </script>
 </head>

@@ -50,7 +50,7 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/discount.js"></script>
 </head>
 <body onLoad="init()"><?php include("../../menu.php")?>

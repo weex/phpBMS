@@ -57,8 +57,8 @@ function field_text($name,$value="",$required=false,$message="",$type="",$attrib
 	*/
 	?><input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo htmlQuotes($value) ?>" <?php 
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><?php if ($required) { ?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php } //end required if 
-	if ($type) {?><script language="JavaScript"><?php echo $type?>Array[<?php echo $type?>Array.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php }//end $type if
+	?> /><?php if ($required) { ?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php } //end required if 
+	if ($type) {?><script language="JavaScript" type="text/javascript"><?php echo $type?>Array[<?php echo $type?>Array.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php }//end $type if
 }//end function
 
 
@@ -172,7 +172,7 @@ function field_email($name,$value,$attributes){
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonEmail" onclick="openEmail('<?php echo $name?>')" title="Send E-Mail"><span>send e-mail</span></button>
-	<script language="JavaScript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
+	<script language="JavaScript" type="text/javascript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
 }
 
 //============================================================================================
@@ -189,7 +189,7 @@ function field_web($name,$value="http://",$attributes=""){
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonWWW" onclick="openWebpage('<?php echo $name?>')" title="Visit site in new window"><span>visit site</span></button>
-	<script language="JavaScript">wwwArray[wwwArray.length]=new Array('<?php echo $name?>','One or more web page fields are invalid.');</script>	
+	<script language="JavaScript" type="text/javascript">wwwArray[wwwArray.length]=new Array('<?php echo $name?>','One or more web page fields are invalid.');</script>	
 	<?php
 }
 
@@ -212,7 +212,7 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> onChange="validateCurrency(this);" style="text-align:right;" /><?php
-	if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
+	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 
 //============================================================================================
@@ -231,7 +231,7 @@ function field_percentage($name,$value,$precision=1,$required=false,$message="",
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onChange") echo " ".$attribute."=\"".$tvalue."\"";
 	?> onChange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"] ?>" style="text-align:right;" /><?php
-	if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
+	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 
 
@@ -251,8 +251,8 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 			if($attribute!="onChange") 
 				echo " ".$attribute."=\"".$tvalue."\"";				
 	?> onchange="formatDateField(this);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"]?>" /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick date</span></button>
-	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
-	?><script language="JavaScript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
+	<?php if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
+	?><script language="JavaScript" type="text/javascript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function
 
 //============================================================================================
@@ -268,8 +268,8 @@ function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";				
 	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick time</span></button>
-	<?php if ($required) {?><script language="JavaScript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
-	?><script language="JavaScript">timeArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
+	<?php if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
+	?><script language="JavaScript" type="text/javascript">timeArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function
 
 
@@ -307,7 +307,7 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 
 	?>
 	<input type="hidden" name="<?php echo $fieldname?>" id="<?php echo $fieldname?>" value="<?php echo $initialvalue?>" />
-	<script language="javascript">
+	<script language="JavaScript" type="text/javascript">
 		autofill["<?php echo $fieldname?>"]=new Array();
 		autofill["<?php echo $fieldname?>"]["ch"]="";
 		autofill["<?php echo $fieldname?>"]["uh"]="";
@@ -324,7 +324,7 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 		if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="class") echo " ".$attribute."=\"".$tvalue."\"";
 	?> value="<?php echo htmlQuotes($displayresult["display"]) ?>" onkeyup="autofillChange(this);return true;" onblur="setTimeout('blurAutofill(\'<?php echo $fieldname ?>\')', 50)"  onkeydown="captureKey(event)" />
 	<?php if ($required) {
-		?><script language="JavaScript">
+		?><script language="JavaScript" type="text/javascript">
 			requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');
 		</script><?php
 	}//end required if

@@ -53,9 +53,9 @@ function showSystemMessages(){
 	<div class="box" id="systemMessageContainer">	
 		<h2>System Messages</h2>
 		<?php while($therecord=mysql_fetch_array($queryresult)) {
-				$therecord["content"]=str_replace("\n","<br />",htmlentities($therecord["content"]));
+				$therecord["content"]=str_replace("\n","<br />",htmlspecialchars($therecord["content"]));
 		?>
-		<h3 class="systemMessageLinks"><?php echo htmlentities($therecord["subject"])?> <span>[ <?php echo htmlentities(formatDateTime($therecord["creationdate"]))?> <?php echo htmlentities($therecord["createdby"])?>]</span></h3>			
+		<h3 class="systemMessageLinks"><?php echo htmlspecialchars($therecord["subject"])?> <span>[ <?php echo htmlspecialchars(formatDateTime($therecord["creationdate"]))?> <?php echo htmlspecialchars($therecord["createdby"])?>]</span></h3>			
 		<div class="systemMessages">
 			<p><?php echo $therecord["content"]?></p>
 		</div>						
@@ -120,9 +120,9 @@ function showTasks($userid,$type="Tasks"){
 		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
 		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
-		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo htmlentities($therecord["subject"])?></a>
-		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlentities(dateFormat($therecord["enddate"])) ?>)</em><?php } ?>
-		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlentities(getUserName($tid))?>)</em><?php } ?>
+		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlspecialchars($therecord["subject"])?></a>
+		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlspecialchars(dateFormat($therecord["enddate"])) ?>)</em><?php } ?>
+		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlspecialchars(getUserName($tid))?>)</em><?php } ?>
 	</p>
 	<?php } } else {
 	?><p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
@@ -154,7 +154,7 @@ function showSevenDays($userid){
 				}
 				?><tr>
 					<td class="small event" nowrap valign="top"><?php echo $times?></td>
-					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo htmlentities($therecord["subject"])?></a></td>
+					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo htmlspecialchars($therecord["subject"])?></a></td>
 				</tr><?php
 			}
 		} else {

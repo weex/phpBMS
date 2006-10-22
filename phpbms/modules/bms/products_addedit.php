@@ -53,11 +53,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css">
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
 	var numcats=<?php echo $catnumber?>;
 </script>
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/product.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
@@ -149,13 +149,13 @@
 			<p>
 				<label for="unitprice" class="important">sell price</label><br />
 				<?PHP field_dollar("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
-				<script language="javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
+				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
 			</p>
 			
 			<p class="costsP">
 				<label for="unitcost">cost</label><br />
 				<?PHP field_dollar("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
-				<script language="javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>								
+				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>								
 			</p>			
 			<p class="costsP">
 				<label for="markup">mark-up</label><br />

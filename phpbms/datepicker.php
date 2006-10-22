@@ -54,7 +54,7 @@
 			$selDate=NULL;
 			$displayLongDate="Click a Date";
 		}		
-?><script language="javascript">displayLongDate="<?php echo $displayLongDate ?>";</script>
+?><script language="JavaScript" type="text/javascript">displayLongDate="<?php echo $displayLongDate ?>";</script>
 	<?php 
 	?><table class="dp" cellspacing="0" cellpadding="0" border=0>
 	<tr>

@@ -50,9 +50,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
-<script language="JavaScript">
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
 	function checkPassword(theform){
 		if(theform["password"].value!=theform["password2"].value && theform["command"].value!="cancel"){
 			alert("Passwords did not match.");

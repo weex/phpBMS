@@ -47,13 +47,15 @@ String.prototype.htmlEntities = function()
 	  if(charCode==38 || charCode==60 || charCode==62 || charCode==96 || charCode>125)
 		chars[chars.length]=newString[i]
 	}
+
+	//this if was put in cuz IE is retarded
+	if(chars[0])
+		for (var i = 0; i < chars.length; i++){
+			myRegExp = new RegExp();
+			myRegExp.compile(chars[i],'g');
 	
-	for (var i = 0; i < chars.length; i++)
-	{
-		myRegExp = new RegExp();
-		myRegExp.compile(chars[i],'g')
-		newString = newString.replace (myRegExp, '&#' + chars[i].charCodeAt(0) + ';');
-	}	
+			newString = newString.replace (myRegExp, '&#' + chars[i].charCodeAt(0) + ';');
+		}
 	
 	return newString;
 }

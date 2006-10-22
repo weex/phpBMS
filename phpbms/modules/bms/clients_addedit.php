@@ -55,9 +55,9 @@
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css">
 <script language="JavaScript" src="javascript/client.js"></script>
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
@@ -153,7 +153,7 @@
 			<p id="firstnameP">
 				<label for="firstname" class="important">first name</label><br />
 				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" tabindex=1;/>
-				<script language="javascript">var thefirstname=getObjectFromID("firstname");thefirstname.focus()</script>
+				<script language="JavaScript" type="text/javascript">var thefirstname=getObjectFromID("firstname");thefirstname.focus()</script>
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />

@@ -114,8 +114,8 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<script language="JavaScript" src="../../common/javascript/fields.js"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js"></script>
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/clientemail.js"></script>
 </head>
 <body><?php include("../../menu.php")?>
@@ -138,7 +138,7 @@
 				</select>
 				<?php if($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all"){
 					?>
-						<script language="javascript">
+						<script language="JavaScript" type="text/javascript">
 							thediv=getObjectFromID("showsavedsearches");
 							thediv.style.display="block";
 						</script>
@@ -156,7 +156,7 @@
 				
 				<?php 
 					if(!is_numeric($therecord["emailfrom"])){
-					?><script language="javascript">
+					?><script language="JavaScript" type="text/javascript">
 							thefield=getObjectFromID("ds-email");
 							thefield.value="<?php echo $therecord["emailfrom"] ?>";
 					</script>
@@ -204,7 +204,7 @@
 			</div>
 		</div>
 <?php } elseif($thecommand=="send email"){?>
-		<script language="javascript">		
+		<script language="JavaScript" type="text/javascript">		
 			ids=new Array();			
 			emails=new Array();
 			names= new Array();

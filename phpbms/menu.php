@@ -65,7 +65,7 @@ function getSubItems($parentid){
 	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
 
 	<div id="menuRighthandButtons">
-		<a href="/click for information/"  name="toptop" id="loggedinuser" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a>		
+		<a href="/"  name="toptop" id="toptop" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></a>		
 		<button name="menuLogout" type="button" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')" title="log out" class="smallButtons">log out</button>
 		<button name="menuHelp" type="button" onClick="showHelp('<?php echo $_SESSION["app_path"]?>')" title="Help" class="smallButtons">?</button>
 	</div>
@@ -80,7 +80,7 @@ function getSubItems($parentid){
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}
-				else { ?><li><a href=""  id="menu<?php echo $menurecord["id"]?>"  onclick="expandMenu(this);return false;" onmouseover="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><ul class="submenuitems" style="display:none;" id="submenu<?php echo $menurecord["id"]?>"><?php 
+				else { ?><li><a href="/"  id="menu<?php echo $menurecord["id"]?>"  onclick="expandMenu(this);return false;" onmouseover="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems"id="submenu<?php echo $menurecord["id"]?>"><?php 
 					$submenustring.=$menurecord["id"].",";
 					$subitemsquery=getSubItems($menurecord["id"]);
 					if($subitemsquery){
@@ -98,12 +98,12 @@ function getSubItems($parentid){
 							}//end if
 						}//end while
 					}//end if
-					?></ul><?php ;
+					?></ul></li><?php ;
 				}//end if
 			}//end if
 		}//end while
 		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
-	?></ul></div><script language="JavaScript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
+	?></ul></div><script language="JavaScript" type="text/javascript">var subMenuArray="<?php echo $submenustring ?>".split(",");</script>
 <?PHP if (isset($statusmessage)) {?>
 <div id="statusmessage">
 	<div id="SMLeft">
@@ -112,7 +112,7 @@ function getSubItems($parentid){
 		</div>
 	</div>
 </div>
-<script language="javascript">
+<script language="JavaScript" type="text/javascript">
 	var statusM=getObjectFromID("statusmessage");
 	var SMAni=new fx.Combo(statusM,{opacity:false,duration:500});
 	SMAni.hide();

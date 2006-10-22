@@ -1,5 +1,5 @@
 INSERT INTO tablecolumns VALUES (1,2,'id','clients.id','center','',0,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (2,2,'type','if(clients.type=\"prospect\",\"<span style=\'color:red;\'>P</span>\",\"<b>C</b>\")','center','',1,'',0,'',NULL);
+INSERT INTO tablecolumns VALUES (2,2,'type','if(clients.type=\"prospect\",\"<span style=\'color:red;\'>P</span>\",\"<b>C</b>\")','center','',1,'',0,'','noencoding');
 INSERT INTO tablecolumns VALUES (12,2,'name / company','if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)','left','',2,'',0,'100%',NULL);
 INSERT INTO tablecolumns VALUES (16,2,'city','clients.city','left','',4,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (17,2,'state','clients.state','left','',5,'',0,'',NULL);
@@ -8,7 +8,7 @@ INSERT INTO tablecolumns VALUES (44,3,'id','invoices.id','left','',0,'',0,'',NUL
 INSERT INTO tablecolumns VALUES (45,3,'type','invoices.type','left','',1,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (134,3,'status','invoices.status','left','',2,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (46,3,'date','if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate)','left','',4,'',0,'','date');
-INSERT INTO tablecolumns VALUES (47,3,'client name / company','concat(\"<strong>\",if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\")','left','',5,'concat(clients.lastname,clients.firstname,clients.company)',0,'100%',NULL);
+INSERT INTO tablecolumns VALUES (47,3,'client name / company','concat(\"<strong>\",if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\")','left','',5,'concat(clients.lastname,clients.firstname,clients.company)',0,'100%','noencoding');
 INSERT INTO tablecolumns VALUES (139,5,'id','lineitems.id','left','',0,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (48,3,'total','if(invoices.type!=\"VOID\",invoices.totalti,\"-----\")','right','sum(if(invoices.type!=\"VOID\",invoices.totalti,0))',6,'if(invoices.type!=\"VOID\",invoices.totalti,0)',0,'','currency');
 INSERT INTO tablecolumns VALUES (49,3,'due','if(invoices.type!=\"VOID\",invoices.totalti-invoices.amountpaid,\"-----\")','right','sum(if(invoices.type!=\"VOID\",(invoices.totalti-invoices.amountpaid),0))',7,'if(invoices.type!=\"VOID\",invoices.totalti-invoices.amountpaid,0)',0,'','currency');
@@ -21,7 +21,7 @@ INSERT INTO tablecolumns VALUES (56,5,'price ext.','lineitems.unitprice*lineitem
 INSERT INTO tablecolumns VALUES (57,5,'cost ext.','lineitems.unitcost*lineitems.quantity','right','sum(lineitems.unitcost*lineitems.quantity)',9,'',0,'','currency');
 INSERT INTO tablecolumns VALUES (58,5,'total wt.','format((lineitems.unitweight*lineitems.quantity),2)','right','format(sum(lineitems.unitweight*lineitems.quantity),2)',11,'lineitems.unitweight*lineitems.quantity',0,'',NULL);
 INSERT INTO tablecolumns VALUES (59,6,'id','tax.id','center','',0,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (60,6,'name','concat(\"<strong>\",tax.name,\"</strong>\")','left','',1,'tax.name',0,'',NULL);
+INSERT INTO tablecolumns VALUES (60,6,'name','concat(\"<strong>\",tax.name,\"</strong>\")','left','',1,'tax.name',0,'','noencoding');
 INSERT INTO tablecolumns VALUES (61,6,'percentage','concat(tax.percentage,\"%\")','left','',2,'tax.percentage',0,'98%',NULL);
 INSERT INTO tablecolumns VALUES (62,4,'id','products.id','center','',0,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (63,4,'part number','products.partnumber','left','',1,'',0,'',NULL);
@@ -37,14 +37,14 @@ INSERT INTO tablecolumns VALUES (72,8,'part number','products.partnumber','left'
 INSERT INTO tablecolumns VALUES (73,8,'name','products.partname','left','',2,'',1,'50%',NULL);
 INSERT INTO tablecolumns VALUES (74,8,'dependent part num.','childproducts.partnumber','left','',3,'',0,'50%',NULL);
 INSERT INTO tablecolumns VALUES (75,18,'id','clients.id','center','',0,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (76,18,'type','if(clients.type=\"prospect\",\"<span style=\'color:red;\'>P</span>\",\"<b>C</b>\")','left','',1,'clients.type',0,'',NULL);
+INSERT INTO tablecolumns VALUES (76,18,'type','if(clients.type=\"prospect\",\"<span style=\'color:red;\'>P</span>\",\"<b>C</b>\")','left','',1,'clients.type',0,'','noencoding');
 INSERT INTO tablecolumns VALUES (77,18,'company / name','if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)','left','',2,'',1,'100%',NULL);
 INSERT INTO tablecolumns VALUES (79,18,'city','clients.city','left','',3,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (80,18,'state','clients.state','center','',4,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (81,18,'postal code','clients.postalcode','left','',5,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (102,2,'e-mail','clients.email','left','',3,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (103,22,'name','clientemailprojects.name','left','',2,'',0,'100%',NULL);
-INSERT INTO tablecolumns VALUES (104,22,'user','if(clientemailprojects.userid=0,\"<b>global</b>\",concat(users.lastname,\", \",users.firstname))','left','',1,'',0,'',NULL);
+INSERT INTO tablecolumns VALUES (104,22,'user','if(clientemailprojects.userid=0,\"<b>global</b>\",concat(users.lastname,\", \",users.firstname))','left','',1,'',0,'','noencoding');
 INSERT INTO tablecolumns VALUES (105,22,'last run','clientemailprojects.lastrun','right','',3,'',0,'','datetime');
 INSERT INTO tablecolumns VALUES (106,22,'id','clientemailprojects.id','left','',0,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (136,25,'id','discounts.id','left','',0,'',0,'',NULL);

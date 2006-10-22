@@ -45,3 +45,6 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 
 .eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
 .event{padding:4px;padding-bottom:6px;}
+
+#bmsBox button{display:block;float:right;margin:2px 2px 0 0;}
+#bmsBox h2{margin:0 0 4px;}

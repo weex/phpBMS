@@ -86,7 +86,7 @@
 function displayQueryHeader(){
 	?>
 	<input name="newsort" type="hidden" value=""><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults"><tr>
-	<script language="javascript">selIDs=new Array();</script>
+	<script language="JavaScript" type="text/javascript">selIDs=new Array();</script>
 	<?php
 	$columncount=count($this->thecolumns);
 	$i=1;
@@ -94,13 +94,13 @@ function displayQueryHeader(){
 	foreach ($this->thecolumns as $therow){ ?>
 <th nowrap align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
 	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>">
-	<a href="" onClick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
+	<a href="/" onClick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
 	<?php
 		// If sorting on this column give the option to reverse the sort order.
 		if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
-	{?>&nbsp;<a href="" onClick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" width=10 height=10 border=0></a><input name="desc" type="hidden" value="">
+	{?>&nbsp;<a href="/" onClick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" width=10 height=10 border=0></a><input name="desc" type="hidden" value="">
 <?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
-{?> &nbsp;<a href="" onClick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" width=10 height=10 border=0></a>
+{?> &nbsp;<a href="/" onClick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" width=10 height=10 border=0></a>
 <?php }	?></th><?php
 		$i++;
 	}//end foreach
@@ -120,10 +120,10 @@ function displayQueryHeader(){
 				?><tr class="qr<?php echo $rownum?>" id="r-<?php echo $therecord["theid"]?>" <?php
 
 				if ($this->options["select"]) {
-					?> onClick="clickIt(this,event,'<?php echo $this->isselect?>')" <?php 
+					?> onclick="clickIt(this,event,'<?php echo $this->isselect?>')" <?php 
 				}
 				if ($this->options["edit"]) {
-					?> onDblClick="editThis(this);"<?php 
+					?> ondblclick="editThis(this);"<?php 
 				}
 				?> ><?php 
 				
@@ -260,7 +260,7 @@ function displayQueryHeader(){
 <head>
 <title>Choose</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<script language="JavaScript">
+<script language="JavaScript" type="text/javascript">
 function sendInfo(name,thevalue,thedisplay){
 	//stupid browser incompatibilities
 		//netscape
@@ -400,11 +400,11 @@ function sendInfo(name,thevalue,thedisplay){
 	}
 ?>
 <ul class="tabs">
-	<li id="basicSearchT" class="tabsSel"><a href="" onClick="switchSearchTabs(this);return false">basic</a></li>
-	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
-	<li id="loadSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
-	<li id="saveSearchT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
-	<li id="advancedSortT"><a href="" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
+	<li id="basicSearchT" class="tabsSel"><a href="/" onClick="switchSearchTabs(this);return false">basic</a></li>
+	<?PHP if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
+	<li id="loadSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
+	<li id="saveSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
+	<li id="advancedSortT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
 </ul>
 <div class="box" id="searchBox">
 	<div id="basicSearchTab">
@@ -446,7 +446,7 @@ function sendInfo(name,thevalue,thedisplay){
 			</td>
 			<td width="100%" nowrap valign="top" >
 				<p><label for="startswith">starts with</label><br />
-					<input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="javascript">setMainFocus()</script>
+					<input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="JavaScript" type="text/javascript">setMainFocus()</script>
 				</p>
 			</td>
 			<td align="left" valign="top" nowrap class="small">
@@ -586,11 +586,11 @@ function displayQueryButtons() {
 				<option value="">_____________</option>
 				<option value="keepselected" title="(alt+k)">keep selected</option>
 				<option value="omitselected" title="(alt+o)" >omit selected</option>
-			</select><a href="" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
+			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="-1"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="-1"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="-1"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="-1"></a><?php } 
 		
 		}//end if numrows	
 		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?PHP }//end accesslevel?>
-		</div><script language="javascript">
+		</div><script language="JavaScript" type="text/javascript">
 	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
 	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";
 	</script><?php	

@@ -89,7 +89,7 @@
 	<?php 	
 	mysql_data_seek($modulequery,0);	
 	while($modulerecord=mysql_fetch_array($modulequery)){
-		@ include "../".$modulerecord["name"]."/snapshot.php";
+		 include "../".$modulerecord["name"]."/snapshot.php";
 	}//end while 
 	?>
 	</div>

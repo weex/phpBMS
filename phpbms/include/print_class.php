@@ -96,12 +96,12 @@
 			if(mysql_num_rows($this->reports)){
 				mysql_data_seek($this->reports,0);
 
-				?><script language="JavaScript"><?php 
+				?><script language="JavaScript" type="text/javascript"><?php 
 				while($therecord=mysql_fetch_array($this->reports)){
 					?>theReport[theReport.length]=new Array(<?php echo $therecord["id"]?>,"<?php echo $therecord["reportfile"]?>","<?php echo addslashes($therecord["name"])?>","<?php echo $therecord["type"]?>","<?php echo addcslashes(addslashes($therecord["description"]),"\r\n")?>");<?php 
 				 }	 
 				?></script><?php 
-			} else { ?><script language="JavaScript">theReport[theReport.length]=new Array(0,"","No Reports Available","","");</script><?php 
+			} else { ?><script language="JavaScript" type="text/javascript">theReport[theReport.length]=new Array(0,"","No Reports Available","","");</script><?php 
 			}
 		}
 		

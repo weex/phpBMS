@@ -308,7 +308,7 @@ if(isset($_POST["command"])){
 	<title>Invoice Totals</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<?php require("../../../head.php")?>
-	<script language="javascript">
+	<script language="JavaScript" type="text/javascript">
 		function moveItem(id,direction,theform){
 			var additem,removeitem,tempText,tempValue;
 			
