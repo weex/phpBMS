@@ -320,11 +320,13 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 		autofill["<?php echo $fieldname?>"]["vl"]="<?php echo htmlQuotes($displayresult["display"]) ?>";
 		appPath="<?php echo $_SESSION["app_path"]?>";
 	</script>
-	<input autocomplete="off" type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>"  class="autofillField <?php if(isset($attributes["class"])) echo $attributes["class"] ?>" title="Use '%' for wildcard." <?php 
+	<input type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>"  class="autofillField <?php if(isset($attributes["class"])) echo $attributes["class"] ?>" title="Use '%' for wildcard." <?php 
 		if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="class") echo " ".$attribute."=\"".$tvalue."\"";
 	?> value="<?php echo htmlQuotes($displayresult["display"]) ?>" onkeyup="autofillChange(this);return true;" onblur="setTimeout('blurAutofill(\'<?php echo $fieldname ?>\')', 50)"  onkeydown="captureKey(event)" />
 	<?php if ($required) {
 		?><script language="JavaScript" type="text/javascript">
+			var display=getObjectFromID("ds-<?php echo $fieldname?>");
+			display.autocomplete="off";
 			requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');
 		</script><?php
 	}//end required if

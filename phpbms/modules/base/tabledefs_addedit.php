@@ -51,7 +51,7 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tabledefs.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 </head>
@@ -60,89 +60,110 @@
 
 <?php tabledefs_tabs("General",$therecord["id"]);?><div class="bodyline">
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
-	<div style="float:right;width:160px;">
+	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
-	<h1 style="margin-right:165px;"><?php echo $pageTitle ?></h1>
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 		  
 	
-	<fieldset style="clear:both;float:right;width:200px;">
+	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">				
-		</label>
-		<label for="type">
-			type<br />
-			<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>
-		</label>
-		<label for="ds-moduleid">
-			module<br />
-			<?php autofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32","style"=>"width:98%",true,"Module is requred.")) ?>
-		</label>
-		<label for="deletebutton">
-			delete button name<br />
-			<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20">
-		</label>		
+		<p>
+			<label for="id">id</label><br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
+		</p>
+		<p>
+			<label for="type" class="important">type</label><br />
+			<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>		
+		</p>
+		<div class="fauxP">
+			<label for="ds-moduleid">module</label><br />
+			<?php autofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32"),true,"Module is requred.") ?>		
+		</div>
+		<p>
+			<label for="deletebutton">delete button name</label><br />
+			<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20" /><br />
+		</p>
 	</fieldset>
 
-	<div style="margin-right:210px;">
+	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="displayname">display name</label></legend>
-			<label>
-				<?php field_text("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"width:98%","class"=>"important")); ?>
-			</label>
+			<p>
+				<br />
+				<?php field_text("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+			</p>				
 		</fieldset>
+		
 		<fieldset>
-			<legend>sql</legend>
-			<label for="maintable">
-				primary table<br />
-				<?php field_text("maintable",$therecord["maintable"],1,"Main Table cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"")); ?>			
-			</label>
-			<label for="querytable">
-				sql query table <em>(SQL FROM clause)</em><br />
-				<?php field_text("querytable",$therecord["querytable"],1,"Query Table cannot be blank.","",Array("size"=>"32","maxlength"=>"255","style"=>"width:98%")); ?>
-			</label>
-			<div class=small>
-				<em>The sql query table represents the FROM clause of the sql statement.  
-				For some tables definitions, two tables with a JOIN / ON or separated by comments.</em>
-			</div>
+			<legend>Table</legend>
+			<p>
+				<label for="maintable">primary table name</label><br />
+				<?php field_text("maintable",$therecord["maintable"],1,"Primary table name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"")); ?>
+			</p>
+			<p>
+				<label for="querytable">search/display SQL FROM clause</label><br />
+				<textarea id="querytable" name="querytable" rows="3"><?php echo htmlQuotes($therecord["querytable"])?></textarea><br />
+				<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('querytable','Search/Display SQL FROM clause cannot be blank.');</script>
+				<span class="notes">
+					Note: For simple tables, entering the same information as the primary table name is sufficient.<br />
+					For complex data views that invlolve multiple tables, you will want to enter the SQL's FROM clause.<br /><br />
+					For example, for invoices, you want to show both the invoice information and the client's name, so you would enter:<br />
+					invoices INNER JOIN clients ON invoices.clientid=clients.id
+				</span>
+			</p>			
 		</fieldset>
 	</div>
+	
 	<fieldset>
 		<legend>file references</legend>
-		<label for="addfile">
-			add file<br />
-			<?php field_text("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
-		</label>
-		<label for="editfile">
-			edit file<br />
-			<?php field_text("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"width:98%")); ?>
-		</label>		
+		<p>
+			<label for="addfile">add new record file name</label><br />
+			<?php field_text("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?>
+		</p>
+		<p>
+			<label for="editfile">edit record file name</label><br />
+			<?php field_text("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?>		
+		</p>
+		<p class="notes">
+			Location of add and edit files, including path from phpBMS root.  In most cases, they should be the same.
+		</p>
 	</fieldset>
 	
 	<fieldset>
-		<legend>defaults</legend>
-		<label for="defaultwhereclause">
-			search <em>(SQL WHERE clause)</em><br />
-			<textarea id="defaultwhereclause" name="defaultwhereclause" cols="32" rows="3" style="width:98%"><?php echo $therecord["defaultwhereclause"]?></textarea>
-		</label>
-		<label for="defaultsordorder">
-			sort order <em>(SQL ORDER BY clause)</em><br />
-			<textarea id="defaultsortorder" name="defaultsortorder" cols="32" rows="3" style="width:98%"><?php echo $therecord["defaultsortorder"]?></textarea>
-		</label>
-		<label for="defaultsearchtype">
-			search type<br />
-			<?php basic_choicelist("defaultsearchtype",$therecord["defaultsearchtype"],Array(Array("name"=>"none","value"=>""),Array("name"=>"search","value"=>"search")));?>
-		</label>
-		<label for="defaultcriteriafindoptions">
-			critera: selected find option <em>(quick search)</em><br/>
-			<textarea id="defaultcriteriafindoptions" name="defaultcriteriafindoptions" cols="32" rows="3" style="width:98%"><?php echo $therecord["defaultcriteriafindoptions"]?></textarea>
-		</label>
-		<label for="defaultcriteriaselection">
-			criteria: selected search field <br />
-			<textarea id="defaultcriteriaselection" name="defaultcriteriaselection" cols="32" rows="3" style="width:98%"><?php echo $therecord["defaultcriteriaselection"]?></textarea>
-		</label>
+		<legend>search/display defaults</legend>
+		<p>
+			<label for="defaultwhereclause">default search</label> <span class="notes">SQL WHERE clause</span><br />
+			<textarea id="defaultwhereclause" name="defaultwhereclause" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultwhereclause"])?></textarea>			
+			<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('defaultwhereclause','default search cannot be blank.');</script>
+		</p>
+		
+		<p>
+			<label for="defaultsortorder">default sort order</label> <span class="notes">SQL ORDER BY clause</span><br />
+			<textarea id="defaultsortorder" name="defaultsortorder" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultsortorder"])?></textarea>			
+			<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('defaultsortorder','default sort order cannot be blank.');</script>
+		</p>
+		<p>
+			Is default search a quick search item?<br />
+			<input type="radio" id="defaultsearchtypeNone" name="defaultsearchtype" class="radiochecks" value="" <?php if($therecord["defaultsearchtype"]=="") echo "checked=\"checked\""?> />
+			<label for="defaultsearchtypeNone">no</label>&nbsp;
+			
+			<input type="radio" id="defaultsearchtypeSearch" name="defaultsearchtype" class="radiochecks" value="search" <?php if($therecord["defaultsearchtype"]=="search") echo "checked=\"checked\""?> />
+			<label for="defaultsearchtypeNone">yes</label>&nbsp;			
+		</p>
+
+		<p>
+			If yes to the above question:
+		</p>
+		<p>
+			<label for="defaultcriteriafindoptions">critera: selected find option</label> <span class="notes">(quick search)</span><br/>
+			<textarea id="defaultcriteriafindoptions" name="defaultcriteriafindoptions" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultcriteriafindoptions"])?></textarea>
+		
+		</p>
+		<p>
+			<label for="defaultcriteriaselection">criteria: selected search field</label><br />
+			<textarea id="defaultcriteriaselection" name="defaultcriteriaselection" cols="32" rows="4" ><?php echo htmlQuotes($therecord["defaultcriteriaselection"])?></textarea>		
+		</p>
 	</fieldset>
 	
 	<?php include("../../include/createmodifiedby.php"); ?>
