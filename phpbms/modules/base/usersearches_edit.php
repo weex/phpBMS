@@ -50,63 +50,73 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/usersearches.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-
-
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
-	<div style="float:right;width:160px;">
+	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
-	<h1 style="margin-right:165px;"><?php echo $pageTitle ?></h1>
-	<fieldset class="box" style="float:right;width:200px;">
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+	
+	<fieldset id="fsAttributes">
 		<legend>attirbutes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">				
-		</label>
-		<label for="type">
-			type<br />
-			<?php basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true","style"=>"width:98%")); ?>
-		</label>
-		<label for="tabledefid">
-			table<br />
-			<?php displayTables("tabledefid",$therecord["tabledefid"]) ?>
-		</label>
-		<label for="username">
-			user<br />
-			<input id="username" name="username" type="text" value="<?php echo htmlQuotes($username) ?>" size="32" readonly="true" class="uneditable">
-		</label>
+		<p>
+			<label for="id">id</label><br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>
+		</p>
+		
+		<p>
+			<label for="type">type</label><br />
+			<?php basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true")); ?>		
+		</p>
+		
+		<p>
+			<label for="tabledefid">table</label><br />
+			<?php displayTables("tabledefid",$therecord["tabledefid"]) ?>		
+		</p>
+		
+		<p>
+			<label for="username">user</label><br />
+			<input id="username" name="username" type="text" value="<?php echo htmlQuotes($username) ?>" size="32" readonly="true" class="uneditable" />
+		</p>
+		
 		<?php if($therecord["userid"]!=0) {?>
-		<label for="makeglobal" style="text-align:center"><input id="makeglobal" name="makeglobal" type="checkbox" class="radiochecks" value="1"> make global</label>
+		<p>
+			<input id="makeglobal" name="makeglobal" type="checkbox" class="radiochecks" value="1" /><label for="makeglobal">make global</label>
+		</p>
 		<?php } else {?>
-		<label for="accesslevel">
-			access level<br />
-			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>			
-		</label>
+		<p>
+			<label for="accesslevel">access level</label><br />
+			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>
+		</p>
 		<?php } ?>
 	</fieldset>
-	<fieldset>
-		<legend>name / sql</legend>
-		<label for="name">
-			name<br />
-			<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"")); ?>
-		</label>
-		<label for="sqlclause">
-			sql clause<br />
-			<textarea id="sqlclause" name="sqlclause" cols="62" rows="10"><?php echo $therecord["sqlclause"]?></textarea>
-		</label>
-	</fieldset>
 
-<div class="box" align="right" style="clear:both;">
-	<div style="padding:0px;margin:0px;">
-		<?php showSaveCancel(2); ?>
+	<div id="leftSideDiv">
+		<fieldset>
+			<legend>name / sql</legend>
+			<p>
+				<label for="name" class="important">name</label><br />
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","classe"=>"important")); ?>
+			</p>
+			
+			<p>
+				<label for="sqlclause">SQL where clause</label><br />
+				<textarea id="sqlclause" name="sqlclause" cols="62" rows="12"><?php echo htmlQuotes($therecord["sqlclause"])?></textarea>
+			</p>
+		</fieldset>
 	</div>
-	<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
-</div>
+
+	<div class="box" id="createmodifiedby">
+		<div id="savecancel2"><?php showSaveCancel(2)?></div>
+		<div>
+			<br /><br /><br /><br />
+			<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
+		</div>		
+	</div>
 </div>
 <?php include("../../footer.php");?>
 </form>
