@@ -56,16 +56,25 @@ function create_tabs($tabarray,$selected="none") {
 	foreach($tabarray as $theitem){
 		if(!isset($theitem["disabled"])) $theitem["disabled"]=false;
 		if(!isset($theitem["notify"])) $theitem["notify"]=false;
-		
-		if ($theitem["name"]==$selected) $theclass="tabsSel"; else $theclass="tabs";
-		
+				
 		?><li <?php if($theitem["name"]==$selected) echo "class=\"tabsSel\"" ?>><?php
 
-		if ($theitem["name"]==$selected || $theitem["disabled"]) echo "<span>".$theitem["name"]."</span>";
-		else echo "<a href=\"".$theitem["href"]."\">".$theitem["name"]."</a>";
-		if ($theitem["notify"]) {
-		?> <img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-note.png" alt="*" align="absmiddle" width="16" height="16" border="0"><?php
+		if ($theitem["name"]==$selected || $theitem["disabled"]) {
+			$opener="<div>";
+			$closer="</div>";
 		}
+		else {
+			$opener="<a href=\"".$theitem["href"]."\">";
+			$closer="</a>";
+		}
+
+		if ($theitem["notify"]) {
+			$opener.="<span>";
+			$closer="</span>".$closer;
+		}
+		
+		echo $opener.$theitem["name"].$closer;
+		
 		?></li><?php 
 	}
 	?>
