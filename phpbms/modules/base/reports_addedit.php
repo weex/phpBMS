@@ -51,60 +51,62 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/reports.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-
-
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
-	<div style="float:right;width:160px;">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<div style="margin-right:160px;">
-		<h1><?php echo $pageTitle ?></h1>
-	</div>
+	<div id="topButtons"><?php showSaveCancel(1); ?></div>
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 
-	<fieldset style="float:right;clear:both;width:200px">
+	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:170px" />
-		</label>
-		<label for="type">
-			type<br />
-			<?PHP basic_choicelist("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("style"=>"width:180px","tabindex"=>"15"));?>		
-		</label>
-		<label for="tabledefid">
-			report table<br />
-			<?php displayTables("tabledefid",$therecord["tabledefid"]);?>
-		</label>
-		<label for="displayorder" style="padding-bottom:0px;">
-			display order<br>
-			<?PHP field_text("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?>
-		</label>
-		<div class="small"><em>(higher numbers are displayed first)</em></div>
-		<label for="accesslevel" style="padding-bottom:0px;">
-			access level<br>
+		<p>
+			<label for="id">id</label><br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>		
+		</p>
+		<p>
+			<label for="tabledefid">report table</label><br />
+			<?php displayTables("tabledefid",$therecord["tabledefid"]);?><br />
+			<span class="notes">Note: Use the global option to associate the report with every table in the system.</span>
+		</p>
+		
+		<p>
+			<label for="displayorder">
+			display order</label><br />
+			<?PHP field_text("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
+			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
+		</p>
+		<p>
+			<label for="accesslevel" >access<br /></label>
 			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important","tabindex"=>"30"));?>
-		</label>
+		</p>
 	</fieldset>
-	<fieldset>
-		<legend>name / file / description</legend>
-		<label for="name" class="important">
-			name<br />
-			<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>
-		</label>
-		<label style="margin-bottom:20px;">
-			report file<br />
-			<?PHP field_text("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?>
-		</label>
-		<label for="description">
-			description<br />
-			<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?PHP echo $therecord["description"]?></textarea>
-		</label>
-	</fieldset>
+	<div id="leftSideDiv">
+		<fieldset>
+			<legend>details</legend>
+			<p>
+				<label for="name" class="important">name</label><br />
+				<?PHP field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
+			</p>
+			<p>
+				<label for="type">type</label><br />
+				<?PHP basic_choicelist("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
+			</p>
+			<p>
+				<label for="reportfile">report file</label><br />
+				<?PHP field_text("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
+				<span class="notes">Note: file name should include path</span>
+			</p>
+			
+			<p>
+				<label for="description">description</label><br />
+				<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?PHP echo htmlQuotes($therecord["description"])?></textarea>
+			</p>
+		</fieldset>
+	</div>
+	<p>&nbsp;</p>
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php");?>
