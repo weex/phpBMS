@@ -115,7 +115,7 @@
 			
 			<p>
 				<label for="partname" class="important">name</label><br />
-				<input name="partname" type="text" class="important" id="partname" value="<?php echo htmlQuotes($therecord["partname"])?>" size="42" maxlength="128" tabindex="10">							
+				<input name="partname" type="text" class="important" id="partname" value="<?php echo htmlQuotes($therecord["partname"])?>" size="42" maxlength="128" tabindex="10" />							
 			</p>
 			
 			<p>
@@ -237,7 +237,7 @@
 					<div id="noThumb" class="tiny" align="center">no thumbnail</div>
 				<?php } ?>
 				upload thumbnail<br />
-				<input type="hidden" id="thumbchange" name="thumbchange" value="">
+				<input type="hidden" id="thumbchange" name="thumbchange" value="" />
 				<div id="thumbdelete" style="display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onClick="deletePicture('thumb')" tabindex="260"/></div>
 				<div id="thumbadd" style="display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onChange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
 			</div>
@@ -250,7 +250,7 @@
 					<div id="noPicture" class="tiny" align="center">no picture</div>
 				<?php } ?>
 				upload picture <br />
-				<input type="hidden" id="picturechange" name="picturechange" value="">
+				<input type="hidden" id="picturechange" name="picturechange" value="" />
 				<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onClick="deletePicture('picture')" tabindex="270"/></div>				
 				<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onChange="updatePictureStatus('picture','upload')" tabindex="270"/></div>				
 			</div>
