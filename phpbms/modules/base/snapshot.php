@@ -1,5 +1,7 @@
 <?php
 /*
+ $Rev$ | $LastChangedBy$
+ $LastChangedDate$
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |

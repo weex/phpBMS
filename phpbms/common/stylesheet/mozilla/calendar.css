@@ -1,3 +1,6 @@
+/* $Rev$ | $LastChangedBy$ */
+/* $LastChangedDate$ */
+
 	.dp td, .tpHour td, .tpMinute td{padding:2px; font-size:10px;}
 	.dpHead,.tpHead,.tpHour td:Hover .tpHead{ 
 		font-weight:bold;
