@@ -51,50 +51,54 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/modules.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">			
 <div class="bodyline">
-	<h1><?php echo $pageTitle ?></h1>
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">			
-		<div style="float:right;width:100px;padding:0px;">
-			<fieldset style="margin-top:0px;padding-top:0px;">
-				<legend>attributes</legend>
-				<label for="id">
-					id<br />
-					<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:99%" />
-				</label>
-				<label for="version">
-					version<br />
-					<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable" style="width:99%" />
-				</label>
-			</fieldset>			
-		</div>
-		<div style="margin-right:105px;padding:0px;">
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>	
+	
+		<fieldset id="fsAttributes">
+			<legend>attributes</legend>
+			<p>
+				<label for="id">id</label><br />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>			
+			</p>
+			<p>
+				<label for="version">version</label><br />
+				<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable" />
+			</p>
+		</fieldset>			
+
+		<div id="leftSideDiv">
 			<fieldset>
 				<legend>name / folder</legend>
-				<label for="displayname">
-					name<br />
-					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:99%;" />
-				</label>
-				<label for="name">
-					folder name <em>(location)</em><br>
-					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="8" maxlength="128" readonly="true" class="uneditable" style="width:99%;" />
-				</label>					
+				<p>
+					<label for="displayname">name</label><br />
+					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="45" maxlength="128" readonly="true" class="uneditable" />
+				</p>
+				
+				<p>
+					<label for="name">folder name/location</label><br />
+					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="64" maxlength="128" readonly="true" class="uneditable" />
+				</p>				
 			</fieldset>
 		</div>
-		<fieldset style="clear:both;">
+		<fieldset id="fsDescription">
 			<legend><label for="description">description</label></legend>
-			<div style="padding-top:0px;"><textarea id="description" name="description" rows=7 cols="56" readonly="readonly" class="uneditable" style="width:99%"><?php echo $therecord["description"]?></textarea></div>
+			<p>
+				<br />
+				<textarea id="description" name="description" rows=7 cols="56" readonly="readonly" class="uneditable"><?php echo htmlQuotes($therecord["description"])?></textarea>
+			</p>
 		</fieldset>
 		
-		<div class="box" align="right">
+		<p class="box" align="right">
 			<input name="cancelclick" type="hidden" value="0" />
-			<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" style="width:80px;margin-right:10px;" onClick="this.form.cancelclick.value=true;" />
-			</div>
-	</form>
+			<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" onclick="this.form.cancelclick.value=true;" />
+		</p>
 </div>
+</form>
 </body>
 </html>
