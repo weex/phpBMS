@@ -8,7 +8,7 @@ INSERT INTO tablecolumns VALUES (92,10,'to field','relationships.tofield','left'
 INSERT INTO tablecolumns VALUES (91,10,'from field','relationships.fromfield','left','',2,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (90,10,'to table','totable.displayname','left','',4,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (89,10,'from table','fromtable.displayname','left','',1,'',0,'',NULL);
-INSERT INTO tablecolumns VALUES (93,10,'inherint','relationships.inherint','center','',6,'',0,'','boolean');
+INSERT INTO tablecolumns VALUES (93,10,'inherent','relationships.inherint','center','',6,'',0,'','boolean');
 INSERT INTO tablecolumns VALUES (19,10,'id','relationships.id','center','',0,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (8,11,'id','tabledefs.id','center','',0,'',0,'',NULL);
 INSERT INTO tablecolumns VALUES (9,11,'main table','tabledefs.maintable','left','',4,'',0,'100%',NULL);

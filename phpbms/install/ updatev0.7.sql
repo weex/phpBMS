@@ -12,3 +12,4 @@ INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creatio
 INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('----','N/A',15,45,2,2,'2006-10-19 15:45:18','2006-10-19 21:45:18',90);
 ALTER TABLE tablecolumns CHANGE COLUMN `format` `format` enum('date','time','currency','boolean','datetime','filelink','noencoding') default NULL;
 UPDATE tablecolumns SET format="noencoding" WHERE `column` like "%<%";
+UPDATE tablecolumns SET name="inherent" WHERE id=93; 
