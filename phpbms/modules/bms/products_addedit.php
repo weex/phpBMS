@@ -197,7 +197,7 @@
 			</p>
 			
 			<p>
-				<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?><label for="isprepackaged">pre-packaged</label> <span class="notes">(product is not packed with any other product.)/span>
+				<?PHP field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?><label for="isprepackaged">pre-packaged</label> <span class="notes">(product is not packed with any other product.)</span>
 			</p>
 			<p>
 				<?PHP field_checkbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?><label for="isoversized">oversized</label> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
