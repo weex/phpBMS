@@ -1,4 +1,6 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
+.noselects{cursor:auto}
 
+#column,#sortorder,#footerquery{width:98%}

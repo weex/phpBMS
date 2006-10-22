@@ -50,13 +50,14 @@ require_once("include/adminsettings_include.php");
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/timepicker.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/adminsettings.js"></script>
+<script language="JavaScript" src="javascript/adminsettings.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?><div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return processForm(this);">

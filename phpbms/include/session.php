@@ -104,7 +104,7 @@ function reportError($id,$extras,$format=true,$path="",$die=true){
 	if($path=="" && isset($_SESSION["app_path"]))
 		$path=$_SESSION["app_path"];
 	if($format) {?>	
-		<link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css">		
+		<link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
 		<div class="bodyline">
 			<h1>phpBMS Error: <?php echo $id?></h1>
 			<div class="box">

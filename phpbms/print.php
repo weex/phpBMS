@@ -128,8 +128,8 @@ if (isset($_POST["command"])){
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="common/javascript/print.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="common/javascript/print.js" type="text/javascript"></script>
 
 <?PHP  $tablePrinter->showJavaScriptArray();?>
 </head>

@@ -117,7 +117,7 @@
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
-	<tr class="qr<?php echo $row?>" style="cursor:auto">
+	<tr class="qr<?php echo $row?> noselects">
 		<td nowrap valign="top">
 		 	<button type="button" class="graphicButtons buttonUp" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=moveup&amp;columnid=".$therecord["id"]?>';"><span>Move Up</span></button>
 		 	<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;columnid=".$therecord["id"]?>';"><span>Move Down</span></button>
@@ -157,7 +157,7 @@
 		
 		<p>
 			<label for="column">field</label><br />
-			<textarea id="column" name="column" cols="64" rows="2" style="width:99%"><?php echo $thecolumn["column"] ?></textarea><br />
+			<textarea id="column" name="column" cols="64" rows="2"><?php echo $thecolumn["column"] ?></textarea><br />
 			<span class="notes">This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname)</span>
 		</p>
 		
@@ -180,7 +180,7 @@
 		</p>
 		<p>
 			<label for="sortorder">sorting</label><br />
-			<textarea id="sortorder" name="sortorder" cols="64" rows="2" style="width:99%"><?php echo $thecolumn["sortorder"] ?></textarea><br />
+			<textarea id="sortorder" name="sortorder" cols="64" rows="2"><?php echo $thecolumn["sortorder"] ?></textarea><br />
 			<span class="notes">
 				sorting affects how phpBMS will sort when you click on the cloumn header.  Leave blank if you want the sort to reflect the field exactly.<br />
 				This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname).
@@ -189,7 +189,7 @@
 		
 		<p>
 			<label for="footerquery">footer</label><br />
-			<textarea id="footerquery" name="footerquery" cols="32" rows="2" style="width:99%"><?php echo $thecolumn["footerquery"] ?></textarea><br />
+			<textarea id="footerquery" name="footerquery" cols="32" rows="2"><?php echo $thecolumn["footerquery"] ?></textarea><br />
 			<span class="notes">SQL Group by function (e.g avg(invoices.totalti) whill display the average invoice total at the bottom of the table)</span>
 		</p>
 		<p align="right">

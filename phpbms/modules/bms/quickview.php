@@ -48,7 +48,7 @@
 <title><?php echo $pagetitle?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/quickview.css" rel="stylesheet" type="text/css">
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/quickview.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="./javascript/quickview.js" type="text/javascript" ></script>
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>

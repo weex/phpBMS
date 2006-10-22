@@ -43,10 +43,10 @@ function showHelp(base){
 function checkExpand(theitem){
 	var i,tempDiv;
 	var showid=theitem.id.substring(4);
-	var doswitch=false
+	var doswitch=false;
 	for(i=0;i<subMenuArray.length;i++){
 		tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
-		if(tempdiv.style.display!="none" && subMenuArray[i]!=showid)
+		if(tempdiv.style.display=="block" && subMenuArray[i]!=showid)
 			doswitch=true;
 	}
 	if(doswitch)
@@ -75,7 +75,7 @@ function expandMenu(theitem){
 	var thetop=getTop(theitem);
 	var theleft=getLeft(theitem);
 	specificdiv.style.top=(thetop+theitem.offsetHeight)+"px";
-	specificdiv.style.left=theleft+"px";
+	specificdiv.style.left=(theleft-6)+"px";
 	specificdiv.style.display="block";
 	hideSelectBoxes()
 }

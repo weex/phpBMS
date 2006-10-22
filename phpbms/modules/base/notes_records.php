@@ -80,8 +80,8 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css">
-<script language="JavaScript" src="../../common/javascript/queryfunctions.js"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../../common/javascript/queryfunctions.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
 </script>
@@ -89,7 +89,7 @@
 <body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
-		<form name="search" id="searchform" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
+		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
 		<input name="theids" type="hidden" value="">
 		<?php
 			$displayTable->displayQueryButtons();

@@ -54,10 +54,11 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css"><script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/invoice.js"></script>
+<script language="JavaScript" src="javascript/invoice.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body onLoad="initializePage()"><?php include("../../menu.php")?>

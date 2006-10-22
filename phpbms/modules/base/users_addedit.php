@@ -43,13 +43,14 @@
 	include("include/users_addedit_include.php");
 	
 	$pageTitle="User";
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/users.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
@@ -63,77 +64,83 @@
 </script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return (validateForm(this) && checkPassword(this));"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return (validateForm(this) &amp;&amp; checkPassword(this));"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
-	<div style="float:right;width:160px;"><?php showSaveCancel(1); ?></div>
-	<div style="margin-right:170px;">
-		<h1><?php echo $pageTitle ?></h1>
-	</div>
+	<div id="topButtons"><?php showSaveCancel(1); ?></div>
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 	
-	<fieldset style="float:right;width:200px;margin-top:1px;">
+	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<label for="id">id<br/>
-			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:100%" />
-		</label>
-		<label for="accesslevel" class="important">
-			access level<br/>
-			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>
-		</label>
-		<label for="revoked" style="text-align:center"><?PHP field_checkbox("revoked",$therecord["revoked"])?>revoke access</label>
-		<label for="lastlogin" >
-			last log in<br/>
-			<input id="lastlogin" name="lastlogin" type="text" value="<?php echo $therecord["lastlogin"]; ?>" size="32" maxlength="64" readonly="true" class="uneditable"  />
-		</label>
 		
+		<p>
+			<label for="id">id</label><br />
+			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>		
+		</p>
+
+		<p>		
+			<label for="accesslevel" class="important">access level</label><br />
+			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>		
+		</p>
+		
+		<p><?PHP field_checkbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
 	</fieldset>
 	
-	<fieldset>
-		<legend>name</legend>
-		<label for="firstname" class="important" style="float:left;">
-			first name<br />
-			<?PHP field_text("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"font-weight:bolc;")); ?>
-		</label>
-		<label for="lastname" class="important">
-			last name<br />
-			<?PHP field_text("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"font-weight:bolc;")); ?>					
-		</label>		
-	</fieldset>
-	
-	<fieldset>
-		<legend>log in</legend>
-		<label for="login" class="important">
-			name<br>
-			<?PHP field_text("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
-		</label>
-		<label for="password">
-			set password<br/>
-			<input id="password" name="password" type="password" size="32" maxlength="32" />
-		</label>
-		<label for="password2">
-			confirm password<br />
-			<input id="password2" name="password2" type="password" size="32" maxlength="32" />
-		</label>				
-	</fieldset>
-	
-	<fieldset style="margin-right:216px;">
-		<legend>other</legend>
-		<label for="email">
-			e-mail address<br />
-			<?PHP field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>			
-		</label>
-		<label for="phone">
-			phone/extension<br />
-			<input type="text" id="phone" name="phone" value="<?php echo htmlQuotes($therecord["phone"]) ?>" size="32" maxlength="32" />
-		</label>
-		<label for="department">
-			department<br />
-			<?PHP choicelist("department",$therecord["department"],"department",Array("style"=>"")); ?>			
-		</label>
-		<label for="employeenumber">
-			employee number<br />
-			<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />
-		</label>		
-	</fieldset>
+	<div id="leftSideDiv">
+		<fieldset id="fsName">
+			<legend>name</legend>
+			<p id="firstnameP">
+				<label for="firstname" class="important" >first name</label><br />
+				<?PHP field_text("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
+			</p>
+			<p>
+				<label for="lastname" class="important">last name</label><br />
+				<?PHP field_text("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
+			</p>
+		</fieldset>
+
+		<fieldset>
+			<legend>log in</legend>
+			<p>
+				<label for="login" class="important">name</label><br />
+				<?PHP field_text("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
+			</p>
+
+			<p>
+				<label for="lastlogin" >last log in</label><br />
+				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo $therecord["lastlogin"]; ?>" size="32" maxlength="64" readonly="true" class="uneditable"  />			
+			</p>
+
+			<p>
+				<label for="password">set new password</label><br />
+				<input id="password" name="password" type="password" size="32" maxlength="32" />			
+			</p>
+			
+			<p>
+				<label for="password2">confirm new password</label><br />
+				<input id="password2" name="password2" type="password" size="32" maxlength="32" />
+			</p>
+		</fieldset>
+
+		<fieldset>
+			<legend>contact / user information</legend>
+			<p>
+				<label for="email">e-mail address</label><br />
+				<?PHP field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>						
+			</p>
+			<p>
+				<label for="phone">phone/extension</label><br />
+				<input type="text" id="phone" name="phone" value="<?php echo htmlQuotes($therecord["phone"]) ?>" size="32" maxlength="32" />
+			</p>
+			<p>
+			<label for="department">department</label><br />
+				<?PHP choicelist("department",$therecord["department"],"department"); ?>			
+			</p>
+			<p>
+				<label for="employeenumber">employee number</label><br />
+				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />			
+			</p>
+		</fieldset>
+	</div>	
 
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>

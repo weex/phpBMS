@@ -171,7 +171,7 @@ function addSlashesToArray($thearray){
 }
 
 function htmlQuotes($string){
-	return str_replace("\"","&quot;",$string);
+	return htmlspecialchars($string,ENT_COMPAT);
 }
 
 function htmlFormat($string,$quotes=false){
