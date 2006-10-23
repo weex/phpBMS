@@ -80,12 +80,12 @@ function showTasks($userid,$type="Tasks"){
 		break;
 		case "ReceivedAssignments":
 			$querystatement.=" assignedtoid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
-			$title="Received Assignments";
+			$title="Assignments";
 			$sec=1;
 		break;
 		case "GivenAssignments":
 			$querystatement.=" assignedbyid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
-			$title="Given Assignments";
+			$title="Delegations";
 			$sec=2;
 		break;
 	}

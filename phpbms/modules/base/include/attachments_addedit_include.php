@@ -75,6 +75,7 @@ function setRecordDefaults(){
 //========================================================================================
 	$therecord["id"]=NULL;
 
+	$therecord["attachmentid"]=NULL;
 	$therecord["name"]="";
 	$therecord["description"]="";
 	$therecord["type"]="";

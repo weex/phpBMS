@@ -65,30 +65,28 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/files.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="../base/javascript/file.js"></script>
+<script language="JavaScript" src="../base/javascript/file.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 
 
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
-	<div style="float:right;width:160px;">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<div style="margin-right:160px;">
-		<h1><?php echo $pageTitle ?></h1>
-	</div>
+	<div id="topButtons"><?php showSaveCancel(1); ?></div>
+	
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 
-	<fieldset style="float:right;clear:both;width:170px">
+	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
-		<label for="id">
-			id<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:99%" />
-		</label>
-		<label for="accesslevel" id="accesslevellabel">
-			minimum access level<br />
+		<p>
+			<label for="id">id</label><br />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
+		</p>
+		<p id="accesslevellabel">
+			<label for="accesslevel">access level</label><br />
 			<?php 
 				$choices=array();
 				switch(TRUE){
@@ -104,65 +102,65 @@
 						$choices[]=array("value"=>"10","name"=>"basic user (shipping)");
 				}
 				basic_choicelist("accesslevel",$therecord["accesslevel"],$choices,Array("class"=>"important","tabindex"=>"10"));
-			?>
-		</label>
+			?><br /><span class="notes">The minimum access level required to view this attachment.</span>
+		</p>
 	</fieldset>
+	
+	<div class="leftSideDiv">
 	<fieldset>
 		<legend>file</legend>
 		<?php if(isset($_GET["tabledefid"])){?>
-			<input id="attachmentid" name="attachmentid" type="hidden" value="<?php echo $therecord["attachmentid"]?>">
-			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo (integer) $_GET["tabledefid"]?>">
-			<input id="recordid" name="recordid" type="hidden" value="<?php echo (integer) $_GET["refid"]?>">
+			<input id="attachmentid" name="attachmentid" type="hidden" value="<?php echo $therecord["attachmentid"]?>" />
+			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo (integer) $_GET["tabledefid"]?>" />
+			<input id="recordid" name="recordid" type="hidden" value="<?php echo (integer) $_GET["refid"]?>" />
 		<?php }?>
 		
 		<?php if($therecord["id"]) {?>
-			<button  type="button" class="Buttons" onClick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
-			<label for="name" class="important">
-				name<br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?>
-			</label>
-			<div class="small"><em>If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</em></div>
-			<label for="type">
-				type <em>(MIME)</em><br />
-				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="true" class="uneditable" style="" />
-			</label>
-			<label for="upload">
-				replace file<br />
+			<p>
+				<button  type="button" class="Buttons" onclick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
+			</p>
+			<p>
+				<label for="name" class="important">name</label><br />
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?><br />
+				<span class="notes">If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</span>
+			</p>
+			<p>
+				<label for="type">file type </label><span class="notes">(MIME)</span><br />
+				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="true" class="uneditable" style="" />			
+			</p>
+			<p>
+				<label for="upload">replace file</label><br />
 				<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
-			</label>
+			</p>
 		<?php } else {?>
 			<?php if(isset($_GET["tabledefid"])){?>
-				<div>
-					<label for="newfile" style="display:inline"><input class="radiochecks" type="radio" name="newexisting" id="newfile" value="new" checked onClick="switchFile()"> new file</label>
-					<label for="existingfile" style="display:inline"><input type="radio"  class="radiochecks" name="newexisting" id="existingfile" value="existing" onClick="switchFile()"> existing file</label>
-				</div>
-				<label for="fileid-ds" id="fileidlabel" style="display:none;">
-					existing file<br />
-					<?php autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>					
-				</label>
-				<label for="upload" id="uploadlabel" style="display:block;">
-					upload new file<br />
-					<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
-				</label>
-			<?php } else {?>
-				<label for="upload">
-					upload file<br />
-					<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
-				</label>
-			<?php } ?>
+				<p><br />
+					<input class="radiochecks" type="radio" name="newexisting" id="newfile" value="new" checked="checked" onclick="switchFile()" /><label for="newfile">new file</label>&nbsp;&nbsp;
+					<input type="radio"  class="radiochecks" name="newexisting" id="existingfile" value="existing" onclick="switchFile()" /><label for="existingfile">existing file</label><br />
+					<span class="notes">Choose "existing file" if the file has already been uploaded into phpBMS.</span>
+				</p>
+				<p id="fileidlabel">
+					<label for="fileid-ds" >existing file name</label><br />
+					<?php autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>				
+				</p>
+			<?php }?>
+				<p id="uploadlabel">
+					<label for="upload">upload new file</label><br />
+					<input id="upload" name="upload" type="file" size="64" tabindex="260" />				
+				</p>
 		<?php } ?>
-		<label for="servename" id="descriptionlabel">
-			description<br />
-			<textarea name="description" cols="45" rows="4" id="content" style="width:98%"><?php echo $therecord["description"]?></textarea>
-		</label>
+		<p id="descriptionlabel">
+			<label for="content">description</label><br />
+			<textarea name="description" cols="45" rows="4" id="content"><?php echo htmlQuotes($therecord["description"])?></textarea>		
+		</p>
 	</fieldset>
 	<?php 
 	if($therecord["id"]) {
 		$attchmentsquery=getAttachments($therecord["id"]);
 		if(mysql_num_rows($attchmentsquery)){
 		?>
-		<fieldset style="margin-right:185px;">
-			<legend>attachments</legend>
+		<h2>Record Attachments</h2>
+		<div class="fauxP">
 		<div style="" class="smallQueryTableHolder">
 		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
 			<tr>
@@ -174,20 +172,19 @@
 		<?php
 			while($attachmentrecord=mysql_fetch_array($attchmentsquery)){
 	?>
-			<TR>
-				<TD nowrap><?php echo $attachmentrecord["displayname"] ?></TD>
-				<TD><?php echo $attachmentrecord["recordid"] ?></TD>
-				<TD align="right"><?php echo formatDateTime($attachmentrecord["creationdate"]) ?></TD>
-				<TD>
-					<a href="<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>">
-						<img src="<?php echo $_SESSION["app_path"]?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="absmiddle" alt="edit" width="16" height="16" border="0" />
-					</a>
-				</TD>
-			</TR>
+			<tr>
+				<td nowrap><?php echo $attachmentrecord["displayname"] ?></td>
+				<td><?php echo $attachmentrecord["recordid"] ?></td>
+				<td align="right"><?php echo formatDateTime($attachmentrecord["creationdate"]) ?></td>
+				<td>
+					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
+				</td>
+			</tr>
 	<?php 
-			} ?></table></div></fieldset><?php
+			} ?></table></div></div><?php
 		} 
 	}?>
+	</div>
 
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>

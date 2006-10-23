@@ -121,24 +121,25 @@
 <head>
 <title>Label Options</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<?php require("../head.php")?>
+<?php require("../../../head.php")?>
+<link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
-<div class="bodyline" style="width:550px;">
-	<h1>Label Options</h1>
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print">
+<div class="bodyline" id="reportOptions">
+	<h1 id="topTitle"><span>Label Options</span></h1>
 	
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print">
-		<div class="box">
-			skip first labels<br>
-			<input name="skiplabels" value="0" size="3" maxlength="3">
-		</div>
+		<p>
+			skip first labels<br />
+			<input name="skiplabels" value="0" size="3" maxlength="3" />
+		</p>
 		<div align="right" class="box">
-			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="canel" style="width:75px;" onClick="window.close();">	 
+			<input name="command" type="submit" class="Buttons" id="print" value="print" />
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="canel" onclick="window.close();" />
 		</div>
-   </form>
 </div>
+</form>
 </body>
 </html>
 <?php }//end if ?>

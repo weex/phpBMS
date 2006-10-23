@@ -74,10 +74,10 @@
 			</td>
 			<td class="tiny">&nbsp;</td>
 			<td class="box" id="tasksBox" width="45%">
-				<h2>Assignments/Tasks</h2>
+				<h2>Workload</h2>
 				<?php 
-					showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
 					showTasks($_SESSION["userinfo"]["id"],"GivenAssignments");
+					showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
 					showTasks($_SESSION["userinfo"]["id"],"Tasks");
 				?>
 			</td>
