@@ -45,7 +45,7 @@
 
 		$numrows=mysql_num_rows($thequery);
 		?>
-		<select id="savedsearches" name="savedsearches" <?php if ($numrows<1) echo "disabled" ?> style="width:100%;">
+		<select id="savedsearches" name="savedsearches" <?php if ($numrows<1) echo "disabled" ?> >
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
 			<?php 

@@ -114,94 +114,93 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/clientemail.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/clientemail.js"></script>
+<script language="JavaScript" src="javascript/clientemail.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 	<div class="bodyline">
-		<h1><?php echo $pageTitle?></h1>
+		<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
+		
 		<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="theform" id="theform">
 	<?php if($thecommand=="showoptions") { ?>
 		<input type="hidden" name="pid" id="pid" value="<?php echo $therecord["id"]?>" />
-		<fieldset>
-			<label for="savedsearches" id="showsavedsearches" style="display:none;float:right;width:48%">
-				load e-mail addresses from saved search...<br>
-				<?php showSavedSearches($therecord["emailto"]); ?>
-			</label>
-			<label for="therecords" style="margin-right:49%">
-				to<br />			
-				<select id="therecords" name="therecords" onChange="showSavedSearches(this);" style="width:100%;">
+		<div class="box">
+			
+			<p id="toP">
+				<label for="therecords">to</label><br />			
+				<select id="therecords" name="therecords" onChange="showSavedSearches(this);">
 					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected"?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
 					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected"?>>e-mail addresses from saved search...</option>
-					<option value="all" <?php if ($therecord["emailto"]=="all") echo "selected"?>>e-mail addresses from all records</option>
-				</select>
+				</select>				
 				<?php if($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all"){
-					?>
-						<script language="JavaScript" type="text/javascript">
-							thediv=getObjectFromID("showsavedsearches");
-							thediv.style.display="block";
-						</script>
-					<?php
-					}?>
-			</label>
-			<label for="email">
-				from<br />
+				?><script language="JavaScript" type="text/javascript">
+					thediv=getObjectFromID("showsavedsearches");
+					thediv.style.display="block";
+				</script><?php }?>
+			</p>
+			<p id="showsavedsearches" >
+				<label for="savedsearches">load e-mail addresses from saved search...</label><br />
+				<?php showSavedSearches($therecord["emailto"]); ?>			
+			</p>
+			
+			<div class="fauxP" id="fromDiv">
+				<label for="email">from</label><br />
 				<?php 
 				if(is_numeric($therecord["emailfrom"]))
 					$theid=$therecord["emailfrom"];
 				else
 					$theid=0;			
-				autofill("email",$theid,9,"users.id","concat(users.firstname,\" \",users.lastname,\" [\",users.email,\"]\")","\"\"","users.revoked=0 AND users.email!=\"\"",Array("style"=>"width:50%","maxlength"=>"64"),false,"",false) ?>
+				autofill("email",$theid,9,"users.id","concat(users.firstname,\" \",users.lastname,\" [\",users.email,\"]\")","\"\"","users.revoked=0 AND users.email!=\"\"",Array("size"=>"64","maxlength"=>"128"),false,"",false) ?>
 				
-				<?php 
-					if(!is_numeric($therecord["emailfrom"])){
-					?><script language="JavaScript" type="text/javascript">
-							thefield=getObjectFromID("ds-email");
-							thefield.value="<?php echo $therecord["emailfrom"] ?>";
+				<?php  if(!is_numeric($therecord["emailfrom"])){ ?>
+					<script language="JavaScript" type="text/javascript">
+						thefield=getObjectFromID("ds-email");
+						thefield.value="<?php echo $therecord["emailfrom"] ?>";
 					</script>
-					<?php
-					}
-				?>
-			</label>
-			<label for="subject">
-				subject<br />
-				<input type="text" name="subject" id="subject" maxlength="128" style="width:99%" value="<?php echo htmlQuotes($therecord["subject"])?>"/>
-			</label>
-		</fieldset>
-		<fieldset>
-			<div>
-				add field<br>
-				<?php showClientFields(); ?>
-				<input type="button" name="addfield" id="addfield" value="add field" class="smallButtons" onClick="addField()" />
-				<input type="button" name="adddate" id="adddate" value="add today's date" class="smallButtons" onClick="insertAtCursor('body','[[todays_date]]')" />
+				<?php }	?>
 			</div>
-			<div>
-				<textarea class="mono" rows="15" name="body" id="body" cols="30" style="width:99%"><?php echo $therecord["body"]?></textarea>
-			</div>
-		</fieldset>
+			
+			<p>
+				<label for="subject">subject</label><br />
+				<input type="text" name="subject" id="subject" maxlength="128" value="<?php echo htmlQuotes($therecord["subject"])?>"/>			
+			</p>
+		</div>
 		
 		<div class="box">
-			<div style="float:left">
-				<input type="button" name="loademail"	id="loademil" value="load project..." class="Buttons" onClick="showSavedProjects();" />
-				<input type="button" name="saveproject"	id="saveproject" value="save project..." class="Buttons" style="margin-right:10px;" onClick="return saveProject();" />
+			<p>
+				<label for="addfield">add data field</label><br />
+				<?php showClientFields(); ?>
+				<input type="button" name="addfield" id="addfield" value="add field" class="smallButtons" onclick="addField()" />
+				<input type="button" name="adddate" id="adddate" value="add today's date" class="smallButtons" onclick="insertAtCursor('body','[[todays_date]]')" />
+			</p>
+			<p>
+				<textarea class="mono" rows="15" name="body" id="body" cols="40" ><?php echo $therecord["body"]?></textarea>
+			</p>
+		</div>
+		
+		<div class="box">
+			<div id="projectButtons">
+				<input type="button" name="loademail"	id="loademil" value="load project..." class="Buttons" onclick="showSavedProjects();" />
+				<input type="button" name="saveproject"	id="saveproject" value="save project..." class="Buttons" onclick="return saveProject();" />
 				<input type="hidden" name="savename"	id="savename" value="" />
 				<input type="hidden" name="projectid"	id="projectid" value="" />
 			</div>
 			<div align="right">
-				<input type="submit" name="command" 	id="sendemail" value="send email" class="Buttons" style="width:90px;" />
-				<input type="submit" name="command" 	id="cancel" value="cancel" class="Buttons" style="width:90px;" />
-				<input type="submit" name="command" 	id="othercommand" value="" class="Buttons" style="display:none;" />				
+				<input type="submit" name="command" 	id="sendemail" value="send email" class="Buttons" />
+				<input type="submit" name="command" 	id="cancel" value="cancel" class="Buttons" />
+				<input type="submit" name="command" 	id="othercommand" value="" class="Buttons" />				
 			</div>
 		</div>
 		
-		<div id="loadedprojects" style="display:none;">
-			<div><?php showSavedProjects()?></div>
-			<div align="right">
-				<input type="button" name="deleteproject" id="deleteproject" value="delete project" class="Buttons" disabled="true" onClick="deleteProject()">
-				<input type="button" name="loadproject" id="loadproject" value="load project" class="Buttons" disabled="true" onClick="loadProject()">
-				<input type="button" name="closeproject" id="closeproject" value="cancel" onClick="hideSavedProjects()" class="Buttons">
-			</div>
+		<div id="loadedprojects">
+			<p><?php showSavedProjects()?></p>
+			<p align="right">
+				<input type="button" name="deleteproject" id="deleteproject" value="delete project" class="Buttons" disabled="true" onclick="deleteProject()" />
+				<input type="button" name="loadproject" id="loadproject" value="load project" class="Buttons" disabled="true" onclick="loadProject()" />
+				<input type="button" name="closeproject" id="closeproject" value="cancel" onclick="hideSavedProjects()" class="Buttons" />
+			</p>
 		</div>
 <?php } elseif($thecommand=="send email"){?>
 		<script language="JavaScript" type="text/javascript">		
@@ -218,32 +217,31 @@
 		</script>
 		
 		<div class="box">
-			<div style="float:right;">
-				<div align=right>
-				<input type="button" id="beginprocessing" name="beginprocessing" value=" Begin Processing " class="Buttons" onClick="processEmails();" style="width:150px;font-size:12px;">
-				</div>
-				<div align=right>
-				<strong><span id="amountprocessed">0</span> / <?php echo mysql_num_rows($sendqueryresult)?> records processed</strong>
-				</div>
-				<div align=right><input type="submit" name="command" id="done" value="done" class="Buttons" style="width:150px;"></div>
-			</div>
+			<p id="processP">
+				<input type="button" id="beginprocessing" name="beginprocessing" value=" Begin Processing " class="Buttons" onclick="processEmails();"/><br />
+				<span id="amountprocessed">0</span> / <?php echo mysql_num_rows($sendqueryresult)?> records processed<br />
+				<input type="submit" name="command" id="done" value="done" class="Buttons"  />
+			</p>
 			
-			<div style="margin-right:200px;">
-				<div>
-					<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
-						<tr>
-							<th nowrap class="queryheader"><strong>#</strong></th>
-							<th nowrap class="queryheader"><strong>Client ID</strong></th>
-							<th nowrap class="queryheader" align="left"><strong>Name</strong></th>
-							<th nowrap class="queryheader"><strong>E-Mail Address</strong></th>
-							<th nowrap width=50% align="right" class="queryheader"><strong>Status</strong></th>
-						</tr>
-					</table>
-				</div>
-				<div>&nbsp;</div>
-				<div>&nbsp;</div>
+			<div class="fauxP" id="processTableDiv">
+				<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
+					<tr>
+						<th nowrap id="tablereference">#</th>
+						<th nowrap>Client ID</th>
+						<th nowrap align="left">Name</th>
+						<th nowrap>E-Mail Address</th>
+						<th nowrap width=50% align="right">Status</th>
+					</tr>
+					<tr class="queryfooter" id="lastrow">
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</table>
 			</div>
-			
+			<div id="clearP">&nbsp;</div>
 		</div>
 
 <?php } ?>

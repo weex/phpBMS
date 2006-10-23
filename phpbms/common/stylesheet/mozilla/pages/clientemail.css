@@ -1,0 +1,22 @@
+/* $Rev:$ | $LastChangedBy$ */
+/* $LastChangedDate$ */
+#topTitle{}
+
+#showsavedsearches{;display:none;}
+#toP{float:left;}
+#fromDiv{clear:both;}
+#subject,#body{width:99%}
+
+#loadedprojects{display:none;}
+#projectButtons{float:left}
+#sendemail,#cancel{width:90px;}
+#othercommand{display:none}
+
+#saveInput{width:98%}
+#saveSave,#saveCancel{width:75px;}
+
+#beginprocessing,#done{width:150px;}
+#processP{float:right;width:180px; text-align:right}
+#processTableDiv{margin-right:208px;}
+#clearDiv{clear:both;}
+.noselects{cursor:auto}

@@ -95,18 +95,19 @@ function saveProject(theform){
 	var alertMessage="";
 	
 	if(theemail.value=="" && theemail2.value=="")
-		alertMessage+="From cannot be blank.<br>";	
+		alertMessage+="From cannot be blank.<br />";	
 
 	if(subject.value==""){
 		subject.value="[ No Subject ]";
-		alertMessage+="Subject cannot be blank.<br>";
+		alertMessage+="Subject cannot be blank.<br />";
 	}
 	
 	if(alertMessage!="")
 		alert(alertMessage);
 	else{
-		text="<div><input type=\"text\" id=\"saveInput\" maxlength=\"128\" style=\"width:99%\" onKeyUp=\"updateSaveProject(this)\"></div>";
-		text+="<div align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"saveSave\" style=\"width:75px;\" value=\"save\" disabled=\"true\" onClick=\"finishSaveProject();\">&nbsp;<input class=\"Buttons\" type=\"button\" value=\"cancel\" id=\"saveCancel\" onClick=\"closeModal()\" style=\"width:75px;\"></div>";
+		text="<p><input type=\"text\" id=\"saveInput\" maxlength=\"128\"onkeyup=\"updateSaveProject(this)\" /></p>";
+		text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"saveSave\" value=\"save\" disabled=\"true\" onclick=\"finishSaveProject();\" />";
+		text+="&nbsp;<input class=\"Buttons\" type=\"button\" value=\"cancel\" id=\"saveCancel\" onclick=\"closeModal()\" /></>";
 		showModal(text,"Save Project As...",300);
 	}
 }
@@ -166,6 +167,10 @@ function processEmails(){
 			if (emails[i]!=""){
 				theurl="clients_email_process.php?id="+ids[i];
 				loadXMLDoc(theurl,null,false);
+				if(!req.responseXML){
+					alert(theurl);
+					return false;
+				}
 				response = req.responseXML.documentElement;
 				if(response.getElementsByTagName('result')[0].firstChild.data!="sent"){
 					error=true;
@@ -187,12 +192,13 @@ function processEmails(){
 function addEntry(num,id,name,email,error,message){
 		var thetr;
 		var  thetd;
-		var theresult=getObjectFromID("results");
+		var theresult=getObjectFromID("tablereference").parentNode.parentNode;
+		var lastrow=getObjectFromID("lastrow");
 		thetr=document.createElement("TR");
 			if(error)
-				thetr.className="row1";
+				thetr.className="qr1 noselects";
 			else
-				thetr.className="row2";
+				thetr.className="qr2 noselects";
 			
 			thetd=document.createElement("TD")
 				thetd.appendChild(document.createTextNode(num));
@@ -213,8 +219,10 @@ function addEntry(num,id,name,email,error,message){
 			thetd=document.createElement("TD")
 				thetd.appendChild(document.createTextNode(message));
 				thetd.setAttribute("align","right");
-			thetr.appendChild(thetd);			
-		theresult.appendChild(thetr);
+				thetd.className="Important"
+			thetr.appendChild(thetd);
+			
+		theresult.insertBefore(thetr,lastrow);
 		
 }
 

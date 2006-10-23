@@ -68,7 +68,7 @@ function showTodaysClients($interval="1 DAY"){
 			<td align="center"><?php echo $therecord["id"]?></td>
 			<td align="center"><?php echo $therecord["type"]?></td>
 			<td><?php echo htmlspecialchars($therecord["thename"])?></td>
-			<td align="right"><?php echo $displayCSZ?></td>
+			<td align="right" nowrap><?php echo $displayCSZ?></td>
 		</tr><?php }?>
 		<tr class="queryfooter">
 			<td>&nbsp;</td>

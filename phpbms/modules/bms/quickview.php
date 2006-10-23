@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php include("../../menu.php");?>
-<form method="post" name="record" id="record" onSubmit="return false;">
+<form method="post" name="record" id="record" onSubmit="return false;" action="">
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
 
