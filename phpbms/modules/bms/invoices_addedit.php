@@ -105,7 +105,7 @@
 			<p>
 				<label for="id">id</label>
 				<br />
-				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" tabindex="0">			
+				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" tabindex="0"  />
 			</p>
 			
 			<p>
@@ -204,13 +204,13 @@
 	
 	<table border="0" cellpadding="0" cellspacing="0" id="LITable">
 		<tr id="LIHeader">
-			<th nowrap class="queryheader" align="left">part number</td>
-			<th nowrap class="queryheader" align="left">name</td>
-			<th nowrap class="queryheader" align="left" width="90%">memo</td>
-			<th align="right" nowrap class="queryheader">price</td>
-			<th align="qty" nowrap class="queryheader">qty.</td>
-			<th align="right" nowrap class="queryheader">extended</td>
-			<th nowrap class="queryheader">&nbsp;</td>
+			<th nowrap class="queryheader" align="left">part number</th>
+			<th nowrap class="queryheader" align="left">name</th>
+			<th nowrap class="queryheader" align="left" width="90%">memo</th>
+			<th align="right" nowrap class="queryheader">price</th>
+			<th align="center" nowrap class="queryheader">qty.</th>
+			<th align="right" nowrap class="queryheader">extended</th>
+			<th nowrap class="queryheader">&nbsp;</th>
 		</tr>
 		<?php if($therecord["type"]!="Invoice"){?>
 		<tr id="LIAdd">
@@ -267,7 +267,7 @@
 			<div class="fauxP">
 				<label for="ds-taxareaid">tax area</label><br />
 				<?php autofill("taxareaid",$therecord["taxareaid"],6,"tax.id","tax.name","concat(tax.percentage,\"%\")","",Array("size"=>"20","maxlength"=>"64","tabindex"=>"22"),0) ?>
-				<?php field_percentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"7","maxlength"=>"9","onchange"=>"changeTaxPercentage()","tabindex"=>"22")); ?>
+				<?php field_percentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"7","maxlength"=>"9","onChange"=>"changeTaxPercentage()","tabindex"=>"22")); ?>
 			</div>
 		</td>
 		<td>&nbsp;</td>
@@ -300,7 +300,7 @@
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels"><label for="totalti" class="important">total</label></td>
 		<td>
-			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo $therecord["totalti"]?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true"/ >
+			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo $therecord["totalti"]?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
 			<input id="totalcost" name="totalcost" type="hidden" value="<?php echo $therecord["totalcost"] ?>" />
 			<input id="totaltaxable" name="totaltaxable" type="hidden" value="<?php echo $therecord["totaltaxable"] ?>" />
 		</td>

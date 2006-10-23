@@ -115,7 +115,7 @@
 		
 		<div id="thecompleted" class="fauxP">
 			<p>
-				<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>">
+				<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>" />
 				<?php field_checkbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext">completed</label>
 				&nbsp;<?php field_datepicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
 			</p>
@@ -149,20 +149,19 @@
 			</p>
 		</fieldset>
 		
-		<input id="attachedtabledefid" name="attachedtabledefid" type="hidden" value="<?php echo $therecord["attachedtabledefid"]?>">
-		<input id="attachedid" name="attachedid" type="hidden" value="<?php echo $therecord["attachedid"]?>">
+		<input id="attachedtabledefid" name="attachedtabledefid" type="hidden" value="<?php echo $therecord["attachedtabledefid"]?>" />
 		<fieldset id="theassociated">
 			<legend>associated with</legend>
 				<p>
 					<label for="assocarea">area</label><br />
-					<input id="assocarea" type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>">
+					<input id="assocarea" type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" />
 				</p>
 				
 				
 				<p>
 					<label for="attachedid">record id</label><br />
-					<input id="attachedid" type="text" readonly="true" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6">&nbsp;
-					<input name="link" type="button" class="Buttons" value=" go to record " onClick="document.location='<?php echo $_SESSION["app_path"]?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'">
+					<input id="attachedid" type="text" readonly="true" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
+					<input name="link" type="button" class="Buttons" value=" go to record " onclick="document.location='<?php echo $_SESSION["app_path"]?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'" />
 				</>
 		</fieldset>
 
@@ -186,11 +185,11 @@
 		<fieldset>
 			<legend><label for="content">memo</label></legend>
 			<div align="right" id="timeStampDiv">
-				<button id="timeStampButton" type="button" class="invisibleButtons" onClick="timeStamp();">timestamp <img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-timestamp.png" align="absmiddle" alt="timestamp" width="16" height="16" border="0" /></button>
+				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" onClick="timeStamp();">Time Stamp</button>
 			</div>
 			<div style="padding-top:0px;">
 				<textarea name="content" cols="45" rows="23" id="content" style="width:98%"><?php echo $therecord["content"]?></textarea>
-				<input name="username" type="hidden" value="<?php echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>">
+				<input name="username" type="hidden" value="<?php echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>" />
 			</div>
 		</fieldset>
 	</div>
@@ -261,7 +260,7 @@
 		<br />
 		(Any unsaved changes with the current record will be lost.)
 		</div>
-		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons"></div>
+		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons" /></div>
 	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
 	<?php if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)

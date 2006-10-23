@@ -89,7 +89,7 @@
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
 		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
-		<input name="theids" type="hidden" value="">
+		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();
 			$displayTable->displayQueryHeader();

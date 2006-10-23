@@ -65,7 +65,7 @@
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="">
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="" />
 		</p>
 		
 	</fieldset>
@@ -91,7 +91,7 @@
 		</p>
 		<p>
 			<label for="webdisplayname">web display name</label><br />
-			<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64">
+			<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64" />
 		</p>
 	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>

@@ -141,8 +141,8 @@
 				to<br />
 				<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
-			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
-			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
+			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
+			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
 		</div>
 	</form>
 	<div class="fauxP">
@@ -153,14 +153,14 @@
 			<th align="left" nowrap class="queryheader" colspan="2">line item</th>
 		</tr>
 		<tr>
-			<th align="center" nowrap class="queryheader" colspan=2>id</td>
-			<th align="left" nowrap class="queryheader">type</td>
-			<th align="left" nowrap class="queryheader">date</td>
-			<th nowrap class="queryheader" align="left">part num. </td>
-			<th width="100%" class="queryheader" align="left">name</td>
-			<th align="right" nowrap class="queryheader">price</td>
-			<th align="center" nowrap class="queryheader">qty.</td>
-			<th align="right" nowrap class="queryheader">ext.</td>
+			<th align="center" nowrap class="queryheader" colspan=2>id</th>
+			<th align="left" nowrap class="queryheader">type</th>
+			<th align="left" nowrap class="queryheader">date</th>
+			<th nowrap class="queryheader" align="left">part num. </th>
+			<th width="100%" class="queryheader" align="left">name</th>
+			<th align="right" nowrap class="queryheader">price</th>
+			<th align="center" nowrap class="queryheader">qty.</th>
+			<th align="right" nowrap class="queryheader">ext.</th>
 		</tr>
     <?php 
 	$totalextended=0;		

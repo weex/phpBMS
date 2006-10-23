@@ -88,10 +88,10 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 	<div class="fauxP">
 		<table border="0" cellpadding="3" cellspacing="0" class="querytable">
 		<tr>
-		 <th align="left" nowrap class="queryheader">Part Number</td>
-		 <th align="left" nowrap class="queryheader">Name</td>
-		 <th align="left" width=100% class="queryheader">Description</td>
-		 <th align="center" nowrap class="queryheader">&nbsp;</td>
+		 <th align="left" nowrap class="queryheader">Part Number</th>
+		 <th align="left" nowrap class="queryheader">Name</th>
+		 <th align="left" width=100% class="queryheader">Description</th>
+		 <th align="center" nowrap class="queryheader">&nbsp;</th>
 		</tr>
 		<?php 	
 		if($numrows){

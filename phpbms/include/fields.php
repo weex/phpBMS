@@ -126,7 +126,7 @@ function choicelist($name,$value="",$listname,$attributes=array(),$blankvalue="n
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
 
-	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onChange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onFocus="setInitialML(this)">
+	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onchange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onFocus="setInitialML(this)">
 	<?php 
 		$inlist=false;
 		while($therecord=mysql_fetch_array($queryresult)){
@@ -211,7 +211,7 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> onChange="validateCurrency(this);" style="text-align:right;" /><?php
+	?> onchange="validateCurrency(this);" style="text-align:right;" /><?php
 	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 
@@ -230,7 +230,7 @@ function field_percentage($name,$value,$precision=1,$required=false,$message="",
 	if(is_numeric($value)) $value=$value."%";	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onChange") echo " ".$attribute."=\"".$tvalue."\"";
-	?> onChange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"] ?>" style="text-align:right;" /><?php
+	?> onchange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"] ?>" style="text-align:right;" /><?php
 	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 

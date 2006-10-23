@@ -134,21 +134,21 @@
 			to<br />
 			<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 		</p>
-		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons"></p>
-		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons"></p>
+		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
+		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
 	</div>
 
    <div class="fauxP">   
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
-	 <th align="center" nowrap class="queryheader">ID</td>
-	 <th align="center" nowrap class="queryheader">Order Date</td>
-	 <th nowrap class="queryheader" width="100%" align="left">Client</td>
-	 <th align="center" nowrap class="queryheader">Qty.</td>
-	 <th align="right" nowrap class="queryheader">Unit Cost</td>
-	 <th align="right" nowrap class="queryheader">Cost Ext.</td>
-	 <th align="right" nowrap class="queryheader">Unit Price</td>
-	 <th align="right" nowrap class="queryheader">Price Ext.</td>
+	 <th align="center" nowrap class="queryheader">ID</th>
+	 <th align="center" nowrap class="queryheader">Order Date</th>
+	 <th nowrap class="queryheader" width="100%" align="left">Client</th>
+	 <th align="center" nowrap class="queryheader">Qty.</th>
+	 <th align="right" nowrap class="queryheader">Unit Cost</th>
+	 <th align="right" nowrap class="queryheader">Cost Ext.</th>
+	 <th align="right" nowrap class="queryheader">Unit Price</th>
+	 <th align="right" nowrap class="queryheader">Price Ext.</th>
 	</tr>
     <?php 	
 	$totalextended=0;
