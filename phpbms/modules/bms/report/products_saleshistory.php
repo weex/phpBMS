@@ -116,15 +116,15 @@ class salesHistoryReport{
 ?>
    <table border="0" cellpadding="3" cellspacing="0">
 	<tr>
-	 <th align="center" nowrap >ID</td>
-	 <th align="center" nowrap >Order Date</td>
-	 <th align="center" nowrap >Invc. Date</td>
-	 <th nowrap  width="100%" align="left">Client</td>
-	 <th align="center" nowrap >Qty.</td>
-	 <th align="right" nowrap >Unit Cost</td>
-	 <th align="right" nowrap >Cost Ext.</td>
-	 <th align="right" nowrap >Unit Price</td>
-	 <th align="right" nowrap >Price Ext.</td>
+	 <th align="center" nowrap >ID</th>
+	 <th align="center" nowrap >Order Date</th>
+	 <th align="center" nowrap >Invc. Date</th>
+	 <th nowrap  width="100%" align="left">Client</th>
+	 <th align="center" nowrap >Qty.</th>
+	 <th align="right" nowrap >Unit Cost</th>
+	 <th align="right" nowrap >Cost Ext.</th>
+	 <th align="right" nowrap >Unit Price</th>
+	 <th align="right" nowrap >Price Ext.</th>
 	</tr>
     <?php 	
 	$totalextended=0;
@@ -254,44 +254,42 @@ if(isset($_POST["command"])){
 	<title>Product Sales History </title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<?php require("../../../head.php")?>
-	<script language="javascript" src="../../../common/javascript/common.js"></script>
-<script language="javascript" src="../../../common/javascript/fields.js"></script>
-	<script language="javascript" src="../../../common/javascript/datepicker.js"></script>		
+	<link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />	
+	<script language="javascript" src="../../../common/javascript/fields.js" type="text/javascript"></script>
+	<script language="javascript" src="../../../common/javascript/datepicker.js" type="text/javascript"></script>	
 </head>
 
 <body>
-<div class="bodyline" style="width:550px;padding:4px;">
-	<h1>Product Sales History Options</h1>	
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="">
-		<div>
-			<strong>timeframe</strong><br>			
-			<table border=0 cellspacing="0" cellpadding="0">
-				<tr>
-					<td nowrap>
-					   from<br>
-					   <?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:5px;" nowrap>
-						to<br>
-						<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div>
-		   invoice status<br>
-		   <select name="status" style="">
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals">
+<div class="bodyline" id="reportOptions">
+	<h1 id="topTitle"><span>Product Sales History Options</span></h1>	
+		<fieldset>
+			<legend>time frame</legend>
+			<p id="fromP">
+				<label for="fromdate">from</label><br />
+				<?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			</p>
+			<p>
+				<label for="todate">to</label><br />
+				<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			</p>
+		</fieldset>
+
+		<p>
+			<label for="status">include line items from...<br /></label>
+		   <select id="status" name="status">
 				<option value="Orders/Invoices" selected>Orders/Invoices</option>
 				<option value="Invoices">Invoices</option>
 				<option value="Orders">Orders</option>
 		   </select>					
-		</div>
+		</p>
+
 		<div align="right" class="box">
-			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
+			<input name="command" type="submit" class="Buttons" id="print" value="print" />
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
 		</div>
-   </form>
 </div>
+</form>
 
 </body>
 </html><?php }?>

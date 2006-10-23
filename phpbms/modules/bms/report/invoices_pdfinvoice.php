@@ -109,8 +109,10 @@
 			if(!$pictureresult) reportError(300,"Error Retrieving Logo Graphic");
 			$thepicture=mysql_fetch_array($pictureresult);
 		
-		if($thepicture["type"]=="IMAGE/JPEG")			
-			$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth,0,"JPEG");	
+		if($thepicture["type"]=="IMAGE/JPEG"){
+			$image = $thepicture["file"];
+			$pdf->Image('var://image',$leftmargin,$topmargin,$tempwidth,0,"JPEG");	
+		}
 		elseif($thepicture["type"]=="IMAGE/PNG")
 			$pdf->MemImage($thepicture["file"],$leftmargin,$topmargin,$tempwidth);	
 		

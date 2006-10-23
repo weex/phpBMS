@@ -125,14 +125,14 @@ class purchaseHistoryReport{
 			<th align="left" nowrap colspan="2">line item</th>
 		</tr>
 		<tr>
-			<th align="center" nowrap>id</td>
-			<th align="left" nowrap >type</td>
-			<th align="left" nowrap >date</td>
-			<th align="left" nowrap >part num. </td>
-			<th width="100%" nowrap align="left">name</td>
-			<th align="right" nowrap >price</td>
-			<th align="center" nowrap >qty.</td>
-			<th align="right" nowrap >ext.</td>
+			<th align="center" nowrap>id</th>
+			<th align="left" nowrap >type</th>
+			<th align="left" nowrap >date</th>
+			<th align="left" nowrap >part num.</th>
+			<th width="100%" nowrap align="left">name</th>
+			<th align="right" nowrap >price</th>
+			<th align="center" nowrap >qty.</th>
+			<th align="right" nowrap >ext.</th>
 		</tr>
     <?php 
 	$totalextended=0;		
@@ -249,43 +249,41 @@ if(isset($_POST["command"])){
 	<title>Client Purchase History</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<?php require("../../../head.php")?>
-	<script language="javascript" src="../../../common/javascript/fields.js"></script>	
-	<script language="javascript" src="../../../common/javascript/datepicker.js"></script>	
+	<link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />	
+	<script language="javascript" src="../../../common/javascript/fields.js" type="text/javascript"></script>
+	<script language="javascript" src="../../../common/javascript/datepicker.js" type="text/javascript"></script>	
 </head>
 
 <body>
-<div class="bodyline" style="width:550px;padding:4px;">
-	<h1>Client Purchase History Options</h1>	
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="">
-		<div>
-			<strong>timeframe</strong><br>			
-			<table border=0 cellspacing="0" cellpadding="0">
-				<tr>
-					<td nowrap>
-					   from<br>
-					   <?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-					<td style="padding-left:5px;" nowrap>
-						to<br>
-						<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div>
-		   invoice status<br>
-		   <select name="status" style="">
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals">
+<div class="bodyline" id="reportOptions">
+	<h1 id="topTitle"><span>Product Sales History Options</span></h1>	
+		<fieldset>
+			<legend>time frame</legend>
+			<p id="fromP">
+				<label for="fromdate">from</label><br />
+				<?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			</p>
+			<p>
+				<label for="todate">to</label><br />
+				<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+			</p>
+		</fieldset>
+
+		<p>
+			<label for="status">include products from...<br /></label>
+		   <select id="status" name="status">
 				<option value="Orders/Invoices" selected>Orders/Invoices</option>
 				<option value="Invoices">Invoices</option>
 				<option value="Orders">Orders</option>
 		   </select>					
-		</div>
-		<div align="right" class="box">
-			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
-		</div>
-   </form>
-</div>
+		</p>
 
+		<div align="right" class="box">
+			<input name="command" type="submit" class="Buttons" id="print" value="print" />
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
+		</div>
+</div>
+</form>
 </body>
 </html><?php }?>

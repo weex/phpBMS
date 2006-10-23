@@ -62,7 +62,7 @@
 </head>
 <body ><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
@@ -160,7 +160,7 @@
 				
 				<p>
 					<label for="attachedid">record id</label><br />
-					<input id="attachedid" type="text" readonly="true" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
+					<input id="attachedid " name="attachedid" type="text" readonly="true" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
 					<input name="link" type="button" class="Buttons" value=" go to record " onclick="document.location='<?php echo $_SESSION["app_path"]?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'" />
 				</>
 		</fieldset>
