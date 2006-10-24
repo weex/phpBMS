@@ -1,0 +1,10 @@
+/* $Rev$ | $LastChangedBy$ */
+/* $LastChangedDate$ */
+#topTitle{}
+#container{width:740px; margin:0 auto;}
+#logo{
+	float:right;background:white url(../../../image/logo-large.png) 8px 12px no-repeat;
+	width:260px;height:67px;
+}
+#logo span{display:none;}
+

@@ -44,19 +44,20 @@
 <head>
 <title>phpBMS Browser Requirements</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<?php require("head.php")?>
+<link href="common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css" />
+<link href="common/stylesheet/mozilla/pages/requirements.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body><div class="bodyline" style="width:700px;">	
+<body><div class="bodyline" id="container">	
 	<h1>phpBMS Client Browser Requirements</h1>
-	<div class="box" style="float:right;background-color:white;"><img src="common/image/logo-large.png" width="250" height="57" /></div>
+	<div class="box" id="logo" style=""><span>phpBMS</span></div>
 	<div>
 	<ul>
     	<li><strong class="large">JavaScript v2.0</strong><br />
         		<br />
-		This application makes heavy use of newer JavaScript functions, both in doing form verification, and with the many AJAX routines. <br />
+		This application makes <strong>heavy</strong> use of newer JavaScript functions, including the paradigm known as AJAX. Without Javascript, enabled, phpBMS will not run correctly.<br />
 		<br />
-		<strong>A note about window pop-ups:</strong>		This application does utilize Javascript to open new windows. If you disable Javascript window opening (like in Mozilla or Opera) or are utilizing a 3rd-party application to stop Internet Explorer (IE) from opening unwanted windows, this application might not work correctly.<br />
+		<strong>Window pop-ups:</strong>		This application utilizes JavaScript to open new windows. If you disable Javascript window opening (like in Firefox or Opera) or are utilizing a 3rd-party application to stop Internet Explorer  from opening unwanted windows, this application might not work correctly.<br />
 &nbsp; </li>
     	<li><strong class="large">Cookies</strong><br />
         		<br />
@@ -64,11 +65,11 @@
 &nbsp; </li>
     	<li><strong class="large">Style Sheets (CSS) v1.1</strong><br />
         		<br />
-		Your browser must support the rendering of Cascading Style Sheets. The default style sheet scheme is supported on most browsers, but definitely looks best in Firefox. <br />
+		Your browser must support the rendering of Cascading Style Sheets. Without this support, the application will not work correctly. <br />
     		</li>
 	</ul></div>
 	<h2>Tested Browsers</h2>
-	<div><table border="0" cellpadding="0" cellspacing="0" class="querytable">
+	<div class="fauxP" align="center"><table border="0" cellpadding="0" cellspacing="0" class="querytable">
     	<tr>
     		<th class="queryheader" nowrap>Browser Application</th>
     		<th class="queryheader">Version</th>
@@ -77,24 +78,28 @@
    		</tr>
     	<tr class="qr1" style="cursor:auto">
         	<td>Firefox</td>
-        	<td>1.0.7</td>
+        	<td>1.5.0.7</td>
         	<td>Windows/Macintosh</td>
         	<td align="center" class="important">X</td>
    		</tr>
 		
     	<tr class="qr2" style="cursor:auto">
     		<td>Internet Explorer</td>
-    		<td>6.0.2800.1106</td>
+    		<td>6.0.2900.2190</td>
     		<td>Windows</td>
     		<td align="center" class="important">X</td>
    		</tr>
+    	<tr class="qr1" style="cursor:auto">
+    		<td>Opera</td>
+    		<td>9.02</td>
+    		<td>Windows</td>
+    		<td align="center" class="important">X</td>
+    		</tr>
    	</table>
 	</div>
-	<div class="box" align="right">
-		<br />
-		<input type="button" value="back to login page" class="Buttons" onClick="document.location='index.php'"/>&nbsp;&nbsp;<br/>
-		<br />
-	</div>
+	<p class="box" align="right">
+		<input type="button" value="back to login page" class="Buttons" onclick="document.location='index.php'"/>
+	</p>
 </div>
 </body>
 </html>

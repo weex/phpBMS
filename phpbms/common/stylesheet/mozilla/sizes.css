@@ -25,9 +25,7 @@ H1 {
 	padding-left:24px;
 	margin-bottom:8px;
 	font-weight:normal;
-	background-image: url("image/h1graphic.png");
-	background-position:4px 4px;
-	background-repeat:no-repeat;
+	background: url("image/h1graphic.png") 4px 4px no-repeat;;
 }
 LEGEND,H2{	
 	font-weight:bold;
@@ -48,6 +46,13 @@ H2{
 }
 H3{
 	font-size:14px;
+	font-weight:bold;
+	margin:2px;
+	margin-top:10px;
+    font-family: Arial, Helvitica, sans-serif;
+}
+H4{
+	font-size:12px;
 	font-weight:bold;
 	margin:2px;
 	margin-top:10px;
