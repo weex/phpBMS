@@ -113,8 +113,9 @@ if (isset($_POST["command"])){
 						$fakeExtForIE="";
 						if($reportrecord["type"]=="PDF Report")
 							$fakeExtForIE="&ext=.pdf";
+						$dateTimeStamp="&ts=".mktime(); // make the url unique to avoid using browser cache
 						//javascript open each report in new window
-						$tablePrinter->openwindows.="window.open('".$_SESSION["app_path"].$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$fakeExtForIE."','print".$i."');\n";
+						$tablePrinter->openwindows.="window.open('".$_SESSION["app_path"].$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
 					}
 				}
 				$tablePrinter->openwindows.="</script>\n";
