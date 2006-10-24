@@ -39,7 +39,7 @@
 
 // access level to admin area
 if($_SESSION["userinfo"]["accesslevel"]<90)
-	header("Location: noaccess.html");
+	goURL("noaccess.html");
 
 //format tabs for user admin.
 function tabledefs_tabs($selected="none",$id=0) {

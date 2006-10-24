@@ -51,7 +51,7 @@ if(isset($_POST["command"])) {
 		// relocate to new screen
 		//=====================================================================================================
 		$theurl=getAddEditFile(12)."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
-		header("Location: ".$theurl );
+		goURL($theurl );
 	break;
 	case "delete":
 		//a bit more complicated so we'll put it in it's own function?
@@ -70,7 +70,7 @@ if(isset($_POST["command"])) {
 	case "edit/view":
 		// relocate to edit screen
 		//=====================================================================================================
-		  header("Location: ".getAddEditFile(12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
+		  goURL(getAddEditFile(12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
 	break;
 	}//end switch
 } //end if

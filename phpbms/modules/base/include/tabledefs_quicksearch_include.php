@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-	if($_SESSION["userinfo"]["accesslevel"]<90) header("Location: ".$_SESSION["app_path"]."noaccess.html");
+	if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
 	function setDefaultQuickSearch(){
 		$therecord["id"]=NULL;		
 		$therecord["displayorder"]=NULL;		

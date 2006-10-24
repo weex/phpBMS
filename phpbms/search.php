@@ -79,7 +79,7 @@
 			$_SESSION["printing"]["tableid"]=$displayTable->thetabledef["id"];
 			$_SESSION["printing"]["maintable"]=$displayTable->thetabledef["maintable"];
 			$_SESSION["printing"]["theids"]=$theids;
-			header("Location: print.php");
+			goURL("print.php");
 		break;
 		case "other":
 			$displayTable->recordoffset=0;		
@@ -143,7 +143,7 @@
 			$_SESSION["temp_relateto"]=$displayTable->thetabledef["maintable"];
 			$displayTable->querytype="relate";
 
-			header("Location: ".$goto);
+			goURL($goto);
 		break;		
 			
 		}//end switch

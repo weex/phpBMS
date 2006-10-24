@@ -43,7 +43,7 @@
 function goURL($url){
 	if(headers_sent())
 		reportError("450","Could not redirect to: ".$url);
-	header("Location: ".$url);
+		header("Location: ".$url);
 	exit;
 }
 

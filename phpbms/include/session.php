@@ -133,9 +133,9 @@ function xmlEncode($str){
 	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
 		if(isset($loginNoKick)){
 			if(!isset($loginNoDisplayError))
-				header("Location: ".$mainpath."noaccess.html");				
+				goURL($mainpath."noaccess.html");				
 		} else{
-			header("Location: ".$mainpath."index.php");
+			goURL($mainpath."index.php");
 		}
 	} else {
 

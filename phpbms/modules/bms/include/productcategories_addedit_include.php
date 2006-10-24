@@ -149,7 +149,7 @@ else
 			// if we needed to do any clean up (deleteing temp line items)
 			if(!isset($_POST["id"])) $_POST["id"]=0;
 			$theid=$_POST["id"];
-			header("Location: ../../search.php?id=".$tableid."#".$theid);
+			goURL("../../search.php?id=".$tableid."#".$theid);
 		break;
 		case "save":
 			if($_POST["id"]) {

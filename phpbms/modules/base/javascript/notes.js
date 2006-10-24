@@ -42,12 +42,13 @@ window.onload=function(){
 	completedCheck();
 	
 	var attachedField=getObjectFromID("attachedid");
-	if(attachedField.value!="" && attachedField.value!=0){
-		var associatedDiv=getObjectFromID("theassociated");
-		var content=getObjectFromID("content");
-		associatedDiv.style.display="block";
-		content.rows+=7;
-	}
+	if(attachedField)
+		if(attachedField.value!="" && attachedField.value!=0){
+			var associatedDiv=getObjectFromID("theassociated");
+			var content=getObjectFromID("content");
+			associatedDiv.style.display="block";
+			content.rows+=7;
+		}
 	var theid=getObjectFromID("id");
 	var thetype=getObjectFromID("thetype");
 	if(theid.value)

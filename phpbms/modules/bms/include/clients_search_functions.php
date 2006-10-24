@@ -106,7 +106,7 @@ function delete_prospects($theids){
 
 function massEmail($theids){
 	$_SESSION["emailids"]=$theids;
-	header("Location: modules/bms/clients_email.php");
+	goURL("modules/bms/clients_email.php");
 }
 
 ?>

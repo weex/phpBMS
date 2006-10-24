@@ -87,9 +87,9 @@
 
 		function  donePrinting($backurl){
 			if(!$backurl)
-				header("Location: search.php?id=".$this->tableid);
+				goURL("search.php?id=".$this->tableid);
 			else
-				header("Location: ".$backurl);
+				goURL($backurl);
 		}
 		
 		function showJavaScriptArray(){

@@ -59,7 +59,7 @@
 			if(!$queryresult)
 				reportError(300,"Error uUpdating login time.");
 
-			$_SESSION["tableparams"]="";
+			$_SESSION["tableparams"]=array();
 			goURL($_SESSION["default_load_page"]);
 		} else 		
 		return "Login Failed";

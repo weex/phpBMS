@@ -103,7 +103,7 @@
 		
 		case "done":
 		case "cancel":
-			header("Location: ".$_SESSION["app_path"]."search.php?id=2");
+			goURL($_SESSION["app_path"]."search.php?id=2");
 		break;
 	}
 	

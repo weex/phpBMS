@@ -135,7 +135,7 @@
 			<?php if($therecord["assignedbyid"]!=0){ ?>
 			<p>
 				<label for="assignedbyid">assigned by</label><br />
-				<input id="assignedbydisplay" value="<?php echo getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable">			
+				<input id="assignedbydisplay" value="<?php echo getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable" />
 			</p>
 			<?php if($therecord["assignedbyid"]==$_SESSION["userinfo"]["id"]){?>
 			<p>
