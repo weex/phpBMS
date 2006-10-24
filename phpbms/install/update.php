@@ -100,6 +100,10 @@
 <link href="../common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css" />
 <link href="../common/stylesheet/mozilla/pages/install.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../common/javascript/common.js" type="text/javascript"></script>
+<script language="JavaScript" src="../common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
+
 <script language="JavaScript" type="text/javascript">	
 	function runCommand(command){
 		var theURL="updatexml.php?command="+command;
@@ -248,5 +252,8 @@
 		<p><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onclick="document.location='../'" /></p>
 	</div>
 
-</div></body>
+</div>
+<p class="tiny" align="center"> $Rev$ |  $LastChangedDate$
+</p>
+</body>
 </html>

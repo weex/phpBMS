@@ -62,6 +62,14 @@
 		} else return "Cannot open setting.php file";
 	}
 
+	function loadDBSettings($dblink,$vars){
+		$querystatement="SELECT name,value FROM settings";
+		$queryresult=mysql_query($querystatement,$dblink);
+		while($therecord=mysql_fetch_array($queryresult))
+			$vars[$therecord["name"]]=$therecord["value"];
+		return $vars;
+	}
+
 	function importData($thetable){
 		global $dblink;
 		
@@ -150,9 +158,10 @@
 		
 		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND accesslevel>=90";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
-		if (mysql_num_rows($queryresult)>0) return true;
-		return false;
+		if(!$queryresult){
+			return false;
+		}
+		return (mysql_num_rows($queryresult)>0);
 	}
 
 	function getCurrentBaseVersion(){
@@ -319,11 +328,13 @@
 		if(isset($_GET["command"])){
 			$vars=loadSettings();
 			if (!is_array($vars)) 
-				$thereturn="DB Connection Information not loaded";
+				$thereturn="Could Not load settings.php file.";
 			else {
 				$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
 				mysql_select_db($vars["mysql_database"],$dblink);
-
+				
+				$vars=loadDBSettings($dblink,$vars);
+								
 				switch($_GET["command"]){
 					case "verifyLogin":
 						if (!verifyAdminLogin($_GET["u"],$_GET["p"]))

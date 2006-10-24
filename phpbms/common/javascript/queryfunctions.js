@@ -37,14 +37,17 @@
 */
 window.onload=function(){
 
-	var sqlDivs = new Array();
-	sqlDivs[sqlDivs.length]=getObjectFromID("sqlstatement");
-
-	var sqlLinks = new Array();
-	sqlLinks[sqlLinks.length]=getObjectFromID("showSQLButton");
-
-	var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: true, duration:250, onComplete:function(){switchSqlButtons()}});
+	var sqlbttn=getObjectFromID("showSQLButton");;
 	
+	if(sqlbttn){
+		var sqlDivs = new Array();
+		sqlDivs[sqlDivs.length]=getObjectFromID("sqlstatement");
+	
+		var sqlLinks = new Array();
+		sqlLinks[sqlLinks.length]=sqlbttn;
+	
+		var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: true, duration:250, onComplete:function(){switchSqlButtons()}});
+	}
 }
 function switchSqlButtons(){
 	var sqlbutton=getObjectFromID("showSQLButton");

@@ -37,25 +37,31 @@
 */
 
 initArray[initArray.length]=function(){
-	var todaysOrdersDivs = new Array();
-	todaysOrdersDivs[todaysOrdersDivs.length]=getObjectFromID("todaysOrders");
+	
+	var torders=getObjectFromID("todaysOrders");
+	if(torders){
+		var todaysOrdersDivs = new Array();
+		todaysOrdersDivs[todaysOrdersDivs.length]=torders;
+	
+		var todaysOrdersLinks = new Array();
+		todaysOrdersLinks[todaysOrdersLinks.length]=getObjectFromID("todaysOrdersLink");
+	
+		var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysOrdersLink")}});
+		todaysOrdersAccordion.showThisHideOpen(todaysOrdersDivs[0]);
+	}
 
-	var todaysOrdersLinks = new Array();
-	todaysOrdersLinks[todaysOrdersLinks.length]=getObjectFromID("todaysOrdersLink");
 
-
-	var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysOrdersLink")}});
-	todaysOrdersAccordion.showThisHideOpen(todaysOrdersDivs[0]);
-
-
-	var todaysClientsDivs = new Array();
-	todaysClientsDivs[todaysClientsDivs.length]=getObjectFromID("todaysClients");
-
-	var todaysClientsLinks = new Array();
-	todaysClientsLinks[todaysClientsLinks.length]=getObjectFromID("todaysClientsLink");
-
-	var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysClientsLink")}});
-	todaysClientsAccordion.showThisHideOpen(todaysClientsDivs[0]);
+	var tclients=getObjectFromID("todaysClients")
+	if(tclients){
+		var todaysClientsDivs = new Array();
+		todaysClientsDivs[todaysClientsDivs.length]=tclients;
+	
+		var todaysClientsLinks = new Array();
+		todaysClientsLinks[todaysClientsLinks.length]=getObjectFromID("todaysClientsLink");
+	
+		var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysClientsLink")}});
+		todaysClientsAccordion.showThisHideOpen(todaysClientsDivs[0]);
+	}
 }
 
 function switchArrows(arrowid){
