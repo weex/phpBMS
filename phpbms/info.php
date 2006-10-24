@@ -64,37 +64,42 @@
 <head>
 <title>phpBMS Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<?php require("head.php")?>
+<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />	
+<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/info.css" rel="stylesheet" type="text/css" />	
 </head>
 
-<body><?php if(isset($_SESSION["app_path"])) include("menu.php")?>
-<div class="bodyline" style="width:700px;">
-	<h1 style="margin-bottom:20px;">Commercial Open Source Business Management Web Application</h1>
-	<div style="float:right;background-color:white;padding:10px;margin-right:20px;" align="right" class="box small">
-		<img src="common/image/logo-large.png" width="250" height="57" /><br />
+<body>
+<div class="bodyline" id="container">
+	<h1>Commercial Open Source Business Management Web Application</h1>
+	
+	<div id="phpBMSLogo" class="box small">
 		<?php displayVersions($queryresult)?>
 	</div>
-	<div style="width:300px;padding-bottom:0px;">
-		<div class="small">
+	
+	<div id="companyInfo">
+		<p class="small">
 			Copyright &copy; 2004 -2007 kreotek, llc. All Rights Reserved.
 			phpBMS, and the phpBMS logo are trademarks of kreotek, llc.
-		</div>
-		<div style="padding:10px; padding-bottom:0px;">
-			<div class="large important">Kreotek, LLC</div>
-			<div style="" class="small">
-				610 Quantum<br />
-				Rio Rancho, NM 87124
-			</div>		
-			<div  class="important" style="padding-bottom:0px;">Contact Information</div>
-			<div style="padding-top:0px;" class="small">
-				web: <a href="http://www.kreotek.com">http://www.kreotek.com</a><br />
-				sales: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
-				support: <a href="mailtosupport@kreotek.com">support@kreotek.com</a><br />
-				phone: <strong>1-800-731-8026</strong>
-			</div>
-		</div>
+		</p>
+		
+		<h3>Kreotek, LLC</h3>
+		<p class="small">
+			610 Quantum<br />
+			Rio Rancho, NM 87124
+		</p>
+		<p>
+			web: <a href="http://www.kreotek.com">http://www.kreotek.com</a><br />
+			sales: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
+			support: <a href="mailtosupport@kreotek.com">support@kreotek.com</a><br />
+			phone: <strong>1-800-731-8026</strong>
+		</p>
+		<h3>phpBMS Open Source Project</h3>
+		<p>
+			project web site: <a href="http://www.kreotek.com">http://www.phpbms.org</a><br />
+			project forums: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
+		</p>
 	</div>
-	<div style="padding-top:0px;">
+	
 		<h2>Source Code</h2>
 		<ul>
 			<li><strong>phpBMS</strong> - Commercial Open Source Business Management Web Appllication (<a href="http://www.kreotek.com">www.phpbms.org</a>)</li>
@@ -103,18 +108,15 @@
 		</ul>
 		<h2>Technologies</h2>
 		<ul>
-			<li><strong>php</strong> - 
-		   A widely-used general-purpose scripting language that is especially suited for Web development and can be embedded into HTML.  (<a href="http://www.php.net">www.php.net</a>)</li>
+			<li><strong>php</strong> -  A widely-used general-purpose scripting language that is especially suited for Web development and can be embedded into HTML.  (<a href="http://www.php.net">www.php.net</a>)</li>
 			<li><strong>MySQL</strong> - An open source relational database management system (RDBMS) that uses Structured Query Language (SQL) (<a href="http://www.mysql.org">www.mysql.org</a>)</li>
 			<li><strong>AJAX</strong> - Asynchronous Javascript And XML is a group of technologies that help browser based applications behave more like applications you run from your desktop.</li>
 		</ul>
-	</div>
+
 	<?php if(!isset($_SESSION["app_path"])) {?>
-	<div class="box" align="right" style="clear:both">
-		<br />
-		<input type="button" value="back to login page" class="Buttons" onClick="document.location='index.php'"/>&nbsp;&nbsp;<br/>
-		<br />
-	</div>
+	<p class="box" align="right">
+		<input type="button" value="back to login page" class="Buttons" onClick="document.location='index.php'" />
+	</p>
 	<?php } ?>
 </div>
 </body>

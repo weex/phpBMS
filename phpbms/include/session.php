@@ -132,23 +132,32 @@ function xmlEncode($str){
 	
 	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
 		if(isset($loginNoKick)){
-			if(!isset($loginNoDisplayError))
-				goURL($mainpath."noaccess.html");				
+			if(!isset($loginNoDisplayError)){
+				header("Location: ".$mainpath."noaccess.html");
+				exit();
+			}
+			else
+				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"]); 
 		} else{
-			goURL($mainpath."index.php");
+			header("Location: ".$mainpath."index.php");
+			exit();
 		}
 	} else {
 
 		// OPEN DATABASE IF NOT OPENED
-		if(!isset($dblink)){
-			$dblink = @ mysql_pconnect($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"]);		
-			if (!$dblink) 
-				reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
-			if (!mysql_select_db($_SESSION["mysql_database"],$dblink)) 
-				reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);
-		}
+		if(!isset($dblink))		
+			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"]); 
+
 		if(!isset($_SESSION["app_name"]))
 			loadSettings();
 	}//end if
 	
+	function openDB($dbserver,$dbuser,$dbpass,$dbname){
+		$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);		
+		if (!$dblink) 
+			reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
+		if (!mysql_select_db($dbname,$dblink)) 
+			reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);	
+		return $dblink;
+	}
 ?>

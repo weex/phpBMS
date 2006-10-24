@@ -94,7 +94,13 @@
     		<td>9.02</td>
     		<td>Windows</td>
     		<td align="center" class="important">X</td>
-    		</tr>
+   		</tr>
+    	<tr class="qr1" style="cursor:auto">
+    		<td>Internet Explorer</td>
+    		<td>6.0.2900.2190</td>
+    		<td>Windows</td>
+    		<td align="center" class="important">X</td>
+   		</tr>
    	</table>
 	</div>
 	<p class="box" align="right">

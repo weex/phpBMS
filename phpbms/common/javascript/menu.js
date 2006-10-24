@@ -37,7 +37,16 @@
 */
 
 function showHelp(base){
-	window.open(base+"help");
+	var theURL=base+"help/index.php";
+	loadXMLDoc(theURL,null,false);
+	showModal(req.responseText,"phpBMS Help Resources",550);
+
+	var helpToggles = document.getElementsByClassName("helpLinks");
+	var helpStuff = document.getElementsByClassName("helpDivs");
+	
+	var helpFX = new fx.Accordion(helpToggles, helpStuff, {height:true, opacity:false, duration:400});
+		helpFX.showThisHideOpen(helpStuff[0]);
+
 }
 
 function checkExpand(theitem){
