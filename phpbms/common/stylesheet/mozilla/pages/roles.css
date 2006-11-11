@@ -1,0 +1,17 @@
+/* $Rev: 145 $ | $LastChangedBy: mipalmer $ */
+/* $LastChangedDate: 2006-10-21 18:27:44 -0600 (Sat, 21 Oct 2006) $ */
+
+#topButtons{float:right;width:160px;}
+#h1Title{margin-right:165px;}
+
+#fsAttributes{float:right;width:200px;}
+#id{width:98%}
+
+#leftSideDiv{margin-right:208px;padding-top:1px;}
+#description{width:98%}
+
+#assignedusersdiv{float:left; padding-right:10px;}
+#assignedusers,#availableusers{width:150px;}
+
+#usersbuttonsdiv{float:left;padding-top:20px;;padding-right:10px;}
+#usersbuttonsdiv button{width:120px;}

@@ -15,7 +15,7 @@ CREATE TABLE menu (
   modifiedby int(11) default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifieddate timestamp(14) NOT NULL,
-  accesslevel int(11) NOT NULL default '0',
+  roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
@@ -80,22 +80,21 @@ CREATE TABLE relationships (
   KEY fromtable (fromtableid)
 ) TYPE=MyISAM PACK_KEYS=0;
 
-CREATE TABLE reports (
-  description text,
-  id int(11) NOT NULL auto_increment,
-  name varchar(64) default NULL,
-  reportfile varchar(128) default NULL,
-  type varchar(32) default NULL,
-  createdby int(11) NOT NULL default '0',
-  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
-  modifiedby int(11) default NULL,
-  modifieddate timestamp(14) NOT NULL,
-  tabledefid int(11) NOT NULL default '0',
-  displayorder int(11) NOT NULL default '0',
-  accesslevel int(11) NOT NULL default '0',
-  UNIQUE KEY theid (id)
-) TYPE=MyISAM PACK_KEYS=0;
-
+CREATE TABLE `reports` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(64) default NULL,
+  `type` varchar(32) default NULL,
+  `tabledefid` int(11) NOT NULL default '0',
+  `displayorder` int(11) NOT NULL default '0',
+  `roleid` int(11) NOT NULL default '0',
+  `reportfile` varchar(128) default NULL,
+  `description` text,
+  `createdby` int(11) NOT NULL default '0',
+  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default NULL,
+  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM
 
 CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
@@ -114,27 +113,32 @@ CREATE TABLE `tablecolumns` (
   KEY `displayorder` (`displayorder`)
 ) TYPE=MyISAM AUTO_INCREMENT=5000;
 
-CREATE TABLE `tabledefs` (  
-`editfile` varchar(128) default NULL,  
-`displayname` varchar(64) default NULL,  
-`id` int(11) NOT NULL auto_increment,  
-`maintable` varchar(64) NOT NULL default '',  
-`createdby` int(11) NOT NULL default '0',  
-`creationdate` datetime NOT NULL default '0000-00-00 00:00:00',  
-`modifiedby` int(11) default NULL,  
-`modifieddate` timestamp(14) NOT NULL,  
-`querytable` varchar(255) NOT NULL default '',  
-`addfile` varchar(100) default '',  
-`deletebutton` varchar(32) default '',  
-`defaultwhereclause` varchar(255) default NULL,  
-`defaultsortorder` varchar(255) default '',  
-`defaultsearchtype` varchar(64) default '',  
-`defaultcriteriafindoptions` varchar(128) default '',  
-`defaultcriteriaselection` varchar(128) default '',  
-`type` varchar(16) NOT NULL default 'table',  
-`moduleid` int(11) NOT NULL default '0',  
-PRIMARY KEY (`id`)  
-) TYPE=MyISAM AUTO_INCREMENT=1000; 
+CREATE TABLE `tabledefs` (
+  `id` int(11) NOT NULL,
+  `displayname` varchar(64) default NULL,
+  `type` varchar(16) NOT NULL default 'table',
+  `moduleid` int(11) NOT NULL default '0',
+  `maintable` varchar(64) NOT NULL default '',
+  `querytable` varchar(255) NOT NULL default '',
+  `editfile` varchar(128) default NULL,
+  `editroleid` int(11) NOT NULL default '0',
+  `addfile` varchar(100) default '',
+  `addroleid` int(11) NOT NULL default '0',
+  `searchroleid` int(11) NOT NULL default '0',
+  `advsearchroleid` int(11) NOT NULL default '-100',
+  `viewsqlroleid` int(11) NOT NULL default '-100',
+  `deletebutton` varchar(32) default '',
+  `defaultwhereclause` varchar(255) default NULL,
+  `defaultsortorder` varchar(255) default '',
+  `defaultsearchtype` varchar(64) default '',
+  `defaultcriteriafindoptions` varchar(128) default '',
+  `defaultcriteriaselection` varchar(128) default '',
+  `createdby` int(11) NOT NULL default '0',
+  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default NULL,
+  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1000; 
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
@@ -142,7 +146,7 @@ CREATE TABLE tablefindoptions (
   name varchar(64) NOT NULL default '',
   search varchar(255) NOT NULL default '',
   displayorder int(11) NOT NULL default '0',
-  accesslevel int(11) NOT NULL default '0',
+  roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
 ) TYPE=MyISAM AUTO_INCREMENT=2000; 
@@ -153,7 +157,7 @@ CREATE TABLE tableoptions (
   name varchar(64) NOT NULL default '',
   `option` varchar(128) NOT NULL default '',
   othercommand tinyint(1) NOT NULL default '0',
-  accesslevel int(11) NOT NULL default '0',
+  roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
 ) TYPE=MyISAM AUTO_INCREMENT=2000; 
@@ -176,7 +180,6 @@ CREATE TABLE users (
   lastname varchar(64) default NULL,
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   revoked tinyint(1) NOT NULL default '0',
-  accesslevel int(11) default '1',
   createdby int(11) NOT NULL default '0',
   modifiedby int(11) default '0',
   lastlogin datetime default NULL,
@@ -196,7 +199,7 @@ CREATE TABLE usersearches (
   name varchar(128) default '',
   sqlclause text,
   type char(3) NOT NULL default 'SCH',
-  accesslevel int(11) NOT NULL default '0',
+  roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledefid (tabledefid),
   KEY thetype (type),
@@ -220,7 +223,7 @@ CREATE TABLE `files` (
   `creationdate` datetime default '0000-00-00 00:00:00',
   `modifiedby` int(11) default '0',
   `modifieddate` timestamp(14) NOT NULL,
-  `accesslevel` int(11) NOT NULL default '0',
+  `roleid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM AUTO_INCREMENT=100; 
 
@@ -238,3 +241,22 @@ CREATE TABLE `attachments` (
   KEY `thetable` (`tabledefid`),
   KEY `thefile` (`fileid`)
 ) TYPE=MyISAM; 
+
+CREATE TABLE `roles` (
+  `id` INTEGER UNSIGNED DEFAULT NULL AUTO_INCREMENT,
+  `name` VARCHAR(64) NOT NULL,
+  `description` TEXT,
+  `inactive` tinyint(4) NOT NULL,
+  `createdby` INTEGER UNSIGNED,
+  `creationdate` DATETIME,
+  `modifiedby` INTEGER UNSIGNED,
+  `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
+) TYPE = MyISAM;
+
+CREATE TABLE `rolestousers` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `userid` INTEGER UNSIGNED NOT NULL,
+  `roleid` INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(`id`)
+) TYPE = MYISAM;

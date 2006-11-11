@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 
 // These following functions and processing are similar for all pages
 //========================================================================================
@@ -46,11 +46,53 @@ if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noacces
 //set table id
 $tableid=9;
 
+function assignRoles($id,$roles,$dblink){
+	$querystatement="DELETE FROM rolestousers WHERE userid=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Could not remove existing user roles: ".$querystatement);
+	$newroles=explode(",",$roles);
+	foreach($newroles as $therole)
+		if($therole!=""){
+			$querystatement="INSERT INTO rolestousers (userid,roleid) VALUES(".$id.",".$therole.")";
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult) reportError(300,"Could not add new role.");
+		}
+}
+
+function displayRoles($id,$type,$dblink){
+	$querystatement="SELECT roles.id,roles.name
+					FROM roles INNER JOIN rolestousers ON rolestousers.roleid=roles.id 
+					WHERE rolestousers.userid=".$id;
+	$assignedquery=mysql_query($querystatement,$dblink);
+	if(!$assignedquery) reportError(300,"Could not retrieve assigned roles ".mysql_query($dblink));
+	$thelist=array();
+	
+	if($type=="available"){
+		$excludelist=array();
+		while($therecord=mysql_fetch_array($assignedquery))
+			$excludelist[]=$therecord["id"];
+			
+		$querystatement="SELECT id,name FROM roles WHERE inactive=0";
+		$availablequery=mysql_query($querystatement,$dblink);
+		if(!$availablequery) reportError(300,"Could not retrieve available roles");
+		while($therecord=mysql_fetch_array($availablequery))
+			if(!in_array($therecord["id"],$excludelist))
+				$thelist[]=$therecord;		
+	} else 
+		while($therecord=mysql_fetch_array($assignedquery))
+			$thelist[]=$therecord;
+			
+	foreach($thelist as $theoption){
+		?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
+<?php 
+	}
+}
+
 function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="select id, login, firstname, lastname, accesslevel, 
+	$querystatement="select id, login, firstname, lastname, admin,portalaccess,
 				date_Format(lastlogin,\"%c/%e/%Y %T\") as lastlogin, revoked,
 				email,phone,department,employeenumber,
 
@@ -80,7 +122,8 @@ function setRecordDefaults(){
 	$therecord["employeenumber"]="";
 
 	$therecord["revoked"]=0;
-	$therecord["accesslevel"]=10;
+	$therecord["admin"]=0;
+	$therecord["portalaccess"]=0;
 	$therecord["lastlogin"]=NULL;
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
@@ -108,10 +151,11 @@ function updateRecord($variables,$userid){
 	$querystatement.="department=\"".$variables["department"]."\", "; 
 	$querystatement.="employeenumber=\"".$variables["employeenumber"]."\", "; 
 
-	$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
-	if(isset($variables["revoked"])) $querystatement.="revoked=1, "; else $querystatement.="revoked=0, ";
-
 	if($variables["password"]) $querystatement.="password=encode(\"".$variables["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
+
+	if(isset($variables["revoked"])) $querystatement.="revoked=1, "; else $querystatement.="revoked=0, ";
+	if(isset($variables["admin"])) $querystatement.="admin=1, "; else $querystatement.="admin=0, ";
+	if(isset($variables["portalaccess"])) $querystatement.="portalaccess=1, "; else $querystatement.="portalaccess=0, ";
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -119,6 +163,9 @@ function updateRecord($variables,$userid){
 		
 	$thequery = mysql_query($querystatement,$dblink);
 	if(!$thequery) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+	
+	if($variables["roleschanged"]==1)
+		assignRoles($variables["id"],$variables["newroles"],$dblink);
 }// end function
 
 
@@ -129,7 +176,7 @@ function insertRecord($variables,$userid){
 	$querystatement="INSERT INTO users ";
 	
 	$querystatement.="(login,lastname,firstname,email,phone,department,employeenumber,
-						password,accesslevel,revoked,
+						password,revoked,admin,portalaccess,
 	createdby,creationdate,modifiedby) VALUES (";
 	
 	$querystatement.="\"".$variables["login"]."\", ";
@@ -142,8 +189,9 @@ function insertRecord($variables,$userid){
 	$querystatement.="\"".$variables["employeenumber"]."\", "; 	
 	
 	$querystatement.="encode(\"".$variables["password"]."\",\"".$_SESSION["encryption_seed"]."\"), "; 
-	$querystatement.=$variables["accesslevel"].", ";
 	if(isset($variables["revoked"])) $querystatement.="1, "; else $querystatement.="0, ";
+	if(isset($variables["admin"])) $querystatement.="1, "; else $querystatement.="0, ";
+	if(isset($variables["portalaccess"])) $querystatement.="1, "; else $querystatement.="0, ";
 	
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
@@ -152,7 +200,10 @@ function insertRecord($variables,$userid){
 	
 	$thequery = mysql_query($querystatement,$dblink);
 	if(!$thequery) die ("Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
-	return mysql_insert_id($dblink);
+
+	$newid=mysql_insert_id($dblink);
+
+	return $newid;
 }
 
 
@@ -161,10 +212,21 @@ function insertRecord($variables,$userid){
 // Process adding, editing, creating new, canceling or updating
 //==================================================================
 if(!isset($_POST["command"])){
-	if(isset($_GET["id"]))
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
+	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

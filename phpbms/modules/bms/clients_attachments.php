@@ -47,7 +47,12 @@
 	//set the table passing stuff
 	$tabledefid=2;
 	$refid=(integer) $_GET["refid"];
-	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid." AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"];
+
+	$securitywhere="";
+	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+
+	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
 	$backurl="../bms/clients_attachments.php";
 	$base="../../";
 

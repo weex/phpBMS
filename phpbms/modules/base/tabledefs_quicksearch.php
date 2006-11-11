@@ -103,7 +103,7 @@
 			 <th nowrap>Move</th>
 			 <th nowrap align="left">Name</th>
 			 <th width="100%" nowrap align="left">Search</th>
-			 <th width="100%" nowrap class="queryheader" align="left">Access Level</th>
+			 <th width="100%" nowrap class="queryheader" align="left">Access</th>
 			 <th nowrap>&nbsp;</th>
 		</tr>
 	<?php 
@@ -121,7 +121,7 @@
 	 </td>
 	 <td nowrap valign="top"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
 	 <td valign="top" class="small"><?php echo htmlQuotes($therecord["search"])?></td>
-	 <td valign="top" align=center class="small"><?php echo htmlQuotes($therecord["accesslevel"])?></td>
+	 <td valign="top" align=center class="small" nowrap><?php echo displayRights($therecord["roleid"],$therecord["rolename"])?></td>
 	 <td nowrap valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
@@ -147,8 +147,8 @@
 			<?php field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64")); ?>
 		</p>
 		<p>
-			<label for="accesslevel">access level</label><br />
-			<?php basic_choicelist("accesslevel",$thequicksearch["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")));?>
+			<label for="roleid">access (role)</label><br />
+			<?php roles_choicelist("roleid",$thequicksearch["roleid"],$dblink)?>	
 		</p>
 		<p>
 			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />

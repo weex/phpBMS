@@ -116,7 +116,7 @@
 					$thechoices=array();
 					$thechoices[]=array("name"=>"Quote","value"=>"Quote");
 					$thechoices[]=array("name"=>"Order","value"=>"Order");
-					if($_SESSION["userinfo"]["accesslevel"]>=30) $thechoices[]=array("name"=>"Invoice","value"=>"Invoice");
+					if(hasRights(30)) $thechoices[]=array("name"=>"Invoice","value"=>"Invoice");
 					$thechoices[]=array("name"=>"VOID","value"=>"VOID");
 					basic_choicelist("type",$therecord["type"],$thechoices,array("onchange"=>"checkType(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
 				}
@@ -320,7 +320,7 @@
 		<input name="amountpaid" id="amountpaid" type="text" value="<?php echo $therecord["amountpaid"]?>" size="11" maxlength="11" onchange="calculatePaidDue();"  class="important fieldCurrency" tabindex="24"/>
 		<input name="Button" type="button" class="Buttons" onClick="this.form['amountpaid'].value=this.form['totalti'].value;calculatePaidDue();" value="pay in full"  tabindex="24"/>
 	</p>	
-	<?php if($_SESSION["userinfo"]["accesslevel"]>=20){ ?>
+	<?php if(hasRights(20)){ ?>
 	<p>
 		<label for="paymentmethod">payment method</label><br />
 		<?php choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",array("tabindex"=>"24")); ?>
@@ -349,7 +349,7 @@
 			<label for="ccverification">verification/pin</label><br />
 			<input id="ccverification" name="ccverification" type="text"  value="<?php echo htmlQuotes($therecord["ccverification"]) ?>" size="8" maxlength="7" tabindex="29" />		
 		</p>				
-	</div><?php }// end if accesslevel?>
+	</div><?php }// end if access?>
 </fieldset>
 <div id="fsShipping">
 <fieldset>

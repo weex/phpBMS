@@ -131,7 +131,7 @@ function showTodaysOrders($interval="1 DAY"){
 	}
 }
 
-if ($_SESSION["userinfo"]["accesslevel"]>=20) {?>
+if (hasRights(20)) {?>
 <div class="box" id="bmsBox">
 	<button class="graphicButtons buttonDown" id="todaysOrdersLink"><span>Up</span></button>	
 	<h2><a href="../../search.php?id=3">Recent Orders</a></h2>

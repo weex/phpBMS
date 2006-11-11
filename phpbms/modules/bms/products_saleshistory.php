@@ -40,7 +40,7 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 	
-	if($_SESSION["userinfo"]["accesslevel"]<30) goURL($_SESSION["app_path"]."noaccess.html");	
+	if(!hasRights(30)) goURL($_SESSION["app_path"]."noaccess.php");
 	
 	include("include/products_functions.php");
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m")."/01/".date("Y");

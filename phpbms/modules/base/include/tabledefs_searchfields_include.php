@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 	function setDefaultSearchField(){
 		$therecord["id"]=NULL;		
 		$therecord["displayorder"]=NULL;		

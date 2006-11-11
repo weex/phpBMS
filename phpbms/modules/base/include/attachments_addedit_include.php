@@ -57,7 +57,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				files.id,attachments.id as attachmentid,name,description,type,accesslevel,ISNULL(file) as nofile,
+				files.id,attachments.id as attachmentid,name,description,type,roleid,ISNULL(file) as nofile,
 				
 				attachments.createdby, attachments.creationdate, 
 				attachments.modifiedby, attachments.modifieddate
@@ -79,7 +79,7 @@ function setRecordDefaults(){
 	$therecord["name"]="";
 	$therecord["description"]="";
 	$therecord["type"]="";
-	$therecord["accesslevel"]=0;
+	$therecord["roleid"]=0;
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -99,7 +99,7 @@ function updateRecord($variables,$userid){
 
 			$name=$variables["name"];
 			$querystatement.="description=\"".$variables["description"]."\", "; 
-			$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
+			$querystatement.="roleid=".$variables["roleid"].", "; 
 			if($_FILES['upload']["name"]){
 				$name=$_FILES['upload']["name"];
 				if (function_exists('file_get_contents')) {
@@ -140,12 +140,12 @@ function insertRecord($variables,$userid){
 
 		$querystatement="INSERT INTO files ";
 		
-		$querystatement.="(name,description,accesslevel,type,file,
+		$querystatement.="(name,description,roleid,type,file,
 							createdby,creationdate,modifiedby) VALUES (";
 		
 				$querystatement.="\"".$_FILES['upload']["name"]."\", "; 
 				$querystatement.="\"".$variables["description"]."\", "; 
-				$querystatement.=$variables["accesslevel"].", "; 
+				$querystatement.=$variables["roleid"].", "; 
 				$querystatement.="\"".$_FILES['upload']['type']."\", ";
 				$querystatement.="\"".$file."\", ";
 					
@@ -185,10 +185,21 @@ function insertRecord($variables,$userid){
 // Process adding, editing, creating new, canceling or updating
 //==================================================================
 if(!isset($_POST["command"])){
-	if(isset($_GET["id"]))
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
+	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

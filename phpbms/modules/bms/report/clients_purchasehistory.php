@@ -108,7 +108,7 @@ class purchaseHistoryReport{
 		FROM ((clients inner join invoices on clients.id=invoices.clientid) 
 				inner join lineitems on invoices.id=lineitems.invoiceid) 
 					inner join products on lineitems.productid=products.id
-		WHERE clients.id=".$_GET["id"]."   
+		WHERE clients.id=".$id."   
 		and ".$thestatus."		
 		HAVING 
 		thedate >=".$mysqlfromdate."

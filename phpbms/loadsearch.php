@@ -37,6 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 	require("include/session.php");
+	require("include/common_functions.php");
 	
 	function deleteSearch($id){
 		global $dblink;
@@ -107,14 +108,19 @@
 		<?php
 	}//end function
 
-	function showLoad($tabledefid,$basepath,$userid,$accesslevel){
+	function showLoad($tabledefid,$basepath,$userid,$securitywhere){
 		global $dblink;
 		
 		$querystatement="SELECT id,name,userid FROM usersearches 
-						WHERE tabledefid=".$tabledefid." AND type=\"SCH\" AND ((userid=0 and accesslevel<=".$accesslevel.") OR userid=\"".$userid."\") ORDER BY userid, name";
+						WHERE tabledefid=".$tabledefid." AND type=\"SCH\" AND ((userid=0 ".$securitywhere.") OR userid=\"".$userid."\") ORDER BY userid, name";
 		$queryresult = mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(500,"Cannot retrieve saved search infromation");
 		
+
+		$querystatement="SELECT advsearchroleid FROM tabledefs WHERE id=".$tabledefid ;
+		$tabledefresult = mysql_query($querystatement,$dblink);
+		if(!$tabledefresult) reportError(500,"Cannot retrieve table definition information.");
+		$tableinfo=mysql_fetch_array($tabledefresult);
 		
 		?>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -131,7 +137,7 @@
 						<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />					
 					</p>
 					<p>
-						<textarea id="LSSQL" rows="8" cols="10" <?php if($_SESSION["userinfo"]["accesslevel"]<30) echo " readonly=\"readonly\""?>></textarea>
+						<textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
 					</p>
 				</td>
 				<td valign="top">
@@ -147,7 +153,10 @@
 	if(isset($_GET["cmd"])){
 		switch($_GET["cmd"]){
 			case "show":
-				showLoad($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"],$_SESSION["userinfo"]["accesslevel"]);
+				$securitywhere="";
+				if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+					$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";			
+				showLoad($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"],$securitywhere);
 			break;
 			case "getsearch":
 				getSearch($_GET["id"]);

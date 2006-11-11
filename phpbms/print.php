@@ -197,7 +197,7 @@ if (isset($_POST["command"])){
 				<select id="therecords" name="therecords" onChange="showSavedSearches(this);">
 					<option value="selected">selected records (<?php echo count($tablePrinter->theids) ?> record<?php if(count($tablePrinter->theids)>1) echo "s"?>)</option>
 					<option value="savedsearch">saved search...</option>
-					<?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><option value="all">all records in table</option><?php }?>
+					<?php if($_SESSION["userinfo"]["admin"]==1){?><option value="all">all records in table</option><?php }?>
 				</select>
 			</p>
 		</fieldset>

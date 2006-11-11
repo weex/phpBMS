@@ -53,18 +53,10 @@
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/users.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-	function checkPassword(theform){
-		if(theform["password"].value!=theform["password2"].value && theform["command"].value!="cancel"){
-			alert("Passwords did not match.");
-			return false;
-		}
-		return true;
-	}
-</script>
+<script language="JavaScript" src="javascript/users.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return (validateForm(this) &amp;&amp; checkPassword(this));"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
@@ -77,12 +69,18 @@
 			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>		
 		</p>
 
-		<p>		
-			<label for="accesslevel" class="important">access level</label><br />
-			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>		
-		</p>
+		<p><?php field_checkbox("admin",$therecord["admin"])?><label for="admin">administrator</label></p>
 		
+
 		<p><?php field_checkbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
+
+		<p>
+			<?php field_checkbox("portalaccess",$therecord["portalaccess"])?><label for="admin">portal access</label><br />
+			<span class="notes">
+				user accounts marked as portal access cannot login to phpBMS, but are used by external applications
+				when creating/modifiying information from outside the application for recording purposes.
+			</span>
+		</p>
 	</fieldset>
 	
 	<div id="leftSideDiv">
@@ -140,6 +138,35 @@
 				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />			
 			</p>
 		</fieldset>
+		<?php if($therecord["id"]){?>
+		<fieldset>
+			<legend>roles</legend>
+			<input type="hidden" name="roleschanged" id="roleschanged" value="0" />
+			<input type="hidden" name="newroles" id="newroles" value="" />
+			<div class="fauxP">
+			<div id="assignedrolesdiv">
+				assigned roles<br />
+				<select id="assignedroles" size="10" multiple>
+					<?php displayRoles($therecord["id"],"assigned",$dblink)?>
+				</select>
+			</div>
+			<div id="rolebuttonsdiv">
+				<p>
+					<button type="button" class="Buttons" onclick="moveRole('availableroles','assignedroles')">&lt; add role</button>
+				</p>
+				<p>
+					<button type="button" class="Buttons" onclick="moveRole('assignedroles','availableroles')">remove role &gt;</button>
+				</p>
+			</div>
+			<div id="availablerolesdiv">
+				available roles<br />
+				<select id="availableroles" size="10" multiple>
+					<?php displayRoles($therecord["id"],"available",$dblink)?>
+				</select>
+			</div>
+			</div>
+		</fieldset>		
+		<?php }?>
 	</div>	
 
 	<?php include("../../include/createmodifiedby.php"); ?>

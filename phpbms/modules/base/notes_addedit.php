@@ -263,8 +263,6 @@
 		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons" /></div>
 	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
-	<?php if ($_SESSION["userinfo"]["id"] != $therecord["createdby"] && $therecord["createdby"]!="" && $_SESSION["userinfo"]["id"] != $therecord["assignedtoid"] && $_SESSION["userinfo"]["accesslevel"]<90)
-		  echo "<SCRIPT language=\"javascript\">disableSave()</SCRIPT>";?>  
 </div>
 <?php include("../../footer.php")?>
 </form>

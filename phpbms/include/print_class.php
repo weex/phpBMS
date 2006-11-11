@@ -59,8 +59,12 @@
 			$therecord=mysql_fetch_array($queryresult);
 			$this->maintable=$therecord["maintable"];
 
+
+			$securitywhere="";
+			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+				$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 			$querystatement="SELECT id,name,reportfile,type,description,displayorder FROM reports 
-							WHERE (tabledefid=0 or tabledefid=".$this->tableid.") and accesslevel <= ".$_SESSION["userinfo"]["accesslevel"]." ORDER BY tabledefid desc, displayorder desc,name";
+							WHERE (tabledefid=0 or tabledefid=".$this->tableid.") ".$securitywhere." ORDER BY tabledefid desc, displayorder desc,name";
 			$queryresult=mysql_query($querystatement,$dblink);		
 			if(!$queryresult) reportError(500,"Error retreving reports.");
 			$this->reports=$queryresult;
@@ -79,7 +83,10 @@
 		function getSaved($userid,$type){
 			global $dblink;
 			
-			$querystring="SELECT id,name,userid FROM usersearches WHERE tabledefid=".$this->tableid." and type=\"".$type."\" and((userid=0 and accesslevel<=".$_SESSION["userinfo"]["accesslevel"].") or userid=\"".$userid."\") order by userid,name";
+			$securitywhere="";
+			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+				$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+			$querystring="SELECT id,name,userid FROM usersearches WHERE tabledefid=".$this->tableid." and type=\"".$type."\" and((userid=0 ".$securitywhere.") or userid=\"".$userid."\") order by userid,name";
 			$thequery = mysql_query($querystring,$dblink);
 			return $thequery;
 		}//end function

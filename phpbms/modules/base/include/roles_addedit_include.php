@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 166 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2006-10-24 13:09:27 -0600 (Tue, 24 Oct 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -37,43 +37,67 @@
  +-------------------------------------------------------------------------+
 */
 
-
-
-function displayTables($fieldname,$selectedid){
-	global $dblink;
-	
-	$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
-	$thequery=mysql_query($querystatement,$dblink);
-	
-	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
-	while($therecord=mysql_fetch_array($thequery)){
-		echo "	<option value=\"".$therecord["id"]."\"";
-			if($selectedid==$therecord["id"]) echo " selected ";
-		echo ">".$therecord["displayname"]."</option>\n";
-	}
-
-	echo "</select>\n";
+function assignUsers($id,$users,$dblink){
+	$querystatement="DELETE FROM rolestousers WHERE roleid=".$id;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Could not remove existing user roles: ".$querystatement);
+	$newusers=explode(",",$users);
+	foreach($newusers as $theuser)
+		if($theuser!=""){
+			$querystatement="INSERT INTO rolestousers (roleid,userid) VALUES(".$id.",".$theuser.")";
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult) reportError(300,"Could not add new user role.");
+		}
 }
+
+function displayUsers($id,$type,$dblink){
+	$querystatement="SELECT users.id,concat(users.firstname,' ',users.lastname) as name
+					FROM users INNER JOIN rolestousers ON rolestousers.userid=users.id 
+					WHERE rolestousers.roleid=".$id;
+	$assignedquery=mysql_query($querystatement,$dblink);
+	if(!$assignedquery) reportError(300,"Could not retrieve assigned users ".mysql_query($dblink));
+	$thelist=array();
+	
+	if($type=="available"){
+		$excludelist=array();
+		while($therecord=mysql_fetch_array($assignedquery))
+			$excludelist[]=$therecord["id"];
+			
+		$querystatement="SELECT id,concat(users.firstname,' ',users.lastname) as name FROM users WHERE revoked=0 AND portalaccess=0";
+		$availablequery=mysql_query($querystatement,$dblink);
+		if(!$availablequery) reportError(300,"Could not retrieve available users");
+		while($therecord=mysql_fetch_array($availablequery))
+			if(!in_array($therecord["id"],$excludelist))
+				$thelist[]=$therecord;		
+	} else 
+		while($therecord=mysql_fetch_array($assignedquery))
+			$thelist[]=$therecord;
+			
+	foreach($thelist as $theoption){
+		?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
+<?php 
+	}
+}
+
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
 
 //set table id
-$tableid=17;
+$tableid=200;
 
 function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT
- 				id, name, userid, tabledefid, sqlclause, type, roleid 
-				
- 				FROM usersearches
+	$querystatement="SELECT id, name, description, inactive,
+	
+				createdby, creationdate, 
+				modifiedby, modifieddate
+				FROM roles
 				WHERE id=".$id;		
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
-	$therecord = mysql_fetch_array($queryresult);
-	if(!$therecord) reportError(300,"No record for id ".$id);
+	$thequery = mysql_query($querystatement,$dblink);
+	$therecord = mysql_fetch_array($thequery);
 	return $therecord;
 }//end function
 
@@ -81,13 +105,10 @@ function getRecords($id){
 function setRecordDefaults(){
 //========================================================================================
 	$therecord["id"]=NULL;
-	
+
 	$therecord["name"]="";
-	$therecord["userid"]=NULL;
-	$therecord["tabledefid"]=NULL;
-	$therecord["sqlclause"]="";
-	$therecord["roleid"]=0;
-	$therecord["type"]="";
+	$therecord["description"]="";
+	$therecord["inactive"]=0;
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -102,22 +123,60 @@ function setRecordDefaults(){
 function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
-	$querystatement="UPDATE usersearches SET ";
 	
-			if(isset($variables["makeglobal"])) $querystatement.="userid=0, "; 
-			$querystatement.="name=\"".$variables["name"]."\", "; 
-			$querystatement.="tabledefid=\"".$variables["tabledefid"]."\", "; 
-			if(isset($variables["roleid"]))$querystatement.="roleid=\"".$variables["roleid"]."\", "; 
-			if(isset($variables["type"]))$querystatement.="type=\"".$variables["type"]."\", "; 
-			$querystatement.="sqlclause=\"".$variables["sqlclause"]."\" "; 
+	$querystatement="UPDATE roles SET ";
+	
+	//fields
+	$querystatement.="name=\"".$variables["name"]."\", "; 
+	$querystatement.="description=\"".$variables["name"]."\", "; 	
+
+	$querystatement.="inactive=";
+	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
+	$querystatement.=",";
 
 	//==== Almost all records should have this =========
-	$querystatement.="WHERE id=".$variables["id"];
-		
+	$querystatement.="modifiedby=\"".$userid."\" "; 
+	$querystatement.="where id=".$variables["id"];
+	
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+
+	if($variables["userschanged"]==1)
+		assignUsers($variables["id"],$variables["newusers"],$dblink);
+
 }// end function
 
+
+function insertRecord($variables,$userid){
+//========================================================================================
+	global $dblink;
+
+	$querystatement="INSERT INTO roles ";
+	
+	$querystatement.="(name,description,inactive,
+	createdby,creationdate,modifiedby) VALUES (";
+	
+	$querystatement.="\"".$variables["name"]."\", "; 
+	$querystatement.="\"".$variables["description"]."\", "; 
+
+	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
+	$querystatement.=",";
+	
+	//==== Almost all records should have this =========
+	$querystatement.=$userid.", "; 
+	$querystatement.="Now(), ";
+	$querystatement.=$userid.")"; 
+	
+	$queryresult= mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
+		
+	$newid=mysql_insert_id($dblink);
+
+	if($variables["userschanged"]==1)
+		assignUsers($newid,$variables["newusers"],$dblink);
+
+	return $newid;
+}
 
 
 
@@ -140,10 +199,8 @@ if(!isset($_POST["command"])){
 			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
 	}
-	$username=getUserName($therecord["userid"]);
-	if(!$username) $username="global";
-	$createdby="";
-	$modifiedby="";
+	$createdby=getUserName($therecord["createdby"]);
+	$modifiedby=getUserName($therecord["modifiedby"]);
 }
 else
 {
@@ -160,20 +217,16 @@ else
 				$theid=$_POST["id"];
 				//get record
 				$therecord=getRecords($theid);
-				$username=getUserName($therecord["userid"]);
-				if(!$username) $username="global";
-				$createdby="";
-				$modifiedby="";
+				$createdby=getUserName($therecord["createdby"]);
+				$modifiedby=getUserName($therecord["modifiedby"]);
 				$statusmessage="Record Updated";
 			}
 			else {
-				$theid=insertRecord();
+				$theid=insertRecord(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"]);
 				//get record
 				$therecord=getRecords($theid);
-				$username=getUserName($therecord["userid"]);
-				if(!$username) $username="global";
-				$createdby="";
-				$modifiedby="";
+				$createdby=getUserName($therecord["createdby"]);
+				$modifiedby=getUserName($therecord["modifiedby"]);
 				$statusmessage="<div style=\"float:right;margin-top:-3px;\"><button type=\"button\" class=\"smallButtons\" onclick=\"document.location='".$_SERVER["REQUEST_URI"]."'\">add new</button></div>";
 				$statusmessage.="Record Created";
 			}

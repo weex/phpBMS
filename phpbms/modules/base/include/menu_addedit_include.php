@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 
 function displayTableDropDown($selectedlink){
 	global $dblink;
@@ -84,7 +84,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name, link, parentid, displayorder, accesslevel,
+	$querystatement="SELECT id, name, link, parentid, displayorder, roleid,
 				createdby, creationdate, 
 				modifiedby, modifieddate
 				FROM menu
@@ -103,7 +103,7 @@ function setRecordDefaults(){
 	$therecord["link"]=NULL;
 	$therecord["parentid"]=0;
 	$therecord["displayorder"]=0;
-	$therecord["accesslevel"]=0;
+	$therecord["roleid"]=0;
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -139,7 +139,7 @@ function updateRecord($variables,$userid){
 		break;
 	}
 	$querystatement.="displayorder=".$variables["displayorder"].", "; 
-	$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
+	$querystatement.="roleid=".$variables["roleid"].", "; 
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -156,7 +156,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO menu ";
 	
-	$querystatement.="(name,link,parentid,displayorder,accesslevel,
+	$querystatement.="(name,link,parentid,displayorder,roleid,
 	createdby,creationdate,modifiedby) VALUES (";
 	
 	$querystatement.="\"".$variables["name"]."\", "; 
@@ -176,7 +176,7 @@ function insertRecord($variables,$userid){
 		break;
 	}
 	$querystatement.=$variables["displayorder"].", "; 
-	$querystatement.=$variables["accesslevel"].", "; 
+	$querystatement.=$variables["roleid"].", "; 
 	
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
@@ -194,10 +194,21 @@ function insertRecord($variables,$userid){
 // Process adding, editing, creating new, canceling or updating
 //==================================================================
 if(!isset($_POST["command"])){
-	if(isset($_GET["id"]))
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
+	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

@@ -114,7 +114,7 @@
 	 <th nowrap align="center">other</th>
 	 <th nowrap align="left">name</th>
 	 <th nowrap align="left">option / function</th>
-	 <th nowrap align="center">restricted</th>
+	 <th nowrap align="center">access</th>
 	 <th nowrap>&nbsp;</th>
 	</tr>
 
@@ -138,7 +138,7 @@
 				echo "not allowed";				
 		}
 	?></td>
-	 <td nowrap align="center"><?php if ($therecord["accesslevel"]>10) echo "X"; else echo "&middot;";?></td>	
+	 <td nowrap align="center"><?php displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
 	 
 	 <td nowrap valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
@@ -190,8 +190,8 @@
 				</p>
 			</div>
 			<p>
-				<label for="accesslevel">access level</label><br />
-				<?php basic_choicelist("accesslevel",$theoption["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important"));?>			
+				<label for="roleid">access (role)</label><br />
+				<?php roles_choicelist("roleid",$theoption["roleid"],$dblink)?>				
 			</p>
 
 			<p>

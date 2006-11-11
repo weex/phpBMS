@@ -1,7 +1,7 @@
 <?php 
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 155 $ | $LastChangedBy: mipalmer $
+ $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -40,20 +40,21 @@
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
-	include("include/menu_addedit_include.php");
+	include("include/roles_addedit_include.php");
 	
-	$pageTitle="Menu Item";
+	$pageTitle="Role";
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/menus.css" rel="stylesheet" type="text/css" />
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/roles.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="javascript/roles.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>
@@ -67,16 +68,8 @@
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="true" class="uneditable" />
 		</p>
 		
-		<p>
-			<label for="displayorder">display order</label><br />
-			 <?php field_text("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br />
-			 <span class="notes"><strong>Note:</strong> Lower numbers are displayed first.</span>
-		</p>
+		<p><?php field_checkbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
 		
-		<p>
-			<label for="roleid">access (role)</label><br />
-			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
-		</p>
 	</fieldset>
 	
 	<div id="leftSideDiv">
@@ -88,45 +81,43 @@
 		</fieldset>
 
 		<fieldset>
-			<legend>type</legend>
-			<p class="typeP">
-				<br />
-				<input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked" ?> name="radio" onClick="showTypeDetails();"  class="radiochecks" /><label for="type1">category</label><br />
-				<img src="menu-example-category.png" width="150" height="72" class="typeImage" alt="category" />
-			</p>
-			
-			<p class="typeP">
-				<br />
-				<input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type2">table definition search</label><br />
-				<img src="menu-example-tabledef.png" width="150" height="72" class="typeImage" alt="table definition search" />
-			</p>
-
-			<p>
-				<br />
-				<input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type3">page link</label><br />
-				<img src="menu-example-link.png" width="150" height="72" class="typeImage" alt="page link" />
+			<legend><label for="description">description</label></legend>
+			<p><br />
+				<textarea name="description" cols="45" rows="5" id="description"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
-	</div>
-
-	<div id="details">
+		
+		<?php if($therecord["id"]){?>
 		<fieldset>
-			<legend>link / parent</legend>
-			<p id="thelink">
-				<label for="link">link</label> <span class="notes">(URL)</span><br />
-				<input id="link" name="link" type="text" value="<?php if(substr($therecord["link"],0,10)!="search.php" ) echo htmlQuotes($therecord["link"])?>" size="64" maxlength="255" />				
-			</p>
-			<p id="thetabledef">
-				<label  for="linkdropdown">table definition</label><br /> 
-				<?php displayTableDropDown($therecord["link"]) ?>		
-			</p>
-			<p>
-				parent<br/>
-				<?php displayParentDropDown($therecord["parentid"],$therecord["id"]) ?>
-			</p>
-		</fieldset>
+			<legend>users</legend>
+			<input type="hidden" name="userschanged" id="userschanged" value="0" />
+			<input type="hidden" name="newusers" id="newusers" value="" />
+			<div class="fauxP">
+			<div id="assignedusersdiv">
+				users assigned to group<br />
+				<select id="assignedusers" size="10" multiple>
+					<?php displayUsers($therecord["id"],"assigned",$dblink)?>
+				</select>
+			</div>
+			<div id="usersbuttonsdiv">
+				<p>
+					<button type="button" class="Buttons" onclick="moveUser('availableusers','assignedusers')">&lt; add user</button>
+				</p>
+				<p>
+					<button type="button" class="Buttons" onclick="moveUser('assignedusers','availableusers')">remove user &gt;</button>
+				</p>
+			</div>
+			<div id="availableusersdiv">
+				available users<br />
+				<select id="availableusers" size="10" multiple>
+					<?php displayUsers($therecord["id"],"available",$dblink)?>
+				</select>
+			</div>
+			</div>
+		</fieldset>		
+		<?php }?>
 	</div>
-	<script language="JavaScript" type="text/javascript">showTypeDetails();</script>
+
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php"); ?>

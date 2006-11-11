@@ -40,7 +40,7 @@
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 
 //set table id
 $tableid=11;
@@ -52,6 +52,7 @@ function getRecords($id){
 	$querystatement="SELECT
 				id,maintable,displayname,querytable,addfile,editfile,deletebutton,type,moduleid,
 				defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
+				searchroleid,addroleid,editroleid,advsearchroleid,viewsqlroleid,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -75,17 +76,22 @@ function setRecordDefaults(){
 	
 	$therecord["addfile"]="";
 	$therecord["editfile"]="";
+	$therecord["addroleid"]=0;
+	$therecord["editroleid"]=0;
 	$therecord["moduleid"]=1;
 
 	$therecord["deletebutton"]="delete";
 	$therecord["type"]="table";
 
+	$therecord["searchroleid"]=0;
+	$therecord["advsearchroleid"]=-100;
+	$therecord["viewsqlroleid"]=-100;
 	$therecord["defaultwhereclause"]="";
 	$therecord["defaultcriteriafindoptions"]="";
 	$therecord["defaultcriteriaselection"]="";
 	$therecord["defaultsortorder"]="";
 
-	$therecord["defaultsearchtype"]="search";
+	$therecord["defaultsearchtype"]="";
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -120,6 +126,12 @@ function updateRecord($variables,$userid){
 			$querystatement.="defaultcriteriafindoptions=\"".$variables["defaultcriteriafindoptions"]."\", "; 
 			$querystatement.="defaultcriteriaselection=\"".$variables["defaultcriteriaselection"]."\", "; 
 
+			$querystatement.="searchroleid=".$variables["searchroleid"].", "; 
+			$querystatement.="addroleid=".$variables["addroleid"].", "; 
+			$querystatement.="editroleid=".$variables["editroleid"].", "; 
+			$querystatement.="advsearchroleid=".$variables["advsearchroleid"].", "; 
+			$querystatement.="viewsqlroleid=".$variables["viewsqlroleid"].", "; 
+
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
 	$querystatement.="WHERE id=".$variables["id"];
@@ -136,7 +148,9 @@ function insertRecord($variables,$userid){
 	$querystatement="INSERT INTO tabledefs ";
 	
 	$querystatement.="(maintable,querytable,displayname,type,moduleid,addfile,editfile,deletebutton,
-						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
+						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,\
+						searchroleid,addroleid,editroleid,advsearchroleid,viewsqlroleid,
+						
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["maintable"]."\", "; 
@@ -155,6 +169,12 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["defaultsearchtype"]."\", "; 
 			$querystatement.="\"".$variables["defaultcriteriafindoptions"]."\", "; 
 			$querystatement.="\"".$variables["defaultcriteriaselection"]."\", "; 
+			
+			$querystatement.=$variables["searchroleid"].", "; 
+			$querystatement.=$variables["addroleid"].", "; 
+			$querystatement.=$variables["editroleid"].", "; 			
+			$querystatement.=$variables["advsearchroleid"].", "; 
+			$querystatement.=$variables["viewsqlroleid"].", "; 
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
@@ -173,10 +193,21 @@ function insertRecord($variables,$userid){
 // Process adding, editing, creating new, canceling or updating
 //==================================================================
 if(!isset($_POST["command"])){
-	if(isset($_GET["id"]))
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
+	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

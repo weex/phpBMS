@@ -37,10 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 
-function getMenu(){
-	global $dblink;
-	
-	$querystatement="SELECT id,name,link,accesslevel FROM menu WHERE parentid=0 ORDER BY displayorder";
+function getMenu($dblink){
+	$querystatement="SELECT id,name,link,roleid FROM menu WHERE parentid=0 ORDER BY displayorder";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(1,"Error Retrieving Menu");
 	
@@ -50,14 +48,14 @@ function getMenu(){
 function getSubItems($parentid){
 	global $dblink;
 
-	$querystatement="SELECT id,name,link,accesslevel FROM menu WHERE parentid=".$parentid." ORDER BY displayorder";
+	$querystatement="SELECT id,name,link,roleid FROM menu WHERE parentid=".$parentid." ORDER BY displayorder";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(1,"Error Retrieving Menu");
 
 	if (mysql_num_rows($queryresult)<1) return false; else return $queryresult;
 }
 
-	$menus=getMenu();
+	$menus=getMenu($dblink);
 	$nummenus=mysql_num_rows($menus);
 
 ?>
@@ -74,7 +72,7 @@ function getSubItems($parentid){
 	<?php 	
 		$submenustring="";
 		while($menurecord=mysql_fetch_array($menus)){
-			if($_SESSION["userinfo"]["accesslevel"]>=$menurecord["accesslevel"]){
+			if(hasRights($menurecord["roleid"])){
 				if($menurecord["link"]) {
 					if(strpos($menurecord["link"],"http")!==0)
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
@@ -89,7 +87,7 @@ function getSubItems($parentid){
 							if($subrecord["name"]=="----")
 								$sep=true;
 							else{
-								if($_SESSION["userinfo"]["accesslevel"]>=$subrecord["accesslevel"]){
+								if(hasRights($menurecord["roleid"])){
 									if(strpos($subrecord["link"],"http")!==0)
 										$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
 								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php 

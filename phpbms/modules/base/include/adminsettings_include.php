@@ -115,6 +115,9 @@ function updateEncyptionSeed($newseed,$currpassword,$userid,$currseed,$dblink){
 }
 
 //process commands
+if(!hasRights(-100))
+	goURL($_SESSION["app_path"]."noaccess.php");
+
 if (isset($_POST["command"])) {
 	switch($_POST["command"]){
 		case "Update Settings":

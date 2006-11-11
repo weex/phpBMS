@@ -54,7 +54,7 @@
 			global $dblink;
 			$querystatement="SELECT tabledefs.id,maintable,querytable,tabledefs.displayname,addfile,editfile,deletebutton,type,
 							  defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
-							  modules.name
+							  modules.name,searchroleid,advsearchroleid,viewsqlroleid
 							  FROM tabledefs inner join modules on tabledefs.moduleid=modules.id
 							  WHERE tabledefs.id=".$id;
 			
@@ -64,6 +64,9 @@
 			if (mysql_num_rows($queryresult)<1) reportError(1,"table definition not found: ".$id);
 			
 			$therecord=mysql_fetch_array($queryresult);
+			
+			if(!hasRights($therecord["searchroleid"]))
+				goURL($_SESSION["app_path"]."noaccess.php");
 			
 			return $therecord;
 		}//end function getTableDef
@@ -94,13 +97,13 @@ function displayQueryHeader(){
 	foreach ($this->thecolumns as $therow){ ?>
 <th nowrap align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
 	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>" />
-	<a href="/" onClick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
+	<a href="/" onclick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
 	<?php
 		// If sorting on this column give the option to reverse the sort order.
 		if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
-	{?>&nbsp;<a href="/" onClick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
+	{?>&nbsp;<a href="/" onclick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
 <?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
-{?> &nbsp;<a href="/" onClick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
+{?> &nbsp;<a href="/" onclick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
 <?php }	?></th><?php
 		$i++;
 	}//end foreach
@@ -336,7 +339,7 @@ function sendInfo(name,thevalue,thedisplay){
 			global $dblink;
 		
 			$options=Array();
-			$querystatement="SELECT name,`option`,othercommand,accesslevel
+			$querystatement="SELECT name,`option`,othercommand,roleid
 								  FROM tableoptions WHERE tabledefid=".$id;
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
@@ -344,10 +347,10 @@ function sendInfo(name,thevalue,thedisplay){
 			while($therecord=mysql_fetch_array($queryresult)) {
 				if($therecord["othercommand"]) {
 					$options["othercommands"][$therecord["name"]]["displayname"]=$therecord["option"];
-					$options["othercommands"][$therecord["name"]]["accesslevel"]=$therecord["accesslevel"];
+					$options["othercommands"][$therecord["name"]]["roleid"]=$therecord["roleid"];
 				}else{
 					$options[$therecord["name"]]["allowed"]=$therecord["option"];
-					$options[$therecord["name"]]["accesslevel"]=$therecord["accesslevel"];
+					$options[$therecord["name"]]["roleid"]=$therecord["roleid"];
 				}
 			}
 			return $options;
@@ -357,7 +360,7 @@ function sendInfo(name,thevalue,thedisplay){
 			global $dblink;
 			
 			$findoptions=Array();
-			$querystatement="SELECT name,search,accesslevel
+			$querystatement="SELECT name,search,roleid
 								  FROM tablefindoptions WHERE tabledefid=".$id." ORDER BY displayorder";
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
@@ -401,7 +404,7 @@ function sendInfo(name,thevalue,thedisplay){
 ?>
 <ul class="tabs">
 	<li id="basicSearchT" class="tabsSel"><a href="/" onClick="switchSearchTabs(this);return false">basic</a></li>
-	<?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end accesslevel ?>
+	<?php if(hasRights($this->thetabledef["advsearchroleid"])){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end access ?>
 	<li id="loadSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
 	<li id="saveSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
 	<li id="advancedSortT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
@@ -416,7 +419,7 @@ function sendInfo(name,thevalue,thedisplay){
 						<select name="find" id="find">
 						<?php 											
 							for($i=0;$i<count($this->findoptions);$i++) {
-								if($this->findoptions[$i]["accesslevel"]<=$_SESSION["userinfo"]["accesslevel"]){
+								if(hasRights($this->findoptions[$i]["roleid"])){
 									?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
 										if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
 									?>><?php echo $this->findoptions[$i]["name"]?></option><?php
@@ -468,7 +471,7 @@ function sendInfo(name,thevalue,thedisplay){
 			<td align="left" valign=top nowrap ><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(alt+t)"/></p></td>
 		</tr>				
 	</table>
-</div><?php if($_SESSION["userinfo"]["accesslevel"]>=30){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end accesslevel ?>
+</div><?php if(hasRights($this->thetabledef["advsearchroleid"])){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end access ?>
 <div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
 <div id="saveSearchTab" style="display:none;margin:0px;padding:0px;margin:0px;">
 	<div id="saveSearchReults" style="display:none"></div>
@@ -493,22 +496,22 @@ function sendInfo(name,thevalue,thedisplay){
 function displayQueryButtons() { 
 	if(!isset($this->tableoptions["new"])){
 		 $this->tableoptions["new"]["allowed"]=0;
-		 $this->tableoptions["new"]["accesslevel"]=0;
+		 $this->tableoptions["new"]["roleid"]=0;
 	}
 	if(!isset($this->tableoptions["select"])) {
 		$this->tableoptions["select"]["allowed"]=0;
-		$this->tableoptions["select"]["accesslevel"]=0;
+		$this->tableoptions["select"]["roleid"]=0;
 	}
 	if(!isset($this->tableoptions["edit"])){
 		 $this->tableoptions["edit"]["allowed"]=0;
-		 $this->tableoptions["edit"]["accesslvel"]=0;
+		 $this->tableoptions["edit"]["roleid"]=0;
 	}
 	if(!isset($this->tableoptions["printex"])) {
 		$this->tableoptions["printex"]["allowed"]=0;
-		$this->tableoptions["printex"]["accesslevel"]=0;
+		$this->tableoptions["printex"]["roleid"]=0;
 	}
 	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
-	if($_SESSION["userinfo"]["accesslevel"]>=90){?>
+	if(hasRights($this->thetabledef["viewsqlroleid"])){?>
 	<div id="sqlstatement">
 	<fieldset>
 		<legend>SQL Statement</legend>
@@ -545,17 +548,17 @@ function displayQueryButtons() {
 	
 		<div id="recordCommands">
 		<?php 
-		if ($this->tableoptions["new"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["new"]["accesslevel"]) 
+		if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) 
 			{
 		?><button type="button" accesskey="n" class="graphicButtons buttonNew" onClick="addRecord()" title="new (alt+n)"><span>new</span></button><?php 
 			} 
 			
 		if($this->numrows) {
-			if ($this->tableoptions["edit"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["edit"]["accesslevel"]) {
+			if ($this->tableoptions["edit"]["allowed"] && hasRights($this->tableoptions["edit"]["roleid"])) {
 				?><button id="edit" accesskey="e" type="button" disabled="true" class="graphicButtons buttonEditDisabled" onClick="editThis()" title="edit (alt+e)"><span>edit</span></button><?php
 			}
 		
-			if($this->tableoptions["printex"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["printex"]["accesslevel"]){
+			if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
 				?><button id="print" accesskey="p" type="submit" disabled="true" class="graphicButtons buttonPrintDisabled" name="doprint"  title="print (alt+p)"><span>print</span></button><?php
 			}
 
@@ -571,14 +574,14 @@ function displayQueryButtons() {
 				<?php } 
 				if($this->tableoptions["othercommands"]){
 					foreach($this->tableoptions["othercommands"] as $key => $value){
-						if($_SESSION["userinfo"]["accesslevel"]>=$value["accesslevel"]){
+						if(hasRights($value["roleid"])){
 							?><option value="<?php echo $key?>"><?php echo $value["displayname"]?></option><?php
 						}
 					}
 				}
 				?></select><?php
 		}
-		if($this->tableoptions["select"]["allowed"] && $_SESSION["userinfo"]["accesslevel"]>=$this->tableoptions["select"]["accesslevel"]){?> <select id="searchSelection" onChange="perfromToSelection(this)">
+		if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){?> <select id="searchSelection" onChange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
 				<option value="selectall" title="(alt+a)">select all</option>
@@ -589,7 +592,7 @@ function displayQueryButtons() {
 			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
 		
 		}//end if numrows	
-		if($_SESSION["userinfo"]["accesslevel"]>=90){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?php }//end accesslevel?>
+		if(hasRights($this->thetabledef["viewsqlroleid"])){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?php }//end rights?>
 		</div><script language="JavaScript" type="text/javascript">
 	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
 	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";

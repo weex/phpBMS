@@ -1,2 +1,2 @@
-INSERT INTO users VALUES (1,'nologin','Tá€-Gó','EXTERNAL','',NOW(),0,-10,2,2,Now(),Now(),'','','','');
-INSERT INTO users VALUES (2,'admin',encode('phpbms','freeble'),'Administrator','',Now(),0,90,2,2,Now(),Now(),'','','','');
+INSERT INTO `users` (`id`, `login`, `password`, `firstname`, `lastname`, `creationdate`, `revoked`, `createdby`, `modifiedby`, `lastlogin`, `modifieddate`, `email`, `phone`, `department`, `employeenumber`, `admin`, `portalaccess`) VALUES (1,'nologin','Tá€-Gó','phpBMS','Install',NOW(),1,1,1,NOW(),NULL,'','','','',0,1);
+INSERT INTO `users` (`id`, `login`, `password`, `firstname`, `lastname`, `creationdate`, `revoked`, `createdby`, `modifiedby`, `lastlogin`, `modifieddate`, `email`, `phone`, `department`, `employeenumber`, `admin`, `portalaccess`) VALUES (2,'admin',encode('phpbms','freeble'),'Administrator',' ',NOW(),0,1,1,NOW(),NULL,'','','','',1,0);

@@ -100,6 +100,7 @@ vertical-align:middle;
 .buttonWWW{background:url(image/button-www.png) 0 0 no-repeat;}
 .buttonX{background:url(image/button-x.png) 0 0 no-repeat;}
 .buttonTimeStamp{background:url(image/button-timestamp.png) 100% 0 no-repeat;padding-right:20px;font-size:11px;margin-right:6px;color:black;width:auto;}
+.buttonDownload{background:url(image/button-download.png) 0 0 no-repeat;}
 
 .buttonShowSQLUp{width:35px;background:url(image/button-sql-up.png) 0 0 no-repeat;}
 .buttonShowSQLDown{width:35px;background:url(image/button-sql-down.png) 0 0 no-repeat;}

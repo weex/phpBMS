@@ -36,13 +36,13 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+	
 	function setOptionDefaults(){
 		$therecord["id"]=NULL;		
 		$therecord["name"]="";		
 		$therecord["option"]="";		
 		$therecord["othercommand"]=0;		
-		$therecord["accesslevel"]=0;		
+		$therecord["roleid"]=0;		
 
 		return $therecord;		
 	}
@@ -50,11 +50,11 @@
 	function getOptions($tabledefid,$optionid=false){
 		global $dblink;
 
-		$querystatement="SELECT id, name, `option`, othercommand, accesslevel
-		FROM tableoptions 
+		$querystatement="SELECT tableoptions.id, tableoptions.name, tableoptions.option, tableoptions.othercommand, tableoptions.roleid, roles.name as rolename
+		FROM tableoptions LEFT JOIN roles ON tableoptions.roleid=roles.id
 		WHERE tabledefid=".$tabledefid;
-		if($optionid) $querystatement.=" AND id=".$optionid;
-		$querystatement.=" ORDER BY othercommand, id";
+		if($optionid) $querystatement.=" AND tableoptions.id=".$optionid;
+		$querystatement.=" ORDER BY othercommand, tableoptions.id";
 		
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
@@ -65,10 +65,10 @@
 
 	function addOption($variables,$tabledefid){
 		global $dblink;
-		$querystatement="INSERT INTO tableoptions (tabledefid, accesslevel, name, `option`, othercommand)
+		$querystatement="INSERT INTO tableoptions (tabledefid, roleid, name, `option`, othercommand)
 		values (";
 		$querystatement.=$tabledefid.", ";
-		$querystatement.=$variables["accesslevel"].", ";
+		$querystatement.=$variables["roleid"].", ";
 		if($variables["othercommand"]==1) {
 			$querystatement.="\"".$variables["name"]."\", ";
 			$querystatement.="\"".$variables["option"]."\", ";
@@ -87,7 +87,7 @@
 		global $dblink;
 		$querystatement="UPDATE tableoptions set ";
 		$querystatement.="othercommand=".$variables["othercommand"].", ";		
-		$querystatement.="accesslevel=".$variables["accesslevel"].", ";
+		$querystatement.="roleid=".$variables["roleid"].", ";
 		if($variables["othercommand"]==1) {
 			$querystatement.="name=\"".$variables["name"]."\", ";
 			$querystatement.="`option`=\"".$variables["option"]."\", ";

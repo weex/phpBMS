@@ -47,6 +47,42 @@ function goURL($url){
 	exit;
 }
 
+function hasRights($roleid){
+	$hasrights=false;
+	if($_SESSION["userinfo"]["admin"]==1)
+		$hasrights=true;
+	elseif($roleid==0)
+		$hasrights=true;
+	else
+		foreach($_SESSION["userinfo"]["roles"] as $role)
+			if($role==$roleid)
+				$hasrights=true;
+
+	return $hasrights;
+}
+
+function displayRights($roleid,$rolename,$dblink=false){
+	 	switch($roleid){
+			case 0:
+				echo "EVERYONE";
+			break;
+			case -100:
+				echo "Administrators";
+			break;
+			default:
+				if(!$rolename){
+					if(!$dblink)
+						reportError(400,"displayRights needs a database link if rolename is not specified");
+					$querystatement="SELECT name FROM roles WHERE id=".$roleid;
+					$queryresult=mysql_query($querystatement,$dblink);
+					if(!queryresult) reportError(400,"displayRights could not retrieve role name");
+					$therecord=mysql_fetch_array($queryresult);
+					$rolename=$therecord["name"];
+				}
+				echo $rolename;
+		}
+}
+
 //Create Tabs
 //===================================
 function create_tabs($tabarray,$selected="none") {
@@ -295,7 +331,8 @@ function formatVariable($value,$format){
 			$value=formatDateTime($value);
 		break;
 		case "filelink":
-			$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
+			$value="<button class=\"graphicButtons buttonDownload\" type=\"button\" onclick=\"document.location='".$_SESSION["app_path"]."servefile.php?i=".$value."'\"><span>download</span></button>";
+			//$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
 		break;
 		case "noencoding":
 			$value=$value;

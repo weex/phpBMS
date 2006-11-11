@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 145 $ | $LastChangedBy: mipalmer $
+ $LastChangedDate: 2006-10-21 18:27:44 -0600 (Sat, 21 Oct 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -36,48 +36,22 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	session_cache_limiter('private');
-	require_once("../../../include/session.php");
-	require_once("../../../fpdf/fpdf.php");
-
-	if($_SESSION["printing"]["sortorder"])
-		$sortorder=$_SESSION["printing"]["sortorder"];
-	else
-		$sortorder="  ORDER BY concat(lastname,firstname,company)";
-
-	$maxrows=10;
-	$maxcolumns=3;
-	$topstart=1/2;
-	$leftstart=3/16;
-	$columnmargin=1/8;
-	$labelheight=1;
-	$labelwidth=2+(5/8);
+//=============================================
+//functions
+//=============================================
+//inactivate roles
+function delete_record($theids){
+	global $dblink;
 	
-	$reportquerystatement="select firstname,lastname,company,shiptoaddress1,shiptoaddress2,
-						shiptocity,shiptostate,shiptopostalcode,shiptocountry 
-						FROM clients ";
-						
-	$border_debug=0;
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"roles.id");
 
-	function printLabel($pdf,$therecord,$thex,$they,$border_debug){
-		//offset lef tby 1/8" and top by 1/16th
-		$pdf->SetXY($thex+(1/8),$they+1/16);
-		$pdf->SetFont("Arial","B",9);
-		if($therecord["lastname"]){
-			$thename=$therecord["lastname"].", ".$therecord["firstname"];
-			if($therecord["company"]) $thename.="\n".$therecord["company"];
-		} else {
-			$thename=$therecord["company"];		
-		}
-		$pdf->MultiCell(2.25,.135,$thename,$border_debug,2,"L");
-		$pdf->SetFont("Arial","",8);
-		$pdf->SetX($thex+(1/8));
-		$pdf->Cell(2.25,.12,$therecord["shiptoaddress1"],$border_debug,2,"L");
-		if($therecord["shiptoaddress2"]) $pdf->Cell(2.25,.12,$therecord["shiptoaddress2"],$border_debug,2,"L");
-		$pdf->Cell(2.25,.12,$therecord["shiptocity"].", ".$therecord["shiptostate"]." ".$therecord["shiptopostalcode"],$border_debug,2,"L");
-		if($therecord["shiptocountry"]) $pdf->Cell(2.25,.12,$therecord["shiptocountry"],$border_debug,2,"L");
-		
-		return $pdf;
-	}
-	require("../../../report/general_labels.php");
+	$querystatement = "UPDATE roles SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE ".$whereclause.";";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Couldn't revoke access: ".mysql_error($dblink)." -- ".$querystatement);		
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" inactivated.";
+	return $message;	
+}
 ?>

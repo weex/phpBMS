@@ -80,7 +80,7 @@ function delete_record($theids){
 	$repeatqueryresult = mysql_query($querystatement,$dblink);
 	if (!$repeatqueryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
 
-	$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["accesslevel"]." >=90)) and (".$whereclause.") and (notes.`repeat`!=1);";
+	$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["admin"]." =1)) and (".$whereclause.") and (notes.`repeat`!=1);";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
 

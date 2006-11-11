@@ -171,6 +171,7 @@ function loadSettings() {
 					$thereturn.=importData("users");
 					$thereturn.=importData("settings");
 					$thereturn.=importData("files");
+					$thereturn.=importData("roles");
 					$thereturn.="\nDone Importing Data\n===========================\n";
 			
 				break;

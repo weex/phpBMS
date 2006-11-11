@@ -79,8 +79,8 @@
 			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
 		<p>
-			<label for="accesslevel" >access<br /></label>
-			<?php basic_choicelist("accesslevel",$therecord["accesslevel"],array(array("value"=>"-10","name"=>"portal access only"),array("value"=>"10","name"=>"basic user (shipping)"),array("value"=>"20","name"=>"Power User (sales)"),array("value"=>"30","name"=>"Manager (sales manager)"),array("value"=>"50","name"=>"Upper Manager"),array("value"=>"90","name"=>"Administrator")),Array("class"=>"important","tabindex"=>"30"));?>
+			<label for="roleid" >access (role)</label><br />
+			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 	</fieldset>
 	<div id="leftSideDiv">

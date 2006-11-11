@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 
 function displayTables($fieldname,$selectedid){
 	global $dblink;
@@ -74,7 +74,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT
-				id,name,type,reportfile,tabledefid,description,displayorder,accesslevel,
+				id,name,type,reportfile,tabledefid,description,displayorder,roleid,
 				
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -97,7 +97,7 @@ function setRecordDefaults(){
 	$therecord["tabledefid"]=0;
 	$therecord["reportfile"]="";
 	$therecord["displayorder"]=0;
-	$therecord["accesslevel"]=10;
+	$therecord["roleid"]=0;
 	$therecord["description"]="";
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
@@ -122,7 +122,7 @@ function updateRecord($variables,$userid){
 			$querystatement.="reportfile=\"".$variables["reportfile"]."\", "; 
 			$querystatement.="description=\"".$variables["description"]."\", "; 
 			$querystatement.="displayorder=".$variables["displayorder"].", "; 
-			$querystatement.="accesslevel=".$variables["accesslevel"].", "; 
+			$querystatement.="roleid=".$variables["roleid"].", "; 
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -139,7 +139,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO reports ";
 	
-	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,accesslevel,
+	$querystatement.="(name,type,tabledefid,reportfile,description,displayorder,roleid,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
@@ -148,7 +148,7 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["reportfile"]."\", "; 
 			$querystatement.="\"".$variables["description"]."\", "; 
 			$querystatement.=$variables["displayorder"].", "; 
-			$querystatement.=$variables["accesslevel"].", "; 
+			$querystatement.=$variables["roleid"].", "; 
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
@@ -167,10 +167,21 @@ function insertRecord($variables,$userid){
 // Process adding, editing, creating new, canceling or updating
 //==================================================================
 if(!isset($_POST["command"])){
-	if(isset($_GET["id"]))
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
+	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

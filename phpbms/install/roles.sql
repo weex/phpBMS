@@ -1,0 +1,4 @@
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (10,'shipping','Basic user access only.',0,1,NOW(),1,NOW());
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (20,'sales','sales',0,1,NOW(),1,NOW());
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (30,'sales manager','',0,1,NOW(),1,NOW());
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (50,'upper manager','',0,1,NOW(),1,NOW());

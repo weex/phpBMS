@@ -63,7 +63,7 @@ function product_tabs($selected="none",$id=0) {
 		)
 	);
 	
-	if($_SESSION["userinfo"]["accesslevel"]>=30){
+	if(hasRights(30)){
 		array_push($thetabs,array(
 			"name"=>"Sales History",
 			"href"=>(($id)?"products_saleshistory.php?id=".$id:"N/A"),

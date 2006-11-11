@@ -132,10 +132,8 @@ function xmlEncode($str){
 	
 	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
 		if(isset($loginNoKick)){
-			if(!isset($loginNoDisplayError)){
-				header("Location: ".$mainpath."noaccess.html");
+			if(!isset($loginNoDisplayError))
 				exit();
-			}
 			else
 				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"]); 
 		} else{

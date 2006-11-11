@@ -156,7 +156,7 @@
 		global $dblink;
 		global $vars;
 		
-		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND accesslevel>=90";
+		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND admin=1";
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult){
 			return false;
@@ -308,6 +308,19 @@
 					
 					//Processing Data Structure Changes
 					$thereturn.=processSQLfile("updatev0.7.sql");
+					
+					$querystatement="SELECT id,accesslevel FROM users WHERE accesslevel!=0";
+					$queryresult=mysql_query($querystatement,$dblink);
+					while($therecord=mysql_fetch_array($queryresult)){
+						while($therecord["accesslevel"]>1){
+							if($therecord["accesslevel"]==40)
+								$therecord["accesslevel"]=$therecord["accesslevel"]-10;
+							$querystatement="INSERT INTO rolestousers (userid,roleid) VALUES (".$therecord["id"].",".$therecord["accesslevel"].")";
+							$insertresult=mysql_query($querystatement,$dblink);
+							$therecord["accesslevel"]=$therecord["accesslevel"]-10;							
+						}
+					}					
+					$thereturn.=" - Connverted user access levels to roles.\n";				
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"base\";";

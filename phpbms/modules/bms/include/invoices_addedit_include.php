@@ -317,7 +317,7 @@ function updateRecord($variables,$userid){
 			$querystatement.="shippeddate=".$tempdate.", "; 
 			$querystatement.="trackingno=\"".$variables["trackingno"]."\", "; 
 
-			if($_SESSION["userinfo"]["accesslevel"]>=20){
+			if(hasRights(20)){
 				$querystatement.="paymentmethod=\"".$variables["paymentmethod"]."\", "; 
 				$querystatement.="checkno=\"".$variables["checkno"]."\", "; 
 				$querystatement.="bankname=\"".$variables["bankname"]."\", "; 
@@ -494,12 +494,21 @@ function insertRecord($variables,$userid){
 //==================================================================
 
 if(!isset($_POST["command"])){
+	$querystatement="SELECT addroleid,editroleid FROM tabledefs WHERE id=".$tableid;
+	$tableresult=mysql_query($querystatement,$dblink);
+	if(!$tableresult) reportError(200,"Could Not retrieve Table Definition for id ".$tableid);
+	$tablerecord=mysql_fetch_array($tableresult);
+	
 	if(isset($_GET["id"])){
+		//editing
+		if(!hasRights($tablerecord["editroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=getRecords((integer) $_GET["id"]);
-		//invoice specific
-	}
-	else
+	} else {
+		if(!hasRights($tablerecord["addroleid"]))
+			goURL($_SESSION["app_path"]."noaccess.php");
 		$therecord=setRecordDefaults();
+	}
 	$createdby=getUserName($therecord["createdby"]);
 	$modifiedby=getUserName($therecord["modifiedby"]);
 }

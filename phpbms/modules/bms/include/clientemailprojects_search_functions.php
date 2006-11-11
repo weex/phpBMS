@@ -40,7 +40,7 @@
 //=============================================
 //functions
 //=============================================
-if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+
 
 //delete
 function delete_record($theids){

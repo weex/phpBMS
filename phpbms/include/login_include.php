@@ -39,16 +39,23 @@
 	function verifyLogin($username,$password,$seed,$dblink){
 		$thereturn="Login Failed";
 		
-		$querystatement="SELECT id, firstname, lastname, accesslevel, email, phone, department, employeenumber 
+		$querystatement="SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
 						FROM users 
-						WHERE login=\"".$username."\" and password=ENCODE(\"".$password."\",\"".$seed."\") and revoked=0 and accesslevel>=10";
+						WHERE login=\"".$username."\" and password=ENCODE(\"".$password."\",\"".$seed."\") and revoked=0 and portalaccess=0";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult)
-			reportError(300,"Error verifing user record");
+		if(!$queryresult) reportError(300,"Error verifing user record: ".$querystatement);
 		if(mysql_num_rows($queryresult)){
 			//We found a record that matches in the database
 			// populate the session and go in
 			$_SESSION["userinfo"]=mysql_fetch_array($queryresult);
+			
+			// Next get the users roles, and populate the session with them
+			$_SESSION["userinfo"]["roles"][]=0;
+			$querystatement="SELECT roleid FROM rolestousers WHERE userid=".$_SESSION["userinfo"]["id"];
+			$rolesqueryresult=mysql_query($querystatement,$dblink);
+			if(!$rolesqueryresult) reportError(310,"Error obtaining user roles.");
+			while($rolerecord=mysql_fetch_array($rolesqueryresult))
+				$_SESSION["userinfo"]["roles"][]=$rolerecord["roleid"];
 			
 			// set application location (web, not physical)
 			$pathrev=strrev($_SERVER["PHP_SELF"]);

@@ -331,4 +331,17 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 		</script><?php
 	}//end required if
 }//end function
+
+function roles_choicelist($name,$selected,$dblink){
+	$querystatement="SELECT name,id FROM roles WHERE inactive=0";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(310,"Error Retrieving Roles");
+	?><select id="<?php echo $name?>" name="<?php echo $name?>">
+	<option value="0" <?php if($selected==0) echo "selected"?>>EVERYONE</option>
+	<?php while($therecord=mysql_fetch_array($queryresult)){ ?>
+	<option value="<?php echo $therecord["id"]?>" <?php if($selected==$therecord["id"]) echo "selected"?>><?php echo $therecord["name"]?></option>	
+	<?php }?>
+	<option value="-100" <?php if($selected==-100) echo "selected"?>>Administrators</option>
+	</select><?php
+}
 ?>

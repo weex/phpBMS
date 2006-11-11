@@ -39,16 +39,19 @@
 
 session_cache_limiter('private');
 require_once("include/session.php");
-if(isset($_GET["i"]) && isset($_SESSION["userinfo"]["accesslevel"])) {
-	$querystatement="SELECT file,type,name FROM files WHERE id=".((integer)$_GET["i"])." AND accesslevel<=".$_SESSION["userinfo"]["accesslevel"];
+require_once("include/common_functions.php");
+if(isset($_GET["i"])) {
+	$querystatement="SELECT file,type,name,roleid FROM files WHERE id=".((integer)$_GET["i"]);
 	@ $queryresult=mysql_query($querystatement,$dblink);
 	if($queryresult) {
 		if(mysql_num_rows($queryresult)){
 			$therecord=mysql_fetch_array($queryresult);
-			header("Content-type: ".$therecord["type"]);
-			header("Content-Disposition: attachment; filename=\"".rawurlencode($therecord["name"])."\"");
-		
-			echo $therecord["file"];
+			if(hasRights($therecord["roleid"])){
+				header("Content-type: ".$therecord["type"]);
+				header("Content-Disposition: attachment; filename=\"".rawurlencode($therecord["name"])."\"");
+			
+				echo $therecord["file"];
+			}
 		}
 	}
 }

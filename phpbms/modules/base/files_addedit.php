@@ -85,24 +85,9 @@
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
 		</p>
-		<p id="accesslevellabel">
-			<label for="accesslevel">access level</label><br />
-			<?php 
-				$choices=array();
-				switch(TRUE){
-					case ($_SESSION["userinfo"]["accesslevel"]>=90):
-						$choices[]=array("value"=>"90","name"=>"Administrator");
-					case ($_SESSION["userinfo"]["accesslevel"]>=50):
-						$choices[]=array("value"=>"50","name"=>"Upper Manager");
-					case ($_SESSION["userinfo"]["accesslevel"]>=30):
-						$choices[]=array("value"=>"30","name"=>"Manager (sales manager)");
-					case ($_SESSION["userinfo"]["accesslevel"]>=20):
-						$choices[]=array("value"=>"20","name"=>"Power User (sales)");
-					case ($_SESSION["userinfo"]["accesslevel"]>=10):
-						$choices[]=array("value"=>"10","name"=>"basic user (shipping)");
-				}
-				basic_choicelist("accesslevel",$therecord["accesslevel"],$choices,Array("class"=>"important","tabindex"=>"10"));
-			?><br /><span class="notes">The minimum access level required to view this attachment.</span>
+		<p id="roleidP">
+			<label for="roleid">access (role)</label><br />
+			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 	</fieldset>
 	
@@ -141,7 +126,13 @@
 				</p>
 				<p id="fileidlabel">
 					<label for="fileid-ds" >existing file name</label><br />
-					<?php autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 AND files.accesslevel<=".$_SESSION["userinfo"]["accesslevel"],Array("size"=>"40","maxlength"=>"128","style"=>"",false)) ?>				
+					<?php 
+						
+						$securitywhere="";
+						if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
+							$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+						autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 ".$securitywhere,Array("size"=>"40","maxlength"=>"128","style"=>"",false)) 
+					?>				
 				</p>
 			<?php }?>
 				<p id="uploadlabel">

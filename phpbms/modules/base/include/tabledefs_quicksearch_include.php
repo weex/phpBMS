@@ -37,13 +37,13 @@
  +-------------------------------------------------------------------------+
 */
 
-	if($_SESSION["userinfo"]["accesslevel"]<90) goURL($_SESSION["app_path"]."noaccess.html");
+	
 	function setDefaultQuickSearch(){
 		$therecord["id"]=NULL;		
 		$therecord["displayorder"]=NULL;		
 
 		$therecord["name"]="";		
-		$therecord["accesslevel"]=11;		
+		$therecord["roleid"]=0;		
 		$therecord["search"]="";		
 
 		return $therecord;
@@ -51,11 +51,12 @@
 	
 	function getQuicksearchs($tabledefid,$quicksearchid=false){
 		global $dblink;
-		$querystatement="SELECT id, name, `search`, displayorder, accesslevel
-		FROM tablefindoptions 
-		WHERE tabledefid=".$tabledefid;
-		if($quicksearchid) $querystatement.=" AND id=".$quicksearchid;
-		$querystatement.=" ORDER BY displayorder";
+		$querystatement="SELECT tablefindoptions.id, tablefindoptions.name, tablefindoptions.search, tablefindoptions.displayorder, roleid,
+		roles.name as rolename
+		FROM tablefindoptions LEFT JOIN roles ON tablefindoptions.roleid=roles.id
+		WHERE tablefindoptions.tabledefid=".$tabledefid;
+		if($quicksearchid) $querystatement.=" AND tablefindoptions.id=".$quicksearchid;
+		$querystatement.=" ORDER BY tablefindoptions.displayorder";
 		
 		$thequery=mysql_query($querystatement) or $thequery=mysql_error($dblink)." -- ".$querystatement;		
 		return $thequery;
@@ -64,12 +65,12 @@
 
 	function addQuicksearch($variables,$tabledefid){
 		global $dblink;
-		$querystatement="INSERT INTO tablefindoptions (tabledefid, name, `search`, accesslevel, displayorder)
+		$querystatement="INSERT INTO tablefindoptions (tabledefid, name, `search`, roleid, displayorder)
 		values (";
 		$querystatement.=$tabledefid.", ";
 		$querystatement.="\"".$variables["name"]."\", ";
 		$querystatement.="\"".$variables["search"]."\", ";
-		$querystatement.="\"".$variables["accesslevel"]."\", ";
+		$querystatement.="\"".$variables["roleid"]."\", ";
 		$querystatement.="\"".$variables["displayorder"]."\")";		
 		if(mysql_query($querystatement)) $thereturn ="Quick Search Item Added"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
 		
@@ -81,7 +82,7 @@
 		global $dblink;
 		$querystatement="UPDATE tablefindoptions set ";
 		$querystatement.="name=\"".$variables["name"]."\", ";
-		$querystatement.="accesslevel=\"".$variables["accesslevel"]."\", ";
+		$querystatement.="roleid=\"".$variables["roleid"]."\", ";
 		$querystatement.="`search`=\"".$variables["search"]."\" ";
 		$querystatement.="WHERE id=".$variables["quicksearchid"];
 		if(mysql_query($querystatement)) $thereturn ="Quick Search Item Updated"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
