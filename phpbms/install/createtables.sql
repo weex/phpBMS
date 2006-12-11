@@ -94,7 +94,7 @@ CREATE TABLE `reports` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM
+) ENGINE=MyISAM;
 
 CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
