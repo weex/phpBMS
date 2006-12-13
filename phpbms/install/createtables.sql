@@ -188,6 +188,8 @@ CREATE TABLE users (
   phone varchar(32) default '',
   department varchar(128) default '',
   employeenumber varchar(64) default '',
+  admin tinyint(4) NOT NULL default '0',
+  portalaccess tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY theid (id)
 ) TYPE=MyISAM PACK_KEYS=0;
