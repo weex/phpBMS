@@ -10,6 +10,6 @@
 		<input name="modifiedby" type="hidden" value="<?php $therecord["modifiedby"] ?>" /><input id="cancelclick" name="cancelclick" type="hidden" value="0" />
 		modified by<br/>
 		<div><input name="modifiedbydisplay" type="text" value="<?php echo $modifiedby?>" size="20" maxlength="164" readonly="true" class="uneditable fieldCreateModify" tabindex="0" /></div>
-		<div><input name="modifieddate" type="text" value="<?php echo formatTimestamp($therecord["modifieddate"],true) ?>" size="20" maxlength="164" readonly="true" class="uneditable fieldCreateModify" tabindex="0" /></div>			
+		<div><input name="modifieddate" type="text" value="<?php echo formatDateTime($therecord["modifieddate"]) ?>" size="20" maxlength="164" readonly="true" class="uneditable fieldCreateModify" tabindex="0" /></div>			
 	</div>	
 </div>
