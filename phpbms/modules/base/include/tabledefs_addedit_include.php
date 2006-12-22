@@ -148,7 +148,7 @@ function insertRecord($variables,$userid){
 	$querystatement="INSERT INTO tabledefs ";
 	
 	$querystatement.="(maintable,querytable,displayname,type,moduleid,addfile,editfile,deletebutton,
-						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,\
+						defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 						searchroleid,addroleid,editroleid,advsearchroleid,viewsqlroleid,
 						
 						createdby,creationdate,modifiedby) VALUES (";
