@@ -173,7 +173,7 @@
 			</p>
 			<p class="cszP">
 				<label for="state">state/prov</label><br />
-				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="2" maxlength="2" tabindex=6 />			
+				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="3" maxlength="5" tabindex=6 />			
 			</p>
 			<p class="cszP">
 				<label for="postalcode">zip/postal code</label><br />

@@ -42,3 +42,6 @@ ALTER TABLE `clients` DROP `paymentmethod`;
 ALTER TABLE `clients` DROP `ccnumber`;
 ALTER TABLE `clients` DROP `ccexpiration`;
 ALTER TABLE `clients` FROP `displayname`
+ALTER TABLE `clients` ALTER COLUMN `state` `state` varchar(5) default NULL;
+ALTER TABLE `clients` ALTER COLUMN `shiptostate` `shiptostate` varchar(5) default NULL;
+ALTER TABLE `invoices` ALTER COLUMN `state` `state` varchar(5) default NULL;

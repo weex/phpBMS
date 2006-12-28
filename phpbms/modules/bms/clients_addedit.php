@@ -218,7 +218,7 @@
 
 			<p class="csz">
 				<label for="state">state/province</label><br />
-				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="2" maxlength="2" tabindex="16" />
+				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="3" maxlength="5" tabindex="16" />
 			</p>
 			<p>
 				<label for="postalcode">zip/postal code</label><br />
@@ -246,7 +246,7 @@
 
 			<p class="csz">
 				<label for="shiptostate">state/province</label><br />
-				<input id="shiptostate" name="shiptostate" type="text" value="<?php echo htmlQuotes($therecord["shiptostate"])?>" size="2" maxlength="2" tabindex="22" />				
+				<input id="shiptostate" name="shiptostate" type="text" value="<?php echo htmlQuotes($therecord["shiptostate"])?>" size="3" maxlength="5" tabindex="22" />				
 			</p>
 			
 			<p>
