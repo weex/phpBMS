@@ -50,7 +50,7 @@
 	$securitywhere="";
 	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
 		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";	
-	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere
+	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
 	$backurl="../bms/products_attachments.php";
 	$base="../../";
 

@@ -188,7 +188,12 @@ function timeFromSQLTime($sqlTime){
 function dateFromSQLTimestamp ($datetime) {
 	if($datetime=="")
 		return mktime();
-
+	$hour=0;
+	$minute=0;
+	$second=0;
+	$month=1;
+	$day=1;
+	$year=1974;
 	settype($datetime, 'string');
 	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
 	array_shift ($matches);	

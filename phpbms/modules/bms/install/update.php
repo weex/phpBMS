@@ -42,6 +42,9 @@ function loadSettings() {
 	if($settingsfile){
 		//loop through the settings file and load variables into the session 
 		while( !feof($settingsfile)) {
+			$line=null;
+			$key=null;
+			$value=null;
 			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
 			if ($line){
 				$key=trim($key);
@@ -54,9 +57,6 @@ function loadSettings() {
 					$variables[$key]=$value;
 				}
 			}
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
 		}
 		fclose($settingsfile);
 		return $variables;
@@ -303,41 +303,41 @@ function loadSettings() {
 	}//end update		
 
 	function moveShipping($dblink){
-		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!="" ORDER BY shippingmethod";
+		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
-			$updatequery=mysql_query($querystatement,$dblink)
+			$updatequery=mysql_query($querystatement,$dblink);
 		}
 		$querystatement="SELECT id,name FROM shippingmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["ID"]."
 							WHERE shippingmethod=\"".$therecord["name"]."\"";
-			$updatequery=mysql_query($querystatement,$dblink)
+			$updatequery=mysql_query($querystatement,$dblink);
 		}
 		$querystatement="ALTER TABLE invoices DROP shippingmethod";
-		$updatequery=mysql_query($querystatement,$dblink)
+		$updatequery=mysql_query($querystatement,$dblink);
 		
 		return true;
 	}
 
 	function movePayments($dblink){
-		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!="" ORDER BY paymentmethod";
+		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="INSERT INTO `paymentmethods` (name,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",1,NOW())";
-			$updatequery=mysql_query($querystatement,$dblink)
+			$updatequery=mysql_query($querystatement,$dblink);
 		}
 		$querystatement="SELECT id,name FROM paymentmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="UPDATE invoices SET paymentmethod=".$therecord["ID"]."
 							WHERE paymentmethod=\"".$therecord["name"]."\"";
-			$updatequery=mysql_query($querystatement,$dblink)
+			$updatequery=mysql_query($querystatement,$dblink);
 		}
 		$querystatement="ALTER TABLE invoices DROP paymentmethod";
-		$updatequery=mysql_query($querystatement,$dblink)
+		$updatequery=mysql_query($querystatement,$dblink);
 		
 		return true;
 	}

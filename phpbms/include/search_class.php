@@ -218,6 +218,7 @@ function displayQueryHeader(){
 				$startsubout=$start+2;
 				$endsubout=strpos($string,"}}");
 				$end=$endsubout+2;
+				$temp="";
 				eval(stripslashes("\$temp=".substr($string,$startsubout,$endsubout-$startsubout).";"));
 				$string=substr($string,0,$start).$temp.substr($string,$end);
 			}

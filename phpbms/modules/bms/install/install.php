@@ -42,6 +42,9 @@ function loadSettings() {
 	if($settingsfile){
 		//loop through the settings file and load variables into the session 
 		while( !feof($settingsfile)) {
+			$line=null;
+			$key=null;
+			$value=null;
 			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
 			if ($line){
 				$key=trim($key);
@@ -54,9 +57,6 @@ function loadSettings() {
 					$variables[$key]=$value;
 				}
 			}
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
 		}
 		fclose($settingsfile);
 		return $variables;

@@ -41,3 +41,4 @@ ALTER TABLE `clients` ADD COLUMN `discountid` INTEGER UNSIGNED DEFAULT 0;
 ALTER TABLE `clients` DROP `paymentmethod`;
 ALTER TABLE `clients` DROP `ccnumber`;
 ALTER TABLE `clients` DROP `ccexpiration`;
+ALTER TABLE `clients` FROP `displayname`

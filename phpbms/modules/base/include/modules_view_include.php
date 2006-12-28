@@ -63,6 +63,7 @@ function getRecords($id){
 
 function setRecordDefaults(){
 //========================================================================================
+	$therecord["id"]=null;
 	return $therecord;	
 }//end function
 

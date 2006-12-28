@@ -78,6 +78,9 @@ function loadMysqlSettings() {
 	if($settingsfile){
 		//loop through the settings file and load variables into the session 
 		while( !feof($settingsfile)) {
+			$line=NULL;
+			$key=NULL;
+			$value=NULL;
 			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
 			if ($line){
 				$key=trim($key);
@@ -91,9 +94,6 @@ function loadMysqlSettings() {
 						$_SESSION[$key]=$value;
 				}
 			}
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
 		}
 		fclose($settingsfile);
 		return $path;
@@ -153,9 +153,9 @@ function xmlEncode($str){
 	function openDB($dbserver,$dbuser,$dbpass,$dbname){
 		$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);		
 		if (!$dblink) 
-			reportError(500,"Could not link to MySQL Server.  Please check your settings.",true,$mainpath);
+			reportError(500,"Could not link to MySQL Server.  Please check your settings.",true);
 		if (!mysql_select_db($dbname,$dblink)) 
-			reportError(500,"Could not open database.  Please check your settings.",true,$mainpath);	
+			reportError(500,"Could not open database.  Please check your settings.",true);	
 		return $dblink;
 	}
 ?>
