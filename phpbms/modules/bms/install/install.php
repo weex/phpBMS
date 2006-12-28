@@ -146,6 +146,8 @@ else{
 	$thereturn.=importData("tablesearchablefields");
 	$thereturn.=importData("usersearches");
 	$thereturn.=importData("settings");
+	$thereturn.=importData("shippingmethods");
+	$thereturn.=importData("paymentmethods");
 
 	$thereturn.="Done Importing Data\n===========================\n";
 	

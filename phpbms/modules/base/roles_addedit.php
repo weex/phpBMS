@@ -1,7 +1,7 @@
 <?php 
 /*
- $Rev: 155 $ | $LastChangedBy: mipalmer $
- $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
+ $Rev$ | $LastChangedBy$
+ $LastChangedDate$
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |

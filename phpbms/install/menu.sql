@@ -17,3 +17,4 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (17,'relationships','search.php?id=10',6,60,1,1,NOW(),NOW(),-100);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (18,'table definitions','search.php?id=11',6,80,1,1,NOW(),NOW(),-100);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (19,'modules','search.php?id=21',6,99,1,1,NOW(),NOW(),-100);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Shipping Methods','search.php?id=300',204,30,1,1,NOW(),NOW(),30);

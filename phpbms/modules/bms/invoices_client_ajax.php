@@ -38,10 +38,10 @@
 */
 
 	include("../../include/session.php");
-	$querystatement="SELECT address1, address2, city, state, postalcode, country, tax.name as taxname,
+	$querystatement="SELECT address1, address2, city, state, postalcode, country,
 						shiptoaddress1, shiptoaddress2, shiptocity, shiptostate, shiptopostalcode, shiptocountry,
-						paymentmethod,ccnumber,ccexpiration
-						FROM clients LEFT JOIN tax on clients.taxareaid=tax.id 
+						paymentmethodid,shippingmethodid,discountid,taxareaid
+						FROM clients
 						WHERE clients.id=".((integer)$_GET["id"]);
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(500,"Cannot retrieve Client info: ".mysql_error($dblink)." <br/><br/> ".$querystatement);
@@ -72,10 +72,10 @@
 		$thestate="";
 		$thepostalcode="";
 		$thecountry="";
-		$therecord["paymentmethod"]="";
-		$therecord["ccnumber"]="";
-		$therecord["ccexpiration"]="";
-		$therecord["taxname"]="";
+		$therecord["paymentmethodid"]=0;
+		$therecord["shippingmethodid"]=0;
+		$therecord["discountid"]=0;
+		$therecord["taxareaid"]=0;
 	}
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
@@ -99,15 +99,15 @@
   <field>country</field>
   <value><?php echo xmlEncode($thecountry) ?></value>
 
-  <field>paymentmethod</field>
-  <value><?php echo xmlEncode($therecord["paymentmethod"]) ?></value>
+  <field>paymentmethodid</field>
+  <value><?php echo xmlEncode($therecord["paymentmethodid"]) ?></value>
 
-  <field>ccnumber</field>
-  <value><?php echo xmlEncode($therecord["ccnumber"]) ?></value>
+  <field>shippingmethodid</field>
+  <value><?php echo xmlEncode($therecord["shippingmethodid"]) ?></value>
 
-  <field>ccexpiration</field>
-  <value><?php echo xmlEncode($therecord["ccexpiration"]) ?></value>
+  <field>discountid</field>
+  <value><?php echo xmlEncode($therecord["discountid"]) ?></value>
 
-  <field>ds-taxareaid</field>
-  <value><?php echo xmlEncode($therecord["taxname"]) ?></value>
+  <field>taxareaid</field>
+  <value><?php echo xmlEncode($therecord["taxareaid"]) ?></value>
 </response>

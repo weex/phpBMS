@@ -55,3 +55,9 @@ INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayor
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (47,22,'all records','clientemailprojects.id!=-1',0,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (48,22,'global projects','clientemailprojects.userid=0',1,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (105,25,'all records','discounts.id!=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (300,'All Records','shippingmethods.id!=-1',2,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (300,'Active Records','shippingmethods.inactive=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (300,'Inactive Records','shippingmethods.inactive=1',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'All Records','paymentmethods.id!=-1',2,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'Active','paymentmethods.inactive=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'Inactive','paymentmethods.inactive=1',1,0);

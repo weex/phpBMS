@@ -48,39 +48,38 @@
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tax.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
 <div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
-		<div style="float:right;width:160px;">
-			  <?php showSaveCancel(1); ?>
-		</div>
-		<div style="margin-right:160px;">
-			<h1><?php echo $pageTitle ?></h1>
-		</div>
+	<div id="topButtons">
+		  <?php showSaveCancel(1); ?>
+	</div>
+	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 
-	<fieldset style="float:right;width:100px;padding-bottom:10px;">
+	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
-		<label for="id">
-			id<br />
-			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="width:98%">
-			<br/>&nbsp;
-			<br/>&nbsp;
-		</label>
+		<p>
+			<label for="id">id</label><br />
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
+		</p>
 	</fieldset>
-	<fieldset >
-		<legend>name / percentage</legend>
-		<label for="name" class="important">
-			name<br />
-			<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
-		</label>
-		<label for="percentage">
-			percentage<br />
-			<?php field_percentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>
-		</label>
-	</fieldset>
+
+	<div id="nameDiv">
+		<fieldset >
+			<legend>name / percentage</legend>
+			<p>
+				<label for="name" class="important">name</label><br />
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
+			</p>
+			<p>
+				<label for="percentage">percentage</label><br />
+				<?php field_percentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>		
+			</p>
+		</fieldset>
+	</div>
 	<?php include("../../include/createmodifiedby.php"); ?>	
 	</form>
 </div>

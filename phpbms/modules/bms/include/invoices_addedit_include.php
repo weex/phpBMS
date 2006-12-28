@@ -36,19 +36,118 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
-function getDiscount($id){
-	if(!$id) return "";
-	
-	global $dblink;
-	
-	$querystatement="SELECT if(discounts.type+0=1,concat(discounts.value,\"%\"),discounts.value) AS value FROM discounts WHERE id=".$id;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,("Error Retreiving Discount".$querystatement." - ".mysql_error($dblink)));
-	$therecord=mysql_fetch_array($queryresult);
-	
-	return $therecord["value"];
+function showPaymentSelect($id,$paymentMethods){
+	?><select name="paymentmethodid" id="paymentmethodid" onchange="showPaymentOptions()">
+		<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+	<?php foreach($paymentMethods as $method){?>
+		<option value="<?php echo $method["id"]?>" <?php if($id==$method["id"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>	
+	<?php } ?>
+	</select>
+	<?php 
 }
+
+function getPayments($dblink){
+	$querystatement="SELECT id,name,type,onlineprocess,processscript FROM paymentmethods WHERE inactive=0 ORDER BY priority,name";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Payment Methods ".$querystatement." - ".mysql_error($dblink)));
+	?><script language="javascript" type="text/javascript">
+		paymentMethods=Array();
+		<?php while($therecord=mysql_fetch_array($queryresult)) {
+			$thereturn[$therecord["id"]]=$therecord;
+		?>
+			paymentMethods[<?php echo $therecord["id"]?>]=Array();
+			paymentMethods[<?php echo $therecord["id"]?>]["name"]="<?php echo $therecord["name"]?>";
+			paymentMethods[<?php echo $therecord["id"]?>]["type"]="<?php echo $therecord["type"]?>";
+			paymentMethods[<?php echo $therecord["id"]?>]["onlineprocess"]=<?php echo $therecord["onlineprocess"]?>;
+			paymentMethods[<?php echo $therecord["id"]?>]["processscript"]="<?php echo $therecord["processscript"]?>";
+		<?php } ?>
+	</script><?php 
+	return $thereturn;
+}
+
+function showShippingSelect($id,$shippingMethods){
+	?><select name="shippingmethodid" id="shippingmethodid" onchange="changeShipping(this)">
+		<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+	<?php foreach($shippingMethods as $method){?>
+		<option value="<?php echo $method["id"]?>" <?php if($id==$method["id"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>	
+	<?php } ?>
+	</select>
+	<?php 
+}
+
+function getShipping($dblink){
+	$querystatement="SELECT id,name,canestimate,estimationscript FROM shippingmethods WHERE inactive=0 ORDER BY priority,name";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Shipping Methods ".$querystatement." - ".mysql_error($dblink)));
+	?><script language="javascript" type="text/javascript">
+		shippingMethods=Array();
+		<?php while($therecord=mysql_fetch_array($queryresult)) {
+			$thereturn[$therecord["id"]]=$therecord;
+		?>
+			shippingMethods[<?php echo $therecord["id"]?>]=Array();
+			shippingMethods[<?php echo $therecord["id"]?>]["name"]="<?php echo $therecord["name"]?>";
+			shippingMethods[<?php echo $therecord["id"]?>]["canestimate"]=<?php echo $therecord["canestimate"]?>;
+			shippingMethods[<?php echo $therecord["id"]?>]["estimationscript"]="<?php echo $therecord["estimationscript"]?>";
+		<?php } ?>
+	</script><?php 
+	return $thereturn;
+}
+
+
+function showTaxSelect($id,$dblink){
+	$id=(int) $id;
+	$querystatement="SELECT id,name,percentage FROM tax ORDER BY name";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Tax Areas ".$querystatement." - ".mysql_error($dblink)));
+	?><select name="taxareaid" id="taxareaid" onchange="getPercentage()" size="5">
+		<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+		<?php 
+			while($therecord=mysql_fetch_array($queryresult)){
+				?><option value="<?php echo $therecord["id"]?>" <?php if($id==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["percentage"]."%"?></option><?php
+			}
+		?>
+	</select><?php
+	
+}
+
+function showDiscountSelect($id,$dblink){
+	$id=(int) $id;
+	$querystatement="SELECT id,name,type,value FROM discounts WHERE inactive!=1 ORDER BY name";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Discounts ".$querystatement." - ".mysql_error($dblink)));
+	?><select name="discountid" id="discountid" onchange="getDiscount()" size="8">
+		<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+		<?php 
+			while($therecord=mysql_fetch_array($queryresult)){
+				if($therecord["type"]=="amount")
+					$therecord["value"]=currencyFormat($therecord["value"]);
+				else
+					$therecord["value"].="%";
+				?><option value="<?php echo $therecord["id"]?>" <?php if($id==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["value"]?></option><?php
+			}
+		?>
+	</select><?php
+}
+
+function getDiscount($id,$dblink){
+	$therecord["name"]="";
+	$therecord["value"]=0;
+	
+	if(((int) $id)!=0){		
+		$querystatement="SELECT name,type,value FROM discounts WHERE id=".$id;
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(100,("Error Retreiving Discount".$querystatement." - ".mysql_error($dblink)));
+		$therecord=mysql_fetch_array($queryresult);
+		if($therecord["type"]!="amount"){
+			$therecord["value"].="%";
+			$therecord["name"].=": ".$therecord["value"];
+		} else
+			$therecord["name"].=": ".currencyFormat($therecord["value"]);
+	}
+	$therecord["name"]=htmlspecialchars($therecord["name"]);
+	return $therecord;
+}
+
 
 function getLineItems($id){
 	if(!$id) return false;
@@ -67,17 +166,20 @@ function getLineItems($id){
 	return $queryresult;	
 }
 
-function getTaxPercentage($taxid){
-	if (!is_numeric($taxid)) return 0;
+function getTax($id,$dblink){
+	$therecord["name"]="";
 	
-	global $dblink;
+	if(((int) $id)!=0){
+		
+		$querystatement="SELECT name FROM tax WHERE id=".$id;
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) reportError(100,"Could Not Retrieve Tax Percentage");
+		if(mysql_num_rows($queryresult))
+			$therecord=mysql_fetch_array($queryresult);
+	}
 	
-	$querystatement="SELECT percentage FROM tax WHERE id=".$taxid;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,"Could Not Retrieve Tax Percentage");
-	if(!mysql_num_rows($queryresult)) return 0;
-	$therecord=mysql_fetch_array($queryresult);
-	return $therecord["percentage"];
+	$therecord["name"]=htmlspecialchars($therecord["name"]);
+	return $therecord;
 }
 
 function addLineItems($values,$invoiceid,$userid){
@@ -150,7 +252,8 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="SELECT id, clientid, status, type, totalweight, totaltni, totalti, totalcost,
-					leadsource, shippingmethod, paymentmethod, checkno, bankname, ccnumber,
+					leadsource, shippingmethodid, paymentmethodid, checkno, bankname, ccnumber, routingnumber, 
+					accountnumber, transactionid,
 					ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					address1,address2,city,state,postalcode, country, amountpaid, 
 					trackingno, taxareaid, taxpercentage, totalti-amountpaid as amountdue,
@@ -169,6 +272,14 @@ function getRecords($id){
 	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
 	$therecord = mysql_fetch_array($queryresult);
 	if(!$therecord) reportError(300,"No record for id ".$id);
+
+	$discountinfo=getDiscount($therecord["discountid"],$dblink);
+	$therecord["discountname"]=$discountinfo["name"];
+	$therecord["discount"]=$discountinfo["value"];
+
+	$taxinfo=getTax($therecord["taxareaid"],$dblink);
+	$therecord["taxname"]=$taxinfo["name"];
+
 	return $therecord;
 }//end function
 
@@ -191,13 +302,19 @@ function setRecordDefaults(){
 	$therecord["postalcode"]="";
 	$therecord["country"]="";
 
-	$therecord["taxareaid"]=NULL;
-	$therecord["taxpercentage"]=NULL;
-	$therecord["shippingmethod"]=NULL;
+	$therecord["taxareaid"]=0;
+	$therecord["taxname"]=0;
 	$therecord["tax"]=0;
+	$therecord["taxpercentage"]=NULL;
+
+	$therecord["shippingmethodid"]=0;
 	$therecord["totalweight"]=0;
+	
 	$therecord["discountid"]=0;
 	$therecord["discountamount"]=0;
+	$therecord["discountname"]="";
+	$therecord["discount"]=0;
+		
 	$therecord["subtotal"]=0;
 	$therecord["totaltni"]=0;
 	$therecord["totaltaxable"]=0;
@@ -212,12 +329,15 @@ function setRecordDefaults(){
 
 	$therecord["specialinstructions"]="";
 
-	$therecord["paymentmethod"]="";
+	$therecord["paymentmethodid"]=0;
+	$therecord["routingnumber"]="";
+	$therecord["accountnumber"]="";	
 	$therecord["ccnumber"]="";
 	$therecord["ccexpiration"]="";
 	$therecord["ccverification"]="";
 	$therecord["checkno"]="";
 	$therecord["bankname"]="";
+	$therecord["transactionid"]="";
 
 	$therecord["amountpaid"]=0;
 	$therecord["amountdue"]=0;
@@ -305,7 +425,7 @@ function updateRecord($variables,$userid){
 			$querystatement.="totalcost=".$variables["totalcost"].", "; 
 			$querystatement.="totalweight=".$variables["totalweight"].", "; 
 
-			$querystatement.="shippingmethod=\"".$variables["shippingmethod"]."\", "; 
+			$querystatement.="shippingmethodid=".$variables["shippingmethodid"].", "; 
 
 			if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") 
 				{$tempdate="NULL";}
@@ -318,12 +438,19 @@ function updateRecord($variables,$userid){
 			$querystatement.="trackingno=\"".$variables["trackingno"]."\", "; 
 
 			if(hasRights(20)){
-				$querystatement.="paymentmethod=\"".$variables["paymentmethod"]."\", "; 
+				$querystatement.="paymentmethodid=".$variables["paymentmethodid"].", "; 
 				$querystatement.="checkno=\"".$variables["checkno"]."\", "; 
 				$querystatement.="bankname=\"".$variables["bankname"]."\", "; 
 				$querystatement.="ccnumber=\"".$variables["ccnumber"]."\", "; 
 				$querystatement.="ccexpiration=\"".$variables["ccexpiration"]."\", "; 
 				$querystatement.="ccverification=\"".$variables["ccverification"]."\", "; 
+				
+				if($variables["accountnumber"]=="")$variables["accountnumber"]="NULL";				
+				$querystatement.="accountnumber=".$variables["accountnumber"].", "; 
+				if($variables["routingnumber"]=="")$variables["routingnumber"]="NULL";
+				$querystatement.="routingnumber=".$variables["routingnumber"].", "; 
+
+				$querystatement.="transactionid=\"".$variables["transactionid"]."\", "; 
 			}
 
 			$querystatement.="specialinstructions=\"".$variables["specialinstructions"]."\", "; 
@@ -375,7 +502,7 @@ function insertRecord($variables,$userid){
 	$querystatement="INSERT INTO invoices 
 			(clientid,leadsource,type,status,orderdate,discountamount,discountid,
 			invoicedate,address1,address2,city,state,postalcode, country, totaltni, totaltaxable, totalti,shipping,tax,amountpaid,
-			totalcost,totalweight,shippingmethod,shippeddate,trackingno,paymentmethod,
+			totalcost,totalweight,shippingmethodid,shippeddate,trackingno,paymentmethodid,accountnumber,routingnumber,transactionid,
 			checkno,bankname,ccnumber,ccexpiration,ccverification,specialinstructions,printedinstructions,
 			taxareaid, taxpercentage, weborder,webconfirmationno,ponumber,requireddate,
 						createdby,creationdate,modifiedby) VALUES (";
@@ -433,7 +560,7 @@ function insertRecord($variables,$userid){
 			$querystatement.=$variables["totalcost"].", "; 
 			$querystatement.=$variables["totalweight"].", "; 
 
-			$querystatement.="\"".$variables["shippingmethod"]."\", "; 
+			$querystatement.=$variables["shippingmethodid"].", "; 
 
 				if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") $tempdate="NULL";
 				else{
@@ -444,7 +571,12 @@ function insertRecord($variables,$userid){
 			$querystatement.=$tempdate.", "; 
 			$querystatement.="\"".$variables["trackingno"]."\", "; 
 
-			$querystatement.="\"".$variables["paymentmethod"]."\", "; 
+			$querystatement.=$variables["paymentmethodid"].", "; 
+			if($variables["accountnumber"]=="")$variables["accountnumber"]="NULL";				
+			$querystatement.=$variables["accountnumber"].", "; 
+			if($variables["routingnumber"]=="")$variables["routingnumber"]="NULL";
+			$querystatement.=$variables["routingnumber"].", "; 
+			$querystatement.="\"".$variables["transactionid"]."\", "; 			
 			$querystatement.="\"".$variables["checkno"]."\", "; 
 			$querystatement.="\"".$variables["bankname"]."\", "; 
 			$querystatement.="\"".$variables["ccnumber"]."\", "; 

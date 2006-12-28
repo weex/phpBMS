@@ -41,12 +41,6 @@ function returnFalse(){
 }
 
 function initializePage(){
-	var taxid=getObjectFromID("taxareaid");
-	taxid.onchange=getPercentage;
-
-	var discountid=getObjectFromID("discountid");
-	discountid.onchange=getDiscount;
-
 	calculateTotal();
 	showPaymentOptions();
 	var theid=getObjectFromID("id");
@@ -62,82 +56,96 @@ function initializePage(){
 	}
 }
 
+function payInFull(){
+	amtpaid = getObjectFromID("amountpaid");
+	totalti = getObjectFromID("totalti");
+	amtpaid.value=totalti.value;
+	calculatePaidDue();
+}
+
 // These function are used when redefining the onChange property of 
 // a hidden field for the the taxAreaID.  It uses XMLHttpRequest to
 // grab the tax percentage.
 function getPercentage(){
 	var theitem,thevalue,repsponse;
 	var taxareaid =getObjectFromID("taxareaid");	
-
+	var parentax=getObjectFromID("parenTax");
+	var taxbox=getObjectFromID("tax")
+	
 	var base=document.URL;
 	base=base.substring(0,base.indexOf("invoices_addedit.php"));
-	if(taxareaid.value){
+	
+	if(taxareaid.value!=0){
 		var theurl=base+"invoices_tax_ajax.php?id="+taxareaid.value;
 		//need this to be synchronous, so the window does not close and 
 		//yack.
 		loadXMLDoc(theurl,null,false);
 		response = req.responseXML.documentElement;
 		thevalue = response.getElementsByTagName('value')[0].firstChild.data;
-		
-		theitem=getObjectFromID("taxpercentage");
+		theitem=getObjectFromID("taxpercentage");		
 		theitem.value=thevalue+"%";
+		parentax.innerHTML="("+taxareaid.options[taxareaid.selectedIndex].text+")";
 	} else {
 		theitem=getObjectFromID("taxpercentage");
 		theitem.value="";
+		taxbox.value="0";
+		parentax.innerHTML="&nbsp;";
 	}
 	calculateTotal();
+
 	return true;
 }
 
 function getDiscount(){
 	var thevalue,repsponse;
-	var discountid =getObjectFromID("discountid");	
+	var discountid=getObjectFromID("discountid");	
+	var parendiscount=getObjectFromID("parenDiscount");
 
+	if(discountid.value==0)
+		parendiscount.innerHTML="&nbsp;";
+	else
+		parendiscount.innerHTML="("+discountid.options[discountid.selectedIndex].text+")";
+	
 	var base=document.URL;
 	base=base.substring(0,base.indexOf("invoices_addedit.php"));
 	var	theitem=getObjectFromID("discount");
-	if(discountid.value){
-		var theurl=base+"invoices_discount_ajax.php?id="+discountid.value;
-		//need this to be synchronous, so the window does not close and 
-		//yack.
-		loadXMLDoc(theurl,null,false);
-		if(!req.responseXML) {
-			alert(req.responseText);
-			return false;
-		}
-		response = req.responseXML.documentElement;
-		thevalue = response.getElementsByTagName('value')[0].firstChild.data;
-		
-		theitem.value=thevalue;
-	} else {
-		theitem.value="";
+
+	var theurl=base+"invoices_discount_ajax.php?id="+discountid.value;
+	//need this to be synchronous, so the window does not close and 
+	//yack.
+	loadXMLDoc(theurl,null,false);
+	if(!req.responseXML) {
+		alert(req.responseText);
+		return false;
 	}
+	response = req.responseXML.documentElement;
+	thevalue = response.getElementsByTagName('value')[0].firstChild.data;
+	
+	theitem.value=thevalue;
+	var thediscount=getObjectFromID("discountamount");
+	thediscount.value=formatCurrency(0);
+	
 	calculateTotal();
 	return true;
 }
 
-function changeTaxPercentage(){
+function clearTaxareaid(){
+	var taxpercent=getObjectFromID("taxpercentage");
 	var thetaxareaid=getObjectFromID("taxareaid");
-	var taxareaidDisplay=getObjectFromID("ds-taxareaid");
-	thetaxareaid.value="";
-	taxareaidDisplay.value="";
-	autofill["taxareaid"]["ch"]="";
-	autofill["taxareaid"]["uh"]="";
-	autofill["taxareaid"]["vl"]="";	
+	var parentax=getObjectFromID("parenTax");	
+	thetaxareaid.selectedIndex=0;
 	calculateTotal();
+	parentax.innerHTML="("+taxpercent.value+")";
 }
 
 function changeTaxAmount(){
 	var taxpercent=getObjectFromID("taxpercentage");
 	var thetaxareaid=getObjectFromID("taxareaid");
-	var taxareaidDisplay=getObjectFromID("ds-taxareaid");
+	var parentax=getObjectFromID("parenTax");	
 	taxpercent.value="";
-	thetaxareaid.value="";
-	taxareaidDisplay.value="";
-	autofill["taxareaid"]["ch"]="";
-	autofill["taxareaid"]["uh"]="";
-	autofill["taxareaid"]["vl"]="";	
+	thetaxareaid.selectedIndex=0;
 	calculateTotal();
+	parentax.innerHTML="("+taxpercent.value+")";
 }
 
 // This function is used when redefining the onChange property of 
@@ -161,12 +169,17 @@ function populateShipping(){
 				thevalue=response.getElementsByTagName('value')[i].firstChild.data;
 			if(!theitem)
 				alert("<b>Error</b><br /> Could not find field: "+response.getElementsByTagName('field')[i].firstChild.data);
-			else{
-			theitem.value=thevalue;
-			if(theitem.onchange) theitem.onchange();
-			if(theitem.onblur) theitem.onblur();
+			else{							
+				theitem.value=thevalue;
+				if(theitem.onchange && theitem.id != "taxareaid" && theitem.id != "discountid") theitem.onchange();
+				if(theitem.onblur) theitem.onblur();
 			}
 		}
+		//now need to run taxarea and discount on changes (due to AJAX calls)
+		tempitem=getObjectFromID("discountid");
+		tempitem.onchange();		
+		var tempitem=getObjectFromID("taxareaid");
+		tempitem.onchange();		
 	} else {
 		//blank out current shipping
 		theitem=getObjectFromID("address1");
@@ -187,40 +200,150 @@ function populateShipping(){
 	return true;
 }
 
-function estimateShipping(){
-	var theitem,thevalue,repsponse;	
-	var theid=getObjectFromID("id");
-	var postalcode=getObjectFromID("postalcode");
-	var shippingmethod=getObjectFromID("shippingmethod");
 
-	var base=document.URL;
-	base=base.substring(0,base.indexOf("invoices_addedit.php"));
+function changeShipping(theselect){
+	var estimateShippingButton=getObjectFromID("estimateShippingButton");
 
-	if(postalcode.value!="" && shippingmethod.value!="") {
-		var theurl=base+"invoices_shipping_ajax.php?id="+theid.value;
-		var theurl=theurl+"&postalcodeto="+postalcode.value;
-		var theurl=theurl+"&shipvia="+encodeURIComponent(shippingmethod.value);
-
-		loadXMLDoc(theurl,null,false);
-		response = req.responseXML.documentElement;
-
-		thevalue="0";
-		if(response.getElementsByTagName('value')[0].firstChild)
-			thevalue = response.getElementsByTagName('value')[0].firstChild.data; 
-		var theshipping=getObjectFromID("shipping");
-		if(thevalue==0){
-			var message="<div class=\"important\">Estimate shipping returned a zero value.</div>";
-			message   +="<div>This may be caused because:</div><ol>";
-			message   +="<li>The UPS calculating site is not working.</li>";
-			message   +="<li>UPS could not ship to the zip/postal code using the shipping method.</li>";
-			message   +="<li>The products on the invoice do not contain the proper shipping information.</li>";
-			message   +="<li>An unrecognized form of shipping was chosen. (non UPS)</li></ol>";
-			alert(message);
+	var newClass="graphicButtons buttonShipDisabled";
+	var parenShipping=getObjectFromID("parenShipping");
+	
+	var isDisabled=true;
+	if(theselect.value!=0){
+		parenShipping.innerHTML="("+theselect.options[theselect.selectedIndex].text+")";
+		if(shippingMethods[theselect.value]["canestimate"]==1){
+			newClass="graphicButtons buttonShip";
+			isDisabled=false;
 		}
-		theshipping.value=thevalue;
-		theshipping.onchange();
-	} else alert("In order to estimate shipping, a shipping zip/postal code must be entered \n and a shipping method must be selected.")
-	return true;
+	} else
+		parenShipping.innerHTML="&nbsp;";
+	estimateShippingButton.className=newClass
+	estimateShippingButton.disabled=isDisabled;
+}
+paymentNotice="";
+function startPaymentProcess(){
+	if(vTabTimeout!=0){
+		window.clearTimeout(vTabTimeout);
+		vTabTimeout=0;
+	}		
+	
+	if(paymentNotice==""){
+		var noticeHolder=getObjectFromID("paymentNotice")
+		paymentNotice=noticeHolder.innerHTML;
+		noticeHolder.innerHTML="";		
+	}
+	showModal(paymentNotice,"Online Payment Processing",400,10);		
+}
+
+
+shippingNotice="";
+function startEstimateShipping(){
+	if(vTabTimeout!=0){
+		window.clearTimeout(vTabTimeout);
+		vTabTimeout=0;
+	}		
+	
+	if(shippingNotice=="") {
+		var noticeHolder=getObjectFromID("shippingNotice")
+		shippingNotice=noticeHolder.innerHTML;
+		noticeHolder.innerHTML="";
+	}
+	showModal(shippingNotice,"Estimate Shipping",400,10);		
+}
+
+function performPaymentProcess(base){
+	var resultsArea=getObjectFromID("paymentNoticeResults");
+	var currentPayment=getObjectFromID("paymentmethodid").value;
+	var theURL=base+paymentMethods[currentPayment]["processscript"];
+	var therespond="";
+
+	resultsArea.value="Starting Script (this may take a moment)\n";
+	
+	//not sure what to pass, so we'll just pass the total right now.
+	var total=getObjectFromID("amountpaid").value;
+	
+	theURL+="?amt="+encodeURI(currencyToNumber(total));
+
+	//timestamp for client caching
+	var today=new Date();
+	theURL+="&rand="+today.getTime();
+		
+	loadXMLDoc(theURL,null,false);
+	if(req.responseXML){
+		var newTransactionid = req.responseXML.documentElement.getElementsByTagName('value')[0].firstChild.data;
+		
+		if(newShippingAmount==0)
+			therespond="Process returned no transaction id."
+		else{
+			var transactionid=getObjectFromID("transactionid");
+			transactionid.value=newTransactionid;
+			therespond="Process Succeeded.  Transaction id recorded";
+		}
+	} else
+	therespond = req.responseText
+
+	resultsArea.value+="Script Response:\n"+therespond+"\n";
+
+}
+
+function performShippingEstimate(base){
+	var resultsArea=getObjectFromID("shippingNoticeResults");
+
+	var currentShipping=getObjectFromID("shippingmethodid").value;
+	var theURL=base+shippingMethods[currentShipping]["estimationscript"];
+	var shiptozip=getObjectFromID("postalcode");	
+	var therespond="";
+
+	resultsArea.value="Starting Script (this may take a moment)\n";
+	
+	theURL+="?shipvia="+encodeURI(shippingMethods[currentShipping]["name"]);
+	
+		// get table (tbody)
+		var thetable=getObjectFromID("LIHeader").parentNode;
+		//for each line that starts with LIN  get the last childs first child
+		var therow;
+		var j;
+		var attribs;
+		var lipair="";
+		for(var i=0;i<thetable.childNodes.length;i++){
+			if(thetable.childNodes[i].tagName){
+				therow=thetable.childNodes[i];
+				if(therow.id.substring(0,3)=="LIN"){
+					for(j=0;j<therow.childNodes.length;j++){
+						if(therow.childNodes[j].className==""){
+							if(therow.childNodes[j].firstChild.innerHTML)
+								lipair=therow.childNodes[j].firstChild.innerHTML;
+							else
+								lipair=therow.childNodes[j].childNodes[1].innerHTML;
+							
+							theURL+="&LI"+i+"="+encodeURI(lipair);							
+						}
+					}					
+				}
+			}
+		}	
+	
+	theURL+="&shiptozip="+encodeURI(shiptozip.value);
+	//timestamp for client caching
+	var today=new Date();
+	theURL+="&rand="+today.getTime();
+	
+	loadXMLDoc(theURL,null,false);
+	if(req.responseXML){
+		var newShippingAmount = req.responseXML.documentElement.getElementsByTagName('value')[0].firstChild.data;
+		
+		if(newShippingAmount==0)
+			therespond="Estimation returned 0.  Check the client's postal code, and the line item products shipping setup."
+		else{
+			var shipping=getObjectFromID("shipping");
+			shipping.value=newShippingAmount;
+			calculateTotal();
+			therespond="Shipping Amount Updated";
+		}
+	} else
+	therespond = req.responseText
+
+	resultsArea.value+="Script Response:\n"+therespond+"\n";
+
 }
 
 //this function makes sure that amount due is 0 before allowing changing to an invoice
@@ -640,30 +763,56 @@ function calculateExtended(){
 
 
 function showPaymentOptions(){
-	var theform=document.forms["record"];
+	var paymentMethodID=getObjectFromID("paymentmethodid").value;
 	var checkinfo=getObjectFromID("checkpaymentinfo");
 	var ccinfo=getObjectFromID("ccpaymentinfo");
-	switch(theform["paymentmethod"].value){
-		case "Personal Check":
-		case "Check":
-		case "Cashiers Check":
-		case "check":
+	
+	var theType;
+	if(paymentMethodID==0)
+		theType="";
+	else
+		theType=paymentMethods[paymentMethodID]["type"];
+
+	//display appropriate payment details
+	switch(theType){
+		case "draft":
 			checkinfo.style.display="block";
 			ccinfo.style.display="none";
 		break;
-		case "VISA":
-		case "VISA - Debit": 
-		case "American Express":
-		case "Master Card":
-		case "Discover Card":
+		case "charge":
 			checkinfo.style.display="none";
 			ccinfo.style.display="block";
 		break;
 		default:
 			checkinfo.style.display="none";
 			ccinfo.style.display="none";
-		break;
-	}//end switch
+	}
+	
+	//update parentesis display
+	var parenPayment=getObjectFromID("parenPayment");
+	if(paymentMethodID==0)
+		parenPayment.innerHTML="&nbsp;";
+	else
+		parenPayment.innerHTML="("+paymentMethods[paymentMethodID]["name"]+")";
+		
+	//next onlinceprocessing
+	var online;
+	var transactionid=getObjectFromID("pTransactionid");
+	var paymentButton=getObjectFromID("paymentProcessButton");
+	if(paymentMethodID==0)
+		online=0;
+	else
+		online=paymentMethods[paymentMethodID]["onlineprocess"];
+	if(online==1){
+		transactionid.style.display="block";
+		paymentButton.disabled=false;
+		paymentButton.className="graphicButtons buttonMoney";
+	}else{
+		transactionid.style.display="none";
+		paymentButton.disabled=true;
+		paymentButton.className="graphicButtons buttonMoneyDisabled";
+	}
+	
 }
 
 function viewClient(addeditfile){
@@ -697,15 +846,58 @@ function showWebConfirmationNum(theitem){
 
 function clearDiscount(){
 	var discountid=getObjectFromID("discountid");
-	var discountDisplay=getObjectFromID("ds-discountid");
 	var discount=getObjectFromID("discount");
 	discount.value="";
+	discountid.selectedIndex=0;	
 	discountid.value="";
-	discountDisplay.value="";
-	autofill["discountid"]["ch"]="";
-	autofill["discountid"]["uh"]="";
-	autofill["discountid"]["vl"]="";	
-	autofill["discountid"]["ch"]="";
-	autofill["discountid"]["uh"]="";
-	autofill["discountid"]["vl"]="";	
+}
+
+vTabTimeout=0;
+function vTabOver(thetab){
+	//cancel any timeouts
+	if(vTabTimeout!=0){
+		window.clearTimeout(vTabTimeout);
+		vTabTimeout=0;
+	}
+	//onhover any tabs that are active
+	var i;
+	var othertab;
+	var othercontent;
+	for(i=1;i<5;i++){
+		if("vTab"+i != thetab.id){
+			othertab=getObjectFromID("vTab"+i);
+			othercontent=getObjectFromID("vContent"+i)			
+			othertab.className="invoiceTotalLabels vTabs";
+			othercontent.style.display="none";
+		} else {
+			var thecontent=getObjectFromID("vContent"+i);
+		}
+	}
+	var pareninfo=getObjectFromID("parenInfo");
+	pareninfo.style.display="none";
+	
+	//change to hover class
+	thetab.className="invoiceTotalLabels vTabsHover";
+	thecontent.style.display="block";
+	thecontent.style.height=(thecontent.parentNode.offsetHeight-16)+"px";
+	for(i=0;i<thecontent.childNodes.length;i++)
+		if(thecontent.childNodes[i].tagName=="FIELDSET")
+			thecontent.childNodes[i].style.height=(thecontent.offsetHeight-24)+"px";	
+	//hide other tabs and default
+	//show appropriate tab
+}
+function vTabOut(){
+	var i;
+	var thetab;
+	for(i=1;i<5;i++){
+		thetab=getObjectFromID("vTab"+i);
+		if(thetab.className=="invoiceTotalLabels vTabsHover"){
+			thetab.className="invoiceTotalLabels vTabs";
+			thecontent=getObjectFromID("vContent"+i)
+			thecontent.style.display="none";
+		}
+	}
+	var pareninfo=getObjectFromID("parenInfo");
+	pareninfo.style.display="block";
+	vTabTimeout=0;
 }

@@ -107,6 +107,44 @@ function basic_choicelist($name,$value="",$list="",$attributes=""){
 	<?php
 }
 
+//============================================================================================
+function table_choicelist($name,$value="",$table="",$valuefield="",$displayfield,$attributes="",$whereclause="",$orderclause="",$hasblank=true){
+	/*
+	   name =			Name of the field
+	   value =			Value for selefted item
+	   table =			SQL table clause to pull from
+	   valuefield =		SQL column clasue to use for the value
+	   displayfield		SQL column clause to use for display
+	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
+						attribute value.
+	   hasblank =		boolean, wehterh <none> (0) can be an option
+	   whereclause = 	SQL WHERE clause (minus the WHERE)
+	   orderclasue = 	SQL ORDER BY clause (minus the ORDER BY)
+	*/
+
+	global $dblink;
+	
+	$querystatement = "SELECT (".$valuefield.") AS thevalue, (".$displayfield.") as thedisplay FROM (".$table.")";
+	if($whereclause)
+		$querystatement.=" WHERE ".$whereclause;
+	if($orderclause)
+		$querystatement.=" ORDER BY ".$orderclause;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,"Error creating drop down: ".mysql_error($dblink)." -- ".$querystatement)
+	
+	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php 
+	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
+	?> ><?php
+		if($hasblank)?><option value="0" <?php if ($value==0 || $value=="") echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
+		while($therecord=mysql_fetch_array($queryresult)){
+			?><option value="<?php echo htmlQuotes($therecord["thevalue"])?>" <?php if ($therecord["thevalue"]==$value) echo " selected=\"selected\" "?> ><?php echo htmlQuotes($therecord["thedisplay"])?></option>
+			<?php
+		}
+	?></select>
+	<?php
+}
+
+
 // choicelist
 //============================================================================================
 function choicelist($name,$value="",$listname,$attributes=array(),$blankvalue="none"){

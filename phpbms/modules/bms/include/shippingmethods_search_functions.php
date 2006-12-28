@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 145 $ | $LastChangedBy: mipalmer $
+ $LastChangedDate: 2006-10-21 18:27:44 -0600 (Sat, 21 Oct 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -36,22 +36,22 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+
 //=============================================
 //functions
 //=============================================
-//inactivate roles
 function delete_record($theids){
 	global $dblink;
+
+	$whereclause=buildWhereClause($theids,"shippingmethods.id");
 	
-	//passed variable is array of user ids to be revoked
-	$whereclause=buildWhereClause($theids,"roles.id");
-
-	$querystatement = "UPDATE roles SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE ".$whereclause.";";
+	$querystatement = "UPDATE shippingmethods SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE ".$whereclause.";";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(300,"Couldn't revoke access: ".mysql_error($dblink)." -- ".$querystatement);		
-
+	if (!$queryresult) reportError(300,"Couldn't Mark Inactive : ".mysql_error($dblink)." -- ".$querystatement);		
+	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
-	$message.=" inactivated.";
-	return $message;	
+	$message.=" marked inactive.";
+	return $message;
 }
+
 ?>

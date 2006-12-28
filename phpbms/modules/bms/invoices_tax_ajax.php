@@ -39,7 +39,7 @@
 
 	require("../../include/session.php");
 
-	$querystatement="SELECT percentage FROM tax where id=".$_GET["id"];
+	$querystatement="SELECT percentage FROM tax where id=".((int) $_GET["id"]);
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reporError(100,"Tax percentage could not be retrieved");
 	if(mysql_num_rows($queryresult))

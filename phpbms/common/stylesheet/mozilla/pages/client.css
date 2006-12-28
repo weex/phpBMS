@@ -8,7 +8,8 @@
 #leftSideDiv{padding-top:1px;margin-right:208px;}
 
 #id, #becameclient, #ds-salesmanagerid, #ccnumber, #ds-taxareaid, #comments{width:98%}
-#type, #category, #leadsource, #paymentmethod{width:99%}
+#type, #category, #leadsource,#paymentmethodid,#shippingmethodid,#discountid,#taxareaid{width:99%}
+
 
 #firstnameP{float:left;}
 

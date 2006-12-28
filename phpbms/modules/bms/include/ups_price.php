@@ -179,10 +179,10 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 	$request = "POST /using/services/rave/qcostcgi.cgi HTTP/1.0\nContent-type: application/x-www-form-urlencoded\nContent-length: " .
 		strlen($passedparams) . "\n\n" . $passedparams;
 				
-	$this->socket = fsockopen("www.ups.com", 80);
-	fputs($this->socket, $request);	
-	$output=fread ($this->socket, 8192);
-	fclose($this->socket);
+	$socket = fsockopen("www.ups.com", 80);
+	fputs($socket, $request);	
+	$output=fread ($socket, 8192);
+	fclose($socket);
 
 	strtok($output, "%");
 	if(strpos($output,"UPSOnLine3")){

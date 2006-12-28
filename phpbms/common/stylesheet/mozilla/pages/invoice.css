@@ -19,14 +19,14 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 #fsAttributes{clear:both;float:right;width:250px;}
 #attributesRight{float:right;padding-top:0px;}
 #type{width:90px}
-#leadsource,#bankname{width:98%}
+#leadsource{width:98%}
 
-#fsTops,#fsShipping{margin-right:275px;}
+#fsTops{margin-right:275px;}
 #address1{margin-bottom:2px;}
 .cszP{float:left;}
 #countryP{clear:left;}
 
-#fsLineItems{clear:both;}
+#divLineItems{clear:both;padding:8px;}
 
 #LITable{}
 #LIHeader th{
@@ -45,15 +45,43 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 #qty{text-align:center;width:50px;}
 #extended,.fieldTotal{width:75px;}
 
+.fieldTotal{height:16px;}
+.lineitems td{height:22px;}
 .lineitemsRight{ border-right:1px solid #CCCCCC;}
 .lineitemsLeft{ border-left:1px solid #CCCCCC;}
 .lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
-.invoiceTotalLabels{padding-left:65px;height:23px;}
+.totalItems,.invoiceTotalLabels,#parenInfo div span{border-bottom:1px solid #CCCCCC}
+.invoiceTotalLabels{padding-left:25px;}
+.invoiceTotalLabels div{height:24px; line-height:24px;vertical-align:bottom;}
 
-#fsPayment{float:right;width:250px;margin-top:0px;padding-top:0px;}
 
-#ccpaymentinfo,#checkpaymentinfo{display:none;}
+#parenInfo div{height:25px;clear:right;}
+#parenInfo div span{
+	display:block;
+	float:right;
+	line-height:24px;height:24px;
+	padding:0 4px;
+	color:#666666;
+}
+
+#totalSpacer{height:55px;line-height:55px;border:0;}
+#totalSpacer span{border:0;}
+div #parenSpacer{height:55px;clear:right}
+div #parenSpacer span{height:55px;line-height:55px;border:0;}
+
+
+.vTabs,.vTabsHover{cursor:pointer;color:#455372;background:url(../image/button-rew.png) 5px 4px no-repeat;}
+.vTabsHover,.vContent{background-color:#DDDDDD;}
+.vContent{display:none;padding:8px; text-align:left;float:right;width:360px;}
+.vContent fieldset{margin:0;}
+
+#shippingNotice,#paymentNotice{display:none;}
+#shippingNoticeResults,#paymentNoticeResults{width:98%}
+#pTotalweight{float:right}
+#ccpaymentinfo,#checkpaymentinfo,pTransactionid{display:none;}
 #fieldCCNumber,#fieldCCExpiration{float:left;}
+#pCheckNumber,#pAccountNumber{float:right;}
+
 
 #fsInstructions{clear:both;}
 #specialinstructions,#printedinstructions{width:99%}

@@ -52,7 +52,7 @@
 
 	//Generate the invoice Query
 	$querystatement="SELECT invoices.id, totalweight, totaltni, totalti, totalcost, invoices.taxareaid,
-					shippingmethod, invoices.paymentmethod, checkno, bankname, invoices.ccnumber,
+					shippingmethods.name as shippingmethod, paymentmethods.name as paymentmethod, checkno, bankname, invoices.ccnumber,
 					invoices.ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					clients.firstname, clients.lastname, clients.company,
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
@@ -62,11 +62,14 @@
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
 					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
-					invoices.ponumber,invoices.discountamount,invoices.discountid,ccverification,
+					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					
 					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
 					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
-					FROM invoices INNER JOIN  clients ON invoices.clientid=clients.id ".$_SESSION["printing"]["whereclause"].$sortorder;
+					FROM ((invoices INNER JOIN  clients ON invoices.clientid=clients.id) 
+						LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid)
+						LEFT JOIN shippingmethods ON shippingmethods.id=invoices.shippingmethodid
+					".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=mysql_query($querystatement,$dblink);
 	if(!$thequery) reportError(200,"Invlaid SQL statement: ".mysql_error($dblink)." -- ".$querystatement);
 	//===================================================================================================

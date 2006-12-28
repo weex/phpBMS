@@ -48,6 +48,7 @@ function checkForInvoices($id){
 		return false;
 }
 
+
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
@@ -69,8 +70,8 @@ function getRecords($id){
 	$querystatement="SELECT id, firstname, lastname, company, city, state, postalcode, country, shiptocountry,
 				address1, address2, type, inactive, leadsource, salesmanagerid, homephone, workphone,
 				mobilephone, fax, otherphone, shiptoaddress1, shiptoaddress2, shiptocity,shiptostate,
-				shiptopostalcode, email, webaddress, comments, paymentmethod, ccnumber, ccexpiration, 
-				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient,taxareaid,
+				shiptopostalcode, email, webaddress, comments, paymentmethodid, taxareaid, discountid, shippingmethodid,
+				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient,
 				createdby, creationdate, 
 				modifiedby, modifieddate
 				FROM clients
@@ -122,10 +123,10 @@ function setRecordDefaults(){
 	$therecord["salesmanagerid"]=NULL;
 	$therecord["leadsource"]="";
 
-	$therecord["paymentmethod"]="";
-	$therecord["ccnumber"]="";
-	$therecord["ccexpiration"]="";
-	$therecord["taxareaid"]="";
+	$therecord["paymentmethodid"]=0;
+	$therecord["discountid"]=0;
+	$therecord["shippingmethodid"]=0;
+	$therecord["taxareaid"]=0;
 
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
@@ -186,14 +187,12 @@ function updateRecord($variables,$userid){
 			$querystatement.="shiptopostalcode=\"".$variables["shiptopostalcode"]."\", "; 
 			$querystatement.="shiptocountry=\"".$variables["shiptocountry"]."\", "; 
 
-			$querystatement.="paymentmethod=\"".$variables["paymentmethod"]."\", "; 
-			$querystatement.="ccnumber=\"".$variables["ccnumber"]."\", "; 
-			$querystatement.="ccexpiration=\"".$variables["ccexpiration"]."\", "; 
+			$querystatement.="paymentmethodid=".$variables["paymentmethodid"].", "; 
+			$querystatement.="shippingmethodid=".$variables["shippingmethodid"].", "; 
+			$querystatement.="discountid=".$variables["discountid"].", "; 
+			$querystatement.="taxareaid=".$variables["taxareaid"].", "; 
 
 			$querystatement.="comments=\"".$variables["comments"]."\", "; 			
-			if(!$variables["taxareaid"] || $variables["taxareaid"]===0)
-				$variables["taxareaid"]="NULL";
-			$querystatement.="taxareaid=".$variables["taxareaid"].", "; 			
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -213,7 +212,7 @@ function insertRecord($variables,$userid){
 	$querystatement.="(firstname,lastname,company,homephone,workphone,mobilephone,fax,otherphone,email,webaddress,";
 	$querystatement.="type,becameclient,category,inactive,salesmanagerid,leadsource,address1,address2,city,state,postalcode,country,shiptoaddress1,";
 	$querystatement.="shiptoaddress2,shiptocity,shiptostate,shiptopostalcode,shiptocountry,";
-	$querystatement.="paymentmethod,ccnumber,ccexpiration,comments,taxareaid,
+	$querystatement.="paymentmethodid,shippingmethodid,discountid,taxareaid,comments,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["firstname"]."\", "; 
@@ -259,13 +258,12 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["shiptopostalcode"]."\", "; 
 			$querystatement.="\"".$variables["shiptocountry"]."\", "; 
 
-			$querystatement.="\"".$variables["paymentmethod"]."\", "; 
-			$querystatement.="\"".$variables["ccnumber"]."\", "; 
-			$querystatement.="\"".$variables["ccexpiration"]."\", "; 
+			$querystatement.=$variables["paymentmethodid"].", "; 
+			$querystatement.=$variables["shippingmethodid"].", "; 
+			$querystatement.=$variables["discountid"].", "; 
+			$querystatement.=$variables["taxareaid"].", "; 
 
 			$querystatement.="\"".$variables["comments"]."\", "; 
-			if(!$variables["taxareaid"] || $variables["taxareaid"]===0)
-				$variables["taxareaid"]="NULL";
 			$querystatement.=$variables["taxareaid"].", "; 			
 				
 	//==== Almost all records should have this =========

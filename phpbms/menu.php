@@ -74,7 +74,7 @@ function getSubItems($parentid){
 		while($menurecord=mysql_fetch_array($menus)){
 			if(hasRights($menurecord["roleid"])){
 				if($menurecord["link"]) {
-					if(strpos($menurecord["link"],"http")!==0)
+					if(strpos($menurecord["link"],"http")!==0 && strpos($menurecord["link"],"javascript")!==0)
 						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}

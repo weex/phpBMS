@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 170 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2006-11-10 19:49:30 -0700 (Fri, 10 Nov 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -37,67 +37,27 @@
  +-------------------------------------------------------------------------+
 */
 
-function assignUsers($id,$users,$dblink){
-	$querystatement="DELETE FROM rolestousers WHERE roleid=".$id;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Could not remove existing user roles: ".$querystatement);
-	$newusers=explode(",",$users);
-	foreach($newusers as $theuser)
-		if($theuser!=""){
-			$querystatement="INSERT INTO rolestousers (roleid,userid) VALUES(".$id.",".$theuser.")";
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(300,"Could not add new user role.");
-		}
-}
-
-function displayUsers($id,$type,$dblink){
-	$querystatement="SELECT users.id,concat(users.firstname,' ',users.lastname) as name
-					FROM users INNER JOIN rolestousers ON rolestousers.userid=users.id 
-					WHERE rolestousers.roleid=".$id;
-	$assignedquery=mysql_query($querystatement,$dblink);
-	if(!$assignedquery) reportError(300,"Could not retrieve assigned users ".mysql_query($dblink));
-	$thelist=array();
-	
-	if($type=="available"){
-		$excludelist=array();
-		while($therecord=mysql_fetch_array($assignedquery))
-			$excludelist[]=$therecord["id"];
-			
-		$querystatement="SELECT id,concat(users.firstname,' ',users.lastname) as name FROM users WHERE revoked=0 AND portalaccess=0";
-		$availablequery=mysql_query($querystatement,$dblink);
-		if(!$availablequery) reportError(300,"Could not retrieve available users");
-		while($therecord=mysql_fetch_array($availablequery))
-			if(!in_array($therecord["id"],$excludelist))
-				$thelist[]=$therecord;		
-	} else 
-		while($therecord=mysql_fetch_array($assignedquery))
-			$thelist[]=$therecord;
-			
-	foreach($thelist as $theoption){
-		?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
-<?php 
-	}
-}
-
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
 
 //set table id
-$tableid=200;
+$tableid=300;
 
 function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name, description, inactive,
-	
+	$querystatement="SELECT id, name, inactive, canestimate, estimationscript, priority,
+
 				createdby, creationdate, 
 				modifiedby, modifieddate
-				FROM roles
+				FROM shippingmethods
 				WHERE id=".$id;		
-	$thequery = mysql_query($querystatement,$dblink);
-	$therecord = mysql_fetch_array($thequery);
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Could not retrieve record: ".mysql_error($dblink)." ".$querystatement));
+	$therecord = mysql_fetch_array($queryresult);
+	if(!$therecord) reportError(300,"No record for id ".$id);
 	return $therecord;
 }//end function
 
@@ -105,17 +65,18 @@ function getRecords($id){
 function setRecordDefaults(){
 //========================================================================================
 	$therecord["id"]=NULL;
-
-	$therecord["name"]="";
-	$therecord["description"]="";
+	$therecord["name"]="";	
 	$therecord["inactive"]=0;
-
+	$therecord["priority"]=0;
+	$therecord["canestimate"]=0;
+	$therecord["estimationscript"]="";	
+	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
 
 	$therecord["creationdate"]=NULL;
 	$therecord["modifieddate"]=NULL;
-
+	
 	return $therecord;	
 }//end function
 
@@ -124,26 +85,29 @@ function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="UPDATE roles SET ";
+	$querystatement="UPDATE shippingmethods SET ";
 	
-	//fields
-	$querystatement.="name=\"".$variables["name"]."\", "; 
-	$querystatement.="description=\"".$variables["name"]."\", "; 	
+		$querystatement.="name=\"".$variables["name"]."\", "; 
 
-	$querystatement.="inactive=";
-	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
-	$querystatement.=",";
+		$querystatement.="inactive=";
+		if(isset($variables["inactive"])) $querystatement.=1; else $querystatement.=0;
+		$querystatement.=",";
+
+		$querystatement.="priority=".$variables["priority"].", "; 
+
+		$querystatement.="canestimate=";
+		if(isset($variables["canestimate"])) $querystatement.=1; else $querystatement.=0;
+		$querystatement.=",";
+		
+		$querystatement.="estimationscript=\"".$variables["estimationscript"]."\", "; 
+			
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
-	$querystatement.="where id=".$variables["id"];
-	
+	$querystatement.="WHERE id=".$variables["id"];
+		
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
-
-	if($variables["userschanged"]==1)
-		assignUsers($variables["id"],$variables["newusers"],$dblink);
-
 }// end function
 
 
@@ -151,31 +115,31 @@ function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
-	$querystatement="INSERT INTO roles ";
+	$querystatement="INSERT INTO shippingmethods ";
 	
-	$querystatement.="(name,description,inactive,
-	createdby,creationdate,modifiedby) VALUES (";
+	$querystatement.="(name,inactive,priority,canestimate,estimationscript,
+						createdby,creationdate,modifiedby) VALUES (";
 	
-	$querystatement.="\"".$variables["name"]."\", "; 
-	$querystatement.="\"".$variables["description"]."\", "; 
+		$querystatement.="\"".$variables["name"]."\", "; 
 
-	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
-	$querystatement.=",";
-	
+		if(isset($variables["inactive"])) $querystatement.=1; else $querystatement.=0;
+		$querystatement.=",";
+
+		$querystatement.=$variables["priority"].", "; 
+
+		if(isset($variables["canestimate"])) $querystatement.=1; else $querystatement.=0;
+		$querystatement.=",";
+		
+		$querystatement.="\"".$variables["estimationscript"]."\", "; 
+				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
 	$querystatement.=$userid.")"; 
 	
-	$queryresult= mysql_query($querystatement,$dblink);
+	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
-		
-	$newid=mysql_insert_id($dblink);
-
-	if($variables["userschanged"]==1)
-		assignUsers($newid,$variables["newusers"],$dblink);
-
-	return $newid;
+	return mysql_insert_id($dblink);
 }
 
 

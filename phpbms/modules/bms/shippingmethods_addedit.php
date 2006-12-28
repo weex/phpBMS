@@ -1,7 +1,7 @@
 <?php 
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 155 $ | $LastChangedBy: mipalmer $
+ $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -36,93 +36,69 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/discounts_addedit_include.php");
-	
-	$pageTitle="Discounts / Promotions";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	include("include/shippingmethods_addedit_include.php");
+
+	 $pageTitle="Shipping Method"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/discounts.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/shippingmethods.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="javascript/shippingmethods.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/discount.js" type="text/javascript"></script>
 </head>
-<body onLoad="init()"><?php include("../../menu.php")?>
+<body><?php include("../../menu.php")?>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
-	
-	<div id="fsAttributes">
-		<fieldset>
-			<legend>attributes</legend>
-			<p>
-				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" />
-			</p>			
-			<p>
-				<?php field_checkbox("inactive",$therecord["inactive"])?> <label for="inactive">inactive</label>
-			</p>		
-		</fieldset>
-		
-		<fieldset>
-			<legend>statistics</legend>
-			<p>
-				<strong>Orders</strong> (<?php echo $stats["Order"]["total"]?>)<br/>
-				total: <?php echo currencyFormat($stats["Order"]["sum"])?>
-			</p>
-			<p>
-				<strong>Invoices</strong> (<?php echo $stats["Invoice"]["total"]?>)<br />
-				total: <?php echo currencyFormat($stats["Invoice"]["sum"])?>
-			</p>
-		</fieldset>
-	</div>
+
+	<fieldset id="fsAttributes">
+		<legend>attribues</legend>
+		<p>
+			<label for="id">id</label><br />
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
+		</p>
+		<p>	<br />		
+			<?php field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
+		</p>
+		<p>
+			<label for="priority">priority</label><br />
+			<?php field_text("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
+		</p>
+		<p class="notes">
+			Lower priority numbered items are displayed first.
+		</p>
+	</fieldset>
 
 	<div id="nameDiv">
-		<fieldset>
+		<fieldset >
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",htmlQuotes($therecord["name"]),1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
 			</p>
 		</fieldset>
-		
 		<fieldset>
-			<legend>discount</legend>
-			<p>
-				<strong>type</strong><br />
-				<input type="radio" class="radiochecks" id="typePercentage" name="type" value="percent" <?php if($therecord["type"]=="percent") echo "checked" ?>  onClick="changeType()" /><label for="typePercentage">percentage</label>
-				<input type="radio" class="radiochecks" id="typeAmount" name="type" value="amount" <?php if($therecord["type"]=="amount") echo "checked" ?> onClick="changeType()" /><label for="typeAmount">amount</label>
+			<legend>estimate charges</legend>
+			<p><br />
+			<?php field_checkbox("canestimate",$therecord["canestimate"],false,Array("tabindex"=>"4","onchange"=>"checkScript(this)"))?><label for="canestimate">esitmate shipping</label>
 			</p>
-			<p id="pValue">
-				<label for="percentvalue">value</label><br />
-				<?php field_percentage("percentvalue",$therecord["value"],2,1,"Value is required",Array("size"=>"10","maxlength"=>"10"));?>
-			</p>
-			<p id="aValue">
-				<label for="amountvalue">value</label><br />
-				<?php field_dollar("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
-			</p>			
-		</fieldset>
-		
-		<fieldset>
-			<legend><label for="description">description</label></legend>
-			<p>
-				<span class="notes">(description is used on invoice reports)</span><br />
-				<textarea id="description" name="description" cols="38" rows="4"><?php echo htmlspecialchars($therecord["description"])?></textarea>
+			<p id="pEstimationscript" <?php if($therecord["canestimate"]) echo "style=\"display:block\" "?>>
+				<label for="estimationscript">estimation script</label><br />
+				<input id="estimationscript" name="estimationscript" type="text" value="<?php echo htmlQuotes($therecord["estimationscript"])?>" size="64" maxlength="128"/>
 			</p>
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>
+	<?php include("../../include/createmodifiedby.php"); ?>	
 	</form>
 </div>
-<?php include("../../footer.php")?>
+<?php include("../../footer.php");?>
 </body>
 </html>

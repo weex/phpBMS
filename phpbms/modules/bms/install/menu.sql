@@ -11,3 +11,5 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (210,'Products','search.php?id=4',209,0,1,1,NOW(),NOW(),10);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (211,'Product Categories','search.php?id=7',209,1,1,1,NOW(),NOW(),30);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (212,'Prerequisites','search.php?id=8',209,2,1,1,NOW(),NOW(),20);
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (213,'Shipping Methods','search.php?id=300',204,30,1,1,NOW(),NOW(),30);
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (214,'Payment Methods','search.php?id=301',204,40,1,1,NOW(),NOW(),30);

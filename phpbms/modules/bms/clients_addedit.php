@@ -124,26 +124,27 @@
 		</fieldset>
 				
 		<fieldset>
-			<legend>defaults</legend>
+			<legend>order defaults</legend>
 			<p>
-				<label for="paymentmethod">payment type</label><br />
-				<?php choicelist("paymentmethod",$therecord["paymentmethod"],"paymentmethod",Array("tabindex"=>"27")); ?>			
+				<label for="paymentmethodid">payment method</label><br />
+				<?php table_choicelist("paymentmethodid",$therecord["paymentmethodid"],$table="paymentmethods","id","name","","inactive=0","priority,name")?>
 			</p>
 
 			<p>
-				<label for="ccnumber">credit card number</label><br />
-				<input id="ccnumber" name="ccnumber" type="text" value="<?php echo htmlQuotes($therecord["ccnumber"]) ?>" size="22" maxlength="32" tabindex="28"/>
-			</p>
-			
-			<p>
-				<label for="ccexpiration">credit card expiration</label><br />
-				<input id="ccexpiration" name="ccexpiration" type="text"  value="<?php echo htmlQuotes($therecord["ccexpiration"]) ?>" size="7" maxlength="7" tabindex="29"/>
+				<label for="shippingmethodid">shipping method</label><br />
+				<?php table_choicelist("shippingmethodid",$therecord["shippingmethodid"],$table="shippingmethods","id","name","","inactive=0","priority,name")?>
 			</p>
 
-			<div class="fauxP">
-				<label for="ds-taxareaid">tax area</label><br />
-				<?php autofill("taxareaid",$therecord["taxareaid"],6,"tax.id","tax.name","concat(tax.percentage,\"%\")","",Array("size"=>"20","maxlength"=>"64","tabindex"=>"25"),0) ?>
-			</div>
+			<p>
+				<label for="discountid">discount</label><br />
+				<?php table_choicelist("discountid",$therecord["discountid"],$table="discounts","id","name","","inactive=0","name")?>
+			</p>
+
+			<p>
+				<label for="taxareaid">tax area</label><br />
+				<?php table_choicelist("taxareaid",$therecord["taxareaid"],$table="tax","id","name","","","name")?>
+			</p>
+
 		</fieldset>	
 	</div>
 		

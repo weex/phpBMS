@@ -56,7 +56,7 @@ class totalReport{
 			$this->selectcolumns[$columnnames[$i]]=$columnvalues[$i];
 		$this->selectcolumns=array_reverse($this->selectcolumns);
 		
-		$this->selecttable="(invoices inner join clients on invoices.clientid=clients.id)";
+		$this->selecttable="((invoices inner join clients on invoices.clientid=clients.id) LEFT JOIN shippingmethods ON shippingmethods.id = invoices.shippingmethodid) LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid";
 
 		if($variables["groupingvaluelist"]) {
 			$this->group=explode(":::",stripslashes($variables["groupingvaluelist"]));
@@ -404,8 +404,8 @@ if(isset($_POST["command"])){
 							<option value="concat(users2.firstname,' ',users2.lastname)">Client Account Manager</option>
 							<option value="clients.leadsource">Client Lead Source</option>
 							<option value="invoices.leadsource">Lead Source</option>
-							<option value="invoices.paymentmethod">Payment Method</option>
-							<option value="invoices.shippingmethod">Shipping Method</option>
+							<option value="paymentmethods.name">Payment Method</option>
+							<option value="shippingmethods.name">Shipping Method</option>
 							<option value="invoices.shipcountry">Shipping Country</option>
 							<option value="invoices.shipstate">Shipping State</option>
 							<option value="invoices.shipcity">Shipping City</option>

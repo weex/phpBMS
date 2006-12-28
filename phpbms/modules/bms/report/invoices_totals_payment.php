@@ -48,7 +48,7 @@
 	$_POST["columnvaluelist"]=addslashes("concat('$',format(sum(invoices.totalti-invoices.amountpaid),2)):::concat('$',format(sum(invoices.totalti),2)):::concat('$',format(sum(invoices.totaltni),2))");
 	
 	$_POST["groupingnamelist"]="Payment Method";
-	$_POST["groupingvaluelist"]="invoices.paymentmethod";
+	$_POST["groupingvaluelist"]="paymentmethods.name";
 
 	require("invoices_totals.php");
 ?>

@@ -43,3 +43,11 @@ INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (80,25,'new','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (81,25,'select','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (82,25,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (300,'new','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (300,'select','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (300,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (300,'printex','0',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'new','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'select','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'printex','1',0,0);

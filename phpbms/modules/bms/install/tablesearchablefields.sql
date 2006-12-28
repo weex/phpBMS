@@ -39,3 +39,5 @@ INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displ
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (74,22,'clientemailprojects.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (75,22,'users.firstname like \"{{value}}%\" or users.lastname like \"{{value}}%\"','user',1,'whereclause');
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (95,25,'discounts.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (300,'shippingmethods.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (301,'paymentmethods.name','name',0,'field');

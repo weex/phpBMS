@@ -270,11 +270,23 @@ function loadSettings() {
 					$ver["version"]="0.62";
 				break;
 				// ================================================================================================
-				case "0.61";
+				case "0.62";
 					$thereturn.="Updating BMS Module to 0.7\n";
 
-					//$thereturn.=processSQLfile("updatev0.7.sql");
-
+					$thereturn.=processSQLfile("updatev0.7.sql");
+					
+					//Update shipping from invoices
+					if(moveShipping($dblink))
+						$thereturn.=" - Created default Shipping Methods\n.";
+					else
+						$thereturn.=" - Failed to create default Shipping Methods\n.";
+					
+					//update payment From invoices
+					if(movePayments($dblink))
+						$thereturn.=" - Created default payment Methods\n.";
+					else
+						$thereturn.=" - Failed to create default payment Methods\n.";
+					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"bms\";";
 					$updateresult=mysql_query($querystatement,$dblink);
@@ -290,7 +302,47 @@ function loadSettings() {
 
 	}//end update		
 
+	function moveShipping($dblink){
+		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!="" ORDER BY shippingmethod";
+		$queryresult=mysql_query($querystatement,$dblink);
+		while($therecord=mysql_fetch_array($queryresult)){
+			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
+			$updatequery=mysql_query($querystatement,$dblink)
+		}
+		$querystatement="SELECT id,name FROM shippingmethods";
+		$queryresult=mysql_query($querystatement,$dblink);
+		while($therecord=mysql_fetch_array($queryresult)){
+			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["ID"]."
+							WHERE shippingmethod=\"".$therecord["name"]."\"";
+			$updatequery=mysql_query($querystatement,$dblink)
+		}
+		$querystatement="ALTER TABLE invoices DROP shippingmethod";
+		$updatequery=mysql_query($querystatement,$dblink)
 		
+		return true;
+	}
+
+	function movePayments($dblink){
+		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!="" ORDER BY paymentmethod";
+		$queryresult=mysql_query($querystatement,$dblink);
+		while($therecord=mysql_fetch_array($queryresult)){
+			$querystatement="INSERT INTO `paymentmethods` (name,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",1,NOW())";
+			$updatequery=mysql_query($querystatement,$dblink)
+		}
+		$querystatement="SELECT id,name FROM paymentmethods";
+		$queryresult=mysql_query($querystatement,$dblink);
+		while($therecord=mysql_fetch_array($queryresult)){
+			$querystatement="UPDATE invoices SET paymentmethod=".$therecord["ID"]."
+							WHERE paymentmethod=\"".$therecord["name"]."\"";
+			$updatequery=mysql_query($querystatement,$dblink)
+		}
+		$querystatement="ALTER TABLE invoices DROP paymentmethod";
+		$updatequery=mysql_query($querystatement,$dblink)
+		
+		return true;
+	}
+
+
 		$thereturn=doUpdate();	
 		header('Content-Type: text/xml');
 		?><?php echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'; ?>
