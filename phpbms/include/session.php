@@ -95,6 +95,8 @@ function loadMysqlSettings() {
 				}
 			}
 		}
+		if(!isset($_SESSION["mysql_pconnect"]))
+			$_SESSION["mysql_pconnect"]="true";
 		fclose($settingsfile);
 		return $path;
 	} else reportError(500,"Settings file could not be opened");
@@ -135,7 +137,7 @@ function xmlEncode($str){
 			if(!isset($loginNoDisplayError))
 				exit();
 			else
-				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"]); 
+				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
 		} else{
 			header("Location: ".$mainpath."index.php");
 			exit();
@@ -144,14 +146,17 @@ function xmlEncode($str){
 
 		// OPEN DATABASE IF NOT OPENED
 		if(!isset($dblink))		
-			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"]); 
+			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
 
 		if(!isset($_SESSION["app_name"]))
 			loadSettings();
 	}//end if
 	
-	function openDB($dbserver,$dbuser,$dbpass,$dbname){
-		$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);		
+	function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
+		if($pconnect=="true")
+			$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);
+		else
+			$dblink = @ mysql_connect($dbserver,$dbuser,$dbpass);
 		if (!$dblink) 
 			reportError(500,"Could not link to MySQL Server.  Please check your settings.",true);
 		if (!mysql_select_db($dbname,$dblink)) 

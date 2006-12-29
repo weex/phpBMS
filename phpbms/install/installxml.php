@@ -111,6 +111,8 @@ function loadSettings() {
 				}
 			}
 		}
+		if(!isset($variables["mysql_pconnect"]))
+			$variables["mysql_pconnect"]="true";
 		fclose($settingsfile);
 		return $variables;
 	} else return "Cannot open setting.php file";
@@ -124,7 +126,11 @@ function loadSettings() {
 			switch($_GET["command"]){
 
 				case "testconnection":
-					$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					if($vars["mysql_pconnect"]=="true")
+						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+					else
+						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+						 		
 					if(!$dblink) 
 						$thereturn="Could Not Establish Connection To MySQL Server: Check server, username and password"; 
 					else
@@ -134,7 +140,10 @@ function loadSettings() {
 				
 				case "createdatabase":
 					$thereturn="";
-					$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					if($vars["mysql_pconnect"]=="true")
+						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+					else
+						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 					if (!mysql_select_db($vars["mysql_database"])){
 						$queryresult=mysql_query("create database `".$vars["mysql_database"]."`",$dblink);							
 						if(!$queryresult)
@@ -149,7 +158,10 @@ function loadSettings() {
 				
 	
 				case "populatedata":
-					$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+					if($vars["mysql_pconnect"]=="true")
+						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+					else
+						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 					mysql_select_db($vars["mysql_database"]);
 					
 					$thereturn=createTables();

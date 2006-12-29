@@ -140,6 +140,9 @@
 		<li>
 			<p><strong>mysql_userpass</strong>:	the	password for the user that access the database.</p>
 		</li>
+		<li>
+			<p><strong>mysql_pconnect</strong>:	specify whether php should use the mysql_pconnect or mysql_connect command. Some web hosting providers do not allow mysql_pconnect.</p>
+		</li>
 	</ul>
 
 	

@@ -58,6 +58,8 @@ function loadSettings() {
 				}
 			}
 		}
+		if(!isset($variables["mysql_pconnect"]))
+			$variables["mysql_pconnect"]="true";
 		fclose($settingsfile);
 		return $variables;
 	} else return "Cannot open setting.ini file";
@@ -124,7 +126,10 @@ $vars=loadSettings();
 if(!is_array($vars))
 	$thereturn.=$vars;
 else{
-	$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+	if($vars["mysql_pconnect"]=="true")
+		$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+	else
+		$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 	mysql_select_db($vars["mysql_database"],$dblink);
 	
 	$tempreturn=createTables();

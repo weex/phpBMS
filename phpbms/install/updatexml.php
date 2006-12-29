@@ -57,6 +57,8 @@
 					}
 				}
 			}
+			if(!isset($variables["mysql_pconnect"]))
+			$variables["mysql_pconnect"]="true";
 			fclose($settingsfile);
 			return $variables;
 		} else return "Cannot open setting.php file";
@@ -343,7 +345,10 @@
 			if (!is_array($vars)) 
 				$thereturn="Could Not load settings.php file.";
 			else {
-				$dblink = mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+				if($vars["mysql_pconnect"]=="true")
+					$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+				else
+					$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 				mysql_select_db($vars["mysql_database"],$dblink);
 				
 				$vars=loadDBSettings($dblink,$vars);

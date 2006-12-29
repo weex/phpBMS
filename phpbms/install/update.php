@@ -57,6 +57,8 @@
 					}
 				}
 			}
+			if(!isset($variables["mysql_pconnect"]))
+			$variables["mysql_pconnect"]="true";
 			fclose($settingsfile);
 			return $variables;
 		} else return "Cannot open setting.php file";
@@ -76,7 +78,10 @@
 			echo "<option>Could Not Open Settings File</option>";
 			return false;
 		}
-		$dblink = @ mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);		
+		if($vars["mysql_pconnect"]=="true")
+			$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
+		else
+			$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 		@ mysql_select_db($vars["mysql_database"],$dblink);
 		
 		$querystatement="SELECT name,version FROM modules WHERE name!=\"base\" ";
