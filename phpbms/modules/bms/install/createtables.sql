@@ -231,7 +231,7 @@ CREATE TABLE `shippingmethods` (
 ) TYPE=MyISAM PACK_KEYS=0;
 
 CREATE TABLE `paymentmethods` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL default '',
   `type` enum('draft','charge','receivable') default NULL,
   `priority` int(8) NOT NULL default '0',
