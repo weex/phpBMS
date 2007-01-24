@@ -264,7 +264,6 @@ function insertRecord($variables,$userid){
 			$querystatement.=$variables["taxareaid"].", "; 
 
 			$querystatement.="\"".$variables["comments"]."\", "; 
-			$querystatement.=$variables["taxareaid"].", "; 			
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
