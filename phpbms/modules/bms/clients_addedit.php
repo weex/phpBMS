@@ -86,11 +86,16 @@
 			<p>
 				<label for="type" class="important">type</label><br />
 				<?php 
-					$disabled="false";
+					$disabled=false;
 					if($therecord["type"]=="client")
-						if(checkForInvoices($therecord["id"]))
-							$disabled="true";					
-					basic_choicelist("type",$therecord["type"],Array(Array("name"=>"prospect","value"=>"prospect"),Array("name"=>"client","value"=>"client")),Array("class"=>"important","tabindex"=>5,"disabled"=>$disabled,"onChange"=>"changeClientType(this)"));
+						$disabled=checkForInvoices($therecord["id"],$dblink);
+							
+					$attributes["class"]="important";
+					$attributes["tabindex"]="5";
+					$attributes["onchange"]="changeClientType(this)";
+					if($disabled)
+						$attributes["disabled"]="disabled";
+					basic_choicelist("type",$therecord["type"],Array(Array("name"=>"prospect","value"=>"prospect"),Array("name"=>"client","value"=>"client")),$attributes);
 				?>
 			</p>
 			

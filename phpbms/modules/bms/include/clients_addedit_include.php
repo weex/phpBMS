@@ -37,15 +37,11 @@
  +-------------------------------------------------------------------------+
 */
 
-function checkForInvoices($id){
-	global $dblink;
-	$querystatement="SELECT invoices.id FROM clients INNER JOIN invoices ON clients.id=invoices.clientid WHERE clients.id=".$id;
+function checkForInvoices($id, $dblink){
+	$querystatement="SELECT id FROM invoices WHERE clientid=".$id;
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Check For Invoices Failed: ".mysql_error($dblink)." -- ".$querystatement);	
-	if(mysql_num_rows($queryresult))
-		return true;
-	else
-		return false;
+	return !(mysql_num_rows($queryresult)===0);
 }
 
 
