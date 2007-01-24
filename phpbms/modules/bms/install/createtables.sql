@@ -78,7 +78,7 @@ CREATE TABLE discounts (
 ) TYPE=MyISAM;
 
 CREATE TABLE `invoices` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `clientid` int(11) NOT NULL default '0',
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
   `status` enum('Open','Committed','Packed','Shipped') default NULL,
