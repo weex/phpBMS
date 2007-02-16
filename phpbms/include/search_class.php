@@ -292,7 +292,7 @@ function sendInfo(name,thevalue,thedisplay){
 				$querystatement.="AND (".$this->whereclause.")";
 			
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(100,"Error Retrieving Initial Rowset: ".mysql_error($dblink)."<br>".$querystatement);
+			if(!$queryresult) reportError(100,"Error Retrieving Initial Rowset: ".mysql_error($dblink)."<br />".$querystatement);
 			
 			return $queryresult;
 		}

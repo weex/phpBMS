@@ -65,7 +65,7 @@ if(isset($_POST["command"])) {
 			$dwhereclause=substr($dwhereclause,3);		
 			$thequery = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$dwhereclause.");";
 			$theresult = mysql_query($thequery);
-			if (!$theresult) die ("Couldn't Update: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$thequery."]");		
+			if (!$theresult) die ("Couldn't Update: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$thequery."]");		
 	break;
 	case "edit/view":
 		// relocate to edit screen

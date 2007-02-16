@@ -209,8 +209,7 @@ function validateReal(thevalue){
 
 // validate phone number
 function validatePhone(thevalue){
-	var pattern= /^(?:[\+]?(?:[\d]{1,3})?(?:\s*[\(\.-]?(\d{3})[\)\.-])?\s*(\d{3})[\.-](\d{4}))(?:(?:[ ]+(?:[xX]|(?:[eE][xX][tT][\.]?)))[ ]?[\d]{1,5})?$/;
-	return !(pattern.exec(thevalue)==null);
+	return !(phoneRegExpression.exec(thevalue)==null);
 }
 
 //look for a valid email address

@@ -337,7 +337,7 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 	
 	$querystatement="SELECT ".$displayfield." AS display FROM ".$tableinfo["maintable"]." WHERE ".$getfield."=\"".$initialvalue."\" LIMIT 1;";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,"Could not retrieve autofill inital data.<br>".$querystatement);
+	if(!$queryresult) reportError(100,"Could not retrieve autofill inital data.<br />".$querystatement);
 	if(mysql_num_rows($queryresult))
 		$displayresult = mysql_fetch_array($queryresult);
 	else

@@ -53,4 +53,5 @@ ALTER TABLE usersearches CHANGE accesslevel roleid int(11) NOT NULL default '0';
 UPDATE reports set accesslevel=0 WHERE accesslevel <0;
 UPDATE reports set accesslevel=-100 WHERE accesslevel >=90;
 ALTER TABLE reports CHANGE accesslevel roleid int(11) NOT NULL default '0';
-ALTER TABLE `phpbms`.`users` DROP COLUMN `accesslevel`;
+ALTER TABLE `users` DROP COLUMN `accesslevel`;
+INSERT INTO `settings` (`name`, `value`) VALUES ('phone_format','US - Loose');

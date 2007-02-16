@@ -156,7 +156,7 @@ require_once("include/adminsettings_include.php");
 
 		<div class="fauxP">
 			<br />Printed Logo
-			<div id="graphicHolder"><img src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&f=file&mf=type&r=1"></div>
+			<div id="graphicHolder"><img alt="logo" src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
 		</div>
 		
 		<p>
@@ -180,7 +180,7 @@ require_once("include/adminsettings_include.php");
 				while($entry=readdir($thedir_stream)){
 					if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
 						echo "<option value=\"".$entry."\"";
-							if($entry==$_SESSION["stylesheet"]) echo " selected ";
+							if($entry==$_SESSION["stylesheet"]) echo " selected=\selected\" ";
 						echo ">".$entry."</option>";
 					}
 				}
@@ -189,7 +189,16 @@ require_once("include/adminsettings_include.php");
 			</select>		
 		</p>
 	</fieldset>
-
+	<fieldset>
+		<legend>Localization</legend>
+		<p>
+			<label for="">phone format</label><br />
+			<select id="sphone_format" name="sphone_format">
+				<option value="US - Strict" <?php if($_SESSION["phone_format"]=="US - Strict")  echo "selected=\selected\"";?>>US - Strict</option>
+				<option value="US - Loose" <?php if($_SESSION["phone_format"]=="US - Loose")  echo "selected=\selected\"";?>>US - Loose</option>
+			</select>
+		</p>
+	</fieldset>
 	<?php 
 	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
 	$modulequery=mysql_query($querystatement,$dblink);

@@ -60,7 +60,6 @@
 					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
-					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
 					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					

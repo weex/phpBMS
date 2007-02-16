@@ -206,26 +206,26 @@ TH {
 <h2>
 	<ul>
 		<li>
-			source:<br>
+			source:<br />
 			<?php echo $_SESSION["printing"]["dataprint"]?>
 		</li>
 		<li>
-			date generated:<br>
+			date generated:<br />
 			<?php echo date("m/d/Y H:i");?>
 		</li>
 		<li style="padding-left:30px;padding-right:20px;">
-			view:<br>
+			view:<br />
 			<?php echo $this->view?>
 		</li>
 		<li>
-			from:<br>
+			from:<br />
 			<?php echo $this->fromdate?>
 		</li>
 		<li>
-			to:<br>
+			to:<br />
 			<?php echo $this->todate?>
 		</li>
-	</ul><br><br>
+	</ul><br /><br />
 </h2>
 <?php while($therecord=mysql_fetch_array($this->clientQuery)){?>
 	<h3><?php echo $therecord["thename"]?></h3>

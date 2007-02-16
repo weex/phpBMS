@@ -62,7 +62,7 @@
 		//Generate the invoice Query
 		$reportquerystatement.=$_SESSION["printing"]["whereclause"].$sortorder;
 		$thequery=mysql_query($reportquerystatement,$dblink);
-		if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$reportquerystatement);
+		if(!$thequery) die("No records, or invlaid SQL statement:<br />".$reportquerystatement);
 		//===================================================================================================
 		// Generating PDF File.
 		//===================================================================================================

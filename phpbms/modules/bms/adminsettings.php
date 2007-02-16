@@ -9,8 +9,8 @@
 	
 	<p>
 		<label for="sshipping_markup">markup</label><br />
-		<?php field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?><br>
-		<span class="notes"><strong>Note:</strong> Enter the number to multiply the calculated shipping cost. <br>
+		<?php field_text("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?><br />
+		<span class="notes"><strong>Note:</strong> Enter the number to multiply the calculated shipping cost. <br />
 		For example to mark up shipping costs by 10%, enter 1.1</span>
 	</p>
 	

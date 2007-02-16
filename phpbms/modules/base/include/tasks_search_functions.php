@@ -53,7 +53,7 @@ function mark_asread($theids){
 	
 	$thequery = "update notes set notes.beenread=1 where (".$whereclause.") and type!=\"System\";";
 	$theresult = mysql_query($thequery);
-	if (!$theresult) die ("Couldn't mark as read: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$thequery."]");		
+	if (!$theresult) die ("Couldn't mark as read: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$thequery."]");		
 }
 
 
@@ -69,7 +69,7 @@ function delete_record($theids){
 	$whereclause=substr($whereclause,3);		
 	$querystatement = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$whereclause.");";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(1,"Couldn't Update: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
+	if (!$queryresult) reportError(1,"Couldn't Update: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$querystatement."]");		
 }
 
 ?>

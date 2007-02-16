@@ -107,7 +107,7 @@ class totalReport{
 		$querystatement.=" count(invoices.id) as thecount ";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);
 		$therecord=mysql_fetch_array($queryresult);
 		?>
 		<tr>
@@ -135,7 +135,7 @@ class totalReport{
 			$querystatement.=$groupby." AS thegroup, count(invoices.id) as thecount ";
 			$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$groupby;
 			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);
+			if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)){
 				
@@ -181,7 +181,7 @@ class totalReport{
 		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as thedate";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);	
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);	
 
 		while($therecord=mysql_fetch_array($queryresult)){			
 			
@@ -213,7 +213,7 @@ class totalReport{
 							FROM (lineitems left join products on lineitems.productid=products.id)
 						WHERE lineitems.invoiceid=".$invoiceid;
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br><br>".$querystatement);	
+		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);	
 				
 		?>
 			<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="invoices" style="padding-right:40px;padding-left:<?php echo ($indent+2)?>px;">
@@ -281,11 +281,11 @@ TH {
 <h1><?php echo $_POST["reporttitle"]?></h1>
 <h2>
 	<div>
-	source:<br>
+	source:<br />
 	<?php echo $_SESSION["printing"]["dataprint"]?>
 	</div>
 	<div>
-	date generated:<br>
+	date generated:<br />
 	<?php echo date("m/d/Y H:i");?>
 	</div>
 </h2>
@@ -369,27 +369,27 @@ if(isset($_POST["command"])){
 	<h1>Invoice Total Options</h1>	
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="return submitForm(this)">
 		<div>
-			report title<br>			
+			report title<br />			
 			<input type="text" name="reporttitle" value="" style="width:100%">
 		</div>
 		<div class="box">
-			<strong>Grouping</strong><br>
+			<strong>Grouping</strong><br />
 			<table border=0 cellspacing=0 cellpadding=0>
 				<tr>
 					<td width="50%">
-						selected groupings<br>
+						selected groupings<br />
 						<select name="selectedgroupings" size="5" style="width:100%" multiple>
 						</select>
 						<input type="hidden" name="postedgroupings" value="">
 					</td>
 					<td>
-						<div><br>
-							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('groupings','to',this.form);"><br><br>
+						<div><br />
+							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('groupings','to',this.form);"><br /><br />
 							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('groupings','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">
-						available groupings<br>
+						available groupings<br />
 						<select name="availablegroupings" size="5" style="width:100%" multiple>
 							<option value="invoices.invoicedate">Invoice Date</option>
 							<option value="concat(lpad(month(invoices.invoicedate),2,'0'),' - ',date_format(invoices.invoicedate,'%b'))">Invoice Date - Month</option>
@@ -418,24 +418,24 @@ if(isset($_POST["command"])){
 			</table>
 		</div>
 		<div class="box">
-			<strong>Columns</strong><br>
+			<strong>Columns</strong><br />
 			<table border=0 cellspacing=0 cellpadding=0>
 				<tr>
 					<td width="50%">
-						shown columns<br>
+						shown columns<br />
 						<select name="selectedcolumns" size="7" style="width:100%">
 							<option value="concat('$',format(sum(invoices.totalti),2))">Invoice Total</option>						
 						</select>
 						<input type="hidden" name="postedcolumns" value="">
 					</td>
 					<td>
-						<div><br>
-							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('columns','to',this.form);"><br><br>
+						<div><br />
+							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('columns','to',this.form);"><br /><br />
 							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('columns','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">
-						available columns<br>
+						available columns<br />
 						<select name="availablecolumns" size="7" style="width:100%">
 							<option value="count(invoices.id)">count</option>						
 							<option value="concat('$',format(avg(invoices.totalti),2))">Invoice Total (average)</option>						
@@ -461,8 +461,8 @@ if(isset($_POST["command"])){
 			</table>
 		</div>
 		<div class=box>
-			<strong>Additional Options</strong><br>
-			information shown<br>
+			<strong>Additional Options</strong><br />
+			information shown<br />
 			<select name="showwhat">
 				<option selected value="totals">Totals Only</option>
 				<option value="invoices">Invoices</option>

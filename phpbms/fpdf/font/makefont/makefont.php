@@ -121,7 +121,7 @@ function ReadAFM($file,&$map)
 		{
 			if(!isset($widths[$map[$i]]))
 			{
-				echo '<B>Warning:</B> character '.$map[$i].' is missing<BR>';
+				echo '<B>Warning:</B> character '.$map[$i].' is missing<br />';
 				$widths[$i]=$widths['.notdef'];
 			}
 			else
@@ -389,12 +389,12 @@ function MakeFont($fontfile,$afmfile,$enc='cp1252',$patch=array(),$type='TrueTyp
 			$cmp=$basename.'.z';
 			SaveToFile($cmp,gzcompress($file),'b');
 			$s.='$file=\''.$cmp."';\n";
-			echo 'Font file compressed ('.$cmp.')<BR>';
+			echo 'Font file compressed ('.$cmp.')<br />';
 		}
 		else
 		{
 			$s.='$file=\''.basename($fontfile)."';\n";
-			echo '<B>Notice:</B> font file could not be compressed (zlib extension not available)<BR>';
+			echo '<B>Notice:</B> font file could not be compressed (zlib extension not available)<br />';
 		}
 		if($type=='Type1')
 		{
@@ -411,6 +411,6 @@ function MakeFont($fontfile,$afmfile,$enc='cp1252',$patch=array(),$type='TrueTyp
 	}
 	$s.="?>\n";
 	SaveToFile($basename.'.php',$s);
-	echo 'Font definition file generated ('.$basename.'.php'.')<BR>';
+	echo 'Font definition file generated ('.$basename.'.php'.')<br />';
 }
 ?>

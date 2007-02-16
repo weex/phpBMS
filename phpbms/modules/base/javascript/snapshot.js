@@ -81,6 +81,6 @@ function checkTask(id,type){
 	}
 	loadXMLDoc(theURL,null,false);
 	if(req.responseText!="success")
-		alert("Error: <br>"+req.responseText);	
+		alert("Error: <br />"+req.responseText);	
 	
 }

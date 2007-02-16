@@ -56,7 +56,7 @@ function updatePassword($newpassword,$id){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if($queryresult)
 			echo "ok";
-	else echo mysql_error($dblink)."<br><br>".$querystatement;
+	else echo mysql_error($dblink)."<br /><br />".$querystatement;
 }
 		
 function showUserInfo($base){

@@ -78,11 +78,11 @@ function delete_record($theids){
 	//we need to check for incomplete repeatable child tasks
 	$querystatement="SELECT distinct notes.parentid FROM notes where notes.parentid is not null and notes.completed=0 and (".$whereclause.")";
 	$repeatqueryresult = mysql_query($querystatement,$dblink);
-	if (!$repeatqueryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
+	if (!$repeatqueryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$querystatement."]");		
 
 	$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["admin"]." =1)) and (".$whereclause.") and (notes.`repeat`!=1);";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<BR>\n SQL STATEMENT [".$querystatement."]");		
+	if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$querystatement."]");		
 
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 	$message.=" deleted";

@@ -53,7 +53,7 @@
 						notes.subject,notes.content 
 						FROM notes INNER JOIN users on notes.createdby=users.id ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=mysql_query($querystatement,$dblink);
-	if(!$thequery) die("No records, or invlaid SQL statement:<BR>".$querystatement);
+	if(!$thequery) die("No records, or invlaid SQL statement:<br />".$querystatement);
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================

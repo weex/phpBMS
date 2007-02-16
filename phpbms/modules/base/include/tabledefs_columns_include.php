@@ -87,7 +87,7 @@
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
 		$querystatement.=" ".$variables["wrap"]." )";		
 
-		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Added"; else $thereturn=mysql_error($dblink)." <BR>".$querystatement;
+		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Added"; else $thereturn=mysql_error($dblink)." <br />".$querystatement;
 		
 		return $thereturn;
 	}// end function
@@ -109,7 +109,7 @@
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
 		$querystatement.="wrap=".$variables["wrap"]." ";		
 		$querystatement.="WHERE id=".$variables["columnid"];
-		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Updated"; else $thereturn=mysql_error($dblink)." <br>".$querystatement;
+		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Updated"; else $thereturn=mysql_error($dblink)." <br />".$querystatement;
 		
 		return $thereturn;
 	}

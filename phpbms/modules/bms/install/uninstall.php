@@ -64,7 +64,7 @@ function deleteTables(){
 		if(strpos($deletestatement,";")){
 			$theresult=mysql_query(trim($deletestatement),$dbtlink); 
 			if(!$theresult){
-				echo "<div style=\"font-size:10px;\">".mysql_error($dbtlink)." -- '".$deletestatement."'<br>&nbsp;</div>";
+				echo "<div style=\"font-size:10px;\">".mysql_error($dbtlink)." -- '".$deletestatement."'<br />&nbsp;</div>";
 				$thereturn="false";
 			}
 			$deletestatement="";
@@ -161,7 +161,7 @@ if($_POST["command"]){
 		    
 		<?php if (!$_POST["command"]){?>
 		<p>Uninstalling the BMS module will <strong>not</strong> delete the module directory module or files form the server, but it will uninstall the entries from the phpBMS applications and drop all the tables that were installed by the module.</p>
-	    <div align="center"><strong class="large">Before clicking the uninstall module, make certain this the action you want to take.</strong><br>
+	    <div align="center"><strong class="large">Before clicking the uninstall module, make certain this the action you want to take.</strong><br />
 	    <form name="form1" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>">
 		    	<input name="command" type="submit" class="Buttons" value="Uninstall BMS Module">
 	    </form></div>

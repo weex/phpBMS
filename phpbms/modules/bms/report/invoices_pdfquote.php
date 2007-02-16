@@ -60,7 +60,6 @@
 					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
-					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
 					invoices.totalti-invoices.amountpaid as amountdue,
 					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					
@@ -332,7 +331,7 @@
 		if($therecord["taxareaid"]) {
 			$taxstatement="select id, name, percentage from tax where id=".$therecord["taxareaid"];
 			$taxquery=mysql_query($taxstatement,$dblink);
-			if(!$taxquery) die ("cannot get tax: ".mysql_error($dblink)."<br>".$taxstatement);
+			if(!$taxquery) die ("cannot get tax: ".mysql_error($dblink)."<br />".$taxstatement);
 			$taxrecord=mysql_fetch_array($taxquery);
 			$pdf->SetFont("Arial","",8);
 			$pdf->SetXY($leftmargin,$tempnext+.2+.2);
