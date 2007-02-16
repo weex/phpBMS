@@ -36,6 +36,33 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid,$dblink){
+	$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$invoiceid." AND invoicestatusid=".$statusid;
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Error Updating Status History: deleteing<br />".mysql_error($dblink));
+	
+	$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values(";
+	$querystatement.=((int) $invoiceid).", ";
+	$querystatement.=((int) $statusid).", ";
+
+	if($statusdate=="" || $statusdate=="0/0/0000") $tempdate="NULL";
+	else{
+		$sd="/".ereg_replace(",.","/",$statusdate);
+		$temparray=explode("/",$sd);
+		$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+	}
+	$querystatement.=$tempdate.",";
+	if($assignedtoid=="")
+		$querystatement.="NULL";
+	else
+		$querystatement.=((int) $assignedtoid);
+
+	$querystatement.=")";
+
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Error Updating Status History: inserting<br />".mysql_error($dblink));
+}
+
 function showPaymentSelect($id,$paymentMethods){
 	?><select name="paymentmethodid" id="paymentmethodid" onchange="showPaymentOptions()">
 		<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
@@ -232,6 +259,39 @@ function addLineItems($values,$invoiceid,$userid){
 	}//end if
 }
 
+function getDefaultStatus(){
+	global $dblink;
+		
+	$querystatement="SELECT id FROM invoicestatuses WHERE invoicedefault=1";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,"Could Not Retrieve Stauts Default: ".mysql_error($dblink)."<br /><br />".$querystatement);
+	$therecord=mysql_fetch_array($queryresult);
+	
+	return $therecord["id"];
+}
+
+function displayStatusDropDown($statusid,$dblink){
+	$querystatement="SELECT invoicestatuses.id,invoicestatuses.name,invoicestatuses.invoicedefault,users.firstname,users.lastname FROM 
+					(invoicestatuses LEFT JOIN users ON invoicestatuses.defaultassignedtoid=users.id)WHERE invoicestatuses.inactive=0
+					ORDER BY invoicestatuses.priority,invoicestatuses.name";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Error Retrieving Statuses: ".mysql_error($dblink));	
+	?><select id="statusid" name="statusid" onchange="updateAssignedTo();updateStatusDate()" class="important">
+		<?php
+		$options="";
+		while($therecord=mysql_fetch_array($queryresult)){
+			if($therecord["firstname"]!="" || $therecord["lastname"]!="")
+				$options["s".$therecord["id"]]=trim($therecord["firstname"]." ".$therecord["lastname"]);
+			?><option value="<?php echo $therecord["id"]?>" <?php if($statusid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
+		}
+		?>
+	</select><script language="javascript" type="text/javascript">statusAssignedto=new Array;<?php 
+		if($options!="")
+			foreach($options as $key=>$value){
+				echo "statusAssignedto[\"".$key."\"] = \"".$value."\";\n";
+			}
+?></script><?php
+}
 
 // These following functions and processing are similar for all pages
 //========================================================================================
@@ -251,7 +311,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, clientid, status, type, totalweight, totaltni, totalti, totalcost,
+	$querystatement="SELECT id, clientid, statusid, assignedtoid, type, totalweight, totaltni, totalti, totalcost,
 					leadsource, shippingmethodid, paymentmethodid, checkno, bankname, ccnumber, routingnumber, 
 					accountnumber, transactionid,
 					ccexpiration, specialinstructions, printedinstructions, tax, shipping,
@@ -260,7 +320,7 @@ function getRecords($id){
 					weborder,webconfirmationno,ccverification, totaltaxable, discountamount,discountid,
 					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
 					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
-					date_Format(shippeddate,\"%c/%e/%Y\") as shippeddate,
+					date_Format(statusdate,\"%c/%e/%Y\") as statusdate,
 					ponumber,
 					date_Format(requireddate,\"%c/%e/%Y\") as requireddate,
 					
@@ -292,7 +352,9 @@ function setRecordDefaults(){
 	if(isset($_GET["cid"]))
 		$therecord["clientid"]=$_GET["cid"];
 	$therecord["type"]="Order";
-	$therecord["status"]="Open";
+	$therecord["statusid"]=getDefaultStatus();
+	$therecord["statusdate"]=date("n/d/Y");
+	$therecord["assignedtoid"]="";
 
 	$therecord["leadsource"]="";
 	$therecord["address1"]="";
@@ -323,7 +385,6 @@ function setRecordDefaults(){
 	$therecord["totalcost"]=0;
 
 	$therecord["weborder"]=0;
-	$therecord["shippeddate"]=NULL;
 	$therecord["trackingno"]="";
 	$therecord["webconfirmationno"]="";
 
@@ -376,7 +437,17 @@ function updateRecord($variables,$userid){
 			$querystatement.="leadsource=\"".$variables["leadsource"]."\", "; 
 
 			$querystatement.="type=\"".$variables["type"]."\", "; 
-			$querystatement.="status=\"".$variables["status"]."\", "; 
+
+			$querystatement.="statusid=".((int)$variables["statusid"]).", ";
+			$querystatement.="assignedtoid=".((int) $variables["assignedtoid"]).", ";
+			if($variables["statusdate"]=="" || $variables["statusdate"]=="0/0/0000") $tempdate="NULL";
+			else{
+				$statusdate="/".ereg_replace(",.","/",$variables["statusdate"]);
+				$temparray=explode("/",$statusdate);
+				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+			}
+			$querystatement.="statusdate=".$tempdate.", ";
+
 			
 				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
 				else{
@@ -398,7 +469,7 @@ function updateRecord($variables,$userid){
 					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
 				}
 				//make sure there is an invoice date if the status is set to invoice!!!
-				if($variables["status"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
+				if($variables["type"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
 			$querystatement.="invoicedate=".$tempdate.", "; 
 		
 			$querystatement.="address1=\"".$variables["address1"]."\", "; 
@@ -427,14 +498,6 @@ function updateRecord($variables,$userid){
 
 			$querystatement.="shippingmethodid=".$variables["shippingmethodid"].", "; 
 
-			if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") 
-				{$tempdate="NULL";}
-			else{
-					$shippeddate="/".ereg_replace(",.","/",$variables["shippeddate"]);
-					$temparray=explode("/",$shippeddate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
-			$querystatement.="shippeddate=".$tempdate.", "; 
 			$querystatement.="trackingno=\"".$variables["trackingno"]."\", "; 
 
 			if(hasRights(20)){
@@ -485,6 +548,9 @@ function updateRecord($variables,$userid){
 	
 	if($variables["lineitemschanged"]==1)
 		addLineItems($variables["thelineitems"],$variables["id"],$userid);
+
+	if($variables["statuschanged"]==1)
+		updateStatus($variables["id"],$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"],$dblink);
 		
 	return "Record Updated";
 }// end function
@@ -494,15 +560,15 @@ function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
-	if($variables["status"]=="VOID"){
+	if($variables["type"]=="VOID"){
 		$variables["totaltni"]=0;
 		$variables["totalti"]=0;
 		$variables["amountpaid"]=0;
 	}
 	$querystatement="INSERT INTO invoices 
-			(clientid,leadsource,type,status,orderdate,discountamount,discountid,
+			(clientid,leadsource,type,statusid,assignedtoid,statusdate,orderdate,discountamount,discountid,
 			invoicedate,address1,address2,city,state,postalcode, country, totaltni, totaltaxable, totalti,shipping,tax,amountpaid,
-			totalcost,totalweight,shippingmethodid,shippeddate,trackingno,paymentmethodid,accountnumber,routingnumber,transactionid,
+			totalcost,totalweight,shippingmethodid,trackingno,paymentmethodid,accountnumber,routingnumber,transactionid,
 			checkno,bankname,ccnumber,ccexpiration,ccverification,specialinstructions,printedinstructions,
 			taxareaid, taxpercentage, weborder,webconfirmationno,ponumber,requireddate,
 						createdby,creationdate,modifiedby) VALUES (";
@@ -511,7 +577,15 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["leadsource"]."\", "; 
 
 			$querystatement.="\"".$variables["type"]."\", "; 
-			$querystatement.="\"".$variables["status"]."\", "; 
+			$querystatement.=((int)$variables["statusid"]).", ";
+			$querystatement.=((int) $variables["assignedtoid"]).", ";
+			if($variables["statusdate"]=="" || $variables["statusdate"]=="0/0/0000") $tempdate="NULL";
+			else{
+				$statusdate="/".ereg_replace(",.","/",$variables["statusdate"]);
+				$temparray=explode("/",$statusdate);
+				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+			}
+			$querystatement.=$tempdate.", ";
 			
 				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
 				else{
@@ -533,7 +607,7 @@ function insertRecord($variables,$userid){
 					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
 				}
 				//make sure there is an invoice date if the status is set to invoice!!!
-				if($variables["status"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
+				if($variables["type"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
 			$querystatement.=$tempdate.", "; 
 		
 			$querystatement.="\"".$variables["address1"]."\", "; 
@@ -562,13 +636,6 @@ function insertRecord($variables,$userid){
 
 			$querystatement.=$variables["shippingmethodid"].", "; 
 
-				if($variables["shippeddate"]=="" || $variables["shippeddate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$shippeddate="/".ereg_replace(",.","/",$variables["shippeddate"]);
-					$temparray=explode("/",$shippeddate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
-			$querystatement.=$tempdate.", "; 
 			$querystatement.="\"".$variables["trackingno"]."\", "; 
 
 			$querystatement.=$variables["paymentmethodid"].", "; 
@@ -616,6 +683,9 @@ function insertRecord($variables,$userid){
 	$newid= mysql_insert_id($dblink);
 	if($variables["lineitemschanged"]==1)
 		addLineItems($variables["thelineitems"],$newid,$userid);
+
+	if($variables["statuschanged"]==1)
+		updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"],$dblink);
 	
 	return $newid;
 }

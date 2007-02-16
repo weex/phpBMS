@@ -176,7 +176,7 @@
 		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_name($queryresult,$i);
 
 		?>
-		<select name="singlefield" onChange="checkForCustom(this.value)">
+		<select name="singlefield" onchange="checkForCustom(this.value)">
 			<?php 
 				foreach($fieldlist as $field){
 					echo "<option value=\"".$field."\"";

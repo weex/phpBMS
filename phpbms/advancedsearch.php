@@ -58,18 +58,18 @@
 			<input id="ASsearchbutton" type="button" onClick="performAdvancedSearch(this)" class="Buttons" disabled="true" value="search" />		
 		</p>
 
-		<p>match <select id="ASanyall" onChange="updateAS()">
+		<p>match <select id="ASanyall" onchange="updateAS()">
 			<option value="and" selected="selected">all</option>
 			<option value="or">any</option>
 		</select> of the following rules:</p>
 		<div id="theASCs">
 			<div id="ASC1">
-				<select id="ASC1field" onChange="updateAS()">
+				<select id="ASC1field" onchange="updateAS()">
 					<?php 
 						foreach($fieldlist as $field){
 							echo "<option value=\"".$field."\" >".$field."</option>\n";}?>
 				</select>
-				<select id="ASC1operator" onChange="updateAS()">
+				<select id="ASC1operator" onchange="updateAS()">
 					 <option value="=" selected="selected">=</option>
 					 <option value="!=">!=</option>
 					 <option value=">">&gt;</option>

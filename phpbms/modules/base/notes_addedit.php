@@ -78,7 +78,7 @@
 		
 		<p>
 			<label for="type" class="important">type</label><br />
-			<?php basic_choicelist("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onChange"=>"changeType();"));?>
+			<?php basic_choicelist("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onchange"=>"changeType();"));?>
 			<input type="hidden" id="typeCheck" name="typeCheck" value="<?php echo $therecord["type"]?>" />		
 		</p>
 		
@@ -102,8 +102,8 @@
 			<p>
 				<label for="startdate" id="starttext">start</label><br />
 				<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
-				&nbsp;<?php field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"checkEndDate();setEnglishDates()"));?>	
-				&nbsp;<?php field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onChange"=>"checkEndDate()"));?>
+				&nbsp;<?php field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate();setEnglishDates()"));?>	
+				&nbsp;<?php field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate()"));?>
 			</p>
 			<p>
 				<label for="enddate" id="endtext">end</label><br />
@@ -208,7 +208,7 @@
 						$plural="";
 						if($therecord["repeatfrequency"]>1) $plural="s";
 					?>
-					<select id="repeattype" name="repeattype" onChange="changeRepeatType();">
+					<select id="repeattype" name="repeattype" onchange="changeRepeatType();">
 						<option value="Daily" <?php if ($therecord["repeattype"]=="repeatDaily") echo "selected"?>>Day<?php echo $plural?></option>
 						<option value="Weekly" <?php if ($therecord["repeattype"]=="repeatWeekly") echo "selected"?>>Week<?php echo $plural?></option>
 						<option value="Monthly" <?php if (substr($therecord["repeattype"],0,13)=="repeatMonthly") echo "selected"?>>Month<?php echo $plural?></option>

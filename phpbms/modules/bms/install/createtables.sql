@@ -244,3 +244,29 @@ CREATE TABLE `paymentmethods` (
   `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM PACK_KEYS=0;
+
+CREATE TABLE `invoicestatuses` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(128),
+  `invoicedefault` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `defaultassignedtoid` INTEGER UNSIGNED,
+  `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `priority` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  `createdby` INTEGER UNSIGNED,
+  `creationdate` DATETIME,
+  `modifiedby` INTEGER UNSIGNED,
+  `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
+)
+ENGINE = MYISAM;
+
+CREATE TABLE `invoicestatushistory` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `invoicedefault` INTEGER UNSIGNED  
+  `invoiceid` INTEGER UNSIGNED,
+  `invoicestatusid` INTEGER UNSIGNED,
+  `statusdate` DATE,
+  `assignedtoid` INTEGER UNSIGNED,
+  PRIMARY KEY(`id`)
+)
+ENGINE = MYISAM;

@@ -529,7 +529,7 @@ function displayQueryButtons() {
 		if ($this->truecount<=$_SESSION["record_limit"]) 
 			echo "<div>records:&nbsp;".$this->numrows."</div>";
 		else {?>			
-			<input name="offset" type="hidden" value=""><select name="offsetselector" onChange="this.form.offset.value=this.value;this.form.submit();">
+			<input name="offset" type="hidden" value=""><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
 			  	<?php
 					$displayedoffset=0;
 					while($displayedoffset<$this->truecount){
@@ -568,7 +568,7 @@ function displayQueryButtons() {
 			}
 	
 			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
-				<select id="othercommands" name="othercommands" disabled=true onChange="chooseOtherCommand(this)">
+				<select id="othercommands" name="othercommands" disabled=true onchange="chooseOtherCommand(this)">
 				<option value="" selected class="choiceListBlank">commands...</option>
 				<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
 					<option value="delete_record" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
@@ -582,7 +582,7 @@ function displayQueryButtons() {
 				}
 				?></select><?php
 		}
-		if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){?> <select id="searchSelection" onChange="perfromToSelection(this)">
+		if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){?> <select id="searchSelection" onchange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
 				<option value="selectall" title="(alt+a)">select all</option>
@@ -633,7 +633,7 @@ function displayRelationships(){
 	if (!$queryresult) reportError(1,"Error Retrieving Relationships");
 	if (mysql_num_rows($queryresult)) {
 		?><div class="small box" style="margin:0px;margin-top:3px;">
-		relate selected records to <select id="relationship" name="relationship" onChange="setSelIDs(this.form);this.form.submit();"	disabled="true">
+		relate selected records to <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="true">
 			<option value="" selected class="choiceListBlank">area...</option><?php 
 			while($therecord = mysql_fetch_array($queryresult)){
 			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }

@@ -270,7 +270,7 @@ function validateCurrency(theitem){
 
 	theitem.value=formatCurrency(thenumber);
 	
-	//in case the field has an additional onChange code to be run
+	//in case the field has an additional onchange code to be run
 	if (theitem.thechange) theitem.thechange();
 }
 

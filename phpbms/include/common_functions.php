@@ -205,9 +205,13 @@ $var) {
 }
 
 function addSlashesToArray($thearray){
-	if(!get_magic_quotes_runtime() && !get_magic_quotes_gpc())
-		foreach($thearray as $key=>$value)
-			$thearray[$key]=addslashes($value);
+	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
+		foreach ($thearray as $key=>$value) 
+			$thearray[$key] = stripslashes($value);
+	
+	foreach ($thearray as $key=>$value)
+		$thearray[$key] = mysql_real_escape_string($value);
+	
 	return $thearray;
 }
 

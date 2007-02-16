@@ -64,7 +64,7 @@
 		<form name="form1" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>">
 			<p>
 				<label for="username">name</label><br />
-				<input name="name" type="text" id="username" size="25" maxlength="64" value="<?php echo $_POST["name"]?>"/>
+				<input name="name" type="text" id="username" size="25" maxlength="64" value="<?php echo htmlQuotes($_POST["name"])?>"/>
 			</p>
 			
 			<p>

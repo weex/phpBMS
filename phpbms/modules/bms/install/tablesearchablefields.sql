@@ -41,3 +41,4 @@ INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displ
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (95,25,'discounts.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (300,'shippingmethods.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (301,'paymentmethods.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (302,'invoicestatuses.name','name',0,'field');

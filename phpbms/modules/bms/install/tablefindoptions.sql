@@ -8,14 +8,14 @@ INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayor
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (102,3,'Invoices - This Quarter','invoices.type=\"Invoice\" AND YEAR(invoices.invoicedate)=YEAR(CURDATE()) and QUARTER(invoices.invoicedate)=QUARTER(CURDATE())',15,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (103,3,'Invoices - This Year','invoices.type=\"Invoice\" AND YEAR(invoices.invoicedate)=YEAR(CURDATE())',17,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (104,3,'Invoices - Last Quarter','invoices.type=\"Invoice\" AND YEAR(invoices.invoicedate)=YEAR(DATE_SUB(CURDATE(),INTERVAL 3 MONTH)) and QUARTER(invoices.invoicedate)=QUARTER(DATE_SUB(CURDATE(),INTERVAL 3 MONTH))',16,30);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (106,3,'Orders - Committed','invoices.type=\"Order\" and invoices.status=\"Committed\"',3,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (107,3,'Orders - Open','invoices.type=\"Order\" and invoices.status=\"Open\"',2,0);
+INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (106,3,'Orders - Committed','invoices.type=\"Order\" and invoicestatuses.name=\"Committed\"',3,0);
+INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (107,3,'Orders - Open','invoices.type=\"Order\" and invoicestatuses.name=\"Open\"',2,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (49,3,'Invoices - Today','invoices.type=\"Invoice\" and invoices.invoicedate=curdate()',9,20);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (50,3,'Invoices - Yesterday','invoices.type=\"Invoice\" and invoices.invoicedate=date_sub(curdate(),INTERVAL 1 DAY)',10,20);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (45,3,'Invoices - This Month','invoices.type=\"Invoice\" and year(invoicedate)=year(curdate()) and month(invoicedate)=month(curdate())',13,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (22,3,'Orders','invoices.type=\"Order\"',1,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (23,3,'Orders - Packed','invoices.type=\"Order\" and invoices.status=\"Packed\"',4,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (24,3,'Orders - Shipped','invoices.type=\"Order\" and invoices.status=\"Shipped\"',5,0);
+INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (23,3,'Orders - Packed','invoices.type=\"Order\" and invoicestatuses.name=\"Packed\"',4,0);
+INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (24,3,'Orders - Shipped','invoices.type=\"Order\" and invoicestatuses.name=\"Shipped / Ready To Invoice\"',5,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (25,3,'Invoices','invoices.type=\"Invoice\"',8,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (26,3,'Quotes','invoices.type=\"Quote\"',7,20);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (27,3,'Voided Records','invoices.type=\"VOID\"',18,0);
@@ -61,3 +61,5 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'All Records','paymentmethods.id!=-1',2,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'Active','paymentmethods.inactive=0',0,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'Inactive','paymentmethods.inactive=1',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (302,'Active Records','invoicestatuses.inactive=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (302,'All Records','invoicestatuses.id!=-1',1,0);

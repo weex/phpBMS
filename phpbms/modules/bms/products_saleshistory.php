@@ -112,12 +112,12 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline" style="padding:4px;">
+<?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
 	<div class="box">
 		<p class="timelineP">
-		   <label for="status">invoice status</label><br />
+		   <label for="status">type</label><br />
 		   <select name="status" id="status">
 				<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
 				<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>

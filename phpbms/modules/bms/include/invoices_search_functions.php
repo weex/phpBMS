@@ -46,13 +46,41 @@ function mark_ashipped($theids){
 	global $dblink;
 
 	$whereclause=buildWhereClause($theids,"invoices.id");
-	
-	$querystatement = "UPDATE invoices SET invoices.status=\"Shipped\",invoices.shippeddate=Now(),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" or invoices.type!=\"VOID\");";
+	$whereclause="(".$whereclause.") AND (invoices.type!=\"Invoice\" or invoices.type!=\"VOID\");";
+
+	//Look up default assignedto
+	$querystatement="SELECT defaultassignedtoid FROM invoicestatuses WHERE id=4";
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Could not retrieve default assignedto: ".mysql_error($dblink)." -- ".$querystatement);		
+	$therecord=mysql_fetch_array($queryresult);
+	$assignedtoid="NULL";
+	if($therecord["defaultassignedtoid"]!="")
+		$assignedtoid=$therecord["defaultassignedtoid"];
+
+	$querystatement = "UPDATE invoices SET invoices.statusid=4, invoices.statusdate=Now(), assignedtoid=".$assignedtoid.",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause;
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark As Shipped: ".mysql_error($dblink)." -- ".$querystatement);		
 	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 	$message.=" marked as shipped.";
+
+	//delete/update history
+	$querystatement="SELECT id FROM invoices WHERE ".$whereclause;
+	$queryresult = mysql_query($querystatement,$dblink);
+	
+	while($therecord=mysql_fetch_array($queryresult)){
+		$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=4";
+		$deleteresult = mysql_query($querystatement,$dblink);
+		if (!$deleteresult ) reportError(300,"Could not delete status history: ".mysql_error($dblink)." -- ".$querystatement);		
+		
+		$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
+		$querystatement.=$therecord["id"].",4,NOW(),";
+		$querystatement.=$assignedtoid;
+		$querystatement.=")";
+		$insertresult = mysql_query($querystatement,$dblink);
+		if (!$insertresult) reportError(300,"Could not insert status history: ".mysql_error($dblink)." -- ".$querystatement);		
+	}
+
 
 	return $message;
 }
@@ -63,13 +91,15 @@ function mark_aspaid($theids){
 	global $dblink;
 
 	$whereclause=buildWhereClause($theids,"invoices.id");
-	
+		
 	$querystatement = "UPDATE invoices SET invoices.amountpaid=invoices.totalti,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\")";
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Couldn't Mark As Paid In Full: ".mysql_error($dblink)." -- ".$querystatement);		
 	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 	$message.=" marked as paid in full.";
+
+	
 
 	return $message;
 }
@@ -79,13 +109,44 @@ function mark_asinvoice($theids){
 	global $dblink;
 
 	$whereclause=buildWhereClause($theids,"invoices.id");
+	$whereclause="(".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
 	
-	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\",invoices.status=\"shipped\",invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
+	//Look up default assignedto
+	$querystatement="SELECT defaultassignedtoid FROM invoicestatuses WHERE id=4";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if (!$queryresult) reportError(300,"Could not convert to client: ".mysql_error($dblink)." -- ".$querystatement);		
+	if (!$queryresult) reportError(300,"Could not retrieve default assignedto: ".mysql_error($dblink)." -- ".$querystatement);		
+	$therecord=mysql_fetch_array($queryresult);
+	$assignedtoid="NULL";
+	if($therecord["defaultassignedtoid"]!="")
+		$assignedtoid=$therecord["defaultassignedtoid"];
+
+	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\" invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE".$whereclause;
+	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
 	
 	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 	$message.=" converted to invoice.";
+
+	//delete/update history
+	$querystatement="SELECT id FROM invoices WHERE (".$whereclause.") AND statusid!=4";
+	$queryresult = mysql_query($querystatement,$dblink);
+	
+	while($therecord=mysql_fetch_array($queryresult)){
+		$querystatement = "UPDATE invoices SET invoices.statusid=4,invoices.statusdate=Now(), invoices.assignedtoid=".$assignedtoid.", WHERE id=".$therecord["id"];
+		$queryresult = mysql_query($querystatement,$dblink);
+		if (!$queryresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
+
+		$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=4";
+		$deleteresult = mysql_query($querystatement,$dblink);
+		if (!$deleteresult ) reportError(300,"Could not delete status history: ".mysql_error($dblink)." -- ".$querystatement);		
+		
+		$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
+		$querystatement.=$therecord["id"].",4,NOW(),";
+		$querystatement.=$assignedtoid;
+		$querystatement.=")";
+		$insertresult = mysql_query($querystatement,$dblink);
+		if (!$insertresult) reportError(300,"Could not insert status history: ".mysql_error($dblink)." -- ".$querystatement);		
+	}
 
 	return $message;
 }

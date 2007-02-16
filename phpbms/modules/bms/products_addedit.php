@@ -120,7 +120,7 @@
 			
 			<p>
 				<label for="partnumber"><span class="important">part number</span> <span class="notes">(must be unique)</span></label><br />
-				<?php field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onChange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>				
+				<?php field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>				
 			</p>
 			
 			<div class="fauxP">
@@ -239,7 +239,7 @@
 				upload thumbnail<br />
 				<input type="hidden" id="thumbchange" name="thumbchange" value="" />
 				<div id="thumbdelete" style="display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onClick="deletePicture('thumb')" tabindex="260"/></div>
-				<div id="thumbadd" style="display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onChange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
+				<div id="thumbadd" style="display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onchange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
 			</div>
 
 			<div class="fauxP">
@@ -252,7 +252,7 @@
 				upload picture <br />
 				<input type="hidden" id="picturechange" name="picturechange" value="" />
 				<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onClick="deletePicture('picture')" tabindex="270"/></div>				
-				<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onChange="updatePictureStatus('picture','upload')" tabindex="270"/></div>				
+				<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onchange="updatePictureStatus('picture','upload')" tabindex="270"/></div>				
 			</div>
 		</div>
 	</fieldset>	

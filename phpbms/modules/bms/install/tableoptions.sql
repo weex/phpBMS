@@ -51,3 +51,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `rol
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'select','1',0,0);
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'edit','1',0,0);
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (301,'printex','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (302,'new','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (302,'select','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (302,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (302,'printex','0',0,0);

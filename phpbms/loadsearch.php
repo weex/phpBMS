@@ -80,7 +80,7 @@
 	function displaySavedSearchList($queryresult,$basepath){
 		$numrows=mysql_num_rows($queryresult);
 		?>
-		<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onChange="LSsearchSelect(this,'<?php echo $basepath ?>')">
+		<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo $basepath ?>')">
 			<?php if($numrows<1) {?>
 				<option value="NA">No Saved Searches</option>
 			<?php 

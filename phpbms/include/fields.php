@@ -267,8 +267,8 @@ function field_percentage($name,$value,$precision=1,$required=false,$message="",
 
 	if(is_numeric($value)) $value=$value."%";	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onChange") echo " ".$attribute."=\"".$tvalue."\"";
-	?> onchange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"] ?>" style="text-align:right;" /><?php
+	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onchange") echo " ".$attribute."=\"".$tvalue."\"";
+	?> onchange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"] ?>" style="text-align:right;" /><?php
 	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 
@@ -286,9 +286,9 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) 
 		foreach($attributes as $attribute => $tvalue) 
-			if($attribute!="onChange") 
+			if($attribute!="onchange") 
 				echo " ".$attribute."=\"".$tvalue."\"";				
-	?> onchange="formatDateField(this);<?php if(isset($attributes["onChange"])) echo $attributes["onChange"]?>" /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick date</span></button>
+	?> onchange="formatDateField(this);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"]?>" /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick date</span></button>
 	<?php if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
 	?><script language="JavaScript" type="text/javascript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
 }//end function

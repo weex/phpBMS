@@ -57,7 +57,7 @@
 		$prlookupstatement="SELECT invoices.id from 
 			(clients inner join invoices on clients.id=invoices.clientid) 
 			inner join lineitems on invoices.id = lineitems.invoiceid
-			where clients.id=".$_GET["cid"]." and invoices.status != \"Void\" and invoices.status != \"Quote\" and
+			where clients.id=".$_GET["cid"]." and invoices.type != \"Void\" and invoices.type != \"Quote\" and
 			(".$checkpids.")";
 		$prquery=mysql_query($prlookupstatement,$dblink);
 		if (!$prquery) reportError(100,mysql_error($dblink)." ".$prlookupstatement);

@@ -409,7 +409,6 @@ if(isset($_POST["command"])){
 							<option value="invoices.shipcountry">Shipping Country</option>
 							<option value="invoices.shipstate">Shipping State</option>
 							<option value="invoices.shipcity">Shipping City</option>
-							<option value="invoices.status">Invoice Status</option>
 							<option value="invoices.weborder">Web Orders</option>						
 						</select>
 						<input type="hidden" name="groupingnamelist" value="">

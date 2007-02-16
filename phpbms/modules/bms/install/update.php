@@ -277,8 +277,15 @@ function loadSettings() {
 				// ================================================================================================
 				case "0.62";
 					$thereturn.="Updating BMS Module to 0.7\n";
-
+					
 					$thereturn.=processSQLfile("updatev0.7.sql");
+					
+					//update to new status system
+					if(updateInvoiceStatus($dblink))
+						$thereturn.=" - Updated to new invoice status system\n.";
+					else
+						$thereturn.=" - Failed to updated to new invoice status system\n.";
+					
 					
 					//Update shipping from invoices
 					if(moveShipping($dblink))
@@ -347,6 +354,45 @@ function loadSettings() {
 		return true;
 	}
 
+	function updateInvoiceStatus($dblink){
+		$querystatement="SELECT id,status,statusdate FROM invoices;";
+		while($therecord=mysql_fetch_array($queryresult)){
+			$newstatus=1;
+			switch(){
+				case "Open":
+					$newstatus=1;
+				break;
+				case "Committed":
+					$newstatus=2;
+				break;
+				case "Packed":
+					$newstatus=3;
+				break;
+				case "Shipped":
+					$newstatus=4;
+				break;
+			}
+			$querystatement="UPDATE invoices SET statusid=".$newstatus." WHERE id=".$therecord["id"];
+			$updatequery=mysql_query($querystatement,$dblink);
+			
+			//now create the history
+			if($therecord["statusdate"]!="" && $newstatus=4)
+				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid,statusdate)VALUES(".$therecord["id"].",".$newstatus.",".$therecord["statusdate"].")";
+			elseif($therecord["statusdate"]!="" && $newstatus!=4){
+				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid,statusdate)VALUES(".$therecord["id"].",4,".$therecord["statusdate"].")";
+				$insertquery=mysql_query($querystatement,$dblink);
+				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid)VALUES(".$therecord["id"].",".$newstatus.")";
+			}
+			else
+				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid)VALUES(".$therecord["id"].",".$newstatus.")";
+			$insertquery=mysql_query($querystatement,$dblink);
+			
+		}
+		$querystatement="ALTER TABLE `invoices` DROP COLUMN `status`";
+		$dropcolumnquery=mysql_query($querystatement,$dblink);
+		
+		return true;
+	}
 
 		$thereturn=doUpdate();	
 		header('Content-Type: text/xml');

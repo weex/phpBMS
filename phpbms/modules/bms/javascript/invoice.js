@@ -54,7 +54,36 @@ function initializePage(){
 		var displayClient=getObjectFromID("ds-clientid");
 		displayClient.focus();
 	}
+	
+	var clientinfo=getObjectFromID("clientid");
+	clientinfo.onchange=populateShipping;
+	
+	var assignedtoid=getObjectFromID("assignedtoid");
+	assignedtoid.onchange=updateStatusChange;
 }
+
+function updateAssignedTo(){
+	var status=getObjectFromID("statusid");
+	var assignedto=getObjectFromID("ds-assignedtoid");
+	if(statusAssignedto["s"+status.value]){
+		assignedto.value=statusAssignedto["s"+status.value]
+		lastLookup(assignedto);
+	}
+}
+
+function updateStatusChange(){
+	var statuschanged=getObjectFromID("statuschanged");
+	statuschanged.value=1;
+}
+
+function updateStatusDate(){
+	var statusdate=getObjectFromID("statusdate");
+	var today=new Date();
+	statusdate.value=englishDate(today);
+	
+	updateStatusChange();
+}
+
 
 function payInFull(){
 	amtpaid = getObjectFromID("amountpaid");
@@ -63,7 +92,7 @@ function payInFull(){
 	calculatePaidDue();
 }
 
-// These function are used when redefining the onChange property of 
+// These function are used when redefining the onchange property of 
 // a hidden field for the the taxAreaID.  It uses XMLHttpRequest to
 // grab the tax percentage.
 function getPercentage(){
@@ -148,7 +177,7 @@ function changeTaxAmount(){
 	parentax.innerHTML="("+taxpercent.value+")";
 }
 
-// This function is used when redefining the onChange property of 
+// This function is used when redefining the onchange property of 
 // a hidden field for the the client ID.  It will then open a small window
 // passing the client ID, and retrieve the appropriate shipping info
 function populateShipping(){

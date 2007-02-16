@@ -56,6 +56,11 @@ function invoice_tabs($selected="none",$id=0) {
 			"href"=>($id)?"invoices_addedit.php?id=".$id:"invoices_addedit.php"
 		),
 		array(
+			"name"=>"Status History",
+			"href"=>(($id)?"invoices_statushistory.php?refid=".$id:"N/A"),
+			"disabled"=>(($id)?false:true),
+		),
+		array(
 			"name"=>"Attachments",
 			"href"=>(($id)?"invoices_attachments.php?refid=".$id:"N/A"),
 			"disabled"=>(($id)?false:true),

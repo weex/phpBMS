@@ -194,7 +194,7 @@ if (isset($_POST["command"])){
 
 			<p>
 				<label class="important" for="therecords">from</label><br />
-				<select id="therecords" name="therecords" onChange="showSavedSearches(this);">
+				<select id="therecords" name="therecords" onchange="showSavedSearches(this);">
 					<option value="selected">selected records (<?php echo count($tablePrinter->theids) ?> record<?php if(count($tablePrinter->theids)>1) echo "s"?>)</option>
 					<option value="savedsearch">saved search...</option>
 					<?php if($_SESSION["userinfo"]["admin"]==1){?><option value="all">all records in table</option><?php }?>
@@ -220,7 +220,7 @@ if (isset($_POST["command"])){
 			</p>
 			<p class="important">
 				<label for="thesort">by</label><br />
-				<select id="thesort" name="thesort" onChange="showSortOptions(this)">
+				<select id="thesort" name="thesort" onchange="showSortOptions(this)">
 					<option value="default" selected>report default</option>
 					<option value="single">single field</option>
 					<option value="savedsort">saved sort...</option>

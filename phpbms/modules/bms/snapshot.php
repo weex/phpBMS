@@ -84,11 +84,11 @@ function showTodaysClients($interval="1 DAY"){
 function showTodaysOrders($interval="1 DAY"){
 	global $dblink;
 	$querystatement="SELECT invoices.id,
-					invoices.status,
+					invoicestatuses.name as status,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
 					invoices.totalti as total,
 					invoices.totalti-invoices.amountpaid as amtdue
-					FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
+					FROM (invoices INNER JOIN clients ON invoices.clientid=clients.id) INNER JOIN invoicestatuses on invoices.statusid=invoicestatuses.id
 					WHERE invoices.creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") AND (invoices.type=\"Order\")
 					ORDER BY invoices.creationdate DESC LIMIT 0,50
 	";

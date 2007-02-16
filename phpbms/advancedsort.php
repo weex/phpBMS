@@ -62,7 +62,7 @@
 	function displaySavedSortList($queryresult){
 		$numrows=mysql_num_rows($queryresult);
 		?>
-		<select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onChange="sortSavedSelect(this)" />
+		<select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onchange="sortSavedSelect(this)" />
 			<?php if($numrows<1) {?>
 				<option value="NA">No Saved Sorts</option>
 			<?php 
@@ -143,12 +143,12 @@
 				<td valign=top width="99%">
 					<div id="theSorts">
 						<div id="Sort1">
-							<select id="Sort1Field" onChange="updateSort()">
+							<select id="Sort1Field" onchange="updateSort()">
 								<?php 
 									foreach($fieldlist as $field){
 										echo "<option value=\"".$field."\" >".$field."</option>\n";}?>
 							</select>
-							<select id="Sort1Order" onChange="updateSort()">
+							<select id="Sort1Order" onchange="updateSort()">
 								 <option value="ASC" selected="selected">Ascending</option>
 								 <option value="DESC">Descending</option>
 							</select>

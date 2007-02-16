@@ -130,7 +130,7 @@
 			
 			<p id="toP">
 				<label for="therecords">to</label><br />			
-				<select id="therecords" name="therecords" onChange="showSavedSearches(this);">
+				<select id="therecords" name="therecords" onchange="showSavedSearches(this);">
 					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected"?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
 					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected"?>>e-mail addresses from saved search...</option>
 				</select>				
