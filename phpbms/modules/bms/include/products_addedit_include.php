@@ -37,10 +37,25 @@
  +-------------------------------------------------------------------------+
 */
 function checkNumberCategories($dblink){
-	$querystatement="SELECT count(id) AS thecount FROM productcategories";
+	$querystatement="SELECT count(id) AS thecount FROM productcategories WHERE inactive=0";
 	$queryresult=mysql_query($querystatement,$dblink);
 	$therecord=mysql_fetch_array($queryresult);
 	return $therecord["thecount"];
+}
+
+function displayProductCategories($categoryid,$dblink){
+	$querystatement="SELECT `id`,`name` FROM `productcategories` WHERE `inactive` =0 OR `id` =".((int) $categoryid)." ORDER BY `name`";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(100,("Error Retreiving Product Categories: ".$querystatement." - ".mysql_error($dblink)));
+	?><select name="categoryid" id="categoryid">
+		<?php 
+			while($therecord=mysql_fetch_array($queryresult)){
+				?><option value="<?php echo $therecord["id"]?>" <?php if($categoryid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
+				<?php
+			}
+		?>
+	</select><?php
+	
 }
 
 // These following functions and processing are similar for all pages

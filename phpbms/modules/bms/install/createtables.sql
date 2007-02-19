@@ -158,16 +158,17 @@ CREATE TABLE prerequisites (
 ) TYPE=MyISAM PACK_KEYS=0;
 
 CREATE TABLE productcategories (
-  createdby int(11) NOT NULL default '0',
-  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
-  description text,
-  id int(11) NOT NULL auto_increment,
-  modifiedby int(11) default NULL,
-  modifieddate timestamp(14) NOT NULL,
-  name varchar(64) default NULL,
-  webenabled tinyint(1) NOT NULL default '0',
-  webdisplayname varchar(64) default '',
-  UNIQUE KEY theid (id)
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(64) default NULL,
+  `inactive` TINYINT UNSIGNED DEFAULT 0
+  `description` text,
+  `webenabled` tinyint(1) NOT NULL default 0,
+  `webdisplayname` varchar(64) default '',
+  `createdby` int(11) NOT NULL default 0,
+  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifiedby` int(11) default NULL,
+  `modifieddate` timestamp(14) NOT NULL,
+  PRIMARY KEY(`id`)
 ) TYPE=MyISAM PACK_KEYS=0;
 
 CREATE TABLE products (

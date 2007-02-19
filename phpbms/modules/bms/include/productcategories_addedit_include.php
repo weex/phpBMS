@@ -48,7 +48,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name, description, webenabled, webdisplayname,
+	$querystatement="SELECT id, name, description, webenabled, webdisplayname, inactive,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -67,6 +67,7 @@ function setRecordDefaults(){
 	$therecord["id"]=NULL;
 
 	$therecord["name"]="";
+	$therecord["inactive"]=NULL;
 	$therecord["webenabled"]=0;
 	$therecord["description"]="";
 	$therecord["webdisplayname"]="";
@@ -92,6 +93,10 @@ function updateRecord($variables,$userid){
 			
 			if (!isset($variables["webenabled"])) $variables["webenabled"]=0;
 			$querystatement.="webenabled=".$variables["webenabled"].", "; 
+
+			if (!isset($variables["inactive"])) $variables["inactive"]=0;
+			$querystatement.="inactive=".$variables["inactive"].", "; 
+
 			$querystatement.="webdisplayname=\"".$variables["webdisplayname"]."\", "; 
 
 	//==== Almost all records should have this =========
@@ -109,7 +114,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO productcategories ";
 	
-	$querystatement.="(name,description, webenabled, webdisplayname,
+	$querystatement.="(name,description, webenabled, inactive, webdisplayname,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
@@ -117,6 +122,10 @@ function insertRecord($variables,$userid){
 
 			if (!isset($variables["webenabled"])) $variables["webenabled"]=0;
 			$querystatement.=$variables["webenabled"].", "; 
+
+			if (!isset($variables["inactive"])) $variables["inactive"]=0;
+			$querystatement.=$variables["inactive"].", "; 
+
 			$querystatement.="\"".$variables["webdisplayname"]."\", "; 
 				
 	//==== Almost all records should have this =========

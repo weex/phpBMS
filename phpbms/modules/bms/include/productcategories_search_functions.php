@@ -45,21 +45,12 @@ function delete_record($theids){
 
 	$whereclause=buildWhereClause($theids,"productcategories.id");
 	
-	$querystatement= "SELECT products.id FROM products INNER JOIN productcategories ON products.categoryid=productcategories.id 
-					 WHERE ".$whereclause.";";
+	$querystatement = "UPDATE productcategories SET inactive=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause.";";
 	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Select for delete failed: ".mysql_error($dblink)." -- ".$querystatement);
-	
-	if(!mysql_num_rows($queryresult)){
-		$querystatement = "DELETE FROM productcategories WHERE ".$whereclause.";";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if (!$queryresult) reportError(300,"Couldn't Delete: ".mysql_error($dblink)." -- ".$querystatement);		
-		
-		$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
-	} else {
-		$message=buildStatusMessage(0,count($theids));	
-	}
-	$message.=" deleted.";
+	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
+
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
+	$message.=" marked inactive.";
 	return $message;			
 }
 

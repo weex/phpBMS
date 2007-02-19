@@ -67,7 +67,9 @@
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="" />
 		</p>
-		
+		<p>
+			<?php field_checkbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
+		</p>		
 	</fieldset>
 	
 	<div id="nameDiv">
@@ -75,6 +77,7 @@
 			<legend><label for="name">name</label></legend>
 			<p><br />
 				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<br />
 			</p>			
 		</fieldset>
 	</div>

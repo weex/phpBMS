@@ -125,7 +125,7 @@
 			
 			<div class="fauxP">
 				<label for="ds-categoryid" class="important">product category</label><br />
-				<?php autofill("categoryid",$therecord["categoryid"],7,"productcategories.id","productcategories.name","\"\"","",Array("size"=>"40","maxlength"=>"128","tabindex"=>"30"),1,"Category name cannot be blank.") ?>				
+				<?php displayProductCategories($therecord["categoryid"],$dblink) ?>
 			</div>
 			
 			<p>
