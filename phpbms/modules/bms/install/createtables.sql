@@ -209,6 +209,7 @@ CREATE TABLE tax (
   id int(11) NOT NULL auto_increment,
   name varchar(64) default NULL,
   percentage double NOT NULL default '0',
+  `inactive` TINYINT UNSIGNED DEFAULT 0,
   createdby int(11) NOT NULL default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifiedby int(11) default NULL,

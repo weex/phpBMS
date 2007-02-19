@@ -48,7 +48,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name, percentage, 
+	$querystatement="SELECT id, name, percentage, inactive,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -67,6 +67,7 @@ function setRecordDefaults(){
 	$therecord["id"]=NULL;
 	$therecord["name"]=NULL;	
 	$therecord["percentage"]=0;
+	$therecord["inactive"]=NULL;
 	
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -89,6 +90,8 @@ function updateRecord($variables,$userid){
 			if($variables["percentage"]=="")
 				$variables["percentage"]="0";
 			$querystatement.="percentage=".$variables["percentage"].", "; 
+			if(!isset($variables["inactive"])) $variables["inactive"]=0;
+			$querystatement.="inactive=".$variables["inactive"].", ";
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -105,7 +108,7 @@ function insertRecord($variables,$userid){
 
 	$querystatement="INSERT INTO tax ";
 	
-	$querystatement.="(name,percentage,
+	$querystatement.="(name,percentage,inactive,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["name"]."\", "; 
@@ -113,6 +116,8 @@ function insertRecord($variables,$userid){
 			if($variables["percentage"]=="")
 				$variables["percentage"]="0";
 			$querystatement.=$variables["percentage"].", "; 
+			if(!isset($variables["inactive"])) $variables["inactive"]=0;
+			$querystatement.=$variables["inactive"].", ";
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 

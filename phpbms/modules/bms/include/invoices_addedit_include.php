@@ -123,7 +123,7 @@ function getShipping($dblink){
 
 function showTaxSelect($id,$dblink){
 	$id=(int) $id;
-	$querystatement="SELECT id,name,percentage FROM tax ORDER BY name";
+	$querystatement="SELECT id,name,percentage FROM tax WHERE inactive=0 OR id=".$id." ORDER BY name";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Error Retreiving Tax Areas ".$querystatement." - ".mysql_error($dblink)));
 	?><select name="taxareaid" id="taxareaid" onchange="getPercentage()" size="5">

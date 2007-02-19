@@ -45,7 +45,6 @@ INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayor
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (66,5,'Invoices - Last Week','invoices.type=\"Invoice\" and year(invoices.invoicedate)=year(date_sub(curdate(),INTERVAL 7 DAY)) and week(invoices.invoicedate)=week(date_sub(curdate(),INTERVAL 7 DAY))',13,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (67,5,'Invoices - This Month','invoices.type=\"Invoice\" and year(invoices.invoicedate)=year(curdate()) and month(invoices.invoicedate)=month(curdate())',14,30);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (68,5,'Invoices - Last Month','invoices.type=\"Invoice\" and year(invoicedate)=year(date_sub(curdate(),INTERVAL 1 MONTH)) and month(invoicedate)=month(date_sub(curdate(),INTERVAL 1 MONTH))',15,30);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (30,6,'All Records','tax.id != 0',1,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (36,7,'All Records','productcategories.id != 0',1,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (37,8,'All Records','prerequisites.id != 0',1,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (38,18,'matching names','clients.firstname=dupclients.firstname and clients.lastname=dupclients.lastname and clients.id<>dupclients.ID',1,0);
@@ -63,3 +62,6 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (301,'Inactive','paymentmethods.inactive=1',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (302,'Active Records','invoicestatuses.inactive=0',0,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (302,'All Records','invoicestatuses.id!=-1',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'All Records','tax.id != 0',3,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'Active Records','tax.inactive=0',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'Inactive Records','tax.inactive=1',2,0);

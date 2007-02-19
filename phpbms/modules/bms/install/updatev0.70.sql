@@ -68,3 +68,9 @@ UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatu
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Packed\"' WHERE `id`=23;
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Committed\"' WHERE `id`=106;
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Open\"' WHERE `id`=107;
+ALTER TABLE `tax` ADD COLUMN `inactive` TINYINT UNSIGNED DEFAULT 0 AFTER `percentage`;
+UPDATE `tabledefs` SET `defaultwhereclause`='tax.inactive=0',`deletebutton`="inactivate" WHERE `maintable`="tax";
+DELETE FROM `tablefindoptions` WHERE `tabledefid`=6;
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'All Records','tax.id != 0',3,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'Active Records','tax.inactive=0',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (6,'Inactive Records','tax.inactive=1',2,0);
