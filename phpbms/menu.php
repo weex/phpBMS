@@ -63,7 +63,7 @@ function getSubItems($parentid){
 	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
 
 	<div id="menuRighthandButtons">
-		<a href="/"  name="toptop" id="toptop" onClick="showUserInfo('<?php echo $_SESSION["app_path"]?>'); return false;"><?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?></a>		
+		<?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>
 		<button name="menuLogout" type="button" onClick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')" title="log out" class="smallButtons">log out</button>
 		<button name="menuHelp" type="button" onClick="showHelp('<?php echo $_SESSION["app_path"]?>')" title="Help" class="smallButtons">?</button>
 	</div>
@@ -87,7 +87,7 @@ function getSubItems($parentid){
 							if($subrecord["name"]=="----")
 								$sep=true;
 							else{
-								if(hasRights($menurecord["roleid"])){
+								if(hasRights($subrecord["roleid"])){
 									if(strpos($subrecord["link"],"http")!==0)
 										$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
 								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php 

@@ -42,16 +42,14 @@ require_once("../../include/common_functions.php");
 require_once("../../include/fields.php");
 
 require_once("include/adminsettings_include.php");
-?>
 
-<?php $pageTitle="Settings"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+$pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>

@@ -123,7 +123,7 @@
 			<legend>contact / user information</legend>
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?php field_email("email",$therecord["email"],Array("size"=>"64","maxlength"=>"128")); ?>						
+				<?php field_email("email",$therecord["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
 			</p>
 			<p>
 				<label for="phone">phone/extension</label><br />

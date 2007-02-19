@@ -55,3 +55,7 @@ UPDATE reports set accesslevel=-100 WHERE accesslevel >=90;
 ALTER TABLE reports CHANGE accesslevel roleid int(11) NOT NULL default '0';
 ALTER TABLE `users` DROP COLUMN `accesslevel`;
 INSERT INTO `settings` (`name`, `value`) VALUES ('phone_format','US - Loose');
+UPDATE `menu` SET `name` ='configuration', `roleid` =0 WHERE `name` ='settings';
+UPDATE `menu` SET `name` ='Settings', `roleid` =0 WHERE `name` ='Admin';
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('my account','modules/base/myaccount.php',6,-10,1,1,NOW(),NOW(),0);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('----','',6,-5,1,1,NOW(),NOW(),0);

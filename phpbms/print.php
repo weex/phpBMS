@@ -230,7 +230,7 @@ if (isset($_POST["command"])){
 		<fieldset>
 			<legend>customizng reports</legend>
 			<p class="notes">
-			Many reports feature a logo and your company infromation.  These can be set in the admin settings area. 
+			Many reports feature a logo and your company infromation.  This information can be set administratively in the configuration area
 			</p>
 			<p class="notes">
 			Need more reports, or want to cuztomize an existing report to meet your specific needs? <br />
