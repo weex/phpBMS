@@ -150,7 +150,22 @@
 				<?php table_choicelist("taxareaid",$therecord["taxareaid"],$table="tax","id","name","","","name")?>
 			</p>
 
-		</fieldset>	
+		</fieldset>
+		<fieldset>
+			<legend>e-Commerce Login</legend>
+			<p>
+				<label for="username">user name</label><br />
+				<input id="username" name="username" value="<?php echo htmlQuotes($therecord["username"])?>" maxlength="32" size="20"/>
+			</p>
+			<p>
+				<label for="password">password</label><br />
+				<input id="password" name="password" value="<?php echo htmlQuotes($therecord["password"])?>" maxlength="32" size="20"/>
+			</p>
+			<p>
+				<button class="Buttons" onclick="generateUserAndPass()" type="button">Generate</button>
+			</p>
+			<p class="notes">Client user names and passwords are <strong>not</strong> used for clients' to log in directly to phpBMS.</p>
+		</fieldset>
 	</div>
 		
 	<div id="leftSideDiv">		

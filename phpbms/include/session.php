@@ -36,18 +36,6 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-if(!isset($_SERVER['REQUEST_URI'])) {
-	// This following code is for windows boxen, because they lack some server varables as well
-	// formating options for the strftime function
-	$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
-	
-	define("HOUR_FORMAT","%I");
-
-	// Append the query string if it exists and isn't null
-	if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
-		$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
-} else
-	define("HOUR_FORMAT","%l");
 	
 function loadSettings(){
 	global $dblink;
@@ -125,13 +113,41 @@ function xmlEncode($str){
 	return $str;
 }
 
+function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
+	if($pconnect=="true")
+		$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);
+	else
+		$dblink = @ mysql_connect($dbserver,$dbuser,$dbpass);
+	if (!$dblink) 
+		reportError(500,"Could not link to MySQL Server.  Please check your settings.",true);
+	if (!mysql_select_db($dbname,$dblink)) 
+		reportError(500,"Could not open database.  Please check your settings.",true);	
+	return $dblink;
+}
+
 // Start Code
 //=================================================================================================================
+	if(!isset($_SERVER['REQUEST_URI'])) {
+		// This following code is for windows boxen, because they lack some server varables as well
+		// formating options for the strftime function
+		$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
+		
+		define("HOUR_FORMAT","%I");
+	
+		// Append the query string if it exists and isn't null
+		if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
+			$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
+	} else
+		define("HOUR_FORMAT","%l");
+
 	session_start();
 	error_reporting(E_ALL);
-	if (!isset($_SESSION["app_path"])) $mainpath=loadMysqlSettings();
-	else $mainpath=$_SESSION["app_path"];
 	
+	if (!isset($_SESSION["app_path"]))
+		$mainpath=loadMysqlSettings();
+	else 
+		$mainpath=$_SESSION["app_path"];
+			
 	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
 		if(isset($loginNoKick)){
 			if(!isset($loginNoDisplayError))
@@ -150,17 +166,5 @@ function xmlEncode($str){
 
 		if(!isset($_SESSION["app_name"]))
 			loadSettings();
-	}//end if
-	
-	function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
-		if($pconnect=="true")
-			$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);
-		else
-			$dblink = @ mysql_connect($dbserver,$dbuser,$dbpass);
-		if (!$dblink) 
-			reportError(500,"Could not link to MySQL Server.  Please check your settings.",true);
-		if (!mysql_select_db($dbname,$dblink)) 
-			reportError(500,"Could not open database.  Please check your settings.",true);	
-		return $dblink;
-	}
+	}//end if	
 ?>

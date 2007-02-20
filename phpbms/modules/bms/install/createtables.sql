@@ -50,7 +50,7 @@ CREATE TABLE `clients` (
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `modifieddate` timestamp NOT NULL,
   UNIQUE KEY `theid` (`id`),
   KEY `notin` (`inactive`),
   KEY `thefirstname` (`firstname`),
@@ -78,15 +78,17 @@ CREATE TABLE discounts (
 ) TYPE=MyISAM;
 
 CREATE TABLE `invoices` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL,
   `clientid` int(11) NOT NULL default '0',
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
   `status` enum('Open','Committed','Packed','Shipped') default NULL,
+  `statusid` int(10) unsigned default NULL,
+  `statusdate` date default NULL,
+  `assignedtoid` int(10) unsigned default NULL,
   `ponumber` varchar(64) default NULL,
   `orderdate` date default NULL,
   `invoicedate` date default NULL,
   `requireddate` date default NULL,
-  `shippeddate` date default NULL,
   `leadsource` varchar(64) default NULL,
   `address1` varchar(128) default NULL,
   `address2` varchar(128) default NULL,
@@ -108,7 +110,7 @@ CREATE TABLE `invoices` (
   `trackingno` varchar(64) default NULL,
   `shipping` double default '0',
   `totalcost` double default '0',
-  `totalti` double default '0',  
+  `totalti` double default '0',
   `amountpaid` double default '0',
   `paymentmethodid` int(10) unsigned default NULL,
   `ccexpiration` varchar(10) default NULL,
@@ -124,10 +126,11 @@ CREATE TABLE `invoices` (
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `modifieddate` timestamp,
   UNIQUE KEY `theid` (`id`),
   KEY `client` (`clientid`)
-)TYPE=MyISAM PACK_KEYS=0;;
+) TYPE=MyISAM PACK_KEYS=0;
+
 
 CREATE TABLE lineitems (
   createdby int(11) NOT NULL default '0',
@@ -160,7 +163,7 @@ CREATE TABLE prerequisites (
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) default NULL,
-  `inactive` TINYINT UNSIGNED DEFAULT 0
+  `inactive` TINYINT UNSIGNED DEFAULT 0,
   `description` text,
   `webenabled` tinyint(1) NOT NULL default 0,
   `webdisplayname` varchar(64) default '',
@@ -243,7 +246,7 @@ CREATE TABLE `paymentmethods` (
   `createdby` int(11) default NULL,
   `creationdate` datetime default NULL,
   `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM PACK_KEYS=0;
 
@@ -264,7 +267,7 @@ ENGINE = MYISAM;
 
 CREATE TABLE `invoicestatushistory` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `invoicedefault` INTEGER UNSIGNED  
+  `invoicedefault` INTEGER UNSIGNED,
   `invoiceid` INTEGER UNSIGNED,
   `invoicestatusid` INTEGER UNSIGNED,
   `statusdate` DATE,

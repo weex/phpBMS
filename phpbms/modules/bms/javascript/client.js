@@ -36,6 +36,52 @@
  +-------------------------------------------------------------------------+
 */
 
+function checkPunc(num) {
+
+    if ((num >=33) && (num <=47)) { return true; }
+    if ((num >=58) && (num <=64)) { return true; }
+    if ((num >=91) && (num <=96)) { return true; }
+    if ((num >=123) && (num <=126)) { return true; }
+
+    return false;
+}
+
+function getRandomNum() {
+
+    rndNum = Math.random()
+    rndNum = parseInt(rndNum * 1000);
+    rndNum = (rndNum % 94) + 33;
+
+    return rndNum;
+}
+
+function generateUserAndPass(){
+	var username=getObjectFromID("username");
+	var password=getObjectFromID("password");
+	var firstname=getObjectFromID("firstname");
+	var lastname=getObjectFromID("lastname");
+	var company=getObjectFromID("company");
+	var theusername;
+	var thepassword="";
+	var numI;
+	
+	if(company.value)
+		theusername=company.value.toLowerCase().replace(/ /g,"").substr(0,32);
+	else{
+		theusername=firstname.value.toLowerCase().replace(/ /,"").substr(0,1)+lastname.value.toLowerCase().replace(/ /,"");
+	}
+	username.value=theusername;
+	
+	for(i=0;i<=8;i++){
+		numI = getRandomNum();
+		while (checkPunc(numI)) 
+			numI = getRandomNum();
+		thepassword +=String.fromCharCode(numI).toLowerCase();
+	}
+	password.value=thepassword
+	
+}
+
 function changeClientType(theselect){
 	var becameclient=getObjectFromID("becameclient");
 	var becameclientDiv=getObjectFromID("becameclientDiv");

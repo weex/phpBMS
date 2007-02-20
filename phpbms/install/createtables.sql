@@ -92,7 +92,7 @@ CREATE TABLE `reports` (
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
 
@@ -136,7 +136,7 @@ CREATE TABLE `tabledefs` (
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1000; 
 

@@ -67,7 +67,7 @@ function getRecords($id){
 				address1, address2, type, inactive, leadsource, salesmanagerid, homephone, workphone,
 				mobilephone, fax, otherphone, shiptoaddress1, shiptoaddress2, shiptocity,shiptostate,
 				shiptopostalcode, email, webaddress, comments, paymentmethodid, taxareaid, discountid, shippingmethodid,
-				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient,
+				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient, password, username,
 				createdby, creationdate, 
 				modifiedby, modifieddate
 				FROM clients
@@ -124,6 +124,8 @@ function setRecordDefaults(){
 	$therecord["shippingmethodid"]=0;
 	$therecord["taxareaid"]=0;
 
+	$therecord["username"]="";
+	$therecord["password"]="";
 
 	$therecord["createdby"]=$_SESSION["userinfo"]["id"];
 	$therecord["modifiedby"]=NULL;
@@ -190,6 +192,8 @@ function updateRecord($variables,$userid){
 
 			$querystatement.="comments=\"".$variables["comments"]."\", "; 			
 
+			$querystatement.="username=\"".$variables["username"]."\", "; 
+			$querystatement.="password=\"".$variables["password"]."\", "; 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
 	$querystatement.="WHERE id=".$variables["id"];
@@ -208,7 +212,7 @@ function insertRecord($variables,$userid){
 	$querystatement.="(firstname,lastname,company,homephone,workphone,mobilephone,fax,otherphone,email,webaddress,";
 	$querystatement.="type,becameclient,category,inactive,salesmanagerid,leadsource,address1,address2,city,state,postalcode,country,shiptoaddress1,";
 	$querystatement.="shiptoaddress2,shiptocity,shiptostate,shiptopostalcode,shiptocountry,";
-	$querystatement.="paymentmethodid,shippingmethodid,discountid,taxareaid,comments,
+	$querystatement.="paymentmethodid,shippingmethodid,discountid,taxareaid,comments,username,password,
 						createdby,creationdate,modifiedby) VALUES (";
 	
 			$querystatement.="\"".$variables["firstname"]."\", "; 
@@ -260,7 +264,9 @@ function insertRecord($variables,$userid){
 			$querystatement.=$variables["taxareaid"].", "; 
 
 			$querystatement.="\"".$variables["comments"]."\", "; 
-				
+
+			$querystatement.="\"".$variables["username"]."\", "; 
+			$querystatement.="\"".$variables["password"]."\", "; 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
