@@ -92,25 +92,21 @@ function closeTPBox(){
 
 function tpClickHour(hour){
 	var timeField=getObjectFromID(showTP.timeField);
-	var ampm;
-	if(!validateTime(timeField.value)) timeField.value="12:00 AM";
 	
-	var minutes=timeField.value.substr(timeField.value.indexOf(":")+1,2)
-	
-	if(hour>11) {ampm=" PM"; hour=hour-12}else ampm=" AM";
-	if (hour==0) hour=12;
-	
-	timeField.value=hour+":"+minutes+ampm;
+	var thetime=stringToTime(timeField.value);
+	thetime.setHours(hour);
+	timeField.value=timeToString(thetime);
+
 	if(timeField.onchange) timeField.onchange();
 }
 function tpClickMinute(thetd){
-	var minutes=thetd.innerHTML;
+	var minutes=parseInt(thetd.innerHTML.replace(/:/,""));
 	var timeField=getObjectFromID(showTP.timeField);
-	if(!validateTime(timeField.value)) timeField.value="12:00 AM";
-
-	var hours=timeField.value.substring(0,timeField.value.indexOf(":"));
-	var ampm=timeField.value.substr(timeField.value.indexOf(" "));
-	timeField.value=hours+minutes+ampm;
+	
+	var thetime=stringToTime(timeField.value);
+	thetime.setMinutes(minutes);
+	timeField.value=timeToString(thetime);
+	
 	if(timeField.onchange) timeField.onchange();
 	closeTPBox();
 }

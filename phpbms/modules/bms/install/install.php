@@ -153,6 +153,7 @@ else{
 	$thereturn.=importData("settings");
 	$thereturn.=importData("shippingmethods");
 	$thereturn.=importData("paymentmethods");
+	$thereturn.=importData("invoicestatuses");
 
 	$thereturn.="Done Importing Data\n===========================\n";
 	

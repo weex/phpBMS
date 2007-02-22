@@ -105,7 +105,7 @@
 
 			<p>
 				<label for="lastlogin" >last log in</label><br />
-				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo $therecord["lastlogin"]; ?>" size="32" maxlength="64" readonly="true" class="uneditable"  />			
+				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo formatFromSQLDate($therecord["lastlogin"]); ?>" size="32" maxlength="64" readonly="true" class="uneditable"  />			
 			</p>
 
 			<p>

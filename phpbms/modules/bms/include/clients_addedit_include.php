@@ -67,7 +67,7 @@ function getRecords($id){
 				address1, address2, type, inactive, leadsource, salesmanagerid, homephone, workphone,
 				mobilephone, fax, otherphone, shiptoaddress1, shiptoaddress2, shiptocity,shiptostate,
 				shiptopostalcode, email, webaddress, comments, paymentmethodid, taxareaid, discountid, shippingmethodid,
-				category, date_Format(becameclient,\"%c/%e/%Y\") as becameclient, password, username,
+				category, becameclient, password, username,
 				createdby, creationdate, 
 				modifiedby, modifieddate
 				FROM clients
@@ -160,11 +160,8 @@ function updateRecord($variables,$userid){
 
 			if(isset($variables["type"])) $querystatement.="type=\"".$variables["type"]."\", "; 
 			if($variables["becameclient"]=="" || $variables["becameclient"]=="0/0/0000") $tempdate="NULL";
-			else{
-				$variables["becameclient"]="/".ereg_replace(",.","/",$variables["becameclient"]);
-				$temparray=explode("/",$variables["becameclient"]);
-				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-			}
+			else
+				$tempdate="\"".sqlDateFromString($variables["becameclient"])."\"";
 			$querystatement.="becameclient=".$tempdate.", "; 
 			$querystatement.="category=\"".$variables["category"]."\", "; 
 			if(isset($variables["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
@@ -231,11 +228,8 @@ function insertRecord($variables,$userid){
 
 			$querystatement.="\"".$variables["type"]."\", "; 
 			if($variables["becameclient"]=="" || $variables["becameclient"]=="0/0/0000") $tempdate="NULL";
-			else{
-				$variables["becameclient"]="/".ereg_replace(",.","/",$variables["becameclient"]);
-				$temparray=explode("/",$variables["becameclient"]);
-				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-			}
+			else
+				$tempdate="\"".sqlDateFromString($variables["becameclient"])."\"";
 			$querystatement.=$tempdate.", "; 
 			$querystatement.="\"".$variables["category"]."\", "; 
 			if(isset($variables["inactive"])) $querystatement.="1, "; else $querystatement.="0, ";

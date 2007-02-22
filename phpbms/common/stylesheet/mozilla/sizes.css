@@ -19,11 +19,10 @@
 
 H1 {
 	font-family: Arial, Helvitica, sans-serif;
-	border-bottom: 1px solid #ccc;
 	font-size:20px;
 	margin:3px;
 	padding-left:24px;
-	margin-bottom:8px;
+	margin-bottom:9px;
 	font-weight:normal;
 	background: url("image/h1graphic.png") 4px 4px no-repeat;;
 }

@@ -93,7 +93,7 @@ function getRecords($id){
 	global $dblink;
 	
 	$querystatement="select id, login, firstname, lastname, admin,portalaccess,
-				date_Format(lastlogin,\"%c/%e/%Y %T\") as lastlogin, revoked,
+				lastlogin, revoked,
 				email,phone,department,employeenumber,
 
 				createdby, creationdate, 

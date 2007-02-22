@@ -73,7 +73,7 @@ function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name,userid,emailto,emailfrom,subject,body,DATE_FORMAT(lastrun,\"%m/%d/%Y %H:%i\")as lastrun
+	$querystatement="SELECT id, name,userid,emailto,emailfrom,subject,body
 				FROM clientemailprojects
 				WHERE id=".$id;		
 	$queryresult = mysql_query($querystatement,$dblink);

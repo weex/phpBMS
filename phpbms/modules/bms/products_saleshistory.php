@@ -43,8 +43,8 @@
 	if(!hasRights(30)) goURL($_SESSION["app_path"]."noaccess.php");
 	
 	include("include/products_functions.php");
-	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m")."/01/".date("Y");
-	if(!isset($_POST["todate"])) $_POST["todate"]=date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y")));
+	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
+	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
 
@@ -82,7 +82,6 @@
 	
 	$querystatement="SELECT invoices.id as id, 
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
-		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
 		if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
 		lineitems.quantity as qty, 
 		lineitems.unitprice*lineitems.quantity as extended,
@@ -127,12 +126,12 @@
 		
 		<p class="timelineP">
 		   <label for="fromdate">from</label><br />
-		   <?php field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+		   <?php field_datepicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
 		</p>
 
 		<p class="timelineP">
 			to<br />
-			<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php field_datepicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 		</p>
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
@@ -167,7 +166,7 @@
 ?>
 	<tr class="row<?php echo $row?>">
 	 <td align="center" nowrap><?php echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+	 <td align="center" nowrap><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
 	 <td nowrap><?php echo $therecord["client"]?></td>
 	 <td align="center" nowrap><?php echo number_format($therecord["qty"],2)?></td>
 	 <td align="right" nowrap><?php echo "\$".number_format($therecord["cost"],2)?></td>

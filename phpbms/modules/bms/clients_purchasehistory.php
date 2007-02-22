@@ -49,8 +49,8 @@
 	if(!$clientqueryresult) reportError(300,"Could not retrieve client record ".mysql_error($dblink)." -- ".$clientquerystatement);
 	$clientrecord=mysql_fetch_array($clientqueryresult);
 
-	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=date("m/d/Y",strtotime("-1 year"));
-	if(!isset($_POST["todate"])) $_POST["todate"]=date("m/d/Y");
+	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
+	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
 
@@ -89,7 +89,6 @@
 	//get history
 	$querystatement="SELECT invoices.id,
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
-		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
 		invoices.type,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
@@ -134,12 +133,12 @@
 			
 			<p class="timelineP">
 			   <label for="fromdate">from</label><br />
-			   <?php field_datepicker("fromdate",$_POST["fromdate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+			   <?php field_datepicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
 			</p>
 	
 			<p class="timelineP">
 				to<br />
-				<?php field_datepicker("todate",$_POST["todate"],0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php field_datepicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
@@ -175,7 +174,7 @@
 		</td>
 		<td align="left" nowrap><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
 		<td align="left" nowrap><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+		<td align="left" nowrap><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
 		<td nowrap><?php echo $therecord["partnumber"]?></td>
 		<td ><?php echo $therecord["partname"]?></td>
 		<td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
@@ -184,7 +183,7 @@
 	</tr>
     <?php }//end while ?>
     <?php  if(!mysql_num_rows($queryresult)) {?>
-	<tr><td colspan="9" align=center style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
+	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
 	 <td align="center" class="queryfooter" colspan=2>&nbsp;</td>

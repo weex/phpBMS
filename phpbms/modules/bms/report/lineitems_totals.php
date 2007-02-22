@@ -184,7 +184,7 @@ class totalReport{
 		global $dblink;
 		
 		$querystatement="SELECT lineitems.invoiceid, 
-						if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as thedate,
+						if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, invoices.invoicedate,
 						lineitems.id,products.partnumber,products.partname,quantity,lineitems.unitprice,quantity*lineitems.unitprice as extended
 						FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY lineitems.id ";
 		$queryresult=mysql_query($querystatement,$dblink);
@@ -199,7 +199,7 @@ class totalReport{
 			?>
 			<tr>
 				<td class="lineitems" nowrap><?php echo $therecord["invoiceid"]?></td>
-				<td class="lineitems" nowrap><?php if($therecord["thedate"]) echo $therecord["thedate"]; else echo "&nbsp;"?></td>
+				<td class="lineitems" nowrap><?php if($therecord["invoicedate"]) echo formatFromSQLDate($therecord["invoicedate"]); else echo "&nbsp;"?></td>
 				<td class="lineitems" width="20%"><?php echo $therecord["thename"]?></td>
 				<td width="60%" class="lineitems" nowrap><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
 				<td width="9%" class="lineitems" align="right" nowrap><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
@@ -264,7 +264,7 @@ TH {
 	</div>
 	<div>
 	date generated:<br />
-	<?php echo date("m/d/Y H:i");?>
+	<?php echo dateToString(mktime())." ".timeToString(mktime())?>
 	</div>
 </h2>
 <?php $this->showReportTable();?>

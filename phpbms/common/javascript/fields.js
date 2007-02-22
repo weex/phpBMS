@@ -147,47 +147,12 @@ function validateForm(theform){
 
 //validate a time (12 hour)
 function validateTime(strValue){
-	var objRegExp= /^([1-9]|1[0-2]|0[1-9]){1}(:[0-5][0-9]\ [aApP][mM]){1}$/;
-	if(!objRegExp.test(strValue))
-		return false;
-	else
-		return true;
+	return (strValue == timeToString(stringToTime(strValue)))
 }
 
 // validate dates
 function validateDate(strValue) {
-  var objRegExp = /^\d{1,2}(\-|\/|\.)\d{1,2}\1\d{2,4}$/
-
-  //check to see if in correct format
-  if(!objRegExp.test(strValue))
-    return false; //doesn't match pattern, bad date
-  else{
-  
-	for (var i=1;i<strValue.length;i++){
-		if (strValue.charAt(i)=="." || strValue.charAt(i)=="/" || strValue.charAt(i)=="-"){
-		    var strSeparator = strValue.substring(i,i+1) //find date separator
-			break;
-		}
-	}
-    var arrayDate = strValue.split(strSeparator); //split date into month, day, year
-    //create a lookup for months not equal to Feb.
-    var arrayLookup = { 1 : 31, 3 : 31, 4 : 30, 5 : 31, 6 : 30, 7 : 31,
-                        8 : 31, 9 : 30, 10 : 31, 11 : 30, 12 : 31}
-    var intDay = parseInt(arrayDate[1],10);
-    //check if month value and day value agree
-    var intMonth = parseInt(arrayDate[0],10);
-    if(arrayLookup[intMonth] != null) {	  
-      if(intDay <= arrayLookup[intMonth] && intDay != 0)
-        return true; //found in lookup table, good date
-    }
-
-    //check for February
-    var intYear = parseInt(arrayDate[2],10);
-	if (intYear <1000) intYear=intYear+2000;
-    if( ((intYear % 4 == 0 && intDay <= 29) || (intYear % 4 != 0 && intDay <=28)) && intDay !=0 && intMonth==2)
-      return true; //Feb. had valid number of days
-  }
-  return false; //any other values, bad date
+  return (strValue == dateToString(stringToDate(strValue)));
 }
 
 //validate integer

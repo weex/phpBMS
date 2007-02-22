@@ -114,7 +114,7 @@ CREATE TABLE `tablecolumns` (
 ) TYPE=MyISAM AUTO_INCREMENT=5000;
 
 CREATE TABLE `tabledefs` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `displayname` varchar(64) default NULL,
   `type` varchar(16) NOT NULL default 'table',
   `moduleid` int(11) NOT NULL default '0',
@@ -262,3 +262,21 @@ CREATE TABLE `rolestousers` (
   `roleid` INTEGER UNSIGNED NOT NULL,
   PRIMARY KEY(`id`)
 ) TYPE = MYISAM;
+
+CREATE TABLE `scheduler` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45),
+  `job` VARCHAR(128),
+  `crontab` VARCHAR(64),
+  `lastrun` DATETIME,
+  `startdatetime` DATETIME,
+  `enddatetime` DATETIME,
+  `description` TEXT,
+  `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `createdby` INTEGER UNSIGNED,
+  `creationdate` DATETIME,
+  `modifiedby` INTEGER UNSIGNED,
+  `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
+)
+ENGINE = MYISAM;

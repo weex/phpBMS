@@ -143,9 +143,9 @@
 			</p>
 			<?php } }?>
 			<p>
-				<label for="assignedtodate" style="padding:0px;">follow up date</label><br />
-				<?php field_datepicker("assignedtodate","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
-				&nbsp;<?php field_timepicker("assignedtotime","",0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+				<label for="assignedtodate">follow up date</label><br />
+				<?php field_datepicker("assignedtodate",$therecord["assignedtodate"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+				&nbsp;<?php field_timepicker("assignedtotime",$therecord["assignedtotime"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
 			</p>
 		</fieldset>
 		

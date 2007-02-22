@@ -129,63 +129,141 @@ function getUserName($id=0){
 	return trim($tempinfo["name"]);
 }
 
-// This Function prepares a date for insertion/updaing into a SQL statement
+
+// date/time functions
 // It will add the quotes for you.
 //=====================================================================
-function formatToSQLDate($thedate,$allownull=true){
-	if($thedate=="" || $thedate=="0/0/0000"){
-		if ($allownull)
-			$tempdate="NULL";
-		else
-			$tempdate="\"0000-00-00\"";
-	} else{
-		$thedate="/".ereg_replace(",.","/",$thedate);
-		$temparray=explode("/",$thedate);
-		$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-	}//end if
-	return $tempdate;
-}//end function
+define("DATE_FORMAT",$_SESSION["date_format"]);
+define("TIME_FORMAT",$_SESSION["time_format"]);
 
-function formatToSQLTime($thetime,$allownull=true){
-	if($thetime=="" || $thetime=="0:00"){
-		if ($allownull)
-			$temptime="NULL";
-		else
-			$temptime="\"00:00:00\"";
-	} else{
-		if(strpos($thetime,"AM")!==false){
-			$thetime=str_replace(" AM","",$thetime);
-			$addtime=0;
-		}
-		else {
-			$thetime=str_replace(" PM","",$thetime);
-			$addtime=12;
-		}
-		$timearray=explode(":",$thetime);
-		if($timearray[0]!="12")
-			$timearray[0]= ((integer) $timearray[0]) + $addtime;
-		$temptime="\"".$timearray[0].":".$timearray[1].":00\"";
-	}	
-	return $temptime;
-}
+function stringToDate($datestring,$format=DATE_FORMAT){
+	$thedate=NULL;
+	if($datestring){
+		switch($format){
 
-function dateFromSQLDate($sqlDate){
-	$thedate="";
-	$temparray=explode("-",$sqlDate);
-	if(count($temparray)>1)
-		$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
+			case "SQL":
+				$temparray=explode("-",$datestring);
+				if(count($temparray)>1)
+					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
+			break;
+
+			case "English, US":
+				$datestring="/".ereg_replace(",.","/",$datestring);
+				$temparray=explode("/",$datestring);
+				if(count($temparray)>1)
+					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
+			break;
+
+		}
+	}
 	return $thedate;
 }
 
-function timeFromSQLTime($sqlTime){
-	$thetime="";
-	$temparray=explode(":",$sqlTime);
-	if(count($temparray)>1)
-		$thetime=mktime($temparray[0],$temparray[1],$temparray[2]);
+function stringToTime($timestring,$format=TIME_FORMAT){
+	$thetime=NULL;
+	if($timestring){
+		switch($format){
+
+			case "24 Hour":
+				$temparray=explode(":",$timestring);
+				if(count($temparray)>1)
+					$thetime=mktime($temparray[0],$temparray[1],$temparray[2]);
+			break;
+
+			case "12 Hour":
+				if(strpos($timestring,"AM")!==false){
+					$timestring=str_replace(" AM","",$timestring);
+					$addtime=0;
+				}
+				else {
+					$timestring=str_replace(" PM","",$timestring);
+					$addtime=12;
+				}
+				$timearray=explode(":",$timestring);
+				if($timearray[0]!="12")
+					$timearray[0]= ((integer) $timearray[0]) + $addtime;
+				$thetime=mktime($timearray[0],$timearray[1],0);
+			break;
+		}
+	}
 	return $thetime;
 }
 
-function dateFromSQLTimestamp ($datetime) {
+function dateToString($thedate,$format=DATE_FORMAT){
+	$datestring="";
+	if($thedate){
+		switch($format){
+
+			case "SQL":
+				$datestring=strftime("%Y-%m-%d",$thedate);
+			break;
+			
+			case "English, US":
+				$datestring=strftime("%m/%d/%Y",$thedate);
+			break;
+
+		}
+	}
+	return $datestring;
+}
+
+function timeToString($thetime,$format=TIME_FORMAT){
+	$timestring="";
+	if($thetime){
+		switch($format){
+			case "24 Hour":
+				$timestring=strftime("%H:%M:%S",$thetime);
+			break;
+			case "12 Hour":
+				$timestring=trim(strftime(HOUR_FORMAT.":%M %p",$thetime));
+			break;
+		}
+	}
+	return $timestring;
+}
+
+function formatFromSQLDate($sqldate,$format=DATE_FORMAT){
+	$datestring="";
+	if($sqldate!="")
+		if($format=="SQL")
+			$datestring=$sqldate;
+		else
+			$datestring=dateToString(stringToDate($sqldate,"SQL"),$format);
+	return $datestring;
+}
+
+function formatFromSQLTime($sqltime,$format=TIME_FORMAT){
+	$timestring="";
+	if($sqltime!="")
+		if($format=="24 Hour")
+			$timestring=$sqltime;
+		else 
+			$timestring=timeToString(timeToDate($sqltime,"24 Hour"),$format);
+	return $timestring;
+}
+
+function formatFromSQLDatetime($sqldatetime,$dateformat=DATE_FORMAT,$timeformat=TIME_FORMAT){
+	$datetimestring="";
+	if($sqldatetime!=""){
+		$datetimearray=explode(" ",$sqldatetime);
+
+		$datestring=$datetimearray[0];
+		if($dateformat=="SQL")
+			$datestring=$datestring;
+		else 
+			$datestring=dateToString(stringToDate($datestring,"SQL"),$dateformat);
+
+		$timestring=$datetimearray[1];
+		if($timeformat=="24 Hour")
+			$timestring=$timestring;
+		else 
+			$timestring=timeToString(stringToTime($timestring,"24 Hour"),$timeformat);
+		$datetimestring=trim($datestring." ".$timestring);
+	}
+	return $datetimestring;
+}
+
+function formatFromSQLTimestamp ($datetime,$dateformat=DATE_FORMAT,$timeformat=TIME_FORMAT) {
 	if($datetime=="")
 		return mktime();
 	$hour=0;
@@ -197,13 +275,40 @@ function dateFromSQLTimestamp ($datetime) {
 	settype($datetime, 'string');
 	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
 	array_shift ($matches);	
-	foreach (array('year','month','day','hour','minute','second') as
-$var) {
+	foreach (array('year','month','day','hour','minute','second') as $var) {
 		$$var = (int) array_shift($matches);
 	}
-	return mktime($hour,$minute,$second,$month,$day,$year);
+	
+	
+	$thedatetime=mktime($hour,$minute,$second,$month,$day,$year);
+	
+	return trim(dateToString($thedatetime,$dateformat)." ".timeToString($thedatetime,$timeformat));
 }
 
+function sqlDateFromString($datestring,$format=DATE_FORMAT){
+	$sqldate="0000-00-00";
+	if($datestring){
+		if($format=="SQL")
+			$sqldate=$datestring;
+		else
+			$sqldate=dateToString(stringToDate($datestring,$format),"SQL");
+	}
+	return $sqldate;
+}
+
+function sqlTimeFromString($timestring,$format=TIME_FORMAT){
+	$sqltime="0000-00-00";
+	if($timestring){
+		if($format=="24 Hour")
+			$sqltime=$timestring;
+		else
+			$sqltime=timeToString(stringToTime($timestring,$format),"24 Hour");
+	}
+	return $sqltime;
+}
+
+
+//============================================================================
 function addSlashesToArray($thearray){
 	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
 		foreach ($thearray as $key=>$value) 
@@ -281,46 +386,6 @@ function booleanFormat($bool){
 		return"&middot;";
 }
 
-function dateFormat($thedate){
-	if($thedate) {
-		$phpdate=dateFromSQLDate($thedate);
-		return strftime("%m/%d/%Y",$phpdate);
-	} else return "";
-}
-
-function timeFormat($thetime){
-	if($thetime) {
-		$phptime=timeFromSQLTime($thetime);
-		return strftime(HOUR_FORMAT.":%M %p",$phptime);
-	} else return "";
-}
-
-function formatDateTime($thedatetime,$secs=false){
-	$temparray=explode(" ",$thedatetime);
-	$thereturn="";
-	if (isset($temparray[0])){
-		if($temparray[0]){
-			$phpdate=dateFromSQLDate($temparray[0]);
-			$thereturn.=strftime("%m/%d/%Y",$phpdate);
-		}
-	}
-	if (isset($temparray[1])){
-		$phptime=timeFromSQLTime($temparray[1]);		
-		if($secs)
-			$thereturn.=" ".strftime(HOUR_FORMAT.":%M:%S %p",$phptime);
-		else
-			$thereturn.=" ".strftime(HOUR_FORMAT.":%M %p",$phptime);
-	}
-	return $thereturn;
-}
-
-
-function formatTimestamp($timestamp){
-	if($timestamp){
-		$phptimestamp=dateFromSQLTimestamp($timestamp);
-		return strftime("%m/%d/%Y ".HOUR_FORMAT.":%M:%S %p",$phptimestamp);
-	}
-}
 
 function formatVariable($value,$format){
 	switch($format){
@@ -331,13 +396,13 @@ function formatVariable($value,$format){
 			$value=booleanFormat($value);
 		break;
 		case "date":
-			$value=dateFormat($value);
+			$value=formatFromSQLDate($value);
 		break;
 		case "time":
-			$value=timeFormat($value);
+			$value=formatFromSQLTime($value);
 		break;
 		case "datetime":
-			$value=formatDateTime($value);
+			$value=formatFromSQLDatetime($value);
 		break;
 		case "filelink":
 			$value="<button class=\"graphicButtons buttonDownload\" type=\"button\" onclick=\"document.location='".$_SESSION["app_path"]."servefile.php?i=".$value."'\"><span>download</span></button>";

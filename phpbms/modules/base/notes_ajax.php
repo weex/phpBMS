@@ -44,9 +44,9 @@
 		global $dblink;
 		
 		$querystatement="SELECT subject,assignedtoid,assignedbyid,content,type,
-						date_Format(assignedtodate,\"%c/%e/%Y\") as assignedtodate,time_format(assignedtotime,\"%l:%i %p\") as assignedtotime,
-						date_Format(startdate,\"%c/%e/%Y\") as startdate, time_format(starttime,\"%l:%i %p\") as starttime,
-						date_Format(enddate,\"%c/%e/%Y\") as enddate, time_format(endtime,\"%l:%i %p\") as endtime
+						assignedtodate, assignedtotime,
+						startdate, starttime,
+						enddate, endtime
 						FROM notes WHERE id=".$noteid;
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,"Could not retrieve note record: ".mysql_error($dblink)."<br />".$querystatement);		

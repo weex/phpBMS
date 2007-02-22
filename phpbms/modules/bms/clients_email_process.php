@@ -49,7 +49,7 @@
 		if($queryresult){
 			$therecord=mysql_fetch_array($queryresult);
 			
-			$themessage=str_replace("[[todays_date]]",date("m/d/Y"),$themessage);
+			$themessage=str_replace("[[todays_date]]",dateToString(mktime()),$themessage);
 			foreach($therecord as $key=>$value)
 				$themessage=str_replace("[[".$key."]]",$value,$themessage);
 			

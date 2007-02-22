@@ -74,15 +74,15 @@
 
 		if ($therecord["parentid"]){
 
-			$lastTaskdate=dateFromSQLDate($therecord["startdate"]);
+			$lastTaskdate=stringToDate($therecord["startdate"],"SQL");
 		
 			$querystatement="SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE id=".$therecord["parentid"];
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(300,"Error Retrieving Parent Note Repeat Options: ".mysql_error($dblink)."<br />".$querystatement);
 			$therecord=mysql_fetch_array($queryresult);
-			$startdate=dateFromSQLDate($therecord["startdate"]);
-			$enddate=dateFromSQLDate($therecord["enddate"]);
-			$repeatuntil=dateFromSQLDate($therecord["repeatuntildate"]);
+			$startdate=stringToDate($therecord["startdate"],"SQL");
+			$enddate=stringToDate($therecord["enddate"],"SQL");
+			$repeatuntil=stringToDate($therecord["repeatuntildate"],"SQL");
 			$nextdate=$startdate;
 			$rpTimes=1;
 
@@ -206,7 +206,7 @@
 				
 		$newenddate="NULL";
 		if($enddate)			
-			$newenddate="\"".strftime("%Y-%m-%d",$newdate+($enddate-$startdate))."\"";
+			$newenddate="\"".dateToString($newdate+($enddate-$startdate),"SQL")."\"";
 					
 		$querystatement="SELECT id,type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,CURDATE() as creationdate,createdby,category,
 					attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid
@@ -215,7 +215,7 @@
 		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);				
 		$therecord=mysql_fetch_array($queryresult);
 	
-		$querystatement="SELECT id FROM notes WHERE parentid=".$parentid." AND completed=0 AND startdate=\"".strftime("%Y-%m-%d",$newdate)."\"";
+		$querystatement="SELECT id FROM notes WHERE parentid=".$parentid." AND completed=0 AND startdate=\"".dateToString($newdate,"SQL")."\"";
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,"Error Retrieving Parent Note: ".mysql_error($dblink)."<br />".$querystatement);				
 		if(mysql_num_rows($queryresult))
@@ -227,7 +227,7 @@
 		$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,`repeat`,repeatfrequency,repeattype,repeattimes,
 					type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,creationdate,createdby,category,
 					attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid) VALUES (
-					".$therecord["id"].", \"".strftime("%Y-%m-%d",$newdate)."\",".$newenddate.", 0, NULL,0,1,\"repeatDaily\",0,";
+					".$therecord["id"].", \"".dateToString($newdate,"SQL")."\",".$newenddate.", 0, NULL,0,1,\"repeatDaily\",0,";
 		$querystatement.="\"".$therecord["type"]."\", ";
 		$querystatement.="\"".$therecord["subject"]."\", ";
 		$querystatement.="\"".$therecord["content"]."\", ";

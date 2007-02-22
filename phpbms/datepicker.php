@@ -46,7 +46,7 @@
 		$today=mktime(0,0,0);
 		$todayArray=getdate($today);
 		if($selectedDate!="0000-00-00"){
-			$selDate=dateFromSQLDate($selectedDate);
+			$selDate=stringToDate($selectedDate,"SQL");
 			$tempDate=getdate($selDate);
 			$displayLongDate=$tempDate["month"]." ".$tempDate["mday"].", ".$tempDate["year"];
 		}

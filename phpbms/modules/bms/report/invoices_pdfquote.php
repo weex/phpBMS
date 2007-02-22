@@ -58,13 +58,13 @@
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
 					invoices.address1 as shiptoaddress1,invoices.address2 as shiptoaddress2,invoices.city as shiptocity,
 					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
-					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
-					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
+					invoicedate,
+					orderdate,
 					invoices.totalti-invoices.amountpaid as amountdue,
 					invoices.ponumber,invoices.discountamount,invoices.discountid,
 					
-					invoices.createdby, date_Format(invoices.creationdate,\"%c/%e/%Y %T\") as creationdate, 
-					invoices.modifiedby, date_Format(invoices.modifieddate,\"%c/%e/%Y %T\") as modifieddate
+					invoices.createdby, invoices.creationdate, 
+					invoices.modifiedby, invoices.modifieddate
 					FROM ((invoices INNER JOIN  clients ON invoices.clientid=clients.id) 
 						LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid)
 						LEFT JOIN shippingmethods ON shippingmethods.id=invoices.shippingmethodid
@@ -200,7 +200,7 @@
 	
 		$pdf->SetXY($leftmargin,$tempnext+$tempheight/2+0.03);
 		$pdf->Cell(.75,.13,$therecord["id"],$border_debug,0,"L");
-		$pdf->Cell(.75,.13,$therecord["orderdate"],$border_debug,0,"L");
+		$pdf->Cell(.75,.13,formatFromSQLDate($therecord["orderdate"]),$border_debug,0,"L");
 		$pdf->Cell(.75,.13,$therecord["ponumber"],$border_debug,0,"L");
 		
 		// THe last person who modified the record is the person who processed the order

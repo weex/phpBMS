@@ -101,7 +101,7 @@ function showClient($clientid,$basepath){
 		?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
 			<td><?php echo $invoicerecord["id"]?></td>
 			<td><?php echo $invoicerecord["type"]?></td>
-			<td><?php echo dateFormat($invoicerecord["thedate"])?></td>
+			<td><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
 			<td align="right"><?php echo currencyFormat($invoicerecord["totalti"])?></td>
 		</tr>
 		<?php }?></table><?php }?>	

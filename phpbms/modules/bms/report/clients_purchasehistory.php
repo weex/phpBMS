@@ -100,7 +100,7 @@ class purchaseHistoryReport{
 			
 	$querystatement="SELECT invoices.id,
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
-		if(invoices.type=\"Invoice\",Date_Format(invoices.invoicedate,\"%c/%e/%Y\"),Date_Format(invoices.orderdate,\"%c/%e/%Y\")) as formateddate, 
+		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as formateddate, 
 		invoices.type,
 		products.partname as partname, products.partnumber as partnumber,
 		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
@@ -211,7 +211,7 @@ TH {
 		</li>
 		<li>
 			date generated:<br />
-			<?php echo date("m/d/Y H:i");?>
+			<?php echo dateToString(mktime())." ".timeToString(mktime());?>
 		</li>
 		<li style="padding-left:30px;padding-right:20px;">
 			view:<br />
@@ -262,11 +262,13 @@ if(isset($_POST["command"])){
 			<legend>time frame</legend>
 			<p id="fromP">
 				<label for="fromdate">from</label><br />
-				<?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php 
+				$thedate=mktime(0,0,0,date("m"),1);
+				field_datepicker("fromdate",dateToString($thedate),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 			<p>
 				<label for="todate">to</label><br />
-				<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php field_datepicker("todate",dateToString(mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 		</fieldset>
 

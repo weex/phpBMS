@@ -59,3 +59,6 @@ UPDATE `menu` SET `name` ='configuration', `roleid` =0 WHERE `name` ='settings';
 UPDATE `menu` SET `name` ='Settings', `roleid` =0 WHERE `name` ='Admin';
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('my account','modules/base/myaccount.php',6,-10,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('----','',6,-5,1,1,NOW(),NOW(),0);
+CREATE TABLE `scheduler` (`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,`name` VARCHAR(45),`job` VARCHAR(128),`crontab` VARCHAR(64),`lastrun` DATETIME, `startdatetime` DATETIME, `enddatetime` DATETIME, `description` TEXT, `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0, `createdby` INTEGER UNSIGNED, `creationdate` DATETIME, `modifiedby` INTEGER UNSIGNED, `modifieddate` TIMESTAMP, PRIMARY KEY(`id`) )ENGINE = MYISAM;
+INSERT INTO `settings` (`name`, `value`) VALUES ('date_format','English, US');
+INSERT INTO `settings` (`name`, `value`) VALUES ('time_format','12 Hour');

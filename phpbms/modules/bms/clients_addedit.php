@@ -105,7 +105,7 @@
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
 				<label for="becameclient">became a client</label><br />
-				<input type="text" id="becameclient" name="becameclient" readonly="true" class="uneditable" value="<?php echo $therecord["becameclient"]?>" size="8" />
+				<input type="text" id="becameclient" name="becameclient" readonly="true" class="uneditable" value="<?php echo formatFromSQLDate($therecord["becameclient"])?>" size="8" />
 			</p>
 			
 			<p>

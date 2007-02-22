@@ -15,6 +15,14 @@
 		break;
 	} echo "\n\n";	
 	
+	//date formating
+	?>DATE_FORMAT="<?php echo $_SESSION["date_format"]?>";<?php
+	echo "\n\n";
+	
+	//time formating
+	?>TIME_FORMAT="<?php echo $_SESSION["time_format"]?>";<?php
+	echo "\n\n";
+	
  	if(isset($_SESSION["include_js"])){
 		echo $_SESSION["include_js"];
 		$_SESSION["include_js"]="";

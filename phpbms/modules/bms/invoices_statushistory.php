@@ -62,12 +62,8 @@
 					$assignedtoid=((int) $_POST["as".$historyid]);
 					$querystatement="UPDATE invoicestatushistory SET statusdate=";
 					if($value=="" || $value=="0/0/0000") $tempdate="NULL";
-					else{
-						$statusdate="/".ereg_replace(",.","/",$value);
-						$temparray=explode("/",$statusdate);
-						$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-					}
-					
+					else
+						$tempdate="\"".sqlDateFromString($value)."\"";
 					$querystatement.=$tempdate;
 					$querystatement.=",assignedtoid=".$assignedtoid;
 					$querystatement.=" WHERE id=".((int) $historyid);
@@ -82,8 +78,7 @@
 	$querystatement="SELECT id,name FROM invoicestatuses WHERE inactive=0 ORDER BY priority,name";
 	$statusresult=mysql_query($querystatement,$dblink);
 	
-	$querystatement="SELECT id,invoicestatusid,assignedtoid,
-					 date_Format(statusdate,\"%c/%e/%Y\") as statusdate
+	$querystatement="SELECT id, invoicestatusid, assignedtoid, statusdate
 					FROM invoicestatushistory WHERE invoiceid=".$refid;
 	$historyresult=mysql_query($querystatement,$dblink);
 	if(!$historyresult) reportError(300,"Error fetching status history:<br />".mysql_error($dblink));

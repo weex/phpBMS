@@ -166,7 +166,7 @@
 			<tr>
 				<td nowrap><?php echo $attachmentrecord["displayname"] ?></td>
 				<td><?php echo $attachmentrecord["recordid"] ?></td>
-				<td align="right"><?php echo formatDateTime($attachmentrecord["creationdate"]) ?></td>
+				<td align="right"><?php echo formatFromSQLDatetime($attachmentrecord["creationdate"]) ?></td>
 				<td>
 					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
 				</td>

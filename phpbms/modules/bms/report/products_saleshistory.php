@@ -97,8 +97,8 @@ class salesHistoryReport{
 		$temparray=explode("/",$this->todate);
 		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
 			
-		$querystatement="select invoices.id as id, Date_Format(invoices.orderdate,\"%c/%e/%Y\") as orderdate,
-			Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as invoicedate,
+		$querystatement="select invoices.id as id, invoices.orderdate,
+			invoices.invoicedate,
 			if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
 			lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
 			lineitems.unitprice as price, lineitems.unitcost as cost, lineitems.unitcost*lineitems.quantity as extendedcost
@@ -141,8 +141,8 @@ class salesHistoryReport{
 ?>
 	<tr>
 	 <td align="center" nowrap><?php echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?php echo $therecord["orderdate"]?$therecord["orderdate"]:"&nbsp;" ?></td>
-	 <td align="center" nowrap><?php echo $therecord["invoicedate"]?$therecord["invoicedate"]:"&nbsp;" ?></td>
+	 <td align="center" nowrap><?php echo $therecord["orderdate"]?formatFromSQLDate($therecord["orderdate"]):"&nbsp;" ?></td>
+	 <td align="center" nowrap><?php echo $therecord["invoicedate"]?formatFromSQLDate($therecord["invoicedate"]):"&nbsp;" ?></td>
 	 <td nowrap><?php echo $therecord["client"]?></td>
 	 <td align="center" nowrap><?php echo number_format($therecord["qty"],2)?></td>
 	 <td align="right" nowrap><?php echo "\$".number_format($therecord["cost"],2)?></td>
@@ -216,7 +216,7 @@ TH {
 		</li>
 		<li>
 			date generated:<br />
-			<?php echo date("m/d/Y H:i");?>
+			<?php echo dateToString(mktime())." ".timeToString(mktime())?>
 		</li>
 		<li style="padding-left:30px;padding-right:20px;">
 			view:<br />
@@ -267,11 +267,14 @@ if(isset($_POST["command"])){
 			<legend>time frame</legend>
 			<p id="fromP">
 				<label for="fromdate">from</label><br />
-				<?php field_datepicker("fromdate",date("m")."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php 
+					$thedate=dateToString(mktime(0,0,0,date("m"),1);
+					field_datepicker("fromdate",$thedate."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);
+				?>
 			</p>
 			<p>
 				<label for="todate">to</label><br />
-				<?php field_datepicker("todate",date("m/d/Y",mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php field_datepicker("todate",dateToString(mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 		</fieldset>
 

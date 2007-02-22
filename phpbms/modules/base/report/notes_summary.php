@@ -49,7 +49,7 @@
 		$sortorder=" ORDER BY notes.creationdate DESC";
 
 	//Generate the notes Query
-	$querystatement="SELECT users.firstname, users.lastname, notes.id, date_Format(notes.creationdate,\"%c/%e/%Y %T\") as thecreationdate,
+	$querystatement="SELECT users.firstname, users.lastname, notes.id, notes.creationdate,
 						notes.subject,notes.content 
 						FROM notes INNER JOIN users on notes.createdby=users.id ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=mysql_query($querystatement,$dblink);
@@ -79,7 +79,7 @@
 	$pdf->SetFont("Arial","B",16);
 	$pdf->Cell($tempwidth,.25,"Notes Summary",$border_debug,1,"L");
 	$pdf->SetFont("Arial","B",12);
-	$pdf->Cell($tempwidth,.18,"Date Created: ".date("m/d/Y"),$border_debug,1,"L");
+	$pdf->Cell($tempwidth,.18,"Date Created: ".dateToString(mktime()),$border_debug,1,"L");
 	$pdf->SetLineWidth(.04);
 	$pdf->Line($leftmargin,$pdf->GetY(),$paperwidth-$rightmargin,$pdf->GetY());
 	
@@ -91,7 +91,7 @@
 		$pdf->Cell($tempwidth-.5,.17,"ID: ".$therecord["id"],$border_debug,1,"L");
 
 		$pdf->SetX($leftmargin+.125);
-		$pdf->Cell($tempwidth-.5,.17,"Created: ".$therecord["firstname"]." ".$therecord["lastname"]." ".$therecord["thecreationdate"],$border_debug,1,"L");
+		$pdf->Cell($tempwidth-.5,.17,"Created: ".$therecord["firstname"]." ".$therecord["lastname"]." ".formatFromSQLDateTime($therecord["creationdate"]),$border_debug,1,"L");
 
 		$pdf->SetFont("Arial","B",11);
 		$pdf->SetXY($leftmargin+.25,$pdf->GetY()+.04);

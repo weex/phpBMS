@@ -109,10 +109,17 @@ function getRecords($id){
 	$querystatement="SELECT
 				id, subject, assignedtoid, `type`, content, importance, category,
 				attachedtabledefid, attachedid, parentid, location, private, `status`,
-				repeatfrequency, repeattype, repeatdays,repeattimes,`repeat`, date_Format(repeatuntildate,'%c/%e/%Y') as repeatuntildate,
-				completed,date_Format(completeddate,'%c/%e/%Y') as completeddate,date_Format(startdate,'%c/%e/%Y') as startdate,
-				time_format(starttime,'%l:%i %p') as starttime,date_Format(enddate,'%c/%e/%Y') as enddate, time_format(endtime,'%l:%i %p') as endtime,
-				assignedtoid,date_Format(assignedtodate,'%c/%e/%Y') as assignedtodate,time_format(assignedtotime,'%l:%i %p') as assignedtotime,assignedbyid,
+				repeatfrequency, repeattype, repeatdays,repeattimes,`repeat`, 
+				repeatuntildate,
+				completed,
+				completeddate,
+				startdate,
+				starttime,
+				enddate, 
+				endtime,
+				assignedtoid,
+				assignedtodate,
+				assignedtotime,assignedbyid,
 
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -199,21 +206,21 @@ function updateRecord($variables,$userid){
 
 			if(isset($variables["completed"])) {
 				$querystatement.="completed=1, "; 
-				$querystatement.="completeddate=".formatToSQLDate($variables["completeddate"]).", "; 
+				$querystatement.="completeddate=\"".sqlDateFromString($variables["completeddate"]).", "; 
 			}else {
 				$querystatement.="completed=0, completeddate=NULL, ";
 			}
 
 			if($variables["enddate"]!="") {
-				$querystatement.="enddate=".formatToSQLDate($variables["enddate"]).", "; 
-				$querystatement.="endtime=".formatToSQLTime($variables["endtime"]).", "; 
+				$querystatement.="enddate=\"".sqlDateFromString($variables["enddate"])."\", "; 
+				$querystatement.="endtime=\"".sqlTimeFromString($variables["endtime"])."\", "; 
 			} else {
 				$querystatement.="enddate=NULL,endtime=NULL, ";
 			}
 
 			if($variables["startdate"]!="") {
-				$querystatement.="startdate=".formatToSQLDate($variables["startdate"]).", "; 
-				$querystatement.="starttime=".formatToSQLTime($variables["starttime"]).", "; 
+				$querystatement.="startdate=\"".sqlDateFromString($variables["startdate"]).", "; 
+				$querystatement.="starttime=\"".sqlTimeFromString($variables["starttime"]).", "; 
 			} else {
 				$querystatement.="startdate=NULL,starttime=NULL, ";
 			}
@@ -240,7 +247,7 @@ function updateRecord($variables,$userid){
 				if($variables["rpuntil"]<1) $variables["repeattimes"]=$variables["rpuntil"];
 				$querystatement.="repeattimes=".$variables["repeattimes"].", ";
 				if($variables["repeattimes"]==-1)
-					$querystatement.="repeatuntildate=".formatToSQLDate($variables["repeatuntildate"]).", "; 
+					$querystatement.="repeatuntildate=\"".sqlDateFromString($variables["repeatuntildate"])."\", "; 
 				else
 					$querystatement.="repeatuntildate=NULL,"; 
 					
@@ -251,8 +258,8 @@ function updateRecord($variables,$userid){
 
 			if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
 			$querystatement.="assignedtoid=".$variables["assignedtoid"].", "; 
-			$querystatement.="assignedtodate=".formatToSQLDate($variables["assignedtodate"]).", "; 
-			$querystatement.="assignedtotime=".formatToSQLTime($variables["assignedtotime"]).", "; 
+			$querystatement.="assignedtodate=\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
+			$querystatement.="assignedtotime=\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
 			if($variables["assignedtoid"]!=$variables["assignedtochange"]){
 				if($variables["assignedtoid"]!="NULL")
 					$querystatement.="assignedbyid=".$userid.", "; 
@@ -314,20 +321,20 @@ function insertRecord($variables,$userid){
 
 	if(isset($variables["completed"])) {
 		$querystatement.="1, "; 
-		$querystatement.=formatToSQLDate($variables["completeddate"]).", "; 
+		$querystatement.="\"".sqlDateFromString($variables["completeddate"])."\", "; 
 	}else {
 		$querystatement.="0, NULL, ";
 	}
 
 	if($variables["enddate"]!="") {
-		$querystatement.=formatToSQLDate($variables["enddate"]).", "; 
-		$querystatement.=formatToSQLTime($variables["endtime"]).", "; 
+		$querystatement.="\"".sqlDateFromString($variables["enddate"])."\", "; 
+		$querystatement.="\"".sqlTimeFromString($variables["endtime"])."\", "; 
 	} else {
 		$querystatement.="NULL,NULL, ";
 	}
 	if($variables["startdate"]!="") {
-		$querystatement.=formatToSQLDate($variables["startdate"]).", "; 
-		$querystatement.=formatToSQLTime($variables["starttime"]).", "; 
+		$querystatement.="\"".sqlDateFromString($variables["startdate"])."\", "; 
+		$querystatement.="\"".sqlTimeFromString($variables["starttime"])."\", "; 
 	} else {
 		$querystatement.="NULL,NULL, ";
 	}
@@ -354,7 +361,7 @@ function insertRecord($variables,$userid){
 		if($variables["rpuntil"]<1) $variables["repeattimes"]=$variables["rpuntil"];
 		$querystatement.=$variables["repeattimes"].", ";
 		if($variables["repeattimes"]==-1)
-			$querystatement.=formatToSQLDate($variables["repeatuntildate"]).", "; 
+			$querystatement.="\"".sqlDateFromString($variables["repeatuntildate"])."\", "; 
 		else
 			$querystatement.="NULL,"; 
 
@@ -364,8 +371,8 @@ function insertRecord($variables,$userid){
 
 	if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
 	$querystatement.=$variables["assignedtoid"].", "; 
-	$querystatement.=formatToSQLDate($variables["assignedtodate"]).", "; 
-	$querystatement.=formatToSQLTime($variables["assignedtotime"]).", "; 
+	$querystatement.="\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
+	$querystatement.="\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
 	$assignedby=0;
 	if($variables["assignedtoid"]!=$variables["assignedtochange"])
 		if($variables["assignedtoid"]!="NULL")

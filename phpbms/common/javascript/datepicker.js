@@ -115,35 +115,7 @@ function dpUnhighlightDay(){
 	displayinfo.innerHTML=displayLongDate;
 }
 
-function stringToDate(sDate){
-	var sep="/";
-	var month=sDate.substring(0,sDate.indexOf(sep))
-	var day=sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1))
-	var year=sDate.substring(sDate.lastIndexOf(sep)+1);
-	year=parseInt(year,10);
-	if(year<100) year+=2000;
-	return new Date(year,parseInt(month,10)-1,parseInt(day,10));
-}
-
-function mysqlstringToDate(sDate){
-	var sep="-";
-	var year=sDate.substring(0,sDate.indexOf(sep))
-	var month=sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1))
-	var day=sDate.substring(sDate.lastIndexOf(sep)+1);
-	
-	return Date(year,month,day);
-}
-
-function dateToString(thedate){
-	var sep="/";
-	return (thedate.getMonth()+1)+sep+thedate.getDate()+sep+thedate.getFullYear();
-}
 
 function formatDateField(thefield){
-	if(validateDate(thefield.value)){
-		thefield.value=thefield.value.replace(/\-/g,"/");
-		var thedate=stringToDate(thefield.value);
-		thefield.value=dateToString(thedate);
-	} else
-	thefield.value="";
+	thefield.value=dateToString(stringToDate(thefield.value));
 }

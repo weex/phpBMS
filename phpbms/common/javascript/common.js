@@ -214,6 +214,122 @@ function dateFromField(englishdate,englishtime){
 	return thedate;	
 }
 
+/* DATE AND TIME --------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+function stringToDate(sDate,format){
+	if (!format) format=DATE_FORMAT;
+	var thedate="";
+
+	if(sDate){
+		var sep;
+		var month;
+		var day;
+		var year;
+		switch(format){
+			case "SQL":
+				sep="-";
+				year=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+				month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
+				day=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+			break;
+			case "English, US":
+				sep="/";
+				month=parseInt(sDate.substring(0,sDate.indexOf(sep)),10)-1;
+				day=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10);
+				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				if(year<100) year+=2000;
+			break;
+		}
+		thedate=new Date(year,month,day);
+	}
+	return thedate
+}
+
+
+function dateToString(thedate,format){
+	if(!format) format=DATE_FORMAT;
+	var sdate="";
+	
+	if(thedate){
+		var sep;
+		switch(format){
+			case "SQL":
+				sep="-";
+				sdate= thedate.getFullYear()+sep+(thedate.getMonth()+1)+sep+thedate.getDate();
+			break;
+			
+			case "English, US":
+				sep="/";
+				sdate= (thedate.getMonth()+1)+sep+thedate.getDate()+sep+thedate.getFullYear();
+			break;
+		}
+	}
+	return sdate;
+}
+
+function stringToTime(sTime,format){
+	if(!format) format=TIME_FORMAT;
+	var thetime="";
+	if(sTime){
+		var timeArray;
+		switch(format){
+			case "24 Hour":
+				timeArray=sTime.split(":");
+				if(timeArray.length=3)
+					thetime=new Date(0,0,0,parseInt(timeArray[0],10),parseInt(timeArray[1],10),parseInt(timeArray[2],10));
+			break;
+			
+			case "12 Hour":
+				timeadd=0;
+				if(sTime.indexOf(" PM"))
+					timeadd=12;
+				sTime=sTime.replace(/ AM/,"");
+				sTime=sTime.replace(/ PM/,"");
+				timeArray=sTime.split(":");
+				if(timeArray.length=2){
+					var hour=parseInt(timeArray[0],10);
+					if (hour!=12)
+						hour=hour+timeadd;
+						thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
+				}
+			break;
+		}
+	}
+	return thetime;
+}
+
+function timeToString(thetime,format){
+	sTime="";
+	if(!format) format=TIME_FORMAT;
+	if(thetime){
+		var hours=thetime.getHours();
+		var minutes=thetime.getMinutes();
+		var seconds=thetime.getSeconds();
+		var sep=":"
+		switch(format){
+			case "24 Hour":
+				if(hours<10) hours="0"+hours;
+				if(minutes<10) minutes="0"+minutes;
+				if(seconds<10) seconds="0"+seconds;
+				sTime=hours+sep+minutes+sep+seconds;
+			break;
+			
+			case "12 Hour":
+				var ampm=" AM";
+				if(hours>12)
+					hours=hours-12;
+				if(hours>11)
+					ampm=" PM";
+				if (hours=0) hours=12;
+				if(minutes<10) minutes="0"+minutes;				
+				sTime=hours+sep+minutes+ampm;
+			break;
+		}
+	}
+	return sTime;
+}
+
+/* MODAL ----------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- */
 
 function showModal(content,title,thewidth,thetop){

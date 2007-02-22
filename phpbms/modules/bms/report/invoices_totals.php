@@ -178,7 +178,7 @@ class totalReport{
 		$querystatement="SELECT ";
 		foreach($this->selectcolumns as $name=>$column)
 			$querystatement.=$column." AS `".$name."`,";
-		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, Date_Format(invoices.invoicedate,\"%c/%e/%Y\") as thedate";
+		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, invoices.invoicedate";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";		
 		$queryresult=mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(500,"Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);	
@@ -189,7 +189,7 @@ class totalReport{
 			<tr>
 				<td width="100%" style="padding-left:<?php echo ($indent+2)?>px;" class="invoices">
 				<?php echo $therecord["theid"]?> -
-				<?php echo $therecord["thedate"]?> - 
+				<?php echo formatFromSQLDate($therecord["invoicedate"])?> - 
 				<?php echo $therecord["thename"]?>					
 				</td>
 				<?php
@@ -286,7 +286,7 @@ TH {
 	</div>
 	<div>
 	date generated:<br />
-	<?php echo date("m/d/Y H:i");?>
+	<?php echo dateToString(mktime())." ".timeToString(mktime())?>
 	</div>
 </h2>
 <?php $this->showReportTable();?>

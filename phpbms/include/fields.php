@@ -277,12 +277,13 @@ function field_percentage($name,$value,$precision=1,$required=false,$message="",
 function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
-	   value =			Value for field 
+	   value =			Value for field (SQL formatted date)
 	   required =		true/false wether the field is validated by javascript before submitting for blank values
 	   message =		message displayed if not validate						
 	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
 						attribute value.
 	*/
+	$value=formatFromSQLDate($value);
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) 
 		foreach($attributes as $attribute => $tvalue) 
@@ -297,12 +298,13 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
-	   value =			Value for field 
+	   value =			Value for field (SQL formatted time)
 	   required =		true/false wether the field is validated by javascript before submitting for blank values
 	   message =		message displayed if not validate						
 	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
 						attribute value.
 	*/
+	$value=formatFromSQLTime($value);
 	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";				
 	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick time</span></button>

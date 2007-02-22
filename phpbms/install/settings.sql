@@ -8,3 +8,5 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('company_csz','Rio Rancho, NM 8
 INSERT INTO `settings` (`name`, `value`) VALUES ('company_phone','505.994.6388');
 INSERT INTO `settings` (`name`, `value`) VALUES ('stylesheet','mozilla');
 INSERT INTO `settings` (`name`, `value`) VALUES ('phone_format','US - Loose');
+INSERT INTO `settings` (`name`, `value`) VALUES ('date_format','English, US');
+INSERT INTO `settings` (`name`, `value`) VALUES ('time_format','12 Hour');

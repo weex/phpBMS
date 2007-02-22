@@ -80,7 +80,7 @@
 	$pdf->SetFont("Arial","B",16);
 	$pdf->Cell($tempwidth,.25,"Clients Notes Summary",$border_debug,1,"L");
 	$pdf->SetFont("Arial","",12);
-	$pdf->Cell($tempwidth,.18,"Date Created: ".date("m/d/Y"),$border_debug,1,"L");
+	$pdf->Cell($tempwidth,.18,"Date Created: ".dateToString(mktime()),$border_debug,1,"L");
 	$pdf->SetLineWidth(.04);
 	$pdf->Line($leftmargin,$pdf->GetY(),$paperwidth-$rightmargin,$pdf->GetY());
 	
@@ -107,8 +107,8 @@
 		$pdf->SetY($pdf->GetY()+.05);		
 		$pdf->SetLineWidth(.01);		
 
-		$querystatement="SELECT users.firstname, users.lastname, notes.id, date_Format(notes.creationdate,\"%c/%e/%Y %T\") as thecreationdate,
-							date_Format(notes.modifieddate,\"%c/%e/%Y %T\") as themodifieddate, users2.firstname as mfirstname ,users2.lastname as mlastname,
+		$querystatement="SELECT users.firstname, users.lastname, notes.id, notes.creationdate,
+							notes.modifieddate, users2.firstname as mfirstname ,users2.lastname as mlastname,
 							notes.attachedtabledefid,notes.attachedid , notes.subject, notes.content 
 							FROM (notes INNER JOIN users on notes.createdby=users.id) LEFT JOIN users as users2 on notes.modifiedby=users2.id
 							WHERE ".$notewhereclause." ORDER BY  notes.modifieddate DESC";
@@ -124,10 +124,10 @@
 			$pdf->Cell($tempwidth-.375,.17,"ID: ".$therecord["id"],$border_debug,1,"L");
 	
 			$pdf->SetX($leftmargin+.125);
-			$pdf->Cell($tempwidth-.375,.17,"Created: ".$therecord["firstname"]." ".$therecord["lastname"]." ".$therecord["thecreationdate"],$border_debug,1,"L");
+			$pdf->Cell($tempwidth-.375,.17,"Created: ".$therecord["firstname"]." ".$therecord["lastname"]." ".formatFromSQLDatetime($therecord["creationdate"]),$border_debug,1,"L");
 			
 			$pdf->SetX($leftmargin+.125);
-			$pdf->Cell($tempwidth-.375,.17,"Modified: ".$therecord["mfirstname"]." ".$therecord["mlastname"]." ".$therecord["themodifieddate"],$border_debug,1,"L");
+			$pdf->Cell($tempwidth-.375,.17,"Modified: ".$therecord["mfirstname"]." ".$therecord["mlastname"]." ".formatFromSQLDatetime($therecord["modifieddate"]),$border_debug,1,"L");
 			
 			if($therecord["attachedtabledefid"]==3)	{
 				$pdf->SetX($leftmargin+.125);

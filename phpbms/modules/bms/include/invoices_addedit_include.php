@@ -47,9 +47,7 @@ function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid,$dblink){
 
 	if($statusdate=="" || $statusdate=="0/0/0000") $tempdate="NULL";
 	else{
-		$sd="/".ereg_replace(",.","/",$statusdate);
-		$temparray=explode("/",$sd);
-		$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
+		$tempdate="\"".sqlDateFromString($statusdate)."\"";
 	}
 	$querystatement.=$tempdate.",";
 	if($assignedtoid=="")
@@ -318,11 +316,8 @@ function getRecords($id){
 					address1,address2,city,state,postalcode, country, amountpaid, 
 					trackingno, taxareaid, taxpercentage, totalti-amountpaid as amountdue,
 					weborder,webconfirmationno,ccverification, totaltaxable, discountamount,discountid,
-					date_Format(invoicedate,\"%c/%e/%Y\") as invoicedate,
-					date_Format(orderdate,\"%c/%e/%Y\") as orderdate,
-					date_Format(statusdate,\"%c/%e/%Y\") as statusdate,
+					invoicedate,orderdate,statusdate,requireddate,
 					ponumber,
-					date_Format(requireddate,\"%c/%e/%Y\") as requireddate,
 					
 				createdby, creationdate, 
 				modifiedby, modifieddate
@@ -353,7 +348,9 @@ function setRecordDefaults(){
 		$therecord["clientid"]=$_GET["cid"];
 	$therecord["type"]="Order";
 	$therecord["statusid"]=getDefaultStatus();
-	$therecord["statusdate"]=date("n/d/Y");
+	$therecord["orderdate"]=dateToString(mktime(),"SQL");
+	$therecord["invoicedate"]=NULL;
+	$therecord["statusdate"]=dateToString(mktime(),"SQL");
 	$therecord["assignedtoid"]="";
 
 	$therecord["leadsource"]="";
@@ -403,8 +400,6 @@ function setRecordDefaults(){
 	$therecord["amountpaid"]=0;
 	$therecord["amountdue"]=0;
 
-	$therecord["orderdate"]=date("n/d/Y");
-	$therecord["invoicedate"]=NULL;
 	$therecord["printedinstructions"]=$_SESSION["invoice_default_printinstruc"];
 
 	$therecord["ponumber"]="";
@@ -441,20 +436,14 @@ function updateRecord($variables,$userid){
 			$querystatement.="statusid=".((int)$variables["statusid"]).", ";
 			$querystatement.="assignedtoid=".((int) $variables["assignedtoid"]).", ";
 			if($variables["statusdate"]=="" || $variables["statusdate"]=="0/0/0000") $tempdate="NULL";
-			else{
-				$statusdate="/".ereg_replace(",.","/",$variables["statusdate"]);
-				$temparray=explode("/",$statusdate);
-				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-			}
+			else
+				$tempdate="\"".sqlDateFromString($variables["statusdate"])."\"";
 			$querystatement.="statusdate=".$tempdate.", ";
 
 			
-				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$variables["orderdate"]="/".ereg_replace(",.","/",$variables["orderdate"]);
-					$temparray=explode("/",$variables["orderdate"]);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+			if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
+			else
+				$tempdate="\"".sqlDateFromString($variables["orderdate"])."\"";
 			$querystatement.="orderdate=".$tempdate.", "; 
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
@@ -463,11 +452,9 @@ function updateRecord($variables,$userid){
 			$querystatement.="discountid=".$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$variables["invoicedate"]="/".ereg_replace(",.","/",$variables["invoicedate"]);
-					$temparray=explode("/",$variables["invoicedate"]);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+				else
+					$tempdate="\"".sqlDateFromString($variables["invoicedate"])."\"";
+
 				//make sure there is an invoice date if the status is set to invoice!!!
 				if($variables["type"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
 			$querystatement.="invoicedate=".$tempdate.", "; 
@@ -528,11 +515,9 @@ function updateRecord($variables,$userid){
 
 			$querystatement.="ponumber=\"".$variables["ponumber"]."\", "; 
 				if($variables["requireddate"]=="" || $variables["requireddate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$requireddate="/".ereg_replace(",.","/",$variables["requireddate"]);
-					$temparray=explode("/",$requireddate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+				else
+					$tempdate="\"".sqlDateFromString($variables["requireddate"])."\"";
+
 			$querystatement.="requireddate=".$tempdate.", "; 
 
 			if(!isset($variables["weborder"])) $variables["weborder"]=0; 
@@ -580,19 +565,13 @@ function insertRecord($variables,$userid){
 			$querystatement.=((int)$variables["statusid"]).", ";
 			$querystatement.=((int) $variables["assignedtoid"]).", ";
 			if($variables["statusdate"]=="" || $variables["statusdate"]=="0/0/0000") $tempdate="NULL";
-			else{
-				$statusdate="/".ereg_replace(",.","/",$variables["statusdate"]);
-				$temparray=explode("/",$statusdate);
-				$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-			}
+			else
+				$tempdate="\"".sqlDateFromString($variables["statusdate"])."\"";
 			$querystatement.=$tempdate.", ";
 			
 				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$orderdate="/".ereg_replace(",.","/",$variables["orderdate"]);
-					$temparray=explode("/",$orderdate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+				else
+					$tempdate="\"".sqlDateFromString($variables["orderdate"])."\"";
 			$querystatement.=$tempdate.", "; 
 
 				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
@@ -601,11 +580,9 @@ function insertRecord($variables,$userid){
 			$querystatement.=$variables["discountid"].", "; 
 
 				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$invoicedate="/".ereg_replace(",.","/",$variables["invoicedate"]);
-					$temparray=explode("/",$invoicedate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+				else
+					$tempdate="\"".sqlDateFromString($variables["invoicedate"])."\"";
+				
 				//make sure there is an invoice date if the status is set to invoice!!!
 				if($variables["type"]=="Invoice" && $tempdate=="NULL") $tempdate="Now()";
 			$querystatement.=$tempdate.", "; 
@@ -664,12 +641,9 @@ function insertRecord($variables,$userid){
 			$querystatement.=$variables["weborder"].", "; 
 			$querystatement.="\"".$variables["webconfirmationno"]."\", "; 
 			$querystatement.="\"".$variables["ponumber"]."\", "; 
-				if($variables["requireddate"]=="" || $variables["requireddate"]=="0/0/0000") $tempdate="NULL";
-				else{
-					$requireddate="/".ereg_replace(",.","/",$variables["requireddate"]);
-					$temparray=explode("/",$requireddate);
-					$tempdate="\"".$temparray[3]."-".$temparray[1]."-".$temparray[2]."\"";
-				}
+			if($variables["requireddate"]=="" || $variables["requireddate"]=="0/0/0000") $tempdate="NULL";
+			else
+				$tempdate="\"".sqlDateFromString($variables["requireddate"])."\"";
 			$querystatement.=$tempdate.", "; 
 				
 	//==== Almost all records should have this =========

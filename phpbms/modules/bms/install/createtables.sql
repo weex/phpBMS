@@ -78,7 +78,7 @@ CREATE TABLE discounts (
 ) TYPE=MyISAM;
 
 CREATE TABLE `invoices` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `clientid` int(11) NOT NULL default '0',
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
   `status` enum('Open','Committed','Packed','Shipped') default NULL,
@@ -129,7 +129,7 @@ CREATE TABLE `invoices` (
   `modifieddate` timestamp,
   UNIQUE KEY `theid` (`id`),
   KEY `client` (`clientid`)
-) TYPE=MyISAM PACK_KEYS=0;
+) TYPE=MyISAM AUTO_INCREMENT=1000 PACK_KEYS=0;
 
 
 CREATE TABLE lineitems (
