@@ -13,7 +13,7 @@ INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; backgro
 INPUT[disabled]:Active{border:1px outset black;}
 FORM{margin:0px;padding:0px;}
 
-
+.currency{text-align:right;}
 .uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1;color:#666666;}
 .disabledtext{color:#CCCCCC;}
 .radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}

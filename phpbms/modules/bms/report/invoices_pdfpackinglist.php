@@ -308,7 +308,7 @@
 		$pdf->Cell($shippingmethodwidth,.15,$therecord["shippingmethod"],$border_debug,0,"L");
 		$pdf->Cell($estimatedboxeswidth,.15,$total_boxes,$border_debug,0,"C");
 		$pdf->Cell($totalweightwidth,.15,number_format($therecord["totalweight"],2),$border_debug,0,"C");
-		$pdf->Cell($shippingwidth,.15,currencyFormat($therecord["shipping"]),$border_debug,0,"R");
+		$pdf->Cell($shippingwidth,.15,numberToCurrency($therecord["shipping"]),$border_debug,0,"R");
 		
 	}// end fetch_array while loop
 

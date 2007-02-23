@@ -102,7 +102,7 @@ function showClient($clientid,$basepath){
 			<td><?php echo $invoicerecord["id"]?></td>
 			<td><?php echo $invoicerecord["type"]?></td>
 			<td><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
-			<td align="right"><?php echo currencyFormat($invoicerecord["totalti"])?></td>
+			<td align="right"><?php echo numberToCurrency($invoicerecord["totalti"])?></td>
 		</tr>
 		<?php }?></table><?php }?>	
 	</div>

@@ -79,7 +79,7 @@ function updateStatusChange(){
 function updateStatusDate(){
 	var statusdate=getObjectFromID("statusdate");
 	var today=new Date();
-	statusdate.value=englishDate(today);
+	statusdate.value=dateToString(today);
 	
 	updateStatusChange();
 }
@@ -152,7 +152,7 @@ function getDiscount(){
 	
 	theitem.value=thevalue;
 	var thediscount=getObjectFromID("discountamount");
-	thediscount.value=formatCurrency(0);
+	thediscount.value=numberToCurrency(0);
 	
 	calculateTotal();
 	return true;
@@ -560,7 +560,7 @@ function addLine(thetd){
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
 	temptd.className="small";
-	temptd.innerHTML=(unitprice.value=="")?formatCurrency(0):unitprice.value;
+	temptd.innerHTML=(unitprice.value=="")?numberToCurrency(0):unitprice.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
@@ -574,7 +574,7 @@ function addLine(thetd){
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
 	temptd.className="small";
-	temptd.innerHTML=(extended.value=="")?formatCurrency(0):extended.value;
+	temptd.innerHTML=(extended.value=="")?numberToCurrency(0):extended.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
@@ -619,9 +619,9 @@ function addLine(thetd){
 	taxable.value=1;
 	unitweight.value=0
 	unitcost.value=0
-	unitprice.value=formatCurrency(0);
+	unitprice.value=numberToCurrency(0);
 	quantity.value="1";
-	extended.value=formatCurrency(0);
+	extended.value=numberToCurrency(0);
 	autofill["partname"]["ch"]="";
 	autofill["partname"]["uh"]="";
 	autofill["partname"]["vl"]="";	
@@ -687,13 +687,13 @@ function calculatePaidDue(){
 
 	//first calculate and reformat amountpaid
 	var numpaid=currencyToNumber(paid);
-	paid=formatCurrency(numpaid);
+	paid=numberToCurrency(numpaid);
 	document.forms["record"]["amountpaid"].value=paid;
 
 	//Next Calculate Amount Due
 	var numtotal=currencyToNumber(total);
 	var due=numtotal-numpaid;
-	due=formatCurrency(due);
+	due=numberToCurrency(due);
 	
 	document.forms["record"]["amountdue"].value=due;
 }
@@ -722,7 +722,7 @@ function calculateTotal(){
 			numDiscount=parseFloat(discountFromID.value);
 		}
 	}
-	discountValue=formatCurrency(numDiscount);
+	discountValue=numberToCurrency(numDiscount);
 	thediscount.value=discountValue;
 
 	//calculate totaltaxable
@@ -730,12 +730,12 @@ function calculateTotal(){
 
 	//calculate and reformat subtotal
 	var numsubtotal=parseFloat(thetotalBD.value)-numDiscount;
-	var subtotalValue=formatCurrency(numsubtotal);
+	var subtotalValue=numberToCurrency(numsubtotal);
 	subtotal.value=subtotalValue;
 
 	//next calculate and reformat shipping
 	var numshipping=currencyToNumber(shipping.value);
-	shippingValue=formatCurrency(numshipping);
+	shippingValue=numberToCurrency(numshipping);
 	shipping.value=shippingValue;
 
 	//next calculate and reformat tax
@@ -753,12 +753,12 @@ function calculateTotal(){
 		taxpercentage.value=taxpercentagevalue;
 		validatePercentage(taxpercentage,5);
 	}
-	taxValue=formatCurrency(numtax);
+	taxValue=numberToCurrency(numtax);
 	tax.value=taxValue;
 
 	//last calculate and format the grand total
 	var thetotal=numsubtotal+numshipping+numtax;
-	thetotal=formatCurrency(thetotal);
+	thetotal=numberToCurrency(thetotal);
 	totalti.value=thetotal;
 	
 	calculatePaidDue();
@@ -772,7 +772,7 @@ function calculateExtended(){
 	//=================================
 	var thecurrency=document.forms["record"]["price"].value;
 	theprice=currencyToNumber(thecurrency);
-	newdollar=formatCurrency(theprice);
+	newdollar=numberToCurrency(theprice);
 	document.forms["record"]["price"].value=newdollar;
 		
 	//==================================
@@ -786,7 +786,7 @@ function calculateExtended(){
 	// Last, figure extended and reformat to dollar
 	//=============================================
 	var extended=(theqty*theprice).toString();
-	extended=formatCurrency(extended);
+	extended=numberToCurrency(extended);
 	document.forms["record"]["extended"].value=extended;
 }
 

@@ -122,10 +122,8 @@ function updateRecord($variables,$userid){
 				if($variables["percentvalue"]=="")
 					$variables["percentvalue"]="0";
 				$querystatement.="value=".$variables["percentvalue"].", "; 
-			} else {
-				$amountvalue=ereg_replace("\\\$|,","",$variables["amountvalue"]);
-				$querystatement.="value=".$amountvalue.", "; 
-			}
+			} else 
+				$querystatement.="value=".currencyToNumber($variables["amountvalue"]).", "; 
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -157,10 +155,8 @@ function insertRecord($variables,$userid){
 				if($variables["percentvalue"]=="")
 					$variables["percentvalue"]="0";
 				$querystatement.=$variables["percentvalue"].", "; 
-			} else {
-				$amountvalue=ereg_replace("\\\$|,","",$variables["amountvalue"]);
-				$querystatement.=$amountvalue.", "; 
-			}
+			} else 
+				$querystatement.=currencyToNumber($variables["amountvalue"]).", "; 
 				
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 

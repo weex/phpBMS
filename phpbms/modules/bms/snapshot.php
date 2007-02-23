@@ -116,15 +116,15 @@ function showTodaysOrders($interval="1 DAY"){
 			<td><?php echo $therecord["id"]?></td>
 			<td align=center><?php echo $therecord["status"]?></td>
 			<td><?php echo htmlspecialchars($therecord["thename"])?></td>
-			<td align="right"><?php echo currencyFormat($therecord["total"])?></td>
-			<td align="right"><?php echo currencyFormat($therecord["amtdue"])?></td>
+			<td align="right"><?php echo numberToCurrency($therecord["total"])?></td>
+			<td align="right"><?php echo numberToCurrency($therecord["amtdue"])?></td>
 		</tr><?php }?>
 		<tr class="queryfooter">
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
-			<td align="right"><?php echo currencyFormat($total)?></td>
-			<td align="right"><?php echo currencyFormat($totaldue)?></td>
+			<td align="right"><?php echo numberToCurrency($total)?></td>
+			<td align="right"><?php echo numberToCurrency($totaldue)?></td>
 		</tr>
 		</table><?php
 	} else {?><div class="small disabledtext">no orders entered in last day</div><?php

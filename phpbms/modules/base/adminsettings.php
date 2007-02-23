@@ -112,7 +112,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 
 		<p>
 			<label for="sencryption_seed">encryption seed</label><br />
-			<?php field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
+			<?php field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Encryption seed name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
 		</p>
 
 		<p>
@@ -210,7 +210,23 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 				<option value="12 Hour" <?php if($_SESSION["time_format"]=="12 Hour")  echo "selected=\selected\"";?>>12 Hour (<?php echo timeToString(mktime(),"12 Hour")?>)</option>
 			</select>
 		</p>
-
+		<p>&nbsp;</p>
+		<p>
+			<label for="scurrency_symbol">currency symbol</label><br />
+			<?php field_text("scurrency_symbol",$_SESSION["currency_symbol"],1,"Currency symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"8")); ?>
+		</p>
+		<p>
+			<label for="scurrency_accuracy">currency decimal points of accuracy</label><br />
+			<?php field_text("scurrency_accuracy",$_SESSION["currency_accuracy"],1,"Currency accuracy name cannot be blank and must be a valid integer.","integer",Array("size"=>"4","maxlength"=>"1")); ?>
+		</p>
+		<p>
+			<label for="sdecimal_symbol">decimal symbol</label><br />
+			<?php field_text("sdecimal_symbol",$_SESSION["decimal_symbol"],1,"Decimal symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
+		</p>
+		<p>
+			<label for="sthousands_separator">thousands separator</label><br />
+			<?php field_text("sthousands_separator",$_SESSION["thousands_separator"],1,"Thousands separator name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
+		</p>
 	</fieldset>
 	<?php 
 	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";

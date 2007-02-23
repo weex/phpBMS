@@ -233,9 +233,9 @@
 			</script>
 			</td>
 			<td width="100%"><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
-			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo currencyFormat(0)?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
+			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo numberToCurrency(0)?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
-			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo currencyFormat(0)?>" size="12" maxlength="16" readonly="true" /></td>
+			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo numberToCurrency(0)?>" size="12" maxlength="16" readonly="true" /></td>
 			<td nowrap align="center"><button type="button" onclick="addLine(this.parentNode);" tabindex="20" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);

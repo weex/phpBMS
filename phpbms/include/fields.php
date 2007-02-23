@@ -234,10 +234,10 @@ function field_web($name,$value="http://",$attributes=""){
 
 
 //============================================================================================
-function field_dollar($name,$value=0,$required=false,$message="",$attributes="") {
+function field_currency($name,$value=0,$required=false,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
-	   value =			Value for field 
+	   value =			Value for field
 	   required =		true/false wether the field is validated by javascript before submitting for blank values
 	   message =		message displayed if not validate						
 	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
@@ -245,11 +245,14 @@ function field_dollar($name,$value=0,$required=false,$message="",$attributes="")
 	*/
 
 	if(!is_numeric($value)) $value=0;
-	$value=currencyFormat($value);
+	$value=numberToCurrency($value);
 	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> onchange="validateCurrency(this);" style="text-align:right;" /><?php
+	if ($attributes) 
+		foreach($attributes as $attribute => $tvalue) 
+			if($attribute!="onchange" && $attribute!="class")echo " ".$attribute."=\"".$tvalue."\"";
+	?> onchange="validateCurrency(this);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"] ?>" class="currency<?php if(isset($attributes["class"])) echo " ".$attributes["class"] ?>" /><?php
+
 	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
 }
 

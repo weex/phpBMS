@@ -206,7 +206,7 @@ function updateRecord($variables,$userid){
 
 			if(isset($variables["completed"])) {
 				$querystatement.="completed=1, "; 
-				$querystatement.="completeddate=\"".sqlDateFromString($variables["completeddate"]).", "; 
+				$querystatement.="completeddate=\"".sqlDateFromString($variables["completeddate"])."\", "; 
 			}else {
 				$querystatement.="completed=0, completeddate=NULL, ";
 			}

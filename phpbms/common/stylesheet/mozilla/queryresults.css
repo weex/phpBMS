@@ -40,6 +40,7 @@
 .querytable th A:hover{color: white;}
 
 .querytable td.queryfooter, .queryfooter{
+	white-space:nowrap;
 	background:#BBBBBB;
 	border:1px solid #999999;
 	padding:5px;

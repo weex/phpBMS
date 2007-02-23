@@ -78,11 +78,11 @@
 			<legend>statistics</legend>
 			<p>
 				<strong>Orders</strong> (<?php echo $stats["Order"]["total"]?>)<br/>
-				total: <?php echo currencyFormat($stats["Order"]["sum"])?>
+				total: <?php echo numberToCurrency($stats["Order"]["sum"])?>
 			</p>
 			<p>
 				<strong>Invoices</strong> (<?php echo $stats["Invoice"]["total"]?>)<br />
-				total: <?php echo currencyFormat($stats["Invoice"]["sum"])?>
+				total: <?php echo numberToCurrency($stats["Invoice"]["sum"])?>
 			</p>
 		</fieldset>
 	</div>
@@ -108,7 +108,7 @@
 			</p>
 			<p id="aValue">
 				<label for="amountvalue">value</label><br />
-				<?php field_dollar("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
+				<?php field_currency("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
 			</p>			
 		</fieldset>
 		

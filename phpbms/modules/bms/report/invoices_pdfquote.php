@@ -322,11 +322,11 @@
 		$pdf->SetFont("Arial","B",10);
 		$pdf->SetXY($leftmargin,$tempnext+.2+.03);
 		if($therecord["discountamount"]!=0)
-			$pdf->Cell($discountwidth,.15,currencyFormat($therecord["discountamount"]),$border_debug,0,"L");
-		$pdf->Cell($totaltniwidth,.15,currencyFormat($therecord["totaltni"]),$border_debug,0,"R");
-		$pdf->Cell($taxwidth,.15,currencyFormat($therecord["tax"]),$border_debug,0,"R");
-		$pdf->Cell($shippingwidth,.15,currencyFormat($therecord["shipping"]),$border_debug,0,"R");
-		$pdf->Cell($totalwidth,.15,currencyFormat($therecord["totalti"]),$border_debug,0,"R");
+			$pdf->Cell($discountwidth,.15,numberToCurrency($therecord["discountamount"]),$border_debug,0,"L");
+		$pdf->Cell($totaltniwidth,.15,numberToCurrency($therecord["totaltni"]),$border_debug,0,"R");
+		$pdf->Cell($taxwidth,.15,numberToCurrency($therecord["tax"]),$border_debug,0,"R");
+		$pdf->Cell($shippingwidth,.15,numberToCurrency($therecord["shipping"]),$border_debug,0,"R");
+		$pdf->Cell($totalwidth,.15,numberToCurrency($therecord["totalti"]),$border_debug,0,"R");
 		// If a tax area is defined, print the tax information
 		if($therecord["taxareaid"]) {
 			$taxstatement="select id, name, percentage from tax where id=".$therecord["taxareaid"];

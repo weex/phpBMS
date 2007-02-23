@@ -178,44 +178,20 @@ function disableSave(){
 		tempButton.disabled=true;		
 }
 
-function englishTime(thedate){
-			var ampm = " AM";
-			var hours = thedate.getHours()
-			if(hours==0) hours=12;
-			if (hours>12){
-				var ampm = " PM";
-				hours=hours-12
-			}
-			var minutes=thedate.getMinutes();
-			if(minutes<10)
-				minutes="0"+minutes;
-			return hours+":"+minutes+ampm;
-}
-
-function englishDate(thedate){
-	return (thedate.getMonth()+1)+"/"+thedate.getDate()+"/"+thedate.getFullYear();	
-}
-
-function dateFromField(englishdate,englishtime){
-	var theyear= parseInt(englishdate.substring(englishdate.lastIndexOf("/")+1),10);
-	var themonth= parseInt(englishdate.substring(0,englishdate.indexOf("/")),10)-1;
-	var theday= parseInt(englishdate.substring(englishdate.indexOf("/")+1,englishdate.lastIndexOf("/")),10);
-	var thedate= new Date(theyear,themonth,theday);
-	if(englishtime){
-		var thehour=parseInt(englishtime.substring(0,englishtime.indexOf(":")),10);
-		var theminute=parseInt(englishtime.substring(englishtime.indexOf(":")+1,englishtime.indexOf(" ")),10);
-		var AMPM=englishtime.substring(englishtime.indexOf(" ")+1);
-		if(AMPM=="PM" && thehour!=12)
-			thehour+=12;
-		else if (AMPM=="AM" && thehour==12)
-			thehour=0;
-		thedate.setHours(thehour,theminute);
-	}
-	return thedate;	
-}
 
 /* DATE AND TIME --------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- */
+function stringToDatetime(sDate,sTime){
+	thedate=stringToDate(sDate)
+	if(sTime){
+		var thetime=stringToTime(sTime);
+		thedate.setHours(thetime.getHours());
+		thedate.setMinutes(thetime.getMinutes());
+		thedate.setSeconds(thetime.getSeconds());
+	}
+	return thedate;
+}
+
 function stringToDate(sDate,format){
 	if (!format) format=DATE_FORMAT;
 	var thedate="";
@@ -252,15 +228,25 @@ function dateToString(thedate,format){
 	
 	if(thedate){
 		var sep;
+		var month;
+		var day;
 		switch(format){
 			case "SQL":
-				sep="-";
-				sdate= thedate.getFullYear()+sep+(thedate.getMonth()+1)+sep+thedate.getDate();
+				sep="-";			
+				month=thedate.getMonth()+1;
+				if(month<10) month="0"+month;
+				day=thedate.getDate();
+				if(day<10) day="0"+day;					
+				sdate= thedate.getFullYear()+sep+month+sep+day;
 			break;
 			
 			case "English, US":
 				sep="/";
-				sdate= (thedate.getMonth()+1)+sep+thedate.getDate()+sep+thedate.getFullYear();
+				month=thedate.getMonth()+1;
+				if(month<10) month="0"+month;
+				day=thedate.getDate();
+				if(day<10) day="0"+day;					
+				sdate= month+sep+day+sep+thedate.getFullYear();
 			break;
 		}
 	}
@@ -327,6 +313,46 @@ function timeToString(thetime,format){
 		}
 	}
 	return sTime;
+}
+/* CURRENCY -------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+function numberToCurrency(number){
+	var currency="";
+	if(isNaN(parseFloat(number))) number=0;
+
+	if(number<0)
+		currency+="-";
+	number=Math.abs(number);
+	currency+=CURRENCY_SYMBOL;
+	if(number>0 && number <0)
+		currency+="0";
+
+	var withThousands=parseInt(number).toString();
+  	var objRegExp  = new RegExp('(-?[0-9]+)([0-9]{3})');
+	while(objRegExp.test(withThousands))
+       withThousands = withThousands.replace(objRegExp, '$1'+THOUSANDS_SEPARATOR+'$2');
+
+	var lessthanone=Math.round((number-Math.round(number))*(Math.pow(10,CURRENCY_ACCURACY))).toString();
+	while(lessthanone.length<CURRENCY_ACCURACY)
+		lessthanone="0"+lessthanone;
+	currency+=withThousands;
+	if(CURRENCY_ACCURACY!=0)
+		currency+=DECIMAL_SYMBOL+lessthanone;
+	return currency;
+}
+
+function currencyToNumber(currency){
+	var number=0;
+	var thousSep=THOUSANDS_SEPARATOR;
+	if(thousSep=="." || thousSep=="*" || thousSep=="[" || thousSep=="]" || thousSep=="-" || thousSep=="+")
+		thousSep="\\"+thousSep;
+	var objRegExp  = new RegExp(thousSep,"g");
+	currency=currency.replace(objRegExp,"");
+	currency=currency.replace(CURRENCY_SYMBOL,"");
+	currency=currency.replace(DECIMAL_SYMBOL,".");
+	if(currency)
+		number=parseFloat(currency);
+	return number
 }
 
 /* MODAL ----------------------------------------------------------------------- */

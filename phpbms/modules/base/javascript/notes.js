@@ -175,14 +175,14 @@ function checkEndDate(){
 		var enddatefield=getObjectFromID("enddate");
 		var endtimefield=getObjectFromID("endtime");
 		var starttimefield=getObjectFromID("starttime");
-		var thestart=dateFromField(startdatefield.value,starttimefield.value);
-		var theend=dateFromField(enddatefield.value,endtimefield.value);
+		var thestart=stringToDatetime(startdatefield.value,starttimefield.value);
+		var theend=stringToDatetime(enddatefield.value,endtimefield.value);
 		if (thestart>theend){
 			theend=thestart;
 			theend.setHours(theend.getHours()+1);
-			enddatefield.value=englishDate(theend);
+			enddatefield.value=dateToString(theend);
 			if(starttimefield.value)
-				endtimefield.value=englishTime(theend);
+				endtimefield.value=timeToString(theend);
 		}
 	}
 }
@@ -218,8 +218,8 @@ function dateChecked(type){
 			var today=new Date();
 			if(type=="end")
 				today.setHours(today.getHours()+1);
-			thedate.value= englishDate(today);
-			thetime.value= englishTime(today);
+			thedate.value= dateToString(today);
+			thetime.value= timeToString(today);
 		}
 		thetext.className=null;
 		thedate.removeAttribute("readonly");
@@ -369,7 +369,7 @@ function setEnglishDates(){
 	var byDayText= getObjectFromID("rpmobyday");	
 	var startdate= getObjectFromID("startdate");
 	if(startdate.value=="") return false;
-	var thedate= dateFromField(startdate.value)
+	var thedate= stringToDatetime(startdate.value)
 	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")),10);
 	
 	var dayending="th";

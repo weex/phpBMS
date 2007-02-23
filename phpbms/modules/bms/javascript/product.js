@@ -122,7 +122,7 @@ function calculatePrice(){
 	
 	unitcost=currencyToNumber(thecost.value);
 	var newnumber=(Math.round((unitcost+(markup*unitcost/100))*100)/100).toString();
-	theprice.value=formatCurrency(newnumber);	
+	theprice.value=numberToCurrency(newnumber);	
 }
 
 function updatePictureStatus(pic,status){

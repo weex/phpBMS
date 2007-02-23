@@ -148,13 +148,13 @@
 			<legend>price / cost</legend>
 			<p>
 				<label for="unitprice" class="important">sell price</label><br />
-				<?php field_dollar("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
+				<?php field_currency("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
 				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
 			</p>
 			
 			<p class="costsP">
 				<label for="unitcost">cost</label><br />
-				<?php field_dollar("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
+				<?php field_currency("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
 				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>								
 			</p>			
 			<p class="costsP">

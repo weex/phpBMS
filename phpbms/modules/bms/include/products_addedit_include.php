@@ -141,12 +141,9 @@ function updateRecord($variables,$userid){
 
 			if(isset($variables["inactive"])) $querystatement.="inactive=1, "; else $querystatement.="inactive=0, ";
 			if(isset($variables["taxable"])) $querystatement.="taxable=1, "; else $querystatement.="taxable=0, ";
-		
-				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
-				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
-			
-			$querystatement.="unitprice=".$unitprice.", "; 
-			$querystatement.="unitcost=".$unitcost.", "; 
+					
+			$querystatement.="unitprice=".currencyToNumber($variables["unitprice"]).", "; 
+			$querystatement.="unitcost=".currencyToNumber($variables["unitcost"]).", "; 
 			$querystatement.="unitofmeasure=\"".$variables["unitofmeasure"]."\", "; 
 
 			$querystatement.="type=\"".$variables["type"]."\", "; 
@@ -238,12 +235,9 @@ function insertRecord($variables,$userid){
 			if(isset($variables["inactive"])) $querystatement.="1, "; else $querystatement.="0, ";
 			if(isset($variables["taxable"])) $querystatement.="1, "; else $querystatement.="0, ";
 			$querystatement.="\"".$variables["memo"]."\", "; 
-		
-				$unitprice=ereg_replace("\\\$|,","",$variables["unitprice"]);
-				$unitcost=ereg_replace("\\\$|,","",$variables["unitcost"]);
-			
-			$querystatement.=$unitprice.", "; 
-			$querystatement.=$unitcost.", "; 
+					
+			$querystatement.=currencyToNumber($variables["unitprice"]).", "; 
+			$querystatement.=currencyToNumber($variables["unitcost"]).", "; 
 			$querystatement.="\"".$variables["unitofmeasure"]."\", "; 
 
 			$querystatement.="\"".$variables["type"]."\", "; 

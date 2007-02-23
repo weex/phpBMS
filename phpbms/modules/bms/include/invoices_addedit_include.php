@@ -145,7 +145,7 @@ function showDiscountSelect($id,$dblink){
 		<?php 
 			while($therecord=mysql_fetch_array($queryresult)){
 				if($therecord["type"]=="amount")
-					$therecord["value"]=currencyFormat($therecord["value"]);
+					$therecord["value"]=numberToCurrency($therecord["value"]);
 				else
 					$therecord["value"].="%";
 				?><option value="<?php echo $therecord["id"]?>" <?php if($id==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["value"]?></option><?php
@@ -167,7 +167,7 @@ function getDiscount($id,$dblink){
 			$therecord["value"].="%";
 			$therecord["name"].=": ".$therecord["value"];
 		} else
-			$therecord["name"].=": ".currencyFormat($therecord["value"]);
+			$therecord["name"].=": ".numberToCurrency($therecord["value"]);
 	}
 	$therecord["name"]=htmlspecialchars($therecord["name"]);
 	return $therecord;
@@ -446,8 +446,7 @@ function updateRecord($variables,$userid){
 				$tempdate="\"".sqlDateFromString($variables["orderdate"])."\"";
 			$querystatement.="orderdate=".$tempdate.", "; 
 
-				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
-			$querystatement.="discountamount=".$discountamount.", ";
+			$querystatement.="discountamount=".currencyToNumber($variables["discountamount"]).", ";
 			if($variables["discountid"]=="")$variables["discountid"]="NULL";
 			$querystatement.="discountid=".$variables["discountid"].", "; 
 
@@ -466,19 +465,12 @@ function updateRecord($variables,$userid){
 			$querystatement.="postalcode=\"".$variables["postalcode"]."\", "; 
 			$querystatement.="country=\"".$variables["country"]."\", "; 
 
-				$totaltni=ereg_replace("\\\$|,","",$variables["totaltni"]);
-				$totaltaxable=ereg_replace("\\\$|,","",$variables["totaltaxable"]);
-				$totalti=ereg_replace("\\\$|,","",$variables["totalti"]);
-				$shipping=ereg_replace("\\\$|,","",$variables["shipping"]);
-				$tax=ereg_replace("\\\$|,","",$variables["tax"]);
-				$amountpaid=ereg_replace("\\\$|,","",$variables["amountpaid"]);
-
-			$querystatement.="totaltni=".$totaltni.", "; 
-			$querystatement.="totaltaxable=".$totaltaxable.", "; 
-			$querystatement.="totalti=".$totalti.", "; 
-			$querystatement.="shipping=".$shipping.", "; 
-			$querystatement.="tax=".$tax.", "; 
-			$querystatement.="amountpaid=".$amountpaid.", "; 
+			$querystatement.="totaltni=".currencyToNumber($variables["totaltni"]).", "; 
+			$querystatement.="totaltaxable=".currencyToNumber($variables["totaltaxable"]).", "; 
+			$querystatement.="totalti=".currencyToNumber($variables["totalti"]).", "; 
+			$querystatement.="shipping=".currencyToNumber($variables["shipping"]).", "; 
+			$querystatement.="tax=".currencyToNumber($variables["tax"]).", "; 
+			$querystatement.="amountpaid=".currencyToNumber($variables["amountpaid"]).", "; 
 
 			$querystatement.="totalcost=".$variables["totalcost"].", "; 
 			$querystatement.="totalweight=".$variables["totalweight"].", "; 
@@ -564,22 +556,21 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["type"]."\", "; 
 			$querystatement.=((int)$variables["statusid"]).", ";
 			$querystatement.=((int) $variables["assignedtoid"]).", ";
-			if($variables["statusdate"]=="" || $variables["statusdate"]=="0/0/0000") $tempdate="NULL";
+			if($variables["statusdate"]=="") $tempdate="NULL";
 			else
 				$tempdate="\"".sqlDateFromString($variables["statusdate"])."\"";
 			$querystatement.=$tempdate.", ";
 			
-				if($variables["orderdate"]=="" || $variables["orderdate"]=="0/0/0000") $tempdate="NULL";
+				if($variables["orderdate"]=="") $tempdate="NULL";
 				else
 					$tempdate="\"".sqlDateFromString($variables["orderdate"])."\"";
 			$querystatement.=$tempdate.", "; 
 
-				$discountamount=ereg_replace("\\\$|,","",$variables["discountamount"]);
-			$querystatement.=$discountamount.", "; 				
+			$querystatement.=currencyToNumber($variables["discountamount"]).", "; 				
 			if($variables["discountid"]=="")$variables["discountid"]="NULL";
 			$querystatement.=$variables["discountid"].", "; 
 
-				if($variables["invoicedate"]=="" || $variables["invoicedate"]=="0/0/0000") $tempdate="NULL";
+				if($variables["invoicedate"]=="") $tempdate="NULL";
 				else
 					$tempdate="\"".sqlDateFromString($variables["invoicedate"])."\"";
 				
@@ -594,19 +585,12 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["postalcode"]."\", "; 
 			$querystatement.="\"".$variables["country"]."\", "; 
 
-				$totaltni=ereg_replace("\\\$|,","",$variables["totaltni"]);
-				$totaltaxable=ereg_replace("\\\$|,","",$variables["totaltaxable"]);
-				$totalti=ereg_replace("\\\$|,","",$variables["totalti"]);
-				$shipping=ereg_replace("\\\$|,","",$variables["shipping"]);
-				$tax=ereg_replace("\\\$|,","",$variables["tax"]);
-				$amountpaid=ereg_replace("\\\$|,","",$variables["amountpaid"]);
-
-			$querystatement.=$totaltni.", "; 
-			$querystatement.=$totaltaxable.", "; 
-			$querystatement.=$totalti.", "; 
-			$querystatement.=$shipping.", "; 
-			$querystatement.=$tax.", "; 
-			$querystatement.=$amountpaid.", "; 
+			$querystatement.=currencyToNumber($variables["totaltni"]).", "; 
+			$querystatement.=currencyToNumber($variables["totaltaxable"]).", "; 
+			$querystatement.=currencyToNumber($variables["totalti"]).", "; 
+			$querystatement.=currencyToNumber($variables["shipping"]).", "; 
+			$querystatement.=currencyToNumber($variables["tax"]).", "; 
+			$querystatement.=currencyToNumber($variables["amountpaid"]).", "; 
 
 			$querystatement.=$variables["totalcost"].", "; 
 			$querystatement.=$variables["totalweight"].", "; 

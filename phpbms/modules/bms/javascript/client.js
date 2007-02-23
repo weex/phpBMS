@@ -93,7 +93,7 @@ function changeClientType(theselect){
 	} else {
 		becameclientDiv.style.display="block";
 		var today=new Date();
-		becameclient.value=englishDate(today);
+		becameclient.value=dateToString(today);
 	}
 	var newTitle=theselect.value.substr(0,1).toUpperCase()+theselect.value.substr(1);
 	thetitle.innerHTML="<span>"+newTitle+"</span>"

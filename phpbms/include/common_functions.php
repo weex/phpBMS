@@ -131,7 +131,6 @@ function getUserName($id=0){
 
 
 // date/time functions
-// It will add the quotes for you.
 //=====================================================================
 define("DATE_FORMAT",$_SESSION["date_format"]);
 define("TIME_FORMAT",$_SESSION["time_format"]);
@@ -307,6 +306,26 @@ function sqlTimeFromString($timestring,$format=TIME_FORMAT){
 	return $sqltime;
 }
 
+// Currency functions
+//=====================================================================
+function numberToCurrency($number){
+	$currency="";
+	if($number<0)
+		$currency.="-";
+	$currency.=$_SESSION["currency_symbol"].number_format(abs($number),$_SESSION["currency_accuracy"],$_SESSION["decimal_symbol"],$_SESSION["thousands_separator"]);
+	return $currency;
+}
+
+function currencyToNumber($currency){
+	$number=str_replace($_SESSION["currency_symbol"],"",$currency);
+	$number=str_replace($_SESSION["thousands_separator"],"",$number);
+	$number=str_replace($_SESSION["decimal_symbol"],".",$number);
+	$number=((real) $number);
+	
+	return $number;
+}
+
+
 
 //============================================================================
 function addSlashesToArray($thearray){
@@ -370,15 +389,6 @@ function getAddEditFile($tabledefid,$addedit="edit"){
 	return $_SESSION["app_path"].$therecord["thefile"];
 }
 
-function currencyFormat($number){
-	if(!is_numeric($number)) return $number;
-	if($number <0)
-		$thenumber="-$".number_format(abs($number),2);
-	else
-		$thenumber="$".number_format($number,2);
-	return $thenumber;
-}
-
 function booleanFormat($bool){
 	if($bool==1)
 		return "X";
@@ -390,7 +400,7 @@ function booleanFormat($bool){
 function formatVariable($value,$format){
 	switch($format){
 		case "currency":
-			$value=currencyFormat($value);
+			$value=numberToCurrency($value);
 		break;
 		case "boolean":
 			$value=booleanFormat($value);

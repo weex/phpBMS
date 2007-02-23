@@ -62,3 +62,6 @@ INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `mo
 CREATE TABLE `scheduler` (`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,`name` VARCHAR(45),`job` VARCHAR(128),`crontab` VARCHAR(64),`lastrun` DATETIME, `startdatetime` DATETIME, `enddatetime` DATETIME, `description` TEXT, `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0, `createdby` INTEGER UNSIGNED, `creationdate` DATETIME, `modifiedby` INTEGER UNSIGNED, `modifieddate` TIMESTAMP, PRIMARY KEY(`id`) )ENGINE = MYISAM;
 INSERT INTO `settings` (`name`, `value`) VALUES ('date_format','English, US');
 INSERT INTO `settings` (`name`, `value`) VALUES ('time_format','12 Hour');
+INSERT INTO `settings` (`name`, `value`) VALUES ('currency_symbol','$');
+INSERT INTO `settings` (`name`, `value`) VALUES ('decimal_symbol','.');
+INSERT INTO `settings` (`name`, `value`) VALUES ('thousands_separator',',');

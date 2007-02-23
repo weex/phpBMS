@@ -217,22 +217,7 @@ function openWebpage(thefieldname){
 
 // checks and formats a field to dollars
 function validateCurrency(theitem){
-	var theCurrency=theitem.value;
-	var i;
-	var thenumber="";
-	var newdollar;
-	
-	for(i=0;i<theCurrency.length;i++){
-		if (theCurrency.charAt(i)!="$" && theCurrency.charAt(i)!="+" && theCurrency.charAt(i)!=",") thenumber=thenumber+theCurrency.charAt(i);
-	}
-	//if the first number is a ".", add a 0
-	if (thenumber.charAt(0)==".") thenumber="0"+thenumber;
-
-	//get rid of trailing zeros and possibly "."
-	while(thenumber.charAt(thenumber.length-1)=="0" && thenumber.indexOf(".")!=-1) thenumber=thenumber.substring(0,thenumber.length-1);
-	if(thenumber.charAt(thenumber.length-1)==".") thenumber=thenumber.substring(0,thenumber.length-1);
-
-	theitem.value=formatCurrency(thenumber);
+	theitem.value=numberToCurrency(thenumber);
 	
 	//in case the field has an additional onchange code to be run
 	if (theitem.thechange) theitem.thechange();
@@ -245,78 +230,6 @@ function validatePercentage(thefield,precision){
 	thefield.value+="%";
 }
 
-function formatCurrency(thenumber){
-	var newdollar,retval
-	thenumber=thenumber.toString();	
-	//check for number		
-	if (isNaN(parseFloat(thenumber)) || thenumber.length!=((parseFloat(thenumber)).toString()).length) thenumber="0.00";
-
-	// add the dollar sign... remember that if it is a negative number, the minus sign goes in front
-	if(thenumber.charAt(0)=="-") {
-			newdollar="-$";
-			thenumber=thenumber.substring(1,thenumber.length);
-		} else newdollar="$";
-
-	var big_string = ""+(Math.round(100*(Math.abs(thenumber))))  //rounding the absolute value times 100
-	var biglen = big_string.length                            //how the string gets handled depends on its length
-	if (biglen == 0)                   //null
-		{retval = "0.00"} 
-	else if (biglen == 1)              //1 to 9 (.01 to .09 cents)
-		{retval = "0.0"+big_string}
-	else if (biglen == 2)              //10 to 99 (.10 to .99 cents)
-		{retval = "0."+big_string}
-	else  { 						  //all cases above 100 ($1.00)
-			//The substring method returns all characters in the string
-			// starting with and including the the first argument,
-			// up to but not including the second argument.  
-			var hundredths_digit = big_string.substring(biglen-1,biglen)  
-			var tenths_digit = big_string.substring(biglen-2,biglen-1)    
-			var integer_digits = big_string.substring(0,biglen-2)
-			// commafy,  borrowed from Danny Goodman, "Javascript Bible"
-			var re = /(-?\d+)(\d{3})/
-			while (re.test(integer_digits))  {
-				integer_digits = integer_digits.replace(re, "$1,$2")
-			}
-			retval = integer_digits + "." + tenths_digit + hundredths_digit
-	}  
-    newdollar = newdollar+retval;
-	
-	return newdollar;
-}
-
-function currencyToNumber(thecurrency){
-	var i;
-	var thenumber="";
-	for(i=0;i<thecurrency.length;i++){
-		if (thecurrency.charAt(i)!="$" && thecurrency.charAt(i)!="+" && thecurrency.charAt(i)!=",") thenumber=thenumber+thecurrency.charAt(i);
-	}
-	//if the first number is a ".", add a 0
-	if (thenumber.charAt(0)==".") thenumber="0"+thenumber;
-
-	//get rid of trailing zeros and possibly "."
-	while(thenumber.charAt(thenumber.length-1)=="0" && thenumber.indexOf(".")!=-1) thenumber=thenumber.substring(0,thenumber.length-1);
-	if(thenumber.charAt(thenumber.length-1)==".") thenumber=thenumber.substring(0,thenumber.length-1);
-	
-	if (isNaN(parseFloat(thenumber)) || thenumber.length!=((parseFloat(thenumber)).toString()).length) thenumber="0.00";	
-	
-	thenumber=parseFloat(thenumber);
-	return thenumber;
-}
-
-
-function  processUniqueReqChange(){
-	 if (req.readyState == 4) {
-		// only if "OK"
-		if (req.status == 200) {			
-			var response = req.responseXML.documentElement;
-			var thename = response.getElementsByTagName('name')[0].firstChild.data;
-			var isunique = response.getElementsByTagName('isunique')[0].firstChild.data;
-			
-			if(isunique==0)
-				alert("This field requires a unique value.<br/><br/>Another record already exists with this value.");
-		}
-	}
-}
 
 function getNumberFromPercentage(thenumber){
 	var markupnumber="";
@@ -336,10 +249,10 @@ function getNumberFromPercentage(thenumber){
 function checkUnique(path,thevalue,thename,thetable,thefield,excludeid){
 	
 	var theurl=path+"checkunique.php?value="+encodeURIComponent(thevalue);
-	theurl=theurl+"&table="+thetable;
-	theurl=theurl+"&name="+thename;
-	theurl=theurl+"&field="+thefield;
-	theurl=theurl+"&excludeid="+excludeid;
+	theurl=theurl+"&table="+encodeURIComponent(thetable);
+	theurl=theurl+"&name="+encodeURIComponent(thename);
+	theurl=theurl+"&field="+encodeURIComponent(thefield);
+	theurl=theurl+"&excludeid="+parseInt(excludeid);
 
 	loadXMLDoc(theurl,processUniqueReqChange,true);
 }
