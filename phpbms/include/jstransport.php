@@ -2,6 +2,7 @@
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
 	require_once("session.php");
+	require_once("common_functions.php");
 	
 	
 	//phone formating
@@ -16,21 +17,24 @@
 	} echo "\n\n";	
 	
 	//date formating
-	?>DATE_FORMAT="<?php echo $_SESSION["date_format"]?>";<?php
+	?>DATE_FORMAT="<?php echo htmlQuotes($_SESSION["date_format"])?>";<?php
 	echo "\n\n";
 	
 	//time formating
-	?>TIME_FORMAT="<?php echo $_SESSION["time_format"]?>";<?php
+	?>TIME_FORMAT="<?php echo htmlQuotes($_SESSION["time_format"])?>";<?php
 	echo "\n\n";
 
 	//currency formating
-	?>CURRENCY_SYMBOL="<?php echo $_SESSION["currency_symbol"]?>";<?php
+	?>CURRENCY_SYMBOL="<?php echo htmlQuotes($_SESSION["currency_symbol"])?>";<?php
 	echo "\n";
+
 	?>CURRENCY_ACCURACY=<?php echo $_SESSION["currency_accuracy"]?>;<?php
 	echo "\n";
-	?>DECIMAL_SYMBOL="<?php echo $_SESSION["decimal_symbol"]?>";<?php
+
+	?>DECIMAL_SYMBOL="<?php echo htmlQuotes($_SESSION["decimal_symbol"])?>";<?php
 	echo "\n";
-	?>THOUSANDS_SEPARATOR="<?php echo $_SESSION["thousands_separator"]?>";<?php
+
+	?>THOUSANDS_SEPARATOR="<?php echo htmlQuotes($_SESSION["thousands_separator"])?>";<?php
 	echo "\n";
 
 	

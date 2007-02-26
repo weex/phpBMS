@@ -245,7 +245,7 @@ function field_currency($name,$value=0,$required=false,$message="",$attributes="
 	*/
 
 	if(!is_numeric($value)) $value=0;
-	$value=numberToCurrency($value);
+	$value=htmlQuotes(numberToCurrency($value));
 	
 	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
 	if ($attributes) 

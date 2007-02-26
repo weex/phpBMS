@@ -217,7 +217,7 @@ function openWebpage(thefieldname){
 
 // checks and formats a field to dollars
 function validateCurrency(theitem){
-	theitem.value=numberToCurrency(thenumber);
+	theitem.value=numberToCurrency(currencyToNumber(theitem.value));
 	
 	//in case the field has an additional onchange code to be run
 	if (theitem.thechange) theitem.thechange();

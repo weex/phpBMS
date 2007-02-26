@@ -52,7 +52,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php require("../../head.php")?>
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
@@ -64,7 +64,7 @@
 <?php $paymentMethods=getPayments($dblink)?>
 </head>
 <body onLoad="initializePage()"><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <?php invoice_tabs("General",$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
@@ -233,9 +233,9 @@
 			</script>
 			</td>
 			<td width="100%"><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
-			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo numberToCurrency(0)?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
+			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
-			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo numberToCurrency(0)?>" size="12" maxlength="16" readonly="true" /></td>
+			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="true" /></td>
 			<td nowrap align="center"><button type="button" onclick="addLine(this.parentNode);" tabindex="20" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);
@@ -244,21 +244,13 @@
 	?><tr id="LISep"><td colspan="7"></td></tr><?php 
 	while($lineitem=mysql_fetch_array($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
-			<td nowrap class="small lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlspecialchars($lineitem["partnumber"]); else echo "&nbsp;";?></td>
-			<td class="small" ><strong><?php if($lineitem["partname"]) echo htmlspecialchars($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
-			<td class="tiny" ><?php if($lineitem["memo"]) echo htmlspecialchars($lineitem["memo"]); else echo "&nbsp;"?></td>
-			<td align="right" nowrap class="small"><?php echo $lineitem["unitprice"]?></td>
-			<td align="center" nowrap class="small"><?php echo $lineitem["quantity"]?></td>
-			<td align="right" nowrap class="small"><?php echo $lineitem["extended"]?></td>
-			<td align="center"><span class="LIRealInfo">
-					<?php echo $lineitem["productid"]?>[//]
-					<?php echo $lineitem["unitcost"]?>[//]
-					<?php echo $lineitem["unitweight"]?>[//]
-					<?php echo $lineitem["numprice"]?>[//]
-					<?php echo $lineitem["quantity"]?>[//]
-					<?php echo htmlspecialchars($lineitem["memo"])?>[//]
-					<?php echo $lineitem["taxable"]?>
-				</span>
+			<td nowrap class="lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlQuotes($lineitem["partnumber"]); else echo "&nbsp;";?></td>
+			<td><strong><?php if($lineitem["partname"]) echo htmlQuotes($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
+			<td><?php if($lineitem["memo"]) echo htmlQuotes($lineitem["memo"]); else echo "&nbsp;"?></td>
+			<td align="right" nowrap><?php echo htmlQuotes(numberToCurrency($lineitem["unitprice"]))?></td>
+			<td align="center" nowrap><?php echo $lineitem["quantity"]?></td>
+			<td align="right" nowrap><?php echo htmlQuotes(numbertoCurrency($lineitem["extended"]))?></td>
+			<td align="center"><span class="LIRealInfo"><?php echo $lineitem["productid"]?>[//]<?php echo $lineitem["unitcost"]?>[//]<?php echo $lineitem["unitweight"]?>[//]<?php echo $lineitem["numprice"]?>[//]<?php echo $lineitem["quantity"]?>[//]<?php echo htmlQuotes($lineitem["memo"])?>[//]<?php echo $lineitem["taxable"]?></span>
 				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="graphicButtons buttonMinus" onClick="return deleteLine(this)" tabindex="21" title="Remove line item"><span>-</span></button><?php } ?>
 			</td>
 		</tr>
@@ -411,10 +403,10 @@
 						echo $therecord["taxpercentage"]."%)";
 					} else echo "&nbsp;";				
 				?></span></div>
-				<div><span id="parenShipping"><?php if($therecord["shippingmethodid"]!=0) echo "(".htmlspecialchars($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
+				<div><span id="parenShipping"><?php if($therecord["shippingmethodid"]!=0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
 				<div>&nbsp;</div>
 				<div id="parenSpacer"><span>&nbsp;</span></div>
-				<div><span id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlspecialchars($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
+				<div><span id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
 			</div>
 		</td>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab1" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>discount<input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></div></td>

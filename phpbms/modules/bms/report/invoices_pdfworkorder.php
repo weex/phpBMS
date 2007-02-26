@@ -38,6 +38,8 @@
 */
 	session_cache_limiter('private');
 	require_once("../../../include/session.php");
+	//reload settings in latin1 (fpdf doesn't like utf)
+	loadSettings("latin1");
 	require_once("../../../include/common_functions.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;

@@ -340,7 +340,7 @@ function addSlashesToArray($thearray){
 }
 
 function htmlQuotes($string){
-	return htmlspecialchars($string,ENT_COMPAT);
+	return htmlspecialchars($string,ENT_COMPAT,"UTF-8");
 }
 
 function htmlFormat($string,$quotes=false){
@@ -400,7 +400,7 @@ function booleanFormat($bool){
 function formatVariable($value,$format){
 	switch($format){
 		case "currency":
-			$value=numberToCurrency($value);
+			$value=htmlQuotes(numberToCurrency($value));
 		break;
 		case "boolean":
 			$value=booleanFormat($value);
@@ -422,7 +422,7 @@ function formatVariable($value,$format){
 			$value=$value;
 		break;
 		default:
-			$value=htmlspecialchars($value);
+			$value=htmlQuotes($value);
 	}
 	return $value;
 }

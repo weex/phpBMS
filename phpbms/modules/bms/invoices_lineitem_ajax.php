@@ -38,6 +38,7 @@
 */
 
 	include("../../include/session.php");
+	include("../../include/common_functions.php");
 
 	if (!isset($_GET["cid"])) $_GET["cid"]="0";
 	if (!$_GET["cid"]) $_GET["cid"]="0";	
@@ -68,7 +69,7 @@
 	
 	
 	if(!$prereqnotmet) {
-		$querystatement="SELECT id,partnumber,partname,unitprice,concat(\"\$\",format((unitprice),2)) as formatedprice, 
+		$querystatement="SELECT id,partnumber,partname,unitprice, 
 						description, weight, unitcost, taxable
 						FROM products WHERE id=".$_GET["id"];
 		$queryresult= mysql_query($querystatement,$dblink);
@@ -78,7 +79,6 @@
 		$therecord["partnumber"]="";
 		$therecord["partname"]="";
 		$therecord["unitprice"]="";
-		$therecord["formatedprice"]="";
 		$therecord["description"]="";
 		$therecord["taxable"]="";
 		$therecord["weight"]="";
@@ -108,7 +108,7 @@
 	<value><?php echo xmlEncode($therecord["description"]) ?></value>
 
 	<field>price</field>
-	<value><?php echo xmlEncode($therecord["formatedprice"]) ?></value>
+	<value><?php echo xmlEncode(numberToCurrency($therecord["unitprice"])) ?></value>
 
 	<field>unitcost</field>
 	<value><?php echo $therecord["unitcost"] ?></value>

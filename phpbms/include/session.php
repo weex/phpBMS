@@ -37,8 +37,11 @@
  +-------------------------------------------------------------------------+
 */
 	
-function loadSettings(){
+function loadSettings($encoding="utf8"){
 	global $dblink;
+	
+	// this only works for MySQL 5
+	@ mysql_query("SET NAMES ".$encoding,$dblink);
 	
 	$querystatement="SELECT name,value FROM settings";
 	$queryresult=mysql_query($querystatement,$dblink);

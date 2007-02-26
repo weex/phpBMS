@@ -47,7 +47,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
@@ -178,7 +178,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 				while($entry=readdir($thedir_stream)){
 					if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
 						echo "<option value=\"".$entry."\"";
-							if($entry==$_SESSION["stylesheet"]) echo " selected=\selected\" ";
+							if($entry==$_SESSION["stylesheet"]) echo " selected=\"selected\" ";
 						echo ">".$entry."</option>";
 					}
 				}
@@ -192,22 +192,22 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 		<p>
 			<label for="sphone_format">phone format</label><br />
 			<select id="sphone_format" name="sphone_format">
-				<option value="US - Strict" <?php if($_SESSION["phone_format"]=="US - Strict")  echo "selected=\selected\"";?>>US - Strict</option>
-				<option value="US - Loose" <?php if($_SESSION["phone_format"]=="US - Loose")  echo "selected=\selected\"";?>>US - Loose</option>
+				<option value="US - Strict" <?php if($_SESSION["phone_format"]=="US - Strict")  echo "selected=\"selected\"";?>>US - Strict</option>
+				<option value="US - Loose" <?php if($_SESSION["phone_format"]=="US - Loose")  echo "selected=\"selected\"";?>>US - Loose</option>
 			</select>
 		</p>
 		<p>
 			<label for="sdate_format">date format</label><br />
 			<select id="sdate_format" name="sdate_format">
-				<option value="SQL" <?php if($_SESSION["date_format"]=="SQL")  echo "selected=\selected\"";?>>SQL (<?php echo dateToString(mktime() ,"SQL")?>)</option>
-				<option value="English, US" <?php if($_SESSION["date_format"]=="English, US")  echo "selected=\selected\"";?>>English, US (<?php echo dateToString(mktime(),"English, US")?>)</option>
+				<option value="SQL" <?php if($_SESSION["date_format"]=="SQL")  echo "selected=\"selected\"";?>>SQL (<?php echo dateToString(mktime() ,"SQL")?>)</option>
+				<option value="English, US" <?php if($_SESSION["date_format"]=="English, US")  echo "selected=\"selected\"";?>>English, US (<?php echo dateToString(mktime(),"English, US")?>)</option>
 			</select>
 		</p>
 		<p>
 			<label for="stime_format">time format</label><br />
 			<select id="stime_format" name="stime_format">
-				<option value="24 Hour" <?php if($_SESSION["time_format"]=="24 Hour")  echo "selected=\selected\"";?>>24 Hour (<?php echo timeToString(mktime() ,"24 Hour")?>)</option>
-				<option value="12 Hour" <?php if($_SESSION["time_format"]=="12 Hour")  echo "selected=\selected\"";?>>12 Hour (<?php echo timeToString(mktime(),"12 Hour")?>)</option>
+				<option value="24 Hour" <?php if($_SESSION["time_format"]=="24 Hour")  echo "selected=\"selected\"";?>>24 Hour (<?php echo timeToString(mktime() ,"24 Hour")?>)</option>
+				<option value="12 Hour" <?php if($_SESSION["time_format"]=="12 Hour")  echo "selected=\"selected\"";?>>12 Hour (<?php echo timeToString(mktime(),"12 Hour")?>)</option>
 			</select>
 		</p>
 		<p>&nbsp;</p>

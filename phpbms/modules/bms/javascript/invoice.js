@@ -540,47 +540,43 @@ function addLine(thetd){
 	temptd=document.createElement("td");
 	temptd.setAttribute("nowrap","nowrap");
 	temptd.setAttribute("valign","top");
-	temptd.className="small lineitemsLeft important";
+	temptd.className="lineitemsLeft important";
 	temptd.innerHTML=(partnumber.value=="")?"&nbsp;":partnumber.value;
 	thetr.appendChild(temptd);
 	
 	temptd=document.createElement("td");
 	temptd.setAttribute("valign","top");
-	temptd.className="small important";
+	temptd.className="important";
 	temptd.innerHTML=(partname.value=="")?"&nbsp;":partname.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
 	temptd.setAttribute("valign","top");
-	temptd.className="tiny";
 	temptd.innerHTML=(memo.value=="")?"&nbsp;":memo.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
-	temptd.className="small";
 	temptd.innerHTML=(unitprice.value=="")?numberToCurrency(0):unitprice.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","center");
-	temptd.className="small";
 	temptd.innerHTML=(quantity.value=="")?"0":quantity.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
 	temptd.setAttribute("valign","top");
 	temptd.setAttribute("align","right");
-	temptd.className="small";
 	temptd.innerHTML=(extended.value=="")?numberToCurrency(0):extended.value;
 	thetr.appendChild(temptd);
 
 	temptd=document.createElement("td");
 	temptd.setAttribute("align","center");
 	temptd.style.padding="0px";
-	var content="<span style=\"display:none;\">";
+	var content="<span class=\"LIRealInfo\">";
 	content+=productid.value+"[//]";
 	content+=unitcost.value+"[//]";
 	content+=unitweight.value+"[//]";
@@ -588,7 +584,7 @@ function addLine(thetd){
 	content+=quantity.value+"[//]";
 	content+=memo.value+"[//]";
 	content+=taxable.value+"</span>";
-	content+="<button type=\"button\" onClick=\"return deleteLine(this)\" class=\"graphicButtons buttonMinus\"><span>-</span></button>";
+	content+="<button type=\"button\" onclick=\"return deleteLine(this)\" class=\"graphicButtons buttonMinus\"><span>-</span></button>";
 	temptd.innerHTML=content
 	thetr.appendChild(temptd);
 
@@ -634,35 +630,17 @@ function addLine(thetd){
 }
 
 function setLineItems(){
-	// if lineitemschanged=1
 	var changed=getObjectFromID("lineitemschanged");
 	var lineitems=getObjectFromID("thelineitems");
 	if(changed.value==1){
-		// get table (tbody)
-		var thetable=getObjectFromID("LIHeader").parentNode;
-		//for each line that starts with LIN  get the last childs first child
-		var therow;
-		var j;
-		var attribs;
-		lineitems.value="";
-		for(var i=0;i<thetable.childNodes.length;i++){
-			if(thetable.childNodes[i].tagName){
-				therow=thetable.childNodes[i];
-				if(therow.id.substring(0,3)=="LIN"){
-					for(j=0;j<therow.childNodes.length;j++){
-						if(therow.childNodes[j].className==""){
-							// set text area "thelineitems" field contents to variable
-							if(therow.childNodes[j].firstChild.innerHTML)
-								lineitems.value+=therow.childNodes[j].firstChild.innerHTML+"{[]}";
-							else
-								lineitems.value+=therow.childNodes[j].childNodes[1].innerHTML+"{[]}";
-						}
-					}					
-				}
-			}
+		var allRows=document.getElementsByClassName("LIRealInfo");
+		if(allRows.length){
+			for(var i=0;i<allRows.length;i++)
+				if(allRows[i].innerHTML!="")
+					lineitems.value+=allRows[i].innerHTML+"{[]}";
+			if(lineitems.value.length>4)
+				lineitems.value=lineitems.value.substring(0,lineitems.value.length-4);
 		}
-		if(lineitems.value.length>4)
-			lineitems.value=lineitems.value.substring(0,lineitems.value.length-4);
 	}
 }
 

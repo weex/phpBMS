@@ -38,6 +38,8 @@
 */
 	session_cache_limiter('private');
 	require_once("../../../include/session.php");
+	//reload settings in latin1 (fpdf doesn't like utf)
+	loadSettings("latin1");
 	require_once("../../../include/common_functions.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
@@ -262,8 +264,8 @@
 				$partname=$thelineitem["partname"];
 			$pdf->Cell($partnamewidth,.13,$partname,$border_debug,0,"L");
 			$pdf->Cell($qtywidth,.13,number_format($thelineitem["quantity"],2),$border_debug,0,"C");
-			$pdf->Cell($unitpricewidth,.13,"\$".number_format($thelineitem["unitprice"],2),$border_debug,0,"R");
-			$pdf->Cell($extendedwidth,.13,"\$".number_format($thelineitem["extended"],2),$border_debug,1,"R");
+			$pdf->Cell($unitpricewidth,.13,numberToCurrency($thelineitem["unitprice"]),$border_debug,0,"R");
+			$pdf->Cell($extendedwidth,.13,numberToCurrency($thelineitem["extended"]),$border_debug,1,"R");
 			$pdf->SetX($leftmargin+.125);
 			$pdf->SetFont("Arial","i",8);
 			$thelineitem["memo"].="\n";

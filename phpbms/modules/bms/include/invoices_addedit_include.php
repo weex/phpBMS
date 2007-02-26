@@ -169,7 +169,7 @@ function getDiscount($id,$dblink){
 		} else
 			$therecord["name"].=": ".numberToCurrency($therecord["value"]);
 	}
-	$therecord["name"]=htmlspecialchars($therecord["name"]);
+	$therecord["name"]=htmlQuotes($therecord["name"]);
 	return $therecord;
 }
 
@@ -180,9 +180,9 @@ function getLineItems($id){
   	$querystatement="SELECT lineitems.id,lineitems.productid,
 	
 				products.partnumber as partnumber, products.partname as partname, lineitems.taxable,
-				lineitems.quantity as quantity, concat(\"\$\",format(lineitems.unitprice,2)) as unitprice, 
+				lineitems.quantity as quantity, lineitems.unitprice, 
 				lineitems.unitprice as numprice, lineitems.unitcost as unitcost, lineitems.unitweight as unitweight, lineitems.memo as memo,
-				concat(\"\$\",format((lineitems.unitprice*lineitems.quantity),2)) as extended 
+				lineitems.unitprice*lineitems.quantity as extended 
 				FROM lineitems LEFT JOIN products on lineitems.productid=products.id 
 				WHERE lineitems.invoiceid=".$id;
 				
@@ -203,7 +203,7 @@ function getTax($id,$dblink){
 			$therecord=mysql_fetch_array($queryresult);
 	}
 	
-	$therecord["name"]=htmlspecialchars($therecord["name"]);
+	$therecord["name"]=htmlQuotes($therecord["name"]);
 	return $therecord;
 }
 
@@ -213,7 +213,9 @@ function addLineItems($values,$invoiceid,$userid){
 	$querystatement="DELETE FROM lineitems WHERE  invoiceid=".$invoiceid;
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,"Could Not remove lineitems");
-
+		
+	//var_dump($values);
+	//exit;
 	if($values){
 	$lineitems= explode("{[]}",$values);		
 	foreach($lineitems as $lineitem) {

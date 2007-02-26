@@ -278,5 +278,4 @@ CREATE TABLE `scheduler` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-)
-ENGINE = MYISAM;
+) ENGINE = MYISAM;

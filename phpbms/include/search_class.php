@@ -263,7 +263,7 @@ function displayQueryHeader(){
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Choose</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script language="JavaScript" type="text/javascript">
 function sendInfo(name,thevalue,thedisplay){
 	//stupid browser incompatibilities
@@ -516,7 +516,7 @@ function displayQueryButtons() {
 	<div id="sqlstatement">
 	<fieldset>
 		<legend>SQL Statement</legend>
-		<div class="mono small" style="height:150px; overflow:auto;"><?php echo stripslashes(htmlspecialchars($this->querystatement))?></div>
+		<div class="mono small" style="height:150px; overflow:auto;"><?php echo stripslashes(htmlQuotes($this->querystatement))?></div>
 	</fieldset><?php if($this->sqlerror) {?>
 	<fieldset>
 		<legend><span style="text-transform:capitalize">SQL</span> Error</legend>

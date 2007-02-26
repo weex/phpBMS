@@ -48,7 +48,7 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 #extended,.fieldTotal{width:75px;}
 
 .fieldTotal{height:16px;}
-.lineitems td{height:22px;}
+.lineitems td{height:22px; font-size:11px; vertical-align:top;padding-left:4px;}
 .lineitemsRight{ border-right:1px solid #CCCCCC;}
 .lineitemsLeft{ border-left:1px solid #CCCCCC;}
 .lineitemsBottom{ border-bottom:1px solid #CCCCCC;}

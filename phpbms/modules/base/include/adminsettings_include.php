@@ -52,6 +52,9 @@ function processSettings($variables,$files,$dblink){
 	foreach($variables as $key=>$value){
 		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0 && $key!="changeseed" && $key!="currentpassword" && $key!="sencryption_seed" && $key!="doencryptionupdate"){
 			if($_SESSION[substr($key,1)]!=$value){
+				// i know not why I need to do this, but apparently, wacky things 
+				// happen with odd characters.
+				//$value=str_replace(chr(ord("Â")),"",$value);
 				$writesettings[substr($key,1)]=$value;
 				$_SESSION[substr($key,1)]=stripslashes($value);
 			}

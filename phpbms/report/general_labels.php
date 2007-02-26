@@ -120,7 +120,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Label Options</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php require("../../../head.php")?>
 <link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />
 </head>

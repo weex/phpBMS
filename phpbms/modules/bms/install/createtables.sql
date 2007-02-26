@@ -60,7 +60,7 @@ CREATE TABLE `clients` (
   KEY `thelastname` (`lastname`),
   KEY `thecompany` (`company`),
   KEY `thetype` (`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 PACK_KEYS=0;
+) ENGINE=MyISAM PACK_KEYS=0;
 
 
 CREATE TABLE discounts (

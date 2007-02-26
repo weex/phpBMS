@@ -67,7 +67,7 @@ function showTodaysClients($interval="1 DAY"){
 		?><tr onclick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td align="center"><?php echo $therecord["id"]?></td>
 			<td align="center"><?php echo $therecord["type"]?></td>
-			<td><?php echo htmlspecialchars($therecord["thename"])?></td>
+			<td><?php echo htmlQuotes($therecord["thename"])?></td>
 			<td align="right" nowrap><?php echo $displayCSZ?></td>
 		</tr><?php }?>
 		<tr class="queryfooter">
@@ -115,7 +115,7 @@ function showTodaysOrders($interval="1 DAY"){
 		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td><?php echo $therecord["id"]?></td>
 			<td align=center><?php echo $therecord["status"]?></td>
-			<td><?php echo htmlspecialchars($therecord["thename"])?></td>
+			<td><?php echo htmlQuotes($therecord["thename"])?></td>
 			<td align="right"><?php echo numberToCurrency($therecord["total"])?></td>
 			<td align="right"><?php echo numberToCurrency($therecord["amtdue"])?></td>
 		</tr><?php }?>
