@@ -61,7 +61,7 @@
 			<p align="right" style="float:right;"><img src="<?php echo $_SESSION["app_path"]?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
 			<h3>phpBMS - Commercial Open Source Business Management Web Application</h3>
 			<p class="small">v<?php displayVersions($queryresult)?></p>
-			<p>Copyright &reg; 2004 -2007 kreotek, llc. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of kreotek, llc.</p>
+			<p>Copyright &reg; 2004-2007 Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
 			<p>
 				<strong>Kreotek, LLC</strong><br />
 				610 Quantum<br />
@@ -79,9 +79,9 @@
 				phpBMS takes advanage of HTML's accessKey property to allow
 				you to use your keyboard to navigate pages.  Some browsers and OS's
 				might have different modifier keys, so check your
-				browser documentation.  On windows, in INternet Explorer and Firefox, hold
+				browser documentation.  On windows, in Internet Explorer and Firefox, hold
 				down the Alt key followed by the shortcut.  On opera hold down shift-esc then
-				the shortut.  On macs, in both firefox and safari use the ctrl key.
+				the shortut.  On a Mac, use the ctrl key in both Firefox and Safari.
 			</p>
 			<h4>Search/List Screens</h4>
 			<div class="fauxP">
@@ -155,10 +155,10 @@
 	<div class="helpDivs">
 		<div class="helpSectionDivs">
 		<ul>
-			<li><p><a href="http://www.phpbms.org">phpBMS project Web Site</a> - Main site for phpBMS development, documentation, and user support.</p></li>
-			<li><p><a href="http://phpbms.org/wiki/PhpbmsFaq">phpBMS FAQ</a> - Frequently asked questions </p></li>
-			<li><p><a href="http://www.phpbms.org/Forum">phpBMS User Support forum</a> - A place for user and developer discussions.</p></li>
-			<li><p><a href="http://phpbms.org/wiki/PhpbmsGuide">phpBMS Wiki Documentation </a> - Wiki driven user documentation starting point.</p></li>
+			<li><p><a href="http://www.phpbms.org" target="_blank">phpBMS project Web Site</a> - Main site for phpBMS development, documentation, and user support.</p></li>
+			<li><p><a href="http://phpbms.org/wiki/PhpbmsFaq" target="_blank">phpBMS FAQ</a> - Frequently asked questions </p></li>
+			<li><p><a href="http://www.phpbms.org/forum" target="_blank">phpBMS User Support forum</a> - A place for user and developer discussions.</p></li>
+			<li><p><a href="http://phpbms.org/wiki/PhpbmsGuide" target="_blank">phpBMS Wiki Documentation </a> - Wiki driven user documentation starting point.</p></li>
 		</ul>
 		</div>
 	</div>
@@ -182,8 +182,8 @@
 			your business processes to your software, make your software work the way your business does.
 		</p>
 		<p>
-			Kreotek can provide for all of  your comapny's customization needs.  From custom reports, importing, adding fields,
-			or integrating with legacy systems, le the people who created the software tailor phpBMS to work within your
+			Kreotek can provide for all of  your company's customization needs.  From custom reports, importing, adding fields,
+			or integrating with legacy systems, let the people who created the software tailor phpBMS to work within your
 			specific business processes.
 		</p>
 		<p>
