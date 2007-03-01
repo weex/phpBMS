@@ -66,7 +66,7 @@
 				<strong>Kreotek, LLC</strong><br />
 				610 Quantum<br />
 				Rio Rancho, NM 87124<br />
-				<a href="http://www.kreotek.com">http://www.kreotek.com</a><br />
+				<a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a><br />
 				1-800-731-8026<br />
 			</p>
 		</div>
