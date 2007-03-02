@@ -75,12 +75,12 @@
 		<p>
 			<label for="displayorder">
 			display order</label><br />
-			<?php field_text("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
+			<?php fieldText("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
 			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
 		<p>
 			<label for="roleid" >access (role)</label><br />
-			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
+			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 	</fieldset>
 	<div id="leftSideDiv">
@@ -88,15 +88,15 @@
 			<legend>details</legend>
 			<p>
 				<label for="name" class="important">name</label><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
 			</p>
 			<p>
 				<label for="type">type</label><br />
-				<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
+				<?php fieldBasicList("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
 			</p>
 			<p>
 				<label for="reportfile">report file</label><br />
-				<?php field_text("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
+				<?php fieldText("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
 				<span class="notes">Note: file name should include path</span>
 			</p>
 			

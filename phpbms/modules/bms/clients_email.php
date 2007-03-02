@@ -152,7 +152,7 @@
 					$theid=$therecord["emailfrom"];
 				else
 					$theid=0;			
-				autofill("email",$theid,9,"users.id","concat(users.firstname,\" \",users.lastname,\" [\",users.email,\"]\")","\"\"","users.revoked=0 AND users.email!=\"\"",Array("size"=>"64","maxlength"=>"128"),false,"",false) ?>
+				fieldAutofill("email",$theid,9,"users.id","concat(users.firstname,\" \",users.lastname,\" [\",users.email,\"]\")","\"\"","users.revoked=0 AND users.email!=\"\"",Array("size"=>"64","maxlength"=>"128"),false,"",false) ?>
 				
 				<?php  if(!is_numeric($therecord["emailfrom"])){ ?>
 					<script language="JavaScript" type="text/javascript">

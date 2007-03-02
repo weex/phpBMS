@@ -81,6 +81,6 @@ function product_tabs($selected="none",$id=0) {
 			"disabled"=>(($id)?false:true),
 			"notify"=>($numrows?true:false)
 		));
-	create_tabs($thetabs,$selected);
+	displayTabs($thetabs,$selected);
 }
 ?>

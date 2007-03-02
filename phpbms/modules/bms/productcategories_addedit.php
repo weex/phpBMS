@@ -68,7 +68,7 @@
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="" />
 		</p>
 		<p>
-			<?php field_checkbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
+			<?php fieldCheckbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
 		</p>		
 	</fieldset>
 	
@@ -76,7 +76,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
 				<br />
 			</p>			
 		</fieldset>
@@ -90,7 +90,7 @@
 	<fieldset>
 		<legend>web</legend>
 		<p>
-			<?php field_checkbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
+			<?php fieldCheckbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
 		</p>
 		<p>
 			<label for="webdisplayname">web display name</label><br />

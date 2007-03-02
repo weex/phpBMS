@@ -87,7 +87,7 @@
 		</p>
 		<p id="roleidP">
 			<label for="roleid">access (role)</label><br />
-			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
+			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 	</fieldset>
 	
@@ -106,7 +106,7 @@
 			</p>
 			<p>
 				<label for="name" class="important">name</label><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?><br />
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?><br />
 				<span class="notes">If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</span>
 			</p>
 			<p>
@@ -131,7 +131,7 @@
 						$securitywhere="";
 						if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
 							$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
-						autofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 ".$securitywhere,Array("size"=>"40","maxlength"=>"128","style"=>"",false)) 
+						fieldAutofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 ".$securitywhere,Array("size"=>"40","maxlength"=>"128","style"=>"",false)) 
 					?>				
 				</p>
 			<?php }?>

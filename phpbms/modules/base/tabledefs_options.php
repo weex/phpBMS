@@ -169,7 +169,7 @@
 			<div id="pdList">
 				<p>
 					<label for="pdName">function</label><br />
-					<?php basic_choicelist("pdName",$therecord["name"],array(array("value"=>"new","name"=>"new"),array("value"=>"select","name"=>"select"),array("value"=>"edit","name"=>"edit"),array("value"=>"printex","name"=>"printing")));?>
+					<?php fieldBasicList("pdName",$therecord["name"],array(array("value"=>"new","name"=>"new"),array("value"=>"select","name"=>"select"),array("value"=>"edit","name"=>"edit"),array("value"=>"printex","name"=>"printing")));?>
 				</p>
 				<p>option</p>
 				<p>
@@ -182,16 +182,16 @@
 			<div id="other">
 				<p>
 					<label for="name">function name</label><br />
-					<?php field_text("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
+					<?php fieldText("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
 				</p>
 				<p>
 					<label for="option">display name</label><br />
-					<?php field_text("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
+					<?php fieldText("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
 				</p>
 			</div>
 			<p>
 				<label for="roleid">access (role)</label><br />
-				<?php roles_choicelist("roleid",$theoption["roleid"],$dblink)?>				
+				<?php fieldRolesList("roleid",$theoption["roleid"],$dblink)?>				
 			</p>
 
 			<p>

@@ -125,14 +125,14 @@
 				<tr class="row<?php echo $row ?> <?php if(!$historyid){?>disabledstatus<?php }?>">
 					<td><?php if($historyid) echo "<strong>".$therecord["name"]."</strong>"; else  echo $therecord["name"]?></td>
 					<td><?php if($historyid) {
-							field_datepicker("sh".$historyid,$historydate,true,$therecord["name"]." status date must be a valid date and not blank.",Array("size"=>"11","maxlength"=>"11","tabindex"=>"14"));
+							fieldDatePicker("sh".$historyid,$historydate,true,$therecord["name"]." status date must be a valid date and not blank.",Array("size"=>"11","maxlength"=>"11","tabindex"=>"14"));
 						} else {
 							echo "&nbsp;";
 						}
 					?>					
 					</td>
 					<td><?php if($historyid) {
-							autofill("as".$historyid,$assignedtoid,9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128"));
+							fieldAutofill("as".$historyid,$assignedtoid,9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128"));
 						} else {
 							echo "&nbsp;";
 						}

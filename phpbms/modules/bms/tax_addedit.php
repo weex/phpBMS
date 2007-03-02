@@ -66,7 +66,7 @@
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
 		</p>
 		<p>
-			<?php field_checkbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
+			<?php fieldCheckbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
 		</p>		
 	</fieldset>
 
@@ -75,11 +75,11 @@
 			<legend>name / percentage</legend>
 			<p>
 				<label for="name" class="important">name</label><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
 			</p>
 			<p>
 				<label for="percentage">percentage</label><br />
-				<?php field_percentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>		
+				<?php fieldPercentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>		
 			</p>
 		</fieldset>
 	</div>

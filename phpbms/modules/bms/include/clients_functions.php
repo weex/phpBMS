@@ -75,6 +75,6 @@ function client_tabs($selected="none",$id=0) {
 			"notify"=>($numrows?true:false)
 		)
 	);
-	create_tabs($thetabs,$selected);
+	displayTabs($thetabs,$selected);
 }
 ?>

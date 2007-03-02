@@ -70,7 +70,7 @@
 		
 		<p>
 			<label for="type">type</label><br />
-			<?php basic_choicelist("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true")); ?>		
+			<?php fieldBasicList("type",$therecord["type"],array(array("value"=>"SCH","name"=>"Search"),array("value"=>"SRT","name"=>"Sort")),Array("class"=>"uneditable","disabled"=>"true")); ?>		
 		</p>
 		
 		<p>
@@ -90,7 +90,7 @@
 		<?php } else {?>
 		<p>
 			<label for="roleid">access (role)</label><br />
-			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
+			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 		<?php } ?>
 	</fieldset>
@@ -100,7 +100,7 @@
 			<legend>name / sql</legend>
 			<p>
 				<label for="name" class="important">name</label><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","classe"=>"important")); ?>
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","classe"=>"important")); ?>
 			</p>
 			
 			<p>

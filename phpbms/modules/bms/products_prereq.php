@@ -126,12 +126,12 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		<legend>add new prerequisite product</legend>
 		<div class="preqAdd fauxP">
 			<label for="ds-partnumber">part number</label><br />
-			<?php autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
+			<?php fieldAutofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
 		</div>
 		<div class="preqAdd fauxP">
 			<label for="ds-partname">part name</label><br />
-			<?php autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
+			<?php fieldAutofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
 		</div>
 		<p id="addButtonP"><br />

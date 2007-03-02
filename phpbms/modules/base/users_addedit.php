@@ -69,13 +69,13 @@
 			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>		
 		</p>
 
-		<p><?php field_checkbox("admin",$therecord["admin"])?><label for="admin">administrator</label></p>
+		<p><?php fieldCheckbox("admin",$therecord["admin"])?><label for="admin">administrator</label></p>
 		
 
-		<p><?php field_checkbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
+		<p><?php fieldCheckbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
 
 		<p>
-			<?php field_checkbox("portalaccess",$therecord["portalaccess"])?><label for="admin">portal access</label><br />
+			<?php fieldCheckbox("portalaccess",$therecord["portalaccess"])?><label for="admin">portal access</label><br />
 			<span class="notes">
 				user accounts marked as portal access cannot login to phpBMS, but are used by external applications
 				when creating/modifiying information from outside the application for recording purposes.
@@ -88,11 +88,11 @@
 			<legend>name</legend>
 			<p id="firstnameP">
 				<label for="firstname" class="important" >first name</label><br />
-				<?php field_text("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
+				<?php fieldText("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />
-				<?php field_text("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
+				<?php fieldText("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
 			</p>
 		</fieldset>
 
@@ -100,7 +100,7 @@
 			<legend>log in</legend>
 			<p>
 				<label for="login" class="important">name</label><br />
-				<?php field_text("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
+				<?php fieldText("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
 			</p>
 
 			<p>
@@ -123,7 +123,7 @@
 			<legend>contact / user information</legend>
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?php field_email("email",$therecord["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
+				<?php fieldEmail("email",$therecord["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
 			</p>
 			<p>
 				<label for="phone">phone/extension</label><br />
@@ -131,7 +131,7 @@
 			</p>
 			<p>
 			<label for="department">department</label><br />
-				<?php choicelist("department",$therecord["department"],"department"); ?>			
+				<?php fieldChoiceList("department",$therecord["department"],"department"); ?>			
 			</p>
 			<p>
 				<label for="employeenumber">employee number</label><br />

@@ -144,11 +144,11 @@
 		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>" />
 		<p>
 			<label for="name" class="important">name</label><br/>
-			<?php field_text("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64")); ?>
+			<?php fieldText("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64")); ?>
 		</p>
 		<p>
 			<label for="roleid">access (role)</label><br />
-			<?php roles_choicelist("roleid",$thequicksearch["roleid"],$dblink)?>	
+			<?php fieldRolesList("roleid",$thequicksearch["roleid"],$dblink)?>	
 		</p>
 		<p>
 			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />

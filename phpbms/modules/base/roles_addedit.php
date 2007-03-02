@@ -68,7 +68,7 @@
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="true" class="uneditable" />
 		</p>
 		
-		<p><?php field_checkbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
+		<p><?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
 		
 	</fieldset>
 	
@@ -76,7 +76,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
 			</p>
 		</fieldset>
 

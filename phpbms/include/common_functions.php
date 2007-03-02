@@ -85,7 +85,7 @@ function displayRights($roleid,$rolename,$dblink=false){
 
 //Create Tabs
 //===================================
-function create_tabs($tabarray,$selected="none") {
+function displayTabs($tabarray,$selected="none") {
 	?>
 	<ul class="tabs">
 	<?php
@@ -237,7 +237,7 @@ function formatFromSQLTime($sqltime,$format=TIME_FORMAT){
 		if($format=="24 Hour")
 			$timestring=$sqltime;
 		else 
-			$timestring=timeToString(timeToDate($sqltime,"24 Hour"),$format);
+			$timestring=timeToString(stringToTime($sqltime,"24 Hour"),$format);
 	return $timestring;
 }
 

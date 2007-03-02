@@ -44,7 +44,7 @@
 
 // common text input
 //============================================================================================
-function field_text($name,$value="",$required=false,$message="",$type="",$attributes="") {
+function fieldText($name,$value="",$required=false,$message="",$type="",$attributes="") {
 
 	/* 
 	   name =		Name of the field
@@ -63,7 +63,7 @@ function field_text($name,$value="",$required=false,$message="",$type="",$attrib
 
 
 //============================================================================================
-function field_checkbox($name,$value="",$disabled=false,$attributes=""){
+function fieldCheckbox($name,$value="",$disabled=false,$attributes=""){
 	/*
 	   name =		Name of the field
 	   value =		Value for field when checked
@@ -85,7 +85,7 @@ function field_checkbox($name,$value="",$disabled=false,$attributes=""){
 }
 
 //============================================================================================
-function basic_choicelist($name,$value="",$list="",$attributes=""){
+function fieldBasicList($name,$value="",$list="",$attributes=""){
 	/*
 	   name =		Name of the field
 	   value =		Value for selefted item
@@ -108,7 +108,7 @@ function basic_choicelist($name,$value="",$list="",$attributes=""){
 }
 
 //============================================================================================
-function table_choicelist($name,$value="",$table="",$valuefield="",$displayfield,$attributes="",$whereclause="",$orderclause="",$hasblank=true){
+function fieldDataTableList($name,$value="",$table="",$valuefield="",$displayfield,$attributes="",$whereclause="",$orderclause="",$hasblank=true){
 	/*
 	   name =			Name of the field
 	   value =			Value for selefted item
@@ -147,8 +147,7 @@ function table_choicelist($name,$value="",$table="",$valuefield="",$displayfield
 
 // choicelist
 //============================================================================================
-function choicelist($name,$value="",$listname,$attributes=array(),$blankvalue="none"){
-	error_reporting(E_ALL);
+function fieldChoiceList($name,$value="",$listname,$attributes=array(),$blankvalue="none"){
 	/*
 	name =			Name of the field
 	value =			Value for field
@@ -199,7 +198,7 @@ function choicelist($name,$value="",$listname,$attributes=array(),$blankvalue="n
 
 
 //============================================================================================
-function field_email($name,$value,$attributes){
+function fieldEmail($name,$value="",$attributes=array()){
 	/*
 	   name =			Name of the field
 	   value =			Value for field 
@@ -214,7 +213,7 @@ function field_email($name,$value,$attributes){
 }
 
 //============================================================================================
-function field_web($name,$value="http://",$attributes=""){
+function fieldWebAddress($name,$value="http://",$attributes=array()){
 	/*
 	   name =			Name of the field
 	   value =			Value for field 
@@ -234,7 +233,7 @@ function field_web($name,$value="http://",$attributes=""){
 
 
 //============================================================================================
-function field_currency($name,$value=0,$required=false,$message="",$attributes="") {
+function fieldCurrency($name,$value=0,$required=false,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
 	   value =			Value for field
@@ -257,7 +256,7 @@ function field_currency($name,$value=0,$required=false,$message="",$attributes="
 }
 
 //============================================================================================
-function field_percentage($name,$value,$precision=1,$required=false,$message="",$attributes="") {
+function fieldPercentage($name,$value,$precision=1,$required=false,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
 	   value =			Value for field 
@@ -277,7 +276,7 @@ function field_percentage($name,$value,$precision=1,$required=false,$message="",
 
 
 //============================================================================================
-function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
+function fieldDatePicker($name,$value,$required=0,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
 	   value =			Value for field (SQL formatted date)
@@ -298,7 +297,7 @@ function field_datepicker($name,$value,$required=0,$message="",$attributes="") {
 }//end function
 
 //============================================================================================
-function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
+function fieldTimePicker($name,$value,$required=0,$message="",$attributes="") {
 	/*
 	   name =			Name of the field
 	   value =			Value for field (SQL formatted time)
@@ -317,7 +316,7 @@ function field_timepicker($name,$value,$required=0,$message="",$attributes="") {
 
 
 //============================================================================================
-function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$extrafield="",$whereclause="",$attributes="",$required=false,$message="",$blankout=true){
+function fieldAutofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$extrafield="",$whereclause="",$attributes="",$required=false,$message="",$blankout=true){
 	/*
 	   fieldname =		Name(id) of the input 
 	   initialvalue =	Value for get field (usually and id)
@@ -375,7 +374,7 @@ function autofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$
 	}//end required if
 }//end function
 
-function roles_choicelist($name,$selected,$dblink){
+function fieldRolesList($name,$selected,$dblink){
 	$querystatement="SELECT name,id FROM roles WHERE inactive=0";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(310,"Error Retrieving Roles");

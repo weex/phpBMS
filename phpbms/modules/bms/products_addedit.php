@@ -77,11 +77,11 @@
 			</p>
 
 			<p>
-				<?php field_checkbox("inactive",$therecord["inactive"],false,array("tabindex"=>"50"))?><label for="inactive">inactive</label>
+				<?php fieldCheckbox("inactive",$therecord["inactive"],false,array("tabindex"=>"50"))?><label for="inactive">inactive</label>
 			</p>
 
 			<p>
-				<?php field_checkbox("taxable",$therecord["taxable"],false,array("tabindex"=>"60"))?><label for="taxable">taxable</label>
+				<?php fieldCheckbox("taxable",$therecord["taxable"],false,array("tabindex"=>"60"))?><label for="taxable">taxable</label>
 			</p>
 
 			<p>
@@ -120,7 +120,7 @@
 			
 			<p>
 				<label for="partnumber"><span class="important">part number</span> <span class="notes">(must be unique)</span></label><br />
-				<?php field_text("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>				
+				<?php fieldText("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>				
 			</p>
 			
 			<div class="fauxP">
@@ -148,13 +148,13 @@
 			<legend>price / cost</legend>
 			<p>
 				<label for="unitprice" class="important">sell price</label><br />
-				<?php field_currency("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
+				<?php fieldCurrency("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
 				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
 			</p>
 			
 			<p class="costsP">
 				<label for="unitcost">cost</label><br />
-				<?php field_currency("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
+				<?php fieldCurrency("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
 				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>								
 			</p>			
 			<p class="costsP">
@@ -164,7 +164,7 @@
 					if($therecord["unitcost"]!=0){
 						$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
 					}				
-					field_percentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
+					fieldPercentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
 				?>
 			</p>
 			<p>
@@ -177,7 +177,7 @@
 			<legend>weight / shipping</legend>
 			<p>
 				<label for="weight">weight</label><br />
-				<?php field_text("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"180")); ?><br />
+				<?php fieldText("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"180")); ?><br />
 				<span class="notes"><strong>Note:</strong> Weight must be in lbs. in order for shipping to be auto-estimated correctly.</span>
 			</p>
 			
@@ -193,14 +193,14 @@
 						$itemsperpackage=1/$therecord["packagesperitem"];
 					else
 						$itemsperpackage=NULL;
-				?><?php field_text("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"200")); ?>	
+				?><?php fieldText("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"200")); ?>	
 			</p>
 			
 			<p>
-				<?php field_checkbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?><label for="isprepackaged">pre-packaged</label> <span class="notes">(product is not packed with any other product.)</span>
+				<?php fieldCheckbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?><label for="isprepackaged">pre-packaged</label> <span class="notes">(product is not packed with any other product.)</span>
 			</p>
 			<p>
-				<?php field_checkbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?><label for="isoversized">oversized</label> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
+				<?php fieldCheckbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?><label for="isoversized">oversized</label> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
 			</p>
 		</fieldset>
 	</div>
@@ -208,7 +208,7 @@
 	<fieldset>
 		<legend>web</legend>
 		<p>
-			<?php field_checkbox("webenabled",$therecord["webenabled"],false,Array("tabindex"=>"220"))?><label for="webenabled">web enabled</label>
+			<?php fieldCheckbox("webenabled",$therecord["webenabled"],false,Array("tabindex"=>"220"))?><label for="webenabled">web enabled</label>
 		</p>
 				
 		<div style=" <?php if(!$therecord["webenabled"]) echo "display:none;" ?>" id="webstuff">

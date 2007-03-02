@@ -74,7 +74,7 @@
 			<legend><label for="name">name</label></legend>
 			<p>
 				<br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"60","maxlength"=>"128")); ?>
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"60","maxlength"=>"128")); ?>
 			</p>
 		</fieldset>
 	</div>

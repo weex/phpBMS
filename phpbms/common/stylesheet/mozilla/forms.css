@@ -25,19 +25,14 @@ FORM{margin:0px;padding:0px;}
 	padding: 2px 6px;
 	cursor: pointer;
 	vertical-align: middle;
-	border:1px solid #454A59;
-	border-bottom-color:#2F333D;
-	border-top-color:#626876;
+	border:1px solid #7B8DA1;
 	background:#7A8193 url(image/button-back.png) repeat-x;
 	height:26px;
 }
-.smallButtons{font-size:10px;height:23px;background-position:0 -3px;}
+.smallButtons{font-size:10px;height:23px;background-position:0 -2px;}
 .Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
-	border-color:#94DA78;
-	border:1px solid #BBBBBB;
-	border-bottom-color:#6AB948;
-	border-top-color:#AEDF9A;
-	color:#AEDF9A;
+	border:1px solid #E6E600;
+	color:#E6E600;
 }
 .Buttons[disabled]:Hover,.smallButtons[disabled]:Hover{
 	/* first two entries are from disabled, the last are from standard buttons */

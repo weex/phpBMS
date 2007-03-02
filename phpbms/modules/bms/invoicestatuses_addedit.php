@@ -67,11 +67,11 @@
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
 		</p>
 		<p>		
-			<?php field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
+			<?php fieldCheckbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
 		</p>
 		<p>
 			<label for="priority">priority</label><br />
-			<?php field_text("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
+			<?php fieldText("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
 		</p>
 		<p class="notes">
 			Lower priority numbered items are displayed first.
@@ -82,17 +82,17 @@
 		<fieldset >
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"45","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"45","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
 			</p>
 		</fieldset>
 		<fieldset>
 			<legend>Defaults</legend>
 			<p><br />
-				<?php field_checkbox("invoicedefault",$therecord["invoicedefault"],false,Array("tabindex"=>"4"))?><label for="invoicedefault">new order default</label>				
+				<?php fieldCheckbox("invoicedefault",$therecord["invoicedefault"],false,Array("tabindex"=>"4"))?><label for="invoicedefault">new order default</label>				
 			</p>
 			<p>
 				<label for="defaultassignedtoid">assigned to</label><br />
-				<?php autofill("defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"45","maxlength"=>"128")) ?>
+				<?php fieldAutofill("defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"45","maxlength"=>"128")) ?>
 			</p>
 		</fieldset>
 	</div>

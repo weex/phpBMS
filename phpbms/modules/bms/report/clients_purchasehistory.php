@@ -264,11 +264,11 @@ if(isset($_POST["command"])){
 				<label for="fromdate">from</label><br />
 				<?php 
 				$thedate=mktime(0,0,0,date("m"),1);
-				field_datepicker("fromdate",dateToString($thedate),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				fieldDatePicker("fromdate",dateToString($thedate),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 			<p>
 				<label for="todate">to</label><br />
-				<?php field_datepicker("todate",dateToString(mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php fieldDatePicker("todate",dateToString(mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 			</p>
 		</fieldset>
 

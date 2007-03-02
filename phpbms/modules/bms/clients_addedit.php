@@ -95,12 +95,12 @@
 					$attributes["onchange"]="changeClientType(this)";
 					if($disabled)
 						$attributes["disabled"]="disabled";
-					basic_choicelist("type",$therecord["type"],Array(Array("name"=>"prospect","value"=>"prospect"),Array("name"=>"client","value"=>"client")),$attributes);
+					fieldBasicList("type",$therecord["type"],Array(Array("name"=>"prospect","value"=>"prospect"),Array("name"=>"client","value"=>"client")),$attributes);
 				?>
 			</p>
 			
 			<p>
-				<?php field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive" class="important">inactive</label>
+				<?php fieldCheckbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive" class="important">inactive</label>
 			</p>
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
@@ -110,7 +110,7 @@
 			
 			<p>
 				<label for="category">category</label><br />
-				<?php choicelist("category",$therecord["category"],"clientcategories",array("tabindex"=>"5")); ?>
+				<?php fieldChoiceList("category",$therecord["category"],"clientcategories",array("tabindex"=>"5")); ?>
 			</p>
 			
 		</fieldset>
@@ -119,12 +119,12 @@
 			<legend>sales</legend>
 			<div class="fauxP">
 				<label for="ds-salesmanagerid">sales manager</label><br />
-				<?php autofill("salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0 AND users.id > 1",Array("maxlength"=>"64","tabindex"=>"25")) ?>
+				<?php fieldAutofill("salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0 AND users.id > 1",Array("maxlength"=>"64","tabindex"=>"25")) ?>
 			</div>
 			
 			<p>
 				<label for="leadsource">lead source</label><br />
-				<?php choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"26","class"=>"small")); ?>
+				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"26","class"=>"small")); ?>
 			</p>
 		</fieldset>
 				
@@ -132,22 +132,22 @@
 			<legend>order defaults</legend>
 			<p>
 				<label for="paymentmethodid">payment method</label><br />
-				<?php table_choicelist("paymentmethodid",$therecord["paymentmethodid"],$table="paymentmethods","id","name","","inactive=0","priority,name")?>
+				<?php fieldDataTableList("paymentmethodid",$therecord["paymentmethodid"],$table="paymentmethods","id","name","","inactive=0","priority,name")?>
 			</p>
 
 			<p>
 				<label for="shippingmethodid">shipping method</label><br />
-				<?php table_choicelist("shippingmethodid",$therecord["shippingmethodid"],$table="shippingmethods","id","name","","inactive=0","priority,name")?>
+				<?php fieldDataTableList("shippingmethodid",$therecord["shippingmethodid"],$table="shippingmethods","id","name","","inactive=0","priority,name")?>
 			</p>
 
 			<p>
 				<label for="discountid">discount</label><br />
-				<?php table_choicelist("discountid",$therecord["discountid"],$table="discounts","id","name","","inactive=0","name")?>
+				<?php fieldDataTableList("discountid",$therecord["discountid"],$table="discounts","id","name","","inactive=0","name")?>
 			</p>
 
 			<p>
 				<label for="taxareaid">tax area</label><br />
-				<?php table_choicelist("taxareaid",$therecord["taxareaid"],$table="tax","id","name","","","name")?>
+				<?php fieldDataTableList("taxareaid",$therecord["taxareaid"],$table="tax","id","name","","","name")?>
 			</p>
 
 		</fieldset>
@@ -190,37 +190,37 @@
 			<legend>contact</legend>
 			<p class="phonelefts">
 				<label for="workphone">work phone</label><br />
-				<?php field_text("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
+				<?php fieldText("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
 			</p>
 			
 			<p>
 				<label for="homephone">home phone</label><br />
-				<?php field_text("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
+				<?php fieldText("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p class="phonelefts">
 				<label for="mobilephone">mobile phone</label><br />
-				<?php field_text("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
+				<?php fieldText("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
 			</p>
 
 			<p>
 				<label for="fax">fax number</label><br />
-					<?php field_text("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
+					<?php fieldText("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="otherphone">other phone</label><br />
-				<?php field_text("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
+				<?php fieldText("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?php field_email("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>
+				<?php fieldEmail("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>
 			</p>
 			
 			<p>
 				<label for="webaddress">web site</label><br />
-				<?php field_web("webaddress",$therecord["webaddress"],Array("tabindex"=>"12","size"=>"68","maxlength"=>"128")); ?>
+				<?php fieldWebAddress("webaddress",$therecord["webaddress"],Array("tabindex"=>"12","size"=>"68","maxlength"=>"128")); ?>
 			</p>
 		</fieldset>
 		

@@ -70,7 +70,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"64","class"=>"important")); ?>
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"64","class"=>"important")); ?>
 			</p>
 		</fieldset>	
 	</div>
@@ -84,7 +84,7 @@
 		
 		<p>
 			<label for="fromfield">field</label><br />
-			<?php field_text("fromfield",$therecord["fromfield"],1,"From field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
+			<?php fieldText("fromfield",$therecord["fromfield"],1,"From field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
 		</p>
 	</fieldset>
 	
@@ -97,11 +97,11 @@
 		
 		<p>
 			<label for="tofield">field</label><br />
-			<?php field_text("tofield",$therecord["tofield"],1,"To field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
+			<?php fieldText("tofield",$therecord["tofield"],1,"To field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
 		</p>
 		
 		<p>
-			<?php field_checkbox("inherint",$therecord["inherint"])?><label for="inherint">inherent relationsip</label>
+			<?php fieldCheckbox("inherint",$therecord["inherint"])?><label for="inherint">inherent relationsip</label>
 		</p>
 		<p class="notes">
 			Note: Use "inherent relationship" if the "to table" is already included in the "from table" query table (see the

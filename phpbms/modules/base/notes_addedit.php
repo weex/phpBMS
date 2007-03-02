@@ -78,13 +78,13 @@
 		
 		<p>
 			<label for="type" class="important">type</label><br />
-			<?php basic_choicelist("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onchange"=>"changeType();"));?>
+			<?php fieldBasicList("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onchange"=>"changeType();"));?>
 			<input type="hidden" id="typeCheck" name="typeCheck" value="<?php echo $therecord["type"]?>" />		
 		</p>
 		
 		<p>
 			<label for="title">title</label><br />
-			<?php field_text("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"128","class"=>"important")); ?>
+			<?php fieldText("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"128","class"=>"important")); ?>
 		</p>				
 	</fieldset>
 	
@@ -92,8 +92,8 @@
 		<fieldset>
 			<legend><label for="importance">importance / privacy</label></legend>
 			<p><br />
-				<?php basic_choicelist("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
-				<?php field_checkbox("private",$therecord["private"])?><label for="private">private</label>
+				<?php fieldBasicList("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
+				<?php fieldCheckbox("private",$therecord["private"])?><label for="private">private</label>
 			</p>
 		</fieldset>
 
@@ -102,33 +102,33 @@
 			<p>
 				<label for="startdate" id="starttext">start</label><br />
 				<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
-				&nbsp;<?php field_datepicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate();setEnglishDates()"));?>	
-				&nbsp;<?php field_timepicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate()"));?>
+				&nbsp;<?php fieldDatePicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate();setEnglishDates()"));?>	
+				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate()"));?>
 			</p>
 			<p>
 				<label for="enddate" id="endtext">end</label><br />
 				<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked" ?> onClick="dateChecked('end')" class="radiochecks" />
-				&nbsp;<?php field_datepicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
-				&nbsp;<?php field_timepicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+				&nbsp;<?php fieldDatePicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 			</p>
 		</fieldset>
 		
 		<div id="thecompleted" class="fauxP">
 			<p>
 				<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>" />
-				<?php field_checkbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext">completed</label>
-				&nbsp;<?php field_datepicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
+				<?php fieldCheckbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext">completed</label>
+				&nbsp;<?php fieldDatePicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
 			</p>
 			<p id="thestatus">
 				<label for="status">status</label><br />
-				<?php choicelist("status",$therecord["status"],"notestatus"); ?>				
+				<?php fieldChoiceList("status",$therecord["status"],"notestatus"); ?>				
 			</p>			
 		</div>
 		
 		<fieldset>
 			<legend><label for="ds-assignedtoid">assigned to</label></legend>
 			<div class="fauxP"><br />
-				<?php autofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32")) ?>
+				<?php fieldAutofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32")) ?>
 				<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
 			</div>
 
@@ -144,8 +144,8 @@
 			<?php } }?>
 			<p>
 				<label for="assignedtodate">follow up date</label><br />
-				<?php field_datepicker("assignedtodate",$therecord["assignedtodate"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
-				&nbsp;<?php field_timepicker("assignedtotime",$therecord["assignedtotime"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+				<?php fieldDatePicker("assignedtodate",$therecord["assignedtodate"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+				&nbsp;<?php fieldTimePicker("assignedtotime",$therecord["assignedtotime"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
 			</p>
 		</fieldset>
 		
@@ -175,7 +175,7 @@
 			
 			<p>
 				<label for="category">category</label><br />
-				<?php choicelist("category",$therecord["category"],"notecategories"); ?>
+				<?php fieldChoiceList("category",$therecord["category"],"notecategories"); ?>
 			</p>
 			
 		</fieldset>
@@ -200,10 +200,10 @@
 			<legend>recurrence</legend>
 			<div class="fauxP"><br />
 				<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
-				<?php field_checkbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?><label for="repeat">repeat every</label>
+				<?php fieldCheckbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?><label for="repeat">repeat every</label>
 				&nbsp;&nbsp;
 				<div id="repeatoptions">						
-					<?php field_text("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onKeyup"=>"addS(this)"))?>
+					<?php fieldText("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onKeyup"=>"addS(this)"))?>
 					<?php 
 						$plural="";
 						if($therecord["repeatfrequency"]>1) $plural="s";
@@ -241,11 +241,11 @@
 							$attribs["readonly"]="readonly";					
 						}
 						if($therecord["repeattimes"]>0) $tempvalue=$therecord["repeattimes"];
-						field_text("repeattimes",$tempvalue,false,$message="The number of times to repeat must be a valid integer","integer",$attribs)?>
+						fieldText("repeattimes",$tempvalue,false,$message="The number of times to repeat must be a valid integer","integer",$attribs)?>
 					</p>
 					<p id="rpuntildate">
 						<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked" ?> value="-1" onClick="updateRepeatUntil()"/> <label for="rprduntildate">until</label>&nbsp;&nbsp;
-						<?php field_datepicker("repeatuntildate",$therecord["repeatuntildate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
+						<?php fieldDatePicker("repeatuntildate",$therecord["repeatuntildate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
 					</p>
 				</div>
 			</div>

@@ -75,11 +75,11 @@
 		</p>
 		<p>
 			<label for="type" class="important">type</label><br />
-			<?php basic_choicelist("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>		
+			<?php fieldBasicList("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>		
 		</p>
 		<div class="fauxP">
 			<label for="ds-moduleid">module</label><br />
-			<?php autofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32"),true,"Module is requred.") ?>		
+			<?php fieldAutofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32"),true,"Module is requred.") ?>		
 		</div>
 	</fieldset>
 
@@ -88,7 +88,7 @@
 			<legend><label for="displayname">display name</label></legend>
 			<p>
 				<br />
-				<?php field_text("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"important")); ?>
+				<?php fieldText("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"important")); ?>
 			</p>				
 		</fieldset>
 		
@@ -96,7 +96,7 @@
 			<legend>Table</legend>
 			<p>
 				<label for="maintable">primary table name</label><br />
-				<?php field_text("maintable",$therecord["maintable"],1,"Primary table name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"")); ?>
+				<?php fieldText("maintable",$therecord["maintable"],1,"Primary table name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"")); ?>
 			</p>
 			<p>
 				<label for="querytable">search/display SQL FROM clause</label><br />
@@ -115,22 +115,22 @@
 			<legend>add/edit options</legend>
 			<p>
 				<label for="addfile">add record file</label><br />
-				<?php field_text("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
+				<?php fieldText("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
 				<span class="notes">file name, including path from application root, that is used for creating new records.</span>
 			</p>
 			<p>
 				add access (role)<br />
-				<?php roles_choicelist("addroleid",$therecord["addroleid"],$dblink)?>
+				<?php fieldRolesList("addroleid",$therecord["addroleid"],$dblink)?>
 			</p>
 			<p>&nbsp;</p>
 			<p>
 				<label for="editfile">edit record file </label><br />
-				<?php field_text("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
+				<?php fieldText("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
 				<span class="notes">file name, including path from application root, that is used for editing existing records.</span>			
 			</p>
 			<p>
 				edit access (role)<br />
-				<?php roles_choicelist("editroleid",$therecord["editroleid"],$dblink)?>
+				<?php fieldRolesList("editroleid",$therecord["editroleid"],$dblink)?>
 			</p>
 		</fieldset>
 		
@@ -138,15 +138,15 @@
 			<legend>search screen options</legend>
 			<p>
 				<label for="searchroleid">search access (role)</label><br />
-				<?php roles_choicelist("searchroleid",$therecord["searchroleid"],$dblink)?>
+				<?php fieldRolesList("searchroleid",$therecord["searchroleid"],$dblink)?>
 			</p>
 			<p>
 				<label for="advsearchroleid">advanced search access (role)</label><br />
-				<?php roles_choicelist("advsearchroleid",$therecord["advsearchroleid"],$dblink)?>			
+				<?php fieldRolesList("advsearchroleid",$therecord["advsearchroleid"],$dblink)?>			
 			</p>
 			<p>
 				<label for="viewsqlroleid">view sql access (role)</label><br />
-				<?php roles_choicelist("viewsqlroleid",$therecord["viewsqlroleid"],$dblink)?>
+				<?php fieldRolesList("viewsqlroleid",$therecord["viewsqlroleid"],$dblink)?>
 			</p>
 			<p>
 				<label for="deletebutton">delete button name</label><br />

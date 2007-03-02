@@ -67,11 +67,11 @@
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
 		</p>
 		<p>	<br />		
-			<?php field_checkbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
+			<?php fieldCheckbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
 		</p>
 		<p>
 			<label for="priority">priority</label><br />
-			<?php field_text("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
+			<?php fieldText("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
 		</p>
 		<p class="notes">
 			Lower priority numbered items are displayed first.
@@ -82,13 +82,13 @@
 		<fieldset >
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
 			</p>
 		</fieldset>
 		<fieldset>
 			<legend>estimate charges</legend>
 			<p><br />
-			<?php field_checkbox("canestimate",$therecord["canestimate"],false,Array("tabindex"=>"4","onchange"=>"checkScript(this)"))?><label for="canestimate">esitmate shipping</label>
+			<?php fieldCheckbox("canestimate",$therecord["canestimate"],false,Array("tabindex"=>"4","onchange"=>"checkScript(this)"))?><label for="canestimate">esitmate shipping</label>
 			</p>
 			<p id="pEstimationscript" <?php if($therecord["canestimate"]) echo "style=\"display:block\" "?>>
 				<label for="estimationscript">estimation script</label><br />

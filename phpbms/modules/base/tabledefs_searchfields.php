@@ -145,16 +145,16 @@
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
 			<p>
 				<label for="name">name</label><br />
-				<?php field_text("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64")); ?>
+				<?php fieldText("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64")); ?>
 			</p>
 			<p>
 				<label for="type">type</label><br />
-				<?php basic_choicelist("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")));?>
+				<?php fieldBasicList("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")));?>
 			</p>
 			
 			<p>
 				<label for="field">field name / SQL where clause</label><br />
-				<?php field_text("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255")); ?>
+				<?php fieldText("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255")); ?>
 			
 			</p>
 			<p>

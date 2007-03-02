@@ -1,10 +1,8 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-BODY { background: white url("image/back.png"); background-attachment:fixed;
-	background-position:top;
-	background-repeat:repeat-x;
-	margin:15px;
+BODY { background: white url("image/back.png"); 
+	margin:0 15px;
 }
 BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI, BUTTON { 
 	font-size : 12px;

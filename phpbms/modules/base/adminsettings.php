@@ -79,7 +79,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 		
 		<p>		
 			<label for="sapplication_name">application name</label><br/>
-			<?php field_text("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
+			<?php fieldText("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
 			<span class="notes">
 				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
 			</span>
@@ -87,12 +87,12 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 
 		<p>
 			<label for="srecord_limit">record display limit</label><br />
-			<?php field_text("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
+			<?php fieldText("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
 		</p>
 		
 		<p>
 			<label for="sdefault_load_page">default page</label><br />
-			<?php field_text("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
+			<?php fieldText("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
 		</p>
 	</fieldset>
 	
@@ -112,7 +112,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 
 		<p>
 			<label for="sencryption_seed">encryption seed</label><br />
-			<?php field_text("sencryption_seed",$_SESSION["encryption_seed"],1,"Encryption seed name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
+			<?php fieldText("sencryption_seed",$_SESSION["encryption_seed"],1,"Encryption seed name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
 		</p>
 
 		<p>
@@ -213,19 +213,19 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 		<p>&nbsp;</p>
 		<p>
 			<label for="scurrency_symbol">currency symbol</label><br />
-			<?php field_text("scurrency_symbol",$_SESSION["currency_symbol"],1,"Currency symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"8")); ?>
+			<?php fieldText("scurrency_symbol",$_SESSION["currency_symbol"],1,"Currency symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"8")); ?>
 		</p>
 		<p>
 			<label for="scurrency_accuracy">currency decimal points of accuracy</label><br />
-			<?php field_text("scurrency_accuracy",$_SESSION["currency_accuracy"],1,"Currency accuracy name cannot be blank and must be a valid integer.","integer",Array("size"=>"4","maxlength"=>"1")); ?>
+			<?php fieldText("scurrency_accuracy",$_SESSION["currency_accuracy"],1,"Currency accuracy name cannot be blank and must be a valid integer.","integer",Array("size"=>"4","maxlength"=>"1")); ?>
 		</p>
 		<p>
 			<label for="sdecimal_symbol">decimal symbol</label><br />
-			<?php field_text("sdecimal_symbol",$_SESSION["decimal_symbol"],1,"Decimal symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
+			<?php fieldText("sdecimal_symbol",$_SESSION["decimal_symbol"],1,"Decimal symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
 		</p>
 		<p>
 			<label for="sthousands_separator">thousands separator</label><br />
-			<?php field_text("sthousands_separator",$_SESSION["thousands_separator"],1,"Thousands separator name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
+			<?php fieldText("sthousands_separator",$_SESSION["thousands_separator"],1,"Thousands separator name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
 		</p>
 	</fieldset>
 	<?php 

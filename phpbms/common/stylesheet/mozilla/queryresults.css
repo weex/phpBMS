@@ -22,7 +22,7 @@
 }
 
 .querytable td, .queryrow1 td, .queryrow2 td{ 
-				border:1px solid #999999;
+				border:1px solid #BBBBBB;
 				border-bottom-width:0;
 				border-top-width:0;
 				font-size: 11px;
@@ -30,9 +30,9 @@
 				padding-bottom:2px;
 			}
 .querytable th{
-	background:#455372;
-	border:1px solid #999999;
-	padding:3px 9px;
+	background:#7B8DA1;
+	border:1px solid #BBBBBB;
+	padding:3px 5px;
 	color:white;
 }
 
@@ -41,8 +41,8 @@
 
 .querytable td.queryfooter, .queryfooter{
 	white-space:nowrap;
-	background:#BBBBBB;
-	border:1px solid #999999;
+	background:#DDDDDD;
+	border:1px solid #BBBBBB;
 	padding:5px;
 }
 

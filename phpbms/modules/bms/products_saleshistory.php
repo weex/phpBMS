@@ -126,12 +126,12 @@
 		
 		<p class="timelineP">
 		   <label for="fromdate">from</label><br />
-		   <?php field_datepicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
+		   <?php fieldDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
 		</p>
 
 		<p class="timelineP">
 			to<br />
-				<?php field_datepicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
+				<?php fieldDatePicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
 		</p>
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>

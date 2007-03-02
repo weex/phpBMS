@@ -88,7 +88,7 @@ $pageTitle="My Account"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition
 		<legend>Contact Information</legend>
 			<p>
 				<label for="email">e-mail address</label><br />
-				<?php field_email("email",$_SESSION["userinfo"]["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
+				<?php fieldEmail("email",$_SESSION["userinfo"]["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
 			</p>
 			<p>
 				<label for="phone">phone/extension</label><br />

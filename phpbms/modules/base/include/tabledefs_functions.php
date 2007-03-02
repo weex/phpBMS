@@ -64,7 +64,7 @@ function tabledefs_tabs($selected="none",$id=0) {
 			"disabled"=>(($id)?false:true)
 		)		
 	);
-	create_tabs($thetabs,$selected);
+	displayTabs($thetabs,$selected);
 }//end function
 
 ?>

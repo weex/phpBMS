@@ -4,7 +4,7 @@
 	#menu{
 		clear:both;
 		padding:0px;
-		margin-bottom:15px;
+		margin:0 -15px 20px;
 		background:url(image/menu.png);
 		color:white;
 		height:75px;
@@ -89,7 +89,7 @@
 	#statusmessage{
 		background:#0B63A2 url(image/statusm-right.png) bottom right no-repeat;
 		margin:15px;
-		margin-top:-15px;
+		margin-top:-20px;
 		padding:0 5px 0 0;
 		display:none;
 	}

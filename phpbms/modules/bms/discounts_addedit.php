@@ -70,7 +70,7 @@
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" />
 			</p>			
 			<p>
-				<?php field_checkbox("inactive",$therecord["inactive"])?> <label for="inactive">inactive</label>
+				<?php fieldCheckbox("inactive",$therecord["inactive"])?> <label for="inactive">inactive</label>
 			</p>		
 		</fieldset>
 		
@@ -91,7 +91,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",htmlQuotes($therecord["name"]),1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<?php fieldText("name",htmlQuotes($therecord["name"]),1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
 			</p>
 		</fieldset>
 		
@@ -104,11 +104,11 @@
 			</p>
 			<p id="pValue">
 				<label for="percentvalue">value</label><br />
-				<?php field_percentage("percentvalue",$therecord["value"],2,1,"Value is required",Array("size"=>"10","maxlength"=>"10"));?>
+				<?php fieldPercentage("percentvalue",$therecord["value"],2,1,"Value is required",Array("size"=>"10","maxlength"=>"10"));?>
 			</p>
 			<p id="aValue">
 				<label for="amountvalue">value</label><br />
-				<?php field_currency("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
+				<?php fieldCurrency("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
 			</p>			
 		</fieldset>
 		

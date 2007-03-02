@@ -67,11 +67,11 @@
 			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />
 		</p>
 		<p>
-			<?php field_checkbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label>
+			<?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label>
 		</p>
 		<p>
 			<label for="priority">priority</label><br />
-			<?php field_text("priority",$therecord["priority"],0,"","",Array("size"=>"8","maxlength"=>"8","class"=>"","style"=>"")); ?>			
+			<?php fieldText("priority",$therecord["priority"],0,"","",Array("size"=>"8","maxlength"=>"8","class"=>"","style"=>"")); ?>			
 		</p>
 		<p class="notes">
 			Lower priority numbered items are displayed first.
@@ -82,7 +82,7 @@
 		<legend>name / type</legend>
 			<p>
 				<label for="name">name</label><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
 			</p>
 			<p>
 				<label for="type">type</label><br />
@@ -103,7 +103,7 @@
 	<fieldset >
 		<legend>processing</legend>
 		<p>
-			<?php field_checkbox("onlineprocess",$therecord["onlineprocess"],false,Array("onchange"=>"checkScript(this)"))?><label for="onlineprocess">online process</label>
+			<?php fieldCheckbox("onlineprocess",$therecord["onlineprocess"],false,Array("onchange"=>"checkScript(this)"))?><label for="onlineprocess">online process</label>
 		</p>
 		<p id="pProcessscript" <?php if($therecord["onlineprocess"]==0) echo "style=\"display:none\" "?>>
 			<label for="processscript">process script</label><br />

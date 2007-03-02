@@ -1,7 +1,7 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-#mainbody{width:585px;margin:0 auto;padding:0}
+#mainbody{width:585px;margin:50px auto;padding:0}
 
 #fsReportInformation{float:right;width:300px;margin-top:0px;}
 #name,#type{width:98%;color:black}

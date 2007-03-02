@@ -70,13 +70,13 @@
 		
 		<p>
 			<label for="displayorder">display order</label><br />
-			 <?php field_text("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br />
+			 <?php fieldText("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br />
 			 <span class="notes"><strong>Note:</strong> Lower numbers are displayed first.</span>
 		</p>
 		
 		<p>
 			<label for="roleid">access (role)</label><br />
-			<?php roles_choicelist("roleid",$therecord["roleid"],$dblink)?>
+			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
 		</p>
 	</fieldset>
 	
@@ -84,7 +84,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p><br />
-				<?php field_text("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
 			</p>
 		</fieldset>
 

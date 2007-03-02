@@ -82,18 +82,18 @@
 			<div id="attributesRight">
 				<p>
 					<label for="orderdate">order date</label><br />
-					<?php field_datepicker("orderdate",$therecord["orderdate"],0,"Order date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"10"),false);?>
+					<?php fieldDatePicker("orderdate",$therecord["orderdate"],0,"Order date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"10"),false);?>
 				</p>
 				<p>
 					<label for="invoicedate">invoice date</label>
 					<br />
-					<?php field_datepicker("invoicedate",$therecord["invoicedate"],0,"Invoice date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"11"),false);?>
+					<?php fieldDatePicker("invoicedate",$therecord["invoicedate"],0,"Invoice date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"11"),false);?>
 				</p>
 				
 				<p>
 					<label for="requireddate">required date</label>
 					<br />
-					<?php field_datepicker("requireddate",$therecord["requireddate"],0,"Required date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13"),false);?>
+					<?php fieldDatePicker("requireddate",$therecord["requireddate"],0,"Required date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13"),false);?>
 				</p>
 			</div>
 		
@@ -114,7 +114,7 @@
 						$thechoices[]=array("name"=>"Order","value"=>"Order");
 						if(hasRights(30)) $thechoices[]=array("name"=>"Invoice","value"=>"Invoice");
 						$thechoices[]=array("name"=>"VOID","value"=>"VOID");
-						basic_choicelist("type",$therecord["type"],$thechoices,array("onchange"=>"checkType(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
+						fieldBasicList("type",$therecord["type"],$thechoices,array("onchange"=>"checkType(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
 					}
 					?><input type="hidden" id="oldType" name="oldType" value="<?php echo $therecord["type"]?>"/>
 				</p>
@@ -130,7 +130,7 @@
 			<p>
 				<label for="leadsource">lead source</label>
 				<br />
-				<?php choicelist("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"14")); ?>			
+				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"14")); ?>			
 			</p>
 		</fieldset>
 		<fieldset>
@@ -142,11 +142,11 @@
 			</p>
 			<p>
 				<label for="statusdate">status date</label><br />
-				<?PHP field_datepicker("statusdate",$therecord["statusdate"],0,"Status date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13","onchange"=>"updateStatusChange();"),false);?>
+				<?PHP fieldDatePicker("statusdate",$therecord["statusdate"],0,"Status date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13","onchange"=>"updateStatusChange();"),false);?>
 			</p>
 			<p>
 				<label for="assignedtoid">assigned to</label><br />
-				<?php autofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128")) ?>
+				<?php fieldAutofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128")) ?>
 			</p>
 		
 		</fieldset>
@@ -156,7 +156,7 @@
 		<fieldset >
 			<legend><label for="ds-clientid">client</label></legend>
 			<div class="important fauxP"><br />
-				  <?php autofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"45","maxlength"=>"128","style"=>"","style"=>"font-weight:bold","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
+				  <?php fieldAutofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"45","maxlength"=>"128","style"=>"","style"=>"font-weight:bold","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
 				  <script language="JavaScript" type="text/javascript">
 					document.forms["record"]["clientid"].onchange=populateShipping;
 				  </script>
@@ -193,7 +193,7 @@
 		<fieldset>
 			<legend>web / confirmation number</legend>
 			<p><br />
-				<?php field_checkbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
+				<?php fieldCheckbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
 				<input name="webconfirmationno" type="text" value="<?php echo $therecord["webconfirmationno"] ?>" size="41" maxlength="64" tabindex="14" />
 			</p>
 			<p>&nbsp;</p>
@@ -221,13 +221,13 @@
 		<?php if($therecord["type"]!="Invoice"){?>
 		<tr id="LIAdd">
 			<td nowrap>
-			<?php autofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"16","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
+			<?php fieldAutofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"16","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partnumber"].onchange=populateLineItem;
 			</script>
 			</td>
 			<td nowrap>
-			<?php autofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","tabindex"=>"16"),false,"") ?>
+			<?php fieldAutofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","tabindex"=>"16"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partname"].onchange=populateLineItem;
 			</script>
@@ -276,7 +276,7 @@
 					</p>
 					<p>
 						<label for="taxpercentage">tax percentage</label><br />
-						<?php field_percentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"9","maxlength"=>"9","onchange"=>"clearTaxareaid()","tabindex"=>"22")); ?>						
+						<?php fieldPercentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"9","maxlength"=>"9","onchange"=>"clearTaxareaid()","tabindex"=>"22")); ?>						
 					</p>
 				</fieldset>
 			</div>
@@ -351,11 +351,11 @@
 						</p>
 						<p id="pAccountNumber">
 							<label for="accountnumber">account number</label><br />
-							<?php field_text("accountnumber",$therecord["accountnumber"],false,"Account number must be a valid integer","integer",Array("size"=>"20","maxlength"=>"64")); ?>
+							<?php fieldText("accountnumber",$therecord["accountnumber"],false,"Account number must be a valid integer","integer",Array("size"=>"20","maxlength"=>"64")); ?>
 						</p>
 						<p>
 							<label for="routingnumber">routing number</label><br />
-							<?php field_text("routingnumber",$therecord["routingnumber"],false,"Routing number must be a valid integer","integer",Array("size"=>"30","maxlength"=>"64")); ?>
+							<?php fieldText("routingnumber",$therecord["routingnumber"],false,"Routing number must be a valid integer","integer",Array("size"=>"30","maxlength"=>"64")); ?>
 						</p>
 					</div>	
 					<div id="ccpaymentinfo">
