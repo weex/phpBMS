@@ -12,7 +12,7 @@ P{margin:0;padding:0 5px 10px;}
 .bodyline{display:block;padding:5px}
 #loginbox{
 	width:250px;
-	margin:100px auto;
+	margin:100px auto 50px;
 }
 #loginbox h1{margin:0;padding:5px;background:none;height:22px;}
 #loginbox h1 a{display:block;width:85px;height:22px;float:right;background:url(../../../image/logo.png);}
@@ -32,3 +32,8 @@ P{margin:0;padding:0 5px 10px;}
 #command{width:75px;}
 #failed{text-align:center;margin-top:5px;}
 #moreinfo{text-align:center; padding:0 0 4px;}
+
+#demobox{width:250px; margin:0 auto;}
+#demobox h2{margin-top:0;}
+#demobox dt{font-weight:bold; padding:2px 10px;}
+#demobox dd{padding-bottom:10px;}

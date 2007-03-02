@@ -38,23 +38,27 @@
 */
 
 	require("../../include/session.php");
-
-	$result="Errot";
-	if(!isset($_GET["id"])){
-		$result="Bad Passed Variable";
-	} else {
-		$themessage=$_SESSION["massemail"]["body"];
-		$querystatement="SELECT * FROM clients WHERE id=".$_GET["id"];
-		$queryresult=mysql_query($querystatement,$dblink);
-		if($queryresult){
-			$therecord=mysql_fetch_array($queryresult);
-			
-			$themessage=str_replace("[[todays_date]]",dateToString(mktime()),$themessage);
-			foreach($therecord as $key=>$value)
-				$themessage=str_replace("[[".$key."]]",$value,$themessage);
-			
-			if(@ mail($therecord["email"],$_SESSION["massemail"]["subject"],$themessage,"From: ".$_SESSION["massemail"]["from"]))
-				$result="Sent";
+	
+	$result="Error";
+	if($_SESSION["demo_enabled"]=="true"){
+		$result="Sending e-mail disabled in demonstration mode";
+	} else {	
+		if(!isset($_GET["id"])){
+			$result="Bad Passed Variable";
+		} else {
+			$themessage=$_SESSION["massemail"]["body"];
+			$querystatement="SELECT * FROM clients WHERE id=".$_GET["id"];
+			$queryresult=mysql_query($querystatement,$dblink);
+			if($queryresult){
+				$therecord=mysql_fetch_array($queryresult);
+				
+				$themessage=str_replace("[[todays_date]]",dateToString(mktime()),$themessage);
+				foreach($therecord as $key=>$value)
+					$themessage=str_replace("[[".$key."]]",$value,$themessage);
+				
+				if(@ mail($therecord["email"],$_SESSION["massemail"]["subject"],$themessage,"From: ".$_SESSION["massemail"]["from"]))
+					$result="Sent";
+			}
 		}
 	}
 	header('Content-Type: text/xml');

@@ -10,15 +10,18 @@ function displayRoles($id,$dblink){
 }
 
 function changePassword($variables,$id,$dblink){
-	$querystatement="SELECT id FROM users WHERE id=".$id." AND password=ENCODE(\"".$variables["curPass"]."\",\"".mysql_real_escape_string($_SESSION["encryption_seed"])."\")";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if($queryresult)
-		if (mysql_num_rows($queryresult)){
-			$querystatement="UPDATE users SET password=ENCODE(\"".$variables["newPass"]."\",\"".$_SESSION["encryption_seed"]."\") WHERE id=".$id;
-			$queryresult=mysql_query($querystatement,$dblink);
-			return "Password Updated";
-		} else 
-			return "Current Password Incorrect";			
+	if($_SESSION["demo_enabled"]=="false"){
+		$querystatement="SELECT id FROM users WHERE id=".$id." AND password=ENCODE(\"".$variables["curPass"]."\",\"".mysql_real_escape_string($_SESSION["encryption_seed"])."\")";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if($queryresult)
+			if (mysql_num_rows($queryresult)){
+				$querystatement="UPDATE users SET password=ENCODE(\"".$variables["newPass"]."\",\"".$_SESSION["encryption_seed"]."\") WHERE id=".$id;
+				$queryresult=mysql_query($querystatement,$dblink);
+				return "Password Updated";
+			} else 
+				return "Current Password Incorrect";			
+	} else
+		return "Changing password is disbabled in demonstration mode.";
 }
 
 function updateContact($variables,$id,$dblink){

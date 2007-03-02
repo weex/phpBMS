@@ -80,6 +80,28 @@
 			<a href="info.php">program info</a>
 		</p>
 	</div>
-
+	<?php if($_SESSION["demo_enabled"]=="true"){?>
+	<div id="demobox" class="bodyline">
+		<h2>Demonstration Mode Enabled</h2>
+		<p>
+			Use the following user credentials to log into phpBMS. Each user 
+			highlights a different security access level.
+		</p>
+		<dl>
+			<dt>Shipping Personnel</dt>
+			<dd>
+				username: shipping<br />
+				password: shipping
+</dd>
+			<dt>Sales Personnel</dt>
+			<dd>username: sales<br />
+			password: sales</dd>
+			<dt>Sales Manager</dt>
+			<dd>username: salesmanager<br />
+				password: salesmanager
+		     </dd>
+		</dl>
+	</div>
+	<?php } ?>
 </body>
 </html>

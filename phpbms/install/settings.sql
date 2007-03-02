@@ -14,3 +14,4 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('currency_symbol','$');
 INSERT INTO `settings` (`name`, `value`) VALUES ('decimal_symbol','.');
 INSERT INTO `settings` (`name`, `value`) VALUES ('thousands_separator',',');
 INSERT INTO `settings` (`name`, `value`) VALUES ('currency_accuracy','2');
+INSERT INTO `settings` (`name`, `value`) VALUES ('demo_enabled','false');
