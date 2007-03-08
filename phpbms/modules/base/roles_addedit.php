@@ -75,14 +75,14 @@
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p><br />
+			<p>
 				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
 			</p>
 		</fieldset>
 
 		<fieldset>
 			<legend><label for="description">description</label></legend>
-			<p><br />
+			<p>
 				<textarea name="description" cols="45" rows="5" id="description"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>

@@ -1,7 +1,7 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-FIELDSET,.bodyline,.box{ 
+fieldset,.bodyline,.box{ 
 	-moz-border-radius:8px;
 	border: 1px #E4ECEC outset; 
 	padding:0px;
@@ -19,14 +19,14 @@ FIELDSET,.bodyline,.box{
 	padding:10px;margin-top:0px;
 }
 
-FIELDSET,.box{
+fieldset,.box{
 	border-color:#ACB7C4;
 	border-width:1px;
 	border-style:solid;
 	margin:3px 3px 7px 3px;
 	padding:5px; 		
 }
-FIELDSET{padding-top:0px}
+fieldset{padding:8px;overflow:hidden;}
 .box{
 	background-color:#EFF9F9;
 	border:1px solid #CCCCCC;	

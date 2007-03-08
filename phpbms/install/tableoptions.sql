@@ -41,3 +41,12 @@ INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (200,200,'new','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,200,'select','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (202,200,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'new','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'select','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'printex','0',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'inactivate','inactivate',1,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (201,'runSelected','run job(s)',1,0);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'name','scheduler.name','left','',0,'',0,'95%',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'cron interval','scheduler.crontab','left','',1,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'inactive','scheduler.inactive','center','',2,'',0,'','boolean');

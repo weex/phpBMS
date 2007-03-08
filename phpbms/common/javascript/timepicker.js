@@ -94,6 +94,8 @@ function tpClickHour(hour){
 	var timeField=getObjectFromID(showTP.timeField);
 	
 	var thetime=stringToTime(timeField.value);
+	if (thetime=="")
+		thetime=new Date();
 	thetime.setHours(hour);
 	timeField.value=timeToString(thetime);
 
@@ -104,6 +106,8 @@ function tpClickMinute(thetd){
 	var timeField=getObjectFromID(showTP.timeField);
 	
 	var thetime=stringToTime(timeField.value);
+	if (thetime=="")
+		thetime=new Date();
 	thetime.setMinutes(minutes);
 	timeField.value=timeToString(thetime);
 	

@@ -110,12 +110,8 @@
 		</fieldset>
 	</div>
 
-	<div class="box" id="createmodifiedby">
+	<div id="createmodifiedby"><input id="cancelclick" name="cancelclick" type="hidden" value="0" />
 		<div id="savecancel2"><?php showSaveCancel(2)?></div>
-		<div>
-			<br /><br /><br /><br />
-			<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
-		</div>		
 	</div>
 </div>
 <?php include("../../footer.php");?>

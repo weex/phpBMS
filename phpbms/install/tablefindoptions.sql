@@ -41,6 +41,7 @@ INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayor
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (100,24,'Public Events - This Month','notes.type=\'EV\' AND notes.private=0 AND ((notes.startdate = year(notes.startdate)=year(curdate()) and month(notes.startdate)=month(curdate())) OR notes.repeat=1)',14,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (101,24,'Public Events - Next Month','notes.type=\'EV\' notes.private=0 AND ((year(notes.startdate)=year(date_add(curdate(),INTERVAL 1 MONTH)) and month(notes.startdate)=month(date_add(curdate(),INTERVAL 1 MONTH))) OR notes.repeat=1)',15,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (108,26,'All Records','files.id!=0',0,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,200,'Active Roles','roles.inactive=0',0,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (201,200,'Inactive Roles','roles.inactive=1',1,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,200,'All Records','roles.id!=-100',2,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,'Active Roles','roles.inactive=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,'Inactive Roles','roles.inactive=1',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,'All Records','roles.id!=-100',2,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (201,'all records','scheduler.id!=0',0,0);

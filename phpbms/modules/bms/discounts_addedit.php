@@ -90,7 +90,7 @@
 	<div id="nameDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p><br />
+			<p>
 				<?php fieldText("name",htmlQuotes($therecord["name"]),1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
 			</p>
 		</fieldset>
@@ -100,6 +100,7 @@
 			<p>
 				<strong>type</strong><br />
 				<input type="radio" class="radiochecks" id="typePercentage" name="type" value="percent" <?php if($therecord["type"]=="percent") echo "checked" ?>  onClick="changeType()" /><label for="typePercentage">percentage</label>
+				&nbsp;
 				<input type="radio" class="radiochecks" id="typeAmount" name="type" value="amount" <?php if($therecord["type"]=="amount") echo "checked" ?> onClick="changeType()" /><label for="typeAmount">amount</label>
 			</p>
 			<p id="pValue">

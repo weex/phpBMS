@@ -889,7 +889,7 @@ function vTabOver(thetab){
 	thecontent.style.height=(thecontent.parentNode.offsetHeight-16)+"px";
 	for(i=0;i<thecontent.childNodes.length;i++)
 		if(thecontent.childNodes[i].tagName=="FIELDSET")
-			thecontent.childNodes[i].style.height=(thecontent.offsetHeight-24)+"px";	
+			thecontent.childNodes[i].style.height=(thecontent.offsetHeight-34)+"px";	
 	//hide other tabs and default
 	//show appropriate tab
 }

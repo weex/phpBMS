@@ -106,7 +106,6 @@
 			</p>
 		</fieldset>
 	</div>
-	<p>&nbsp;</p>
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php");?>

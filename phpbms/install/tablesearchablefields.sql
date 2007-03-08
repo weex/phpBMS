@@ -37,4 +37,5 @@ INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displ
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (93,24,'assignedby.firstname like','assigned by',4,'whereclause');
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (94,24,'notes.id','id',5,'field');
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (96,26,'files.name','name',0,'field');
-INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (200,200,'roles.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (200,'roles.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (201,'scheduler.name','name',0,'field');

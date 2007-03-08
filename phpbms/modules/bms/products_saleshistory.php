@@ -70,11 +70,8 @@
 		break;
 	}
 
-	$temparray=explode("/",$_POST["fromdate"]);
-	$mysqlfromdate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
-
-	$temparray=explode("/",$_POST["todate"]);
-	$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
+	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
+	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
 	$refquery="select partname from products where id=".$_GET["id"];
 	$refquery=mysql_query($refquery,$dblink);

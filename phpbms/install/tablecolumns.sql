@@ -65,3 +65,6 @@ INSERT INTO `tablecolumns` (`id`, `tabledefid`, `name`, `column`, `align`, `foot
 INSERT INTO `tablecolumns` (`id`, `tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (5001,200,'name','roles.name','left','',1,'',0,'99%',NULL);
 INSERT INTO `tablecolumns` (`id`, `tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (5002,200,'inactive','roles.inactive','center','',2,'',0,'','boolean');
 INSERT INTO `tablecolumns` (`id`, `tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (5000,200,'id','roles.id','left','',0,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'name','scheduler.name','left','',0,'',0,'95%',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'cron interval','scheduler.crontab','left','',1,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'inactive','scheduler.inactive','center','',2,'',0,'','boolean');

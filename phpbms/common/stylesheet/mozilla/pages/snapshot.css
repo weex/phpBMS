@@ -1,27 +1,18 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
-
-/* The following lines is put in  until the site is reformatted*/
-LABEL{display:inline;margin:0;padding:0}
-DIV{padding:0;margin:0;}
-P,.fauxP{margin:0;padding:0 5px 10px;}
-.alt{display:none;}
-.bodyline{display:block;}
-/* The following lines is put in  until the site is reformatted*/
-
-
+#systemMessageContainer{padding:10px;}
 #systemMessageContainer h2{margin:0 0 5px 0;padding:0 0 0px 0;}
-.systemMessageLinks{font-size:12px; border-bottom:1px dotted #CCCCCC; cursor:pointer; margin:5px 5px 0px; padding:3px;}
+.systemMessageLinks{font-size:12px; border-bottom:1px solid #DDDDDD; cursor:pointer; margin:5px 5px 0px; padding:3px;}
 .systemMessageLinks:hover{background-color:#DDDDDD}
 .systemMessageLinks span{color:#666666; font-size:11px; padding:0 0 0 4px;}
-.systemMessages p{border:1px dotted #CCCCCC;border-top:0;padding:8px;margin:0 5px 5px;background:white;}
+.systemMessages p{padding:8px;margin:0 5px 5px;background:white;}
 
 
-#eventsBox{vertical-align:top}
+#eventsBox{vertical-align:top;padding:10px;}
 #eventsBox h2{margin:0; padding:0}
 #todaysDate{float:right;padding:2px 0 0 0;margin:0;}
 
-#tasksBox{vertical-align:top}
+#tasksBox{vertical-align:top;padding:10px;}
 #tasksBox h2{margin:0 0 5px; padding:0}
 #tasksBox h3{
 	margin:0;
@@ -46,5 +37,6 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 .eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
 .event{padding:4px;padding-bottom:6px;}
 
+#bmsBox {padding:10px;}
 #bmsBox button{display:block;float:right;margin:2px 2px 0 0;}
 #bmsBox h2{margin:0 0 4px;}

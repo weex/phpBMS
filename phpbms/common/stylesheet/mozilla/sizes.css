@@ -33,7 +33,7 @@ LEGEND,H2{
         text-transform:capitalize;
         font-family: Arial, Helvitica, sans-serif;
 }
-LEGEND {margin-top:0px;}
+LEGEND {margin-top:0px; font-size:14px;}
 H2{
 	border-bottom: 1px solid #ccc;
 	padding:2px;

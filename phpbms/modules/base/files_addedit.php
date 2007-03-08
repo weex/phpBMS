@@ -91,7 +91,7 @@
 		</p>
 	</fieldset>
 	
-	<div class="leftSideDiv">
+	<div id="leftSideDiv">
 	<fieldset>
 		<legend>file</legend>
 		<?php if(isset($_GET["tabledefid"])){?>

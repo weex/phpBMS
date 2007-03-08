@@ -124,15 +124,9 @@
 					<br />
 					<input name="ponumber" id="ponumber" type="text" value="<?php echo htmlQuotes($therecord["ponumber"])?>" size="11" maxlength="64" tabindex=12 />
 				</p>
-			</div>
-			
-			
-			<p>
-				<label for="leadsource">lead source</label>
-				<br />
-				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"14")); ?>			
-			</p>
+			</div>			
 		</fieldset>
+		
 		<fieldset>
 			<legend>Status</legend>
 			<p>
@@ -155,20 +149,20 @@
 	<div id="fsTops">
 		<fieldset >
 			<legend><label for="ds-clientid">client</label></legend>
-			<div class="important fauxP"><br />
-				  <?php fieldAutofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"45","maxlength"=>"128","style"=>"","style"=>"font-weight:bold","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
+			<div class="important fauxP">
+				  <?php fieldAutofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"51","maxlength"=>"128","class"=>"important","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
 				  <script language="JavaScript" type="text/javascript">
 					document.forms["record"]["clientid"].onchange=populateShipping;
 				  </script>
 				  <?php if($therecord["clientid"]){?>
-				  <input name="viewclient" type="button" value="view client" onClick="viewClient('<?php echo getAddEditFile(2) ?>')" class="Buttons" tabindex="1" />
+				  <input name="viewclient" type="button" value="view client" onclick="viewClient('<?php echo getAddEditFile(2) ?>')" class="smallButtons" tabindex="1" />
 				  <?php }//end if?>
 			</div>
 		</fieldset>
 		
 		<fieldset>
 			<legend><label for="address1">shipping address</label></legend>		
-			<p><br />
+			<p>
 				<input name="address1" id="address1" type="text" value="<?php echo htmlQuotes($therecord["address1"])?>" size="65" maxlength="128" tabindex=3 /><br />
 				<input name="address2" id="address2" type="text"  value="<?php echo htmlQuotes($therecord["address2"])?>" size="65" maxlength="128" tabindex="4" />
 			</p>
@@ -191,16 +185,21 @@
 		</fieldset>
 
 		<fieldset>
-			<legend>web / confirmation number</legend>
-			<p><br />
+			<legend>details</legend>
+			<p>	<label for="weborder">web / confirmation Nnumber</label><br />
 				<?php fieldCheckbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
-				<input name="webconfirmationno" type="text" value="<?php echo $therecord["webconfirmationno"] ?>" size="41" maxlength="64" tabindex="14" />
+				<input name="webconfirmationno" type="text" value="<?php echo $therecord["webconfirmationno"] ?>" size="64" maxlength="64" tabindex="14" />
 			</p>
-			<p>&nbsp;</p>
+			<p>
+				<label for="leadsource">lead source</label><br />
+				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"14")); ?>			
+			</p>			
 		</fieldset>
 	</div>
 
-<div id="divLineItems">
+<fieldset id="lineItemsFS">
+	<legend>line items</legend>
+
 	<input type="hidden" name="thelineitems" id="thelineitems" value="" />
 	<input id="lineitemschanged" name="lineitemschanged" type="hidden" value="0"/>
 	<input id="unitcost" name="unitcost" type="hidden" value="0" />
@@ -410,27 +409,27 @@
 			</div>
 		</td>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab1" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>discount<input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></div></td>
-		<td class="totalItems"><input name="discountamount" id="discountamount" type="text" value="<?php echo $therecord["discountamount"]?>" size="12" maxlength="15" onchange="clearDiscount();calculateTotal();" class="fieldCurrency fieldTotal" tabindex="22"/></td>
+		<td class="totalItems"><input name="discountamount" id="discountamount" type="text" value="<?php echo numberToCurrency($therecord["discountamount"])?>" size="12" maxlength="15" onchange="clearDiscount();calculateTotal();" class="fieldCurrency fieldTotal" tabindex="22"/></td>
 		<td class="totalItems">&nbsp;</td>  	
   </tr><tr>
 		<td colspan="2" class="invoiceTotalLabels"><div>subtotal</div></td>
-		<td class="totalItems"><input class="uneditable fieldCurrency fieldTotal" name="totaltni" id="totaltni" type="text" value="<?php echo $therecord["totaltni"]?>" size="12"  maxlength="15" readonly="true" onchange="calculateTotal();" /></td>
+		<td class="totalItems"><input class="uneditable fieldCurrency fieldTotal" name="totaltni" id="totaltni" type="text" value="<?php echo numberToCurrency($therecord["totaltni"])?>" size="12"  maxlength="15" readonly="true" onchange="calculateTotal();" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab2" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>tax</div></td>
-		<td class="totalItems"><input name="tax" id="tax" type="text" value="<?php echo $therecord["tax"]?>" size="12" maxlength="15" onchange="changeTaxAmount()" class="fieldCurrency fieldTotal" tabindex="22" /></td>
+		<td class="totalItems"><input name="tax" id="tax" type="text" value="<?php echo numberToCurrency($therecord["tax"])?>" size="12" maxlength="15" onchange="changeTaxAmount()" class="fieldCurrency fieldTotal" tabindex="22" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab3" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>shipping</div></td>
-		<td class="totalItems"><input name="shipping" id="shipping" type="text" value="<?php echo $therecord["shipping"]?>" size="12" maxlength="15" onchange="calculateTotal();" class="fieldCurrency fieldTotal" tabindex="23" /></td>
+		<td class="totalItems"><input name="shipping" id="shipping" type="text" value="<?php echo numberToCurrency($therecord["shipping"])?>" size="12" maxlength="15" onchange="calculateTotal();" class="fieldCurrency fieldTotal" tabindex="23" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels important"><div>total</div></td>
 		<td class="totalItems">
-			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo $therecord["totalti"]?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
+			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
 			<input id="totalcost" name="totalcost" type="hidden" value="<?php echo $therecord["totalcost"] ?>" />
 			<input id="totaltaxable" name="totaltaxable" type="hidden" value="<?php echo $therecord["totaltaxable"] ?>" />
 		</td>
@@ -441,16 +440,16 @@
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab4" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>payment</div></td>
-		<td class="totalItems"><input name="amountpaid" id="amountpaid" type="text" value="<?php echo $therecord["amountpaid"]?>" size="12" maxlength="15" onchange="calculatePaidDue();"  class="important fieldCurrency fieldTotal" tabindex="24"/></td>
+		<td class="totalItems"><input name="amountpaid" id="amountpaid" type="text" value="<?php echo numberToCurrency($therecord["amountpaid"])?>" size="12" maxlength="15" onchange="calculatePaidDue();"  class="important fieldCurrency fieldTotal" tabindex="24"/></td>
 		<td class="totalItems"><button type="button" onclick="payInFull()" tabindex="20" class="graphicButtons buttonCheck" title="Pay in full"><span>pay in full</span></button></td>
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels"><div>amount due</div></td>
-		<td class="totalItems"><input id="amountdue" name="amountdue" type="text" value="<?php echo $therecord["amountdue"] ?>" size="12" maxlength="15" onchange="calculatePaidDue();" class="important fieldCurrency fieldTotal" tabindex="24"/></td>
+		<td class="totalItems"><input id="amountdue" name="amountdue" type="text" value="<?php echo numberToCurrency($therecord["amountdue"]) ?>" size="12" maxlength="15" onchange="calculatePaidDue();" class="important fieldCurrency fieldTotal" tabindex="24"/></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 </table>
-</div>
+</fieldset>
 
 <fieldset id="fsInstructions">
 	<legend>instructions</legend>

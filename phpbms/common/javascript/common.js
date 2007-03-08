@@ -284,7 +284,7 @@ function stringToTime(sTime,format){
 			
 			case "12 Hour":
 				timeadd=0;
-				if(sTime.indexOf(" PM"))
+				if(sTime.indexOf(" PM")!=-1)
 					timeadd=12;
 				sTime=sTime.replace(/ AM/,"");
 				sTime=sTime.replace(/ PM/,"");
@@ -319,13 +319,13 @@ function timeToString(thetime,format){
 			
 			case "12 Hour":
 				var ampm=" AM";
-				if(hours>12)
-					hours=hours-12;
 				if(hours>11)
 					ampm=" PM";
-				if (hours=0) hours=12;
+				if(hours>12)
+					hours=hours-12;
+				if (hours==0) hours=12;
 				if(minutes<10) minutes="0"+minutes;				
-				sTime=hours+sep+minutes+ampm;
+				sTime=""+hours+sep+minutes+ampm;
 			break;
 		}
 	}

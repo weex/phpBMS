@@ -91,7 +91,7 @@
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="importance">importance / privacy</label></legend>
-			<p><br />
+			<p>
 				<?php fieldBasicList("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
 				<?php fieldCheckbox("private",$therecord["private"])?><label for="private">private</label>
 			</p>
@@ -127,10 +127,10 @@
 		
 		<fieldset>
 			<legend><label for="ds-assignedtoid">assigned to</label></legend>
-			<div class="fauxP"><br />
+			<p>
 				<?php fieldAutofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0",Array("size"=>"20","maxlength"=>"32")) ?>
 				<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
-			</div>
+			</p>
 
 			<?php if($therecord["assignedbyid"]!=0){ ?>
 			<p>
@@ -144,8 +144,8 @@
 			<?php } }?>
 			<p>
 				<label for="assignedtodate">follow up date</label><br />
-				<?php fieldDatePicker("assignedtodate",$therecord["assignedtodate"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
-				&nbsp;<?php fieldTimePicker("assignedtotime",$therecord["assignedtotime"],0,"",Array("size"=>"11","maxlength"=>"15"),1);?>
+				<?php fieldDatePicker("assignedtodate",$therecord["assignedtodate"],0,"Follow up date must be a valid date",Array("size"=>"11","maxlength"=>"15"),1);?>
+				&nbsp;<?php fieldTimePicker("assignedtotime",$therecord["assignedtotime"],0,"Follow up time must be a valid time",Array("size"=>"11","maxlength"=>"15"),1);?>
 			</p>
 		</fieldset>
 		
@@ -168,7 +168,6 @@
 
 		<fieldset>
 			<p>
-				<br />
 				<label for="location">location</label><br />
 				<input name="location" id="location" type="text" value="<?php echo $therecord["location"]?>"/>
 			</p>
@@ -184,13 +183,13 @@
 	<div id="rightSideDiv">
 		<fieldset>
 			<legend><label for="content">memo</label></legend>
-			<div align="right" id="timeStampDiv">
+			<p align="right" id="timeStampDiv">
 				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" onClick="timeStamp();">Time Stamp</button>
-			</div>
-			<div style="padding-top:0px;">
-				<textarea name="content" cols="45" rows="23" id="content" style="width:98%"><?php echo $therecord["content"]?></textarea>
+			</p>
+			<p>
+				<textarea name="content" cols="45" rows="23" id="content"><?php echo htmlQuotes($therecord["content"])?></textarea>
 				<input name="username" type="hidden" value="<?php echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>" />
-			</div>
+			</p>
 		</fieldset>
 	</div>
 
@@ -198,7 +197,7 @@
 	<div <?php if($therecord["parentid"]) echo "style=\"display:none;\""?>>
 		<fieldset id="therepeat">
 			<legend>recurrence</legend>
-			<div class="fauxP"><br />
+			<div class="fauxP">
 				<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
 				<?php fieldCheckbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?><label for="repeat">repeat every</label>
 				&nbsp;&nbsp;

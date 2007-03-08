@@ -61,21 +61,19 @@
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 	
 	<fieldset id="fsID">
-		<legend><label for="id">id</label></legend>
-		<p><br />
+		<legend>Attributes</legend>
+		<p><label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>
 		</p>
 	</fieldset>
 	<div id="nameDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p><br />
+			<p>
 				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"64","class"=>"important")); ?>
 			</p>
 		</fieldset>	
-	</div>
-	
-	<fieldset id="fsFrom">
+	<fieldset>
 		<legend>from</legend>
 		<p>
 			<label for="fromtableid">table</label><br />
@@ -108,6 +106,9 @@
 			"from table's" definition)
 		</p>
 	</fieldset>
+	</div>
+	
+
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>
 <?php include("../../footer.php"); ?>

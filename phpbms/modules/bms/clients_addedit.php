@@ -61,21 +61,21 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["REQUEST_URI"]; if(isset($_GET["invoiceid"])) echo "&invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]); if(isset($_GET["invoiceid"])) echo "&amp;invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <?php client_tabs("General",$therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>
-		<?php if(isset($_GET["invoiceid"])){?>
-		<div>
-			<input name="gotoinvoice" type="button" value="back to order" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $_GET["invoiceid"] ?>'" style="width:100%" class="Buttons">
-		</div>
-		<?php } ?>			
 	</div>
 
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	
 	<div id="rightSideDiv">
+		<?php if(isset($_GET["invoiceid"])){?>
+		<p id="backtoorderP">
+			<input name="gotoinvoice" id="gotoinvoice" type="button" value="return to order" onclick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $_GET["invoiceid"] ?>'" class="Buttons" />
+		</p>
+		<?php } ?>			
 		<fieldset>
 			<legend>attributes</legend>
 			<p>
@@ -226,7 +226,7 @@
 		
 		<fieldset>
 			<legend><label for="address1">billing / main address</label></legend>
-			<p><br />
+			<p>
 				<input id="address1" name="address1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address1"])?>" tabindex="13"/><br />
 				<input id="address2" name="address2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address2"])?>" tabindex="14"/>
 			</p>
@@ -281,8 +281,8 @@
 		
 		<fieldset>
 			<legend><label for="comments">memo</label></legend>
-			<p><br />
-			<textarea name="comments" cols="20" rows="8" id="comments" style="width:98%" tabindex="30"><?php echo $therecord["comments"]?></textarea>
+			<p>
+			<textarea name="comments" cols="20" rows="8" id="comments" tabindex="30"><?php echo $therecord["comments"]?></textarea>
 			</p>
 		</fieldset>
 		

@@ -37,7 +37,10 @@
  +-------------------------------------------------------------------------+
 */
 
-if(!isset($fromClient)) require("../../../include/session.php");
+if(!isset($fromClient)) {
+	require("../../../include/session.php");
+	require("../../../include/common_functions.php");
+}
 	
 class purchaseHistoryReport{
 	
@@ -92,11 +95,8 @@ class purchaseHistoryReport{
 			break;
 		}
 	
-		$temparray=explode("/",$this->fromdate);
-		$mysqlfromdate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
-	
-		$temparray=explode("/",$this->todate);
-		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
+	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
+	$mysqltodate=sqlDateFromString($_POST["todate"]);
 			
 	$querystatement="SELECT invoices.id,
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 

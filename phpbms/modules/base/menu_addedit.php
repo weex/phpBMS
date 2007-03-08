@@ -83,7 +83,7 @@
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p><br />
+			<p>
 				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
 			</p>
 		</fieldset>
@@ -91,19 +91,16 @@
 		<fieldset>
 			<legend>type</legend>
 			<p class="typeP">
-				<br />
 				<input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked" ?> name="radio" onClick="showTypeDetails();"  class="radiochecks" /><label for="type1">category</label><br />
 				<img src="menu-example-category.png" width="150" height="72" class="typeImage" alt="category" />
 			</p>
 			
 			<p class="typeP">
-				<br />
 				<input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type2">table definition search</label><br />
 				<img src="menu-example-tabledef.png" width="150" height="72" class="typeImage" alt="table definition search" />
 			</p>
 
 			<p>
-				<br />
 				<input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type3">page link</label><br />
 				<img src="menu-example-link.png" width="150" height="72" class="typeImage" alt="page link" />
 			</p>

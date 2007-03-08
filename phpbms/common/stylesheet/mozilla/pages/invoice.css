@@ -16,10 +16,12 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 #printButton{ text-align:right;float:left;}
 #printButton input{width:75px;}
 
+#address1,#address2,#country,#leadsource{width:364px;}
+
 #fsAttributes{clear:both;float:right;width:260px;}
 #attributesRight{float:right;padding-top:0px;}
 #type{width:90px}
-#leadsource,#statusid{width:98%}
+#statusid{width:98%}
 #ds-assignedtoid{width:99%}
 
 
@@ -28,7 +30,7 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 .cszP{float:left;}
 #countryP{clear:left;}
 
-#divLineItems{clear:both;padding:8px;}
+#lineItemsFS{clear:both;}
 
 #LITable{}
 #LIHeader th{

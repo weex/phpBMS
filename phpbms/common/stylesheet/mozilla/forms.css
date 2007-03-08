@@ -109,7 +109,10 @@ vertical-align:middle;
 
 #dontSubmit{position:absolute;display:none;}
 
-#createmodifiedby{clear:both}
-#savecancel2{float:right;padding:17px 17px 0 0;}
-.fieldCreateModify{width:135px;margin-bottom:2px;}
-#createdbydiv{float:left;padding:0px 2px 0 0;}
+#createmodifiedby{clear:both;padding-top:10px;}
+#createmodifiedby table{border-collapse:collapse;}
+#createmodifiedby table td{background-color:#C1D4D4; font-size:11px; padding:2px 9px 2px 5px;margin:0 1px 1px 0; color:#666666;border-right:3px solid #D5D9DD;}
+#createmodifiedby td.cmTitles{background:none; padding-right:5px; padding-left:2px; color:black;}
+#cmFirstRow td{border-bottom:3px solid #D5D9DD}
+
+#savecancel2{float:right;padding-top:12px;}

@@ -1,7 +1,7 @@
 <?php 
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 197 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2007-03-02 10:48:56 -0700 (Fri, 02 Mar 2007) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2005, Kreotek LLC                                         |
  | All rights reserved.                                                    |
@@ -40,24 +40,25 @@
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
-
-	include("include/productcategories_addedit_include.php");
+	include("include/scheduler_addedit_include.php");
 	
-	$pageTitle="Product Category";
+	$pageTitle="Schedule";
+	
+	$currentpath=getcwd();
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/productcategories.css" rel="stylesheet" type="text/css" />
+<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/scheduler.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
 	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
+		<?php showSaveCancel(1); ?>
 	</div>
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	
@@ -65,41 +66,75 @@
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" style="" />
+			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="true" class="uneditable" />
 		</p>
-		<p>
-			<?php fieldCheckbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
-		</p>		
+		
+		<p><?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
+		
 	</fieldset>
 	
-	<div id="leftDiv">
+	<div id="leftSideDiv">
 		<fieldset>
-			<legend><label for="name">name</label></legend>
-			<p>
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
-				<br />
-			</p>			
+			<legend>Enabling the Scheduler</legend>
+			<p>In order to enable the phpBMS scheduler,make sure you add the following line to your crontab:</p>
+			<p class="mono important">*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;
+			cd <?php echo $currentpath;?>; php -f cron.php > /dev/null 2>&1 </p>
 		</fieldset>
 		<fieldset>
-			<legend><label for="description">description</label></legend>
-			<p><textarea name="description" cols="38" rows="4" id="description"><?php echo $therecord["description"]?></textarea></p>
+			<legend>Scheduled Job</legend>
+			<p>
+				<label for="name">name</label><br />
+				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
+			</p>		
+			<p>
+				<label for="job">Script</label> <span class="notes">(including path relative to <?php echo $currentpath?>)</span><br />
+				<?php fieldText("job",$therecord["job"],1,"Script cannot be blank.","",Array("size"=>"32","maxlength"=>"64",)); ?>			
+			</p>
 		</fieldset>
 		
 		<fieldset>
-			<legend>web</legend>
+			<legend>Interval</legend>
+				<p class="crontabnotation">
+					<label for="mins">min</label><br />
+					<input name="mins" id="mins" maxlength="25" size="3" value="*" type="text" />
+				</p>
+				<p class="crontabnotation">
+					<label for="hrs">hrs</label><br />
+					<input name="hours" id="hours" maxlength="25" size="3" value="*" type="text" />
+				</p>
+				<p class="crontabnotation">
+					<label for="dayofmonth">date</label><br />
+					<input name="dayofmonth" id="dayofmonth"  maxlength="25" size="3" value="*" type="text" />
+				</p>
+				<p class="crontabnotation">
+					<label for="months">mo</label><br />
+					<input name="months" id="months" maxlength="25" size="3" value="*" type="text" />
+				</p>
+				<p class="crontabnotation">
+					<label for="dayofweek">day</label><br />
+					<input name="dayofweek" id="dayofweek" maxlength="25" size="3" value="*" type="text">
+				</p>
+			<p class="notes" id="standarNotationP">(Uses standard crontab notation.)</p>
+			
+		</fieldset>
+		<fieldset>
+			<legend>Dates</legend>
 			<p>
-				<?php fieldCheckbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
+				<label for="startdate">start</label><br />
+				&nbsp;<?php fieldDatePicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>	
+				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
 			</p>
 			<p>
-				<label for="webdisplayname">web display name</label><br />
-				<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64" />
+				<label for="enddate">end</label><br />
+				&nbsp;<?php fieldDatePicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 			</p>
 		</fieldset>
 	</div>
 
 	<?php include("../../include/createmodifiedby.php"); ?>
-	</form>
 </div>
-<?php include("../../footer.php")?>
+<?php include("../../footer.php"); ?>
+</form>
 </body>
 </html>

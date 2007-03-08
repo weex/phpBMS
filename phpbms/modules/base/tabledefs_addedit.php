@@ -87,7 +87,6 @@
 		<fieldset>
 			<legend><label for="displayname">display name</label></legend>
 			<p>
-				<br />
 				<?php fieldText("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"important")); ?>
 			</p>				
 		</fieldset>

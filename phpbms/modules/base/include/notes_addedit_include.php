@@ -258,8 +258,16 @@ function updateRecord($variables,$userid){
 
 			if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
 			$querystatement.="assignedtoid=".$variables["assignedtoid"].", "; 
-			$querystatement.="assignedtodate=\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
-			$querystatement.="assignedtotime=\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
+			if($variables["assignedtodate"]!="")
+				$querystatement.="assignedtodate=\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
+			else
+				$querystatement.="assignedtodate=NULL, "; 
+						
+			if($variables["assignedtotime"]!="")
+				$querystatement.="assignedtotime=\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
+			else
+				$querystatement.="assignedtotime=NULL, "; 
+			
 			if($variables["assignedtoid"]!=$variables["assignedtochange"]){
 				if($variables["assignedtoid"]!="NULL")
 					$querystatement.="assignedbyid=".$userid.", "; 
@@ -290,7 +298,6 @@ function updateRecord($variables,$userid){
 			repeatTask($variables["id"]);
 		}
 	}
-		
 }// end function
 
 
@@ -371,8 +378,15 @@ function insertRecord($variables,$userid){
 
 	if($variables["assignedtoid"]=="")$variables["assignedtoid"]="NULL";
 	$querystatement.=$variables["assignedtoid"].", "; 
-	$querystatement.="\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
-	$querystatement.="\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
+	if($variables["assignedtodate"]!="")
+		$querystatement.="\"".sqlDateFromString($variables["assignedtodate"])."\", "; 
+	else
+		$querystatement.="NULL, "; 
+				
+	if($variables["assignedtotime"]!="")
+		$querystatement.="\"".sqlTimeFromString($variables["assignedtotime"])."\", "; 
+	else
+		$querystatement.="NULL, "; 
 	$assignedby=0;
 	if($variables["assignedtoid"]!=$variables["assignedtochange"])
 		if($variables["assignedtoid"]!="NULL")

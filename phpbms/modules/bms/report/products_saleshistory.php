@@ -37,7 +37,10 @@
  +-------------------------------------------------------------------------+
 */
 
-if(!isset($fromProduct)) require("../../../include/session.php");
+if(!isset($fromClient)) {
+	require("../../../include/session.php");
+	require("../../../include/common_functions.php");
+}
 	
 class salesHistoryReport{
 	
@@ -91,11 +94,8 @@ class salesHistoryReport{
 			break;
 		}
 	
-		$temparray=explode("/",$this->fromdate);
-		$mysqlfromdate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
-	
-		$temparray=explode("/",$this->todate);
-		$mysqltodate="\"".$temparray[2]."-".$temparray[0]."-".$temparray[1]."\"";
+		$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
+		$mysqltodate=sqlDateFromString($_POST["todate"]);
 			
 		$querystatement="select invoices.id as id, invoices.orderdate,
 			invoices.invoicedate,
@@ -268,7 +268,7 @@ if(isset($_POST["command"])){
 			<p id="fromP">
 				<label for="fromdate">from</label><br />
 				<?php 
-					$thedate=dateToString(mktime(0,0,0,date("m"),1);
+					$thedate=dateToString(mktime(0,0,0,date("m"),1));
 					fieldDatePicker("fromdate",$thedate."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);
 				?>
 			</p>

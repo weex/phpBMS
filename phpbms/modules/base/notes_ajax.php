@@ -87,7 +87,7 @@
 		else
 			$protocol = "http";
 
-		$themessage= "You have received an e-mail notification of a ".$therecord["type"]." that has been assigned to you. To log on and view more details go to ".$protocol."://".$_SERVER["HTTP_HOST"].$_SESSION["app_path"]."\n\n";
+		$themessage= "You have received an e-mail notification of a ".$therecord["type"]." that has been assigned to you. To log in and view more details go to ".$protocol."://".$_SERVER["HTTP_HOST"].$_SESSION["app_path"]."\n\n";
 		$themessage.="Title: ".$therecord["subject"]."\n\n";
 		if($therecord["assignedtodate"]) {
 			$themessage.="Follow Up: ".$therecord["assignedtodate"];
