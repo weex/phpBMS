@@ -59,6 +59,8 @@ function loadMysqlSettings() {
 	$path="";
 	$count=1;
 	//need to look for settings file... only go up a total of 5 directorieds
+	$currdirectory= getcwd();
+	
 	while(!file_exists("settings.php") and ($count<5)){
 		$path.="../";
 		@ chdir("../");
@@ -89,6 +91,7 @@ function loadMysqlSettings() {
 		if(!isset($_SESSION["mysql_pconnect"]))
 			$_SESSION["mysql_pconnect"]="true";
 		fclose($settingsfile);
+		@ chdir ($currdirectory);
 		return $path;
 	} else reportError(500,"Settings file could not be opened");
 }
@@ -143,8 +146,10 @@ function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
 	} else
 		define("HOUR_FORMAT","%l");
 
-	session_start();
+	if(!isset($noSession))	
+		session_start();
 	error_reporting(E_ALL);
+
 	
 	if (!isset($_SESSION["app_path"]))
 		$mainpath=loadMysqlSettings();

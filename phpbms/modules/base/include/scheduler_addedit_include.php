@@ -37,67 +37,44 @@
  +-------------------------------------------------------------------------+
 */
 
-function assignUsers($id,$users,$dblink){
-	$querystatement="DELETE FROM rolestousers WHERE roleid=".$id;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Could not remove existing user roles: ".$querystatement);
-	$newusers=explode(",",$users);
-	foreach($newusers as $theuser)
-		if($theuser!=""){
-			$querystatement="INSERT INTO rolestousers (roleid,userid) VALUES(".$id.",".$theuser.")";
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(300,"Could not add new user role.");
-		}
-}
-
-function displayUsers($id,$type,$dblink){
-	$querystatement="SELECT users.id,concat(users.firstname,' ',users.lastname) as name
-					FROM users INNER JOIN rolestousers ON rolestousers.userid=users.id 
-					WHERE rolestousers.roleid=".$id;
-	$assignedquery=mysql_query($querystatement,$dblink);
-	if(!$assignedquery) reportError(300,"Could not retrieve assigned users ".mysql_query($dblink));
-	$thelist=array();
-	
-	if($type=="available"){
-		$excludelist=array();
-		while($therecord=mysql_fetch_array($assignedquery))
-			$excludelist[]=$therecord["id"];
-			
-		$querystatement="SELECT id,concat(users.firstname,' ',users.lastname) as name FROM users WHERE revoked=0 AND portalaccess=0";
-		$availablequery=mysql_query($querystatement,$dblink);
-		if(!$availablequery) reportError(300,"Could not retrieve available users");
-		while($therecord=mysql_fetch_array($availablequery))
-			if(!in_array($therecord["id"],$excludelist))
-				$thelist[]=$therecord;		
-	} else 
-		while($therecord=mysql_fetch_array($assignedquery))
-			$thelist[]=$therecord;
-			
-	foreach($thelist as $theoption){
-		?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
-<?php 
-	}
-}
-
 // These following functions and processing are similar for all pages
 //========================================================================================
 //========================================================================================
 
 //set table id
-$tableid=200;
+$tableid=201;
 
 function getRecords($id){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="SELECT id, name, description, inactive,
+	$querystatement="SELECT id, name, job, crontab, lastrun, startdatetime, enddatetime, 
+				description, inactive, lastrun,
 	
 				createdby, creationdate, 
 				modifiedby, modifieddate
-				FROM roles
+				FROM scheduler
 				WHERE id=".$id;		
 	$thequery = mysql_query($querystatement,$dblink);
 	$therecord = mysql_fetch_array($thequery);
+	
+	$datearray=explode(" ",$therecord["startdatetime"]);
+	$therecord["startdate"]=$datearray[0];
+	if(isset($datearray[1])) $therecord["starttime"]=$datearray[1]; else $therecord["starttime"]="";
+	
+	$datearray=explode(" ",$therecord["enddatetime"]);
+	$therecord["enddate"]=$datearray[0];
+	if(isset($datearray[1])) $therecord["endtime"]=$datearray[1]; else $therecord["endtime"]="";
+
+	$cronarray=explode("::",$therecord["crontab"]);
+	if(isset($cronarray[0])) $therecord["min"]=$cronarray[0]; else $therecord["min"]="*";
+	if(isset($cronarray[1])) $therecord["hrs"]=$cronarray[1]; else $therecord["hrs"]="*";
+	if(isset($cronarray[2])) $therecord["date"]=$cronarray[2]; else $therecord["date"]="*";
+	if(isset($cronarray[3])) $therecord["mo"]=$cronarray[3]; else $therecord["mo"]="*";
+	if(isset($cronarray[4])) $therecord["day"]=$cronarray[4]; else $therecord["day"]="*";
+	
+	$therecord["lastrun"]=formatFromSQLDatetime($therecord["lastrun"]);
+	
 	return $therecord;
 }//end function
 
@@ -108,10 +85,19 @@ function setRecordDefaults(){
 
 	$therecord["name"]="";
 	$therecord["job"]="";
+	$therecord["description"]="";
+	$therecord["crontab"]="*::*::*::*::*";
 	$therecord["inactive"]=0;
-	$therecord["interval"]="*::*::*::*::*";
+	$therecord["lastrun"]="";
 
-	$therecord["startdate"]="";
+
+	$therecord["min"]="*";
+	$therecord["hrs"]="*";
+	$therecord["date"]="*";
+	$therecord["mo"]="*";
+	$therecord["day"]="*";
+
+	$therecord["startdate"]=dateToString(mktime(),"SQL");
 	$therecord["starttime"]="";
 
 	$therecord["enddate"]="";
@@ -131,15 +117,42 @@ function updateRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 	
-	$querystatement="UPDATE roles SET ";
+	$querystatement="UPDATE scheduler SET ";
 	
 	//fields
 	$querystatement.="name=\"".$variables["name"]."\", "; 
-	$querystatement.="description=\"".$variables["name"]."\", "; 	
-
+	$querystatement.="job=\"".$variables["job"]."\", "; 
+	$querystatement.="description=\"".$variables["description"]."\", "; 	
 	$querystatement.="inactive=";
 	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
 	$querystatement.=",";
+
+	$temparray[0]=$variables["min"];
+	$temparray[1]=$variables["hrs"];
+	$temparray[2]=$variables["date"];
+	$temparray[3]=$variables["mo"];
+	$temparray[4]=$variables["day"];
+	$variables["crontab"]=implode("::",$temparray);
+	$querystatement.="crontab=\"".$variables["crontab"]."\", "; 
+	
+	if($variables["startdate"]){
+		$variables["startdate"]=sqlDateFromString($variables["startdate"]);
+		if($variables["starttime"])
+			$variables["startdate"].=" ".sqlTimeFromString($variables["starttime"]);
+		$querystatement.="startdatetime=\"".$variables["startdate"]."\", "; 			
+	}
+	else
+		$querystatement.="startdatetime=NULL, "; 
+
+	if($variables["enddate"]){
+		$variables["enddate"]=sqlDateFromString($variables["enddate"]);
+		if($variables["endtime"])
+			$variables["enddate"].=" ".sqlTimeFromString($variables["endtime"]);
+		$querystatement.="enddatetime=\"".$variables["enddate"]."\", "; 			
+	}
+	else
+		$querystatement.="enddatetime=NULL, "; 
+	
 
 	//==== Almost all records should have this =========
 	$querystatement.="modifiedby=\"".$userid."\" "; 
@@ -148,9 +161,6 @@ function updateRecord($variables,$userid){
 	$queryresult = mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Update Failed: ".mysql_error($dblink)." -- ".$querystatement);
 
-	if($variables["userschanged"]==1)
-		assignUsers($variables["id"],$variables["newusers"],$dblink);
-
 }// end function
 
 
@@ -158,29 +168,54 @@ function insertRecord($variables,$userid){
 //========================================================================================
 	global $dblink;
 
-	$querystatement="INSERT INTO roles ";
+	$querystatement="INSERT INTO scheduler ";
 	
-	$querystatement.="(name,description,inactive,
+	$querystatement.="(name,job,description,inactive,
+	crontab,startdatetime,enddatetime,
 	createdby,creationdate,modifiedby) VALUES (";
 	
+//fields
 	$querystatement.="\"".$variables["name"]."\", "; 
-	$querystatement.="\"".$variables["description"]."\", "; 
-
+	$querystatement.="\"".$variables["job"]."\", "; 
+	$querystatement.="\"".$variables["description"]."\", "; 	
 	if(isset($variables["inactive"])) $querystatement.="1"; else $querystatement.="0";
 	$querystatement.=",";
+
+	$temparray[0]=$variables["min"];
+	$temparray[1]=$variables["hrs"];
+	$temparray[2]=$variables["date"];
+	$temparray[3]=$variables["mo"];
+	$temparray[4]=$variables["day"];
+	$variables["crontab"]=implode("::",$temparray);
+	$querystatement.="\"".$variables["crontab"]."\", "; 
 	
+	if($variables["startdate"]){
+		$variables["startdate"]=sqlDateFromString($variables["startdate"]);
+		if($variables["starttime"])
+			$variables["startdate"].=" ".sqlTimeFromString($variables["starttime"]);
+		$querystatement.="\"".$variables["startdate"]."\", "; 			
+	}
+	else
+		$querystatement.="NULL, "; 
+
+	if($variables["enddate"]){
+		$variables["enddate"]=sqlDateFromString($variables["enddate"]);
+		if($variables["endtime"])
+			$variables["enddate"].=" ".sqlTimeFromString($variables["endtime"]);
+		$querystatement.="\"".$variables["enddate"]."\", "; 			
+	}
+	else
+		$querystatement.="NULL, "; 
+
 	//==== Almost all records should have this =========
 	$querystatement.=$userid.", "; 
 	$querystatement.="Now(), ";
 	$querystatement.=$userid.")"; 
-	
+
 	$queryresult= mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(300,"Insert Failed: ".mysql_error($dblink)." -- ".$querystatement);
 		
 	$newid=mysql_insert_id($dblink);
-
-	if($variables["userschanged"]==1)
-		assignUsers($newid,$variables["newusers"],$dblink);
 
 	return $newid;
 }

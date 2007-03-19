@@ -291,9 +291,12 @@ function stringToTime(sTime,format){
 				timeArray=sTime.split(":");
 				if(timeArray.length=2){
 					var hour=parseInt(timeArray[0],10);
-					if (hour!=12)
+					if (hour!=12 && timeadd==12)
 						hour=hour+timeadd;
-						thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
+					else 
+						if(timeadd==0)
+							hour=0;
+					thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
 				}
 			break;
 		}

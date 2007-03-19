@@ -219,8 +219,8 @@ function updateRecord($variables,$userid){
 			}
 
 			if($variables["startdate"]!="") {
-				$querystatement.="startdate=\"".sqlDateFromString($variables["startdate"]).", "; 
-				$querystatement.="starttime=\"".sqlTimeFromString($variables["starttime"]).", "; 
+				$querystatement.="startdate=\"".sqlDateFromString($variables["startdate"])."\", "; 
+				$querystatement.="starttime=\"".sqlTimeFromString($variables["starttime"])."\", "; 
 			} else {
 				$querystatement.="startdate=NULL,starttime=NULL, ";
 			}

@@ -264,18 +264,21 @@ CREATE TABLE `rolestousers` (
 ) TYPE = MYISAM;
 
 CREATE TABLE `scheduler` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45),
-  `job` VARCHAR(128),
-  `crontab` VARCHAR(64),
-  `lastrun` DATETIME,
-  `startdatetime` DATETIME,
-  `enddatetime` DATETIME,
-  `description` TEXT,
-  `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `createdby` INTEGER UNSIGNED,
-  `creationdate` DATETIME,
-  `modifiedby` INTEGER UNSIGNED,
-  `modifieddate` TIMESTAMP,
-  PRIMARY KEY(`id`)
-) ENGINE = MYISAM;
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(45) default NULL,
+  `job` varchar(128) default NULL,
+  `crontab` varchar(64) default NULL,
+  `lastrun` datetime default NULL,
+  `startdatetime` datetime NOT NULL,
+  `enddatetime` datetime default NULL,
+  `description` text,
+  `inactive` tinyint(3) unsigned NOT NULL default '0',
+  `createdby` int(10) unsigned default NULL,
+  `creationdate` datetime default NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`),
+  KEY `inactivated` (`inactive`),
+  KEY `startdate` (`startdatetime`),
+  KEY `enddate` (`enddatetime`)
+);

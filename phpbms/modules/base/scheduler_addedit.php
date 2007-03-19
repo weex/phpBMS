@@ -42,7 +42,7 @@
 	include("../../include/fields.php");
 	include("include/scheduler_addedit_include.php");
 	
-	$pageTitle="Schedule";
+	$pageTitle="Scheduler";
 	
 	$currentpath=getcwd();
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,9 +53,11 @@
 <?php require("../../head.php")?>
 <link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/scheduler.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
+<script language="JavaScript" src="../../common/javascript/timepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>
@@ -70,15 +72,19 @@
 		</p>
 		
 		<p><?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
-		
+
+		<p>
+			script last run<br />
+			<strong><?php if($therecord["lastrun"]) echo $therecord["lastrun"]; else echo "never"?></strong>
+		</p>
 	</fieldset>
 	
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>Enabling the Scheduler</legend>
-			<p>In order to enable the phpBMS scheduler,make sure you add the following line to your crontab:</p>
+			<p>In order to enable the phpBMS scheduler, make sure you add the following line to your crontab:</p>
 			<p class="mono important">*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;
-			cd <?php echo $currentpath;?>; php -f cron.php > /dev/null 2>&1 </p>
+			cd <?php echo $currentpath;?>; php -f cron.php > /dev/null 2>&amp;1 </p>
 		</fieldset>
 		<fieldset>
 			<legend>Scheduled Job</legend>
@@ -87,8 +93,12 @@
 				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
 			</p>		
 			<p>
-				<label for="job">Script</label> <span class="notes">(including path relative to <?php echo $currentpath?>)</span><br />
+				<label for="job">script</label> <span class="notes">(path relative to <?php echo $currentpath?>)</span><br />
 				<?php fieldText("job",$therecord["job"],1,"Script cannot be blank.","",Array("size"=>"32","maxlength"=>"64",)); ?>			
+			</p>
+			<p>
+				<label for="description">description</label><br />
+				<textarea id="description" name="description"><?php echo htmlQuotes($therecord["description"]) ?></textarea>
 			</p>
 		</fieldset>
 		
@@ -96,23 +106,23 @@
 			<legend>Interval</legend>
 				<p class="crontabnotation">
 					<label for="mins">min</label><br />
-					<input name="mins" id="mins" maxlength="25" size="3" value="*" type="text" />
+					<input name="min" id="min" maxlength="25" size="3" value="<?php echo $therecord["min"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
 					<label for="hrs">hrs</label><br />
-					<input name="hours" id="hours" maxlength="25" size="3" value="*" type="text" />
+					<input name="hrs" id="hrs" maxlength="25" size="3" value="<?php echo $therecord["hrs"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
 					<label for="dayofmonth">date</label><br />
-					<input name="dayofmonth" id="dayofmonth"  maxlength="25" size="3" value="*" type="text" />
+					<input name="date" id="date"  maxlength="25" size="3" value="<?php echo $therecord["date"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
 					<label for="months">mo</label><br />
-					<input name="months" id="months" maxlength="25" size="3" value="*" type="text" />
+					<input name="mo" id="mo" maxlength="25" size="3" value="<?php echo $therecord["mo"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
 					<label for="dayofweek">day</label><br />
-					<input name="dayofweek" id="dayofweek" maxlength="25" size="3" value="*" type="text">
+					<input name="day" id="day" maxlength="25" size="3" value="<?php echo $therecord["day"]?>" type="text" />
 				</p>
 			<p class="notes" id="standarNotationP">(Uses standard crontab notation.)</p>
 			
@@ -121,13 +131,13 @@
 			<legend>Dates</legend>
 			<p>
 				<label for="startdate">start</label><br />
-				&nbsp;<?php fieldDatePicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>	
-				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
+				<?php fieldDatePicker("startdate",$therecord["startdate"],1,"Must enter a valid start date.",Array("size"=>"11","maxlength"=>"15"));?>	
+				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"Must enter a valid start time.",Array("size"=>"11","maxlength"=>"15"));?>
 			</p>
 			<p>
 				<label for="enddate">end</label><br />
-				&nbsp;<?php fieldDatePicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
-				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
+				<?php fieldDatePicker("enddate",$therecord["enddate"],0,"Must enter a valid end date.",Array("size"=>"11","maxlength"=>"15"));?>			
+				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"Must enter a valid end time.",Array("size"=>"11","maxlength"=>"15"));?>			
 			</p>
 		</fieldset>
 	</div>

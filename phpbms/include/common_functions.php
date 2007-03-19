@@ -179,8 +179,11 @@ function stringToTime($timestring,$format=TIME_FORMAT){
 					$addtime=12;
 				}
 				$timearray=explode(":",$timestring);
-				if($timearray[0]!="12")
+				if($timearray[0]!="12" && $addtime==12)
 					$timearray[0]= ((integer) $timearray[0]) + $addtime;
+				else 
+					if ($addtime==0)
+						$timearray[0]=0;
 				$thetime=mktime($timearray[0],$timearray[1],0);
 			break;
 		}
@@ -239,6 +242,18 @@ function formatFromSQLTime($sqltime,$format=TIME_FORMAT){
 		else 
 			$timestring=timeToString(stringToTime($sqltime,"24 Hour"),$format);
 	return $timestring;
+}
+
+function dateFromSQLDatetime($sqldatetime){
+		$thedatetime=false;
+		$datetimearray=explode(" ",$sqldatetime);
+		if(count($datetimearray)==2){
+			$tempdatearray=explode("-",$datetimearray[0]);
+			$temptimearray=explode(":",$datetimearray[1]);
+			if(count($tempdatearray)>1 && count($temptimearray)>1)
+				$thedatetime=mktime((int) $temptimearray[0],(int) $temptimearray[1],(int) $temptimearray[2],(int) $tempdatearray[1],(int) $tempdatearray[2],(int) $tempdatearray[0]);
+		}		
+		return $thedatetime;
 }
 
 function formatFromSQLDatetime($sqldatetime,$dateformat=DATE_FORMAT,$timeformat=TIME_FORMAT){

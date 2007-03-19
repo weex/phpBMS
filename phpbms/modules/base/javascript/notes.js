@@ -159,7 +159,7 @@ function completedCheck(){
 		completedDateButton.onclick=CDBOC;
 		if(!completedDate.value){
 			var today=new Date();
-			completedDate.value=(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear();
+			completedDate.value=dateToString(today);
 		}
 	} else {
 		completedDate.setAttribute("readonly","readonly");
@@ -466,7 +466,7 @@ function updateRepeatUntil(){
 		rpUntilDateButton.onclick=RUDB;
 		var today=new Date();
 		var theday= new Date(today.valueOf()+(1000*60*60*24));
-		rpUntilDate.value=(theday.getMonth()+1)+"/"+theday.getDate()+"/"+theday.getFullYear();
+		rpUntilDate.value=dateToString(theday);
 		
 		rpUntilDate.focus()
 	}
