@@ -68,3 +68,9 @@ INSERT INTO `tablecolumns` (`id`, `tabledefid`, `name`, `column`, `align`, `foot
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'name','scheduler.name','left','',0,'',0,'95%',NULL);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'cron interval','scheduler.crontab','left','',1,'',0,'',NULL);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (201,'inactive','scheduler.inactive','center','',2,'',0,'','boolean');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'time','log.stamp','left','',1,'',0,'','datetime');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'id','log.id','left','',0,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'type','log.type','left','',2,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'value','log.value','left','',3,'',1,'90%',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'user','concat(users.firstname,\" \",users.lastname)','left','',4,'',0,'',NULL);
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (202,'ip address','log.ip','left','',5,'',0,'',NULL);

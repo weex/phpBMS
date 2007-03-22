@@ -20,3 +20,4 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('my account','modules/base/myaccount.php',6,-10,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('----','',6,-5,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('scheduler','search.php?id=201',6,32,1,1,NOW(),NOW(),-100);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('system log','search.php?id=202',6,11,1,1,NOW(),NOW(),-100);

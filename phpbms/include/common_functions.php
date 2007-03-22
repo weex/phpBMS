@@ -40,6 +40,19 @@
 //=================================================
 //Most Common Functions of the Application go here.
 //=================================================
+function sendLog($dblink,$type,$value,$userid="NULL"){
+	if($userid!="NULL") $userid= (int) $userid;
+	$ip=$_SERVER["REMOTE_ADDR"];
+
+	$querystatement="INSERT INTO `log` (`type`,`value`,`userid`,`ip`) VALUES (";
+	$querystatement.="\"".mysql_real_escape_string($type)."\", ";
+	$querystatement.="\"".mysql_real_escape_string($value)."\", ";
+	$querystatement.=$userid.", ";
+	$querystatement.="\"".$ip."\")";
+	@ mysql_query($querystatement,$dblink) or die(mysql_error($dblink).":".$querystatement);
+	
+}
+
 function goURL($url){
 	if(headers_sent())
 		reportError("450","Could not redirect to: ".$url);

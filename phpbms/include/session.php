@@ -96,7 +96,7 @@ function loadMysqlSettings() {
 	} else reportError(500,"Settings file could not be opened");
 }
 
-function reportError($id,$extras,$format=true,$path="",$die=true){
+function reportError($id,$extras,$format=true,$path="",$die=true,$log=true){
 	if($path=="" && isset($_SESSION["app_path"]))
 		$path=$_SESSION["app_path"];
 	if($format) {?>	
@@ -109,6 +109,13 @@ function reportError($id,$extras,$format=true,$path="",$die=true){
 		</div>
 	<?php }else
 		echo $extras;
+		
+	if($log && function_exists("sendLog")){
+		global $dblik;
+		if(!isset($_SESSION["userinfo"]["id"]))
+			$_SESSION["userinfo"]["id"]="NULL";
+		sendLog($dblink,"ERROR",$id.":".$extras,$_SESSION["userinfo"]["id"]);
+	}
 	if($die) die();
 }
 

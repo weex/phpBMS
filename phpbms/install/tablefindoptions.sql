@@ -45,3 +45,6 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,'Inactive Roles','roles.inactive=1',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (200,'All Records','roles.id!=-100',2,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (201,'all records','scheduler.id!=0',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,'entries within last day','log.stamp> DATE_SUB(CURDATE(),INTERVAL 1 DAY)',0,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,'entries within last week','log.stamp> DATE_SUB(CURDATE(),INTERVAL 1 WEEK)',1,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,'all entries','lg.id!=-1',2,0);

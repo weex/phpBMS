@@ -39,3 +39,5 @@ INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displ
 INSERT INTO `tablesearchablefields` (`id`, `tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (96,26,'files.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (200,'roles.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (201,'scheduler.name','name',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.type','type',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.ip','ip address',1,'field');

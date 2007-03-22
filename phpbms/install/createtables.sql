@@ -1,3 +1,14 @@
+CREATE TABLE `log` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(25),
+  `userid` INTEGER UNSIGNED,
+  `ip` VARCHAR(45),
+  `value` TEXT,
+  `stamp` TIMESTAMP,
+  PRIMARY KEY(`id`)
+)
+ENGINE = MYISAM;
+
 CREATE TABLE choices (
   id int(11) NOT NULL auto_increment,
   listname varchar(64) NOT NULL default '',

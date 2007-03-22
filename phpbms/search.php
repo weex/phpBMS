@@ -124,7 +124,10 @@
 		case "delete":
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			$tempmessage=delete_record($theids);
+			if(function_exists("delete_record"))
+				$tempmessage=delete_record($theids);
+			else
+				$tempmessage="Delete function not defined.";
 			if($tempmessage) $statusmessage=$tempmessage;
 		break;
 		case "advanced search":

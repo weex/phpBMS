@@ -30,6 +30,9 @@
 			$success = @ include($therecord["job"]);
 			if($success){
 				$querystatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$therecord["id"];
+				sendLog($dblink,"SCHEDULER","Secheduled Job ".$therecord["name"]." (".$therecord["id"].") completed",-2);
+			} else {
+				sendLog($dblink,"ERROR","Scheduled Job ".$therecord["name"]." (".$therecord["id"].") returned errors.",-2);
 			}
 				
 		}		
