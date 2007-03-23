@@ -162,7 +162,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
 			<span class="notes">
 				<strong>Note:</strong> This graphic is used on some reports. <br />
-				On PDF reports, it prints in a mximum of 1.75" x 1.75". PNG format.<br />
+				On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
 				If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
 			</span>
 		</p>

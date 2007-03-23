@@ -51,6 +51,9 @@
 <title>Install phpBMS</title>
 <link href="../common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css" />
 <link href="../common/stylesheet/mozilla/pages/install.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="../common/javascript/moo/prototype.lite.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
+<script language="JavaScript" src="../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
 <script language="JavaScript" src="../common/javascript/common.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">	
 	function runCommand(command){
@@ -74,6 +77,13 @@
 		responseText.value+=response.firstChild.data+"\n";
 	}
 	
+	function enableModuleInstall(){
+		var modules=getObjectFromID("modules");
+		var installButton=getObjectFromID("installmodule");
+		if(modules.value!=0)
+			installButton.disabled=false;
+	}
+	
 	function runModuleInstall(){
 		var themodule=getObjectFromID("modules");
 		var responseText= getObjectFromID("moduleresults");
@@ -94,54 +104,38 @@
 <body>
 <div class="bodyline" id="container">
 	<h1>phpBMS Installation</h1>
-	<p>Welcome to phpBMS. This page will guide you through the step of installing phpBMS, it's database, and included BMS module onto your web server. If you have any problems, questions or need help, please visit the <a href="http://www.phpbms.org">phpBMS Project web site </a>.</p>
-	<p>&nbsp;</p>
-	<h1>Server  Requirements</h1>
-	<ul><li>
-			<p>MySQL 3.23.58 or higher</p>
-		</li>
-		<li>
-			<p>PHP 4.1.2 or higher</p>
-		</li>
-		<li>
-			<p>Web Server (Tested using Apache and IIS.)</p>
-		</li>
+	<h2>Server  Requirements</h2>
+	<ul>
+		<li>MySQL 3.23.58 or higher</li>
+		<li>PHP 4.1.2 or higher</li>
+		<li>Web Server (Tested using Apache and IIS.)</li>
     </ul>
 	
-	<p>&nbsp;</p>
-	<h1>Browser Requirements</h1>
+	<h2>Browser Requirements</h2>
 	<p>see the <a href="../requirements.php">requirements page</a>.</p>
-	<p>&nbsp;</p>
-	<h1>Set Up The Database</h1>
-	
-	<div class="box">
-	<h2>Step 1 - Set Database Connection Information</h2>
-	<p>This step will require you to manually create the settings file. that is used by PHP to connect to your MySQL database. </p>
 
+	<h2>Creating the data Back-End </h2>
 	
-	
-	<h3> Create the settings.php File</h3>
-	<p>Make a copy the file <strong>defaultsettings.php</strong> (located in the web application root) and name the new file <strong>settings.php</strong>.</p>
-	<p> Next, modify the following parameters inside the settings.php file:</p>
+	<h3>Step 1 - Creating the settings.php file. </h3>
+	<p>Make a copy the file <strong>defaultsettings.php</strong> (located in the web application root) and name the new file <strong>settings.php</strong>. Next, modify the following parameters inside the settings.php file:</p>
 	<ul class="small">
 		<li><p>
 			<strong>mysql_server</strong>: the MySQL server location <br />
 			In most cases, this should be the same location as the web server, i.e. &quot;localhost&quot;
 			</p>
-			<p class="notes"><strong>Note:</strong> If your database server is different then your web server,  make sure you take any necessary security precautions to secure transmission between the two servers.</p>
-			</li>
+		</li>
 		<li>
 			<p><strong>mysql_database</strong>: the name of the database to be used by phpBMS. <br />
-				If the data base has not been created, You can use <a href="#step2">step two</a> to create a new database for phpBMS.</p>
+			If the database has not been created, You can use <a href="#step2">step two</a> to create a new database for phpBMS.</p>
 		</li>
 		<li>
 			<p><strong>mysql_user</strong>: the name of the user PHP will use to access the database.</p>
 		</li>
 		<li>
-			<p><strong>mysql_userpass</strong>:	the	password for the user that access the database.</p>
+			<p><strong>mysql_userpass</strong>:	the	password for the user PHP will use to access the database.</p>
 		</li>
 		<li>
-			<p><strong>mysql_pconnect</strong>:	specify whether php should use the mysql_pconnect or mysql_connect command. Some web hosting providers do not allow mysql_pconnect.</p>
+			<p><strong>mysql_pconnect</strong>:	(&quot;true&quot; or &quot;false&quot;) This tells phpBMS to use either the PHP mysql_pconnect or mysql_connect command. Some web hosting providers do not allow mysql_pconnect.</p>
 		</li>
 	</ul>
 
@@ -152,101 +146,50 @@
 		to make sure the <strong>settings.php</strong> is setup correctly.
 	</p>
 
-		<p><input type="button" value="Test Connection" class="Buttons" onclick="runCommand('testconnection')" /></p>
+	<p><input type="button" value="Test Connection" class="Buttons" onclick="runCommand('testconnection')" /></p>
 
-		<h3>Connection Test Results</h3>
-		<p>
-			<textarea name="results" id="testconnectionresults" cols="40" rows="4" class="results"></textarea>
-		</p>
-
-	</div>
-	<div>&nbsp;</div>
+	<h4>Connection Test Results</h4>
+	<p><textarea name="results" id="testconnectionresults" cols="40" rows="4" class="results"></textarea></p>
 
 
+	<h3><a name="step2"></a>Step 2 - Create the Database</h3>
+	<p>If the MySQL database that phpBMS will use already exists, skip to <a href="#step3">step three</a>. </p>
+	<p>If the MySQL database that phpBMS will use does not exist, phpBMS can attempt to create it.</p>
+	<p class="notes"><strong>Note:</strong> Some hosting companies limit the number of mySQL databases you are allowed, control database creation through a web application, or allow changes on a request basis. If you are having problems contact your hosting company.</p>
+	<p><input type="button" value="Create Database" class="Buttons" onclick="runCommand('createdatabase')" /></p>
+
+	<h4>Database Creation Results</h4>
+	<p><textarea name="results" id="createdatabaseresults" cols="80" class="results"rows="4"></textarea></p>
 
 
-	<div class="box">	
-		<h2><a name="step2"></a>Step 2 - Create the Database</h2>
-		<p>
-		If you have already created the MySQL database that phpBMS will use, you can 
-		skip to <a href="#step3">step three</a>.  
-		</p>
-		<p>If you have not created the database, phpBMS can attempt to create the database for you.<br />
-			The	user that is specified in the settings.php file must 
-			have sufficient privileges to create the database. 
-		</p>
-		<p><input type="button" value="Create Database" class="Buttons" onclick="runCommand('createdatabase')" /></p>
-		<p class="notes"><strong>Note:</strong> Some ISPs limit the number of mySQL databases you are allowed,  control 
-		database creation through a web application, or allow changes on a request basis. If you are having problems,, try contacting your ISP.</p>
-
-		<h3>Database Creation Results</h3>
-		<p>
-			<textarea name="results" id="createdatabaseresults" cols="80" class="results"rows="4"></textarea>
-		</p>
-
-	</div>	
-		<div>&nbsp;</div>
-
-	<div class="box">
+	<h2>Step 3 - Construct  the Base Modeule (phpBMS core) Data </h2>
+	<p><input type="button" value="Install Core Data" class="Buttons" onclick="runCommand('populatedata')" /></p>
+	<h4>Table Creation and Population Results</h4>
+	<p>
+		<textarea name="results" id="populatedataresults" class="results" cols="80" rows="10"></textarea>
+	</p>
+	<h3>Note the administrator login and password information. </h3>
+	<p class="notes"> Make sure to change the encryptions seed and password after the first successful login</p>
+	<blockquote class="large">
+			login: <strong>admin</strong><br />			
+			password: <strong>phpbms</strong>
+	</blockquote>
+	<h2>Install Additional Modules </h2>
+	<h3>Step 4 - Install Additional Modules</h3>
+	<p>The base phpBMS system contains <strong>only</strong> the bare framework, administration, and note/task/event capabilities. Additional modules add functionality such as client and product management, sales orders, and mass e-mailing. </p>
+	<p>To install a module, highlight the module form the list and click the "Install Selected Module" button.</p>
+	<h4>Select a module to insall</h4>
+	<p><select id="modules" name="modules" onchange="enableModuleInstall()"><option value="0">Select a module to install...</option><?php showModules()?></select> <input type="button" id="installmodule" name="installmodule" value="Install Module" class="Buttons" onclick="runModuleInstall()" disabled="disabled"/></p>
 	
-	<h2>Step 3 - Construct Base System</h2>
-		<p>
-			Next, phpBMS needs to create the base level tables and populate the tables with the basic information that phpBMS needs to 
-			work.
-		</p>
-		<p><input type="button" value="Create Tables and Populate Default Information" class="Buttons" onclick="runCommand('populatedata')" /></p>
-		<h3>Table Creation and Population Results</h3>
-		<p>
-			<textarea name="results" id="populatedataresults" class="results" cols="80" rows="10"></textarea>
-		</p>
-		<h3>Default User and Password</h3>
-		<p>
-			Upon successful creation of the tables and population of default data phpBMS is almost ready to run.
-			One of the records populated was the default administrator record.  This information is required for the first successful login:
-		</p>
-		<blockquote class="large">
-				username: <strong>admin</strong><br />			
-				password: <strong>phpbms</strong>
-		</blockquote>
-		<p class="notes"><strong>Note:</strong> Make sure to change the encryptions seed and password after the first successful login.</p>
-	</div>	
-	
-	
-	<p>&nbsp;</p>
-	<h1 >Install Additional Modules </h1>
-	<div class="box">
-		<p>&nbsp;
-		</p>
-		<p>The base phpBMS system contains <strong>only</strong> the bare framework, administration, and note/task/event capabilities. 
-			Additional modules will add functionality such as client/prospect and product management, quote/order/invoice control, 
-			and mass e-mailing.
-		</p>
-		<h3>Step 4 - Install Additional Modules</h3>
-		<p>To install a module, highlight the module form the list and click the "Install Selected Module" button.</p>
-		<p>
-			Select a module to install<br />
-			<select size="4" id="modules" name="modules">
-			<?php showModules()?>
-			</select>
-		</p>
-		<p>
-			<input type="button" id="installmodule" name="installmodule" value="Install Selected Module" class="Buttons" onclick="runModuleInstall()" />
-		</p>			
+	<h4>Module Installation Results</h4>
+	<p>
+		<textarea name="results" id="moduleresults" class="results" cols="80" rows="10"></textarea>
+	</p>
 
-		<h3>Module Installation Results</h3>
-		<p>
-			<textarea name="results" id="moduleresults" class="results" cols="80" rows="10"></textarea>
-		</p>
 
-	</div>
-
-	<p>&nbsp;</p>
-	<h1>Secure The Application</h1>
-	<div class="box">
-		<p>&nbsp;</p>
+	<h2>Secure The Application</h2>
 		<p>phpBMS can contain sensitive information such as usernames, passwords, ,sensitive credit card information that could be exposed to the internet insecurely.
-			We recommend performing the following actions to secure phpBMS:		    
-		</p>
+			We recommend performing the following actions to secure phpBMS:	</p>
 		<ul>
 			<li>
 				<p><strong>Delete Installation/Disable Folders</strong> - Once the installation process has been completed for the base system and the BMS modules,
@@ -260,26 +203,19 @@
 		    	<p><strong>Restrict access to the settings.php file -</strong> Make sure that only php can read the settings.php file, and that php does not access to write to the file. </p>
 	    	</li>
 		</ul>
-	</div>
-    <p>&nbsp;</p>
-	<h1>Complete the Installation</h1>
-	<div class="box">
-		<h2>Step 5 Log In </h2>
-		<p>If all of the above actions completed successfully, phpBMS was installed successfully. </p>
-		<p>Navigate to log in screen, use the administrative user name password (above) and log in to finish the installation process. After logging in, you may want to go to the administration section, and set up the basic settings for your application as well as change the administrative username and password. </p>
-		<p><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onclick="document.location='../'" /></p>
-	</div>
-	<p>&nbsp;</p>
-	<h1>Troubleshooting</h1>
-	<div class="box">
-		<h2>General Help </h2>
-		<p>
-		If you ran into any problems during this installation, have question about how the program works, or would like any additional
-		information about phpBMS, please visit the <a href="http://www.phpbms.org">phpBMS Project web site</a>.  The phpBMS project web site
-		has many resources to help you including a user wiki, users forum, and mailing list that can help you.</p>
-		<h2>Paid Customization, Installation, Support Options</h2>
-		<p>Paid technical support and phpBMS customization is available from <a href="http://www.kreotek.com">Kreotek</a>,  </p>
-	</div>
+	<h2>Complete the Installation</h2>
+	<h3>Step 5 - Log In </h3>
+	<p>Check the result boxes to make sure that all of the above actions have completed succefully before trying to log in.</p>
+	<p><input type="button" id="login" name="login" value="Log In" class="Buttons" onclick="document.location='../'" /></p>
+
+	<h2>Troubleshooting</h2>
+	<h3>General Help </h3>
+	<p>
+	If you ran into any problems during this installation, have question about how the program works, or would like any additional
+	information about phpBMS, please visit the <a href="http://www.phpbms.org">phpBMS Project web site</a>.  The phpBMS project web site
+	has many resources to help you including a user wiki, users forum, and mailing list that can help you.</p>
+	<h3>Paid Customization, Installation, Support Options</h3>
+	<p>Paid technical support and phpBMS customization is available from <a href="http://www.kreotek.com">Kreotek</a>,  </p>
 	
 </div>
 <p align="center" class="tiny">$Rev$ | $LastChangedDate$</p>

@@ -1,8 +1,6 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
-#topTitle{}
-#container{width:740px; margin:0 auto;}
+#container{width:740px; margin:10px auto;}
 p{margin:0;padding:0px 10px 10px;}
 
 .results{width:98%;font-family:'Courier New', Courier, mono;font-size:13px;}
-#modules{width:200px;}

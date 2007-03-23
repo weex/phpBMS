@@ -65,6 +65,14 @@ function loadSettings() {
 	} else return "Cannot open setting.ini file";
 }
 
+function loadDBSettings($dblink,$vars){
+	$querystatement="SELECT name,value FROM settings";
+	$queryresult=mysql_query($querystatement,$dblink);
+	while($therecord=mysql_fetch_array($queryresult))
+		$vars[$therecord["name"]]=$therecord["value"];
+	return $vars;
+}
+
 	function importData($thetable){
 		global $dblink;
 		
@@ -93,7 +101,7 @@ function loadSettings() {
 	function processSQLfile($filename){
 		global $dblink;
 		
-		$thefile = fopen($filename,"r");
+		$thefile = @ fopen($filename,"r");
 		if(!$thefile) {
 			return "Could not open the file ".$filename.".";
 		}
@@ -115,9 +123,9 @@ function loadSettings() {
 	
 	
 	function verifyAdminLogin($user,$pass,$encryptionSeed,$dblink){
-		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$encryptionSeed."\") AND admin=1";
+		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=ENCODE(\"".$pass."\",\"".$encryptionSeed."\") AND admin=1";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) die("what the!");//return false;
+		if(!$queryresult) return false;
 		if (mysql_num_rows($queryresult)>0) return true;
 		return false;
 	}
@@ -126,7 +134,7 @@ function loadSettings() {
 	function doUpdate() {
 		global $dblink;
 		
-		$thereturn.="Updating BMS\n===================\n";
+		$thereturn="Updating BMS\n===================\n";
 		$vars=loadSettings();
 		if(!is_array($vars)) {
 			$thereturn="Error Loading settings.php file.\n\n";
@@ -137,11 +145,14 @@ function loadSettings() {
 		else
 			$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
 		mysql_select_db($vars["mysql_database"],$dblink);
+
+		$vars=loadDBSettings($dblink,$vars);
+		
 		if(!verifyAdminLogin($_GET["u"],$_GET["p"],$vars["encryption_seed"],$dblink)){
 			$thereturn="Update Requires Administrative Access.\n\n";
 			return $thereturn;
 		}
-			
+				
 		$file =  @ fopen("./version.txt","r");
 		$newVersion=fgets($file,1024);
 		@ fclose($file);
@@ -217,7 +228,9 @@ function loadSettings() {
 					$querystatement="SELECT invoices.id,tax.percentage FROM invoices INNER JOIN tax on invoices.taxareaid=tax.id";
 					$queryresult=mysql_query($querystatement,$dblink);
 					if(!$queryresult) return (mysql_error($dblink)." --".$querystatement);
-					while($therecord=mysql_fetch_array($queryresult,$dblink)){
+					
+					
+					while($therecord=mysql_fetch_array($queryresult)){
 						$querystatement="UPDATE invoices SET taxpercentage=".$therecord["percentage"]."WHERE id=".$therecord["id"];
 						$updateresult=mysql_query($querystatement,$dblink);
 					}
@@ -228,9 +241,11 @@ function loadSettings() {
 					$updateresult=mysql_query($querystatement,$dblink);
 					$thereturn.=" - modified bms record in modules table\n";
 
+
 					$thereturn.="Update to 0.601 Finished\n\n";
 			
-					$ver["version"]="0.601";				
+					$ver["version"]="0.601";
+
 				break;
 				// ================================================================================================
 				case "0.601";
@@ -278,7 +293,7 @@ function loadSettings() {
 				case "0.62";
 					$thereturn.="Updating BMS Module to 0.7\n";
 					
-					$thereturn.=processSQLfile("updatev0.7.sql");
+					$thereturn.=processSQLfile("updatev0.70.sql");
 					
 					//update to new status system
 					if(updateInvoiceStatus($dblink))
@@ -317,19 +332,27 @@ function loadSettings() {
 	function moveShipping($dblink){
 		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) return false;
+		
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
 			$updatequery=mysql_query($querystatement,$dblink);
+			if(!$updatequery) return false;
 		}
+
 		$querystatement="SELECT id,name FROM shippingmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) return false;
+
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["ID"]."
 							WHERE shippingmethod=\"".$therecord["name"]."\"";
 			$updatequery=mysql_query($querystatement,$dblink);
+			if(!$updatequery) return false;
 		}
 		$querystatement="ALTER TABLE invoices DROP shippingmethod";
 		$updatequery=mysql_query($querystatement,$dblink);
+		if(!$updatequery) return false;
 		
 		return true;
 	}
@@ -337,28 +360,37 @@ function loadSettings() {
 	function movePayments($dblink){
 		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) return false;
+
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="INSERT INTO `paymentmethods` (name,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",1,NOW())";
 			$updatequery=mysql_query($querystatement,$dblink);
+			if(!$updatequery) return false;
 		}
+
 		$querystatement="SELECT id,name FROM paymentmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) return false;
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="UPDATE invoices SET paymentmethod=".$therecord["ID"]."
 							WHERE paymentmethod=\"".$therecord["name"]."\"";
 			$updatequery=mysql_query($querystatement,$dblink);
+			if(!$updatequery) return false;
 		}
 		$querystatement="ALTER TABLE invoices DROP paymentmethod";
 		$updatequery=mysql_query($querystatement,$dblink);
+		if(!$updatequery) return false;
 		
 		return true;
 	}
 
 	function updateInvoiceStatus($dblink){
 		$querystatement="SELECT id,status,statusdate FROM invoices;";
+		$queryresult=mysql_query($querystatement,$dblink);
+		if(!$queryresult) return false;
 		while($therecord=mysql_fetch_array($queryresult)){
 			$newstatus=1;
-			switch(){
+			switch($therecord["status"]){
 				case "Open":
 					$newstatus=1;
 				break;

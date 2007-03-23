@@ -60,7 +60,7 @@ function getSubItems($parentid){
 
 ?>
 <div id="menu">
-	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
+	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>" name="toptop"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
 
 	<div id="menuRighthandButtons">
 		<?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>

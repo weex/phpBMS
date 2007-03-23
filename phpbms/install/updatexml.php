@@ -158,11 +158,15 @@
 		global $dblink;
 		global $vars;
 		
-		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND admin=1";
+		if((real) getCurrentBaseVersion()>=.7)
+			$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND admin=1";
+		else
+			$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND accesslevel>=90";
+		
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult){
+				
+		if(!$queryresult)
 			return false;
-		}
 		return (mysql_num_rows($queryresult)>0);
 	}
 
@@ -322,6 +326,9 @@
 							$therecord["accesslevel"]=$therecord["accesslevel"]-10;							
 						}
 					}					
+					$querystatement="ALTER TABLE `users` DROP COLUMN `accesslevel`";
+					$queryresult=mysql_query($querystatement,$dblink);
+
 					$thereturn.=" - Connverted user access levels to roles.\n";				
 
 					//Updating Module Table
@@ -356,7 +363,7 @@
 				switch($_GET["command"]){
 					case "verifyLogin":
 						if (!verifyAdminLogin($_GET["u"],$_GET["p"]))
-							$thereturn="DB Connection error or invlaid adminstrative error.\n";
+							$thereturn="DB Connection error or invalid administrative error.\n";
 						else
 							$thereturn="DB Connected\nAdministrative user successfully verified\n";
 					break;

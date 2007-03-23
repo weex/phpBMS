@@ -87,7 +87,7 @@ function getPayments($dblink){
 			paymentMethods[<?php echo $therecord["id"]?>]["processscript"]="<?php echo $therecord["processscript"]?>";
 		<?php } ?>
 	</script><?php 
-	return $thereturn;
+	return $queryresult;
 }
 
 function showShippingSelect($id,$shippingMethods){
@@ -115,7 +115,7 @@ function getShipping($dblink){
 			shippingMethods[<?php echo $therecord["id"]?>]["estimationscript"]="<?php echo $therecord["estimationscript"]?>";
 		<?php } ?>
 	</script><?php 
-	return $thereturn;
+	return $queryresult;
 }
 
 
