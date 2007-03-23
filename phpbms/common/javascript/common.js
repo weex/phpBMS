@@ -294,7 +294,7 @@ function stringToTime(sTime,format){
 					if (hour!=12 && timeadd==12)
 						hour=hour+timeadd;
 					else 
-						if(timeadd==0)
+						if(hour==12)
 							hour=0;
 					thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
 				}

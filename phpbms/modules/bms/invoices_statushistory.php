@@ -46,7 +46,8 @@
 	$refrecord=mysql_fetch_array($refquery);
 
 	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name 
+			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
+			   invoices.type
 			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
 			   WHERE invoices.id=".$refid;
 	$refquery=mysql_query($refquery,$dblink);
@@ -100,7 +101,7 @@
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<p>
-			<input accesskey="s" title="(alt+s)" name="command" type="submit" value="update statuses" class="Buttons"/>
+			<input accesskey="s" title="(alt+s)" name="command" type="submit" value="update statuses" class="Buttons" <?php if($refrecord["type"]=="Invoice") echo "disabled=\"disabled\""?>/>
 		</p>
 		<div class="fauxP">
 			<table class="querytable">
@@ -144,7 +145,7 @@
 			</table>
 		</div>
 		<p>
-			<input name="command" type="submit" value="update statuses" class="Buttons"/>
+			<input name="command" type="submit" value="update statuses" class="Buttons" <?php if($refrecord["type"]=="Invoice") echo "disabled=\"disabled\""?>/>
 		</p>
 			
 	</form>	

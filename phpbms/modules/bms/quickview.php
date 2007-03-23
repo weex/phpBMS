@@ -81,34 +81,34 @@
 						$passedValue="";
 						if(isset($_GET["cid"]))
 							$passedValue=$_GET["cid"];
-						fieldAutofill("namecid",$passedValue,2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","",Array("size"=>"45","maxlength"=>"128","class"=>"important lookupWhats","tabindex"=>"10"),0)
+						fieldAutofill("namecid",$passedValue,2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","class"=>"important lookupWhats","tabindex"=>"10"),0)
 					?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["namecid"].onchange=updateViewButton;</script>						
 				</p>
 				
 				<p id="lookupEmailLabel" class="disabledP">
 					<label for="ds-emailcid">e-mail address</label><br />
-					<?php fieldAutofill("emailcid","",2,"clients.id","clients.email","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
+					<?php fieldAutofill("emailcid","",2,"clients.id","clients.email","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["emailcid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupWorkPhoneLabel" class="disabledP">
 					<label for="ds-workphonecid" >work phone</label><br />
-					<?php fieldAutofill("workphonecid","",2,"clients.id","clients.workphone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
+					<?php fieldAutofill("workphonecid","",2,"clients.id","clients.workphone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["workphonecid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupHomePhoneLabel" class="disabledP">
 					<label for="ds-homephonecid">home phone</label><br />
-					<?php fieldAutofill("homephonecid","",2,"clients.id","clients.homephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
+					<?php fieldAutofill("homephonecid","",2,"clients.id","clients.homephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["homephonecid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupMobilePhoneLabel" class="disabledP">
 					<label for="lookupname">mobile phone</label><br />
-					<?php fieldAutofill("mobilephonecid","",2,"clients.id","clients.mobilephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
+					<?php fieldAutofill("mobilephonecid","",2,"clients.id","clients.mobilephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["mobilephonecid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupMainAddressLabel" class="disabledP">
 					<label for="lookupname" >address</label><br />
-					<?php fieldAutofill("mainaddresscid","",2,"clients.id","clients.address1","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
+					<?php fieldAutofill("mainaddresscid","",2,"clients.id","clients.address1","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["mainaddresscid"].onchange=updateViewButton;</script>
 				</p>
 			</div>

@@ -154,7 +154,7 @@
 				  <script language="JavaScript" type="text/javascript">
 					document.forms["record"]["clientid"].onchange=populateShipping;
 				  </script>
-				  <?php if($therecord["clientid"]){?>
+				  <?php if($therecord["id"]){?>
 				  <input name="viewclient" type="button" value="view client" onclick="viewClient('<?php echo getAddEditFile(2) ?>')" class="smallButtons" tabindex="1" />
 				  <?php }//end if?>
 			</div>
@@ -210,8 +210,8 @@
 	<table border="0" cellpadding="0" cellspacing="0" id="LITable">
 		<tr id="LIHeader">
 			<th nowrap class="queryheader" align="left">part number</th>
-			<th nowrap class="queryheader" align="left">name</th>
-			<th nowrap class="queryheader" align="left" width="100%">memo</th>
+			<th nowrap class="queryheader" align="left" id="partnameHeader"><div>name</div></th>
+			<th nowrap class="queryheader" align="left" id="memoHeader">memo</th>
 			<th align="right" nowrap class="queryheader">price</th>
 			<th align="center" nowrap class="queryheader">qty.</th>
 			<th align="right" nowrap class="queryheader">extended</th>
@@ -231,7 +231,7 @@
 					document.forms["record"]["partname"].onchange=populateLineItem;
 			</script>
 			</td>
-			<td width="100%"><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
+			<td><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
 			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
 			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
 			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="true" /></td>
@@ -244,7 +244,7 @@
 	while($lineitem=mysql_fetch_array($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
 			<td nowrap class="lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlQuotes($lineitem["partnumber"]); else echo "&nbsp;";?></td>
-			<td><strong><?php if($lineitem["partname"]) echo htmlQuotes($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
+			<td width="150"><strong><?php if($lineitem["partname"]) echo htmlQuotes($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
 			<td><?php if($lineitem["memo"]) echo htmlQuotes($lineitem["memo"]); else echo "&nbsp;"?></td>
 			<td align="right" nowrap><?php echo htmlQuotes(numberToCurrency($lineitem["unitprice"]))?></td>
 			<td align="center" nowrap><?php echo $lineitem["quantity"]?></td>
@@ -431,7 +431,7 @@
 		<td class="totalItems">
 			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
 			<input id="totalcost" name="totalcost" type="hidden" value="<?php echo $therecord["totalcost"] ?>" />
-			<input id="totaltaxable" name="totaltaxable" type="hidden" value="<?php echo $therecord["totaltaxable"] ?>" />
+			<input id="totaltaxable" name="totaltaxable" type="text" value="<?php echo $therecord["totaltaxable"] ?>" />
 		</td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>

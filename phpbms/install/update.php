@@ -128,6 +128,16 @@
 		responseText.value+=response.firstChild.data+"\n";
 	}
 	
+	function changeModules(){
+		var themodule=getObjectFromID("modules");
+		var moduleButton= getObjectFromID("updatemodule");
+		
+		if(themodule.value==0)
+			moduleButton.disabled="disabled";
+		else
+			moduleButton.disabled=false;
+	}
+	
 	function runModuleUpdate(){
 		var themodule=getObjectFromID("modules");
 		var responseText= getObjectFromID("moduleresults");
@@ -152,110 +162,77 @@
 
 <body>
 <div class="bodyline" id="container">
-	<h1>phpBMS v<?php echo $version ?> Update Instructions</h1>
-	<p>&nbsp;</p>
-	<h1>Before updating</h1>
+	<h1>phpBMS v<?php echo $version ?> Update</h1>
+	<h2>Before updating</h2>
+		<p>Backup all of your data and program files before running any update.</p>
 		<p>
-			It is always a good idea to backup all of your data and files before running any updates. 
 			By downloading and decompressing this update, you may have already replaced script files 
 			from the previous version of phpBMS. If you have decompressed these files to a separate 
 			directory and have made custom changes directly to the system we recommend backing up 
 			those files before continuing. 
 		</p>
-		<p>
-			For the latest information about phpBMS, including help
-			forums, mailing lists, wiki, and downloads, please check the <a href="http://www.phpbms.org">phpBMS Project
-		web site</a>.</p>
-		<p>&nbsp;</p>
+		<p>For the latest information about phpBMS check the <a href="http://www.phpbms.org">phpBMS Project web site</a>.</p>
 
-		<h1>Updating the base system</h1>
-		<div class="box">
+		<h2>Updating the base system</h2>
 		
-	    	<h2 >Step 1 - Enter Administrator Log In</h2>
-			<p>
-				Only users with administrative rights can run the update procedure.<br />
-				Enter the log in name of and administrator and verify both the database connection and the administrative log in.
-			</p>
-			<p>
-				user name<br />
-				<input name="name" type="text" id="username" size="32" maxlength="64" />
-				<input name="name" type="hidden" id="version"  value="<?php echo $version ?>" />
-			</p>
-			<p>
-				password<br />
-				<input name="password" type="password" id="password" size="32" maxlength="24"  />
-			</p>
-			
-			<p>
-				<input type="button" value="Verify Log In" class="Buttons" onclick="runCommand('verifyLogin')" />
-			</p>
+		<h3>Step 1 - Verify administrative privileges</h3>
+		<p>
+	Only users with administrative rights can run the update.</p>
+		<p>			name<br />
+			<input name="name" type="text" id="username" size="32" maxlength="64" />
+			<input name="name" type="hidden" id="version"  value="<?php echo $version ?>" />
+    	</p>
+		<p>
+			password<br />
+			<input name="password" type="password" id="password" size="32" maxlength="24"  />
+		</p>
+		
+		<p>
+			<input type="button" value="Verify" class="Buttons" onclick="runCommand('verifyLogin')" />
+		</p>
 
-    		<h3 >Administrative Login Results</h3>
-    		<p>
-    			<textarea name="results" id="verifyLoginresults" class="results" cols="80"rows="4"></textarea>
-   			</p>
+		<h4>Verify Results</h4>
+		<p>
+			<textarea name="results" id="verifyLoginresults" class="results" cols="80" rows="2"></textarea>
+		</p>
 
-	</div>
-	<div class="box" style="margin-bottom:10px;">
-		<h2>Step 2 - Check for Updates </h2>
-		<p>If the administrative login was successful, compare the unpacked version version to the version reported in the database.</p>
+		<h3>Step 2 - Check for Updates </h3>
 		<p>
-			<input type="button" value="Check For Update" class="Buttons" onclick="runCommand('checkBaseUpdate')" />
+			<input type="button" value="Check Availability" class="Buttons" onclick="runCommand('checkBaseUpdate')" />
 		</p>
-		<h3>Update Check Results</h3>
+		<h4>Availability Results</h4>
 		<p>
-			<textarea name="results" id="checkBaseUpdateresults" class="results" cols="80" rows="4"></textarea>
+			<textarea name="results" id="checkBaseUpdateresults" class="results" cols="80" rows="2"></textarea>
 		</p>
-	</div>
 
-	<div class="box" style="clear:both;">
-		<h2 >Step 3 - Update the Base Module</h2>
+		<h3 >Step 3 - Update the Base Module (phpBMS core)</h3>
 		<p>
-			Click the &quot;Update Base Module&quot; button to run the core and base module update. 
+			<input type="button" value="Update Core" class="Buttons" onclick="runCommand('updateBaseVersion')" />
 		</p>
-		<p>This may make changes to the database records and structure. </p>
+		<h3>Core Update Results</h3>
 		<p>
-			<input type="button" value="Update Base Module" class="Buttons" onclick="runCommand('updateBaseVersion')" />
+			<textarea name="results" id="updateBaseVersionresults" class="results" cols="80" rows="8"></textarea>
 		</p>
-		<h3>Base Module  Update Results</h3>
-		<p>
-			<textarea name="results" id="updateBaseVersionresults" class="results" cols="80" rows="10"></textarea>
-		</p>
-	</div>
 	
-	<p>&nbsp;</p>
-	<h1>Updating Installed modules</h1>
-	<div class="box">
-		<h2>Step 4 - Update Additional Modules </h2>
-		
+	<h2>Updating Installed modules</h2>
+		<h3>Step 4 - Update Additional Modules</h3>
+		<p>Select a module to update</p>
 		<p>
-			Below is a list of additional installed modules that can be updated. To update a module, 
-			select the module from the list, and click the &quot;update module &quot; button. 
-		</p>
-		<p> 
-			Select a module to update <br />
-			<select size="6" id="modules" name="modules">
+			<select id="modules" name="modules" onchange="changeModules()">
+				<option value="0">Select a module to update...</option>
 				<?php showModules()?>
 			</select>
+			<input type="button" id="updatemodule" name="updatemodule" value="update" class="Buttons" onclick="runModuleUpdate()" disabled="disabled"/>
         </p>
+		<h4>Module Update Results</h4>
 		<p>
-			<input type="button" id="updatemodule" name="updatemodule" value="Update Module" class="Buttons" onclick="runModuleUpdate()" />
-		</p>
-		<h3>Results</h3>
-		<p>
-			<textarea name="results" id="moduleresults" class="results" cols="80" rows="11"></textarea>
+			<textarea name="results" id="moduleresults" class="results" cols="80" rows="8"></textarea>
 		</p>
 			
-	</div>
 		
-	<p>&nbsp;</p>
-	<h1>Complete the update</h1>
-	<div class="box">
-		<p><br />
-			Before continuing to the login screen, you may want to clear your <strong>browser cache</strong> (temporary internet files), so that any new JavaScript and style sheet files will refresh properly. </p>
-		<p>If phpBMS updated successfully, go to the log in screen.</p>
-		<p><input type="button" id="login" name="login" value="Go to Log In Screen" class="Buttons" onclick="document.location='../'" /></p>
-	</div>
+	<h2>Complete the update</h2>
+		<p>Make sure you clear your <strong>browser cache</strong> (temporary internet files). Some updates may require the resetting of session files.</p>
+		<p><input type="button" id="login" name="login" value="Log In" class="Buttons" onclick="document.location='../'" /></p>
 
 </div>
 <p class="tiny" align="center"> $Rev$ |  $LastChangedDate$

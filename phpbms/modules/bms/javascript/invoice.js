@@ -380,16 +380,14 @@ function checkType(theitem){
 	if (theitem.value=="Invoice") {
 		var amountdue=getObjectFromID("amountdue");
 		var invoicedate=getObjectFromID("invoicedate");
-		var shipped=getObjectFromID("statusShipped");
 		if(currencyToNumber(amountdue.value)!=0){
 			theitem.value="Order";
-			alert("The order has not been fully paid. \n Check the 'amount paid' field.");
+			alert("Payment has not been fully applied.");
 		} else{
 			if(invoicedate.value==""){
-				var currentdate= new Date();
-				invoicedate.value=(currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
+				var today= new Date();
+				invoicedate.value=dateToString(today);
 			}
-			shipped.checked=true;
 		}
 		
 	} 

@@ -75,6 +75,7 @@ function getPayments($dblink){
 	$querystatement="SELECT id,name,type,onlineprocess,processscript FROM paymentmethods WHERE inactive=0 ORDER BY priority,name";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Error Retreiving Payment Methods ".$querystatement." - ".mysql_error($dblink)));
+	$thereturn=array();
 	?><script language="javascript" type="text/javascript">
 		paymentMethods=Array();
 		<?php while($therecord=mysql_fetch_array($queryresult)) {
@@ -87,7 +88,7 @@ function getPayments($dblink){
 			paymentMethods[<?php echo $therecord["id"]?>]["processscript"]="<?php echo $therecord["processscript"]?>";
 		<?php } ?>
 	</script><?php 
-	return $queryresult;
+	return $thereturn;
 }
 
 function showShippingSelect($id,$shippingMethods){
@@ -104,6 +105,7 @@ function getShipping($dblink){
 	$querystatement="SELECT id,name,canestimate,estimationscript FROM shippingmethods WHERE inactive=0 ORDER BY priority,name";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Error Retreiving Shipping Methods ".$querystatement." - ".mysql_error($dblink)));
+	$thereturn=array();
 	?><script language="javascript" type="text/javascript">
 		shippingMethods=Array();
 		<?php while($therecord=mysql_fetch_array($queryresult)) {
@@ -115,7 +117,7 @@ function getShipping($dblink){
 			shippingMethods[<?php echo $therecord["id"]?>]["estimationscript"]="<?php echo $therecord["estimationscript"]?>";
 		<?php } ?>
 	</script><?php 
-	return $queryresult;
+	return $thereturn;
 }
 
 

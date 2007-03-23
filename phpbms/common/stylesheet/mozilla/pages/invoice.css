@@ -43,7 +43,11 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 .LIRealInfo{display:none;}
 
 #ds-partnumber{width:90px;}
-#ds-partname{width:120px;}
+#ds-partname{width:135px;}
+
+#partnameHeader div{width:120px;}
+#memoHeader{width:100%}
+
 #price{width:60px;}
 #memo{width:100%}
 #qty{text-align:center;width:50px;}

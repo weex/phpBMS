@@ -195,7 +195,7 @@ function stringToTime($timestring,$format=TIME_FORMAT){
 				if($timearray[0]!="12" && $addtime==12)
 					$timearray[0]= ((integer) $timearray[0]) + $addtime;
 				else 
-					if ($addtime==0)
+					if ($timearray[0]==12)
 						$timearray[0]=0;
 				$thetime=mktime($timearray[0],$timearray[1],0);
 			break;
@@ -271,20 +271,22 @@ function dateFromSQLDatetime($sqldatetime){
 
 function formatFromSQLDatetime($sqldatetime,$dateformat=DATE_FORMAT,$timeformat=TIME_FORMAT){
 	$datetimestring="";
+	$timestring="";
 	if($sqldatetime!=""){
 		$datetimearray=explode(" ",$sqldatetime);
-
-		$datestring=$datetimearray[0];
+		
+		$datestring=trim($datetimearray[0]);
 		if($dateformat=="SQL")
 			$datestring=$datestring;
 		else 
 			$datestring=dateToString(stringToDate($datestring,"SQL"),$dateformat);
-
-		$timestring=$datetimearray[1];
-		if($timeformat=="24 Hour")
-			$timestring=$timestring;
-		else 
-			$timestring=timeToString(stringToTime($timestring,"24 Hour"),$timeformat);
+		if(isset($datetimearray[1])){
+			$timestring=$datetimearray[1];
+			if($timeformat=="24 Hour")
+				$timestring=$timestring;
+			else 
+				$timestring=timeToString(stringToTime($timestring,"24 Hour"),$timeformat);
+		}
 		$datetimestring=trim($datestring." ".$timestring);
 	}
 	return $datetimestring;

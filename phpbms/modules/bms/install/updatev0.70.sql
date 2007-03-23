@@ -41,7 +41,7 @@ ALTER TABLE `clients` ADD COLUMN `discountid` INTEGER UNSIGNED DEFAULT 0;
 ALTER TABLE `clients` DROP `paymentmethod`;
 ALTER TABLE `clients` DROP `ccnumber`;
 ALTER TABLE `clients` DROP `ccexpiration`;
-ALTER TABLE `clients` FROP `displayname`
+ALTER TABLE `clients` DROP `displayname`
 ALTER TABLE `clients` CHANGE COLUMN `state` `state` varchar(5) default NULL;
 ALTER TABLE `clients` CHANGE COLUMN `shiptostate` `shiptostate` varchar(5) default NULL;
 ALTER TABLE `invoices` CHANGE COLUMN `state` `state` varchar(5) default NULL;
@@ -68,6 +68,7 @@ ALTER TABLE `invoices` CHANGE COLUMN `shippeddate` `statusdate` DATE DEFAULT NUL
 ALTER TABLE `invoices` ADD COLUMN `statusid` INTEGER UNSIGNED AFTER `status`;
 ALTER TABLE `invoices` ADD COLUMN `assignedtoid` INTEGER UNSIGNED AFTER `statusid`;
 UPDATE `tabledefs` SET `querytable`='((invoices inner join clients on invoices.clientid=clients.id) inner join invoicestatuses on invoices.statusid=invoicestatuses.id)' WHERE `id` =3;
+UPDATE `tablecolumns` SET `column`='invoicestatuses.name' WHERE `column`='invoices.status';
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Shipped / Ready To Invoice\"' WHERE `id`=24;
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Packed\"' WHERE `id`=23;
 UPDATE `tablefindoptions` SET `search`='invoices.type=\"Order\" and invoicestatuses.name=\"Committed\"' WHERE `id`=106;

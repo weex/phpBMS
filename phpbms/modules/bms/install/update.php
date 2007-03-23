@@ -296,28 +296,30 @@ function loadDBSettings($dblink,$vars){
 					$thereturn.=processSQLfile("updatev0.70.sql");
 					
 					//update to new status system
-					if(updateInvoiceStatus($dblink))
-						$thereturn.=" - Updated to new invoice status system\n.";
+					$result=updateInvoiceStatus($dblink);
+					if($result===true)
+						$thereturn.=" - Updated to new invoice status system\n";
 					else
-						$thereturn.=" - Failed to updated to new invoice status system\n.";
-					
+						$thereturn.=" - Failed to updated to new invoice status system\n".$result."\n\n";					
 					
 					//Update shipping from invoices
-					if(moveShipping($dblink))
-						$thereturn.=" - Created default Shipping Methods\n.";
+					$result=moveShipping($dblink);
+					if($result===true)
+						$thereturn.=" - Created default Shipping Methods\n";
 					else
-						$thereturn.=" - Failed to create default Shipping Methods\n.";
+						$thereturn.=" - Failed to create default shipping methods\n".$result."\n\n";
 					
 					//update payment From invoices
-					if(movePayments($dblink))
-						$thereturn.=" - Created default payment Methods\n.";
+					$result=movePayments($dblink);
+					if($result===true)
+						$thereturn.=" - Created default payment methods\n";
 					else
-						$thereturn.=" - Failed to create default payment Methods\n.";
+						$thereturn.=" - Failed to create default payment Methods\n".$result."\n\n";
 					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"bms\";";
 					$updateresult=mysql_query($querystatement,$dblink);
-					$thereturn.=" - modified bms record in modules table\n";
+					$thereturn.=" - Updated bms module record with new version\n";
 
 					$thereturn.="Update to 0.7 Finished\n\n";
 			
@@ -332,96 +334,124 @@ function loadDBSettings($dblink,$vars){
 	function moveShipping($dblink){
 		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
+		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
 		
 		while($therecord=mysql_fetch_array($queryresult)){
 			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
 			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return false;
+			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		}
 
 		$querystatement="SELECT id,name FROM shippingmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
+		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
 
 		while($therecord=mysql_fetch_array($queryresult)){
-			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["ID"]."
+			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["id"]."
 							WHERE shippingmethod=\"".$therecord["name"]."\"";
 			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return false;
+			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		}
 		$querystatement="ALTER TABLE invoices DROP shippingmethod";
 		$updatequery=mysql_query($querystatement,$dblink);
-		if(!$updatequery) return false;
+		if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		
-		return true;
+		return true; 		 
 	}
 
 	function movePayments($dblink){
 		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
+		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
 
 		while($therecord=mysql_fetch_array($queryresult)){
-			$querystatement="INSERT INTO `paymentmethods` (name,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",1,NOW())";
+			switch($therecord["paymentmethod"]){
+				case "VISA":
+				case "VISA - Debit": 
+				case "American Express":
+				case "Master Card":
+				case "MasterCard":
+				case "Discover Card":
+					$type="\"charge\"";
+				break;
+				
+				case "Personal Check":
+				case "Check":
+				case "Cashiers Check":
+				case "check":
+					$type="\"draft\"";
+				break;				
+				
+				default:
+					$type="NULL";
+				break;
+			}
+			
+			$querystatement="INSERT INTO `paymentmethods` (name,`type`,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",".$type.",1,NOW())";
 			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return false;
+			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		}
 
 		$querystatement="SELECT id,name FROM paymentmethods";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
+		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
 		while($therecord=mysql_fetch_array($queryresult)){
-			$querystatement="UPDATE invoices SET paymentmethod=".$therecord["ID"]."
+			$querystatement="UPDATE invoices SET paymentmethodid=".$therecord["id"]."
 							WHERE paymentmethod=\"".$therecord["name"]."\"";
 			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return false;
+			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		}
 		$querystatement="ALTER TABLE invoices DROP paymentmethod";
 		$updatequery=mysql_query($querystatement,$dblink);
-		if(!$updatequery) return false;
+		if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
 		
 		return true;
 	}
 
 	function updateInvoiceStatus($dblink){
-		$querystatement="SELECT id,status,statusdate FROM invoices;";
+		$querystatement="SELECT id,status,statusdate,orderdate,invoicedate,type FROM invoices";
 		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
+		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
+		
 		while($therecord=mysql_fetch_array($queryresult)){
 			$newstatus=1;
 			switch($therecord["status"]){
 				case "Open":
 					$newstatus=1;
+					$statusdate=$therecord["orderdate"];
 				break;
 				case "Committed":
 					$newstatus=2;
+					$statusdate=$therecord["orderdate"];					
 				break;
 				case "Packed":
 					$newstatus=3;
 				break;
 				case "Shipped":
 					$newstatus=4;
+					if($therecord["statusdate"])
+						$statusdate=$therecord["statusdate"];
+					elseif($therecord["invoicedate"])
+						$statusdate=$therecord["invoicedate"];
+					else
+						$statusdate=$therecord["orderdate"];
 				break;
+				if($therecord["type"]=="Invoice")
+					$statusdate=$therecord["invoicedate"];
 			}
-			$querystatement="UPDATE invoices SET statusid=".$newstatus." WHERE id=".$therecord["id"];
+			$querystatement="UPDATE invoices SET statusid=".$newstatus.", statusdate=\"".$statusdate."\" WHERE id=".$therecord["id"];
 			$updatequery=mysql_query($querystatement,$dblink);
-			
+			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+
 			//now create the history
-			if($therecord["statusdate"]!="" && $newstatus=4)
-				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid,statusdate)VALUES(".$therecord["id"].",".$newstatus.",".$therecord["statusdate"].")";
-			elseif($therecord["statusdate"]!="" && $newstatus!=4){
-				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid,statusdate)VALUES(".$therecord["id"].",4,".$therecord["statusdate"].")";
-				$insertquery=mysql_query($querystatement,$dblink);
-				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid)VALUES(".$therecord["id"].",".$newstatus.")";
-			}
-			else
-				$querystatement="INSERT INTO invoicestatushistory (invoiceid,statusid)VALUES(".$therecord["id"].",".$newstatus.")";
+			$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate)VALUES(".$therecord["id"].",".$newstatus.",\"".$statusdate."\")";
 			$insertquery=mysql_query($querystatement,$dblink);
+			if(!$insertquery) return mysql_error($dblink)." -- ".$querystatement;
 			
 		}
 		$querystatement="ALTER TABLE `invoices` DROP COLUMN `status`";
 		$dropcolumnquery=mysql_query($querystatement,$dblink);
+		if(!$dropcolumnquery) return mysql_error($dblink)." -- ".$querystatement;
 		
 		return true;
 	}
