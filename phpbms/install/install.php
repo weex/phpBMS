@@ -107,7 +107,7 @@
 	<h2>Server  Requirements</h2>
 	<ul>
 		<li>MySQL 3.23.58 or higher</li>
-		<li>PHP 4.1.2 or higher</li>
+		<li>PHP 4.3.0 or higher</li>
 		<li>Web Server (Tested using Apache and IIS.)</li>
     </ul>
 	

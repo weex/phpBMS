@@ -431,7 +431,7 @@
 		<td class="totalItems">
 			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
 			<input id="totalcost" name="totalcost" type="hidden" value="<?php echo $therecord["totalcost"] ?>" />
-			<input id="totaltaxable" name="totaltaxable" type="text" value="<?php echo $therecord["totaltaxable"] ?>" />
+			<input id="totaltaxable" name="totaltaxable" type="hidden" value="<?php echo $therecord["totaltaxable"] ?>" />
 		</td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>

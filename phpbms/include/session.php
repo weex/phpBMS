@@ -140,6 +140,40 @@ function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
 
 // Start Code
 //=================================================================================================================
+
+//php <4.3.0 compatibility
+if(!function_exists("mysql_real_escape_string")){
+	function mysql_real_escape_string($string){
+		return mysql_escape_string($string);
+	}
+	
+   function utf8_replaceEntity($result){
+       $value = (int)$result[1];
+       $string = '';
+      
+       $len = round(pow($value,1/8));
+      
+       for($i=$len;$i>0;$i--){
+           $part = ($value & (255>>2)) | pow(2,7);
+           if ( $i == 1 ) $part |= 255<<(8-$len);
+          
+           $string = chr($part) . $string;
+          
+           $value >>= 6;
+       }
+      
+       return $string;
+   }
+  
+   function html_entity_decode($string){
+       return preg_replace_callback(
+           '/&#([0-9]+);/u',
+           'utf8_replaceEntity',
+           $string
+       );
+   }	
+}
+
 	if(!isset($_SERVER['REQUEST_URI'])) {
 		// This following code is for windows boxen, because they lack some server varables as well
 		// formating options for the strftime function
@@ -156,7 +190,6 @@ function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
 	if(!isset($noSession))	
 		session_start();
 	error_reporting(E_ALL);
-
 	
 	if (!isset($_SESSION["app_path"]))
 		$mainpath=loadMysqlSettings();
