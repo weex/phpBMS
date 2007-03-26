@@ -3,7 +3,7 @@
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
  +-------------------------------------------------------------------------+
- | Copyright (c) 2005, Kreotek LLC                                         |
+ | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
  +-------------------------------------------------------------------------+
  |                                                                         |

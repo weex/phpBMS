@@ -1,13 +1,13 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
-#container{width:740px; margin:0 auto}
+#container{width:740px; margin:10px auto}
 #phpBMSLogo{
 	float:right;
-	background:white url(../../../image/logo-large) 10px 10px no-repeat;
+	background:white url(../../../image/logo-large.png) 10px 10px no-repeat;
 	padding:77px 10px 10px 10px;
 	margin-right:20px;
 	width:250px;
 	text-align:right;
 }
-#companyInfo{margin-right:190px;
-}
+#companyInfo{margin-right:190px;}
+#loginButton{width:100px;}

@@ -1,3 +1,28 @@
+phpBMS v0.7
+http://phpbms.org/browser/tags/phpbms-0.7
+ 
+ * Support for multiple phone formats
+ * Support for multiple currency formats
+ * Support for multiple date/time formats
+ * New client order defaults
+ * New scheduler system 
+ * New logging system
+ * Support for type JPG on logo
+ * Redesigned help system
+ * Better autofill system
+ * Support for both mysql_connect and mysql_pconnect
+ * Redesigned order screen
+ * Longer state fields
+ * Order status now modifiable
+ * Track order status history 
+ * Users can edit their information
+ * New user access level system
+ * XHTML compliance
+ * New look and feel
+ * Fixed bugs: #26, #29, #31, #33, #35, #36, #39, #40, #50, #51, #52, #53, #53, #55, #56, #63, #68, #69, #70, #74, #75, #76, #78, #80, #84
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.7
+
 phpBMS v0.62
 http://phpbms.org/browser/tags/phpbms-0.62
 

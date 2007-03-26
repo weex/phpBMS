@@ -3,7 +3,7 @@
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
  +-------------------------------------------------------------------------+
- | Copyright (c) 2005, Kreotek LLC                                         |
+ | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
  +-------------------------------------------------------------------------+
  |                                                                         |
@@ -51,8 +51,8 @@ function showTodaysClients($interval="1 DAY"){
 	if(mysql_num_rows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
-				<th align="center">ID</th>
-				<th align="center">Type</th>
+				<th align="left">ID</th>
+				<th align="left">Type</th>
 				<th align="left" width="100%">Name</th>
 				<th nowrap align="right">Location</th>
 			</tr>
@@ -65,8 +65,8 @@ function showTodaysClients($interval="1 DAY"){
 			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?><tr onclick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
-			<td align="center"><?php echo $therecord["id"]?></td>
-			<td align="center"><?php echo $therecord["type"]?></td>
+			<td align="left" nowrap><?php echo $therecord["id"]?></td>
+			<td align="left" nowrap><?php echo $therecord["type"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>
 			<td align="right" nowrap><?php echo $displayCSZ?></td>
 		</tr><?php }?>
@@ -99,7 +99,7 @@ function showTodaysOrders($interval="1 DAY"){
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
 				<th align="left">ID</th>
-				<th align="center">Status</th>
+				<th align="left">Status</th>
 				<th width="100%" align="left">Name</th>
 				<th align="right">Total</th>
 				<th align="right">Due</th>
@@ -114,7 +114,7 @@ function showTodaysOrders($interval="1 DAY"){
 			$totaldue+=$therecord["amtdue"];
 		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td><?php echo $therecord["id"]?></td>
-			<td align=center><?php echo $therecord["status"]?></td>
+			<td nowrap="nowrap"><?php echo $therecord["status"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>
 			<td align="right"><?php echo numberToCurrency($therecord["total"])?></td>
 			<td align="right"><?php echo numberToCurrency($therecord["amtdue"])?></td>

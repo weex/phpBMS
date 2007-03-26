@@ -3,7 +3,7 @@
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
  +-------------------------------------------------------------------------+
- | Copyright (c) 2005, Kreotek LLC                                         |
+ | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
  +-------------------------------------------------------------------------+
  |                                                                         |
@@ -70,7 +70,8 @@
 
 <body>
 <div class="bodyline" id="container">
-	<h1>Commercial Open Source Business Management Web Application</h1>
+	<h1>About phpBMS</h1>
+	<p>phpBMS is commercial open source, web-based, business management software.</p>
 	
 	<div id="phpBMSLogo" class="box small">
 		<?php displayVersions($queryresult)?>
@@ -78,8 +79,9 @@
 	
 	<div id="companyInfo">
 		<p class="small">
-			Copyright &copy; 2004 -2007 kreotek, llc. All Rights Reserved.
-			phpBMS, and the phpBMS logo are trademarks of kreotek, llc.
+			Copyright &copy; 2004 -2007 Kreotek, llc. All Rights Reserved.
+			phpBMS, and the phpBMS logo are trademarks of Kreotek, llc. 
+			Software is licensed under a <a href="license.txt">modified BSD license</a>.
 		</p>
 		
 		<h3>Kreotek, LLC</h3>
@@ -114,8 +116,8 @@
 		</ul>
 
 	<?php if(!isset($_SESSION["app_path"])) {?>
-	<p class="box" align="right">
-		<input type="button" value="back to login page" class="Buttons" onClick="document.location='index.php'" />
+	<p align="right">
+		<input type="button" value="Log In" class="Buttons" onClick="document.location='./'" id="loginButton"/>
 	</p>
 	<?php } ?>
 </div>

@@ -3,7 +3,7 @@
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
  +-------------------------------------------------------------------------+
- | Copyright (c) 2005, Kreotek LLC                                         |
+ | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
  +-------------------------------------------------------------------------+
  |                                                                         |
@@ -49,62 +49,58 @@
 </head>
 
 <body><div class="bodyline" id="container">	
-	<h1>phpBMS Client Browser Requirements</h1>
 	<div class="box" id="logo" style=""><span>phpBMS</span></div>
-	<div>
-	<ul>
-    	<li><strong class="large">JavaScript v2.0</strong><br />
-        		<br />
-		This application makes <strong>heavy</strong> use of newer JavaScript functions, including the paradigm known as AJAX. Without Javascript, enabled, phpBMS will not run correctly.<br />
-		<br />
-		<strong>Window pop-ups:</strong>		This application utilizes JavaScript to open new windows. If you disable Javascript window opening (like in Firefox or Opera) or are utilizing a 3rd-party application to stop Internet Explorer  from opening unwanted windows, this application might not work correctly.<br />
-&nbsp; </li>
-    	<li><strong class="large">Cookies</strong><br />
-        		<br />
-		A single cookie is set to identify the user during a session. <br />
-&nbsp; </li>
-    	<li><strong class="large">Style Sheets (CSS) v1.1</strong><br />
-        		<br />
-		Your browser must support the rendering of Cascading Style Sheets. Without this support, the application will not work correctly. <br />
-    		</li>
-	</ul></div>
+	<h1>phpBMS Browser Requirements</h1>
+	<h2 id="cba">Client Browser Aplication</h2>
+
+	<h3>JavaScript v2.0</h3>
+	<p>This application makes heavy use of newer JavaScript functions, including the paradigm known as AJAX. Without Javascript, enabled, phpBMS will not run correctly.</p>
+
+	<h3>Window pop-ups:</h3>
+	<p>This application utilizes JavaScript to open new windows. If you disable Javascript window opening (like in Firefox or Opera) or are utilizing a 3rd-party application to stop Internet Explorer  from opening unwanted windows, this application might not work correctly.</p>
+
+	<h3>Cookies</h3>
+	<p>A single cookie is set to identify the user during a session.</p>
+
+	<h3>Style Sheets (CSS) v1.1</h3>
+	<p>Your browser must support the rendering of Cascading Style Sheets. Without this support, the application will not work correctly.</p>
+
 	<h2>Tested Browsers</h2>
-	<div class="fauxP" align="center"><table border="0" cellpadding="0" cellspacing="0" class="querytable">
+	<table border="0" cellpadding="0" cellspacing="0" class="querytable" id="browserTable">
     	<tr>
     		<th class="queryheader" nowrap>Browser Application</th>
     		<th class="queryheader">Version</th>
     		<th class="queryheader">Platform(s)</th>
     		<th align="center" class="queryheader">Compatibility</th>
    		</tr>
-    	<tr class="qr1" style="cursor:auto">
+    	<tr class="row2">
         	<td>Firefox</td>
         	<td>1.5.0.7</td>
         	<td>Windows/Macintosh</td>
         	<td align="center" class="important">X</td>
-   		</tr>
-		
-    	<tr class="qr2" style="cursor:auto">
+   		</tr>		
+    	<tr class="row1">
     		<td>Internet Explorer</td>
     		<td>6.0.2900.2190</td>
     		<td>Windows</td>
     		<td align="center" class="important">X</td>
    		</tr>
-    	<tr class="qr1" style="cursor:auto">
+    	<tr class="row2">
     		<td>Opera</td>
     		<td>9.02</td>
     		<td>Windows</td>
     		<td align="center" class="important">X</td>
    		</tr>
-    	<tr class="qr1" style="cursor:auto">
+    	<tr class="row1">
     		<td>Internet Explorer</td>
     		<td>6.0.2900.2190</td>
     		<td>Windows</td>
     		<td align="center" class="important">X</td>
    		</tr>
+		<tr class="queryfooter"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
    	</table>
-	</div>
-	<p class="box" align="right">
-		<input type="button" value="back to login page" class="Buttons" onclick="document.location='index.php'"/>
+	<p align="right">
+		<input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton"/>
 	</p>
 </div>
 </body>
