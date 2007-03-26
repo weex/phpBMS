@@ -54,7 +54,7 @@ function showTodaysClients($interval="1 DAY"){
 				<th align="left">ID</th>
 				<th align="left">Type</th>
 				<th align="left" width="100%">Name</th>
-				<th nowrap align="right">Location</th>
+				<th nowrap="nowrap" align="right">Location</th>
 			</tr>
 		<?php 
 		$i=1;
@@ -65,10 +65,10 @@ function showTodaysClients($interval="1 DAY"){
 			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?><tr onclick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
-			<td align="left" nowrap><?php echo $therecord["id"]?></td>
-			<td align="left" nowrap><?php echo $therecord["type"]?></td>
+			<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?></td>
+			<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>
-			<td align="right" nowrap><?php echo $displayCSZ?></td>
+			<td align="right" nowrap="nowrap"><?php echo $displayCSZ?></td>
 		</tr><?php }?>
 		<tr class="queryfooter">
 			<td>&nbsp;</td>
@@ -112,7 +112,7 @@ function showTodaysOrders($interval="1 DAY"){
 			if($i==1) $i=2; else $i=1;
 			$total+=$therecord["total"];
 			$totaldue+=$therecord["amtdue"];
-		?><tr onClick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
+		?><tr onclick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td><?php echo $therecord["id"]?></td>
 			<td nowrap="nowrap"><?php echo $therecord["status"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>

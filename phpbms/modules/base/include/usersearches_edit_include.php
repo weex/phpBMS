@@ -48,7 +48,7 @@ function displayTables($fieldname,$selectedid){
 	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "	<option value=\"".$therecord["id"]."\"";
-			if($selectedid==$therecord["id"]) echo " selected ";
+			if($selectedid==$therecord["id"]) echo " selected=\"selected\"";
 		echo ">".$therecord["displayname"]."</option>\n";
 	}
 

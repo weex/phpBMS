@@ -49,12 +49,12 @@ function displayTables($fieldname,$selectedid){
 	echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\" tabindex=\"20\">\n";
 
 	echo "<option value=\"0\" ";
-	if ($selectedid=="0") echo "selected";
+	if ($selectedid=="0") echo "selected=\"selected\"";
 	echo " style=\"font-weight:bold\">global</option>\n";
 
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "	<option value=\"".$therecord["id"]."\"";
-			if($selectedid==$therecord["id"]) echo " selected ";
+			if($selectedid==$therecord["id"]) echo " selected=\"selected\"";
 		echo ">".$therecord["displayname"]."</option>\n";
 	}
 

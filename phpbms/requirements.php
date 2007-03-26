@@ -68,7 +68,7 @@
 	<h2>Tested Browsers</h2>
 	<table border="0" cellpadding="0" cellspacing="0" class="querytable" id="browserTable">
     	<tr>
-    		<th class="queryheader" nowrap>Browser Application</th>
+    		<th class="queryheader" nowrap="nowrap">Browser Application</th>
     		<th class="queryheader">Version</th>
     		<th class="queryheader">Platform(s)</th>
     		<th align="center" class="queryheader">Compatibility</th>

@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php include("../../menu.php");?>
-<form method="post" name="record" id="record" onSubmit="return false;" action="">
+<form method="post" name="record" id="record" onsubmit="return false;" action="">
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
 
@@ -71,7 +71,7 @@
 				</select>				
 			</p>
 			<p id="lookupButtonsP">
-				<input type="button" value="view" id="dolookup" class="Buttons" disabled="true" tabindex="20" onclick="viewClient('<?php echo $_SESSION["app_path"]?>')" />
+				<input type="button" value="view" id="dolookup" class="Buttons" disabled="disabled" tabindex="20" onclick="viewClient('<?php echo $_SESSION["app_path"]?>')" />
 				<input type="button" value="add new" id="addnew" class="Buttons" tabindex="20" onclick="addEditRecord('new','client','<?php echo getAddEditFile(2,"add")?>')" />
 			</p>			
 			<div class="fauxP" id="lookupWhatP">
@@ -102,12 +102,12 @@
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["homephonecid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupMobilePhoneLabel" class="disabledP">
-					<label for="lookupname">mobile phone</label><br />
+					<label for="ds-mobilephonecid">mobile phone</label><br />
 					<?php fieldAutofill("mobilephonecid","",2,"clients.id","clients.mobilephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["mobilephonecid"].onchange=updateViewButton;</script>
 				</p>
 				<p id="lookupMainAddressLabel" class="disabledP">
-					<label for="lookupname" >address</label><br />
+					<label for="ds-mainaddresscid" >address</label><br />
 					<?php fieldAutofill("mainaddresscid","",2,"clients.id","clients.address1","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
 					<script language="JavaScript" type="text/javascript">document.forms["record"]["mainaddresscid"].onchange=updateViewButton;</script>
 				</p>

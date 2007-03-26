@@ -160,12 +160,12 @@ if (isset($_POST["command"])){
 			name<br />
 			<input name="reportid" type="hidden" value="<?php echo $therecord["id"] ?>" />
 			<input name="reportfile" type="hidden" value="<?php echo htmlQuotes($therecord["reportfile"]) ?>" />
-			<input name="name" type="text" class="uneditable important" id="name" value="<?php echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="true" />		
+			<input name="name" type="text" class="uneditable important" id="name" value="<?php echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="readonly" />		
 		</p>
 		
 		<p>
 			type<br />
-			<input name="type" type="text" class="uneditable" id="type" value="<?php echo $therecord["type"] ?>" size="20" maxlength="64" readonly="true" />
+			<input name="type" type="text" class="uneditable" id="type" value="<?php echo $therecord["type"] ?>" size="20" maxlength="64" readonly="readonly" />
 		</p>
 		<p>
 			description<br />

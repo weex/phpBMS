@@ -73,7 +73,7 @@
 <body><?php include("../../menu.php")?>
 
 
-<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	
@@ -83,7 +83,7 @@
 		<legend>Attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />		
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
 		</p>
 		<p id="roleidP">
 			<label for="roleid">access (role)</label><br />
@@ -111,7 +111,7 @@
 			</p>
 			<p>
 				<label for="type">file type </label><span class="notes">(MIME)</span><br />
-				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="true" class="uneditable" style="" />			
+				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="readonly" class="uneditable" style="" />			
 			</p>
 			<p>
 				<label for="upload">replace file</label><br />
@@ -120,7 +120,7 @@
 		<?php } else {?>
 			<?php if(isset($_GET["tabledefid"])){?>
 				<p><br />
-					<input class="radiochecks" type="radio" name="newexisting" id="newfile" value="new" checked="checked" onclick="switchFile()" /><label for="newfile">new file</label>&nbsp;&nbsp;
+					<input class="radiochecks" type="radio" name="newexisting" id="newfile" value="new"  checked="checked" onclick="switchFile()" /><label for="newfile">new file</label>&nbsp;&nbsp;
 					<input type="radio"  class="radiochecks" name="newexisting" id="existingfile" value="existing" onclick="switchFile()" /><label for="existingfile">existing file</label><br />
 					<span class="notes">Choose "existing file" if the file has already been uploaded into phpBMS.</span>
 				</p>
@@ -156,15 +156,15 @@
 		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
 			<tr>
 				<th align="left">table</th>
-				<th align="left" nowrap>ID</th>
+				<th align="left" nowrap="nowrap">ID</th>
 				<th align="right" width="99%">attached</th>
-				<th align="left" nowrap>&nbsp;</th>
+				<th align="left" nowrap="nowrap">&nbsp;</th>
 			</tr>
 		<?php
 			while($attachmentrecord=mysql_fetch_array($attchmentsquery)){
 	?>
 			<tr>
-				<td nowrap><?php echo $attachmentrecord["displayname"] ?></td>
+				<td nowrap="nowrap"><?php echo $attachmentrecord["displayname"] ?></td>
 				<td><?php echo $attachmentrecord["recordid"] ?></td>
 				<td align="right"><?php echo formatFromSQLDatetime($attachmentrecord["creationdate"]) ?></td>
 				<td>

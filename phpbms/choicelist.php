@@ -101,8 +101,8 @@
 	</p>
 	<p id="MLStatus" class="small">&nbsp;</p>
 	<div class="box" align="right">
-		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onClick="clickOK('<?php echo $_SESSION["app_path"]?>','<?php echo $listid?>','<?php echo $listname?>')"/>
-		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onClick="closeBox('<?php echo $listid?>');"/>&nbsp;
+		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onclick="clickOK('<?php echo $_SESSION["app_path"]?>','<?php echo $listid?>','<?php echo $listname?>')"/>
+		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onclick="closeBox('<?php echo $listid?>');"/>&nbsp;
 	</div>
 <?php	}//end function
 

@@ -76,12 +76,13 @@
 		<div class="helpSectionDivs">
 			<p>&nbsp;</p>
 			<p>
-				phpBMS takes advanage of HTML's accessKey property to allow
+				phpBMS takes advanage of HTML's accesskey property to allow
 				you to use your keyboard to navigate pages.  Some browsers and OS's
 				might have different modifier keys, so check your
-				browser documentation.  On windows, in Internet Explorer and Firefox, hold
-				down the Alt key followed by the shortcut.  On opera hold down shift-esc then
-				the shortut.  On a Mac, use the ctrl key in both Firefox and Safari.
+				browser documentation.  In windows, when using Internet Explorer and Firefox &lt 2.0, hold
+				down the Alt key followed by the shortcut.  When using Firefox &gt 2.0 in windows hold down Alt-Shift buttons 
+				followed by the shortcut. In opera hold down Shift-Esc then
+				the shortut.  On a Mac, use the ctrl key in both Firefox &lt; 2.0 and Safari. 
 			</p>
 			<h4>Search/List Screens</h4>
 			<div class="fauxP">

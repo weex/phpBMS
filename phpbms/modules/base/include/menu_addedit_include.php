@@ -47,7 +47,7 @@ function displayTableDropDown($selectedlink){
 	echo "<select id=\"linkdropdown\" name=\"linkdropdown\">\n";
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "<option value=\"search.php?id=".$therecord["id"]."\" ";
-		if ($selectedlink=="search.php?id=".$therecord["id"]) echo "selected";
+		if ($selectedlink=="search.php?id=".$therecord["id"]) echo "selected=\"selected\"";
 		echo " >".$therecord["displayname"]."</option>\n";
 	}
 	echo "</select>\n";
@@ -62,11 +62,11 @@ function displayParentDropDown($selectedpid,$id=0){
 	$thequery=mysql_query($querystatement,$dblink);
 	echo "<select name=\"parentid\" id=\"parentid\">\n";
 	echo "<option value=\"0\" ";
-	if ($selectedpid=="0") echo "selected";
+	if ($selectedpid=="0") echo "selected=\"selected\"";
 	echo " >-- none --</option>\n";
 	while($therecord=mysql_fetch_array($thequery)){
 		echo "<option value=\"".$therecord["id"]."\" ";
-		if ($selectedpid==$therecord["id"]) echo "selected";
+		if ($selectedpid==$therecord["id"]) echo "selected=\"selected\"";
 		echo " >".$therecord["name"]."</option>\n";
 	}
 	echo "</select>\n";

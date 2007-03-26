@@ -65,7 +65,7 @@
 							$userqueryline=false;						
 							?><option value="NA">----- user ------</option><?php 
 						}
-						?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"]==$selected) echo "selected"?>><?php echo $therecord["name"]?></option><?php 
+						?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"]==$selected) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php 
 					}// end while
 				}//end if
 			?>

@@ -38,8 +38,8 @@
 	echo "\n";
 
 	
- 	if(isset($_SESSION["include_js"])){
-		echo $_SESSION["include_js"];
-		$_SESSION["include_js"]="";
+ 	if(isset($_SESSION["includedJS"])){
+		echo "\n\n".$_SESSION["includedJS"];
+		$_SESSION["includedJS"]="";
 	}
 ?>

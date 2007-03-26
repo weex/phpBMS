@@ -98,7 +98,7 @@ function showClient($clientid,$basepath){
 		<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
 				if($invoicerecord["type"]=="VOID")
 					$invoicerecord["totalti"]="-----"
-		?><tr onClick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
+		?><tr onclick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
 			<td><?php echo $invoicerecord["id"]?></td>
 			<td><?php echo $invoicerecord["type"]?></td>
 			<td><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
@@ -112,8 +112,8 @@ function showClient($clientid,$basepath){
 	
 	
 	<div class="salesNotesButtons">
-		<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" onClick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><span>edit</span></button>
-		<button type="button" class="graphicButtons buttonNew" onClick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><span>new</span></button>
+		<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><span>edit</span></button>
+		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><span>new</span></button>
 	</div>
 	
 	<h2>Notes</h2>
@@ -136,8 +136,8 @@ function showClient($clientid,$basepath){
 					$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
 				if(strlen($noterecord["category"])>17)
 					$noterecord["category"]=substr($noterecord["category"],0,17)."...";
-		?><tr onClick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
-			<td align=center><?php echo $noterecord["importance"]?></td>
+		?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
+			<td align="center"><?php echo $noterecord["importance"]?></td>
 			<td><?php echo $noterecord["type"]?></td>
 			<td><?php echo $noterecord["category"]?></td>
 			<td><?php echo $noterecord["subject"]?></td>

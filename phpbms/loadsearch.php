@@ -141,8 +141,8 @@
 					</p>
 				</td>
 				<td valign="top">
-					<p><br/><input id="LSLoad" type="button" onClick="LSRunSearch()" class="Buttons" disabled="true" value="run search"/></p>
-					<p><input id="LSDelete" type="button" onClick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="true" value="delete"/></p>
+					<p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
+					<p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
 					<div id="LSResults">&nbsp;</div>
 				</td>
 			</tr>

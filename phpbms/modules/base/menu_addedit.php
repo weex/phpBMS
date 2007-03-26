@@ -54,7 +54,7 @@
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>
@@ -65,7 +65,7 @@
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="true" class="uneditable" />
+			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
 		
 		<p>
@@ -91,17 +91,17 @@
 		<fieldset>
 			<legend>type</legend>
 			<p class="typeP">
-				<input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked" ?> name="radio" onClick="showTypeDetails();"  class="radiochecks" /><label for="type1">category</label><br />
+				<input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();"  class="radiochecks" /><label for="type1">category</label><br />
 				<img src="menu-example-category.png" width="150" height="72" class="typeImage" alt="category" />
 			</p>
 			
 			<p class="typeP">
-				<input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type2">table definition search</label><br />
+				<input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();" class="radiochecks" /><label for="type2">table definition search</label><br />
 				<img src="menu-example-tabledef.png" width="150" height="72" class="typeImage" alt="table definition search" />
 			</p>
 
 			<p>
-				<input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked" ?> name="radio" onClick="showTypeDetails();" class="radiochecks" /><label for="type3">page link</label><br />
+				<input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();" class="radiochecks" /><label for="type3">page link</label><br />
 				<img src="menu-example-link.png" width="150" height="72" class="typeImage" alt="page link" />
 			</p>
 		</fieldset>

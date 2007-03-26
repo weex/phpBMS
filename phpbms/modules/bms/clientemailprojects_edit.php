@@ -54,7 +54,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
@@ -65,7 +65,7 @@
 		<legend><label for="id">id</label></label></legend>
 		<p>
 			<br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
 	</fieldset>
 
@@ -82,7 +82,7 @@
 	<fieldset id="fsUser">
 		<legend><label for="username">user</label></legend>
 		<p><br />
-			<input id="username" name="username" type="text" value="<?php echo $username ?>" size="50" readonly="true" class="uneditable" />
+			<input id="username" name="username" type="text" value="<?php echo $username ?>" size="50" readonly="readonly" class="uneditable" />
 		</p>
 		<?php if($therecord["userid"]!=0) {?>
 		<p>
@@ -96,22 +96,22 @@
 		<p>
 			<label for="from">from</label><br />
 			<?php if(is_numeric($therecord["emailfrom"])) $therecord["emailfrom"]=getEmailInfo($therecord["emailfrom"]);?>
-			<input id="from" name="from" value="<?php echo htmlQuotes($therecord["emailfrom"])?>" readonly="true" class="uneditable" size="60" />		
+			<input id="from" name="from" value="<?php echo htmlQuotes($therecord["emailfrom"])?>" readonly="readonly" class="uneditable" size="60" />		
 		</p>
 		<p>
 			<label for="to">to</label><br />
-			<input id="to" name="to" value="<?php if($therecord["emailto"]=="selected" or $therecord["emailto"]=="all") echo htmlQuotes($therecord["emailto"]); else echo "saved search"?>" size="60" readonly="true" class="uneditable" />
+			<input id="to" name="to" value="<?php if($therecord["emailto"]=="selected" or $therecord["emailto"]=="all") echo htmlQuotes($therecord["emailto"]); else echo "saved search"?>" size="60" readonly="readonly" class="uneditable" />
 			<?php if(is_numeric($therecord["emailto"]))	{?>			
-			<br /><input id="to2" name="to2" value="<?php echo htmlQuotes(showSavedSearch($therecord["emailto"]))?>" readonly="true" class="uneditable" size="60"/>
+			<br /><input id="to2" name="to2" value="<?php echo htmlQuotes(showSavedSearch($therecord["emailto"]))?>" readonly="readonly" class="uneditable" size="60"/>
 			<?php } ?>		
 		</p>
 		
 		<p>
 			<label for="subject">subject</label><br />
-			<input id="subject" name="subject" type="text" value="<?php echo $therecord["subject"]?>" size="32" readonly="true" class="uneditable" />		
+			<input id="subject" name="subject" type="text" value="<?php echo $therecord["subject"]?>" size="32" readonly="readonly" class="uneditable" />		
 		</p>
 		<p>
-			<textarea id="body" name="body" readonly="true" class="uneditable" cols="80" rows="40"><?php echo htmlQuotes($therecord["body"])?></textarea>
+			<textarea id="body" name="body" readonly="readonly" class="uneditable" cols="80" rows="40"><?php echo htmlQuotes($therecord["body"])?></textarea>
 		</p>
 	</fieldset>
 

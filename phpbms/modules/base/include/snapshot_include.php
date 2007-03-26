@@ -119,7 +119,7 @@ function showTasks($userid,$type="Tasks"){
 	<p id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>">
 		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
-		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked"?> onClick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
+		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked=\"checked\""?> onclick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
 		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a>
 		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php } ?>
 		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes(getUserName($tid))?>)</em><?php } ?>
@@ -139,7 +139,7 @@ function showSevenDays($userid){
 	$rownum=0;
 	?><table border="0" cellspacing="0" cellpadding="0" width="100%"><?php
 	for($i=0;$i<7;$i++){
-		?><tr><td colspan=2 class="eventDayName"><?php echo $today.strftime("%A",$theday); if($today){echo ")"; $today="";}?></td></tr><?php 
+		?><tr><td colspan="2" class="eventDayName"><?php echo $today.strftime("%A",$theday); if($today){echo ")"; $today="";}?></td></tr><?php 
 		$donext=true;
 
 		$queryresult=getEventsForDay($theday,$userid,$repeatArray[$theday]);
@@ -153,12 +153,12 @@ function showSevenDays($userid){
 					$times.=$therecord["endtime"]." ";								
 				}
 				?><tr>
-					<td class="small event" nowrap valign="top"><?php echo $times?></td>
+					<td class="small event" nowrap="nowrap" valign="top"><?php echo $times?></td>
 					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
 				</tr><?php
 			}
 		} else {
-			?><tr><td colspan=2 class="small event disabledtext">no events</td></tr><?php		
+			?><tr><td colspan="2" class="small event disabledtext">no events</td></tr><?php		
 		}		
 						
 		$theday=strtotime("tomorrow",$theday);

@@ -420,7 +420,7 @@ function populateLineItem(){
 				message+=	"been purchased by the client prior to ordering this product.<br /><br />";
 				message+= 	"Make sure the client has been entered and that they have purchased<br />";
 				message+= 	"any prerequiste products before adding this product.";
-				message+=	"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
+				message+=	"<DIV align=\"right\"><button class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\">ok</button></DIV>";
 
 				
 				partnumber.value="";
@@ -835,7 +835,7 @@ function doPrint(base,id){
 function disableSaves(theform){
 	for(i=0;i<theform.length;i++){
 		if(theform[i].type=="submit" && theform[i].value=="save"){			
-			theform[i].disabled="true";
+			theform[i].disabled="disabled";
 		}
 	}
 }

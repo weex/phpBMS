@@ -100,11 +100,11 @@
 	<div class="fauxP">
 	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
 		<tr>
-			 <th nowrap>Move</th>
-			 <th nowrap align="left">Name</th>
-			 <th width="100%" nowrap align="left">Search</th>
-			 <th width="100%" nowrap class="queryheader" align="left">Access</th>
-			 <th nowrap>&nbsp;</th>
+			 <th nowrap="nowrap">Move</th>
+			 <th nowrap="nowrap"align="left">Name</th>
+			 <th width="100%" nowrap="nowrap"align="left">Search</th>
+			 <th width="100%" nowrap="nowrap"class="queryheader" align="left">Access</th>
+			 <th nowrap="nowrap">&nbsp;</th>
 		</tr>
 	<?php 
 		$topdisplayorder=-1;
@@ -114,15 +114,15 @@
 			if($row==1) $row=2; else $row=1;
 	?>
 	<tr class="qr<?php echo $row?> noselects">
-	 <td nowrap valign="top">
+	 <td nowrap="nowrap"valign="top">
 	 	<button type="button" class="graphicButtons buttonUp" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=moveup&amp;quicksearchid=".$therecord["id"]?>';"><span>up</span></button>
 	 	<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;quicksearchid=".$therecord["id"]?>';"><span>dn</span></button>
 		 <?php echo $therecord["displayorder"]?>
 	 </td>
-	 <td nowrap valign="top"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
+	 <td nowrap="nowrap"valign="top"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
 	 <td valign="top" class="small"><?php echo htmlQuotes($therecord["search"])?></td>
-	 <td valign="top" align=center class="small" nowrap><?php echo displayRights($therecord["roleid"],$therecord["rolename"])?></td>
-	 <td nowrap valign="top">
+	 <td valign="top" align="center" class="small" nowrap="nowrap"><?php echo displayRights($therecord["roleid"],$therecord["rolename"])?></td>
+	 <td nowrap="nowrap" valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
 	 </td>
@@ -137,7 +137,7 @@
 	</tr>
 	</table>
 	</div>
-	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<input name="quicksearchid" type="hidden" value="<?php echo $thequicksearch["id"]?>" />

@@ -103,7 +103,7 @@
 	}
 </script>
 </head>
-<body onLoad="init()"><?php include("../../menu.php")?>
+<body onload="init()"><?php include("../../menu.php")?>
 
 
 <?php tabledefs_tabs("Options",$_GET["id"]);?><div class="bodyline">
@@ -111,11 +111,11 @@
 	<div class="fauxP">
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
-	 <th nowrap align="center">other</th>
-	 <th nowrap align="left">name</th>
-	 <th nowrap align="left">option / function</th>
-	 <th nowrap align="center">access</th>
-	 <th nowrap>&nbsp;</th>
+	 <th nowrap="nowrap"align="center">other</th>
+	 <th nowrap="nowrap"align="left">name</th>
+	 <th nowrap="nowrap"align="left">option / function</th>
+	 <th nowrap="nowrap"align="center">access</th>
+	 <th nowrap="nowrap">&nbsp;</th>
 	</tr>
 
 	<?php 
@@ -124,11 +124,11 @@
 		if($row==1)$row=2;else $row=1;
 	?>
 	<tr class="qr<?php echo $row?> noselects">
-	 <td align="center" nowrap><?php echo booleanFormat($therecord["othercommand"])?></td>
-	 <td nowrap><strong><?php 
+	 <td align="center" nowrap="nowrap"><?php echo booleanFormat($therecord["othercommand"])?></td>
+	 <td nowrap="nowrap"><strong><?php 
 	 		if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?></strong>
 	</td>
-	 <td nowrap class="small"><?php 
+	 <td nowrap="nowrap"class="small"><?php 
 	 	if($therecord["othercommand"]) 
 			echo $therecord["name"]; 
 		else {
@@ -138,9 +138,9 @@
 				echo "not allowed";				
 		}
 	?></td>
-	 <td nowrap align="center"><?php displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
+	 <td nowrap="nowrap"align="center"><?php displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
 	 
-	 <td nowrap valign="top">
+	 <td nowrap="nowrap"valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
 	 </td>
@@ -156,14 +156,14 @@
 	</table></div>
 	<fieldset>
 		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 			<input id="optionid" name="optionid" type="hidden" value="<?php echo $theoption["id"]?>" />
 			<p>command type</p>
 			<p>			
-				<input type="radio" id="oc1" name="othercommand" value="0" onClick="switchType()" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc1">pre-defined</label>
+				<input type="radio" id="oc1" name="othercommand" value="0" onclick="switchType()" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc1">pre-defined</label>
 				&nbsp;
 				
-				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" onClick="switchType()" <?php if($theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc2">other</label>
+				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" onclick="switchType()" <?php if($theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc2">other</label>
 			</p>
 			
 			<div id="pdList">

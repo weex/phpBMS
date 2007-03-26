@@ -41,74 +41,74 @@
 	function displayTPBox(){	
 ?>
 
-<table border="0" cellspacing=0 cellpadding=0 style="width:230px;">
+<table border="0" cellspacing="0" cellpadding="0" style="width:230px;">
 	<tr>
 		<td width="100%" class="tpHead">&nbsp;</td>
-		<td class="tpHead"><button type="buttton" class="invisibleButtons" id="TPCancel" onClick="closeTPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>		
+		<td class="tpHead"><button type="buttton" class="invisibleButtons" id="TPCancel" onclick="closeTPBox();"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-x.png" align="absmiddle" alt="x" width="16" height="16" border="0" /></button></td>		
 	</tr>
 </table>
-<table border="0" cellspacing=0 cellpadding=0 class="tpHour" style="width:230px;">
+<table border="0" cellspacing="0" cellpadding="0" class="tpHour" style="width:230px;">
 	<tr>
-		<td onClick="tpClickHour(0)">00</td>
-		<td onClick="tpClickHour(1)">01</td>
-		<td onClick="tpClickHour(2)">02</td>
-		<td onClick="tpClickHour(3)">03</td>
-		<td onClick="tpClickHour(4)">04</td>
-		<td onClick="tpClickHour(5)">05</td>
-		<td onClick="tpClickHour(6)">06</td>
-		<td onClick="tpClickHour(7)">07</td>
-		<td onClick="tpClickHour(8)">08</td>
-		<td onClick="tpClickHour(9)">09</td>
-		<td onClick="tpClickHour(10)">10</td>
-		<td onClick="tpClickHour(11)">11</td>
+		<td onclick="tpClickHour(0)">00</td>
+		<td onclick="tpClickHour(1)">01</td>
+		<td onclick="tpClickHour(2)">02</td>
+		<td onclick="tpClickHour(3)">03</td>
+		<td onclick="tpClickHour(4)">04</td>
+		<td onclick="tpClickHour(5)">05</td>
+		<td onclick="tpClickHour(6)">06</td>
+		<td onclick="tpClickHour(7)">07</td>
+		<td onclick="tpClickHour(8)">08</td>
+		<td onclick="tpClickHour(9)">09</td>
+		<td onclick="tpClickHour(10)">10</td>
+		<td onclick="tpClickHour(11)">11</td>
 	</tr>
 	<tr>
-		<td onClick="tpClickHour(12)">12</td>
-		<td onClick="tpClickHour(13)">13</td>
-		<td onClick="tpClickHour(14)">14</td>
-		<td onClick="tpClickHour(15)">15</td>
-		<td onClick="tpClickHour(16)">16</td>
-		<td onClick="tpClickHour(17)">17</td>
-		<td onClick="tpClickHour(18)">18</td>
-		<td onClick="tpClickHour(19)">19</td>
-		<td onClick="tpClickHour(20)">20</td>
-		<td onClick="tpClickHour(21)">21</td>
-		<td onClick="tpClickHour(22)">22</td>
-		<td onClick="tpClickHour(23)">23</td>
-	</tr>
-</table>
-<table border="0" cellspacing=0 cellpadding=0 class="tpMinute" id="tpMinuteLess" width="230px">
-	<tr>
-		<td onClick="tpClickMinute(this)">:00</td>
-		<td onClick="tpClickMinute(this)">:05</td>
-		<td onClick="tpClickMinute(this)">:10</td>
-		<td onClick="tpClickMinute(this)">:15</td>
-		<td onClick="tpClickMinute(this)">:20</td>
-		<td onClick="tpClickMinute(this)">:25</td>
-	</tr>
-	<tr>
-		<td onClick="tpClickMinute(this)">:30</td>
-		<td onClick="tpClickMinute(this)">:35</td>
-		<td onClick="tpClickMinute(this)">:40</td>
-		<td onClick="tpClickMinute(this)">:45</td>
-		<td onClick="tpClickMinute(this)">:50</td>		
-		<td onClick="tpClickMinute(this)">:55</td>		
+		<td onclick="tpClickHour(12)">12</td>
+		<td onclick="tpClickHour(13)">13</td>
+		<td onclick="tpClickHour(14)">14</td>
+		<td onclick="tpClickHour(15)">15</td>
+		<td onclick="tpClickHour(16)">16</td>
+		<td onclick="tpClickHour(17)">17</td>
+		<td onclick="tpClickHour(18)">18</td>
+		<td onclick="tpClickHour(19)">19</td>
+		<td onclick="tpClickHour(20)">20</td>
+		<td onclick="tpClickHour(21)">21</td>
+		<td onclick="tpClickHour(22)">22</td>
+		<td onclick="tpClickHour(23)">23</td>
 	</tr>
 </table>
-<table border="0" cellspacing=0 cellpadding=0 class="tpMinute" id="tpMinuteMore"  width="230px" style="display:none;">
+<table border="0" cellspacing="0" cellpadding="0" class="tpMinute" id="tpMinuteLess" width="230px">
+	<tr>
+		<td onclick="tpClickMinute(this)">:00</td>
+		<td onclick="tpClickMinute(this)">:05</td>
+		<td onclick="tpClickMinute(this)">:10</td>
+		<td onclick="tpClickMinute(this)">:15</td>
+		<td onclick="tpClickMinute(this)">:20</td>
+		<td onclick="tpClickMinute(this)">:25</td>
+	</tr>
+	<tr>
+		<td onclick="tpClickMinute(this)">:30</td>
+		<td onclick="tpClickMinute(this)">:35</td>
+		<td onclick="tpClickMinute(this)">:40</td>
+		<td onclick="tpClickMinute(this)">:45</td>
+		<td onclick="tpClickMinute(this)">:50</td>		
+		<td onclick="tpClickMinute(this)">:55</td>		
+	</tr>
+</table>
+<table border="0" cellspacing="0" cellpadding="0" class="tpMinute" id="tpMinuteMore"  width="230px" style="display:none;">
 	<tr>
 	<?php 
 		for($i=0;$i<60;$i++){
 			if($i!=0 && ($i/6)==round($i/6,0))
 				echo ("</TR><TR>");
-			?><td onClick="tpClickMinute(this)">:<?php echo str_pad($i,2,"0",STR_PAD_LEFT)?></td><?php
+			?><td onclick="tpClickMinute(this)">:<?php echo str_pad($i,2,"0",STR_PAD_LEFT)?></td><?php
 		}
 	?>
 	</tr>
 </table>
 
 <div align=right>
-<input name="TPmoreless" id="TPmoreless" type="button" value="more" class="smallButtons" onClick="switchMinutes(this)">
+<input name="TPmoreless" id="TPmoreless" type="button" value="more" class="smallButtons" onclick="switchMinutes(this)">
 </div>
 <?php	}//end function
 

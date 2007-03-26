@@ -619,7 +619,7 @@ function AcceptPageBreak()
 	return $this->AutoPageBreak;
 }
 
-function Cell($w,$h=0,$txt='',$border=0,$ln=0,$align='',$fill=0,$link='')
+function Cell($w,$h=0,$txt='',$border="0",$ln=0,$align='',$fill=0,$link='')
 {
 	//Output a cell
 	$k=$this->k;
@@ -698,7 +698,7 @@ function Cell($w,$h=0,$txt='',$border=0,$ln=0,$align='',$fill=0,$link='')
 		$this->x+=$w;
 }
 
-function MultiCell($w,$h,$txt,$border=0,$align='J',$fill=0)
+function MultiCell($w,$h,$txt,$border="0",$align='J',$fill=0)
 {
 	//Output text with automatic or explicit line breaks
 	$cw=&$this->CurrentFont['cw'];

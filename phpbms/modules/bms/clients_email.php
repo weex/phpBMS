@@ -131,8 +131,8 @@
 			<p id="toP">
 				<label for="therecords">to</label><br />			
 				<select id="therecords" name="therecords" onchange="showSavedSearches(this);">
-					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected"?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
-					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected"?>>e-mail addresses from saved search...</option>
+					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected=\"selected\""?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
+					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected=\"selected\""?>>e-mail addresses from saved search...</option>
 				</select>				
 				<?php if($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all"){
 				?><script language="JavaScript" type="text/javascript">
@@ -197,8 +197,8 @@
 		<div id="loadedprojects">
 			<p><?php showSavedProjects()?></p>
 			<p align="right">
-				<input type="button" name="deleteproject" id="deleteproject" value="delete project" class="Buttons" disabled="true" onclick="deleteProject()" />
-				<input type="button" name="loadproject" id="loadproject" value="load project" class="Buttons" disabled="true" onclick="loadProject()" />
+				<input type="button" name="deleteproject" id="deleteproject" value="delete project" class="Buttons" disabled="disabled" onclick="deleteProject()" />
+				<input type="button" name="loadproject" id="loadproject" value="load project" class="Buttons" disabled="disabled" onclick="loadProject()" />
 				<input type="button" name="closeproject" id="closeproject" value="cancel" onclick="hideSavedProjects()" class="Buttons" />
 			</p>
 		</div>
@@ -226,11 +226,11 @@
 			<div class="fauxP" id="processTableDiv">
 				<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
 					<tr>
-						<th nowrap id="tablereference">#</th>
-						<th nowrap>Client ID</th>
-						<th nowrap align="left">Name</th>
-						<th nowrap>E-Mail Address</th>
-						<th nowrap width=50% align="right">Status</th>
+						<th nowrap="nowrap" id="tablereference">#</th>
+						<th nowrap="nowrap">Client ID</th>
+						<th nowrap="nowrap" align="left">Name</th>
+						<th nowrap="nowrap">E-Mail Address</th>
+						<th nowrap="nowrap" width=50% align="right">Status</th>
 					</tr>
 					<tr class="queryfooter" id="lastrow">
 						<td>&nbsp;</td>

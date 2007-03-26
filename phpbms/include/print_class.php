@@ -180,7 +180,7 @@
 			<?php 
 				foreach($fieldlist as $field){
 					echo "<option value=\"".$field."\"";
-					if($field=="id") echo "selected";
+					if($field=="id") echo "selected=\"selected\"";
 					echo ">".$field."</option>\n";
 				}
 			?>

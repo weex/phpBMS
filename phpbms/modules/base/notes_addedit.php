@@ -62,7 +62,7 @@
 </head>
 <body ><?php include("../../menu.php")?>
 
-<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <div class="bodyline">
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
@@ -71,7 +71,7 @@
 		<legend>Attirbutes</legend>
 		<p id="idP">
 			<label for="id">id</label><br/>
-			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable"/>
+			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="readonly" class="uneditable"/>
 			<input name="parentid" id="parentid" type="hidden" value="<?php echo $therecord["parentid"]; ?>" />
 			<input name="thebackurl" id="thebackurl" type="hidden" value="<?php if(isset($_GET["backurl"])) echo $_GET["backurl"]; ?>" />
 		</p>
@@ -101,13 +101,13 @@
 			<legend>dates</legend>
 			<p>
 				<label for="startdate" id="starttext">start</label><br />
-				<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked" ?> onClick="dateChecked('start')" class="radiochecks" />
+				<input name="dostart" id="startcheck" type="checkbox" value="1" <?php if($therecord["startdate"]) echo "checked=\"checked\"" ?> onclick="dateChecked('start')" class="radiochecks" />
 				&nbsp;<?php fieldDatePicker("startdate",$therecord["startdate"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate();setEnglishDates()"));?>	
 				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"",Array("size"=>"11","maxlength"=>"15","onchange"=>"checkEndDate()"));?>
 			</p>
 			<p>
 				<label for="enddate" id="endtext">end</label><br />
-				<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked" ?> onClick="dateChecked('end')" class="radiochecks" />
+				<input name="doend" id="endcheck" type="checkbox" value="1" <?php if($therecord["enddate"]) echo "checked=\"checked\"" ?> onclick="dateChecked('end')" class="radiochecks" />
 				&nbsp;<?php fieldDatePicker("enddate",$therecord["enddate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"",Array("size"=>"11","maxlength"=>"15"));?>			
 			</p>
@@ -139,7 +139,7 @@
 			</p>
 			<?php if($therecord["assignedbyid"]==$_SESSION["userinfo"]["id"]){?>
 			<p>
-				<button type="button" id="sendemailnotice" class="Buttons" onClick="sendEmailNotice('<?php echo $_SESSION["app_path"]?>')">send e-mail notice</button>
+				<button type="button" id="sendemailnotice" class="Buttons" onclick="sendEmailNotice('<?php echo $_SESSION["app_path"]?>')">send e-mail notice</button>
 			</p>
 			<?php } }?>
 			<p>
@@ -154,13 +154,13 @@
 			<legend>associated with</legend>
 				<p>
 					<label for="assocarea">area</label><br />
-					<input id="assocarea" type="text" readonly="true" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" />
+					<input id="assocarea" type="text" readonly="readonly" class="uneditable" value="<?php echo $attachedtableinfo["displayname"];?>" />
 				</p>
 				
 				
 				<p>
 					<label for="attachedid">record id</label><br />
-					<input id="attachedid " name="attachedid" type="text" readonly="true" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
+					<input id="attachedid " name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
 					<input name="link" type="button" class="Buttons" value=" go to record " onclick="document.location='<?php echo $_SESSION["app_path"]?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'" />
 				</>
 		</fieldset>
@@ -184,7 +184,7 @@
 		<fieldset>
 			<legend><label for="content">memo</label></legend>
 			<p align="right" id="timeStampDiv">
-				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" onClick="timeStamp();">Time Stamp</button>
+				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" onclick="timeStamp();">Time Stamp</button>
 			</p>
 			<p>
 				<textarea name="content" cols="45" rows="23" id="content"><?php echo htmlQuotes($therecord["content"])?></textarea>
@@ -208,30 +208,30 @@
 						if($therecord["repeatfrequency"]>1) $plural="s";
 					?>
 					<select id="repeattype" name="repeattype" onchange="changeRepeatType();">
-						<option value="Daily" <?php if ($therecord["repeattype"]=="repeatDaily") echo "selected"?>>Day<?php echo $plural?></option>
-						<option value="Weekly" <?php if ($therecord["repeattype"]=="repeatWeekly") echo "selected"?>>Week<?php echo $plural?></option>
-						<option value="Monthly" <?php if (substr($therecord["repeattype"],0,13)=="repeatMonthly") echo "selected"?>>Month<?php echo $plural?></option>
-						<option value="Yearly" <?php if ($therecord["repeattype"]=="repeatYearly") echo "selected"?>>Year<?php echo $plural?></option>
+						<option value="Daily" <?php if ($therecord["repeattype"]=="repeatDaily") echo "selected=\"selected\""?>>Day<?php echo $plural?></option>
+						<option value="Weekly" <?php if ($therecord["repeattype"]=="repeatWeekly") echo "selected=\"selected\""?>>Week<?php echo $plural?></option>
+						<option value="Monthly" <?php if (substr($therecord["repeattype"],0,13)=="repeatMonthly") echo "selected=\"selected\""?>>Month<?php echo $plural?></option>
+						<option value="Yearly" <?php if ($therecord["repeattype"]=="repeatYearly") echo "selected=\"selected\""?>>Year<?php echo $plural?></option>
 					</select><br />&nbsp;<br />
 					
 					<p id="weeklyoptions" <?php if ($therecord["repeattype"]!="repeatweekly"){?>style="display:none;"<?php }?>>
-						<span id="wos" class="repeatWeekChecks"><input name="wosc" type="checkbox" value="s" <?php if(strpos(" ".$therecord["repeatdays"],"s",0)) echo "checked"?> class="radiochecks" />Sun</span>
-						<span id="wom" class="repeatWeekChecks"><input name="womc" type="checkbox" value="m" <?php if(strpos(" ".$therecord["repeatdays"],"m",0)) echo "checked"?> class="radiochecks" />Mon</span>
-						<span id="wot" class="repeatWeekChecks"><input name="wotc" type="checkbox" value="t" <?php if(strpos(" ".$therecord["repeatdays"],"t",0)) echo "checked"?> class="radiochecks" />Tue</span>
-						<span id="wow" class="repeatWeekChecks"><input name="wowc" type="checkbox" value="w" <?php if(strpos(" ".$therecord["repeatdays"],"w",0)) echo "checked"?> class="radiochecks" />Wed</span>
-						<span id="wor" class="repeatWeekChecks"><input name="worc" type="checkbox" value="r" <?php if(strpos(" ".$therecord["repeatdays"],"r",0)) echo "checked"?> class="radiochecks" />Thu</span>
-						<span id="wof" class="repeatWeekChecks"><input name="wofc" type="checkbox" value="f" <?php if(strpos(" ".$therecord["repeatdays"],"f",0)) echo "checked"?> class="radiochecks" />Fri</span>
-						<span id="woa" class="repeatWeekChecks"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked"?> class="radiochecks" />Sat</span>
+						<span id="wos" class="repeatWeekChecks"><input name="wosc" type="checkbox" value="s" <?php if(strpos(" ".$therecord["repeatdays"],"s",0)) echo "checked=\"checked\""?> class="radiochecks" />Sun</span>
+						<span id="wom" class="repeatWeekChecks"><input name="womc" type="checkbox" value="m" <?php if(strpos(" ".$therecord["repeatdays"],"m",0)) echo "checked=\"checked\""?> class="radiochecks" />Mon</span>
+						<span id="wot" class="repeatWeekChecks"><input name="wotc" type="checkbox" value="t" <?php if(strpos(" ".$therecord["repeatdays"],"t",0)) echo "checked=\"checked\""?> class="radiochecks" />Tue</span>
+						<span id="wow" class="repeatWeekChecks"><input name="wowc" type="checkbox" value="w" <?php if(strpos(" ".$therecord["repeatdays"],"w",0)) echo "checked=\"checked\""?> class="radiochecks" />Wed</span>
+						<span id="wor" class="repeatWeekChecks"><input name="worc" type="checkbox" value="r" <?php if(strpos(" ".$therecord["repeatdays"],"r",0)) echo "checked=\"checked\""?> class="radiochecks" />Thu</span>
+						<span id="wof" class="repeatWeekChecks"><input name="wofc" type="checkbox" value="f" <?php if(strpos(" ".$therecord["repeatdays"],"f",0)) echo "checked=\"checked\""?> class="radiochecks" />Fri</span>
+						<span id="woa" class="repeatWeekChecks"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked=\"checked\""?> class="radiochecks" />Sat</span>
 					</p>
 					<p id="monthlyoptions" style=" <?php if (substr($therecord["repeattype"],0,13)!="repeatMonthly"){?>display:none;<?php }?>margin-bottom:5px;">
 						<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)=="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br />
 						<input type="radio" class="radiochecks" name="rpmo" id="rpmobda" value="byDay" <?php if (substr($therecord["repeattype"],13)=="byDay"){?>checked<?php }?>/><span id="rpmobyday"></span> of the month.
 					</p>
 					<p id="rpuntilforever">
-						<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked" ?> value="0" onClick="updateRepeatUntil()"/> <label for="rprduntilforever">forever</label>
+						<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked=\"checked\"" ?> value="0" onclick="updateRepeatUntil()"/> <label for="rprduntilforever">forever</label>
 					</p>
 					<p id="rpuntiltimes">
-						<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked" ?> value="1" onClick="updateRepeatUntil()" /> <label for="rprduntilftimes">number of times</label>&nbsp;&nbsp;
+						<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked=\"checked\"" ?> value="1" onclick="updateRepeatUntil()" /> <label for="rprduntilftimes">number of times</label>&nbsp;&nbsp;
 						<?php 
 						$tempvalue="";
 						$attribs=array("size"=>"2","maxlength"=>"3");				
@@ -243,7 +243,7 @@
 						fieldText("repeattimes",$tempvalue,false,$message="The number of times to repeat must be a valid integer","integer",$attribs)?>
 					</p>
 					<p id="rpuntildate">
-						<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked" ?> value="-1" onClick="updateRepeatUntil()"/> <label for="rprduntildate">until</label>&nbsp;&nbsp;
+						<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked=\"checked\"" ?> value="-1" onclick="updateRepeatUntil()"/> <label for="rprduntildate">until</label>&nbsp;&nbsp;
 						<?php fieldDatePicker("repeatuntildate",$therecord["repeatuntildate"],0,"",Array("size"=>"11","maxlength"=>"15"));?>
 					</p>
 				</div>
@@ -259,7 +259,7 @@
 		<br />
 		(Any unsaved changes with the current record will be lost.)
 		</div>
-		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onClick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons" /></div>
+		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onclick="goParent('<?php echo getAddEditFile(12) ?>')" class="Buttons" /></div>
 	</fieldset>
 	<?php include("../../include/createmodifiedby.php"); ?>
 </div>

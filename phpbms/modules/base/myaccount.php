@@ -54,7 +54,7 @@ $pageTitle="My Account"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition
 <script language="JavaScript" src="javascript/myaccount.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?><div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="record" id="record" onSubmit="return false">
+	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="record" id="record" onsubmit="return false">
 	<input type="hidden" id="command" name="command" value=""/>
 	
 	<h1><span><?php echo $pageTitle ?></span></h1>

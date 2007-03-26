@@ -88,18 +88,18 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 	<div class="fauxP">
 		<table border="0" cellpadding="3" cellspacing="0" class="querytable">
 		<tr>
-		 <th align="left" nowrap class="queryheader">Part Number</th>
-		 <th align="left" nowrap class="queryheader">Name</th>
+		 <th align="left" nowrap="nowrap" class="queryheader">Part Number</th>
+		 <th align="left" nowrap="nowrap" class="queryheader">Name</th>
 		 <th align="left" width=100% class="queryheader">Description</th>
-		 <th align="center" nowrap class="queryheader">&nbsp;</th>
+		 <th align="center" nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
 		<?php 	
 		if($numrows){
 			while ($prereq=mysql_fetch_array($prereqresult)){
 	?>
 		<tr>
-			<td align="left" nowrap><?php echo $prereq["partnumber"] ?></td>
-			<td align="left" nowrap><?php echo $prereq["partname"] ?></td>
+			<td align="left" nowrap="nowrap"><?php echo $prereq["partnumber"] ?></td>
+			<td align="left" nowrap="nowrap"><?php echo $prereq["partname"] ?></td>
 			<td align="left" width="100%"><?php echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
 			<td align="center">
 				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?php echo $prereq["id"] ?>)"><span>-</span></button> 
@@ -115,7 +115,7 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		</tr>
 		<?php
 		} else {?>
-		<tr><td colspan="4" align=center style="padding:0px;"><div class="norecords">No Prerequisites to Display</div></td></tr>
+		<tr><td colspan="4" align="center" style="padding:0px;"><div class="norecords">No Prerequisites to Display</div></td></tr>
 		<?php
 		}//end if
 		?>

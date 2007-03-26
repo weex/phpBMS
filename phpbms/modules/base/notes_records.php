@@ -89,7 +89,7 @@
 <body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
-		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onSubmit="setSelIDs(this);return true;">
+		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onsubmit="setSelIDs(this);return true;">
 		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();

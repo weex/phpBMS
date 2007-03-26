@@ -122,9 +122,9 @@
 			<p class="timelineP">
 			   <label for="status">type</label><br />
 			   <select name="status" id="status">
-					<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected"?>>Orders/Invoices</option>
-					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected"?>>Invoices</option>
-					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected"?>>Orders</option>
+					<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected=\"selected\""?>>Orders/Invoices</option>
+					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
+					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
 			   </select>								
 			</p>
 			
@@ -144,19 +144,19 @@
 	<div class="fauxP">
 	<table border="0" cellpadding="0" cellspacing="0" class="querytable">
 		<tr>
-			<th align="left" nowrap class="queryheader" colspan="4">invoice</th>
-			<th align="left" nowrap class="queryheader" colspan="3">product</th>		
-			<th align="left" nowrap class="queryheader" colspan="2">line item</th>
+			<th align="left" nowrap="nowrap" class="queryheader" colspan="4">invoice</th>
+			<th align="left" nowrap="nowrap" class="queryheader" colspan="3">product</th>		
+			<th align="left" nowrap="nowrap" class="queryheader" colspan="2">line item</th>
 		</tr>
 		<tr>
-			<th align="center" nowrap class="queryheader" colspan=2>id</th>
-			<th align="left" nowrap class="queryheader">type</th>
-			<th align="left" nowrap class="queryheader">date</th>
-			<th nowrap class="queryheader" align="left">part num. </th>
+			<th align="center" nowrap="nowrap" class="queryheader" colspan="2">id</th>
+			<th align="left" nowrap="nowrap" class="queryheader">type</th>
+			<th align="left" nowrap="nowrap" class="queryheader">date</th>
+			<th nowrap="nowrap" class="queryheader" align="left">part num. </th>
 			<th width="100%" class="queryheader" align="left">name</th>
-			<th align="right" nowrap class="queryheader">price</th>
-			<th align="center" nowrap class="queryheader">qty.</th>
-			<th align="right" nowrap class="queryheader">ext.</th>
+			<th align="right" nowrap="nowrap" class="queryheader">price</th>
+			<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
+			<th align="right" nowrap="nowrap" class="queryheader">ext.</th>
 		</tr>
     <?php 
 	$totalextended=0;		
@@ -167,23 +167,23 @@
 	?>
 	<tr class="row<?php echo $row?>">
 		<td >
-			<button type="button" class="invisibleButtons" onClick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+			<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
 		</td>
-		<td align="left" nowrap><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
-		<td nowrap><?php echo $therecord["partnumber"]?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
+		<td nowrap="nowrap"><?php echo $therecord["partnumber"]?></td>
 		<td ><?php echo $therecord["partname"]?></td>
-		<td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
-		<td align="center" nowrap><?php echo $therecord["qty"]?></td>
-		<td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap="nowrap"><?php echo $therecord["qty"]?></td>
+		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
     <?php }//end while ?>
     <?php  if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
-	 <td align="center" class="queryfooter" colspan=2>&nbsp;</td>
+	 <td align="center" class="queryfooter" colspan="2">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td class="queryfooter">&nbsp;</td>

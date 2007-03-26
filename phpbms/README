@@ -6,7 +6,7 @@
 
 Your server must be running at least:
  * MySQL 3.2358+
- * PHP 4.1.2+ with MySQL support enabled. 
+ * PHP 4.3.0+ with MySQL support enabled. 
 
 
 === INSTALLATION ===

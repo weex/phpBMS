@@ -54,7 +54,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
@@ -64,7 +64,7 @@
 		<legend>attribues</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />
+			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
 		<p>
 			<?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label>
@@ -87,10 +87,10 @@
 			<p>
 				<label for="type">type</label><br />
 				<select name="type">
-					<option value="" <?PHP if($therecord["type"]=="") echo "selected"; ?>>&lt;None&gt;</option>
-					<option value="draft" <?PHP if($therecord["type"]=="draft") echo "selected"; ?>>Draft</option>
-					<option value="charge"<?PHP if($therecord["type"]=="charge") echo "selected"; ?>>Charge</option>
-					<option value="receivable"<?PHP if($therecord["type"]=="receivable") echo "selected"; ?>>Receivable</option>
+					<option value="" <?PHP if($therecord["type"]=="") echo "selected=\"selected\""; ?>>&lt;None&gt;</option>
+					<option value="draft" <?PHP if($therecord["type"]=="draft") echo "selected=\"selected\""; ?>>Draft</option>
+					<option value="charge"<?PHP if($therecord["type"]=="charge") echo "selected=\"selected\""; ?>>Charge</option>
+					<option value="receivable"<?PHP if($therecord["type"]=="receivable") echo "selected=\"selected\""; ?>>Receivable</option>
 				</select>
 			</p>
 			<p class="notes">Type determines which fields are shown on the invoice creation 

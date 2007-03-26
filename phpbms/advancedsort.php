@@ -102,9 +102,9 @@
 		
 		</p>
 		<p align="right" class="buttonsRight">
-			<input type="button" class="Buttons" style="width:75px;" id="sortSavedDeleteButton" value="delete" disabled="true" onClick="sortSavedDelete('<?php echo $basepath ?>')"/>
-			<input type="button" class="Buttons" style="width:75px;" id="sortSavedLoadButton" value="load" disabled="true" onClick="sortSavedLoad('<?php echo $basepath ?>')"/>
-			<input type="button" class="Buttons" style="width:75px;" id="sortSavedCancelButton" value="cancel" onClick="closeModal()"/>
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedDeleteButton" value="delete" disabled="disabled" onclick="sortSavedDelete('<?php echo $basepath ?>')"/>
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedLoadButton" value="load" disabled="disabled" onclick="sortSavedLoad('<?php echo $basepath ?>')"/>
+			<input type="button" class="Buttons" style="width:75px;" id="sortSavedCancelButton" value="cancel" onclick="closeModal()"/>
 		</p>
 		<?php
 	}
@@ -160,16 +160,16 @@
 					</div>
 					<p>
 						sql order by clause<br/>
-						<textarea id="sortSQL" style="width:98%;height:75px;" cols="57" rows="4" onKeyUp="sortEnableButtons(this)" ></textarea>		
+						<textarea id="sortSQL" style="width:98%;height:75px;" cols="57" rows="4" onkeyup="sortEnableButtons(this)" ></textarea>		
 					</p>
 				</td>
 				<td valign=top>
 					<div style="float:right">
 				    <br/>
-					<p><input id="sortRunSort" type="button" onClick="performAdvancedSort(this)" class="Buttons" disabled="true" value="run sort" style="width:90px;" /></p>
-					<p><input id="sortLoadSort" type="button" onClick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></p>
-					<p><input id="sortSaveSort" type="button" onClick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="true" value="save sort..." style="width:90px;" /></p>
-					<p><input id="sortClearSort" type="button" onClick="clearSort()" class="Buttons" disabled="true" value="clear sort" style="width:90px;" /></p>
+					<p><input id="sortRunSort" type="button" onclick="performAdvancedSort(this)" class="Buttons" disabled="disabled" value="run sort" style="width:90px;" /></p>
+					<p><input id="sortLoadSort" type="button" onclick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></p>
+					<p><input id="sortSaveSort" type="button" onclick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="disabled" value="save sort..." style="width:90px;" /></p>
+					<p><input id="sortClearSort" type="button" onclick="clearSort()" class="Buttons" disabled="disabled" value="clear sort" style="width:90px;" /></p>
 					</div>
 				</td>
 			</tr>

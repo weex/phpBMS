@@ -23,7 +23,7 @@
 <fieldset>
 	<legend>clients</legend>
 	<p><br/>
-		<input type="button" name="mngclientemail" id="mngclientemail" class="Buttons" value="Manage Client E-Mail Projects" onClick="document.location='../../search.php?id=22'" />
+		<input type="button" name="mngclientemail" id="mngclientemail" class="Buttons" value="Manage Client E-Mail Projects" onclick="document.location='../../search.php?id=22'" />
 	</p>
 </fieldset>
 

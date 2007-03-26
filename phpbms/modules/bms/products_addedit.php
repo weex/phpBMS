@@ -62,7 +62,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php product_tabs("General",$therecord["id"]);?><div class="bodyline">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
@@ -73,7 +73,7 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" />			
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />			
 			</p>
 
 			<p>
@@ -86,18 +86,18 @@
 
 			<p>
 				<span class="important">product type</span><br />
-				<input type="radio" name="type" id="typeInventory" value="Inventory" <?php if($therecord["type"]=="Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="70"/><label for="typeInventory">inventory</label><br />
-				<input type="radio" name="type" id="typeNonInventory" value="Non-Inventory" <?php if($therecord["type"]=="Non-Inventory") echo "checked"?> class="radiochecks" align="baseline" tabindex="80"/><label for="typeNonInventory" >non-inventory</label><br />
-				<input type="radio" name="type" id="typeService" value="Service" <?php if($therecord["type"]=="Service") echo "checked"?> class="radiochecks" align="baseline" tabindex="90"/><label for="typeService" >service</label><br />
-				<input type="radio" name="type" id="typeKit" value="Kit" <?php if($therecord["type"]=="Kit") echo "checked"?> class="radiochecks" align="baseline" tabindex="100"/><label for="typeKit" >kit</label><br />
-				<input type="radio" name="type" id="typeAssembly" value="Assembly" <?php if($therecord["type"]=="Assembly") echo "checked"?> class="radiochecks" align="baseline" tabindex="110"/><label for="typeAssembly">assembly</label>
+				<input type="radio" name="type" id="typeInventory" value="Inventory" <?php if($therecord["type"]=="Inventory") echo "checked=\"checked\""?> class="radiochecks" tabindex="70"/><label for="typeInventory">inventory</label><br />
+				<input type="radio" name="type" id="typeNonInventory" value="Non-Inventory" <?php if($therecord["type"]=="Non-Inventory") echo "checked=\"checked\""?> class="radiochecks" tabindex="80"/><label for="typeNonInventory" >non-inventory</label><br />
+				<input type="radio" name="type" id="typeService" value="Service" <?php if($therecord["type"]=="Service") echo "checked=\"checked\""?> class="radiochecks"  tabindex="90"/><label for="typeService" >service</label><br />
+				<input type="radio" name="type" id="typeKit" value="Kit" <?php if($therecord["type"]=="Kit") echo "checked=\"checked\""?> class="radiochecks"  tabindex="100"/><label for="typeKit" >kit</label><br />
+				<input type="radio" name="type" id="typeAssembly" value="Assembly" <?php if($therecord["type"]=="Assembly") echo "checked=\"checked\""?> class="radiochecks"  tabindex="110"/><label for="typeAssembly">assembly</label>
 			</p>
 			
 			<p>
 				<span class="important">available status</span><br />
-				<input type="radio" name="status" id="statusInStock" value="In Stock" <?php if($therecord["status"]=="In Stock") echo "checked"?> class="radiochecks" align="baseline" tabindex="120"/> <label for="statusInStock">in stock / available</label><br />
-				<input type="radio" name="status" id="statusOutOfStock" value="Out of Stock" <?php if($therecord["status"]=="Out of Stock") echo "checked"?> class="radiochecks" align="baseline" tabindex="130"/><label for="statusOutOfStock">out of stock / unavailable</label><br />
-				<input type="radio" name="status" id="statusBackordered" value="Backordered" <?php if($therecord["status"]=="Backordered") echo "checked"?> class="radiochecks" align="baseline" tabindex="140"/><label for="statusBackordered">backordered</label>
+				<input type="radio" name="status" id="statusInStock" value="In Stock" <?php if($therecord["status"]=="In Stock") echo "checked=\"checked\""?> class="radiochecks"  tabindex="120"/> <label for="statusInStock">in stock / available</label><br />
+				<input type="radio" name="status" id="statusOutOfStock" value="Out of Stock" <?php if($therecord["status"]=="Out of Stock") echo "checked=\"checked\""?> class="radiochecks"  tabindex="130"/><label for="statusOutOfStock">out of stock / unavailable</label><br />
+				<input type="radio" name="status" id="statusBackordered" value="Backordered" <?php if($therecord["status"]=="Backordered") echo "checked=\"checked\""?> class="radiochecks"  tabindex="140"/><label for="statusBackordered">backordered</label>
 			</p>
 		</fieldset>
 		
@@ -124,7 +124,7 @@
 			</p>
 			
 			<div class="fauxP">
-				<label for="ds-categoryid" class="important">product category</label><br />
+				<label for="categoryid" class="important">product category</label><br />
 				<?php displayProductCategories($therecord["categoryid"],$dblink) ?>
 			</div>
 			
@@ -169,7 +169,7 @@
 			</p>
 			<p>
 				<br />
-				<input type="button" name="updateprice" value="update price" class="Buttons" onClick="calculatePrice()" tabindex="160" />
+				<input type="button" name="updateprice" value="update price" class="Buttons" onclick="calculatePrice()" tabindex="160" />
 			</p>			
 		</fieldset>
 		
@@ -225,7 +225,7 @@
 				<div style=" <?php if(!$therecord["webdescription"]) echo "display:none;"?>" id="webDescPreview">
 				<?php echo $therecord["webdescription"] ?>
 				</div>			
-				<div><input id="buttonWebPreview" type="button" class="Buttons" onClick="editPreviewWebDesc(this)" value="<?php if(!$therecord["webdescription"]) echo "preview"; else echo "edit"?>" tabindex="250"/></div>
+				<div><input id="buttonWebPreview" type="button" class="Buttons" onclick="editPreviewWebDesc(this)" value="<?php if(!$therecord["webdescription"]) echo "preview"; else echo "edit"?>" tabindex="250"/></div>
 
 			</div>
 			
@@ -238,7 +238,7 @@
 				<?php } ?>
 				upload thumbnail<br />
 				<input type="hidden" id="thumbchange" name="thumbchange" value="" />
-				<div id="thumbdelete" style="display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onClick="deletePicture('thumb')" tabindex="260"/></div>
+				<div id="thumbdelete" style="display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onclick="deletePicture('thumb')" tabindex="260"/></div>
 				<div id="thumbadd" style="display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onchange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
 			</div>
 
@@ -251,7 +251,7 @@
 				<?php } ?>
 				upload picture <br />
 				<input type="hidden" id="picturechange" name="picturechange" value="" />
-				<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onClick="deletePicture('picture')" tabindex="270"/></div>				
+				<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onclick="deletePicture('picture')" tabindex="270"/></div>				
 				<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onchange="updatePictureStatus('picture','upload')" tabindex="270"/></div>				
 			</div>
 		</div>

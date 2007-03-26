@@ -61,7 +61,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]); if(isset($_GET["invoiceid"])) echo "&amp;invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onSubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]); if(isset($_GET["invoiceid"])) echo "&amp;invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php client_tabs("General",$therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
@@ -80,7 +80,7 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable" tabindex="0" />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" tabindex="0" />
 			</p>
 				
 			<p>
@@ -105,7 +105,7 @@
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
 				<label for="becameclient">became a client</label><br />
-				<input type="text" id="becameclient" name="becameclient" readonly="true" class="uneditable" value="<?php echo formatFromSQLDate($therecord["becameclient"])?>" size="8" />
+				<input type="text" id="becameclient" name="becameclient" readonly="readonly" class="uneditable" value="<?php echo formatFromSQLDate($therecord["becameclient"])?>" size="8" />
 			</p>
 			
 			<p>

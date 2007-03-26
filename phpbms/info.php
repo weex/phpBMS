@@ -117,7 +117,7 @@
 
 	<?php if(!isset($_SESSION["app_path"])) {?>
 	<p align="right">
-		<input type="button" value="Log In" class="Buttons" onClick="document.location='./'" id="loginButton"/>
+		<input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton"/>
 	</p>
 	<?php } ?>
 </div>

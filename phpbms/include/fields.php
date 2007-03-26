@@ -57,8 +57,12 @@ function fieldText($name,$value="",$required=false,$message="",$type="",$attribu
 	*/
 	?><input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo htmlQuotes($value) ?>" <?php 
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><?php if ($required) { ?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php } //end required if 
-	if ($type) {?><script language="JavaScript" type="text/javascript"><?php echo $type?>Array[<?php echo $type?>Array.length]=new Array('<?php echo $name ?>','<?php echo $message ?>');</script><?php }//end $type if
+	?> /><?php if ($required) { ?><script language="JavaScript" type="text/javascript"><!-- 
+	requiredArray[requiredArray.length]=new Array("<?php echo $name ?>","<?php echo $message ?>");
+	// --></script><?php } //end required if 
+	if ($type) {?><script language="JavaScript" type="text/javascript"><!-- 
+		<?php echo $type?>Array[<?php echo $type?>Array.length]=new Array("<?php echo $name ?>","<?php echo $message ?>");
+	// --></script><?php }//end $type if
 }//end function
 
 
@@ -78,8 +82,8 @@ function fieldCheckbox($name,$value="",$disabled=false,$attributes=""){
 	}
 	
 	?><input name="<?php echo $name ?>" id="<?php echo $name ?>" type="checkbox" value="1" <?php 
-	if ($value) echo "checked ";
-	if ($disabled) echo "disabled=\"true\" ";
+	if ($value) echo "checked=\"checked\" ";
+	if ($disabled) echo "disabled=\"disabled\" ";
 	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
 	?> class="radiochecks" /><?php 
 }
@@ -100,7 +104,7 @@ function fieldBasicList($name,$value="",$list="",$attributes=""){
 	?> > <?php
 		foreach($list as $theitem){
 			$theitem["value"]=str_replace("\"","&quot;",$theitem["value"]);
-			?><option value="<?php echo $theitem["value"]?>" <?php if ($theitem["value"]==$value) echo " selected "?> ><?php echo $theitem["name"]?></option>
+			?><option value="<?php echo $theitem["value"]?>" <?php if ($theitem["value"]==$value) echo " selected=\"selected\" "?> ><?php echo $theitem["name"]?></option>
 			<?php
 		}
 	?></select>
@@ -163,7 +167,7 @@ function fieldChoiceList($name,$value="",$listname,$attributes=array(),$blankval
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
 
-	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onchange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onFocus="setInitialML(this)">
+	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onchange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onfocus="setInitialML(this)">
 	<?php 
 		$inlist=false;
 		while($therecord=mysql_fetch_array($queryresult)){
@@ -175,7 +179,7 @@ function fieldChoiceList($name,$value="",$listname,$attributes=array(),$blankval
 				$theclass=" class=\"choiceListBlank\" ";
 			}
 			if($therecord["thevalue"]==$value){
-				$selected=" selected ";
+				$selected=" selected=\"selected\"";
 				$inlist=true;
 			}
 			if($value=="" and $therecord["thevalue"])
@@ -190,7 +194,7 @@ function fieldChoiceList($name,$value="",$listname,$attributes=array(),$blankval
 				$display=$value;
 				$theclass="";
 			}
-			?><option value="<?php echo $value?>" <?php echo $theclass?> selected><?php echo $display?></option><?php					
+			?><option value="<?php echo $value?>" <?php echo $theclass?> selected="selected"><?php echo $display?></option><?php					
 		}//end if
 	?>
 <option value="*mL*" class="choiceListModify">modify list...</option></select><?php 
@@ -379,11 +383,11 @@ function fieldRolesList($name,$selected,$dblink){
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(310,"Error Retrieving Roles");
 	?><select id="<?php echo $name?>" name="<?php echo $name?>">
-	<option value="0" <?php if($selected==0) echo "selected"?>>EVERYONE</option>
+	<option value="0" <?php if($selected==0) echo "selected=\"selected\""?>>EVERYONE</option>
 	<?php while($therecord=mysql_fetch_array($queryresult)){ ?>
-	<option value="<?php echo $therecord["id"]?>" <?php if($selected==$therecord["id"]) echo "selected"?>><?php echo $therecord["name"]?></option>	
+	<option value="<?php echo $therecord["id"]?>" <?php if($selected==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>	
 	<?php }?>
-	<option value="-100" <?php if($selected==-100) echo "selected"?>>Administrators</option>
+	<option value="-100" <?php if($selected==-100) echo "selected=\"selected\""?>>Administrators</option>
 	</select><?php
 }
 ?>

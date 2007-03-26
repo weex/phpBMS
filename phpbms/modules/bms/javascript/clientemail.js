@@ -106,7 +106,7 @@ function saveProject(theform){
 		alert(alertMessage);
 	else{
 		text="<p><input type=\"text\" id=\"saveInput\" maxlength=\"128\"onkeyup=\"updateSaveProject(this)\" /></p>";
-		text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"saveSave\" value=\"save\" disabled=\"true\" onclick=\"finishSaveProject();\" />";
+		text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"saveSave\" value=\"save\" disabled=\"disabled\" onclick=\"finishSaveProject();\" />";
 		text+="&nbsp;<input class=\"Buttons\" type=\"button\" value=\"cancel\" id=\"saveCancel\" onclick=\"closeModal()\" /></>";
 		showModal(text,"Save Project As...",300);
 	}

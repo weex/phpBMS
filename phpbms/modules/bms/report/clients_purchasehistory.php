@@ -120,19 +120,19 @@ class purchaseHistoryReport{
 ?>
 	<table border="0" cellpadding="0" cellspacing="0" >
 		<tr>
-			<th align="left" nowrap colspan="3">invoice</th>
-			<th align="left" nowrap colspan="3">product</th>		
-			<th align="left" nowrap colspan="2">line item</th>
+			<th align="left" nowrap="nowrap" colspan="3">invoice</th>
+			<th align="left" nowrap="nowrap" colspan="3">product</th>		
+			<th align="left" nowrap="nowrap" colspan="2">line item</th>
 		</tr>
 		<tr>
-			<th align="center" nowrap>id</th>
-			<th align="left" nowrap >type</th>
-			<th align="left" nowrap >date</th>
-			<th align="left" nowrap >part num.</th>
-			<th width="100%" nowrap align="left">name</th>
-			<th align="right" nowrap >price</th>
-			<th align="center" nowrap >qty.</th>
-			<th align="right" nowrap >ext.</th>
+			<th align="center" nowrap="nowrap">id</th>
+			<th align="left" nowrap="nowrap" >type</th>
+			<th align="left" nowrap="nowrap" >date</th>
+			<th align="left" nowrap="nowrap" >part num.</th>
+			<th width="100%" nowrap="nowrap" align="left">name</th>
+			<th align="right" nowrap="nowrap" >price</th>
+			<th align="center" nowrap="nowrap" >qty.</th>
+			<th align="right" nowrap="nowrap" >ext.</th>
 		</tr>
     <?php 
 	$totalextended=0;		
@@ -140,14 +140,14 @@ class purchaseHistoryReport{
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
 	<tr>
-		<td align="left" nowrap><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
-		<td align="left" nowrap><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
-		<td nowrap><?php echo $therecord["partnumber"]?></td>
-		<td nowrap><?php echo $therecord["partname"]?></td>
-		<td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
-		<td align="center" nowrap><?php echo $therecord["qty"]?></td>
-		<td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
+		<td align="left" nowrap="nowrap"><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
+		<td nowrap="nowrap"><?php echo $therecord["partnumber"]?></td>
+		<td nowrap="nowrap"><?php echo $therecord["partname"]?></td>
+		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="center" nowrap="nowrap"><?php echo $therecord["qty"]?></td>
+		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
 	<?php }//end while ?>
 	<tr>

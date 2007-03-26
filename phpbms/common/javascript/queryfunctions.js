@@ -165,7 +165,7 @@ function confirmDelete(deletename){
 	if(selIDs.length!=1)
 		howmany+="s"
 	var content="<div>Are you sure you want to "+deletename+" the "+howmany+"?</div>";
-		content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onClick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onClick=\"closeModal()\" /></div>"	
+		content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onclick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onclick=\"closeModal()\" /></div>"	
 	showModal(content,"Confirm",300) ;
 }
 
@@ -759,9 +759,9 @@ function sortEnableSave(thetext){
 		savebutton.disabled=false;
 }
 function sortAskSaveName(base){
-	var text="<p>name<br /><input id=\"sortSaveName\" type=\"text\" maxlength=\"128\" length=\"40\" onKeyUp=\"sortEnableSave(this)\" style=\"width:98%\" /></p>";
-	text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"sortDoSave\" onClick=\"sortSave('"+base+"')\" value=\"save\" style=\"width:75px\" disabled=\"true\"/>";
-	text+="<input type=\"button\" class=\"Buttons\" onClick=\"closeModal()\" value=\"cancel\" style=\"margin-left:5px;width:75px\"/></p>"
+	var text="<p>name<br /><input id=\"sortSaveName\" type=\"text\" maxlength=\"128\" length=\"40\" onkeyup=\"sortEnableSave(this)\" style=\"width:98%\" /></p>";
+	text+="<p align=\"right\"><input type=\"button\" class=\"Buttons\" id=\"sortDoSave\" onclick=\"sortSave('"+base+"')\" value=\"save\" style=\"width:75px\" disabled=\"disabled\"/>";
+	text+="<input type=\"button\" class=\"Buttons\" onclick=\"closeModal()\" value=\"cancel\" style=\"margin-left:5px;width:75px\"/></p>"
 	showModal(text,"Save Sort As...",250);
 }
 

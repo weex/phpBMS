@@ -89,13 +89,13 @@
 function displayQueryHeader(){
 	?>
 	<script language="JavaScript" type="text/javascript">selIDs=new Array();</script>
-	<input name="newsort" type="hidden" value="" /><table cellspacing=0 cellpadding=0 border=0 class="querytable" id="queryresults"><tr>
+	<input name="newsort" type="hidden" value="" /><table cellspacing="0" cellpadding="0" border="0" class="querytable" id="queryresults"><tr>
 	<?php
 	$columncount=count($this->thecolumns);
 	$i=1;
 
 	foreach ($this->thecolumns as $therow){ ?>
-<th nowrap align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
+<th nowrap="nowrap" align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
 	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>" />
 	<a href="/" onclick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
 	<?php
@@ -133,7 +133,7 @@ function displayQueryHeader(){
 				if ($rownum==1) $rownum++; else $rownum=1;
 				
 				foreach($this->thecolumns as $thecolumn){
-					?><td align="<?php echo $thecolumn["align"]?>" <?php if(!$thecolumn["wrap"]) echo "nowrap"?>><?php echo (($therecord[$thecolumn["name"]]!=="")?formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"]):"&nbsp;")?></td><?php
+					?><td align="<?php echo $thecolumn["align"]?>" <?php if(!$thecolumn["wrap"]) echo "nowrap=\"nowrap\""?>><?php echo (($therecord[$thecolumn["name"]]!=="")?formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"]):"&nbsp;")?></td><?php
 				}
 				?></tr><?php 
 			}
@@ -143,7 +143,7 @@ function displayQueryHeader(){
 		// display a no results page
 		function displayNoResults(){
 			$i=count($this->thecolumns);?>
-			<tr><td colspan="<?php echo $i?>" align=center style="padding:0px;">
+			<tr><td colspan="<?php echo $i?>" align="center" style="padding:0px;">
 				<?php if(!$this->sqlerror) {?>
 				<div class="norecords">No Records to Display</div>
 				<?php } else {?>
@@ -391,7 +391,7 @@ function sendInfo(name,thevalue,thedisplay){
 		function displaySearch(){
 
 		?>
-<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onSubmit="setSelIDs(this);return true;">
+<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onsubmit="setSelIDs(this);return true;">
 <input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" />
 <input id="theids" name="theids" type="hidden" value="" />
 <input id="advancedsearch" name="advancedsearch" type="hidden" value="" />
@@ -404,17 +404,17 @@ function sendInfo(name,thevalue,thedisplay){
 	}
 ?>
 <ul class="tabs">
-	<li id="basicSearchT" class="tabsSel"><a href="/" onClick="switchSearchTabs(this);return false">basic</a></li>
-	<?php if(hasRights($this->thetabledef["advsearchroleid"])){?><li id="advancedSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end access ?>
-	<li id="loadSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
-	<li id="saveSearchT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
-	<li id="advancedSortT"><a href="/" onClick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
+	<li id="basicSearchT" class="tabsSel"><a href="/" onclick="switchSearchTabs(this);return false">basic</a></li>
+	<?php if(hasRights($this->thetabledef["advsearchroleid"])){?><li id="advancedSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end access ?>
+	<li id="loadSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
+	<li id="saveSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
+	<li id="advancedSortT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
 </ul>
 <div class="box" id="searchBox">
 	<div id="basicSearchTab">
 		<table cellpadding="0" cellspacing="0" border="0">
 			<tr>
-				<td nowrap valign="top">
+				<td nowrap="nowrap" valign="top">
 					<p>
 						<label for="find">find</label><br />					
 						<select name="find" id="find">
@@ -422,7 +422,7 @@ function sendInfo(name,thevalue,thedisplay){
 							for($i=0;$i<count($this->findoptions);$i++) {
 								if(hasRights($this->findoptions[$i]["roleid"])){
 									?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php 
-										if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected";
+										if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected=\"selected\"";
 									?>><?php echo $this->findoptions[$i]["name"]?></option><?php
 								}
 							}
@@ -430,7 +430,7 @@ function sendInfo(name,thevalue,thedisplay){
 						</select>
 					</p>
 				</td>
-			<td nowrap valign=top>
+			<td nowrap="nowrap" valign="top">
 				<p>
 				<label for="startswithfield">where</label><br />
 					<select name="startswithfield" id="startswithfield">
@@ -438,9 +438,9 @@ function sendInfo(name,thevalue,thedisplay){
 							for($i=0;$i<count($this->searchablefields);$i++) {
 								echo "<option value=\"".$this->searchablefields[$i]["id"]."\" ";
 									if(!isset($this->savedstartswithfield)){
-										if($this->querytype!="search" and $i==0) echo "selected";				
+										if($this->querytype!="search" and $i==0) echo "selected=\"selected\"";				
 									} else {							
-										if($this->querytype=="search" and addslashes($this->searchablefields[$i]["id"])==$this->savedstartswithfield) echo "selected";
+										if($this->querytype=="search" and addslashes($this->searchablefields[$i]["id"])==$this->savedstartswithfield) echo "selected=\"selected\"";
 									}
 								echo ">".$this->searchablefields[$i]["name"]."</option>\n";
 							}
@@ -448,12 +448,12 @@ function sendInfo(name,thevalue,thedisplay){
 					</select>
 				</p>
 			</td>
-			<td width="100%" nowrap valign="top" >
+			<td width="100%" nowrap="nowrap" valign="top" >
 				<p><label for="startswith">starts with</label><br />
 					<input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="JavaScript" type="text/javascript">setMainFocus()</script>
 				</p>
 			</td>
-			<td align="left" valign="top" nowrap class="small">
+			<td align="left" valign="top" nowrap="nowrap" class="small">
 				<p>
 					<br />
 					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search"/>
@@ -461,15 +461,15 @@ function sendInfo(name,thevalue,thedisplay){
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" align="left" valign=middle nowrap>
+			<td colspan="3" align="left" valign="middle" nowrap="nowrap">
 			<p>
 			<select name="Selection">
-				<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected"?> >new result</option>
-				<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected"?>>add to result</option>
-				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "checked"?>>remove from result</option>
-				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "checked"?>>narrow result</option>
-			</select></p>
-			<td align="left" valign=top nowrap ><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(alt+t)"/></p></td>
+				<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected=\"selected\""?> >new result</option>
+				<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected=\"selected\""?>>add to result</option>
+				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "selected=\"selected\""?>>remove from result</option>
+				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "selected=\"selected\""?>>narrow result</option>
+			</select></p></td>
+			<td align="left" valign="top" nowrap="nowrap"><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(access key+t)"/></p></td>
 		</tr>				
 	</table>
 </div><?php if(hasRights($this->thetabledef["advsearchroleid"])){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end access ?>
@@ -481,13 +481,13 @@ function sendInfo(name,thevalue,thedisplay){
 			<td width="100%">
 				<p><label for="saveSearchName">save current search as</label>
 					<br />
-					<input id="saveSearchName" name="saveSearchName" type="text"  value="" size="35" maxlength="128" onKeyUp="enableSave(this)" />
+					<input id="saveSearchName" name="saveSearchName" type="text"  value="" size="35" maxlength="128" onkeyup="enableSave(this)" />
 				</p>
 			</td>
 			<td align="right">
 				<p>
 					<br />
-					<input id="saveSearch" onClick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="true" type="button" class="Buttons" value="save search" />
+					<input id="saveSearch" onclick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="disabled" type="button" class="Buttons" value="save search" />
 				</p>
 			</td>
 		</tr>
@@ -529,11 +529,11 @@ function displayQueryButtons() {
 		if ($this->truecount<=$_SESSION["record_limit"]) 
 			echo "<div>records:&nbsp;".$this->numrows."</div>";
 		else {?>			
-			<input name="offset" type="hidden" value=""><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
+			<input name="offset" type="hidden" value="" /><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
 			  	<?php
 					$displayedoffset=0;
 					while($displayedoffset<$this->truecount){
-						?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+$_SESSION["record_limit"]<$this->truecount) echo ($displayedoffset+$_SESSION["record_limit"]); else echo $this->truecount;?></option><?php
+						?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected=\"selected\"";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+$_SESSION["record_limit"]<$this->truecount) echo ($displayedoffset+$_SESSION["record_limit"]); else echo $this->truecount;?></option><?php
 						$displayedoffset+=$_SESSION["record_limit"];
 					}
 				?>
@@ -542,7 +542,7 @@ function displayQueryButtons() {
 				?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();"><span>prev.</span></button><?php
 			}
 			if(($this->numrows+$this->recordoffset)<$this->truecount){
-				?><button type="button" class="graphicButtons buttonFF" onClick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><span>next</span></button><?php
+				?><button type="button" class="graphicButtons buttonFF" onclick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><span>next</span></button><?php
 			}
 						  
 		} ?></div><?php }?>	
@@ -551,25 +551,25 @@ function displayQueryButtons() {
 		<?php 
 		if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) 
 			{
-		?><button type="button" accesskey="n" class="graphicButtons buttonNew" onClick="addRecord()" title="new (alt+n)"><span>new</span></button><?php 
+		?><button type="button" accesskey="n" class="graphicButtons buttonNew" onclick="addRecord()" title="new (alt+n)"><span>new</span></button><?php 
 			} 
 			
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]["allowed"] && hasRights($this->tableoptions["edit"]["roleid"])) {
-				?><button id="edit" accesskey="e" type="button" disabled="true" class="graphicButtons buttonEditDisabled" onClick="editThis()" title="edit (alt+e)"><span>edit</span></button><?php
+				?><button id="edit" accesskey="e" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="editThis()" title="edit (alt+e)"><span>edit</span></button><?php
 			}
 		
 			if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
-				?><button id="print" accesskey="p" type="submit" disabled="true" class="graphicButtons buttonPrintDisabled" name="doprint"  title="print (alt+p)"><span>print</span></button><?php
+				?><button id="print" accesskey="p" type="submit" disabled="disabled" class="graphicButtons buttonPrintDisabled" name="doprint"  title="print (alt+p)"><span>print</span></button><?php
 			}
 
 			if($this->thetabledef["deletebutton"] == "delete") {				
-				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="true" onClick="confirmDelete('delete')" class="graphicButtons buttonDeleteDisabled"><span>delete</span></button><?php
+				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="disabled" onclick="confirmDelete('delete')" class="graphicButtons buttonDeleteDisabled"><span>delete</span></button><?php
 			}
 	
 			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
-				<select id="othercommands" name="othercommands" disabled=true onchange="chooseOtherCommand(this)">
-				<option value="" selected class="choiceListBlank">commands...</option>
+				<select id="othercommands" name="othercommands" disabled="disabled" onchange="chooseOtherCommand(this)">
+				<option value="" selected="selected" class="choiceListBlank">commands...</option>
 				<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
 					<option value="delete_record" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
 				<?php } 
@@ -585,12 +585,12 @@ function displayQueryButtons() {
 		if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){?> <select id="searchSelection" onchange="perfromToSelection(this)">
 				<option class="choiceListBlank" value="">selection...</option>
 				<option value="">_____________</option>
-				<option value="selectall" title="(alt+a)">select all</option>
-				<option value="selectnone" title="(alt+x)">select none</option>
+				<option value="selectall" title="(access key+a)">select all</option>
+				<option value="selectnone" title="(access key+x)">select none</option>
 				<option value="">_____________</option>
-				<option value="keepselected" title="(alt+k)">keep selected</option>
-				<option value="omitselected" title="(alt+o)" >omit selected</option>
-			</select><a href="/" onClick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onClick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onClick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onClick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
+				<option value="keepselected" title="(access key+k)">keep selected</option>
+				<option value="omitselected" title="(access key+o)" >omit selected</option>
+			</select><a href="/" onclick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onclick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onclick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onclick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
 		
 		}//end if numrows	
 		if(hasRights($this->thetabledef["viewsqlroleid"])){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?php }//end rights?>
@@ -633,8 +633,8 @@ function displayRelationships(){
 	if (!$queryresult) reportError(1,"Error Retrieving Relationships");
 	if (mysql_num_rows($queryresult)) {
 		?><div class="small box" style="margin:0px;margin-top:3px;">
-		relate selected records to <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="true">
-			<option value="" selected class="choiceListBlank">area...</option><?php 
+		relate selected records to <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
+			<option value="" selected="selected" class="choiceListBlank">area...</option><?php 
 			while($therecord = mysql_fetch_array($queryresult)){
 			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
 		?></select></div>

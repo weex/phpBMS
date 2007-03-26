@@ -116,15 +116,15 @@ class salesHistoryReport{
 ?>
    <table border="0" cellpadding="3" cellspacing="0">
 	<tr>
-	 <th align="center" nowrap >ID</th>
-	 <th align="center" nowrap >Order Date</th>
-	 <th align="center" nowrap >Invc. Date</th>
-	 <th nowrap  width="100%" align="left">Client</th>
-	 <th align="center" nowrap >Qty.</th>
-	 <th align="right" nowrap >Unit Cost</th>
-	 <th align="right" nowrap >Cost Ext.</th>
-	 <th align="right" nowrap >Unit Price</th>
-	 <th align="right" nowrap >Price Ext.</th>
+	 <th align="center" nowrap="nowrap" >ID</th>
+	 <th align="center" nowrap="nowrap" >Order Date</th>
+	 <th align="center" nowrap="nowrap" >Invc. Date</th>
+	 <th nowrap="nowrap"  width="100%" align="left">Client</th>
+	 <th align="center" nowrap="nowrap" >Qty.</th>
+	 <th align="right" nowrap="nowrap" >Unit Cost</th>
+	 <th align="right" nowrap="nowrap" >Cost Ext.</th>
+	 <th align="right" nowrap="nowrap" >Unit Price</th>
+	 <th align="right" nowrap="nowrap">Price Ext.</th>
 	</tr>
     <?php 	
 	$totalextended=0;
@@ -140,15 +140,15 @@ class salesHistoryReport{
 		$totalcostextended+=$therecord["extendedcost"];
 ?>
 	<tr>
-	 <td align="center" nowrap><?php echo $therecord["id"]?></td>
-	 <td align="center" nowrap><?php echo $therecord["orderdate"]?formatFromSQLDate($therecord["orderdate"]):"&nbsp;" ?></td>
-	 <td align="center" nowrap><?php echo $therecord["invoicedate"]?formatFromSQLDate($therecord["invoicedate"]):"&nbsp;" ?></td>
-	 <td nowrap><?php echo $therecord["client"]?></td>
-	 <td align="center" nowrap><?php echo number_format($therecord["qty"],2)?></td>
-	 <td align="right" nowrap><?php echo "\$".number_format($therecord["cost"],2)?></td>
-	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
-	 <td align="right" nowrap><?php echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
+	 <td align="center" nowrap="nowrap"><?php echo $therecord["id"]?></td>
+	 <td align="center" nowrap="nowrap"><?php echo $therecord["orderdate"]?formatFromSQLDate($therecord["orderdate"]):"&nbsp;" ?></td>
+	 <td align="center" nowrap="nowrap"><?php echo $therecord["invoicedate"]?formatFromSQLDate($therecord["invoicedate"]):"&nbsp;" ?></td>
+	 <td nowrap="nowrap"><?php echo $therecord["client"]?></td>
+	 <td align="center" nowrap="nowrap"><?php echo number_format($therecord["qty"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["cost"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
 	</tr>
     <?php } ?>
 	<tr>
@@ -157,9 +157,9 @@ class salesHistoryReport{
 	 <td class="grandtotals">&nbsp;</td>
 	 <td class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals"><?php echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap class="grandtotals">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
+	 <td align="right" nowrap="nowrap"class="grandtotals">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
 	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalcostextended,2)?></td>
-	 <td align="right" nowrap class="grandtotals">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
+	 <td align="right" nowrap="nowrap" class="grandtotals">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
 	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalextended,2)?></td>
 	</tr>
    </table>

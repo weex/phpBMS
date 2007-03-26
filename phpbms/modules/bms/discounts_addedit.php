@@ -54,9 +54,9 @@
 <script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/discount.js" type="text/javascript"></script>
 </head>
-<body onLoad="init()"><?php include("../../menu.php")?>
+<body onload="init()"><?php include("../../menu.php")?>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>
 	</div>
@@ -67,7 +67,7 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="true" class="uneditable" />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="readonly" class="uneditable" />
 			</p>			
 			<p>
 				<?php fieldCheckbox("inactive",$therecord["inactive"])?> <label for="inactive">inactive</label>
@@ -99,9 +99,9 @@
 			<legend>discount</legend>
 			<p>
 				<strong>type</strong><br />
-				<input type="radio" class="radiochecks" id="typePercentage" name="type" value="percent" <?php if($therecord["type"]=="percent") echo "checked" ?>  onClick="changeType()" /><label for="typePercentage">percentage</label>
+				<input type="radio" class="radiochecks" id="typePercentage" name="type" value="percent" <?php if($therecord["type"]=="percent") echo "checked=\"checked\"" ?>  onclick="changeType()" /><label for="typePercentage">percentage</label>
 				&nbsp;
-				<input type="radio" class="radiochecks" id="typeAmount" name="type" value="amount" <?php if($therecord["type"]=="amount") echo "checked" ?> onClick="changeType()" /><label for="typeAmount">amount</label>
+				<input type="radio" class="radiochecks" id="typeAmount" name="type" value="amount" <?php if($therecord["type"]=="amount") echo "checked=\"checked\"" ?> onclick="changeType()" /><label for="typeAmount">amount</label>
 			</p>
 			<p id="pValue">
 				<label for="percentvalue">value</label><br />

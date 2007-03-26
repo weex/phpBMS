@@ -84,12 +84,12 @@ class totalReport{
 	
 		
 	function showReportTable(){
-		?><table border=0 cellspacing=0 cellpadding=0>
+		?><table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<th>&nbsp;</th>
 		<?php
 			foreach($this->selectcolumns as $name=>$column){
-				?><th align=right nowrap><?php echo $name?></td><?php
+				?><th align=right nowrap="nowrap"><?php echo $name?></td><?php
 			}//end foreach
 		?>
 		</tr>
@@ -217,16 +217,16 @@ class totalReport{
 				
 		?>
 			<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="invoices" style="padding-right:40px;padding-left:<?php echo ($indent+2)?>px;">
-				<table border=0 cellspacing=0 cellpadding=0 style="border:0px;">
+				<table border="0" cellspacing="0" cellpadding="0" style="border:0px;">
 		<?php 
 		
 		while($therecord=mysql_fetch_array($queryresult)){			
 			?>
 			<tr>
-				<td width="65%" class="lineitems" nowrap><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
-				<td width="24%" class="lineitems" align="right" nowrap><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
-				<td width="12%" class="lineitems" align="center" nowrap><?php echo number_format($therecord["quantity"],2)?></td>
-				<td width="24%" class="lineitems" align="right" nowrap><?php echo "\$".number_format($therecord["extended"],2)?></td>
+				<td width="65%" class="lineitems" nowrap="nowrap"><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
+				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
+				<td width="12%" class="lineitems" align="center" nowrap="nowrap"><?php echo number_format($therecord["quantity"],2)?></td>
+				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
 			</tr>
 			<?php
 		}
@@ -367,14 +367,14 @@ if(isset($_POST["command"])){
 <body>
 <div class="bodyline" style="width:550px;padding:4px;">
 	<h1>Invoice Total Options</h1>	
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onSubmit="return submitForm(this)">
+	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return submitForm(this)">
 		<div>
 			report title<br />			
 			<input type="text" name="reporttitle" value="" style="width:100%">
 		</div>
 		<div class="box">
 			<strong>Grouping</strong><br />
-			<table border=0 cellspacing=0 cellpadding=0>
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="50%">
 						selected groupings<br />
@@ -384,8 +384,8 @@ if(isset($_POST["command"])){
 					</td>
 					<td>
 						<div><br />
-							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('groupings','to',this.form);"><br /><br />
-							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('groupings','from',this.form);">							
+							<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);"><br /><br />
+							<input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">
@@ -419,7 +419,7 @@ if(isset($_POST["command"])){
 		</div>
 		<div class="box">
 			<strong>Columns</strong><br />
-			<table border=0 cellspacing=0 cellpadding=0>
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="50%">
 						shown columns<br />
@@ -430,8 +430,8 @@ if(isset($_POST["command"])){
 					</td>
 					<td>
 						<div><br />
-							<input type="button" value="&lt;&lt;" class="Buttons" onClick="moveItem('columns','to',this.form);"><br /><br />
-							<input type="button" value="&gt;&gt;" class="Buttons" onClick="moveItem('columns','from',this.form);">							
+							<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);"><br /><br />
+							<input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);">							
 						</div>
 					</td>
 					<td width="50%">
@@ -464,7 +464,7 @@ if(isset($_POST["command"])){
 			<strong>Additional Options</strong><br />
 			information shown<br />
 			<select name="showwhat">
-				<option selected value="totals">Totals Only</option>
+				<option selected="selected" value="totals">Totals Only</option>
 				<option value="invoices">Invoices</option>
 				<option value="lineitems">Invoices &amp; Line Items</option>
 			</select>
@@ -474,7 +474,7 @@ if(isset($_POST["command"])){
 
 		<div align="right" class="box">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onClick="window.close();">	 
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onclick="window.close();">	 
 		</div>
    </form>
 </div>

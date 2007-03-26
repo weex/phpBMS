@@ -487,7 +487,7 @@ function sendEmailNotice(base){
 	var theid=getObjectFromID("id");
 	var theURL=base+"modules/base/notes_ajax.php?cm=sendemail&id="+theid.value;
 	loadXMLDoc(theURL,null,false);
-	content=req.responseText+"<DIV align=\"right\"><button class=\"Buttons\" onClick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
+	content=req.responseText+"<DIV align=\"right\"><button class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	var modalcontent=getObjectFromID("modalContent");
 	modalcontent.innerHTML=content;
 }

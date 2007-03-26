@@ -55,7 +55,7 @@
 		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_table($queryresult,$i).".".mysql_field_name($queryresult,$i);
 		?>
 		<p align="right" style="float:right">
-			<input id="ASsearchbutton" type="button" onClick="performAdvancedSearch(this)" class="Buttons" disabled="true" value="search" />		
+			<input id="ASsearchbutton" type="button" onclick="performAdvancedSearch(this)" class="Buttons" disabled="disabled" value="search" />		
 		</p>
 
 		<p>match <select id="ASanyall" onchange="updateAS()">
@@ -79,14 +79,14 @@
 					 <option value="like">like</option>
 					 <option value="not like">not like</option>
 				</select>
-				<input type="text" id="ASC1text" size="30" maxlength="255" onKeyUp="updateAS()" value="" />
-				<button type="button" id="ASC1minus" class="graphicButtons buttonMinusDisabled" onClick="removeLineAS(this)"><span>-</span></button>
-				<button type="button" id="ASC1plus" class="graphicButtons buttonPlus" onClick="addlineAS()"><span>+</span></button>
+				<input type="text" id="ASC1text" size="30" maxlength="255" onkeyup="updateAS()" value="" />
+				<button type="button" id="ASC1minus" class="graphicButtons buttonMinusDisabled" onclick="removeLineAS(this)"><span>-</span></button>
+				<button type="button" id="ASC1plus" class="graphicButtons buttonPlus" onclick="addlineAS()"><span>+</span></button>
 			</div>
 		</div>
 		<p>
 			sql where clause<br/>
-			<textarea id="ASSQL" style="width:99%" cols="90" rows="3" onKeyUp="ASEnableSave(this)"></textarea>		
+			<textarea id="ASSQL" style="width:99%" cols="90" rows="3" onkeyup="ASEnableSave(this)"></textarea>		
 		</p><?php		
 	}
 

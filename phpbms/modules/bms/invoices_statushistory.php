@@ -101,7 +101,7 @@
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<p>
-			<input accesskey="s" title="(alt+s)" name="command" type="submit" value="update statuses" class="Buttons" <?php if($refrecord["type"]=="Invoice") echo "disabled=\"disabled\""?>/>
+			<input accesskey="s" title="(access key+s)" name="command" type="submit" value="update statuses" class="Buttons" <?php if($refrecord["type"]=="Invoice") echo "disabled=\"disabled\""?>/>
 		</p>
 		<div class="fauxP">
 			<table class="querytable">

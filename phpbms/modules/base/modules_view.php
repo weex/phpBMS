@@ -56,7 +56,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onSubmit="return validateForm(this);">			
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">			
 <div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>	
 	
@@ -64,11 +64,11 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="true" class="uneditable"/>			
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>			
 			</p>
 			<p>
 				<label for="version">version</label><br />
-				<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="true" class="uneditable" />
+				<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="readonly" class="uneditable" />
 			</p>
 		</fieldset>			
 
@@ -77,12 +77,12 @@
 				<legend>name / folder</legend>
 				<p>
 					<label for="displayname">name</label><br />
-					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="45" maxlength="128" readonly="true" class="uneditable" />
+					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="45" maxlength="128" readonly="readonly" class="uneditable" />
 				</p>
 				
 				<p>
 					<label for="name">folder name/location</label><br />
-					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="64" maxlength="128" readonly="true" class="uneditable" />
+					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="64" maxlength="128" readonly="readonly" class="uneditable" />
 				</p>				
 			</fieldset>
 		</div>

@@ -63,13 +63,13 @@
 <?php $shippingMethods=getShipping($dblink)?>
 <?php $paymentMethods=getPayments($dblink)?>
 </head>
-<body onLoad="initializePage()"><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onClick="return false;" /></div>
+<body onload="initializePage()"><?php include("../../menu.php")?>
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php invoice_tabs("General",$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
 		  		?><div id="printButton">
-				<input name="doprint" type="button" value="print" accesskey="p" onClick="doPrint('<?php echo $_SESSION["app_path"]?>',<?php echo $therecord["id"]?>)" class="Buttons" />
+				<input name="doprint" type="button" value="print" accesskey="p" onclick="doPrint('<?php echo $_SESSION["app_path"]?>',<?php echo $therecord["id"]?>)" class="Buttons" />
 			</div><?php 
 			}//end if
 			showSaveCancel(1); ?>
@@ -101,13 +101,13 @@
 				<p>
 					<label for="id">id</label>
 					<br />
-					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="true" class="uneditable" tabindex="0"  />
+					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable" tabindex="0"  />
 				</p>
 				
 				<p>
 				<label for="type" class="important">type</label><br />
 					<?php  if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice") {?>
-						<input id="type" name="type" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="true" class="uneditable important" tabindex=9 />
+						<input id="type" name="type" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="readonly" class="uneditable important" tabindex=9 />
 					<?php }else {
 						$thechoices=array();
 						$thechoices[]=array("name"=>"Quote","value"=>"Quote");
@@ -122,7 +122,7 @@
 				<p>
 					<label for="ponumber">client PO#</label>
 					<br />
-					<input name="ponumber" id="ponumber" type="text" value="<?php echo htmlQuotes($therecord["ponumber"])?>" size="11" maxlength="64" tabindex=12 />
+					<input name="ponumber" id="ponumber" type="text" value="<?php echo htmlQuotes($therecord["ponumber"])?>" size="11" maxlength="64" tabindex="12" />
 				</p>
 			</div>			
 		</fieldset>
@@ -163,7 +163,7 @@
 		<fieldset>
 			<legend><label for="address1">shipping address</label></legend>		
 			<p>
-				<input name="address1" id="address1" type="text" value="<?php echo htmlQuotes($therecord["address1"])?>" size="65" maxlength="128" tabindex=3 /><br />
+				<input name="address1" id="address1" type="text" value="<?php echo htmlQuotes($therecord["address1"])?>" size="65" maxlength="128" tabindex="3" /><br />
 				<input name="address2" id="address2" type="text"  value="<?php echo htmlQuotes($therecord["address2"])?>" size="65" maxlength="128" tabindex="4" />
 			</p>
 			<p class="cszP">
@@ -172,15 +172,15 @@
 			</p>
 			<p class="cszP">
 				<label for="state">state/prov</label><br />
-				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="3" maxlength="5" tabindex=6 />			
+				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="3" maxlength="5" tabindex="6" />
 			</p>
 			<p class="cszP">
 				<label for="postalcode">zip/postal code</label><br />
-				<input name="postalcode" type="text" id="postalcode" value="<?php echo htmlQuotes($therecord["postalcode"])?>" size="12" maxlength="15" tabindex=7 />
+				<input name="postalcode" type="text" id="postalcode" value="<?php echo htmlQuotes($therecord["postalcode"])?>" size="12" maxlength="15" tabindex="7" />
 			</p>
 			<p id="countryP">
 				<label for="country">country</label><br />
-				<input name="country" id="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="45" maxlength="64" tabindex=8 />
+				<input name="country" id="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="45" maxlength="64" tabindex="8" />
 			</p>
 		</fieldset>
 
@@ -209,33 +209,33 @@
 	
 	<table border="0" cellpadding="0" cellspacing="0" id="LITable">
 		<tr id="LIHeader">
-			<th nowrap class="queryheader" align="left">part number</th>
-			<th nowrap class="queryheader" align="left" id="partnameHeader"><div>name</div></th>
-			<th nowrap class="queryheader" align="left" id="memoHeader">memo</th>
-			<th align="right" nowrap class="queryheader">price</th>
-			<th align="center" nowrap class="queryheader">qty.</th>
-			<th align="right" nowrap class="queryheader">extended</th>
-			<th nowrap class="queryheader">&nbsp;</th>
+			<th nowrap="nowrap" class="queryheader" align="left">part number</th>
+			<th nowrap="nowrap" class="queryheader" align="left" id="partnameHeader"><div>name</div></th>
+			<th nowrap="nowrap" class="queryheader" align="left" id="memoHeader">memo</th>
+			<th align="right" nowrap="nowrap" class="queryheader">price</th>
+			<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
+			<th align="right" nowrap="nowrap" class="queryheader">extended</th>
+			<th nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
 		<?php if($therecord["type"]!="Invoice"){?>
 		<tr id="LIAdd">
-			<td nowrap>
+			<td nowrap="nowrap">
 			<?php fieldAutofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"16","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partnumber"].onchange=populateLineItem;
 			</script>
 			</td>
-			<td nowrap>
+			<td nowrap="nowrap">
 			<?php fieldAutofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","tabindex"=>"16"),false,"") ?>
 			<script language="JavaScript" type="text/javascript">
 					document.forms["record"]["partname"].onchange=populateLineItem;
 			</script>
 			</td>
 			<td><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
-			<td align="right" nowrap><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
-			<td align="center" nowrap><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
-			<td align="right" nowrap><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="true" /></td>
-			<td nowrap align="center"><button type="button" onclick="addLine(this.parentNode);" tabindex="20" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
+			<td align="right" nowrap="nowrap"><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
+			<td align="center" nowrap="nowrap"><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
+			<td align="right" nowrap="nowrap"><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="readonly" /></td>
+			<td nowrap="nowrap" align="center"><button type="button" onclick="addLine(this.parentNode);" tabindex="20" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
   	$lineitemsresult=getLineItems($therecord["id"]);
 		
@@ -243,14 +243,14 @@
 	?><tr id="LISep"><td colspan="7"></td></tr><?php 
 	while($lineitem=mysql_fetch_array($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
-			<td nowrap class="lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlQuotes($lineitem["partnumber"]); else echo "&nbsp;";?></td>
+			<td nowrap="nowrap" class="lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlQuotes($lineitem["partnumber"]); else echo "&nbsp;";?></td>
 			<td width="150"><strong><?php if($lineitem["partname"]) echo htmlQuotes($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
 			<td><?php if($lineitem["memo"]) echo htmlQuotes($lineitem["memo"]); else echo "&nbsp;"?></td>
-			<td align="right" nowrap><?php echo htmlQuotes(numberToCurrency($lineitem["unitprice"]))?></td>
-			<td align="center" nowrap><?php echo $lineitem["quantity"]?></td>
-			<td align="right" nowrap><?php echo htmlQuotes(numbertoCurrency($lineitem["extended"]))?></td>
+			<td align="right" nowrap="nowrap"><?php echo htmlQuotes(numberToCurrency($lineitem["unitprice"]))?></td>
+			<td align="center" nowrap="nowrap"><?php echo $lineitem["quantity"]?></td>
+			<td align="right" nowrap="nowrap"><?php echo htmlQuotes(numbertoCurrency($lineitem["extended"]))?></td>
 			<td align="center"><span class="LIRealInfo"><?php echo $lineitem["productid"]?>[//]<?php echo $lineitem["unitcost"]?>[//]<?php echo $lineitem["unitweight"]?>[//]<?php echo $lineitem["numprice"]?>[//]<?php echo $lineitem["quantity"]?>[//]<?php echo htmlQuotes($lineitem["memo"])?>[//]<?php echo $lineitem["taxable"]?></span>
-				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="graphicButtons buttonMinus" onClick="return deleteLine(this)" tabindex="21" title="Remove line item"><span>-</span></button><?php } ?>
+				<?php if($therecord["type"]=="Invoice") echo "&nbsp;"; else {?><button type="button" class="graphicButtons buttonMinus" onclick="return deleteLine(this)" tabindex="21" title="Remove line item"><span>-</span></button><?php } ?>
 			</td>
 		</tr>
   <?php } } ?><tr id="LITotals">
@@ -285,7 +285,7 @@
 					<legend>Shipping</legend>
 					<p id="pTotalweight">
 						<label for="totalweight">total wt.</label><br/>
-						<input id="totalweight" name="totalweight" type="text" value="<?php echo $therecord["totalweight"]?>" size="5" maxlength="15" readonly="true" class="uneditable" />			
+						<input id="totalweight" name="totalweight" type="text" value="<?php echo $therecord["totalweight"]?>" size="5" maxlength="15" readonly="readonly" class="uneditable" />			
 					</p>
 					
 					<p>
@@ -380,7 +380,7 @@
 							The payment processing establishes an outside connection to an online
 							processing center.
 						</p>
-						<p><label for="paymentNotice Results">payment process results</label><br /><textarea readonly="readonly" id="paymentNoticeResults" rows="5" cols=""></textarea></p>
+						<p><label for="paymentNoticeResults">payment process results</label><br /><textarea readonly="readonly" id="paymentNoticeResults" rows="5" cols=""></textarea></p>
 						<p align="right">
 							<button type="button" class="Buttons" onclick="performPaymentProcess('<?php echo $_SESSION["app_path"] ?>')">process payment</button>
 							<button type="button" class="Buttons" onclick="closeModal()">done</button>
@@ -413,7 +413,7 @@
 		<td class="totalItems">&nbsp;</td>  	
   </tr><tr>
 		<td colspan="2" class="invoiceTotalLabels"><div>subtotal</div></td>
-		<td class="totalItems"><input class="uneditable fieldCurrency fieldTotal" name="totaltni" id="totaltni" type="text" value="<?php echo numberToCurrency($therecord["totaltni"])?>" size="12"  maxlength="15" readonly="true" onchange="calculateTotal();" /></td>
+		<td class="totalItems"><input class="uneditable fieldCurrency fieldTotal" name="totaltni" id="totaltni" type="text" value="<?php echo numberToCurrency($therecord["totaltni"])?>" size="12"  maxlength="15" readonly="readonly" onchange="calculateTotal();" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
@@ -429,7 +429,7 @@
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels important"><div>total</div></td>
 		<td class="totalItems">
-			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="true" />
+			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="readonly" />
 			<input id="totalcost" name="totalcost" type="hidden" value="<?php echo $therecord["totalcost"] ?>" />
 			<input id="totaltaxable" name="totaltaxable" type="hidden" value="<?php echo $therecord["totaltaxable"] ?>" />
 		</td>

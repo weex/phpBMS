@@ -101,10 +101,10 @@
 	<div class="fauxP">
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
-	 <th align="left" nowrap class="queryheader">move</th>		
-	 <th align="center" nowrap class="queryheader">type</th>
-	 <th align="left" nowrap class="queryheader">name</th>
-	 <th align="left" width="100%"  nowrap class="queryheader">field</th>
+	 <th align="left" nowrap="nowrap" class="queryheader">move</th>		
+	 <th align="center" nowrap="nowrap" class="queryheader">type</th>
+	 <th align="left" nowrap="nowrap"class="queryheader">name</th>
+	 <th align="left" width="100%"  nowrap="nowrap" class="queryheader">field</th>
 	 <th nowrap class="queryheader">&nbsp;</th>
 	</tr>
 	<?php 
@@ -115,15 +115,15 @@
 			if($row==1) $row=2; else $row=1;
 	?>
 	<tr class="qr<?php echo $row?> noselects">
-		<td nowrap valign="top" class="small">
+		<td nowrap="nowrap" valign="top" class="small">
 			<button type="button" class="graphicButtons buttonUp" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=moveup&amp;columnid=".$therecord["id"]?>';"><span>up</span></button>
 			<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;columnid=".$therecord["id"]?>';"><span>dn</span></button>
 			<?php echo $therecord["displayorder"]?>
 		</td>
-		<td nowrap valign="top" class="small" align="center"><strong><?php echo htmlQuotes($therecord["type"]);?></strong></td>
-		<td nowrap valign="top" class="small"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
+		<td nowrap="nowrap" valign="top" class="small" align="center"><strong><?php echo htmlQuotes($therecord["type"]);?></strong></td>
+		<td nowrap="nowrap" valign="top" class="small"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
 		<td valign="top"><?php echo htmlQuotes($therecord["field"])?></td>
-		<td nowrap valign="top">
+		<td nowrap="nowrap" valign="top">
 			 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 			 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
 		</td>
@@ -140,7 +140,7 @@
 	
 	<fieldset>
 		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onSubmit="return validateForm(this);">
+		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 			<input id="searchfieldid" name="searchfieldid" type="hidden" value="<?php echo $thesearchfield["id"]?>" />
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
 			<p>
