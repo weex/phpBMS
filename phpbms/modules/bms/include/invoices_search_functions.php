@@ -109,7 +109,7 @@ function mark_asinvoice($theids){
 	global $dblink;
 
 	$whereclause=buildWhereClause($theids,"invoices.id");
-	$whereclause="(".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti;";
+	$whereclause="(".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti";
 	
 	//Look up default assignedto
 	$querystatement="SELECT defaultassignedtoid FROM invoicestatuses WHERE id=4";
@@ -120,7 +120,7 @@ function mark_asinvoice($theids){
 	if($therecord["defaultassignedtoid"]!="")
 		$assignedtoid=$therecord["defaultassignedtoid"];
 
-	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\" invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE".$whereclause;
+	$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\", invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE".$whereclause;
 	$queryresult = mysql_query($querystatement,$dblink);
 	if (!$queryresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
 	
@@ -130,9 +130,10 @@ function mark_asinvoice($theids){
 	//delete/update history
 	$querystatement="SELECT id FROM invoices WHERE (".$whereclause.") AND statusid!=4";
 	$queryresult = mysql_query($querystatement,$dblink);
+	if (!$queryresult) reportError(300,"Could not retrieve history for history cleaning: ".mysql_error($dblink)." -- ".$querystatement);		
 	
 	while($therecord=mysql_fetch_array($queryresult)){
-		$querystatement = "UPDATE invoices SET invoices.statusid=4,invoices.statusdate=Now(), invoices.assignedtoid=".$assignedtoid.", WHERE id=".$therecord["id"];
+		$querystatement = "UPDATE invoices SET invoices.statusid=4,invoices.statusdate=Now(), invoices.assignedtoid=".$assignedtoid." WHERE invoices.id=".$therecord["id"];
 		$queryresult = mysql_query($querystatement,$dblink);
 		if (!$queryresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
 

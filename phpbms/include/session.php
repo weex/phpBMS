@@ -111,10 +111,10 @@ function reportError($id,$extras,$format=true,$path="",$die=true,$log=true){
 		echo $extras;
 		
 	if($log && function_exists("sendLog")){
-		global $dblik;
+		global $dblink;
 		if(!isset($_SESSION["userinfo"]["id"]))
 			$_SESSION["userinfo"]["id"]="NULL";
-		sendLog($dblink,"ERROR",$id.":".$extras,$_SESSION["userinfo"]["id"]);
+		sendLog($dblink,"ERROR",$id.": ".$_SERVER["REQUEST_URI"]." -- ".$extras,$_SESSION["userinfo"]["id"]);
 	}
 	if($die) die();
 }

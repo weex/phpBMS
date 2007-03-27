@@ -275,7 +275,7 @@ CREATE TABLE `rolestousers` (
 ) TYPE = MYISAM;
 
 CREATE TABLE `scheduler` (
-  `id` int(10) unsigned NOT NULL,
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(45) default NULL,
   `job` varchar(128) default NULL,
   `crontab` varchar(64) default NULL,
@@ -287,7 +287,7 @@ CREATE TABLE `scheduler` (
   `createdby` int(10) unsigned default NULL,
   `creationdate` datetime default NULL,
   `modifiedby` int(10) unsigned default NULL,
-  `modifieddate` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `modifieddate` TIMESTAMP,
   PRIMARY KEY  (`id`),
   KEY `inactivated` (`inactive`),
   KEY `startdate` (`startdatetime`),
