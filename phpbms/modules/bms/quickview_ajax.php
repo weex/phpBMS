@@ -186,8 +186,8 @@ function showClient($clientid,$basepath){
 		<?php 
 		
 		$theaddress=htmlQuotes($therecord["shiptoaddress1"])."<br />";
-		if($therecord["shiptoaddress2"]) $theaddress.=htmlQuotes($therecord["address2"])."<br />";
-		if($therecord["shiptocity"]) $theaddress.=htmlQuotes($therecord["city"]).", ";
+		if($therecord["shiptoaddress2"]) $theaddress.=htmlQuotes($therecord["shiptoaddress2"])."<br />";
+		if($therecord["shiptocity"]) $theaddress.=htmlQuotes($therecord["shiptocity"]).", ";
 		$theaddress.=htmlQuotes($therecord["shiptostate"])." ";
 		$theaddress.=htmlQuotes($therecord["shiptopostalcode"])." ";
 		$theaddress.=htmlQuotes($therecord["shiptocountry"]);
