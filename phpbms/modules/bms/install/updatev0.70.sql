@@ -85,4 +85,4 @@ DELETE FROM `tablefindoptions` WHERE `tabledefid`=7;
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,'All Records','productcategories.id != 0',3,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,'Active Records','productcategories.inactive=0',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,'Inactive Records','productcategories.inactive=1',2,0);
-UPDATE `tablecolumns` set `column`='invoicesstatuses.name' WHERE `column`='invoices.name';
+UPDATE `tablecolumns` set `column`='invoicestatuses.name' WHERE `column`='invoices.name';
