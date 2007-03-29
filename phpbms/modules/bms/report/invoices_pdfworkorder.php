@@ -55,7 +55,7 @@
 	//Generate the invoice Query
 	$querystatement="SELECT invoices.id, totalweight, totaltni, totalti, totalcost, invoices.taxareaid,
 					shippingmethods.name as shippingmethod, paymentmethods.name as paymentmethod, checkno, bankname, invoices.ccnumber,
-					invoices.ccexpiration, specialinstructions, printedinstructions, tax, shipping,
+					invoices.ccexpiration, invoices.ccverification, specialinstructions, printedinstructions, tax, shipping,
 					clients.firstname, clients.lastname, clients.company,
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
 					invoices.address1 as shiptoaddress1,invoices.address2 as shiptoaddress2,invoices.city as shiptocity,
@@ -64,6 +64,7 @@
 					orderdate,
 					invoices.totalti-invoices.amountpaid as amountdue,
 					invoices.ponumber,invoices.discountamount,invoices.discountid,
+					
 					
 					invoices.createdby, invoices.creationdate,
 					invoices.modifiedby, invoices.modifieddate
