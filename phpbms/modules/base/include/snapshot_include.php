@@ -145,16 +145,16 @@ function showSevenDays($userid){
 		$queryresult=getEventsForDay($theday,$userid,$repeatArray[$theday]);
 		if (mysql_num_rows($queryresult)){
 			while($therecord=mysql_fetch_array($queryresult)){
-				$times=$therecord["starttime"]."&nbsp;";
+				$times=formatFromSQLTime($therecord["starttime"])."&nbsp;";
 				if($therecord["endtime"]){
 					$times.= "- ";
 					if($therecord["startdate"]!=$therecord["enddate"])
 						$times.=formatFromSQLDate($therecord["enddate"])." ";
-					$times.=$therecord["endtime"]." ";								
+					$times.=formatFromSQLTime($therecord["endtime"])." ";
 				}
 				?><tr>
 					<td class="small event" nowrap="nowrap" valign="top"><?php echo $times?></td>
-					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
+					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
 				</tr><?php
 			}
 		} else {

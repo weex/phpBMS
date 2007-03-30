@@ -289,13 +289,11 @@ function stringToTime(sTime,format){
 				sTime=sTime.replace(/ AM/,"");
 				sTime=sTime.replace(/ PM/,"");
 				timeArray=sTime.split(":");
-				if(timeArray.length=2){
+				if(timeArray.length==2){
 					var hour=parseInt(timeArray[0],10);
-					if (hour!=12 && timeadd==12)
-						hour=hour+timeadd;
-					else 
-						if(hour==12)
-							hour=0;
+					if(hour==12) hour=0;					
+					hour=hour+timeadd;
+							
 					thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
 				}
 			break;

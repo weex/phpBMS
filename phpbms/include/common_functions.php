@@ -192,11 +192,9 @@ function stringToTime($timestring,$format=TIME_FORMAT){
 					$addtime=12;
 				}
 				$timearray=explode(":",$timestring);
-				if($timearray[0]!="12" && $addtime==12)
-					$timearray[0]= ((integer) $timearray[0]) + $addtime;
-				else 
-					if ($timearray[0]==12)
-						$timearray[0]=0;
+				if ($timearray[0]==12)
+					$timearray[0]=0;
+				$timearray[0]= ((integer) $timearray[0]) + $addtime;
 				$thetime=mktime($timearray[0],$timearray[1],0);
 			break;
 		}
