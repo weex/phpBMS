@@ -427,10 +427,6 @@ function populateLineItem(){
 				partnumberDS.value="";
 				partname.value="";
 				partnameDS.value="";
-				var thediv1=getObjectFromID("dd-partnumber");
-				var thediv2=getObjectFromID("dd-partname");
-				thediv1.style.display="none";
-				thediv2.style.display="none";
 				partnameDS.focus();
 				showModal(message,"Prerequisite Not Met",400,10);
 
