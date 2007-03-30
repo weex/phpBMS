@@ -209,7 +209,7 @@ function editThis(therow){
 		selIDs=new Array();
 		selIDs[0]=therownum;
 	}
-	if(editFile!="/N/A"){
+	if(editFile.indexOf("N/A")==-1){
 		if (editFile.indexOf("?")>=0)
 			connector="&";
 		else

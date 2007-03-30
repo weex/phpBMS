@@ -60,8 +60,8 @@
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 <script language="JavaScript" src="javascript/invoice.js" type="text/javascript"></script>
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-<?php $shippingMethods=getShipping($dblink)?>
-<?php $paymentMethods=getPayments($dblink)?>
+<?php $shippingMethods=getShipping($dblink,$therecord["shippingmethodid"])?>
+<?php $paymentMethods=getPayments($dblink,$therecord["paymentmethodid"])?>
 </head>
 <body onload="initializePage()"><?php include("../../menu.php")?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>

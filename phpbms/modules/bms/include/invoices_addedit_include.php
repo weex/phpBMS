@@ -71,8 +71,8 @@ function showPaymentSelect($id,$paymentMethods){
 	<?php 
 }
 
-function getPayments($dblink){
-	$querystatement="SELECT id,name,type,onlineprocess,processscript FROM paymentmethods WHERE inactive=0 ORDER BY priority,name";
+function getPayments($dblink,$paymentmethodid){
+	$querystatement="SELECT id,name,type,onlineprocess,processscript FROM paymentmethods WHERE inactive=0 OR id=".((int) $paymentmethodid)." ORDER BY priority,name";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Error Retreiving Payment Methods ".$querystatement." - ".mysql_error($dblink)));
 	$thereturn=array();
@@ -101,8 +101,8 @@ function showShippingSelect($id,$shippingMethods){
 	<?php 
 }
 
-function getShipping($dblink){
-	$querystatement="SELECT id,name,canestimate,estimationscript FROM shippingmethods WHERE inactive=0 ORDER BY priority,name";
+function getShipping($dblink,$shippingmethodid){
+	$querystatement="SELECT id,name,canestimate,estimationscript FROM shippingmethods WHERE inactive=0 OR id=".((int) $shippingmethodid)." ORDER BY priority,name";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,("Error Retreiving Shipping Methods ".$querystatement." - ".mysql_error($dblink)));
 	$thereturn=array();
