@@ -111,8 +111,8 @@ class purchaseHistoryReport{
 		WHERE clients.id=".$id."   
 		and ".$thestatus."		
 		HAVING 
-		thedate >=".$mysqlfromdate."
-		and thedate <=".$mysqltodate."
+		thedate >=\"".$mysqlfromdate."\"
+		and thedate <=\"".$mysqltodate."\"
 		ORDER BY thedate,invoices.id;";
 		$thequery=mysql_query($querystatement,$dblink);
 		if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);

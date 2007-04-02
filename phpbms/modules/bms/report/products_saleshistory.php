@@ -106,8 +106,8 @@ class salesHistoryReport{
 					inner join invoices on lineitems.invoiceid=invoices.id) 
 						inner join clients on invoices.clientid=clients.id
 			where products.id=".$id."
-			and invoices.".$searchdate.">=".$mysqlfromdate."
-			and invoices.".$searchdate."<=".$mysqltodate."
+			and invoices.".$searchdate.">=\"".$mysqlfromdate."\"
+			and invoices.".$searchdate."<=\"".$mysqltodate."\"
 			and ".$thestatus."
 			order by invoices.invoicedate, invoices.orderdate;";
 		$thequery=mysql_query($querystatement,$dblink);

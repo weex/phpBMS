@@ -38,6 +38,7 @@
 */
 
 require("../../../include/session.php");
+require("../../../include/common_functions.php");
 	
 class totalReport{
 	

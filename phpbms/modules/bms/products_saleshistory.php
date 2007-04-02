@@ -89,8 +89,8 @@
 					inner join clients on invoices.clientid=clients.id
 		WHERE products.id=".$_GET["id"]." 
 		AND ".$thestatus."
-		HAVING thedate >=".$mysqlfromdate."
-		and thedate <=".$mysqltodate." ORDER BY thedate";
+		HAVING thedate >=\"".$mysqlfromdate."\"
+		and thedate <=\"".$mysqltodate."\" ORDER BY thedate";
 	$queryresult=mysql_query($querystatement,$dblink);
 	if(!$queryresult) reportError(100,mysql_error($dblink)." ".$querystatement);
 	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;

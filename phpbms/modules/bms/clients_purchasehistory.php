@@ -84,11 +84,14 @@
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
 	//get history
-	$querystatement="SELECT invoices.id,
+	$querystatement="SELECT 
+		invoices.id,
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
 		invoices.type,
-		products.partname as partname, products.partnumber as partnumber,
-		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
+		products.partname as partname, 
+		products.partnumber as partnumber,
+		lineitems.quantity as qty, 
+		lineitems.unitprice*lineitems.quantity as extended,
 		lineitems.unitprice as price
 		FROM ((clients inner join invoices on clients.id=invoices.clientid) 
 				inner join lineitems on invoices.id=lineitems.invoiceid) 
@@ -96,8 +99,8 @@
 		WHERE clients.id=".$_GET["id"]."   
 		and ".$thestatus."		
 		HAVING 
-		thedate >=".$mysqlfromdate."
-		and thedate <=".$mysqltodate."
+		thedate >=\"".$mysqlfromdate."\"
+		and thedate <=\"".$mysqltodate."\"
 		ORDER BY thedate,invoices.id;";
 	$queryresult=mysql_query($querystatement);
 	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history: ".mysql_error($dblink)." --".$querystatement);

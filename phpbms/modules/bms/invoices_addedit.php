@@ -186,7 +186,7 @@
 
 		<fieldset>
 			<legend>details</legend>
-			<p>	<label for="weborder">web / confirmation Nnumber</label><br />
+			<p>	<label for="weborder">web / confirmation number</label><br />
 				<?php fieldCheckbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
 				<input name="webconfirmationno" type="text" value="<?php echo $therecord["webconfirmationno"] ?>" size="64" maxlength="64" tabindex="14" />
 			</p>
