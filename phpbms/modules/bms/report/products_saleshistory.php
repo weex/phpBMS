@@ -145,10 +145,10 @@ class salesHistoryReport{
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["invoicedate"]?formatFromSQLDate($therecord["invoicedate"]):"&nbsp;" ?></td>
 	 <td nowrap="nowrap"><?php echo $therecord["client"]?></td>
 	 <td align="center" nowrap="nowrap"><?php echo number_format($therecord["qty"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["cost"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["cost"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extendedcost"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["price"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
     <?php } ?>
 	<tr>
@@ -157,10 +157,10 @@ class salesHistoryReport{
 	 <td class="grandtotals">&nbsp;</td>
 	 <td class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals"><?php echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap="nowrap"class="grandtotals">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
-	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalcostextended,2)?></td>
-	 <td align="right" nowrap="nowrap" class="grandtotals">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
-	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" nowrap="nowrap"class="grandtotals">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo numberToCurrency($avgcost)?></td>
+	 <td align="right" class="grandtotals"><?php echo numberToCurrency($totalcostextended)?></td>
+	 <td align="right" nowrap="nowrap" class="grandtotals">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo numberToCurrency($avgprice)?></td>
+	 <td align="right" class="grandtotals"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
    </table>
 <?php

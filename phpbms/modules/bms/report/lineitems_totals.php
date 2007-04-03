@@ -203,9 +203,9 @@ class totalReport{
 				<td class="lineitems" nowrap="nowrap"><?php if($therecord["invoicedate"]) echo formatFromSQLDate($therecord["invoicedate"]); else echo "&nbsp;"?></td>
 				<td class="lineitems" width="20%"><?php echo $therecord["thename"]?></td>
 				<td width="60%" class="lineitems" nowrap="nowrap"><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
-				<td width="9%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
+				<td width="9%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["unitprice"])?></td>
 				<td width="8%" class="lineitems" align="center" nowrap="nowrap"><?php echo number_format($therecord["quantity"],2)?></td>
-				<td width="7%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+				<td width="7%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 			</tr>
 			<?php
 		}

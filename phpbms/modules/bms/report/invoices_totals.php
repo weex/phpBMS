@@ -225,9 +225,9 @@ class totalReport{
 			?>
 			<tr>
 				<td width="65%" class="lineitems" nowrap="nowrap"><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
-				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["unitprice"],2)?></td>
-				<td width="12%" class="lineitems" align="center" nowrap="nowrap"><?php echo number_format($therecord["quantity"],2)?></td>
-				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["unitprice"])?></td>
+				<td width="12%" class="lineitems" align="center" nowrap="nowrap"><?php echo numberToCurrency($therecord["quantity"])?></td>
+				<td width="24%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 			</tr>
 			<?php
 		}

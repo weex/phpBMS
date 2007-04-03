@@ -175,9 +175,9 @@
 		<td align="left" nowrap="nowrap"><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
 		<td nowrap="nowrap"><?php echo $therecord["partnumber"]?></td>
 		<td ><?php echo $therecord["partname"]?></td>
-		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["price"])?></td>
 		<td align="center" nowrap="nowrap"><?php echo $therecord["qty"]?></td>
-		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
     <?php }//end while ?>
     <?php  if(!mysql_num_rows($queryresult)) {?>
@@ -191,7 +191,7 @@
 	 <td class="queryfooter">&nbsp;</td>
 	 <td align="right" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
    </table>	
 	</div></div><?php include("../../footer.php")?></body>

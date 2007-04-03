@@ -145,9 +145,9 @@ class purchaseHistoryReport{
 		<td align="left" nowrap="nowrap"><?php echo $therecord["formateddate"]?$therecord["formateddate"]:"&nbsp;" ?></td>
 		<td nowrap="nowrap"><?php echo $therecord["partnumber"]?></td>
 		<td nowrap="nowrap"><?php echo $therecord["partname"]?></td>
-		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
+		<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["price"])?></td>
 		<td align="center" nowrap="nowrap"><?php echo $therecord["qty"]?></td>
-		<td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+		<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
 	<?php }//end while ?>
 	<tr>

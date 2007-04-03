@@ -165,10 +165,10 @@
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
 	 <td nowrap="nowrap"><?php echo $therecord["client"]?></td>
 	 <td align="center" nowrap="nowrap"><?php echo number_format($therecord["qty"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["cost"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extendedcost"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["price"],2)?></td>
-	 <td align="right" nowrap="nowrap"><?php echo "\$".number_format($therecord["extended"],2)?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["cost"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extendedcost"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["price"])?></td>
+	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
     <?php } if(!mysql_num_rows($queryresult)) {?>
 	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
@@ -178,10 +178,10 @@
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter"><?php echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo "\$".number_format($avgcost,2)?></td>
-	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalcostextended,2)?></td>
-	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo "\$".number_format($avgprice,2)?></td>
-	 <td align="right" class="queryfooter"><?php echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo numberToCurrency($avgcost)?></td>
+	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalcostextended)?></td>
+	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo numberToCurrency($avgprice)?></td>
+	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
    </table></div></form>	
 </div>
