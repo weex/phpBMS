@@ -137,38 +137,6 @@ function showTabs($dblink,$tabgroup,$currenttabid,$recordid=0){
 	</ul><?php
 }
 
-function displayTabs($tabarray,$selected="none") {
-	?>
-	<ul class="tabs">
-	<?php
-	foreach($tabarray as $theitem){
-		if(!isset($theitem["disabled"])) $theitem["disabled"]=false;
-		if(!isset($theitem["notify"])) $theitem["notify"]=false;
-				
-		?><li <?php if($theitem["name"]==$selected) echo "class=\"tabsSel\"" ?>><?php
-
-		if ($theitem["name"]==$selected || $theitem["disabled"]) {
-			$opener="<div>";
-			$closer="</div>";
-		}
-		else {
-			$opener="<a href=\"".$theitem["href"]."\">";
-			$closer="</a>";
-		}
-
-		if ($theitem["notify"]) {
-			$opener.="<span>";
-			$closer="</span>".$closer;
-		}
-		
-		echo $opener.$theitem["name"].$closer;
-		
-		?></li><?php 
-	}
-	?>
-	</ul>
-	<?php
-}
 
 //=====================================================================
 function getUserName($id=0){
