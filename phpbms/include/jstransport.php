@@ -17,6 +17,10 @@
 	} echo "\n\n";	
 	
 	//date formating
+	?>APP_PATH="<?php echo htmlQuotes($_SESSION["app_path"])?>";<?php
+	echo "\n\n";
+
+	//date formating
 	?>DATE_FORMAT="<?php echo htmlQuotes($_SESSION["date_format"])?>";<?php
 	echo "\n\n";
 	

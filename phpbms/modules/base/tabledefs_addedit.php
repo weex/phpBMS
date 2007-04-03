@@ -41,7 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/tabledefs_functions.php");
 	include("include/tabledefs_addedit_include.php");
 	
 	$pageTitle="Table Definition";
@@ -59,7 +58,7 @@
 <body><?php include("../../menu.php")?>
 
 
-<?php tabledefs_tabs("General",$therecord["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"tabledefs entry",1,$therecord["id"])?><div class="bodyline">
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 	<div id="topButtons">
 		  <?php showSaveCancel(1); ?>

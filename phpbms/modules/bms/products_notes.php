@@ -38,14 +38,14 @@
 */
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
-	include("include/products_functions.php");
 
 	require_once("../../include/search_class.php");
 	require_once("../../include/common_functions.php");	
 
 	//set the table passing stuff
 	$reftableid=4;
-	$refid=(integer) $_GET["refid"];
+	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+	$refid=(integer) $_GET["id"];
   	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
 	$backurl="../bms/products_notes.php";
 	$base="../../";
@@ -56,10 +56,8 @@
 	
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["partname"];
 
-	function doTabs(){
-		global $refid;
-		product_tabs("Notes/Tasks/Events",$refid);
-	}
+	$tabgroup="products entry";
+	$selectedtabid=14;
 	
 	include("../base/notes_records.php");
 	//===================================================================================

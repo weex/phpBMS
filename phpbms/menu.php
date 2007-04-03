@@ -62,10 +62,8 @@ function getSubItems($parentid){
 <div id="menu">
 	<h1><a href="<?php echo $_SESSION["app_path"]?><?php echo $_SESSION["default_load_page"]?>" title="<?php echo htmlQuotes($_SESSION["application_name"]);?>" name="toptop"><span><?php echo $_SESSION["application_name"];?></span></a></h1>
 
-	<div id="menuRighthandButtons">
-		<?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>
-		<button name="menuLogout" type="button" onclick="document.location=('<?php echo $_SESSION["app_path"]?>logout.php')" title="log out" class="smallButtons">log out</button>
-		<button name="menuHelp" type="button" onclick="showHelp('<?php echo $_SESSION["app_path"]?>')" title="Help" class="smallButtons">?</button>
+	<div id="menuRighthand">
+		<?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>	
 	</div>
 		
 	<ul id="menuBar">
@@ -75,7 +73,7 @@ function getSubItems($parentid){
 			if(hasRights($menurecord["roleid"])){
 				if($menurecord["link"]) {
 					if(strpos($menurecord["link"],"http")!==0 && strpos($menurecord["link"],"javascript")!==0)
-						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];
+						$menurecord["link"]=$_SESSION["app_path"].$menurecord["link"];						
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				}
 				else { ?><li><a href="#toptop"  id="menu<?php echo $menurecord["id"]?>"  onclick="expandMenu(this);return false;" onmouseover="checkExpand(this)"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems"id="submenu<?php echo $menurecord["id"]?>"><?php 
@@ -88,8 +86,10 @@ function getSubItems($parentid){
 								$sep=true;
 							else{
 								if(hasRights($subrecord["roleid"])){
-									if(strpos($subrecord["link"],"http")!==0)
+									if(strpos($subrecord["link"],"http")!==0 && strpos($subrecord["link"],"javascript")!==0)
 										$subrecord["link"]=$_SESSION["app_path"].$subrecord["link"];
+									if(strpos($subrecord["link"],"javascript")===0)
+										$subrecord["link"]="#\" onclick=\"".str_replace("javascript:","",$subrecord["link"]);	
 								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php 
 									$sep=false;
 								}//end if

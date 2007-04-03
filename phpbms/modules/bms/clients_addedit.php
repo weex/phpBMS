@@ -40,7 +40,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/clients_functions.php");
 	include("include/clients_addedit_include.php");
 	
 	$pageTitle=ucwords($therecord["type"]);
@@ -62,7 +61,7 @@
 <body><?php include("../../menu.php")?>
 
 <form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]); if(isset($_GET["invoiceid"])) echo "&amp;invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php client_tabs("General",$therecord["id"]); ?>
+<?php showTabs($dblink,"clients entry",6,$therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>

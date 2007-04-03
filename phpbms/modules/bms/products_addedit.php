@@ -41,7 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/products_functions.php");
 	include("include/products_addedit_include.php");
 	
 	$catnumber=checkNumberCategories($dblink);
@@ -63,7 +62,7 @@
 <body><?php include("../../menu.php")?>
 
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php product_tabs("General",$therecord["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"products entry",10,$therecord["id"]);?><div class="bodyline">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><?php echo $pageTitle ?></h1>

@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 204 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2007-03-26 14:07:58 -0700 (Mon, 26 Mar 2007) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -37,44 +37,22 @@
  +-------------------------------------------------------------------------+
 */
 
-//format tabs for clients.
-function client_tabs($selected="none",$id=0) {
+//=============================================
+//functions
+//=============================================
+function delete_record($theids){
 	global $dblink;
 	
-	$querystatement="select id from notes where 
-						attachedtabledefid=2 and attachedid=".$id;
-	$queryresult=mysql_query($querystatement,$dblink);
-	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;
+	//passed variable is array of user ids to be revoked
+	$whereclause=buildWhereClause($theids,"tabs.id");
+	
+	$querystatement = "DELETE FROM menu WHERE ".$whereclause;
+	$queryresult = mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(300,"Delete Failed: ".mysql_error($dblink)." -- ".$querystatement);
 
-	$querystatement="SELECT id FROM attachments where 
-						tabledefid=2 and recordid=".$id;
-	$queryresult=mysql_query($querystatement,$dblink);
-	$queryresult? $numfilerows=mysql_num_rows($queryresult): $numfilerows=0;
+	$message=buildStatusMessage(mysql_affected_rows($dblink),count($theids));
 
-
-	$thetabs=array(
-		array(
-			"name"=>"General",
-			"href"=>($id)?"clients_addedit.php?id=".$id:"clients_addedit.php"
-		),
-		array(
-			"name"=>"Purchase History",
-			"href"=>(($id)?"clients_purchasehistory.php?id=".$id:"N/A"),
-			"disabled"=>(($id)?false:true)
-		),
-		array(
-			"name"=>"Attachments",
-			"href"=>(($id)?"clients_attachments.php?refid=".$id:"N/A"),
-			"disabled"=>(($id)?false:true),
-			"notify"=>($numfilerows?true:false)
-		),
-		array(
-			"name"=>"Notes/Tasks/Events",
-			"href"=>(($id)?"clients_notes.php?refid=".$id:"N/A"),
-			"disabled"=>(($id)?false:true),
-			"notify"=>($numrows?true:false)
-		)
-	);
-	displayTabs($thetabs,$selected);
+	$message.=" deleted.";
+	return $message;
 }
 ?>

@@ -265,14 +265,14 @@ CREATE TABLE `roles` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-) TYPE = MyISAM;
+);
 
 CREATE TABLE `rolestousers` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `userid` INTEGER UNSIGNED NOT NULL,
   `roleid` INTEGER UNSIGNED NOT NULL,
   PRIMARY KEY(`id`)
-) TYPE = MYISAM;
+);
 
 CREATE TABLE `scheduler` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -292,4 +292,21 @@ CREATE TABLE `scheduler` (
   KEY `inactivated` (`inactive`),
   KEY `startdate` (`startdatetime`),
   KEY `enddate` (`enddatetime`)
+);
+
+CREATE TABLE `tabs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `tabgroup` varchar(45) NOT NULL,
+  `location` varchar(128) default NULL,
+  `displayorder` int(11) default '0',
+  `enableonnew` tinyint(3) unsigned default '0',
+  `roleid` int(11) default '0',
+  `tooltip` varchar(128) default NULL,
+  `notificationsql` text,
+  `createdby` int(11) default NULL,
+  `creationdate` datetime default NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp,
+  PRIMARY KEY  (`id`)
 );

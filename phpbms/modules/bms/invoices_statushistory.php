@@ -38,9 +38,8 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 		
-	include("include/invoices_functions.php");
-	
-	$refid=(integer) $_GET["refid"];
+	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+	$refid=(integer) $_GET["id"];
 	$refquery="select firstname,lastname,company from clients where id=".$refid;
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);
@@ -97,7 +96,7 @@
 <script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php invoice_tabs("Status History",$refid);?><div class="bodyline">
+<?php showTabs($dblink,"invoices entry",16,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<p>

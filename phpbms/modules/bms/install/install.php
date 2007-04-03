@@ -141,6 +141,7 @@ else{
 	$thereturn.="\n";
 	$thereturn.=importData("choices");
 	$thereturn.=importData("menu");
+	$thereturn.=importData("tabs");
 	$thereturn.=importData("modules");
 	$thereturn.=importData("relationships");
 	$thereturn.=importData("reports");

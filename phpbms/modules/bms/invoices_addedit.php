@@ -41,7 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/invoices_functions.php");
 	include("include/invoices_addedit_include.php");
 	
 	$pageTitle=$therecord["type"];
@@ -65,7 +64,7 @@
 </head>
 <body onload="initializePage()"><?php include("../../menu.php")?>
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php invoice_tabs("General",$therecord["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"invoices entry",15,$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
 		  		?><div id="printButton">

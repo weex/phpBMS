@@ -40,8 +40,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/products_functions.php");
-
 	$refquery="select partname from products where id=".$_GET["id"];
 	$refquery=mysql_query($refquery,$dblink);
 	$refrecord=mysql_fetch_array($refquery);	
@@ -80,7 +78,7 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 <script language="JavaScript" src="javascript/prereq.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php product_tabs("Prerequisites",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"products entry",11,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<input id="deleteid" name="deleteid" type="hidden" value="0" />

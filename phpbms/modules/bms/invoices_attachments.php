@@ -39,14 +39,14 @@
 
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
-	include("include/invoices_functions.php");
 
 	require_once("../../include/search_class.php");
 	require_once("../../include/common_functions.php");	
 
 	//set the table passing stuff
 	$tabledefid=3;
-	$refid=(integer) $_GET["refid"];
+	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+	$refid=(integer) $_GET["id"];
 	$securitywhere="";
 	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
 		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";	
@@ -67,10 +67,8 @@
 	
 	$pageTitle="Attachments: ".$refrecord["id"].", ".$refrecord["name"];
 
-	function doTabs(){
-		global $refid;
-		invoice_tabs("Attachments",$refid);	
-	}
+	$tabgroup="invoices entry";
+	$selectedtabid=17;
 	
 	include("../base/attachments_records.php");
 	

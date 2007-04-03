@@ -98,6 +98,45 @@ function displayRights($roleid,$rolename,$dblink=false){
 
 //Create Tabs
 //===================================
+function showTabs($dblink,$tabgroup,$currenttabid,$recordid=0){
+	$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
+	$queryresult=mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(400,"showTabs could not retrieve tab information: ".$tabgroup);
+	?><ul class="tabs"><?php 
+		while($therecord=mysql_fetch_array($queryresult)){
+			?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
+				if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
+					$opener="<div>";
+					$closer="</div>";
+				} else{
+					$opener="<a href=\"".$_SESSION["app_path"].$therecord["location"]."?id=".$recordid."\">";
+					$closer="</a>";
+				}
+				if($therecord["notificationsql"]!=""){
+					$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
+					$notificationresult=@ mysql_query($therecord["notificationsql"],$dblink);
+					if(!$notificationresult) {
+						echo "</li></ul>";
+						reportError(400,"Bad Notification SQL Statement in Tab Creation: ".mysql_error($dblink)." -- ".$therecord["notificationsql"]);
+					}
+					if(mysql_num_rows($notificationresult)!=0){
+						$notificationrecord=mysql_fetch_array($notificationresult);
+						if(isset($notificationrecord["theresult"]))
+							if($notificationrecord["theresult"]>0){
+								$opener.="<span>";
+								$closer="</span>".$closer;
+							}
+					}
+				}
+				
+				echo $opener.$therecord["name"].$closer;
+
+			?></li><?php 
+		}	
+	?>
+	</ul><?php
+}
+
 function displayTabs($tabarray,$selected="none") {
 	?>
 	<ul class="tabs">

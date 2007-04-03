@@ -172,6 +172,7 @@ function loadSettings() {
 						
 					$thereturn.=importData("choices");
 					$thereturn.=importData("menu");
+					$thereturn.=importData("tabs");
 					$thereturn.=importData("modules");
 					$thereturn.=importData("notes");
 					$thereturn.=importData("reports");

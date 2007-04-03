@@ -36,8 +36,8 @@
  +-------------------------------------------------------------------------+
 */
 
-function showHelp(base){
-	var theURL=base+"help/index.php";
+function showHelp(){
+	var theURL=APP_PATH+"help/index.php";
 	loadXMLDoc(theURL,null,false);
 	showModal(req.responseText,"phpBMS Help Resources",550);
 

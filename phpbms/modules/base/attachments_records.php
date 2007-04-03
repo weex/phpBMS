@@ -44,7 +44,7 @@
 	$displayTable->tableoptions["printex"]=0;
 	$displayTable->tableoptions["othercommands"]=false;
 	$displayTable->tableoptions["select"]=0;
-
+	
 	if(isset($_POST["deleteCommand"]))
 		if($_POST["deleteCommand"]) $_POST["command"]=$_POST["deleteCommand"];
 
@@ -81,11 +81,11 @@
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-	xtraParamaters="<?php echo "backurl=".$backurl."&tabledefid=".$tabledefid."&refid=".$refid ?>";
+	xtraParamaters="<?php echo "backurl=".$backurl."&amp;tabledefid=".$tabledefid."&amp;refid=".$refid ?>";
 </script>
 
 </head>
-<body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
+<body><?php include("../../menu.php")?><?php showTabs($dblink,$tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
 		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onsubmit="setSelIDs(this);return true;">

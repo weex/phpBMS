@@ -41,8 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/tabledefs_functions.php");
-
 	include("include/tabledefs_searchfields_include.php");
 
 	//process page
@@ -95,7 +93,7 @@
 <body><?php include("../../menu.php")?>
 
 
-<?php tabledefs_tabs("Search Fields",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"tabledefs entry",5,$_GET["id"])?><div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 	
 	<div class="fauxP">

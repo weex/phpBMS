@@ -41,8 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/tabledefs_functions.php");
-
 	include("include/tabledefs_columns_include.php");
 
 	//process page
@@ -97,7 +95,7 @@
 <body><?php include("../../menu.php")?>
 
 
-<?php tabledefs_tabs("Columns",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"tabledefs entry",2,$_GET["id"])?><div class="bodyline">
 	<h1><span><?php echo $pageTitle?></span></h1>
 	<div class="fauxP">
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">

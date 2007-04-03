@@ -41,8 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/clients_functions.php");
-
 	if(!isset($_GET["id"])) reportError(300,"Passed variable not set (id)");
 	$clientquerystatement="SELECT firstname,lastname,company FROM clients WHERE id=".$_GET["id"];
 	$clientqueryresult=mysql_query($clientquerystatement,$dblink);
@@ -117,7 +115,7 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php client_tabs("Purchase History",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"clients entry",7,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">

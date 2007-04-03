@@ -24,12 +24,10 @@
 		border:0;
 	}
 	
-	#menuRighthandButtons{
-		font-size:11px;
+	#menuRighthand{
 		float:right;
-		padding:10px 10px 0 0;
+		padding:14px 15px 0 0;
 	}
-	#menuRighthandButtons button{margin:0px 0 0 5px; height:24px;vertical-align:middle;}
 
 	#menuBar {
 		display:block;
@@ -50,7 +48,7 @@
 		border-right:1px solid #5a6375;
 		font-size:12px;
 		color:white;
-		padding:6px 10px;
+		padding:6px 15px;
 	}
 	#menuBar a:hover{ 
 		background-position:0px 27px;

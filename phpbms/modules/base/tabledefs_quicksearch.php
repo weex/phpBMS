@@ -41,8 +41,6 @@
 	include("../../include/common_functions.php");
 	include("../../include/fields.php");
 
-	include("include/tabledefs_functions.php");
-
 	include("include/tabledefs_quicksearch_include.php");
 
 	//process page
@@ -94,8 +92,7 @@
 </head>
 <body><?php include("../../menu.php")?>
 
-
-<?php tabledefs_tabs("Quick Search",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"tabledefs entry",4,$_GET["id"])?><div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 	<div class="fauxP">
 	<table border="0" cellpadding="3" cellspacing="0" class="querytable">

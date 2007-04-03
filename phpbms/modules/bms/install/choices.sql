@@ -23,3 +23,6 @@ INSERT INTO choices VALUES (122,'paymentmethod','American Express');
 INSERT INTO choices VALUES (123,'shippingmethod','UPS 2nd Day Air');
 INSERT INTO choices VALUES (124,'shippingmethod','FedEx Priority Overnight AM');
 INSERT INTO choices VALUES (125,'shippingmethod','');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','products entry');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','clients entry');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','invoices entry');

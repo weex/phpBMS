@@ -42,7 +42,6 @@
 	
 	if(!hasRights(30)) goURL($_SESSION["app_path"]."noaccess.php");
 	
-	include("include/products_functions.php");
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
@@ -108,7 +107,7 @@
 <script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-<?php product_tabs("Sales History",$_GET["id"]);?><div class="bodyline">
+<?php showTabs($dblink,"products entry",12,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
 	<div class="box">

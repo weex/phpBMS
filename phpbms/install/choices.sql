@@ -5,3 +5,4 @@ INSERT INTO choices VALUES (4,'notestatus','cancelled');
 INSERT INTO choices VALUES (5,'notestatus','tenative');
 INSERT INTO choices VALUES (6,'notestatus','confirmed');
 INSERT INTO choices VALUES (7,'notestatus','');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','tabledefs entry');

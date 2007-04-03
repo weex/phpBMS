@@ -86,7 +86,7 @@
 	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
 </script>
 </head>
-<body><?php include("../../menu.php")?><?php doTabs()?><div class="bodyline">
+<body><?php include("../../menu.php")?><?php showTabs($dblink,$tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
 		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onsubmit="setSelIDs(this);return true;">

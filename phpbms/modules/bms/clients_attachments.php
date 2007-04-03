@@ -39,14 +39,14 @@
 
 	include("../../include/session.php");
 	include("../../include/common_functions.php");
-	include("include/clients_functions.php");
 
 	require_once("../../include/search_class.php");
 	require_once("../../include/common_functions.php");	
 
 	//set the table passing stuff
 	$tabledefid=2;
-	$refid=(integer) $_GET["refid"];
+	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+	$refid=(integer) $_GET["id"];
 
 	$securitywhere="";
 	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
@@ -66,11 +66,8 @@
 	else
 		$pageTitle.=$refrecord["company"];
 
-
-	function doTabs(){
-		global $refid;
-		client_tabs("Attachments",$refid);	
-	}
+	$tabgroup="clients entry";
+	$selectedtabid=8;
 	
 	include("../base/attachments_records.php");
 	
