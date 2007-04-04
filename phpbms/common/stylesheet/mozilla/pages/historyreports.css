@@ -1,8 +1,6 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
-#reportOptions{width:550px; margin:0 auto;}
+#reportOptions{width:550px; margin:10px auto;}
 #topTitle{}
 #fromP{float:left;}
 #print,#cancel{width:75px;}
-
-

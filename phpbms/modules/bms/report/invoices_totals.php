@@ -309,7 +309,7 @@ if(isset($_POST["command"])){
 	<title>Invoice Totals</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<?php require("../../../head.php")?>
-	<script language="JavaScript" type="text/javascript">
+	<script language="JavaScript" type="text/javascript"><!--
 		function moveItem(id,direction,theform){
 			var additem,removeitem,tempText,tempValue;
 			
@@ -361,37 +361,44 @@ if(isset($_POST["command"])){
 			}
 			return thereturn;
 		}//end function
+		// -->
 	</script>
 	
+	<style type="text/css">
+		.bodyline{width:550px;padding:4px;margin:10px auto;}
+		#selectedgroupings,#availablegroupings,#selectedcolumns,#availablecolumns{width:100%}
+		#print{width:75px;margin-right:3px;}
+		#cancel{width:75px;}
+	</style>
 </head>
 
 <body>
-<div class="bodyline" style="width:550px;padding:4px;">
+<div class="bodyline" style="">
 	<h1>Invoice Total Options</h1>	
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return submitForm(this)">
-		<div>
-			report title<br />			
-			<input type="text" name="reporttitle" value="" style="width:100%">
-		</div>
-		<div class="box">
-			<strong>Grouping</strong><br />
+		<p>	
+			<label for="reporttitle">report title</label><br />			
+			<input type="text" name="reporttitle" id="reporttitle" size="45"/>
+		</p>
+		<fieldset>
+			<legend>Grouping</legend>
+			<div class="fauxP">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="50%">
-						selected groupings<br />
-						<select name="selectedgroupings" size="5" style="width:100%" multiple>
+						<label for="selectedgroupings">selected groupings</label><br />
+						<select id="selectedgroupings" name="selectedgroupings" size="5" multiple="multiple">
 						</select>
-						<input type="hidden" name="postedgroupings" value="">
+						<input type="hidden" name="postedgroupings" />
 					</td>
 					<td>
-						<div><br />
-							<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);"><br /><br />
-							<input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);">							
-						</div>
+						<p><br />
+						<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);" /></p>
+						<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);" /></p>
 					</td>
 					<td width="50%">
-						available groupings<br />
-						<select name="availablegroupings" size="5" style="width:100%" multiple>
+						<label for="availablegroupings">available groupings</label><br />
+						<select id="availablegroupings" name="availablegroupings" size="5" multiple="multiple">
 							<option value="invoices.invoicedate">Invoice Date</option>
 							<option value="concat(lpad(month(invoices.invoicedate),2,'0'),' - ',date_format(invoices.invoicedate,'%b'))">Invoice Date - Month</option>
 							<option value="concat(quarter(invoices.invoicedate),' - ',year(invoices.invoicedate))">Invoice Date - Quarter</option>
@@ -412,32 +419,32 @@ if(isset($_POST["command"])){
 							<option value="invoices.shipcity">Shipping City</option>
 							<option value="invoices.weborder">Web Orders</option>						
 						</select>
-						<input type="hidden" name="groupingnamelist" value="">
-						<input type="hidden" name="groupingvaluelist" value="">
+						<input type="hidden" name="groupingnamelist" />
+						<input type="hidden" name="groupingvaluelist" />
 					</td>
 				</tr>
-			</table>
-		</div>
-		<div class="box">
-			<strong>Columns</strong><br />
+			</table></div>
+
+		</fieldset>
+		<fieldset>
+			<legend>Columns</legend>
+			<div class="fauxP">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="50%">
-						shown columns<br />
-						<select name="selectedcolumns" size="7" style="width:100%">
+						<label for="selectedcolumns">shown columns</label>
+						<select name="selectedcolumns" id="selectedcolumns" size="7">
 							<option value="concat('$',format(sum(invoices.totalti),2))">Invoice Total</option>						
 						</select>
-						<input type="hidden" name="postedcolumns" value="">
+						<input type="hidden" name="postedcolumns" />
 					</td>
 					<td>
-						<div><br />
-							<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);"><br /><br />
-							<input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);">							
-						</div>
+						<p><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);" /></p>
+						<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);" /></p>
 					</td>
 					<td width="50%">
-						available columns<br />
-						<select name="availablecolumns" size="7" style="width:100%">
+						<label for="availablecolumns">available columns</label><br />
+						<select name="availablecolumns" id="availablecolumns" size="7">
 							<option value="count(invoices.id)">count</option>						
 							<option value="concat('$',format(avg(invoices.totalti),2))">Invoice Total (average)</option>						
 							<option value="concat('$',format(sum(invoices.totaltni),2))">Subtotal</option>						
@@ -455,28 +462,31 @@ if(isset($_POST["command"])){
 							<option value="concat('$',format(sum(invoices.totalcost),2))">Cost</option>						
 							<option value="concat('$',format(avg(invoices.totalcost),2))">Cost (average)</option>						
 						</select>
-						<input type="hidden" name="columnnamelist" value="">
-						<input type="hidden" name="columnvaluelist" value="">
+						<input type="hidden" name="columnnamelist" />
+						<input type="hidden" name="columnvaluelist" />
 					</td>
 				</tr>
 			</table>
-		</div>
-		<div class=box>
-			<strong>Additional Options</strong><br />
-			information shown<br />
-			<select name="showwhat">
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Options</legend>
+			<p>
+			<label for="showwhat">information shown</label><br />
+			<select name="showwhat" id="showwhat">
 				<option selected="selected" value="totals">Totals Only</option>
 				<option value="invoices">Invoices</option>
 				<option value="lineitems">Invoices &amp; Line Items</option>
 			</select>
-			<input type="hidden" name="showinvoices" value="">
-			<input type="hidden" name="showlineitems" value="">
-		</div>
+			<input type="hidden" name="showinvoices"  />
+			<input type="hidden" name="showlineitems" />
+			</p>
+		</fieldset>
 
-		<div align="right" class="box">
-			<input name="command" type="submit" class="Buttons" id="print" value="print" style="width:75px;margin-right:3px;">
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" style="width:75px;" onclick="window.close();">	 
-		</div>
+		<p align="right">
+			<input name="command" type="submit" class="Buttons" id="print" value="print" />
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
+		</p>
    </form>
 </div>
 

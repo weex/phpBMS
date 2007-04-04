@@ -126,7 +126,7 @@
 </head>
 <body>
 
-<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print">
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print_form">
 <div class="bodyline" id="reportOptions">
 	<h1 id="topTitle"><span>Label Options</span></h1>
 	
@@ -134,10 +134,10 @@
 			skip first labels<br />
 			<input name="skiplabels" value="0" size="3" maxlength="3" />
 		</p>
-		<div align="right" class="box">
+		<p align="right">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" />
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="canel" onclick="window.close();" />
-		</div>
+		</p>
 </div>
 </form>
 </body>
