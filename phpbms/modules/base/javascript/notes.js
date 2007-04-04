@@ -45,9 +45,13 @@ window.onload=function(){
 	if(attachedField)
 		if(attachedField.value!="" && attachedField.value!=0){
 			var associatedDiv=getObjectFromID("theassociated");
-			var content=getObjectFromID("content");
 			associatedDiv.style.display="block";
-			content.rows+=7;
+
+			var leftside=getObjectFromID("leftSideDiv");
+			var timestamp=getObjectFromID("timeStampDiv");
+			var content=getObjectFromID("content");
+			var newHeight=leftside.offsetHeight-timestamp.offsetHeight-57;
+			content.style.height=newHeight+"px"
 		}
 	var theid=getObjectFromID("id");
 	var thetype=getObjectFromID("thetype");
@@ -140,7 +144,7 @@ function changeType(){
 	var leftside=getObjectFromID("leftSideDiv");
 	var timestamp=getObjectFromID("timeStampDiv");
 	var content=getObjectFromID("content");
-	var newHeight=leftside.offsetHeight-timestamp.offsetHeight-38;
+	var newHeight=leftside.offsetHeight-timestamp.offsetHeight-57;
 	content.style.height=newHeight+"px"
 	
 	dateChecked("start");

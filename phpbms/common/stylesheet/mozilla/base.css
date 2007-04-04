@@ -29,10 +29,9 @@
 /* ============================================================================== */
 
 	.autofillField{
-		background-image: url("image/magnify.gif");
-		background-repeat:no-repeat;
+		background-image:url("image/magnify.gif");
 		background-position:right;
-		/* background-origin: border; Commented out as of firefox 1.5*/
+		background-repeat:no-repeat;
 	}
 
 	.AFDropDowns{

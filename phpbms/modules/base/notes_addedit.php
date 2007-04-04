@@ -49,6 +49,7 @@
 	$pageTitle="Note/Task/Event"	
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <title><?php echo $pageTitle ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <?php require("../../head.php")?>
@@ -77,13 +78,13 @@
 		</p>
 		
 		<p>
-			<label for="type" class="important">type</label><br />
+			<label for="thetype" class="important">type</label><br />
 			<?php fieldBasicList("thetype",$therecord["type"],array(array("value"=>"NT","name"=>"Note"),array("value"=>"TS","name"=>"Task"),array("value"=>"EV","name"=>"Event"),array("value"=>"SM","name"=>"System Message")),Array("class"=>"important","onchange"=>"changeType();"));?>
 			<input type="hidden" id="typeCheck" name="typeCheck" value="<?php echo $therecord["type"]?>" />		
 		</p>
 		
 		<p>
-			<label for="title">title</label><br />
+			<label for="subject">title</label><br />
 			<?php fieldText("subject",$therecord["subject"],0,"","",Array("size"=>"28","maxlength"=>"128","class"=>"important")); ?>
 		</p>				
 	</fieldset>
@@ -92,7 +93,7 @@
 		<fieldset>
 			<legend><label for="importance">importance / privacy</label></legend>
 			<p>
-				<?php fieldBasicList("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onClick"=>"changeType();")); ?>
+				<?php fieldBasicList("importance",$therecord["importance"],array(array("value"=>"3","name"=>"Highest"),array("value"=>"2","name"=>"High"),array("value"=>"1","name"=>"Medium"),array("value"=>"0","name"=>"Normal"),array("value"=>"-1","name"=>"Low"),array("value"=>"-2","name"=>"Lowest")),Array("onclick"=>"changeType();")); ?>
 				<?php fieldCheckbox("private",$therecord["private"])?><label for="private">private</label>
 			</p>
 		</fieldset>
@@ -116,8 +117,8 @@
 		<div id="thecompleted" class="fauxP">
 			<p>
 				<input type="hidden" name="completedChange" id="completedChange" value="<?php echo $therecord["completed"]?>" />
-				<?php fieldCheckbox("completed",$therecord["completed"],false,Array("onClick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext">completed</label>
-				&nbsp;<?php fieldDatePicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"true"));?>
+				<?php fieldCheckbox("completed",$therecord["completed"],false,Array("onclick"=>"completedCheck()"))?>&nbsp;<label for="completed" id="completedtext">completed</label>
+				&nbsp;<?php fieldDatePicker("completeddate",$therecord["completeddate"],0,"",Array("size"=>"11","maxlength"=>"15","readonly"=>"readonly"));?>
 			</p>
 			<p id="thestatus">
 				<label for="status">status</label><br />
@@ -160,9 +161,9 @@
 				
 				<p>
 					<label for="attachedid">record id</label><br />
-					<input id="attachedid " name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
+					<input id="attachedid" name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
 					<input name="link" type="button" class="Buttons" value=" go to record " onclick="document.location='<?php echo $_SESSION["app_path"]?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'" />
-				</>
+				</p>
 		</fieldset>
 
 
@@ -199,10 +200,10 @@
 			<legend>recurrence</legend>
 			<div class="fauxP">
 				<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
-				<?php fieldCheckbox("repeat",$therecord["repeat"],false,array("onClick"=>"doRepeat()"))?><label for="repeat">repeat every</label>
+				<?php fieldCheckbox("repeat",$therecord["repeat"],false,array("onclick"=>"doRepeat()"))?><label for="repeat">repeat every</label>
 				&nbsp;&nbsp;
 				<div id="repeatoptions">						
-					<?php fieldText("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onKeyup"=>"addS(this)"))?>
+					<?php fieldText("repeatfrequency",$therecord["repeatfrequency"],false,$message="The repeat frequency must be a valid integer","integer",array("size"=>"2","maxlength"=>"3","onkeyup"=>"addS(this)"))?>
 					<?php 
 						$plural="";
 						if($therecord["repeatfrequency"]>1) $plural="s";

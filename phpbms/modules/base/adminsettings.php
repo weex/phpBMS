@@ -60,7 +60,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 <body><?php include("../../menu.php")?><div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return processForm(this);">
 
-	<div id="topButtons"><input id="updateSettings1" name="command" type="submit" class="Buttons" value="Update Settings" /></div>
+	<div id="topButtons"><input id="updateSettings1" name="command" type="submit" class="Buttons" value="update settings" /></div>
 	
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	
@@ -122,7 +122,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 
 		<p>
 			<input type="hidden" id="doencryptionupdate" name="doencryptionupdate" value=""/>
-			<input type="submit" id="updateSettings3" name="command" class="Buttons" value="Update Encryption Seed" disabled="disabled" onclick="this.form['doencryptionupdate'].value=1"/>	
+			<input type="submit" id="updateSettings3" name="command" class="Buttons" value="update encryption seed" disabled="disabled" onclick="this.form['doencryptionupdate'].value=1"/>	
 		</p>
 	</fieldset>
 		
@@ -236,8 +236,8 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 		@ include "../".$modulerecord["name"]."/adminsettings.php";
 	}//end while 
 	?>
-	<div class="box" id="footerbox">
-		<input id="updateSettings2" name="command" type="submit" class="Buttons" value="Update Settings" />
+	<div id="footerbox">
+		<input id="updateSettings2" name="command" type="submit" class="Buttons" value="update settings" />
 	</div>
 	</form>
 </div>

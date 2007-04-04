@@ -123,12 +123,12 @@ if(!hasRights(-100))
 
 if (isset($_POST["command"])) {
 	switch($_POST["command"]){
-		case "Update Settings":
+		case "update settings":
 			if(processSettings(addSlashesToArray($_POST),$_FILES,$dblink))
 				$statusmessage="Settings Updated";				
 		break;
 		
-		case "Update Encryption Seed":
+		case "update encryption seed":
 			$_POST=addSlashesToArray($_POST);
 			$statusmessage = updateEncyptionSeed($_POST["sencryption_seed"],$_POST["currentpassword"],$_SESSION["userinfo"]["id"],$_SESSION["encryption_seed"],$dblink);
 		break;

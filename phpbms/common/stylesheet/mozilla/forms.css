@@ -1,48 +1,38 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-SELECT, INPUT, TEXTAREA, .uneditable, .fieldtext { 
-	border: 1px solid #ABB1B1;
-	font-size: 11px; padding: 2px;  
-	background-color: #F7FAFA;
-	vertical-align: middle; font-style:normal;
+SELECT, INPUT, TEXTAREA, .uneditable,button{ 
+	border:1px solid #ABB1B1;
+	font-size: 11px; 
+	padding: 2px 0px 2px 3px;  
+	background: #F7FAFA;
+	vertical-align: middle; 
+	font-style:normal;
 }
-SELECT{padding:0px;}
+SELECT{padding:0 0 0 3px;}
+
 TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:white;border-color:black;}
-INPUT[disabled],SELECT[disabled]{background-color:#AAAAAA;color:#EEEEEE; background-image:none;}
-INPUT[disabled]:Active{border:1px outset black;}
+
+INPUT[disabled],SELECT[disabled]{color:#AAAAAA;}
+
 FORM{margin:0px;padding:0px;}
 
+.uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1; color:#666666;}
+
 .currency{text-align:right;}
-.uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1;color:#666666;}
 .disabledtext{color:#CCCCCC;}
 .radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
 
 .Buttons,.smallButtons {
-	color:white;
-	font-weight:bold;
-	font-size:12px;
-	padding: 4px 6px;
 	cursor: pointer;
-	vertical-align: middle;
-	border:1px solid #7B8DA1;
-	background:#7A8193 url(image/button-back.png) repeat-x;
+	background:url(image/button-back.png) repeat-x;
+	padding:2px 4px;
 }
-.smallButtons{font-size:10px;background-position:0 -2px;padding:2px 6px;}
+.smallButtons{font-size:10px;}
 .Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
-	border:1px solid #E6E600;
-	color:#E6E600;
+	border-color:black;
 }
-.Buttons[disabled]:Hover,.smallButtons[disabled]:Hover{
-	/* first two entries are from disabled, the last are from standard buttons */
-	/* this disables hover for disabled buttons */
-	background:#AAAAAA;
-	color:#EFEFEF;
-	
-	border:1px solid #454A59;
-	border-bottom-color:#2F333D;
-	border-top-color:#626876;
-}
+
 
 .invisibleButtons,.invisibleTextField{
 border-style:none;
