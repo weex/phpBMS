@@ -21,6 +21,7 @@ INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `mo
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('----','',6,-5,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('scheduler','search.php?id=201',6,32,1,1,NOW(),NOW(),-100);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('system log','search.php?id=202',6,11,1,1,NOW(),NOW(),-100);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('tabs','search.php?id=203',6,30,1,1,NOW(),NOW(),-100);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Log Out','logout.php',6,-5,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (50,'Help','',0,200,1,1,NOW(),NOW(),0);
-INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('about phpBMS','javascript:showHelp()',50,0,1,1,NOW(),NOW(),0);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('about phpBMS','javascript:showHelp()',6,0,1,1,NOW(),NOW(),0);

@@ -41,5 +41,5 @@ INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorde
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (201,'scheduler.name','name',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.type','type',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.ip','ip address',1,'field');
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (2007,203,'tabs.name','name',1,'field');
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (2008,203,'tabs.tabgroup','group',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.name','name',1,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.tabgroup','group',0,'field');

@@ -112,8 +112,8 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `rol
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (203,'select','1',0,-100);
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (203,'edit','1',0,-100);
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (203,'printex','0',0,0);
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (2007,203,'tabs.name','name',1,'field');
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (2008,203,'tabs.tabgroup','group',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.name','name',1,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.tabgroup','group',0,'field');
 INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','tabledefs entry');
 CREATE TABLE `tabs` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `name` varchar(45) NOT NULL, `tabgroup` varchar(45) NOT NULL, `location` varchar(128) default NULL, `displayorder` int(11) default '0', `enableonnew` tinyint(3) unsigned default '0', `roleid` int(11) default '0', `tooltip` varchar(128) default NULL, `notificationsql` text, `createdby` int(11) default NULL, `creationdate` datetime default NULL, `modifiedby` int(10) unsigned default NULL, `modifieddate` timestamp, PRIMARY KEY (`id`));
 INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (1,'general','tabledefs entry','modules/base/tabledefs_addedit.php',10,1,-100,'','',1,NOW(),1,NOW());
@@ -121,6 +121,7 @@ INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enabl
 INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (3,'options','tabledefs entry','modules/base/tabledefs_options.php',30,0,-100,'',NULL,1,NOW(),1,NOW());
 INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (4,'quick search','tabledefs entry','modules/base/tabledefs_quicksearch.php',40,0,-100,'',NULL,1,NOW(),1,NOW());
 INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (5,'search fields','tabledefs entry','modules/base/tabledefs_searchfields.php',50,0,-100,'',NULL,1,NOW(),1,NOW());
-INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Log Out','logout.php',6,-5,1,1,NOW(),NOW(),0);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('tabs','search.php?id=203',15,30,1,1,NOW(),NOW(),-100);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Log Out','logout.php',15,-5,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (50,'Help','',0,200,1,1,NOW(),NOW(),0);
 INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('about phpBMS','javascript:showHelp()',50,0,1,1,NOW(),NOW(),0);
