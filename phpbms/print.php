@@ -247,7 +247,7 @@ if (isset($_POST["command"])){
 		</p>
 	</fieldset>
 
-	<p id="printFooter" class="box">
+	<p id="printFooter">
 		<input name="command" type="submit" class="Buttons" id="print" value="print" accesskey="p" title="print (alt+p)">
 		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)">	 
 	</p>

@@ -632,8 +632,8 @@ function displayRelationships(){
 	$queryresult = mysql_query($querystatement);	
 	if (!$queryresult) reportError(1,"Error Retrieving Relationships");
 	if (mysql_num_rows($queryresult)) {
-		?><div class="small box" style="margin:0px;margin-top:3px;">
-		relate selected records to <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
+		?><div class="small">
+		show related records in <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
 			<option value="" selected="selected" class="choiceListBlank">area...</option><?php 
 			while($therecord = mysql_fetch_array($queryresult)){
 			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
