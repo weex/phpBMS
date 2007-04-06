@@ -172,6 +172,13 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
 			break;
+			
+			case "English, UK":
+				$datestring="/".ereg_replace(",.","/",$datestring);
+				$temparray=explode("/",$datestring);
+				if(count($temparray)>1)
+					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
+			break;
 
 		}
 	}
@@ -220,6 +227,10 @@ function dateToString($thedate,$format=DATE_FORMAT){
 			
 			case "English, US":
 				$datestring=strftime("%m/%d/%Y",$thedate);
+			break;
+			
+			case "English, UK":
+				$datestring=strftime("%d/%m/%Y",$thedate);
 			break;
 
 		}

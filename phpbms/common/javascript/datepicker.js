@@ -82,7 +82,7 @@ function loadMonth(base,month,year,selectedDate){
 	theURL+="&y="+encodeURIComponent(year);
 	if (selectedDate){
 		tempdate=stringToDate(selectedDate);
-		theURL+="&sd="+encodeURIComponent(tempdate.getFullYear()+"-"+(tempdate.getMonth()+1)+"-"+tempdate.getDate());
+		theURL+="&sd="+encodeURIComponent(dateToString(tempdate, 'SQL'));
 	}
 	loadXMLDoc(theURL,null,false);
 	showDP.box.innerHTML=req.responseText;	

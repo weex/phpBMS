@@ -232,6 +232,13 @@ function stringToDate(sDate,format){
 				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
 				if(year<100) year+=2000;
 			break;
+			case "English, UK":
+				sep="/";
+				day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+				month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
+				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				if(year<100) year+=2000;
+			break;
 		}
 		thedate=new Date(year,month,day);
 	}
@@ -264,6 +271,15 @@ function dateToString(thedate,format){
 				day=thedate.getDate();
 				if(day<10) day="0"+day;					
 				sdate= month+sep+day+sep+thedate.getFullYear();
+			break;
+			
+			case "English, UK":
+				sep="/";
+				month=thedate.getMonth()+1;
+				if(month<10) month="0"+month;
+				day=thedate.getDate();
+				if(day<10) day="0"+day;					
+				sdate= day+sep+month+sep+thedate.getFullYear();
 			break;
 		}
 	}
