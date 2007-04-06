@@ -134,8 +134,8 @@ function mark_asinvoice($theids){
 	
 	while($therecord=mysql_fetch_array($queryresult)){
 		$querystatement = "UPDATE invoices SET invoices.statusid=4,invoices.statusdate=Now(), invoices.assignedtoid=".$assignedtoid." WHERE invoices.id=".$therecord["id"];
-		$queryresult = mysql_query($querystatement,$dblink);
-		if (!$queryresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
+		$updateresult = mysql_query($querystatement,$dblink);
+		if (!$updateresult) reportError(300,"Could not mark as invoice: ".mysql_error($dblink)." -- ".$querystatement);		
 
 		$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=4";
 		$deleteresult = mysql_query($querystatement,$dblink);
