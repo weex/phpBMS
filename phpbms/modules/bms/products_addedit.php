@@ -150,7 +150,7 @@
 				<?php fieldCurrency("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
 				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
 			</p>
-			
+
 			<p class="costsP">
 				<label for="unitcost">cost</label><br />
 				<?php fieldCurrency("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
@@ -169,21 +169,22 @@
 			<p>
 				<br />
 				<input type="button" name="updateprice" value="update price" class="Buttons" onclick="calculatePrice()" tabindex="160" />
-			</p>			
+			</p>
+
+			<p style="clear:both;">
+				<label for="unitofmeasure">units of measure</label><br />
+				<input name="unitofmeasure" type="text" id="unitofmeasure" value="<?php echo htmlQuotes($therecord["unitofmeasure"])?>" size="40" maxlength="32" tabindex="190"/>
+			</p>											
+
 		</fieldset>
 		
 		<fieldset>
 			<legend>weight / shipping</legend>
 			<p>
-				<label for="weight">weight</label><br />
+				<label for="weight">weight</label> (lbs.)<br />
 				<?php fieldText("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"180")); ?><br />
 				<span class="notes"><strong>Note:</strong> Weight must be in lbs. in order for shipping to be auto-estimated correctly.</span>
 			</p>
-			
-			<p>
-				<label for="unitofmeasure">units of measure</label><br />
-				<input name="unitofmeasure" type="text" id="unitofmeasure" value="<?php echo htmlQuotes($therecord["unitofmeasure"])?>" size="40" maxlength="32" tabindex="190"/>
-			</p>											
 			
 			<p>
 				<label for="packagesperitem">items per package <span class="notes">(number of product items that can fit in a shipping package)</span></label><br />
