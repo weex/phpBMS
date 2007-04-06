@@ -202,6 +202,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 				<option value="SQL" <?php if($_SESSION["date_format"]=="SQL")  echo "selected=\"selected\"";?>>SQL (<?php echo dateToString(mktime() ,"SQL")?>)</option>
 				<option value="English, US" <?php if($_SESSION["date_format"]=="English, US")  echo "selected=\"selected\"";?>>English, US (<?php echo dateToString(mktime(),"English, US")?>)</option>
 				<option value="English, UK" <?php if($_SESSION["date_format"]=="English, UK")  echo "selected=\"selected\"";?>>English, UK (<?php echo dateToString(mktime(),"English, UK")?>)</option>
+				<option value="Dutch, NL" <?php if($_SESSION["date_format"]=="Dutch, NL")  echo "selected=\"selected\"";?>>Dutch, NL (<?php echo dateToString(mktime(),"Dutch, NL")?>)</option>
 			</select>
 		</p>
 		<p>

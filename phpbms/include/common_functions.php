@@ -179,6 +179,13 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
 			break;
+			
+			case "Dutch, NL":
+				$datestring="-".ereg_replace(",.","-",$datestring);
+				$temparray=explode("-",$datestring);
+				if(count($temparray)>1)
+					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
+			break;
 
 		}
 	}
@@ -233,6 +240,9 @@ function dateToString($thedate,$format=DATE_FORMAT){
 				$datestring=strftime("%d/%m/%Y",$thedate);
 			break;
 
+			case "Dutch, NL":
+				$datestring=strftime("%d-%m-%Y",$thedate);
+			break;
 		}
 	}
 	return $datestring;
