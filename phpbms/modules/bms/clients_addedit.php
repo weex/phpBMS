@@ -189,27 +189,27 @@
 			<legend>contact</legend>
 			<p class="phonelefts">
 				<label for="workphone">work phone</label><br />
-				<?php fieldText("workphone",$therecord["workphone"],0,"Work phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
+				<?php fieldText("workphone",$therecord["workphone"],0,"Work phone must be in valid format.","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
 			</p>
 			
 			<p>
 				<label for="homephone">home phone</label><br />
-				<?php fieldText("homephone",$therecord["homephone"],0,"Home phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
+				<?php fieldText("homephone",$therecord["homephone"],0,"Home phone must be in valid format.","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p class="phonelefts">
 				<label for="mobilephone">mobile phone</label><br />
-				<?php fieldText("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
+				<?php fieldText("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
 			</p>
 
 			<p>
 				<label for="fax">fax number</label><br />
-					<?php fieldText("fax",$therecord["fax"],0,"Fax number must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
+					<?php fieldText("fax",$therecord["fax"],0,"Fax number must be in valid format.","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
 				<label for="otherphone">other phone</label><br />
-				<?php fieldText("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.<br \/><em>(example: 505-994-6388)<\/em>","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
+				<?php fieldText("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
 			</p>
 			
 			<p>
