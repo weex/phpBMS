@@ -14,6 +14,9 @@
 		case "US - Strict":
 			?>/^[2-9]\d{2}-\d{3}-\d{4}$/;<?php		
 		break;
+		case "UK - Loose":
+			?>/^((\(?0\d{4}\)?\s?\d{3}\s?\d{3})|(\(?0\d{3}\)?\s?\d{3}\s?\d{4})|(\(?0\d{2}\)?\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/;<?php
+		break;	
 	} echo "\n\n";	
 	
 	//date formating
