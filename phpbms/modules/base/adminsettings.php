@@ -195,6 +195,7 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 				<option value="US - Strict" <?php if($_SESSION["phone_format"]=="US - Strict")  echo "selected=\"selected\"";?>>US - Strict</option>
 				<option value="US - Loose" <?php if($_SESSION["phone_format"]=="US - Loose")  echo "selected=\"selected\"";?>>US - Loose</option>
 				<option value="UK - Loose" <?php if($_SESSION["phone_format"]=="UK - Loose")  echo "selected=\"selected\"";?>>UK - Loose</option>
+				<option value="International" <?php if($_SESSION["phone_format"]=="International")  echo "selected=\"selected\"";?>>International</option>
 			</select>
 		</p>
 		<p>

@@ -17,6 +17,9 @@
 		case "UK - Loose":
 			?>/^((\(?0\d{4}\)?\s?\d{3}\s?\d{3})|(\(?0\d{3}\)?\s?\d{3}\s?\d{4})|(\(?0\d{2}\)?\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/;<?php
 		break;	
+		case "International":
+		    ?>/^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$/;<?php
+		break;	
 	} echo "\n\n";	
 	
 	//date formating
