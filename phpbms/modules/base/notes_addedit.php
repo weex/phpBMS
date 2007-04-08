@@ -69,7 +69,7 @@
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 
 	<fieldset id="fsTop">
-		<legend>Attirbutes</legend>
+		<legend>Attributes</legend>
 		<p id="idP">
 			<label for="id">id</label><br/>
 			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="readonly" class="uneditable"/>

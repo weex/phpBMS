@@ -103,7 +103,7 @@ $pageTitle="My Account"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition
 		<legend>Access / Assigned Roles</legend>
 		<ul>
 		<?php 
-			if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrtor</strong></li><?php }
+			if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrator</strong></li><?php }
 			displayRoles($_SESSION["userinfo"]["id"],$dblink)
 		?></ul>
 	</fieldset>
