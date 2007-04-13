@@ -73,7 +73,7 @@
 		<td width="14.286%">M</td>
 		<td width="14.286%">T</td>
 		<td width="14.286%">W</td>
-		<td width="14.286%">T</td>
+		<td width="14.286%">R</td>
 		<td width="14.286%">F</td>
 		<td width="14.286%">S</td>
 	</tr>
