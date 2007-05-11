@@ -187,8 +187,10 @@ if(!function_exists("mysql_real_escape_string")){
 	} else
 		define("HOUR_FORMAT","%l");
 
-	if(!isset($noSession))	
+	if(!isset($noSession)){
+		session_name("phpBMS v0.8");
 		session_start();
+	}
 	error_reporting(E_ALL);
 	
 	if (!isset($_SESSION["app_path"]))
