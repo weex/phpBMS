@@ -220,7 +220,7 @@
 						products.partnumber,
 						lineitems.quantity,
 						lineitems.unitprice,
-						lineitems.quantity*lineitems.unitprice as extended,
+						lineitems.quantity*lineitems.unitweight as extended,
 						lineitems.taxable,
 						lineitems.memo,
 						products.isprepackaged,
