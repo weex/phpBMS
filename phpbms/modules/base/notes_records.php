@@ -83,7 +83,7 @@
 <link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
 <script language="JavaScript" src="../../common/javascript/queryfunctions.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-	xtraParamaters="<?php echo "backurl=".$backurl."&reftableid=".$reftableid."&refid=".$refid ?>";
+	xtraParamaters="backurl="+encodeURIComponent("<?php echo $backurl ?>")+String.fromCharCode(38)+"tabledefid=<?php echo $tabledefid ?>"+String.fromCharCode(38)+"refid=<?php echo $refid ?>";
 </script>
 </head>
 <body><?php include("../../menu.php")?><?php showTabs($dblink,$tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
