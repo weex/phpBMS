@@ -451,8 +451,8 @@ if(isset($_POST["command"])){
 							<option value="concat('$',format(avg(invoices.totaltni),2))">Subtotal (average)</option>						
 							<option value="concat('$',format(sum(invoices.tax),2))">Tax</option>						
 							<option value="concat('$',format(avg(invoices.tax),2))">Tax (average)</option>						
-							<option value="concat('$',format(sum(invoices.tax),2))">Shipping</option>						
-							<option value="concat('$',format(avg(invoices.tax),2))">Shipping (average)</option>						
+							<option value="concat('$',format(sum(invoices.shipping),2))">Shipping</option>						
+							<option value="concat('$',format(avg(invoices.shipping),2))">Shipping (average)</option>						
 							<option value="concat('$',format(sum(invoices.amountpaid),2))">Amount Paid</option>						
 							<option value="concat('$',format(avg(invoices.amountpaid),2))">Amount Paid (average)</option>						
 							<option value="concat('$',format(sum(invoices.totalti-invoices.amountpaid),2))">Amount Due</option>						
