@@ -139,3 +139,15 @@ function deletePicture(pic){
 	addDiv.style.display="block";
 	updatePictureStatus(pic,"delete");
 }
+
+function checkPartNumber(partnumber,excludeid){
+	var partnumber=getObjectFromID("partnumber");
+	var excludeid=getObjectFromID("id");
+	
+	if(!checkUnique(4,"partnumber",partnumber.value,parseInt(excludeid.value))){
+		alert("Part number must be unique.");
+		partnumber.value="";
+		partnumber.focus();
+	}
+	
+}

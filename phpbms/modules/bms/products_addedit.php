@@ -119,7 +119,7 @@
 			
 			<p>
 				<label for="partnumber"><span class="important">part number</span> <span class="notes">(must be unique)</span></label><br />
-				<?php fieldText("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkUnique('../../',this.value,this.name,'products','partnumber','".$therecord["id"]."')")); ?>				
+				<?php fieldText("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkPartNumber()")); ?>				
 			</p>
 			
 			<div class="fauxP">

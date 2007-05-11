@@ -36,21 +36,40 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	include("include/session.php");
+	require ("include/session.php");
 
-	$name=stripslashes($_GET["name"]);
-
-	if(!isset($_GET["excludeid"])) $_GET["excludeid"]="0";
-	if(!$_GET["excludeid"]) $_GET["excludeid"]="0";
-	$querystatement="SELECT id FROM ".$_GET["table"]." WHERE id!=".$_GET["excludeid"]." and ".$_GET["field"]."=\"".$_GET["value"]."\";";
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) die($querystatement);
-	$numrows=mysql_num_rows($queryresult);
+	function isUnique($tablename,$column,$value,$excludeid,$dblink){
+		
+		$thereturn=false;
+		
+		$querystatement="SELECT count(id) AS thecount FROM ".$tablename." WHERE ".$column."=\"".$value."\" AND id!=".$excludeid;
+		$queryresult=mysql_query($querystatement,$dblink);
+		if($queryresult){
+			$therecord=mysql_fetch_array($queryresult);
+			if($therecord["thecount"]==0)
+				$thereturn=true;
+		}
+		
+		return $thereturn;
+	}
+	
+	
+	$isunique=false;
+	
+	if(isset($_GET["tdid"]) && isset($_GET["c"]) && isset($_GET["val"]) && isset($_GET["xid"])) {
+		$_GET["tdid"]=((int) $_GET["tdid"]);
+		$_GET["xid"]=((int) $_GET["xid"]);
+		
+		$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tdid"];
+		$queryresult=mysql_query($querystatement,$dblink);
+		if($queryresult)
+			if($therecord=mysql_fetch_array($queryresult))
+				$isunique=isUnique($therecord["maintable"],$_GET["c"],$_GET["val"],$_GET["xid"],$dblink);		
+	}
 	
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 ?>
 <response>
-  <name><?php echo $_GET["name"]; ?></name>
-  <isunique><?php if($numrows) echo "0"; else echo "1"; ?></isunique>
+  <isunique><?php echo ((int) $isunique) ?></isunique>
 </response>

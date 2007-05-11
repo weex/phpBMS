@@ -246,13 +246,18 @@ function getNumberFromPercentage(thenumber){
 	return markupnumber;
 }
 
-function checkUnique(path,thevalue,thename,thetable,thefield,excludeid){
+function checkUnique(tabledefid,column,checkvalue,excludeid){
 	
-	var theurl=path+"checkunique.php?value="+encodeURIComponent(thevalue);
-	theurl=theurl+"&table="+encodeURIComponent(thetable);
-	theurl=theurl+"&name="+encodeURIComponent(thename);
-	theurl=theurl+"&field="+encodeURIComponent(thefield);
-	theurl=theurl+"&excludeid="+parseInt(excludeid);
+	var theurl=APP_PATH+"checkunique.php?tdid="+parseInt(tabledefid);
+	theurl=theurl+"&c="+encodeURIComponent(column);
+	theurl=theurl+"&val="+encodeURIComponent(checkvalue);
+	theurl=theurl+"&xid="+parseInt(excludeid);
 
-	loadXMLDoc(theurl,processUniqueReqChange,true);
+
+	loadXMLDoc(theurl,null,false);
+	
+	response = req.responseXML.documentElement;
+	thevalue = response.getElementsByTagName('isunique')[0].firstChild.data;
+	
+	if(thevalue==1) return true; else return false;
 }
