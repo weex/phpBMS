@@ -17,19 +17,20 @@
 	while($therecord=mysql_fetch_array($queryresult)){
 		$datetimearray=explode(" ",$therecord["startdatetime"]);
 		$therecord["startdate"]=stringToDate($datetimearray[0],"SQL");
-		$therecord["starttime"]=stringToTime($datetimearray[1],"24-Hour");
+		$therecord["starttime"]=stringToTime($datetimearray[1],"24 Hour");
 
 		if($therecord["enddatetime"]){
 			$datetimearray=explode(" ",$therecord["enddatetime"]);
 			$therecord["enddate"]=stringToDate($datetimearray[0],"SQL");
-			$therecord["endtime"]=stringToTime($datetimearray[1],"24-Hour");
+			$therecord["endtime"]=stringToTime($datetimearray[1],"24 Hour");
 		}
 
 		$validTimes=getTimes($therecord);
 		if(is_array($validTimes) && in_array($now, $validTimes)){
 			$success = @ include($therecord["job"]);
 			if($success){
-				$querystatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$therecord["id"];
+				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$therecord["id"];
+				mysql_query($updatestatement,$dblink);
 				sendLog($dblink,"SCHEDULER","Secheduled Job ".$therecord["name"]." (".$therecord["id"].") completed",-2);
 			} else {
 				sendLog($dblink,"ERROR","Scheduled Job ".$therecord["name"]." (".$therecord["id"].") returned errors.",-2);
