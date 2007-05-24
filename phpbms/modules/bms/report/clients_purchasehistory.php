@@ -158,7 +158,7 @@ class purchaseHistoryReport{
 	 <td class="grandtotals">&nbsp;</td>
 	 <td align="right" class="grandtotals">&nbsp;</td>
 	 <td align="center" class="grandtotals">&nbsp;</td>
-	 <td align="right" class="grandtotals"><?php echo "\$".number_format($totalextended,2)?></td>
+	 <td align="right" class="grandtotals"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
    </table>	<?php
 	}//end fucntion showSalesHistory($id)

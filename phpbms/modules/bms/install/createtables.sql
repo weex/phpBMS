@@ -60,7 +60,7 @@ CREATE TABLE `clients` (
   KEY `thelastname` (`lastname`),
   KEY `thecompany` (`company`),
   KEY `thetype` (`type`)
-) ENGINE=MyISAM PACK_KEYS=0;
+) TYPE=MyISAM PACK_KEYS=0;
 
 
 CREATE TABLE discounts (
@@ -262,8 +262,7 @@ CREATE TABLE `invoicestatuses` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-)
-ENGINE = MYISAM;
+) TYPE = MYISAM;
 
 CREATE TABLE `invoicestatushistory` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -273,5 +272,4 @@ CREATE TABLE `invoicestatushistory` (
   `statusdate` DATE,
   `assignedtoid` INTEGER UNSIGNED,
   PRIMARY KEY(`id`)
-)
-ENGINE = MYISAM;
+) TYPE = MYISAM;

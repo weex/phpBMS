@@ -6,8 +6,7 @@ CREATE TABLE `log` (
   `value` TEXT,
   `stamp` TIMESTAMP,
   PRIMARY KEY(`id`)
-)
-ENGINE = MYISAM;
+) TYPE = MyISAM;
 
 CREATE TABLE choices (
   id int(11) NOT NULL auto_increment,
@@ -105,7 +104,7 @@ CREATE TABLE `reports` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
+) TYPE=MyISAM;
 
 CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
@@ -149,7 +148,7 @@ CREATE TABLE `tabledefs` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1000; 
+) THYPE=MyISAM AUTO_INCREMENT=1000; 
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
