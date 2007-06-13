@@ -86,8 +86,17 @@
 			// process table specific commands (passed by settings)		
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			eval("\$tempmessage=".$_POST["othercommands"]."(\$theids);");
-			if($tempmessage) $statusmessage=$tempmessage;			
+			
+			$querystatement="SELECT name FROM tableoptions WHERE id=".((int) $_POST["othercommands"]);
+			$queryresult=mysql_query($querystatement,$dblink);
+			if(!$queryresult)
+				reportError(300,"Could not retrieve section other commands");
+			if($therecord=mysql_fetch_array($queryresult) || ((int) $_POST["othercommands"])==-1){
+				if(((int) $_POST["othercommands"])==-1)
+					$therecord["name"]="delete_record";
+				eval("\$tempmessage=".$therecord["name"]."(\$theids);");
+				if($tempmessage) $statusmessage=$tempmessage;				
+			}
 		break;
 		case "search":
 			$displayTable->recordoffset=0;		

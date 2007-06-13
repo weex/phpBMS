@@ -340,15 +340,15 @@ function sendInfo(name,thevalue,thedisplay){
 			global $dblink;
 		
 			$options=Array();
-			$querystatement="SELECT name,`option`,othercommand,roleid
+			$querystatement="SELECT id,name,`option`,othercommand,roleid
 								  FROM tableoptions WHERE tabledefid=".$id;
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
 			
 			while($therecord=mysql_fetch_array($queryresult)) {
 				if($therecord["othercommand"]) {
-					$options["othercommands"][$therecord["name"]]["displayname"]=$therecord["option"];
-					$options["othercommands"][$therecord["name"]]["roleid"]=$therecord["roleid"];
+					$options["othercommands"][$therecord["id"]]["displayname"]=$therecord["option"];
+					$options["othercommands"][$therecord["id"]]["roleid"]=$therecord["roleid"];
 				}else{
 					$options[$therecord["name"]]["allowed"]=$therecord["option"];
 					$options[$therecord["name"]]["roleid"]=$therecord["roleid"];
@@ -571,7 +571,7 @@ function displayQueryButtons() {
 				<select id="othercommands" name="othercommands" disabled="disabled" onchange="chooseOtherCommand(this)">
 				<option value="" selected="selected" class="choiceListBlank">commands...</option>
 				<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
-					<option value="delete_record" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
+					<option value="-1" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
 				<?php } 
 				if($this->tableoptions["othercommands"]){
 					foreach($this->tableoptions["othercommands"] as $key => $value){
