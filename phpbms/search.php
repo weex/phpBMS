@@ -91,7 +91,7 @@
 			$queryresult=mysql_query($querystatement,$dblink);
 			if(!$queryresult)
 				reportError(300,"Could not retrieve section other commands");
-			if($therecord=mysql_fetch_array($queryresult) || ((int) $_POST["othercommands"])==-1){
+			if(($therecord=mysql_fetch_array($queryresult)) || ((int) $_POST["othercommands"])==-1){
 				if(((int) $_POST["othercommands"])==-1)
 					$therecord["name"]="delete_record";
 				eval("\$tempmessage=".$therecord["name"]."(\$theids);");
