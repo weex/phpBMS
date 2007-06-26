@@ -387,10 +387,14 @@ function currencyToNumber($currency){
 function addSlashesToArray($thearray){
 	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
 		foreach ($thearray as $key=>$value) 
-			$thearray[$key] = stripslashes($value);
+			if(is_array($value))
+				$thearray[$key]= addSlsashesToArray($value);
+			else
+				$thearray[$key] = stripslashes($value);
 	
 	foreach ($thearray as $key=>$value)
-		$thearray[$key] = mysql_real_escape_string($value);
+		if(!is_array($value))
+			$thearray[$key] = mysql_real_escape_string($value);
 	
 	return $thearray;
 }
