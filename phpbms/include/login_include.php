@@ -42,7 +42,7 @@
 		$querystatement="SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
 						FROM users 
 						WHERE login=\"".mysql_real_escape_string($username)."\" and password=ENCODE(\"".mysql_real_escape_string($password)."\",\"".mysql_real_escape_string($seed)."\") and revoked=0 and portalaccess=0";
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult= @ mysql_query($querystatement,$dblink);
 		if(!$queryresult) reportError(300,"Error verifing user record: ".$querystatement);
 		if(mysql_num_rows($queryresult)){
 			//We found a record that matches in the database

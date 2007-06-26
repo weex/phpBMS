@@ -99,15 +99,28 @@ function loadMysqlSettings() {
 function reportError($id,$extras,$format=true,$path="",$die=true,$log=true){
 	if($path=="" && isset($_SESSION["app_path"]))
 		$path=$_SESSION["app_path"];
-	if($format) {?>	
-		<link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
+	switch($format){
+		case "JSON":
+		case "json":
+			echo "{
+				\"error\" : { \"number\" : ".$id." \"extras\" : \"".str_replace("\n","\\n",addslashes($extras))."\"}
+			}";
+		break;
+		case true:
+		?><link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
 		<div class="bodyline">
 			<h1>phpBMS Error: <?php echo $id?></h1>
 			<div class="box">
 				<?php echo $extras ?>
 			</div>
-		</div>
-	<?php }else
+		</div><?php 
+		break;
+		case false:
+			echo $id;
+			if($extras) echo " - ".$extras;
+		break;
+	}
+	if($format) {}else
 		echo $extras;
 		
 	if($log && function_exists("sendLog")){
@@ -138,45 +151,75 @@ function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
 	return $dblink;
 }
 
+function verifyAPILogin($user,$pass,$seed,$dblink){
+	$thereturn=false;
+	
+	$querystatement="SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
+					FROM users 
+					WHERE login!=\"Scheduler\" AND login=\"".mysql_real_escape_string($user)."\" and password=ENCODE(\"".mysql_real_escape_string($pass)."\",\"".mysql_real_escape_string($seed)."\") and revoked=0 and portalaccess=1";
+	$queryresult=@ mysql_query($querystatement,$dblink);
+	if(!$queryresult) reportError(1441,"Error verifing user record.","json");
+	
+	if(mysql_num_rows($queryresult)){
+		//We found a record that matches in the database
+		// populate the session and go in
+		$_SESSION["userinfo"]=mysql_fetch_array($queryresult);
+
+		// set application location (web, not physical)
+		$pathrev=strrev($_SERVER["PHP_SELF"]);
+		$_SESSION["app_path"]=strrev(substr($pathrev,(strpos($pathrev,"/"))));
+
+		$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
+		$queryresult=@ mysql_query($querystatement,$dblink);
+		if(!$queryresult)
+			reportError(300,"Error updating user login time.","json");
+		$thereturn=true;
+	}
+	return $thereturn;
+}
+
+function reportJSONError(){
+}
+
 // Start Code
 //=================================================================================================================
 
-//php <4.3.0 compatibility
-if(!function_exists("mysql_real_escape_string")){
-	function mysql_real_escape_string($string){
-		return mysql_escape_string($string);
+	//php <4.3.0 compatibility
+	if(!function_exists("mysql_real_escape_string")){
+		function mysql_real_escape_string($string){
+			return mysql_escape_string($string);
+		}
+		
+	   function utf8_replaceEntity($result){
+		   $value = (int)$result[1];
+		   $string = '';
+		  
+		   $len = round(pow($value,1/8));
+		  
+		   for($i=$len;$i>0;$i--){
+			   $part = ($value & (255>>2)) | pow(2,7);
+			   if ( $i == 1 ) $part |= 255<<(8-$len);
+			  
+			   $string = chr($part) . $string;
+			  
+			   $value >>= 6;
+		   }
+		  
+		   return $string;
+	   }
+	  
+	   function html_entity_decode($string){
+		   return preg_replace_callback(
+			   '/&#([0-9]+);/u',
+			   'utf8_replaceEntity',
+			   $string
+		   );
+	   }	
 	}
 	
-   function utf8_replaceEntity($result){
-       $value = (int)$result[1];
-       $string = '';
-      
-       $len = round(pow($value,1/8));
-      
-       for($i=$len;$i>0;$i--){
-           $part = ($value & (255>>2)) | pow(2,7);
-           if ( $i == 1 ) $part |= 255<<(8-$len);
-          
-           $string = chr($part) . $string;
-          
-           $value >>= 6;
-       }
-      
-       return $string;
-   }
-  
-   function html_entity_decode($string){
-       return preg_replace_callback(
-           '/&#([0-9]+);/u',
-           'utf8_replaceEntity',
-           $string
-       );
-   }	
-}
-
+	// This following code is for windows boxen, because they lack some server varables as well
+	// formating options for the strftime function
 	if(!isset($_SERVER['REQUEST_URI'])) {
-		// This following code is for windows boxen, because they lack some server varables as well
-		// formating options for the strftime function
 		$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
 		
 		define("HOUR_FORMAT","%I");
@@ -187,34 +230,47 @@ if(!function_exists("mysql_real_escape_string")){
 	} else
 		define("HOUR_FORMAT","%l");
 
-	if(!isset($noSession)){
-		session_name("phpBMSv08ID");
-		session_start();
-	}
-	error_reporting(E_ALL);
-	
-	if (!isset($_SESSION["app_path"]))
-		$mainpath=loadMysqlSettings();
-	else 
-		$mainpath=$_SESSION["app_path"];
-			
-	if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
-		if(isset($loginNoKick)){
-			if(!isset($loginNoDisplayError))
-				exit();
-			else
-				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
-		} else{
-			header("Location: ".$mainpath."index.php");
-			exit();
-		}
-	} else {
 
-		// OPEN DATABASE IF NOT OPENED
-		if(!isset($dblink))		
-			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
-
-		if(!isset($_SESSION["app_name"]))
+	//Testing for API login
+	if(strpos(basename($_SERVER["PHP_SELF"]),"api_")!==false){
+		if(isset($_POST["phpbmsusername"]) && isset($_POST["phpbmspassword"])){
+			$mainpath=loadMysqlSettings();
+			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]);
 			loadSettings();
-	}//end if	
+			if(!verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"],$_SESSION["encryption_seed"],$dblink))
+				reportError(1440,"Login credentials incorrect","json");
+		} else
+			reportError(1441,"No login credentials passed","json");
+	} else {	
+		if(!isset($noSession)){
+			session_name("phpBMSv08ID");
+			session_start();
+		}
+		
+		if (!isset($_SESSION["app_path"]))
+			$mainpath=loadMysqlSettings();
+		else 
+			$mainpath=$_SESSION["app_path"];
+				
+		if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
+		
+			if(isset($loginNoKick)){
+				if(!isset($loginNoDisplayError))
+					exit();
+				else
+					$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
+			} else{
+				header("Location: ".$mainpath."index.php");
+				exit();
+			}
+		} else {
+	
+			// OPEN DATABASE IF NOT OPENED
+			if(!isset($dblink))		
+				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
+	
+			//load from settings table
+			if(!isset($_SESSION["app_name"])) loadSettings();
+		}//end if
+	}
 ?>
