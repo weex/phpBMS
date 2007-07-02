@@ -339,18 +339,17 @@ function performShippingEstimate(base){
 				if(therow.id.substring(0,3)=="LIN"){
 					for(j=0;j<therow.childNodes.length;j++){
 						if(therow.childNodes[j].className==""){
-							if(therow.childNodes[j].firstChild.innerHTML)
-								lipair=therow.childNodes[j].firstChild.innerHTML;
-							else
-								lipair=therow.childNodes[j].childNodes[1].innerHTML;
-							
-							theURL+="&LI"+i+"="+encodeURI(lipair);							
+							var k=0;
+							for(k=0;k<therow.childNodes[j].childNodes.length;k++)
+								if(therow.childNodes[j].childNodes[k])
+									if(therow.childNodes[j].childNodes[k].className=="LIRealInfo")
+										theURL+="&LI"+i+"="+encodeURI(therow.childNodes[j].childNodes[k].innerHTML);
 						}
 					}					
 				}
 			}
 		}	
-	
+
 	theURL+="&shiptozip="+encodeURI(shiptozip.value);
 	//timestamp for client caching
 	var today=new Date();

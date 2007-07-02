@@ -48,7 +48,7 @@
 	?><response>
 	<value>0</value>
 </response><?php
-		exit;
+		exit();
 	}
 		
 	//SWITCH OUT THE SHIPPING METHOD
@@ -78,7 +78,6 @@
 		if(strpos($name,"LI")!==false){
 			//convert data to array
 			$lineitem=explode("[//]",$item);
-
 			//grab info from product.			
 			$querystatement="SELECT isprepackaged,weight,packagesperitem FROM products WHERE id=".trim($lineitem[0]);
 			$queryresult=mysql_query($querystatement,$dblink);

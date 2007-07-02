@@ -99,26 +99,29 @@ function loadMysqlSettings() {
 function reportError($id,$extras,$format=true,$path="",$die=true,$log=true){
 	if($path=="" && isset($_SESSION["app_path"]))
 		$path=$_SESSION["app_path"];
+	if($format===true)	
+		$format="xhtml";
+		
 	switch($format){
 		case "JSON":
 		case "json":
 			echo "{
-				\"error\" : { \"number\" : ".$id." \"extras\" : \"".str_replace("\n","\\n",addslashes($extras))."\"}
+				\"error\" : { \"number\" : ".$id.", \"extras\" : \"".str_replace("\n","\\n",addslashes($extras))."\"}
 			}";
 		break;
-		case true:
-		?><link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-		<div class="bodyline">
-			<h1>phpBMS Error: <?php echo $id?></h1>
-			<div class="box">
-				<?php echo $extras ?>
-			</div>
-		</div><?php 
+		case "xhtml":
+		case "XHTML":
+			?><link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
+			<div class="bodyline">
+				<h1>phpBMS Error: <?php echo $id?></h1>
+				<div class="box">
+					<?php echo $extras ?>
+				</div>
+			</div><?php 
 		break;
-		case false:
+		default:
 			echo $id;
 			if($extras) echo " - ".$extras;
-		break;
 	}
 	if($format) {}else
 		echo $extras;
