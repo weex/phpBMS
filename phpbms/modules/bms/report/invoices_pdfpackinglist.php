@@ -57,7 +57,9 @@
 					shippingmethods.name as shippingmethod, paymentmethods.name as paymentmethod, checkno, bankname, invoices.ccnumber,
 					invoices.ccexpiration, specialinstructions, printedinstructions, tax, shipping,
 					clients.firstname, clients.lastname, clients.company,
+					clients.email, clients.workphone, clients.homephone, clients.country, invoices.country as shiptocountry,
 					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,
+					clients.email, clients.workphone, clients.homephone, clients.country, clients.shiptocountry,
 					invoices.address1 as shiptoaddress1,invoices.address2 as shiptoaddress2,invoices.city as shiptocity,
 					invoices.state as shiptostate,invoices.postalcode as shiptopostalcode, amountpaid, trackingno,
 					invoicedate,
@@ -129,9 +131,7 @@
 		$pdf->SetFont("Times","",8);
 		$pdf->MultiCell(4,$tempheight,$caddress,$border_debug);
 		$tempnext+=($tempheight*4);
-	
-	
-	
+				
 	
 		//next the Bill To Box
 		$tempnext+=.25;
@@ -143,16 +143,37 @@
 		$pdf->SetFont("Arial","B",8);
 		$pdf->Cell($tempwidth-.125,.15,"SOLD TO",$border_debug,2,"L");
 
-		$address="";
-		if ($therecord["company"]) $address.=$therecord["company"]."\n";
-		$address=$address.$therecord["firstname"]." ".$therecord["lastname"]."\n";
-		$address=$address.$therecord["address1"]."\n";
-		if ($therecord["address2"]) $address.=$therecord["address2"]."\n";
-		$address=$address.$therecord["city"].", ".$therecord["state"]."  ".$therecord["postalcode"]."\n";
+		$displayName="";
+		if($therecord["company"]){
+			$displayName.=$therecord["company"];
+			if($therecord["lastname"])
+				$displayName.=" (".$therecord["firstname"]." ".$therecord["lastname"].")";
+		}else
+			$displayName.=$therecord["firstname"]." ".$therecord["lastname"];
+		
+		$address=$therecord["address1"];
+		if ($therecord["address2"]) $address.="\n".$therecord["address2"];
+		$address.="\n".$therecord["city"].", ".$therecord["state"]."  ".$therecord["postalcode"];
+		if($therecord["country"]) $address.=" ".$therecord["country"];
+		
+		$phoneemail="";
+		if($therecord["workphone"] || $therecord["homephone"]){
+			$phoneemail=$therecord["homephone"]." (H)";
+			if($therecord["workphone"])
+				$phoneemail=$therecord["workphone"]." (W)";
+			$phoneemail.="\n";
+		}
+		if($therecord["email"])
+			$phoneemail.=$therecord["email"];
+		if($phoneemail)
+			$address.="\n\n".$phoneemail;
+		
 
 		$pdf->SetFont("Arial","B",10);
+		$pdf->Cell($tempwidth-.125,.16,$displayName,$border_debug,2,"L");
+		$pdf->SetFont("Arial","B",9);
 		$pdf->MultiCell($tempwidth-.125,.13,$address,$border_debug);
-		
+				
 		//next the *Ship* To Box
 		$pdf->Rect($leftmargin+$tempwidth+.25,$tempnext,$tempwidth,$tempheight);
 		$pdf->SetXY($leftmargin+$tempwidth+.25+.0625,$tempnext+.0625);
@@ -160,13 +181,14 @@
 		$pdf->Cell($tempwidth-.125,.15,"SHIP TO",$border_debug,2,"L");
 
 		$address="";
-		if ($therecord["company"]) $address.=$therecord["company"]."\n";
-		$address=$address.$therecord["firstname"]." ".$therecord["lastname"]."\n";
-		$address=$address.$therecord["shiptoaddress1"]."\n";
-		if ($therecord["shiptoaddress2"]) $address=$address.$therecord["shiptoaddress2"]."\n";
-		$address=$address.$therecord["shiptocity"].", ".$therecord["shiptostate"]."  ".$therecord["shiptopostalcode"]."\n";
+		$address=$therecord["shiptoaddress1"];
+		if ($therecord["shiptoaddress2"]) $address.="\n".$therecord["shiptoaddress2"];
+		$address.="\n".$therecord["shiptocity"].", ".$therecord["shiptostate"]."  ".$therecord["shiptopostalcode"];
+		if($therecord["shiptocountry"]) $address.=" ".$therecord["shiptocountry"];
 
 		$pdf->SetFont("Arial","B",10);
+		$pdf->Cell($tempwidth-.125,.16,$displayName,$border_debug,2,"L");
+		$pdf->SetFont("Arial","B",9);
 		$pdf->MultiCell($tempwidth-.125,.13,$address,$border_debug);
 
 		$tempnext+=$tempheight;

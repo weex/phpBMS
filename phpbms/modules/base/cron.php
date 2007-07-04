@@ -14,26 +14,26 @@
 	$queryresult=mysql_query($querystatment,$dblink);
 	if(!$queryresult) reportError(300,"Could not retrieve schedulers: ".mysql_error($dblink));
 	
-	while($therecord=mysql_fetch_array($queryresult)){
-		$datetimearray=explode(" ",$therecord["startdatetime"]);
-		$therecord["startdate"]=stringToDate($datetimearray[0],"SQL");
-		$therecord["starttime"]=stringToTime($datetimearray[1],"24 Hour");
+	while($schedule_record=mysql_fetch_array($queryresult)){
+		$datetimearray=explode(" ",$schedule_record["startdatetime"]);
+		$schedule_record["startdate"]=stringToDate($datetimearray[0],"SQL");
+		$schedule_record["starttime"]=stringToTime($datetimearray[1],"24 Hour");
 
 		if($therecord["enddatetime"]){
-			$datetimearray=explode(" ",$therecord["enddatetime"]);
-			$therecord["enddate"]=stringToDate($datetimearray[0],"SQL");
-			$therecord["endtime"]=stringToTime($datetimearray[1],"24 Hour");
+			$datetimearray=explode(" ",$schedule_record["enddatetime"]);
+			$schedule_record["enddate"]=stringToDate($datetimearray[0],"SQL");
+			$schedule_record["endtime"]=stringToTime($datetimearray[1],"24 Hour");
 		}
 
-		$validTimes=getTimes($therecord);
+		$validTimes=getTimes($schedule_record);
 		if(is_array($validTimes) && in_array($now, $validTimes)){
-			$success = @ include($therecord["job"]);
+			$success = @ include($schedule_record["job"]);
 			if($success){
-				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$therecord["id"];
+				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
 				mysql_query($updatestatement,$dblink);
-				sendLog($dblink,"SCHEDULER","Secheduled Job ".$therecord["name"]." (".$therecord["id"].") completed",-2);
+				sendLog($dblink,"SCHEDULER","Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed",-2);
 			} else {
-				sendLog($dblink,"ERROR","Scheduled Job ".$therecord["name"]." (".$therecord["id"].") returned errors.",-2);
+				sendLog($dblink,"ERROR","Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors.",-2);
 			}
 				
 		}		
