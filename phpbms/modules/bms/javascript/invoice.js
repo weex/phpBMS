@@ -712,7 +712,8 @@ function calculateTotal(){
 	//next calculate and reformat tax
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
 	if (taxpercentagevalue!=0){
-		var numtax=numTotalTaxable*(taxpercentagevalue/100);
+		var numtax=Math.round(numTotalTaxable*(taxpercentagevalue/100)*Math.pow(10,CURRENCY_ACCURACY))/10^Math.pow(10,CURRENCY_ACCURACY);
+		
 		if(numtax<0) numtax=0;
 	}
 	else {

@@ -470,7 +470,7 @@ function updateRecord($variables,$userid){
 			$querystatement.="country=\"".$variables["country"]."\", "; 
 
 			$querystatement.="totaltni=".currencyToNumber($variables["totaltni"]).", "; 
-			$querystatement.="totaltaxable=".currencyToNumber($variables["totaltaxable"]).", "; 
+			$querystatement.="totaltaxable=".((real) $variables["totaltaxable"]).", "; 
 			$querystatement.="totalti=".currencyToNumber($variables["totalti"]).", "; 
 			$querystatement.="shipping=".currencyToNumber($variables["shipping"]).", "; 
 			$querystatement.="tax=".currencyToNumber($variables["tax"]).", "; 
@@ -590,7 +590,7 @@ function insertRecord($variables,$userid){
 			$querystatement.="\"".$variables["country"]."\", "; 
 
 			$querystatement.=currencyToNumber($variables["totaltni"]).", "; 
-			$querystatement.=currencyToNumber($variables["totaltaxable"]).", "; 
+			$querystatement.=((real) $variables["totaltaxable"]).", "; 
 			$querystatement.=currencyToNumber($variables["totalti"]).", "; 
 			$querystatement.=currencyToNumber($variables["shipping"]).", "; 
 			$querystatement.=currencyToNumber($variables["tax"]).", "; 
