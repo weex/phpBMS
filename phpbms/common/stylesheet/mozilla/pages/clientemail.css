@@ -2,7 +2,7 @@
 /* $LastChangedDate$ */
 #topTitle{}
 
-#showsavedsearches{;display:none;}
+#showsavedsearches{display:none;}
 #toP{float:left;}
 #fromDiv{clear:both;}
 #subject,#body{width:99%}
@@ -15,8 +15,14 @@
 #saveInput{width:98%}
 #saveSave,#saveCancel{width:75px;}
 
-#beginprocessing,#done{width:150px;}
-#processP{float:right;width:180px; text-align:right}
-#processTableDiv{margin-right:230px;}
+#mainBG, #footer{
+	width:585px;
+	margin: 0 auto;
+}
+
+#done{width:75px;}
+#beginprocessing{width:125px;}
+#processP{float:left; line-height:22px}
+#processingWrap{text-align:center;}
 #clearDiv{clear:both;}
 .noselects{cursor:auto}

@@ -104,6 +104,7 @@
 		case "done":
 		case "cancel":
 			goURL($_SESSION["app_path"]."search.php?id=2");
+			
 		break;
 	}
 	
@@ -120,7 +121,7 @@
 <script language="JavaScript" src="javascript/clientemail.js" type="text/javascript"></script>
 </head>
 <body><?php include("../../menu.php")?>
-	<div class="bodyline">
+	<div class="bodyline" id="mainBG">
 		<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 		
 		<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="theform" id="theform">
@@ -216,32 +217,35 @@
 			?>			
 		</script>
 		
-		<div class="box">
-			<p id="processP">
-				<input type="button" id="beginprocessing" name="beginprocessing" value=" Begin Processing " class="Buttons" onclick="processEmails();"/><br />
-				<span id="amountprocessed">0</span> / <?php echo mysql_num_rows($sendqueryresult)?> records processed<br />
-				<input type="submit" name="command" id="done" value="done" class="Buttons"  />
-			</p>
-			
-			<div class="fauxP" id="processTableDiv">
-				<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable">
-					<tr>
-						<th nowrap="nowrap" id="tablereference">#</th>
-						<th nowrap="nowrap">Client ID</th>
-						<th nowrap="nowrap" align="left">Name</th>
-						<th nowrap="nowrap">E-Mail Address</th>
-						<th nowrap="nowrap" width=50% align="right">Status</th>
-					</tr>
-					<tr class="queryfooter" id="lastrow">
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
-				</table>
+		<div id="processingWrap">
+			<div class="box">
+				<div class="fauxP">
+					<table id="results" cellpadding="0" cellspacing="0" border="0" class="querytable" width="100%">
+						<tr>
+							<th nowrap="nowrap" id="tablereference">#</th>
+							<th nowrap="nowrap">ID</th>
+							<th nowrap="nowrap" align="left">Name</th>
+							<th nowrap="nowrap" align="left">E-Mail Address</th>
+							<th nowrap="nowrap" width=50% align="left">Status</th>
+						</tr>
+						<tr class="queryfooter" id="lastrow">
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div id="clearP">&nbsp;</div>
+			<div class="box">
+				<div id="processP">
+					<span id="amountprocessed">0</span> / <?php echo mysql_num_rows($sendqueryresult)?> records processed
+				</div>
+				<div align="right">
+					<input type="button" id="beginprocessing" name="beginprocessing" value=" begin processing " class="Buttons" onclick="sendMailButton();"/> <input type="submit" name="command" id="done" value="done" class="Buttons"  />
+				</div>
+			</div>
 		</div>
 
 <?php } ?>

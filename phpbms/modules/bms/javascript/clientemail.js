@@ -136,37 +136,48 @@ function addField(){
 }
 
 function insertAtCursor(myFieldName, myValue) {
-var myField=getObjectFromID(myFieldName);
-//IE support
-if (document.selection) {
-myField.focus();
-sel = document.selection.createRange();
-sel.text = myValue;
-}
-//MOZILLA/NETSCAPE support
-else if (myField.selectionStart || myField.selectionStart == '0') {
-var startPos = myField.selectionStart;
-var endPos = myField.selectionEnd;
-myField.value = myField.value.substring(0, startPos)
-+ myValue
-+ myField.value.substring(endPos, myField.value.length);
-} else {
-myField.value += myValue;
-}
+	var myField=getObjectFromID(myFieldName);
+	//IE support
+	if (document.selection) {
+	myField.focus();
+	sel = document.selection.createRange();
+	sel.text = myValue;
+	}
+	//MOZILLA/NETSCAPE support
+	else if (myField.selectionStart || myField.selectionStart == '0') {
+	var startPos = myField.selectionStart;
+	var endPos = myField.selectionEnd;
+	myField.value = myField.value.substring(0, startPos)
+	+ myValue
+	+ myField.value.substring(endPos, myField.value.length);
+	} else {
+	myField.value += myValue;
+	}
 }
 
-function processEmails(){
+i = 0;
+
+function sendMailButton(){
+
+	timer = setTimeout("sendEmail()", 1000);
+
+}
+
+function sendEmail(){
 		var counterspan=getObjectFromID("amountprocessed");
 		var thebutton=getObjectFromID("beginprocessing");
 		thebutton.disabled=true;
 		var error;
 		
-		for(var i=0;i<ids.length;i++){
+		if(i<ids.length){
 			error=false;
-			message="sent";
+			message="Email Sent";
+			
 			if (emails[i]!=""){
+			
 				theurl="clients_email_process.php?id="+ids[i];
 				loadXMLDoc(theurl,null,false);
+				
 				if(!req.responseXML){
 					alert(theurl);
 					return false;
@@ -175,18 +186,31 @@ function processEmails(){
 				if(response.getElementsByTagName('result')[0].firstChild.data!="sent"){
 					error=true;
 					message="Error Sending Email";
-				}	
+				}
+					
 			} else {
 				error=true;
 				message="blank e-mail address";
 			}
-			addEntry(i,ids[i],names[i],emails[i],error,message)
+			
+			addEntry(i,ids[i],names[i],emails[i],error,message);
+			
 			while (counterspan.childNodes[0]) {
 			    counterspan.removeChild(counterspan.childNodes[0]);
 			}
+			
 			counterspan.appendChild(document.createTextNode(" "+(i+1)));
-		}//end for
-		//done processing shut down processing button
+			
+			i++;
+			
+			var timeout = 5;
+			if((i%3) == 0)
+				timeout = 1000;
+			
+			timer = setTimeout("sendEmail()", timeout);
+			
+		}//done processing shut down processing button
+		
 }
 
 function addEntry(num,id,name,email,error,message){
@@ -210,15 +234,17 @@ function addEntry(num,id,name,email,error,message){
 			thetr.appendChild(thetd);
 			thetd=document.createElement("TD")
 				thetd.appendChild(document.createTextNode("\u00A0"+name));
-				thetd.setAttribute("nowrap","true");
+				thetd.setAttribute("nowrap","nowrap");
+				thetd.setAttribute("align","left");
 			thetr.appendChild(thetd);
 			thetd=document.createElement("TD")
 				thetd.appendChild(document.createTextNode("\u00A0"+email));
 				thetd.setAttribute("nowrap","true");
+				thetd.setAttribute("align","left");
 			thetr.appendChild(thetd);
 			thetd=document.createElement("TD")
 				thetd.appendChild(document.createTextNode(message));
-				thetd.setAttribute("align","right");
+				thetd.setAttribute("align","left");
 				thetd.className="Important"
 			thetr.appendChild(thetd);
 			

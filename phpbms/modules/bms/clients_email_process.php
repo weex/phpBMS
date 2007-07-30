@@ -38,6 +38,7 @@
 */
 
 	require("../../include/session.php");
+	include("../../include/common_functions.php");
 	
 	$result="Error";
 	if($_SESSION["demo_enabled"]=="true"){
@@ -47,7 +48,7 @@
 			$result="Bad Passed Variable";
 		} else {
 			$themessage=$_SESSION["massemail"]["body"];
-			$querystatement="SELECT * FROM clients WHERE id=".$_GET["id"];
+			$querystatement="SELECT * FROM clients WHERE id=".( (int) $_GET["id"]);
 			$queryresult=mysql_query($querystatement,$dblink);
 			if($queryresult){
 				$therecord=mysql_fetch_array($queryresult);
@@ -57,7 +58,9 @@
 					$themessage=str_replace("[[".$key."]]",$value,$themessage);
 				
 				if(@ mail($therecord["email"],$_SESSION["massemail"]["subject"],$themessage,"From: ".$_SESSION["massemail"]["from"]))
-					$result="Sent";
+					$result="sent";
+				else
+					$result="failed";
 			}
 		}
 	}
@@ -65,5 +68,5 @@
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 ?>
 <response>
-  <result><?php echo $result?></result>
+  <result><?php echo $result; ?></result>
 </response>
