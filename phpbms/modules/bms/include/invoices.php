@@ -220,6 +220,9 @@ if(class_exists("phpbmsTable")){
 	
 				if($this->db->numRows($queryresult))
 					$therecord=$this->db->fetchArray($queryresult);
+			} else{
+				$therecord["name"] = NULL;
+				$therecord["percentage"] = NULL;
 			}
 			
 			$therecord["name"]= htmlQuotes($therecord["name"]);

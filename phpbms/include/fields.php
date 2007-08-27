@@ -479,7 +479,7 @@ class inputChoiceList extends inputField{
 			$this->showLabel();
 		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
 			$this->displayAttributes();
-			?> onchange="changeChoiceList(this,'<?php echo APP_PATH?>','<?php echo $this->listname?>','<?php echo $blankvalue?>');"  onfocus="setInitialML(this)">
+			?> onchange="changeChoiceList(this,'<?php echo APP_PATH?>','<?php echo $this->listname?>','<?php echo $this->blankvalue?>');"  onfocus="setInitialML(this)">
 		<?php 
 			$inlist=false;
 			while($therecord = $this->db->fetchArray($this->queryresult)){

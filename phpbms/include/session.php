@@ -36,8 +36,8 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-@ define("APP_DEBUG",true);
-error_reporting(E_ALL);
+@ define("APP_DEBUG",false);
+//error_reporting(E_ALL);
 
 class appError{
  	var $number=0;

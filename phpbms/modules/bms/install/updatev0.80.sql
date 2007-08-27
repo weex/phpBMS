@@ -5,4 +5,4 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('default_payment','0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('default_shipping','0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('default_discount','0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('default_taxarea','0');
-INSERT INTO `reports` (`name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('223', 'Totals - Tax', 'report', '3', '50', '30', 'modules/bms/reports/invoices_totals_tax.php', 'Tax Totals', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('Totals - Tax', 'report', '3', '50', '30', 'modules/bms/reports/invoices_totals_tax.php', 'Tax Totals', 1, NOW(), 1, NOW());
