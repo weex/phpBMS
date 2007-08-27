@@ -38,10 +38,13 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/fields.php");
+	include("./include/tabledefs_options_include.php");
 
-	include("include/tabledefs_options_include.php");
+	//grab the table name
+	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
+	$queryresult = $db->query($querystatement);
+	$tableRecord = $db->fetchArray($queryresult);
 
 	//process page
 	$thecommand="";
@@ -52,106 +55,111 @@
 	
 	switch($thecommand){
 		case "edit":
-			$singleoptionquery=getOptions($_GET["id"],$_GET["optionid"]);
-			$theoption=mysql_fetch_array($singleoptionquery);
+			$singleoptionquery=getOptions($db, $_GET["id"],$_GET["optionid"]);
+			$theoption=$db->fetchArray($singleoptionquery);
 			$action="edit option";
 		break;
 		
 		case "delete":
-			$statusmessage=deleteOption($_GET["optionid"]);
+			$statusmessage=deleteOption($db, $_GET["optionid"]);
 		break;
 		
 		case "add option":
-			$statusmessage=addOption(addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage=addOption($db, addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit option":
-			$statusmessage=updateOption(addSlashesToArray($_POST));
+			$statusmessage=updateOption($db, addSlashesToArray($_POST));
 		break;
 		
 	}//end switch
 	
-	$optionsquery=getOptions($_GET["id"]);
+	$optionsquery=getOptions($db, $_GET["id"]);
 	
-	$pageTitle="Table Definition: Options";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tableoptions.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-	function init(){
-		switchType();
-	}
+	$pageTitle="Table Definition Options: ".$tableRecord["displayname"];
 	
-	function switchType(){
-		var oc1=getObjectFromID("oc1");
-		var pdFields=getObjectFromID("pdList");
-		var other=getObjectFromID("other");
-		if(oc1.checked){
-			pdFields.style.display="block";
-			other.style.display="none";
-		} else {
-			pdFields.style.display="none";
-			other.style.display="block";
-		}
-	}
-</script>
-</head>
-<body onload="init()"><?php include("../../menu.php")?>
+	$phpbms->cssIncludes[] = "pages/tableoptions.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/tableoptions.js";
 
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+	
+		$temparray["new"] = "new";
+		$temparray["select"] = "select";
+		$temparray["edit"] = "edit";
+		$temparray["reporting"] = "printex";		
+		$theinput = new inputBasicList("pdName",$theoption["name"],$temparray,"function");
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("name",$theoption["name"],"function name",false,NULL,64,64);
+		$theform->addField($theinput);
 
-<?php showTabs($dblink,"tabledefs entry",3,$_GET["id"])?><div class="bodyline">
+		$theinput = new inputField("option",$theoption["option"],"display name",false,NULL,64,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"roleid",$theoption["roleid"],"access (role)");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+	$phpbms->showTabs("tabledefs entry",3,$_GET["id"])?>
+<div class="bodyline">
+
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
-	<div class="fauxP">
-   <table border="0" cellpadding="3" cellspacing="0" class="querytable">
-	<tr>
-	 <th nowrap="nowrap"align="center">other</th>
-	 <th nowrap="nowrap"align="left">name</th>
-	 <th nowrap="nowrap"align="left">option / function</th>
-	 <th nowrap="nowrap"align="center">access</th>
-	 <th nowrap="nowrap">&nbsp;</th>
-	</tr>
+
+	<div class="fauxP">	
+	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
+		<tr>
+			<th nowrap="nowrap"align="center">other</th>
+			<th nowrap="nowrap"align="left">option / function</th>
+			<th nowrap="nowrap"align="left" width="100%">name</th>
+			<th nowrap="nowrap"align="center">access</th>
+			<th nowrap="nowrap">&nbsp;</th>
+		</tr>
 
 	<?php 
 		$row=1;
-		while($therecord=mysql_fetch_array($optionsquery)){ 
+		while($therecord=$db->fetchArray($optionsquery)){ 
 		if($row==1)$row=2;else $row=1;
 	?>
-	<tr class="qr<?php echo $row?> noselects">
-	 <td align="center" nowrap="nowrap"><?php echo booleanFormat($therecord["othercommand"])?></td>
-	 <td nowrap="nowrap"><strong><?php 
-	 		if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?></strong>
-	</td>
-	 <td nowrap="nowrap"class="small"><?php 
-	 	if($therecord["othercommand"]) 
-			echo $therecord["name"]; 
-		else {
-			if($therecord["option"]==1)
-				echo "allowed";
-			else
-				echo "not allowed";				
-		}
-	?></td>
-	 <td nowrap="nowrap"align="center"><?php displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
+		<tr class="qr<?php echo $row?> noselects">
+			<td align="center" nowrap="nowrap"><?php echo booleanFormat($therecord["othercommand"])?></td>
+			<td nowrap="nowrap"class="small"><?php 
+				if($therecord["othercommand"]) 
+					echo $therecord["name"]; 
+				else {
+					if($therecord["option"]==1)
+						echo "allowed";
+					else
+						echo "not allowed";				
+				}
+			?></td>
+			<td nowrap="nowrap" class="important"><?php 
+	 			if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?>
+			</td>
+			<td nowrap="nowrap"align="center"><?php $phpbms->displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
 	 
-	 <td nowrap="nowrap"valign="top">
-		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
-		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
-	 </td>
-	</tr>	
+			<td nowrap="nowrap"valign="top">
+				<button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
+				<button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
+			</td>
+		</tr>	
 	<?php } ?>
-	<tr class="queryfooter">
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	</table></div>
+		<tr class="queryfooter">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+	</div>
+	
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
@@ -165,10 +173,9 @@
 			</p>
 			
 			<div id="pdList">
-				<p>
-					<label for="pdName">function</label><br />
-					<?php fieldBasicList("pdName",$therecord["name"],array(array("value"=>"new","name"=>"new"),array("value"=>"select","name"=>"select"),array("value"=>"edit","name"=>"edit"),array("value"=>"printex","name"=>"printing")));?>
-				</p>
+
+				<p><?php $theform->showField("pdName")?></p>
+
 				<p>option</p>
 				<p>
 					<input type="radio" class="radiochecks" id="pdOptionEnabled" name="pdOption" value="1" <?php if ($theoption["option"]!==0) echo "checked=\"checked\""?> /><label for="pdOptionAllowed">allowed</label>
@@ -178,19 +185,12 @@
 			</div>
 
 			<div id="other">
-				<p>
-					<label for="name">function name</label><br />
-					<?php fieldText("name",$theoption["name"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
-				</p>
-				<p>
-					<label for="option">display name</label><br />
-					<?php fieldText("option",$theoption["option"],0,"","",Array("size"=>"64","maxlength"=>"64")); ?>
-				</p>
+				<p><?php $theform->showField("name") ?></p>
+
+				<p><?php $theform->showField("option") ?></p>
 			</div>
-			<p>
-				<label for="roleid">access (role)</label><br />
-				<?php fieldRolesList("roleid",$theoption["roleid"],$dblink)?>				
-			</p>
+
+			<p><?php $theform->showField("roleid")?></p>
 
 			<p>
 				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
@@ -198,6 +198,4 @@
 		</form>
 	</fieldset>
 </div>
-<?php include("../../footer.php"); ?>
-</body>
-</html>
+<?php include("footer.php"); ?>

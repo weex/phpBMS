@@ -39,13 +39,13 @@
 
 	require("../../include/session.php");
 	
-	if(!isset($_GET["id"])) reportError(300,"Passed veriable not set (id)");
+	if(!isset($_GET["id"])) $error = new appError(300,"Passed veriable not set (id)");
 	
 	$querystatement="SELECT if(discounts.type+0=1,concat(discounts.value,\"%\"),discounts.value) AS value FROM discounts WHERE id=".$_GET["id"];
-	$queryresult = mysql_query($querystatement,$dblink);
+	$queryresult = $db->query($querystatement);
 	if(!$queryresult) reporError(100,"Discount could not be retrieved");
-	if(mysql_num_rows($queryresult))
-		$therecord=mysql_fetch_array($queryresult);
+	if($db->numRows($queryresult))
+		$therecord=$db->fetchArray($queryresult);
 	else
 		$therecord["value"]=0;
 		

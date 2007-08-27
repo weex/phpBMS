@@ -37,23 +37,23 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 	include("../../include/fields.php");
 
 	$refquery="select partname from products where id=".$_GET["id"];
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);	
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);	
 
 if(isset($_POST["command"])){
 	switch($_POST["command"]){
 		case"delete":
 			$thequery="delete from prerequisites where id=".$_POST["deleteid"];
-			$theresult=mysql_query($thequery);
+			$theresult=$db->query($thequery);
 		break;
 		case"add":
 			if($_POST["partnumber"]!=$_GET["id"] && $_POST["partnumber"]!=""){
 				$thequery="insert into prerequisites (parentid,childid) VALUES(".$_GET["id"].",\"".$_POST["partnumber"]."\");";
-				$theresult=mysql_query($thequery);
+				$theresult=$db->query($thequery);
 			}
 		break;
 	}
@@ -62,23 +62,40 @@ if(isset($_POST["command"])){
 	$prerequstatement="SELECT DISTINCT prerequisites.id,partnumber,partname,description 
 						FROM prerequisites INNER JOIN products ON prerequisites.childid=products.id 
 						WHERE prerequisites.parentid=\"".$_GET["id"]."\"";
-	$prereqresult=mysql_query($prerequstatement,$dblink);
-	$prereqresult? $numrows=mysql_num_rows($prereqresult): $numrows=0;
+	$prereqresult=$db->query($prerequstatement);
+	$prereqresult? $numrows=$db->numRows($prereqresult): $numrows=0;
 
-$pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
+	$pageTitle="Product Prerequisites: ".$refrecord["partname"];
+	
+	$phpbms->cssIncludes[] = "pages/products.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/prereq.js";
 
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/prereq.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<?php showTabs($dblink,"products entry",11,$_GET["id"]);?><div class="bodyline">
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
+										"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true);					
+		$theinput->setAttribute("size","16");
+		$theinput->setAttribute("maxlength","32");
+		$theform->addField($theinput);
+		$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
+			
+		$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
+										"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true);
+		$theinput->setAttribute("size","20");
+		$theinput->setAttribute("maxlength","128");
+		$theform->addField($theinput);
+		$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");	
+
+?>
+<?php $phpbms->showTabs("products entry",11,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<input id="deleteid" name="deleteid" type="hidden" value="0" />
@@ -88,12 +105,12 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 		<tr>
 		 <th align="left" nowrap="nowrap" class="queryheader">Part Number</th>
 		 <th align="left" nowrap="nowrap" class="queryheader">Name</th>
-		 <th align="left" width=100% class="queryheader">Description</th>
+		 <th align="left" width="100%" class="queryheader">Description</th>
 		 <th align="center" nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
 		<?php 	
 		if($numrows){
-			while ($prereq=mysql_fetch_array($prereqresult)){
+			while ($prereq=$db->fetchArray($prereqresult)){
 	?>
 		<tr>
 			<td align="left" nowrap="nowrap"><?php echo $prereq["partnumber"] ?></td>
@@ -122,16 +139,11 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
 
 	<fieldset>
 		<legend>add new prerequisite product</legend>
-		<div class="preqAdd fauxP">
-			<label for="ds-partnumber">part number</label><br />
-			<?php fieldAutofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\"",Array("size"=>"15","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript" type="text/javascript">document.forms["record"]["partnumber"].onchange=populateLineItem;</script>
-		</div>
-		<div class="preqAdd fauxP">
-			<label for="ds-partname">part name</label><br />
-			<?php fieldAutofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\"",Array("size"=>"32","maxlength"=>"32"),false,"") ?>
-			<script language="JavaScript" type="text/javascript">document.forms["record"]["partname"].onchange=populateLineItem;</script>
-		</div>
+
+		<div class="preqAdd fauxP"><?php $theform->showField("partnumber")?></div>
+
+		<div class="preqAdd fauxP"><?php $theform->showField("partname")?></div>
+		
 		<p id="addButtonP"><br />
 			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button> 
 		</p>
@@ -150,6 +162,4 @@ $pageTitle="Product Prerequisites: ".$refrecord["partname"];?><!DOCTYPE html PUB
    </fieldset>
 	</form>
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html>
+<?php include("footer.php");?>

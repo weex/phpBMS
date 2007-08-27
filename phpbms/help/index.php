@@ -39,11 +39,11 @@
 	require("../include/session.php");	
 	
 	$querystatement="SELECT displayname,version from modules ORDER BY id";
-	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult=$db->query($querystatement);
 
-	function displayVersions($queryresult){
+	function displayVersions($db,$queryresult){
 		if($queryresult){
-			while($therecord=mysql_fetch_array($queryresult)){
+			while($therecord=$db->fetchArray($queryresult)){
 				if($therecord["displayname"]!="Base"){
 					echo $therecord["displayname"].": ";
 					echo "v".$therecord["version"]."<br />";
@@ -58,9 +58,9 @@
 	<h3 class="helpLinks">About This Program</h3>
 	<div class="helpDivs">
 		<div class="helpSectionDivs">
-			<p align="right" style="float:right;"><img src="<?php echo $_SESSION["app_path"]?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
+			<p align="right" style="float:right;"><img src="<?php echo APP_PATH?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
 			<h3>phpBMS - Commercial Open Source Business Management Web Application</h3>
-			<p class="small">v<?php displayVersions($queryresult)?></p>
+			<p class="small">v<?php displayVersions($db,$queryresult)?></p>
 			<p>Copyright &reg; 2004-2007 Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
 			<p>
 				<strong>Kreotek, LLC</strong><br />

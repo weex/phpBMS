@@ -1,14 +1,6 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-/* The following lines is put in  until the site is reformatted*/
-LABEL{display:inline;margin:0;padding:0}
-DIV{padding:0;margin:0;}
-P{margin:0;padding:0 5px 10px;}
-.alt{display:none;}
-.bodyline{display:block}
-/* The following lines is put in  until the site is reformatted*/
-
 #searchBox{clear:both;margin:0 0 15px 0;padding:10px 5px 5px 5px;}
 #searchbutton,#reset,#LSLoad,#LSDelete,#saveSearch,#ASsearchbutton,
 #sortRunSort,#sortLoadSort,#sortSaveSort,#sortClearSort{width:90px;}
@@ -19,8 +11,78 @@ P{margin:0;padding:0 5px 10px;}
 #LSSelectedSearch,#LSSQL,#saveSearchName{width:99%}
 #LSSQL{height:123px;}
 
-#numCount{margin:0;padding:0 0 2px 0;float:right;text-align:right;}
-#numCount div{margin:0;padding:0; text-align:left;}
-#recordCommands{padding:0 0 2px 0;}
+#numCount{margin:0;padding:0 0 2px 0;float:right;text-align:right;padding-top:10px;}
+#numCount div{text-align:left;}
+
+#theSqlText{height:150px; overflow:auto;}
+#resultInfoDiv{clear:both;}
+#commandSet{height:32px;}
+
+#recordCommands{
+	background:url("../image/search-toolbar-back.png") repeat-x; 
+	height:32px;
+	float:left;
+	margin:0;padding:0;
+}
+#recordCommands li{float:left; list-style-type:none; padding:0;margin:0; background:url("../image/search-toolbar-itemback.png") no-repeat;width:32px;}
+#recordCommands li a{display:block; margin:2px 0 0 2px; width:26px;height:26px; background-repeat:no-repeat;}
+#recordCommands a span{display:none;}
+#recordCommands #firstToolbarItem{background-image:url("../image/search-toolbar-firstback.png")}
+
+.newRecord{background-image: url("../image/search-toolbar-new.png")}
+.editRecord{background-image: url("../image/search-toolbar-edit.png")}
+.editRecordDisabled{background-image: url("../image/search-toolbar-edit-db.png")}
+.deleteRecord{background-image: url("../image/search-toolbar-delete.png")}
+.deleteRecordDisabled{background-image: url("../image/search-toolbar-delete-db.png")}
+.print{background-image: url("../image/search-toolbar-print.png")}
+.printDisabled{background-image: url("../image/search-toolbar-print-db.png")}
+.otherCommands{background-image: url("../image/search-toolbar-cmd.png")}
+.otherCommandsDisabled{background-image: url("../image/search-toolbar-cmd-db.png")}
+.searchSelection{background-image: url("../image/search-toolbar-selection.png")}
+.searchSelectionDisabled{background-image: url("../image/search-toolbar-selection-db.png")}
+.sqlUp{background-image: url("../image/search-toolbar-sql.png")}
+.sqlDn{background-image: url("../image/search-toolbar-sql-dn.png")}
+
+#recordCommands .toolbarDropDowns{
+	margin-top:1px;
+	padding:2px 2px 4px 2px;
+	position:absolute;
+	background:white;
+	border:1px solid #999999;
+	display:none;
+}
+
+#recordCommands .toolbarDropDowns ul{margin:0;padding:0; height:auto}
+#recordCommands .toolbarDropDowns li{
+padding:0;
+margin:0;
+float:none;
+background:none;
+list-style-type:none;
+width:auto;
+height:auto;
+}
+	#recordCommands .toolbarDropDowns a{
+		width:auto;
+		height:auto;
+		float:none;
+		border:0;
+		background-image:none;
+		margin:0px;
+		display:block; 
+		padding:3px 25px 3px 10px;
+		font-size:11px;
+		white-space:nowrap;
+		font-weight:normal;
+	}
+	#recordCommands .toolbarDropDowns .menuSep {border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;}
+	
+	#recordCommands .toolbarDropDowns a:hover{
+		text-decoration:none; 
+		background-color:#663366;
+		color:white;
+	}
+
+
 
 #sortSavedDeleteButton,#sortSavedLoadButton,#sortSavedCancelButton{width:75px;}

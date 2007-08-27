@@ -39,100 +39,136 @@
 // This function writes to the settings.php file
 // any settings you want saved
 //=========================================
-function updateSettings($settings,$dblink) {	
-	foreach($settings as $key=>$value){
-		$querystatement="UPDATE settings set value=\"".$value."\" WHERE name=\"".$key."\"";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(mysql_error($dblink)." - ".$querystatement);		
-	}
-}//end function
 
-function processSettings($variables,$files,$dblink){
-	$writesettings=Array();
-	foreach($variables as $key=>$value){
-		if($key!="command" && $key!="printedlogo" && strpos($key,"mysql_")!==0 && $key!="changeseed" && $key!="currentpassword" && $key!="sencryption_seed" && $key!="doencryptionupdate"){
-			if($_SESSION[substr($key,1)]!=$value){
-				// i know not why I need to do this, but apparently, wacky things 
-				// happen with odd characters.
-				//$value=str_replace(chr(ord("Â")),"",$value);
-				$writesettings[substr($key,1)]=$value;
-				$_SESSION[substr($key,1)]=stripslashes($value);
+class settings{
+	var $db;
+	
+	function settings($db){
+	
+		$this->db = $db;
+	
+	}
+	
+	
+	function getSettings(){
+		$therecord = array();
+		
+		$querystatement = "SELECT `name`, `value` FROM `settings`";
+		$queryresult = $this->db->query($querystatement);
+		
+		while($setting = $this->db->fetchArray($queryresult))
+			$therecord[$setting["name"]] = $setting["value"];
+			
+		return $therecord;
+	}
+	
+	
+	function updateSettings($variables){
+	
+		global $phpbms;
+		
+		if(!isset($variables["persistent_login"])) $variables["persistent_login"]=0;
+		
+		//include any procesing that needs to be done by modules
+		foreach($phpbms->modules as $module => $moduleinfo)
+			if($module != "base")
+				if(class_exists($module."Update")){
+					$class = $module."Update";
+					$extraUpdate = new $class($this->db);
+					$extraUpdate->updateSettings($variables);
+				}		
+	
+		// Update the settings records
+		foreach($variables as $settingname => $settingvalue){
+			if(defined(strtoupper($settingname))){
+				if(constant(strtoupper($settingname)) != $settingvalue){
+					$updatestatement = "UPDATE settings SET value ='".$settingvalue."' WHERE name='".mysql_real_escape_string($settingname)."'";
+					$updateresult = $this->db->query($updatestatement);
+				}
+			}
+		}//end foreach
+		
+		// deal with logo graphic.
+		if(isset($_FILES["printedlogo"])){
+			if($_FILES["printedlogo"]["type"] == "image/png" || $_FILES["printedlogo"]["type"] == "image/jpeg"){
+				if (function_exists('file_get_contents')) {
+					$file = mysql_real_escape_string(file_get_contents($_FILES['printedlogo']['tmp_name']));
+				} else {
+					// If using PHP < 4.3.0 use the following:
+					$file = mysql_real_escape_string(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
+				}
+				$querystatement="UPDATE `files` SET `file` = '".$file."' WHERE id=1";
+				$queryresult=$this->db->query($querystatement);
+			}
+		}		
+
+		return true;
+		
+	}//end method
+	
+
+	function updateEncyptionSeed($newseed,$currpassword,$userid){
+	
+		$userid = (int) $userid;
+	
+		//first let's make sure the password matches
+		$querystatement="SELECT id FROM users WHERE id=".$userid." AND password=ENCODE('".$currpassword."','".ENCRYPTION_SEED."')";
+		$queryresult=$this->db->query($querystatement);
+
+		if(!$this->db->numRows($queryresult))
+			return "Encryption Seed not Updated: Invalid Current Password";
+		
+		//let's update the encryption seed then
+		$querystatement="UPDATE settings SET value='".$newseed."' WHERE name='encryption_seed'";
+		$queryresult=$this->db->query($querystatement);
+			
+		//last, reencode the current password
+		$querystatement="UPDATE users SET password=ENCODE('".$currpassword."','".$newseed."') WHERE id=".$userid;
+		$queryresult=$this->db->query($querystatement);
+
+		//rencode all other passwords
+		$querystatement="UPDATE users SET password = ENCODE(DECODE(password,'".ENCRYPTION_SEED."'),'".$newseed."') WHERE id !=".$userid;
+		$queryresult=$this->db->query($querystatement);
+			
+		return "Encryption Seed Updated.  All passwords changed";
+	}	
+
+
+	function processForm($variables){
+
+		$variables = addSlashesToArray($variables);
+		
+		switch($variables["command"]){
+			case "update settings":
+				if($this->updateSettings($variables))
+					$statusmessage="Settings Updated";
+			break;
+			
+			case "update encryption seed":
+				if(isset($variables["changeseed"]))
+					$statusmessage = $this->updateEncyptionSeed($variables["encryption_seed"],$variables["currentpassword"],$_SESSION["userinfo"]["id"]);
+			break;
+		}
+
+		return $statusmessage;
+
+	}//end method
+	
+	
+	function displayStylesheets($stylesheet){
+
+		$thedir="../../common/stylesheet";
+		$thedir_stream = @opendir($thedir);
+		
+		while($entry = @ readdir($thedir_stream)){
+			if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
+				echo "<option value=\"".$entry."\"";
+					if($entry == $stylesheet) echo " selected=\"selected\" ";
+				echo ">".$entry."</option>";
 			}
 		}
+
 	}
-
-	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-	$modulequery=mysql_query($querystatement,$dblink);
-			
-		while($modulerecord=mysql_fetch_array($modulequery)){
-			@ include "../".$modulerecord["name"]."/include/adminsettings_include.php";
-		}//end while 
-
-
-	// if changes, process settings
-	if(count($writesettings)>0)
-		updateSettings($writesettings,$dblink);
-	
-	// deal with logo graphic.
-	if(isset($files["printedlogo"]))
-		if($files["printedlogo"]["type"]=="image/png"){
-			if (function_exists('file_get_contents')) {
-				$file = addslashes(file_get_contents($_FILES['printedlogo']['tmp_name']));
-			} else {
-				// If using PHP < 4.3.0 use the following:
-				$file = addslashes(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
-			}
-			$querystatement="UPDATE files SET file=\"".$file."\" WHERE id=1";
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(300,"Error Uploading Graphic File");
-		}
-			
-	return true;
-}
-
-function updateEncyptionSeed($newseed,$currpassword,$userid,$currseed,$dblink){
-	//first let's make sure the password matches
-	$querystatement="SELECT id FROM users WHERE id=".$userid." AND password=ENCODE(\"".$currpassword."\",\"".$currseed."\")";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult)
-		return "Error retrieving current user information: ".mysql_error($dblink);
-	if(!mysql_num_rows($queryresult))
-		return "Invalid Password";
-	
-	//let's update the encryption seed then
-	$querystatement="UPDATE settings SET value=\"".$newseed."\" WHERE name=\"encryption_seed\"";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult)
-		return "Error updateing seed: ".mysql_error($dblink);
-
-	//update the current session information
-	$_SESSION["encryption_seed"]=$newseed;
-	
-	//last, reencode the current password
-	$querystatement="UPDATE users SET password=ENCODE(\"".$currpassword."\",\"".$newseed."\") WHERE id=".$userid;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult)
-		return "Error updateing user with new seed: ".mysql_error($dblink);
-		
-	return "Encryption Seed Updated. All other user passwords are now invalid.";
-}
-
-//process commands
-if(!hasRights(-100))
-	goURL($_SESSION["app_path"]."noaccess.php");
-
-if (isset($_POST["command"])) {
-	switch($_POST["command"]){
-		case "update settings":
-			if(processSettings(addSlashesToArray($_POST),$_FILES,$dblink))
-				$statusmessage="Settings Updated";				
-		break;
-		
-		case "update encryption seed":
-			$_POST=addSlashesToArray($_POST);
-			$statusmessage = updateEncyptionSeed($_POST["sencryption_seed"],$_POST["currentpassword"],$_SESSION["userinfo"]["id"],$_SESSION["encryption_seed"],$dblink);
-		break;
-	}
-}
+}//end class
 
 ?>

@@ -37,48 +37,42 @@
  +-------------------------------------------------------------------------+
 */
 
-	require_once("../../include/session.php");
-	require_once("../../include/common_functions.php");	
-	require_once("./include/snapshot_include.php");
-
-	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-	$modulequery=mysql_query($querystatement,$dblink);
+	require_once("../../include/session.php");	
+	require_once("include/snapshot_include.php");
 	
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $_SESSION["application_name"] ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/snapshot.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="./javascript/snapshot.js" type="text/javascript" ></script>
-<?php 
-	while($modulerecord=mysql_fetch_array($modulequery)){
-		?><script language="JavaScript" src="<?php echo "../".$modulerecord["name"]."/javascript/snapshot.js";?>" type="text/javascript" ></script><?php
-	}//end while 
+	//Page details;
+	$pageTitle = APPLICATION_NAME;
+	
+	$phpbms->cssIncludes[] = "pages/snapshot.css";
+	
+	$phpbms->jsIncludes[] = "modules/base/javascript/snapshot.js";
+	
+	foreach($phpbms->modules as $modulename => $modinfo)
+		if(file_exists("../".$modulename."/javascript/snapshot.js") && $modulename != "base")
+			$phpbms->jsIncludes[] = "modules/".$modulename."/javascript/snapshot.js";
+	
+	require("header.php");
+	
 ?>
-</head>
-<body>
-<?php include("../../menu.php");?>
 <div class="bodyline">
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
 
-	<?php showSystemMessages() ?>
+	<?php showSystemMessages($db) ?>
 	
 	<table cellpadding="0" cellspacing="4" border="0" width="100%">
 		<tr>
 			<td id="eventsBox" class="box" width="55%">
 				<p id="todaysDate" class="tiny"><?php echo strftime("%A, %b. %e, %Y")?></p>
 				<h2><a href="../../search.php?id=24">This week's Events</a></h2>
-				<?php showSevenDays($_SESSION["userinfo"]["id"])?>			
+				<?php showSevenDays($_SESSION["userinfo"]["id"],$db)?>			
 			</td>
 			<td class="tiny">&nbsp;</td>
 			<td class="box" id="tasksBox" width="45%">
 				<h2>Workload</h2>
 				<?php 
-					showTasks($_SESSION["userinfo"]["id"],"GivenAssignments");
-					showTasks($_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
-					showTasks($_SESSION["userinfo"]["id"],"Tasks");
+					showTasks($db,$_SESSION["userinfo"]["id"],"GivenAssignments");
+					showTasks($db,$_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
+					showTasks($db,$_SESSION["userinfo"]["id"],"Tasks");
 				?>
 			</td>
 		</tr>
@@ -87,12 +81,10 @@
 	<div style="clear:both;"></div>
 
 	<?php 	
-	mysql_data_seek($modulequery,0);	
-	while($modulerecord=mysql_fetch_array($modulequery)){
-		 include "../".$modulerecord["name"]."/snapshot.php";
-	}//end while 
+	foreach($phpbms->modules as $modulename => $modinfo)				
+		if(file_exists("../".$modulename."/snapshot.php") && $modulename != "base")
+			include("../".$modulename."/snapshot.php");
 	?>
-	</div>
-<?php include("../../footer.php")?>
-</body>
-</html>
+</div>
+
+<?php include("footer.php")?>

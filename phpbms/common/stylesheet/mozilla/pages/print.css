@@ -1,7 +1,8 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-#mainbody{width:585px;margin:50px auto;padding:0}
+#mainbody{width:585px;margin:50px auto 0;padding:0}
+#footer{width:585px; margin:5px auto 0;}
 
 #fsReportInformation{float:right;width:300px;margin-top:0px;}
 #name,#type{width:98%;color:black}
@@ -24,5 +25,5 @@
 
 
 #printFooter{text-align:right}
-#print,#cancel{width:75px;}
+#printButton,#cancel{width:75px;}
 #choosereport{width:205px;height:170px;}

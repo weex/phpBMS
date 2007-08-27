@@ -37,25 +37,23 @@
  +-------------------------------------------------------------------------+
 */
 	require("../include/session.php");
-	if(!isset($_GET["tid"])) reportError(200,"URL variable missing: tid");
-	if(!is_numeric($_GET["tid"])) reportError(300,"URL variable invalid type: tid");
+	if(!isset($_GET["tid"])) $error = new appError(200,"URL variable missing: tid");
+	if(!is_numeric($_GET["tid"])) $error = new appError(300,"URL variable invalid type: tid");
 	
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
 	else
 		$sortorder="";
 	
-	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".$_GET["tid"];
-	$thequery=mysql_query($querystatement,$dblink);                   
-	if(!$thequery)	reportError(100,"Could not retrieve table information");
-	$therecord=mysql_fetch_array($thequery);
+	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".((int $_GET["tid"]);
+	$thequery=$db->query($querystatement);                   
+	if(!$thequery)	$error = new appError(100,"Could not retrieve table information");
+	$therecord=$db->fetchArray($thequery);
 	
 	$querystatement="SELECT * FROM ".$therecord["maintable"]." ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($querystatement,$dblink);                   
+	$thequery=$db->query($querystatement);                   
 
-	if(!$thequery) die("Invalid sql statement. If you entered the where clause manually, make sure you include the word 'where'. ".$querystatement);	
-
-	$num_fields=mysql_num_fields($thequery);
+	$num_fields=$db->numFields($thequery);
 ?>
 <html>
 <head>
@@ -83,12 +81,12 @@ TH {
 <tr>
 <?php 
 	for($i=0;$i<$num_fields;$i++){
-		echo "<th>".mysql_field_name($thequery,$i)."</th>";
+		echo "<th>".$db->fieldName($thequery,$i)."</th>";
 	}
 ?>
 </tr>
 <?php 
-	while($therecord=mysql_fetch_array($thequery)){
+	while($therecord=$db->fetchArray($thequery)){
 		echo "<TR>\n";
 		for($i=0;$i<$num_fields;$i++){
 			echo "<TD>".($therecord[$i]?$therecord[$i]:"&nbsp;")."</td>\n";

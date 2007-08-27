@@ -38,12 +38,11 @@
 */
 	require_once("include/session.php");
 	require_once("include/search_class.php");
-	require_once("include/common_functions.php");	
 	
-	if(!isset($_GET["id"])) reportError(100,"Passed Parameter not present.");
+	if(!isset($_GET["id"])) $error = new appError(100,"Passed Parameter not present.");
 	$_GET["id"]= (integer) $_GET["id"];
 	
-	$displayTable= new displaySearchTable;	
+	$displayTable= new displaySearchTable($db);	
 
 	//initialize the object
 	$displayTable->initialize($_GET["id"]);	
@@ -58,7 +57,10 @@
 	if(!isset($_POST["advancedsearch"])) $_POST["advancedsearch"]="";
 	if(!isset($_POST["advancedsort"])) $_POST["advancedsort"]="";
 			
-	if(isset($_POST["doprint"])) $_POST["command"]="print";
+	if(isset($_POST["doprint"])) 
+		if($_POST["doprint"] == "print")
+			$_POST["command"]="print";
+		
 	if(isset($_POST["deleteCommand"]))
 		if($_POST["deleteCommand"]) $_POST["command"]=$_POST["deleteCommand"];
 	if($_POST["othercommands"]) $_POST["command"]="other";
@@ -75,28 +77,53 @@
 			// run the print routine
 			//=====================================================================================================
 			$displayTable->querytype="print";
+
+			if($_POST["theids"] === "")
+				$_POST["theids"]="-100";
+
 			$theids=explode(",",$_POST["theids"]);
 			$_SESSION["printing"]["tableid"]=$displayTable->thetabledef["id"];
 			$_SESSION["printing"]["maintable"]=$displayTable->thetabledef["maintable"];
 			$_SESSION["printing"]["theids"]=$theids;
 			goURL("print.php");
 		break;
+		case "delete":
+			//=====================================================================================================
+			
+			$_POST["othercommands"] = -1;
+			
 		case "other":
 			$displayTable->recordoffset=0;		
 			// process table specific commands (passed by settings)		
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
 			
-			$querystatement="SELECT name FROM tableoptions WHERE id=".((int) $_POST["othercommands"]);
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult)
-				reportError(300,"Could not retrieve section other commands");
-			if(($therecord=mysql_fetch_array($queryresult)) || ((int) $_POST["othercommands"])==-1){
-				if(((int) $_POST["othercommands"])==-1)
-					$therecord["name"]="delete_record";
-				eval("\$tempmessage=".$therecord["name"]."(\$theids);");
-				if($tempmessage) $statusmessage=$tempmessage;				
+			//try to include table specific functions
+			if(file_exists("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php"))
+				include("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php");
+			
+			//next, see if the searchclass exists
+			if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
+				$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
+				$searchFunctions = new $classname($db,$displayTable->thetabledef["id"],$theids);
+			} else
+				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["id"],$theids);
+										
+			//grab the method name
+			if(((int) $_POST["othercommands"]) === -1)
+				$functionname = "delete_record";
+			else {
+				$querystatement = "SELECT name FROM tableoptions WHERE id=".((int) $_POST["othercommands"]);
+				$queryresult = $db->query($querystatement);
+				$therecord = $db->fetchArray($queryresult);
+				$functionname = $therecord["name"];
 			}
+			
+			if(method_exists($searchFunctions,$functionname))
+				$statusmessage = $searchFunctions->$functionname();
+			else
+				$statusmessage = "Function ".$functionname." not defined";
+			
 		break;
 		case "search":
 			$displayTable->recordoffset=0;		
@@ -130,22 +157,14 @@
 			$tempwhere=substr($tempwhere,3);
 			$displayTable->querywhereclause=$tempwhere;
 		break;
-		case "delete":
-			//=====================================================================================================
-			$theids=explode(",",$_POST["theids"]);
-			if(function_exists("delete_record"))
-				$tempmessage=delete_record($theids);
-			else
-				$tempmessage="Delete function not defined.";
-			if($tempmessage) $statusmessage=$tempmessage;
-		break;
 		case "advanced search":
 			$displayTable->recordoffset=0;		
 			$displayTable->querywhereclause=stripslashes($_POST["advancedsearch"]);			
 			$displayTable->querytype="advanced search";
 		break;
 		case "advanced sort":
-			$displayTable->recordoffset=0;		
+			$displayTable->showGroupings = 0;
+			$displayTable->recordoffset = 0;
 			$displayTable->querysortorder=$_POST["advancedsort"];
 		break;
 		case "relate records":
@@ -168,13 +187,17 @@
 	if($_POST["newsort"]!="") {
 		//$displayTable->setSort($_POST["newsort"]);
 		$displayTable->recordoffset=0;		
+		$displayTable->showGroupings = false;		
 		foreach ($displayTable->thecolumns as $therow){
 			if ($_POST["newsort"]==$therow["name"]) $therow["sortorder"]? $displayTable->querysortorder=$therow["sortorder"] : $displayTable->querysortorder=$therow["column"];
 		}
 		$_POST["startnum"]=1;		
 	} elseif($_POST["desc"]!="") {
-		 $displayTable->querysortorder.=" DESC";
-		 $displayTable->recordoffset=0;		
+	
+		$displayTable->showGroupings = false;		
+		$displayTable->querysortorder.=" DESC";
+		$displayTable->recordoffset=0;		
+		
 	}
 	
 if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and $displayTable->querytype!="new" and $displayTable->querytype!="edit") {
@@ -202,37 +225,33 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 	
 	//record offset?
 	if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
-	
-	
+		
 	$displayTable->issueQuery();
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $displayTable->thetabledef["displayname"] ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("head.php")?>
-
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="common/javascript/queryfunctions.js" type="text/javascript" ></script>
-</head>
-<body><?php include("menu.php");?><?php if(isset($has_header)) display_header();?><div class="bodyline">
+	
+	$pageTitle = $displayTable->thetabledef["displayname"];
+	
+	$phpbms->cssIncludes[] = "pages/search.css";
+	
+	$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
+	
+	include("header.php");
+	
+	?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
-<?php  
-		//Search//select
-			$displayTable->displaySearch();
-			$displayTable->displayQueryButtons();
-			$displayTable->displayQueryHeader();
-			if($displayTable->numrows>0){
-				$displayTable->displayQueryResults();
-				$displayTable->displayQueryFooter();
-			}
-			else
-				$displayTable->displayNoResults();				
-			
-			$displayTable->displayRelationships();
-			$displayTable->saveQueryParameters();
-	?>
-</div>
-<?php include("footer.php")?>
-</body>
-</html><?php }// end relate/print if?>
+	<?php  
+			//Search//select
+				$displayTable->displaySearch();
+				$displayTable->displayQueryButtons();
+				$displayTable->displayQueryHeader();
+				if($displayTable->numrows>0){
+					$displayTable->displayQueryResults();
+					$displayTable->displayQueryFooter();
+				}
+				else
+					$displayTable->displayNoResults();				
+				
+				$displayTable->displayRelationships();
+				$displayTable->saveQueryParameters();
+		?>
+	</div>
+	<?php include("footer.php");}?>

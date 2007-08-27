@@ -49,8 +49,8 @@
 		return $therecord;
 	}
 	
-	function getQuicksearchs($tabledefid,$quicksearchid=false){
-		global $dblink;
+	function getQuicksearchs($db,$tabledefid,$quicksearchid=false){
+
 		$querystatement="SELECT tablefindoptions.id, tablefindoptions.name, tablefindoptions.search, tablefindoptions.displayorder, roleid,
 		roles.name as rolename
 		FROM tablefindoptions LEFT JOIN roles ON tablefindoptions.roleid=roles.id
@@ -58,13 +58,15 @@
 		if($quicksearchid) $querystatement.=" AND tablefindoptions.id=".$quicksearchid;
 		$querystatement.=" ORDER BY tablefindoptions.displayorder";
 		
-		$thequery=mysql_query($querystatement) or $thequery=mysql_error($dblink)." -- ".$querystatement;		
+		$thequery=$db->query($querystatement);
+		
 		return $thequery;
 	}// end function
 
 
-	function addQuicksearch($variables,$tabledefid){
-		global $dblink;
+	function addQuicksearch($db,$variables,$tabledefid){
+		$thereturn = false;
+		
 		$querystatement="INSERT INTO tablefindoptions (tabledefid, name, `search`, roleid, displayorder)
 		values (";
 		$querystatement.=$tabledefid.", ";
@@ -72,52 +74,51 @@
 		$querystatement.="\"".$variables["search"]."\", ";
 		$querystatement.="\"".$variables["roleid"]."\", ";
 		$querystatement.="\"".$variables["displayorder"]."\")";		
-		if(mysql_query($querystatement)) $thereturn ="Quick Search Item Added"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Quick Search Item Added";
 		
 		return $thereturn;
 	}// end function
 	
 
-	function updateQuicksearch($variables){
-		global $dblink;
+	function updateQuicksearch($db,$variables){
+
 		$querystatement="UPDATE tablefindoptions set ";
 		$querystatement.="name=\"".$variables["name"]."\", ";
 		$querystatement.="roleid=\"".$variables["roleid"]."\", ";
 		$querystatement.="`search`=\"".$variables["search"]."\" ";
 		$querystatement.="WHERE id=".$variables["quicksearchid"];
-		if(mysql_query($querystatement)) $thereturn ="Quick Search Item Updated"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Quick Search Item Updated";
 		
 		return $thereturn;
 	}
 
-	function deleteQuicksearch($id){
-		global $dblink;
+	function deleteQuicksearch($db,$id){
+
 		$querystatement="DELETE FROM tablefindoptions WHERE id=".$id;
-		if(mysql_query($querystatement)) $thereturn ="Quick Search Item Deleted"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Quick Search Item Deleted";
 		
 		return $thereturn;
 	}
 
-	function moveQuicksearch($id,$direction="up",$tabledefid){
-		global $dblink;
+	function moveQuicksearch($db,$id,$direction="up",$tabledefid){
 
 		if($direction=="down") $increment="1"; else $increment="-1";
 
 		$querystatement="select displayorder,tabledefid FROM tablefindoptions WHERE id=".$id;
-		$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -1- ".$querystatement;
-		$therecord=mysql_fetch_array($thequery);
+		$thequery=$db->query($querystatement);
+		$therecord=$db->fetchArray($thequery);
 
 		$querystatement="select max(displayorder) as themax FROM tablefindoptions WHERE tabledefid=".$tabledefid;
-		$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -2- ".$querystatement;
-		$maxrecord=mysql_fetch_array($thequery);
+		$thequery=$db->query($querystatement);
+		$maxrecord=$db->fetchArray($thequery);
 		
 		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
 			$querystatement="UPDATE tablefindoptions set displayorder=".$therecord["displayorder"]." 
 								WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$tabledefid;
-			$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -4- ".$querystatement;
+			$thequery=$db->query($querystatement);
 
 			$querystatement="UPDATE tablefindoptions set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -3- ".$querystatement;
+			$thequery=$db->query($querystatement);
 		}// end if
 		
 		if(isset($thereturn)) return $thereturn; else return "Position Moved";

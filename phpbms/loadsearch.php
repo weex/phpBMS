@@ -37,135 +37,151 @@
  +-------------------------------------------------------------------------+
 */
 	require("include/session.php");
-	require("include/common_functions.php");
 	
-	function deleteSearch($id){
-		global $dblink;
-	
-		$querystatement="DELETE FROM usersearches 
-						WHERE id=".$id;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot delete search");
-		
-		echo "success";
-	} 
-	
-	function saveSearch($name,$tabledefid,$userid){
-		global $dblink;
-		
-		$querystatement="INSERT INTO usersearches (userid,tabledefid,name,type,sqlclause) values (";
-		$querystatement.=$userid.", ";
-		$querystatement.="\"".$tabledefid."\", ";
-		$querystatement.="\"".$name."\", ";
-		$querystatement.="\"SCH\", ";		
-		$querystatement.="\"".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."\")";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot save search ".$querystatement);
-		else echo "search saved";
-	}
+	class savedSearch{
 
-	function getSearch($id){
-		global $dblink;
+		var $db;
 		
-		$querystatement="SELECT sqlclause FROM usersearches 
-						WHERE id=".$id;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve saved search infromation");
-		$therecord=mysql_fetch_array($queryresult);
-		
-		echo $therecord["sqlclause"];
+		function savedSearch($db){
+			$this->db=$db;
+		}
 	
-	}
+		function delete($id){
+			$querystatement="DELETE FROM usersearches 
+							WHERE id=".((int) $id);
+			$queryresult = $this->db->query($querystatement);
+			
+			echo "success";
+		} 
 
-	function displaySavedSearchList($queryresult,$basepath){
-		$numrows=mysql_num_rows($queryresult);
-		?>
-		<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo $basepath ?>')">
-			<?php if($numrows<1) {?>
-				<option value="NA">No Saved Searches</option>
-			<?php 
-				} else {
-					$numglobal=0;
-					while($therecord=mysql_fetch_array($queryresult))
-						if($therecord["userid"]<1) $numglobal++;
-					mysql_data_seek($queryresult,0);				
-			?>			
-				<?php if($numglobal>0){ ?>
-				<option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
-				<?php
-					}//end if
-					$userqueryline=true;
-					while($therecord=mysql_fetch_array($queryresult)){
-						if ($therecord["userid"]> 0 and $userqueryline) {
-							$userqueryline=false;						
-							?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php 
-						}
-						?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php 
-					}// end while
-				}//end if
+
+		function save($name,$tabledefid,$userid){
+			$querystatement="INSERT INTO usersearches (userid,tabledefid,name,type,sqlclause) values (";
+			$querystatement.=((int) $userid).", ";
+			$querystatement.="\"".$tabledefid."\", ";
+			$querystatement.="\"".$name."\", ";
+			$querystatement.="\"SCH\", ";		
+			$querystatement.="\"".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."\")";
+
+			$queryresult = $this->db->query($querystatement);
+			
+			echo "search saved";
+		}
+		
+		function get($id){
+			$querystatement="SELECT sqlclause FROM usersearches 
+							WHERE id=".((int) $id);
+			$queryresult = $this->db->query($querystatement);
+
+			$therecord=$this->db->fetchArray($queryresult);
+			
+			echo $therecord["sqlclause"];
+		
+		}
+		
+		
+		function showSavedSearchList($queryresult,$basepath){
+			
+			$numrows=$this->db->numRows($queryresult);
+			
 			?>
-		</select>
-		<?php
-	}//end function
+			<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo $basepath ?>')">
+				<?php if($numrows<1) {?>
+					<option value="NA">No Saved Searches</option>
+				<?php 
+					} else {
+						$numglobal=0;
+						while($therecord=$this->db->fetchArray($queryresult))
+							if($therecord["userid"]<1) $numglobal++;
+						$this->db->seek($queryresult,0);				
+				?>			
+					<?php if($numglobal>0){ ?>
+					<option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
+					<?php
+						}//end if
+						$userqueryline=true;
+						while($therecord=$this->db->fetchArray($queryresult)){
+							if ($therecord["userid"]> 0 and $userqueryline) {
+								$userqueryline=false;						
+								?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php 
+							}
+							?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php 
+						}// end while
+					}//end if
+				?>
+			</select>
+			<?php
+		}//end function
 
-	function showLoad($tabledefid,$basepath,$userid,$securitywhere){
-		global $dblink;
 		
-		$querystatement="SELECT id,name,userid FROM usersearches 
-						WHERE tabledefid=".$tabledefid." AND type=\"SCH\" AND ((userid=0 ".$securitywhere.") OR userid=\"".$userid."\") ORDER BY userid, name";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve saved search infromation");
-		
+		function showLoad($tabledefid,$basepath,$userid,$securitywhere){
+	
+			$querystatement="SELECT id,name,userid FROM usersearches 
+							WHERE tabledefid=".$tabledefid." AND type=\"SCH\" AND ((userid=0 ".$securitywhere.") OR userid=\"".$userid."\") ORDER BY userid, name";
+			$queryresult = $this->db->query($querystatement);
+			if(!$queryresult) $error = new appError(500,"Cannot retrieve saved search infromation");
+			
+	
+			$querystatement="SELECT advsearchroleid FROM tabledefs WHERE id=".$tabledefid ;
+			$tabledefresult = $this->db->query($querystatement);
+			if(!$tabledefresult) $error = new appError(500,"Cannot retrieve table definition information.");
+			$tableinfo=$this->db->fetchArray($tabledefresult);
+			
+			?>
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top">
+					<p>
+					<label for="LSList">saved searches</label><br />
+						<?php $this->showSavedSearchList($queryresult,$basepath)?>				
+					</p>
+					</td>
+					<td valign="top" width="100%">
+						<p>
+						<label for="LSSelectedSearch">name</label><br />
+							<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />					
+						</p>
+						<p>
+							<textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
+						</p>
+					</td>
+					<td valign="top">
+						<p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
+						<p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
+						<div id="LSResults">&nbsp;</div>
+					</td>
+				</tr>
+			</table>
+			<?php		
+		}
+	}//end class
+	
+	
+	
 
-		$querystatement="SELECT advsearchroleid FROM tabledefs WHERE id=".$tabledefid ;
-		$tabledefresult = mysql_query($querystatement,$dblink);
-		if(!$tabledefresult) reportError(500,"Cannot retrieve table definition information.");
-		$tableinfo=mysql_fetch_array($tabledefresult);
-		
-		?>
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td valign="top">
-				<p>
-				<label for="LSList">saved searches</label><br />
-					<?php displaySavedSearchList($queryresult,$basepath)?>				
-				</p>
-				</td>
-				<td valign="top" width="100%">
-					<p>
-					<label for="LSSelectedSearch">name</label><br />
-						<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />					
-					</p>
-					<p>
-						<textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
-					</p>
-				</td>
-				<td valign="top">
-					<p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
-					<p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo $basepath ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
-					<div id="LSResults">&nbsp;</div>
-				</td>
-			</tr>
-		</table>
-		<?php		
-	}
+
+
+
 
 	if(isset($_GET["cmd"])){
+		
+		$thesearch = new savedSearch($db);
+		
 		switch($_GET["cmd"]){
 			case "show":
 				$securitywhere="";
 				if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
 					$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";			
-				showLoad($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"],$securitywhere);
+				$thesearch->showLoad($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"],$securitywhere);
 			break;
 			case "getsearch":
-				getSearch($_GET["id"]);
+				$thesearch->get($_GET["id"]);
 			break;
 			case "savesearch":
-				saveSearch($_GET["name"],$_GET["tid"],$_SESSION["userinfo"]["id"]);
+				$thesearch->save($_GET["name"],$_GET["tid"],$_SESSION["userinfo"]["id"]);
 			break;
 			case "deletesearch":
-				deleteSearch($_GET["id"]);
+				$thesearch->delete($_GET["id"]);
 			break;
 		}//end switch
 	}?>

@@ -36,160 +36,118 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 error_reporting(E_ALL);
+define("APP_DEBUG",false);
+define("noStartup",true);
+include("install_include.php");
+include("../include/session.php");
 
-function importData($thetable){
-	global $dblink;
-	
-	$tablefile = fopen($thetable.".sql","rb");
-	if(!$tablefile) {
-		return "Could not open the file ".$thetable.".sql";
-	}
-	$thereturn="Importing records for '".$thetable."'\n";
-		$counter=0;
-		while(!feof($tablefile)) {
-			$sqlstatement=trim(fgets($tablefile,8184));
-			if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
-				$theresult=mysql_query($sqlstatement,$dblink);
-				if(!$theresult)
-					$thereturn.=mysql_error($dblink)."\n";
-				else
-					$counter++;
-				$sqlstatement="";
-			}//end if;
-		}//end while
+//=====================================================================================
+// START PROCESSING
+//======================================================================================
 
-	$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
-	return $thereturn;
-}//end function
-
-
-function createTables(){
-	global $dblink;
-	
-	$thereturn="";	
-	
-	$createstatement="";
-	$createfile = fopen("createtables.sql","r");
-	if(!$createfile) 
-		$thereturn="Could not open table creation file: createtables.sql";
-	else{
-		while(!feof($createfile)) {
-			$createstatement.=fgets($createfile,1024);
-			if(strpos($createstatement,";")){
-				$theresult=mysql_query(trim($createstatement),$dblink); 
-				if(!$theresult)
-					$thereturn.=mysql_error($dblink)."\n";
-				$createstatement="";
-			}//end if;
-		}//end while
-		
-	}//end if	
-	return $thereturn;
-}//end function
-
-
-function loadSettings() {
-	$settingsfile = @ fopen("../settings.php","r");
-	if($settingsfile){
-		//loop through the settings file and load variables into the session 
-		while( !feof($settingsfile)) {
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
-			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
-			if ($line){
-				$key=trim($key);
-				$value=trim($value);
-				if($key!="" and !strpos($key,"]")){	
-					$startpos=strpos($value,"\"");
-					$endpos=strrpos($value,"\"");
-					if($endpos!=false)
-						$value=substr($value,$startpos+1,$endpos-$startpos-1);
-					$variables[$key]=$value;
-				}
-			}
-		}
-		if(!isset($variables["mysql_pconnect"]))
-			$variables["mysql_pconnect"]="true";
-		fclose($settingsfile);
-		return $variables;
-	} else return "Cannot open setting.php file";
-}
-
-
+		$phpbmsSession = new phpbmsSession;
 		$thereturn="Error Processing: No Command Given";
 		if(isset($_GET["command"])){
-			$vars=loadSettings();
 
-			switch($_GET["command"]){
+			$success = $phpbmsSession->loadDBSettings(false);
+			include_once("include/db.php");
+			$db = new db(false);
+			$db->stopOnError = false;
+			$db->showError = false;
+			$db->logError = false;
 
-				case "testconnection":
-					if($vars["mysql_pconnect"]=="true")
-						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-					else
-						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-						 		
-					if(!$dblink) 
-						$thereturn="Could Not Establish Connection To MySQL Server: Check server, username and password"; 
-					else
-						$thereturn="Connection to MySQL Established";
-				break;
-				
-				
-				case "createdatabase":
-					$thereturn="";
-					if($vars["mysql_pconnect"]=="true")
-						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-					else
-						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-					if (!mysql_select_db($vars["mysql_database"])){
-						$queryresult=mysql_query("create database `".$vars["mysql_database"]."`",$dblink);							
-						if(!$queryresult)
-							$thereturn=mysql_error($dblink)."\n";
-					}
-					
-					if (!mysql_select_db($vars["mysql_database"])) 
-						$thereturn.="Could not connect to database: '".$vars["mysql_database"]."'.";
-					else
-						$thereturn.="Connection to database '".$vars["mysql_database"]."' established";
-				break;
-				
+			if($success !== false){
+				switch($_GET["command"]){
 	
-				case "populatedata":
-					if($vars["mysql_pconnect"]=="true")
-						$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-					else
-						$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-					mysql_select_db($vars["mysql_database"]);
+					case "testconnection":
+					//======================================================================================
 					
-					$thereturn=createTables();
-					if(!$thereturn)
-						$thereturn="Done Creating Tables \n===========================\n";
-					else
-						$thereturn.="\n\n";
+						if($db->connect())
+							$thereturn = "Connection to MySQL Established";
+						else 
+							$thereturn = "Could Not Establish Connection To MySQL Server: Check server, username and password"; 
 						
-					$thereturn.=importData("choices");
-					$thereturn.=importData("menu");
-					$thereturn.=importData("tabs");
-					$thereturn.=importData("modules");
-					$thereturn.=importData("notes");
-					$thereturn.=importData("reports");
-					$thereturn.=importData("tablecolumns");
-					$thereturn.=importData("tabledefs");
-					$thereturn.=importData("tablefindoptions");
-					$thereturn.=importData("tableoptions");
-					$thereturn.=importData("tablesearchablefields");
-					$thereturn.=importData("users");
-					$thereturn.=importData("settings");
-					$thereturn.=importData("files");
-					$thereturn.=importData("roles");
-					$thereturn.="\nDone Importing Data\n===========================\n";
-			
-				break;
+					break;
+					
+					
+					case "createdatabase":
+					//======================================================================================
+	
+						if(!$db->connect())
+							$thereturn = "Could Not Establish Connection To MySQL Server: Check server, username and password"; 
+						else{
+							$querystatement = "CREATE DATABASE ".MYSQL_DATABASE;
+							$queryreult = $db->query($querystatement);
+							
+							if($db->error)
+								$thereturn = "Could not Create Database: ".$db->error;
+							else
+								$thereturn = "Database ".MYSQL_DATABASE." created";
+						}
+							
+					break;
+					
+		
+					case "populatedata":
+	
+						if(!$db->connect())
+							$thereturn = "Could Not Establish Connection To MySQL Server: Check server, username and password"; 
+						else{						
+							if($db->selectSchema()){
+								$thereturn = "";
+								$tempreturn = createTables($db,"createtables.sql");
+								
+								if($tempreturn === true){
+									$thereturn.= "Done Creating Tables \n";
+									
+									$tables = array(
+										"choices",
+										"menu",
+										"tabs",
+										"modules",
+										"notes",
+										"reports",
+										"tablecolumns",
+										"tabledefs",
+										"tablefindoptions",
+										"tablegroupings",
+										"tableoptions",
+										"tablesearchablefields",
+										"users",
+										"settings",
+										"files",
+										"roles",		
+									);
+									foreach($tables as $table){
+										
+										$failure = false;
+										$tempreturn = importData($db,$table);
+										$thereturn .= $tempreturn;
+										if(!strpos($tempreturn,"complete.") === false){
+											$failed = true;
+										}
+										
+									}//end foreach
+									
+									if(!$failure){
+										$thereturn .= "_________________________\n";			
+										$thereturn .= "Done Installing Core Data\n";
+									}
+								
+								} else
+									$thereturn = $tempreturn;
+							
+							} else
+								$thereturn = "Database (schema) ".MYSQL_DATABASE." could not be selected";
+						}//end if
 				
-			}//end switch
+					break;
+					
+				}//end switch
+			} else
+				$thereturn = "Could not access settings.php";
+			
 		}//end if
 		
 		

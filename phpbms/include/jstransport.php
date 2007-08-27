@@ -1,13 +1,11 @@
 <?php 
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
-	require_once("session.php");
-	require_once("common_functions.php");
-	
+	require_once("session.php");	
 	
 	//phone formating
 	?>phoneRegExpression=<?php 
-	switch($_SESSION["phone_format"]){
+	switch(PHONE_FORMAT){
 		case "US - Loose":
 			?>/^(?:[\+]?(?:[\d]{1,3})?(?:\s*[\(\.-]?(\d{3})[\)\.-])?\s*(\d{3})[\.-](\d{4}))(?:(?:[ ]+(?:[xX]|(?:[eE][xX][tT][\.]?)))[ ]?[\d]{1,5})?$/;<?php
 		break;
@@ -20,36 +18,26 @@
 		case "International":
 		    ?>/^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$/;<?php
 		break;	
-	} echo "\n\n";	
-	
+	} 
+		
 	//date formating
-	?>APP_PATH="<?php echo htmlQuotes($_SESSION["app_path"])?>";<?php
-	echo "\n\n";
+	?>APP_PATH="<?php echo htmlQuotes(APP_PATH)?>";<?php
 
 	//date formating
-	?>DATE_FORMAT="<?php echo htmlQuotes($_SESSION["date_format"])?>";<?php
-	echo "\n\n";
+	?>DATE_FORMAT="<?php echo htmlQuotes(DATE_FORMAT)?>";<?php
 	
 	//time formating
-	?>TIME_FORMAT="<?php echo htmlQuotes($_SESSION["time_format"])?>";<?php
-	echo "\n\n";
+	?>TIME_FORMAT="<?php echo htmlQuotes(TIME_FORMAT)?>";<?php
 
 	//currency formating
-	?>CURRENCY_SYMBOL="<?php echo htmlQuotes($_SESSION["currency_symbol"])?>";<?php
-	echo "\n";
+	?>CURRENCY_SYMBOL="<?php echo htmlQuotes(CURRENCY_SYMBOL)?>";<?php
 
-	?>CURRENCY_ACCURACY=<?php echo $_SESSION["currency_accuracy"]?>;<?php
-	echo "\n";
+	?>CURRENCY_ACCURACY=<?php echo CURRENCY_ACCURACY?>;<?php
 
-	?>DECIMAL_SYMBOL="<?php echo htmlQuotes($_SESSION["decimal_symbol"])?>";<?php
-	echo "\n";
+	?>DECIMAL_SYMBOL="<?php echo htmlQuotes(DECIMAL_SYMBOL)?>";<?php
 
-	?>THOUSANDS_SEPARATOR="<?php echo htmlQuotes($_SESSION["thousands_separator"])?>";<?php
-	echo "\n";
+	?>THOUSANDS_SEPARATOR="<?php echo htmlQuotes(THOUSANDS_SEPARATOR)?>";<?php
 
-	
- 	if(isset($_SESSION["includedJS"])){
-		echo "\n\n".$_SESSION["includedJS"];
-		$_SESSION["includedJS"]="";
-	}
+	?>LOGIN_REFRESH=<?php echo LOGIN_REFRESH?>;<?php
+
 ?>

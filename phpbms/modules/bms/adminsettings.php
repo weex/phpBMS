@@ -1,3 +1,42 @@
+<?php 
+	//if we had specific update code for the module, we would create a class
+	//called [module]Update with a method called updateSettings($variables)
+
+	class bmsDisplay{
+	
+		function getFields($therecord){
+			
+			global $db;
+			
+			$theinput = new inputField("shipping_markup",$therecord["shipping_markup"],"shipping markup",false,"real",4,4);
+			$fields[] = $theinput;
+			
+			$theinput = new inputField("shipping_postalcode",$therecord["shipping_postalcode"],"shipping orginiation zip/postal code",false,NULL,32,128);
+			$fields[] = $theinput;
+
+			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","id","name",
+									"inactive=0", "priority,name", true, "default payment method");
+			$fields[] = $theinput;
+	
+			$theinput = new inputDataTableList($db, "default_shipping",$therecord["default_shipping"],"shippingmethods","id","name",
+									"inactive=0", "priority,name", true, "default shipping method");
+			$fields[] = $theinput;
+			
+			$theinput = new inputDataTableList($db, "default_discount",$therecord["default_discount"],"discounts","id","name",
+									"inactive=0", "name", true, "default discount");
+			$fields[] = $theinput;
+	
+			$theinput = new inputDataTableList($db, "default_taxarea",$therecord["default_taxarea"],"tax","id","name",
+									"inactive=0", "name", true, "default tax area");
+			$fields[] = $theinput;
+
+
+		
+			return $fields;
+		}
+		
+		function display($theform,$therecord){
+?>
 <h1 class="newModule">Module: Business Management System</h1>
 <fieldset>
 	<legend>shipping</legend>
@@ -8,22 +47,14 @@
 	</p>
 	
 	<p>
-		<label for="sshipping_markup">markup</label><br />
-		<?php fieldText("sshipping_markup",$_SESSION["shipping_markup"],0,"","real",Array("size"=>"10","maxlength"=>"10")); ?><br />
+		<?php $theform->showField("shipping_markup");?>
+		<br />
 		<span class="notes"><strong>Note:</strong> Enter the number to multiply the calculated shipping cost. <br />
 		For example to mark up shipping costs by 10%, enter 1.1</span>
 	</p>
 	
 	<p>
-		<label for="sshipping_postalcode">shipping orginiation zip/postal code</label><br />
-		<?php fieldText("sshipping_postalcode",$_SESSION["shipping_postalcode"],0,"","",Array("size"=>"32","maxlength"=>"128")); ?>
-	</p>
-</fieldset>
-
-<fieldset>
-	<legend>clients</legend>
-	<p><br/>
-		<input type="button" name="mngclientemail" id="mngclientemail" class="Buttons" value="Manage Client E-Mail Projects" onclick="document.location='../../search.php?id=22'" />
+		<?php $theform->showField("shipping_postalcode");?>
 	</p>
 </fieldset>
 
@@ -31,6 +62,17 @@
 	<legend>invoices</legend>
 	<p>
 		<label for="invoice_default_printinstruc">default printed instructions</label><br/>
-		<textarea id="invoice_default_printinstruc" name="sinvoice_default_printinstruc" cols="60" rows="3" ><?php echo $_SESSION["invoice_default_printinstruc"]?></textarea>
+		<textarea id="invoice_default_printinstruc" name="invoice_default_printinstruc" cols="60" rows="3" ><?php echo $therecord["invoice_default_printinstruc"]?></textarea>
 	</p>
+	<p><?php $theform->showField("default_payment");?></p>
+
+	<p><?php $theform->showField("default_shipping");?></p>
+
+	<p><?php $theform->showField("default_discount");?></p>
+
+	<p><?php $theform->showField("default_taxarea");?></p>
 </fieldset>
+<?php
+		}
+	}
+?>

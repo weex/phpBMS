@@ -40,8 +40,8 @@
 
 	$thequery="SELECT 	id,partnumber,partname
 						from products where id=".$_GET["id"];
-	$thequery = mysql_query($thequery,$dblink);
-	$therecord=mysql_fetch_array($thequery);
+	$thequery = $db->query($thequery);
+	$therecord=$db->fetchArray($thequery);
 	
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';

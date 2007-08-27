@@ -37,16 +37,12 @@
  +-------------------------------------------------------------------------+
 */
 require_once("include/session.php");
-require_once("include/common_functions.php");
 require_once("include/print_class.php");
-
-$pageTitle="Print/Export";
 
 if(!isset($_GET["backurl"])) $_GET["backurl"]="";
 if(isset($_POST["backurl"])) $_GET["backurl"]=$_POST["backurl"];
 
-$tablePrinter= new printer;
-$tablePrinter->initialize($_SESSION["printing"]["tableid"],$_SESSION["printing"]["theids"]);
+$tablePrinter= new printer($db,$_SESSION["printing"]["tableid"],$_SESSION["printing"]["theids"]);
 
 $tablePrinter->saveVariables();
 
@@ -66,9 +62,9 @@ if (isset($_POST["command"])){
 				case "savedsearch":
 					if($_POST["savedsearches"]!="" and $_POST["savedsearches"]!="NA")	{
 						$querystatement="SELECT name,sqlclause FROM usersearches WHERE id=".$_POST["savedsearches"];
-						$queryresult=mysql_query($querystatement,$dblink);
-						If(!$queryresult) reportError(500,"Could not retrieve saved search. ".$querystatement);
-						$therecord=mysql_fetch_array($queryresult);
+						$queryresult=$db->query($querystatement);
+						If(!$queryresult) $error = new appError(500,"Could not retrieve saved search. ".$querystatement);
+						$therecord=$db->fetchArray($queryresult);
 						$whereclause="WHERE ".$therecord["sqlclause"];
 						$dataprint=$therecord["name"];
 					}
@@ -93,9 +89,9 @@ if (isset($_POST["command"])){
 				case "savedsort":
 					if($_POST["savedsorts"]!="" and $_POST["savedsorts"]!="NA")	{
 						$querystatement="SELECT sqlclause FROM usersearches WHERE id=".$_POST["savedsorts"];
-						$queryresult=mysql_query($querystatement,$dblink);
-						If(!$queryresult) reportError(500,"Could not retrieve saved search. ".$querystatement);
-						$therecord=mysql_fetch_array($queryresult);
+						$queryresult=$db->query($querystatement);
+						If(!$queryresult) $error = new appError(500,"Could not retrieve saved search. ".$querystatement);
+						$therecord=$db->fetchArray($queryresult);
 						$sortorder=" ORDER BY ".$therecord["sqlclause"];
 					}
 				break;
@@ -103,51 +99,53 @@ if (isset($_POST["command"])){
 			$_SESSION["printing"]["sortorder"]=$sortorder;
 			
 			if(isset($_POST["choosereport"])){
-				$tablePrinter->openwindows="<script language=\"JavaScript\">\n";
+				$tablePrinter->openwindows="";
 				for($i=0;$i<count($_POST["choosereport"]);$i++){
 					if($_POST["choosereport"][$i]){
 						$querystatement="SELECT reportfile,type from reports where id=".$_POST["choosereport"][$i].";";
-						$queryresult=mysql_query($querystatement,$dblink);
-						if(!$queryresult) reportError(100,"Could not Retreive Report Information");				
-						$reportrecord=mysql_fetch_array($queryresult);	
+						$queryresult=$db->query($querystatement);
+						if(!$queryresult) $error = new appError(100,"Could not Retreive Report Information");				
+						$reportrecord=$db->fetchArray($queryresult);	
 						$fakeExtForIE="";
 						if($reportrecord["type"]=="PDF Report")
 							$fakeExtForIE="&ext=.pdf";
 						$dateTimeStamp="&ts=".mktime(); // make the url unique to avoid using browser cache
 						//javascript open each report in new window
-						$tablePrinter->openwindows.="window.open('".$_SESSION["app_path"].$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
+						$tablePrinter->openwindows.="window.open('".APP_PATH.$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
 					}
 				}
-				$tablePrinter->openwindows.="</script>\n";
 			}			
 		break;
 	}
 }
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/print.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="common/javascript/print.js" type="text/javascript"></script>
 
-<?php  $tablePrinter->showJavaScriptArray();?>
-</head>
-<body>
+$pageTitle="Print/Export";
+
+$phpbms->showMenu = false;
+
+$phpbms->cssIncludes[] = "pages/print.css";
+
+$phpbms->jsIncludes[] = "common/javascript/print.js";
+
+$phpbms->topJS[] = $tablePrinter->showJavaScriptArray();
+
+if($tablePrinter->openwindows) $phpbms->bottomJS[] = $tablePrinter->openwindows;
+
+include("header.php");
+?>
 <div id="mainbody">
 <div class="bodyline">
 	<h1><?php echo $pageTitle ?><a name="top"></a></h1>
 	
 <form action="print.php" method="post" name="print">
-	<input type="hidden" name="backurl" value="<?php echo $_GET["backurl"]?>">
+	<input type="hidden" name="backurl" value="<?php echo $_GET["backurl"]?>" />
 
 	<fieldset id="fsReportInformation" >
 		<legend>report information</legend>
 		<?php 
-			if (mysql_num_rows($tablePrinter->reports)){
-				mysql_data_seek($tablePrinter->reports,0); 
-				$therecord=mysql_fetch_array($tablePrinter->reports);
+			if ($db->numRows($tablePrinter->reports)){
+				$db->seek($tablePrinter->reports,0); 
+				$therecord=$db->fetchArray($tablePrinter->reports);
 			} else {
 				$therecord["id"]=0;
 				$therecord["reportfile"]="";
@@ -211,17 +209,17 @@ if (isset($_POST["command"])){
 			</p>
 			
 			<p id="singlesortdiv">
-				<label for="sortfield">field</label><br />
+				<label for="singlefield">field</label><br />
 				<?php $tablePrinter->showFieldSort()?>
 				<select name="order">
-					<option value="ASC" selected>Ascending</option>
+					<option value="ASC" selected="selected">Ascending</option>
 					<option value="DESC">Descending</option>
 				</select>			
 			</p>
 			<p class="important">
 				<label for="thesort">by</label><br />
 				<select id="thesort" name="thesort" onchange="showSortOptions(this)">
-					<option value="default" selected>report default</option>
+					<option value="default" selected="selected">report default</option>
 					<option value="single">single field</option>
 					<option value="savedsort">saved sort...</option>
 				</select>
@@ -248,12 +246,10 @@ if (isset($_POST["command"])){
 	</fieldset>
 
 	<p id="printFooter">
-		<input name="command" type="submit" class="Buttons" id="print" value="print" accesskey="p" title="print (alt+p)">
-		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)">	 
+		<input name="command" type="submit" class="Buttons" id="printButton" value="print" accesskey="p" title="print (alt+p)" />
+		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)" />	 
 	</p>
    </form>
 </div>
-<?php include("footer.php")?>
 </div>
-</body>
-</html><?php 	if($tablePrinter->openwindows) echo "\n".$tablePrinter->openwindows; ?>
+<?php include("footer.php")?>

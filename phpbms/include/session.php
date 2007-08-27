@@ -36,244 +36,426 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	
-function loadSettings($encoding="utf8"){
-	global $dblink;
-	
-	// this only works for MySQL 5
-	@ mysql_query("SET NAMES ".$encoding,$dblink);
-	
-	$querystatement="SELECT name,value FROM settings";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,("Could not retrieve settings. If you have not ran the update script for phpBMS, 
-										please run it before logging in. Error Details:<br />".mysql_error($dblink)." ".$querystatement));
-	while($therecord=mysql_fetch_array($queryresult))
-		$_SESSION[$therecord["name"]]=$therecord["value"];
-}
+@ define("APP_DEBUG",true);
+error_reporting(E_ALL);
 
-//This function loads any variables written
-// in settings.php into session variables.
-//=========================================
-function loadMysqlSettings() {
+class appError{
+ 	var $number=0;
+	var $title="";
+	var $details="";
+	var $stop=true;
+	var $logerror=true;
+	var $format="xhtml";
 	
-	$path="";
-	$count=1;
-	//need to look for settings file... only go up a total of 5 directorieds
-	$currdirectory= getcwd();
-	
-	while(!file_exists("settings.php") and ($count<5)){
-		$path.="../";
-		@ chdir("../");
-		$count++;
+	function appError($number=0,$details="",$title="",$display=false,$stop=true,$logerror=true,$format="xhtml"){
+		$this->title = $title;
+		
+		
+		$this->details = $details;
+		
+		$this->stop = $stop;
+				
+		$this->logerror = $logerror;
+		$this->format = $format;
+		$this->number = $number;
+				
+		if($this->number<0){
+			switch($number){
+				case -400:
+				case -410:
+				case -420:
+				case -430:
+				case -440:
+				case -450:
+				case -460:
+					$this->title="Database Error";
+				break;
+			}
+		} 
+		
+		if($display || APP_DEBUG) $this->display($format);
+		if($logerror) $this->logError();
+		if($this->stop) exit;
 	}
 	
-	$settingsfile =  @ fopen("settings.php","r");
-	if($settingsfile){
-		//loop through the settings file and load variables into the session 
-		while( !feof($settingsfile)) {
-			$line=NULL;
-			$key=NULL;
-			$value=NULL;
-			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
-			if ($line){
-				$key=trim($key);
-				$value=trim($value);
-				if($key!="" and !strpos($key,"]")){	
-					$startpos=strpos($value,"\"");
-					$endpos=strrpos($value,"\"");
-					if($endpos!=false)
-						$value=substr($value,$startpos+1,$endpos-$startpos-1);
-					if(strpos($key,"mysql_")===0)
-						$_SESSION[$key]=$value;
-				}
+	function display($format=NULL){
+
+		if($format==NULL)
+			$format=$this->format;
+	
+		switch(strtolower($format)){
+			case "json":
+
+				echo "{\n";
+				echo "\"error\" : { \"id\" : ".$this->number;
+				if($this->title)
+					echo ", \"title\" : \"".addslashes($this->title)."\"";
+				if($this->details)
+					echo ", \"details\" : \"".addslashes($this->details)."\"";
+				echo "\n}";
+
+			break;
+			
+			case "xhtml":
+
+				$this->details = str_replace("\n","<br />", htmlspecialchars($this->details,ENT_COMPAT,"UTF-8"));
+
+				if(defined("APP_PATH")){
+					if(!defined("STYLESHEET"))
+						define("STYLESHEET","mozilla");
+				?><link href="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/base.css" rel="stylesheet" type="text/css" /><?php
+				} else {
+					//if the app_path is not defined, we can try including the mozilla stylesheet, relative to 
+					// the assumed phpbms root
+				?><link href="common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css" /><?php 
+				}//end if
+				?><div class="bodyline">
+					<h1><span>phpBMS Error: <?php echo $this->number; if($this->title) echo " ".$this->title?></span></h1>
+					<?php if($this->details) {?>
+					<div class="box">
+						<?php echo $this->details?>
+					</div>
+					<?php  } //end if?>
+				</div><?php 
+
+			break;
+			
+			default:
+			
+				echo "phpBMS Error: ".$this->number;
+				if($this->title) echo ": ".$this->title;
+				if($this->details) echo  " - ".$this->details;
+				
+			break;
+		}//end switch
+	}// end dispaly function
+	
+	function logError(){
+		$message = $_SERVER["REQUEST_URI"]."\n";
+		$message .= $this->number;
+		if($this->title)
+			$message.=": ".$this->title;
+		if($this->details)
+			$message.="\n\n".$this->details;
+						
+		$log = new phpbmsLog($message,"ERROR");
+	}//end logError
+	
+}//end appError class
+
+class phpbmsLog{
+	
+	var $db=NULL;
+	var $type="ERROR";
+	var $value="";
+	var $userid=2;
+	
+	function phpbmsLog($value=NULL,$type=NULL,$userid=NULL,$db=NULL,$sendLog=true){
+
+		//in most cases, it is prudent for the log object to have it's own DB object
+		// so that it can properly supress errors without goofing things up.
+		if($db){
+			if(is_object($db)){
+				$this->db=$db;
+	
+				$this->db->showError=false;
+				$this->db->logError=false;
+				$this->db->stopOnError=false;
 			}
 		}
-		if(!isset($_SESSION["mysql_pconnect"]))
-			$_SESSION["mysql_pconnect"]="true";
-		fclose($settingsfile);
-		@ chdir ($currdirectory);
-		return $path;
-	} else reportError(500,"Settings file could not be opened");
-}
-
-function reportError($id,$extras,$format=true,$path="",$die=true,$log=true){
-	if($path=="" && isset($_SESSION["app_path"]))
-		$path=$_SESSION["app_path"];
-	if($format===true)	
-		$format="xhtml";
-		
-	switch($format){
-		case "JSON":
-		case "json":
-			echo "{
-				\"error\" : { \"number\" : ".$id.", \"extras\" : \"".str_replace("\n","\\n",addslashes($extras))."\"}
-			}";
-		break;
-		case "xhtml":
-		case "XHTML":
-			?><link href="<?php echo $path ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />
-			<div class="bodyline">
-				<h1>phpBMS Error: <?php echo $id?></h1>
-				<div class="box">
-					<?php echo $extras ?>
-				</div>
-			</div><?php 
-		break;
-		default:
-			echo $id;
-			if($extras) echo " - ".$extras;
-	}
-	if($format) {}else
-		echo $extras;
-		
-	if($log && function_exists("sendLog")){
-		global $dblink;
-		if(!isset($_SESSION["userinfo"]["id"]))
-			$_SESSION["userinfo"]["id"]="NULL";
-		sendLog($dblink,"ERROR",$id.": ".$_SERVER["REQUEST_URI"]." -- ".$extras,$_SESSION["userinfo"]["id"]);
-	}
-	if($die) die();
-}
-
-function xmlEncode($str){
-	$str=str_replace("&","&amp;",$str);
-	$str=str_replace("<","&lt;",$str);
-	$str=str_replace(">","&gt;",$str);
-	return $str;
-}
-
-function openDB($dbserver,$dbuser,$dbpass,$dbname,$pconnect){
-	if($pconnect=="true")
-		$dblink = @ mysql_pconnect($dbserver,$dbuser,$dbpass);
-	else
-		$dblink = @ mysql_connect($dbserver,$dbuser,$dbpass);
-	if (!$dblink) 
-		reportError(500,"Could not link to MySQL Server.  Please check your settings.",true);
-	if (!mysql_select_db($dbname,$dblink)) 
-		reportError(500,"Could not open database.  Please check your settings.",true);	
-	return $dblink;
-}
-
-function verifyAPILogin($user,$pass,$seed,$dblink){
-	$thereturn=false;
+		else{
+			if(class_exists("db")){
+				$this->db= new db(false);
 	
-	$querystatement="SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
-					FROM users 
-					WHERE login!=\"Scheduler\" AND login=\"".mysql_real_escape_string($user)."\" and password=ENCODE(\"".mysql_real_escape_string($pass)."\",\"".mysql_real_escape_string($seed)."\") and revoked=0 and portalaccess=1";
-	$queryresult=@ mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(1441,"Error verifing user record.","json");
+				$this->db->showError=false;
+				$this->db->logError=false;
+				$this->db->stopOnError=false;
 	
-	if(mysql_num_rows($queryresult)){
-		//We found a record that matches in the database
-		// populate the session and go in
-		$_SESSION["userinfo"]=mysql_fetch_array($queryresult);
-
-		// set application location (web, not physical)
-		$pathrev=strrev($_SERVER["PHP_SELF"]);
-		$_SESSION["app_path"]=strrev(substr($pathrev,(strpos($pathrev,"/"))));
-
-		$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
-		$queryresult=@ mysql_query($querystatement,$dblink);
-		if(!$queryresult)
-			reportError(300,"Error updating user login time.","json");
-		$thereturn=true;
+				$this->db->connect();
+				$this->db->selectSchema();
+			} else 
+				return false;
+		}
+		
+		if($value)
+			$this->value=$value;
+		if($type)
+			$this->error=$type;
+		if($userid)
+			$this->userid=((int) $userid);
+		
+		if($sendLog)
+			return $this->sendLog();
+		else
+			return true;
+		
+	}//end function
+	
+	function sendLog(){
+			
+		$ip=$_SERVER["REMOTE_ADDR"];
+	
+		$querystatement="INSERT INTO `log` (`type`,`value`,`userid`,`ip`) VALUES (";
+		$querystatement.="\"".mysql_real_escape_string($this->type)."\", ";
+		$querystatement.="\"".mysql_real_escape_string($this->value)."\", ";
+		$querystatement.=$this->userid.", ";
+		$querystatement.="\"".$ip."\")";
+		
+		$this->db->query($querystatement);
+		
 	}
-	return $thereturn;
-}
+}//end phpbmslog
 
-function reportJSONError(){
-}
+
+
+class phpbmsSession{
+
+	var $db=null;
+
+	function loadDBSettings($reportError = true){
+		// This functions looks for the settings.php file, and loads
+		// the database variables as constants.  As an added benefit
+		// it adds the phpBMS root as an included path.
+		
+		$path="";
+		$count=1;
+
+		//need to look for settings file... only go up a total of 10 directories
+		$currdirectory= getcwd();
+		
+		while(!file_exists("settings.php") and ($count<10)){
+			$path.="../";
+			@ chdir("../");
+			$count++;
+		}
+		
+		$settingsfile =  @ fopen("settings.php","r");
+		if($settingsfile){
+			//loop through the settings file and load variables into the session 
+			while( !feof($settingsfile)) {
+				$line=NULL;
+				$key=NULL;
+				$value=NULL;
+				$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
+				if ($line){
+					$key=trim($key);
+					$value=trim($value);
+					if($key!="" and !strpos($key,"]")){	
+						$startpos=strpos($value,"\"");
+						$endpos=strrpos($value,"\"");
+						if($endpos!=false)
+							$value=substr($value,$startpos+1,$endpos-$startpos-1);
+						if(strpos($key,"mysql_")===0){
+							define(strtoupper($key),$value);							
+						}
+					}
+				}
+			}
+			
+			@ fclose($settingsfile);
+
+			//For legacy installations where pconnect is not set
+			if(!defined("MYSQL_PCONNECT"))
+				define("MYSQL_CONNECT",true);
+			
+			//this adds the phpbms root to the include path
+			$pathToAdd=@ getcwd();
+			ini_set("include_path",ini_get("include_path").":".$pathToAdd);
+			
+			//Now to set the path
+			$pathrev = strrev($_SERVER["PHP_SELF"]);
+			$choppos=0;
+
+			for($x=0;$x<$count;$x++)
+				$choppos = strpos($pathrev,"/",$choppos+1);
+			define("APP_PATH",strrev(substr($pathrev,$choppos)));
+			
+			@ chdir ($currdirectory);
+			return $path;
+		} else {
+			if($reportError)
+				$error= new appError(-300,"You may need to run the install process, or set the permission on your settings file correctly.","Settings File Could Not Be Read",true,true,false);
+			return false;
+		}
+	}//end function
+
+	
+	function loadSettings($encoding="utf8"){
+		// We are going to make sure that we are using utf8 
+		// but it works only in mySQL 5, so we supress errors
+		// when trying it.
+		if($this->db==NULL)
+			$error=new appError(-310,"","Database not loaded");
+		
+		$this->db->logError = false;
+		$this->db->stopOnError = false;
+	
+		$this->db->query("SET NAMES ".$encoding);
+	
+		$this->db->logError = true;
+	
+		$querystatement = "SELECT name,value FROM settings";
+
+		$queryresult = $this->db->query($querystatement);
+
+		if(!$queryresult){
+			$error= new appError(-310,"If you have not ran the update script for phpBMS, please run it before logging in.","Could Not Retrieve Settings From Database");
+			return false;
+		} else {
+			while($therecord=$this->db->fetchArray($queryresult))
+				define(strtoupper($therecord["name"]),$therecord["value"]);
+
+			// This following code is for windows boxen, because they lack some server varables as well
+			// formating options for the strftime function
+			if(!isset($_SERVER['REQUEST_URI'])) {
+				$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
+				
+				define("HOUR_FORMAT","%I");
+			
+				// Append the query string if it exists and isn't null
+				if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
+					$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
+			} else
+				define("HOUR_FORMAT","%l");
+
+			return true;
+		}
+	}
+
+
+	function startSession(){
+		// This is in a function in case we want to do sessions differently in the future
+
+		session_name("phpBMS".str_replace(" ","",APPLICATION_NAME)."v08ID");
+		session_start();
+	}
+
+
+	function verifyAPIlogin($user,$pass){
+		$thereturn=false;
+		$this->db->stopOnError = false;
+		
+		$querystatement = "SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
+						FROM users 
+						WHERE login!=\"Scheduler\" AND login=\"".mysql_real_escape_string($user)."\" 
+						AND password=ENCODE(\"".mysql_real_escape_string($pass)."\",\"".mysql_real_escape_string(ENCRYPTION_SEED)."\") 
+						AND revoked=0 AND portalaccess=1";
+		$queryresult = $this->db->query($querystatement);
+		if(!$queryresult) {
+			$error = new appError(-720,"","Error retrieving user record",true,true,true,"json");
+			return false;
+		}
+		
+		if($db->numRows($queryresult)){
+			//We found a record that matches in the database
+			// populate the session and go in
+			$_SESSION["userinfo"]=$db->fetchArray($queryresult);
+		
+			$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
+			$queryresult=@ $db->query($querystatement);
+			if(!$queryresult) {
+				$error = new appError(-730,"","Error Updaingt User Login Time",true,true,true,"json");
+			} else
+				$thereturn=true;
+		}
+		return $thereturn;	
+	}
+	
+}//end loginSession class
+
 
 // Start Code
 //=================================================================================================================
-
-	//php <4.3.0 compatibility
-	if(!function_exists("mysql_real_escape_string")){
-		function mysql_real_escape_string($string){
-			return mysql_escape_string($string);
-		}
-		
-	   function utf8_replaceEntity($result){
-		   $value = (int)$result[1];
-		   $string = '';
-		  
-		   $len = round(pow($value,1/8));
-		  
-		   for($i=$len;$i>0;$i--){
-			   $part = ($value & (255>>2)) | pow(2,7);
-			   if ( $i == 1 ) $part |= 255<<(8-$len);
-			  
-			   $string = chr($part) . $string;
-			  
-			   $value >>= 6;
-		   }
-		  
-		   return $string;
-	   }
-	  
-	   function html_entity_decode($string){
-		   return preg_replace_callback(
-			   '/&#([0-9]+);/u',
-			   'utf8_replaceEntity',
-			   $string
-		   );
-	   }	
+//php <4.3.0 compatibility
+if(!function_exists("mysql_real_escape_string")){
+	function mysql_real_escape_string($string){
+		return mysql_escape_string($string);
 	}
 	
-	// This following code is for windows boxen, because they lack some server varables as well
-	// formating options for the strftime function
-	if(!isset($_SERVER['REQUEST_URI'])) {
-		$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
-		
-		define("HOUR_FORMAT","%I");
+   function utf8_replaceEntity($result){
+	   $value = (int)$result[1];
+	   $string = '';
+	  
+	   $len = round(pow($value,1/8));
+	  
+	   for($i=$len;$i>0;$i--){
+		   $part = ($value & (255>>2)) | pow(2,7);
+		   if ( $i == 1 ) $part |= 255<<(8-$len);
+		  
+		   $string = chr($part) . $string;
+		  
+		   $value >>= 6;
+	   }
+	  
+	   return $string;
+   }
+  
+   function html_entity_decode($string){
+	   return preg_replace_callback(
+		   '/&#([0-9]+);/u',
+		   'utf8_replaceEntity',
+		   $string
+	   );
+   }	
+}// end PHP<4.3 compatibility
+
+
+// Start Login verification Code
+//=================================================================================================================
+
+if(!defined("noStartup")){
+	$scriptname = basename($_SERVER["PHP_SELF"]);
+	$phpbmsSession = new phpbmsSession;
 	
-		// Append the query string if it exists and isn't null
-		if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
-			$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
-	} else
-		define("HOUR_FORMAT","%l");
-
-
 	//Testing for API login
-	if(strpos(basename($_SERVER["PHP_SELF"]),"api_")!==false){
+	if(strpos($scriptname,"api_")!==false){
 		if(isset($_POST["phpbmsusername"]) && isset($_POST["phpbmspassword"])){
-			$mainpath=loadMysqlSettings();
-			$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]);
-			loadSettings();
-			if(!verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"],$_SESSION["encryption_seed"],$dblink))
-				reportError(1440,"Login credentials incorrect","json");
+			$phpbmsSession->loadDBSettings();
+			
+			include_once("include/db.php");
+			$db = new db();
+			$phpbmsSession->db = $db;
+			
+			$phpbmsSession->loadSettings();
+			$phpbms = new phpbms($db);
+	
+			include_once("common_functions.php");
+	
+			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"],ENCRYPTION_SEED))
+				$error = new appError(-700,"","Login credentials incorrect",true,true,true,"json");
 		} else
-			reportError(1441,"No login credentials passed","json");
-	} else {	
-		if(!isset($noSession)){
-			session_name("phpBMSv08ID");
-			session_start();
-		}
+			$error= new appError(-710,"","No login credentials passed",true,true,true,"json");
+	} else {
+	
+		$phpbmsSession->loadDBSettings();
+	
+	
+		include_once("include/db.php");
+		$db = new db();
 		
-		if (!isset($_SESSION["app_path"]))
-			$mainpath=loadMysqlSettings();
-		else 
-			$mainpath=$_SESSION["app_path"];
-				
-		if (!isset($_SESSION["userinfo"]) && basename($_SERVER["PHP_SELF"]) != "index.php") {
+		$phpbmsSession->db = $db;
+		
+		$phpbmsSession->loadSettings();
+		
+		include_once("common_functions.php");
+		$phpbms = new phpbms($db);
+		
+		if(!isset($noSession))
+			$phpbmsSession->startSession();
+		
+		if (!isset($_SESSION["userinfo"]) && $scriptname != "index.php") {
 		
 			if(isset($loginNoKick)){
 				if(!isset($loginNoDisplayError))
 					exit();
-				else
-					$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
 			} else{
-				header("Location: ".$mainpath."index.php");
-				exit();
+				goURL(APP_PATH."index.php");
 			}
-		} else {
-	
-			// OPEN DATABASE IF NOT OPENED
-			if(!isset($dblink))		
-				$dblink = openDB($_SESSION["mysql_server"],$_SESSION["mysql_user"],$_SESSION["mysql_userpass"],$_SESSION["mysql_database"],$_SESSION["mysql_pconnect"]); 
-	
-			//load from settings table
-			if(!isset($_SESSION["app_name"])) loadSettings();
-		}//end if
+		}
+		
 	}
+	
+	$db->stopOnError=true;
+}//end if
+
 ?>

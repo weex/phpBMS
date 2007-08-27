@@ -37,9 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 
-if(!isset($fromClient)) {
-	require("../../../include/session.php");
-	require("../../../include/common_functions.php");
+if(!isset($fromProduct)) {
+	require_once("../../../include/session.php");
 }
 	
 class salesHistoryReport{
@@ -52,9 +51,10 @@ class salesHistoryReport{
 
 	var $productQuery;
 	
-	function initialize($variables){
-		global $dblink;
+	function initialize($variables,$db){
 		
+		$this->db = $db;
+
 		$this->fromdate=$variables["fromdate"];
 		$this->todate=$variables["todate"];
 		$this->view=$variables["status"];
@@ -68,15 +68,13 @@ class salesHistoryReport{
 		$this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
 
 		$querystatement="SELECT products.id,products.partnumber, products.partname FROM products ".$this->whereclause.$this->sortorder;
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(100,"Could not Initialize Product Sales History Report");
+		$queryresult = $this->db->query($querystatement);
 
 		$this->productQuery=$queryresult;
 	}
 	
 		
 	function showSalesHistory($id){
-		global $dblink;
 
 		$thestatus="(invoices.type =\"";
 		switch($this->view){
@@ -110,9 +108,10 @@ class salesHistoryReport{
 			and invoices.".$searchdate."<=\"".$mysqltodate."\"
 			and ".$thestatus."
 			order by invoices.invoicedate, invoices.orderdate;";
-		$thequery=mysql_query($querystatement,$dblink);
-		if(!$thequery) reportError(100,mysql_error($dblink)." ".$querystatement);
-		$thequery? $numrows=mysql_num_rows($thequery): $numrows=0;
+
+		$thequery=$this->db->query($querystatement);
+
+		$thequery? $numrows = $this->db->numRows($thequery): $numrows=0;
 ?>
    <table border="0" cellpadding="3" cellspacing="0">
 	<tr>
@@ -132,7 +131,7 @@ class salesHistoryReport{
 	$totalquantity=0;
 	$avgprice=0;
 	$avgcost=0;
-	while ($therecord=mysql_fetch_array($thequery)){
+	while ($therecord = $this->db->fetchArray($thequery)){
 		$avgcost+=$therecord["cost"];
 		$avgprice+=$therecord["price"];
 		$totalquantity+=$therecord["qty"];
@@ -232,7 +231,7 @@ TH {
 		</li>
 	</ul><br /><br />
 </h2>
-<?php while($therecord=mysql_fetch_array($this->productQuery)){?>
+<?php while($therecord=$this->db->fetchArray($this->productQuery)){?>
 	<h3><?php echo $therecord["partnumber"]." - ".$therecord["partname"] ?></h3>
 <?php $this->showSalesHistory($therecord["id"]);}//end while?>
 </body>
@@ -243,56 +242,62 @@ TH {
 
 if(isset($_POST["command"])){
 	$myreport= new salesHistoryReport();
-	$myreport->initialize($_POST);
+	$myreport->initialize($_POST,$db);
 	
 	$myreport->showReport();
 } else {
-	require("../../../include/fields.php");
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>Product Sales History </title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<?php require("../../../head.php")?>
-	<link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />	
-	<script language="javascript" src="../../../common/javascript/fields.js" type="text/javascript"></script>
-	<script language="javascript" src="../../../common/javascript/datepicker.js" type="text/javascript"></script>	
-</head>
+	
+		require("include/fields.php");
+		
+		$pageTitle = "Product Sales History";
+		$phpbms->cssIncludes[] = "pages/historyreports.css";
+		$phpbms->showMenu = false;
+	
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		
+		$thedate = dateToString( mktime(0,0,0,date("m"),1),"SQL" );
+		$theinput = new inputDatePicker("fromdate", $thedate, "from",true);
+		$theform->addField($theinput);
+		
+		$thedate = dateToString( mktime(0,0,0,date("m")+1,0,date("Y")), "SQL" );
+		$theinput = new inputDatePicker("todate", $thedate, "to",true);
+		$theform->addField($theinput);
 
-<body>
-<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals">
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+
+		include("header.php");
+?>
+<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return validateForm(this)">
 <div class="bodyline" id="reportOptions">
 	<h1 id="topTitle"><span>Product Sales History Options</span></h1>	
 		<fieldset>
 			<legend>time frame</legend>
-			<p id="fromP">
-				<label for="fromdate">from</label><br />
-				<?php 
-					$thedate=dateToString(mktime(0,0,0,date("m"),1));
-					fieldDatePicker("fromdate",$thedate."/01/".date("Y"),0,"",Array("size"=>"10","maxlength"=>"12"),false);
-				?>
-			</p>
-			<p>
-				<label for="todate">to</label><br />
-				<?php fieldDatePicker("todate",dateToString(mktime(0,0,0,date("m")+1,0,date("Y"))),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-			</p>
+
+			<p id="fromP"><?php $theform->showField("fromdate");?></p>
+
+			<p><?php $theform->showField("todate");?></p>
 		</fieldset>
 
 		<p>
 			<label for="status">include line items from...<br /></label>
 		   <select id="status" name="status">
-				<option value="Orders/Invoices" selected>Orders/Invoices</option>
+				<option value="Orders/Invoices" selected="selected">Orders/Invoices</option>
 				<option value="Invoices">Invoices</option>
 				<option value="Orders">Orders</option>
 		   </select>					
 		</p>
 
-		<div align="right" class="box">
+		<div align="right">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" />
 			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
 		</div>
 </div>
 </form>
-
-</body>
-</html><?php }?>
+<?php 
+include("footer.php");
+}?>

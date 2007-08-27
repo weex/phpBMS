@@ -38,14 +38,14 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 	include("../../include/fields.php");
 
-	if(!isset($_GET["id"])) reportError(300,"Passed variable not set (id)");
+	if(!isset($_GET["id"])) $error = new appError(300,"Passed variable not set (id)");
 	$clientquerystatement="SELECT firstname,lastname,company FROM clients WHERE id=".$_GET["id"];
-	$clientqueryresult=mysql_query($clientquerystatement,$dblink);
-	if(!$clientqueryresult) reportError(300,"Could not retrieve client record ".mysql_error($dblink)." -- ".$clientquerystatement);
-	$clientrecord=mysql_fetch_array($clientqueryresult);
+	$clientqueryresult=$db->query($clientquerystatement);
+
+	$clientrecord=$db->fetchArray($clientqueryresult);
 
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
@@ -100,22 +100,30 @@
 		thedate >=\"".$mysqlfromdate."\"
 		and thedate <=\"".$mysqltodate."\"
 		ORDER BY thedate,invoices.id;";
-	$queryresult=mysql_query($querystatement);
-	if(!$queryresult) reportError(500,"Could Not Retrieve purchase history: ".mysql_error($dblink)." --".$querystatement);
+	$queryresult=$db->query($querystatement);
 
-	$numrows=mysql_num_rows($queryresult);
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<?php showTabs($dblink,"clients entry",7,$_GET["id"]);?><div class="bodyline">
+	$numrows=$db->numRows($queryresult);
+
+	$phpbms->cssIncludes[] = "pages/client.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]), "from" ,true);
+		$theform->addField($theinput);
+				
+		$theinput = new inputDatePicker("todate",sqlDateFromString($_POST["todate"]), "to" ,true);
+		$theform->addField($theinput);
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");	
+
+	$phpbms->showTabs("clients entry",7,$_GET["id"]);?><div class="bodyline">
+
 	<h1><?php echo $pageTitle ?></h1>
 
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
@@ -129,15 +137,10 @@
 			   </select>								
 			</p>
 			
-			<p class="timelineP">
-			   <label for="fromdate">from</label><br />
-			   <?php fieldDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
-			</p>
+			<p class="timelineP"><?php $theform->showField("fromdate")?></p>
 	
-			<p class="timelineP">
-				to<br />
-				<?php fieldDatePicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-			</p>
+			<p class="timelineP"><?php $theform->showField("todate")?></p>
+
 			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
 		</div>
@@ -162,13 +165,13 @@
     <?php 
 	$totalextended=0;		
 	$row=1;
-	while ($therecord=mysql_fetch_array($queryresult)){
+	while ($therecord=$db->fetchArray($queryresult)){
 		$row==1? $row++ : $row--;
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
 	<tr class="row<?php echo $row?>">
 		<td >
-			<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+			<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
 		</td>
 		<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
 		<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>
@@ -180,7 +183,7 @@
 		<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
     <?php }//end while ?>
-    <?php  if(!mysql_num_rows($queryresult)) {?>
+    <?php  if(!$db->numRows($queryresult)) {?>
 	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>	
 	<tr>
@@ -194,5 +197,4 @@
 	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
    </table>	
-	</div></div><?php include("../../footer.php")?></body>
-</html><?php }?>
+	</div></div><?php include("footer.php"); } //end if?>

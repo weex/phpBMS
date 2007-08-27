@@ -36,16 +36,6 @@
  +-------------------------------------------------------------------------+
 */
 
-// Testing
-requiredArray= new Array();
-integerArray= new Array();
-phoneArray= new Array();
-emailArray= new Array();
-wwwArray= new Array();
-realArray= new Array();
-dateArray= new Array();
-timeArray= new Array();
-
 function validateForm(theform){
 	var i;
 	var thereturn=true;

@@ -38,22 +38,31 @@
 */
 
 require_once("../../include/session.php");
-require_once("../../include/common_functions.php");
-require_once("../../include/fields.php");
-require_once("include/myaccount_include.php");
 
-$pageTitle="My Account"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/myaccount.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/myaccount.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?><div class="bodyline">
+require_once("../../include/fields.php");
+require_once("include/myaccount.php");
+
+$pageTitle="My Account";
+
+	$phpbms->cssIncludes[] = "pages/myaccount.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/myaccount.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+
+		$theinput = new inputField("email",$_SESSION["userinfo"]["email"],"e-mail address",false,"email",32,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
+		$theform->addField($theinput);
+				
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+	
+	include("header.php");
+?><div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="record" id="record" onsubmit="return false">
 	<input type="hidden" id="command" name="command" value=""/>
 	
@@ -79,35 +88,30 @@ $pageTitle="My Account"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transition
 			<label for="confirmPass">re-type new password</label><br />
 			<input type="password" id="confirmPass" name="confirmPass" maxlength="32"/>
 		</p>
-		<p>
-			<button type="button" class="Buttons" onclick="changePass()">Change Password</button>
-		</p>
 	</fieldset>
+	<p>
+		<button type="button" class="Buttons" onclick="changePass()">Change Password</button>
+	</p>
 	
 	<fieldset>
 		<legend>Contact Information</legend>
-			<p>
-				<label for="email">e-mail address</label><br />
-				<?php fieldEmail("email",$_SESSION["userinfo"]["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
-			</p>
-			<p>
-				<label for="phone">phone/extension</label><br />
-				<input type="text" id="phone" name="phone" value="<?php echo htmlQuotes($_SESSION["userinfo"]["phone"]) ?>" size="32" maxlength="32" />
-			</p>
-			<p>
-				<button type="button" class="Buttons" onclick="changeContact()">Update Contact Information</button>
-			</p>
+
+			<p><?php $theform->showField("email")?></p>
+			
+			<p><?php $theform->showField("phone")?></p>
+
 	</fieldset>
+	<p><button type="button" class="Buttons" onclick="changeContact()">Update Contact Information</button></p>
 	
 	<fieldset>
 		<legend>Access / Assigned Roles</legend>
 		<ul>
 		<?php 
 			if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrator</strong></li><?php }
-			displayRoles($_SESSION["userinfo"]["id"],$dblink)
+			displayRoles($db)
 		?></ul>
 	</fieldset>
 	</form>
 </div>
-<?php include("../../footer.php"); ?></body>
-</html>
+
+<?php include("footer.php"); ?>

@@ -38,28 +38,45 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-	include("include/menu_addedit_include.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/menu.php");
+
+	$thetable = new menus($db,19);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
 	
 	$pageTitle="Menu Item";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/menus.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="javascript/menu.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		<?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	
+	$phpbms->cssIncludes[] = "pages/menus.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/menu.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
+		$theform->addField($theinput);
+		
+		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
+		$theform->addField($theinput);			
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+	
+	$phpbms->bottomJS[] = "showTypeDetails();";
+		
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>	
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
@@ -69,23 +86,20 @@
 		</p>
 		
 		<p>
-			<label for="displayorder">display order</label><br />
-			 <?php fieldText("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br />
-			 <span class="notes"><strong>Note:</strong> Lower numbers are displayed first.</span>
+			<?php $theform->showField("displayorder"); ?><br />
+			<span class="notes">Lower numbers are displayed first.</span>
 		</p>
-		
-		<p>
-			<label for="roleid">access (role)</label><br />
-			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
-		</p>
+
+		<p><?php $theform->showField("roleid")?></p>
+
 	</fieldset>
 	
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p>
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
-			</p>
+
+			<p><?php $theform->showField("name"); ?></p>
+
 		</fieldset>
 
 		<fieldset>
@@ -116,18 +130,18 @@
 			</p>
 			<p id="thetabledef">
 				<label  for="linkdropdown">table definition</label><br /> 
-				<?php displayTableDropDown($therecord["link"]) ?>		
+				<?php $thetable->displayTableDropDown($therecord["link"]) ?>		
 			</p>
 			<p>
 				parent<br/>
-				<?php displayParentDropDown($therecord["parentid"],$therecord["id"]) ?>
+				<?php  $thetable->displayParentDropDown($therecord["parentid"],$therecord["id"]) ?>
 			</p>
 		</fieldset>
 	</div>
-	<script language="JavaScript" type="text/javascript">showTypeDetails();</script>
-	<?php include("../../include/createmodifiedby.php"); ?>
+	
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php"); ?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

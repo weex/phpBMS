@@ -38,54 +38,54 @@
 */
 	require_once("include/session.php");
 	
-	function deleteList($listname){
-		global $dblink;
+	
+	class choiceList{
+		var $db;
+		
+		function choiceList($db){
+			$this->db = $db;
+		}
+	
+	
+		function deleteList($listname){
+			$querystatement="DELETE FROM choices WHERE listname=\"".$listname."\" ";
+			$queryresult=$this->db->query($querystatement);
 
-		$querystatement="DELETE FROM choices WHERE listname=\"".$listname."\" ";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) 
-			reportError(100,"SQL Statement Could not be executed.");
-		else
 			echo "ok";
-	}
-	
-	function addToList($listname,$value){
-		global $dblink;
+		}
 
-		$querystatement="INSERT INTO choices (listname,thevalue) VALUES(\"".$listname."\",\"".$value."\") ";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$querystatement) 
-			reportError(100,"SQL Statement Could not be executed.");
-		else
+
+		function addToList($listname,$value){
+			$querystatement="INSERT INTO choices (listname,thevalue) VALUES(\"".$listname."\",\"".$value."\") ";
+			$queryresult=$this->db->query($querystatement);
+
 			echo "ok";
-	}
+		}
 
-	function displayList($queryresult,$blankvalue){
-		while($therecord=mysql_fetch_array($queryresult)){
-			$display=$therecord["thevalue"];
-			$theclass="";
-			if($therecord["thevalue"]==""){
-				$display="&lt;".$blankvalue."&gt;";
-				$theclass=" class=\"choiceListBlank\" ";
-			}
-			?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?>><?php echo $display?></option><?php
-		}//end while
-	
-	}
-	
+
+		function displayList($queryresult,$blankvalue){
+			while($therecord=$this->db->fetchArray($queryresult)){
+				$display=$therecord["thevalue"];
+				$theclass="";
+				if($therecord["thevalue"]==""){
+					$display="&lt;".$blankvalue."&gt;";
+					$theclass=" class=\"choiceListBlank\" ";
+				}
+				?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?>><?php echo $display?></option><?php
+			}//end while
+		
+		}
+		
 	function displayBox($listname,$blankvalue,$listid){
-		global $dblink;
+		$blankvalue = str_replace("<","",$blankvalue);
+		$blankvalue = str_replace(">","",$blankvalue);
 		
-		$blankvalue=str_replace("<","",$blankvalue);
-		$blankvalue=str_replace(">","",$blankvalue);
-		
-		$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$listname."\" ORDER BY thevalue;";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
+		$querystatement = "SELECT thevalue FROM choices WHERE listname=\"".$listname."\" ORDER BY thevalue;";
+		$queryresult = $this->db->query($querystatement);
 ?>
 	<p id="MLListP">
 		<select id="MLlist" name="MLList" size="12" onchange="updateML(this)">
-			<?php displayList($queryresult,$blankvalue)?>
+			<?php $this->displayList($queryresult,$blankvalue)?>
 		</select>
 	</p>
 	<p id="MLAddDelP">
@@ -101,27 +101,38 @@
 	</p>
 	<p id="MLStatus" class="small">&nbsp;</p>
 	<div align="right">
-		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onclick="clickOK('<?php echo $_SESSION["app_path"]?>','<?php echo $listid?>','<?php echo $listname?>')"/>
+		<input type="button" id="MLok" name="MLok" value="ok" class="Buttons" style="width:75px;" onclick="clickOK('<?php echo APP_PATH?>','<?php echo $listid?>','<?php echo $listname?>')"/>
 		<input type="button" id="MLcancel" name="MLcancel" value="cancel" class="Buttons" style="width:75px;" onclick="closeBox('<?php echo $listid?>');"/>&nbsp;
 	</div>
 <?php	}//end function
+		
+	}//end class
+	
+	
+
+	
+
 
 	if(!isset($_GET["cm"])) 
 		$_GET["cm"]="shw";
 	
 	if(!isset($_GET["ln"]))
 		$_GET["ln"]="shippingmethod";
+
 	if(!isset($_GET["bv"]))
 		$_GET["bv"]="none";
+	
+	$theList = new choiceList($db);
+	
 	switch($_GET["cm"]){
 		case "shw":
-			displayBox($_GET["ln"],$_GET["bv"],$_GET["lid"]);
+			$theList->displayBox($_GET["ln"],$_GET["bv"],$_GET["lid"]);
 		break;
 		case "del":
-			deleteList($_GET["ln"]);
+			$theList->deleteList($_GET["ln"]);
 		break;
 		case "add":
-			addToList($_GET["ln"],$_GET["val"]);
+			$theList->addToList($_GET["ln"],$_GET["val"]);
 		break;
 	}
 	

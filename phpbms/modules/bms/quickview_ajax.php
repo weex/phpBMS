@@ -38,11 +38,9 @@
 */
 
 require("../../include/session.php");
-require("../../include/common_functions.php");
-require("../../include/fields.php");
+require("include/fields.php");
 
-function showClient($clientid,$basepath){
-	global $dblink;
+function showClient($db,$clientid,$basepath){
 	
 	$querystatement="SELECT clients.id, clients.firstname, clients.lastname, clients.company,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
@@ -52,23 +50,26 @@ function showClient($clientid,$basepath){
 					clients.workphone,clients.homephone,clients.mobilephone,clients.fax, clients.email,clients.webaddress,clients.comments
 					FROM clients WHERE id=".$clientid;
 					
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Could Not Retrieve Client: ".mysql_error($dblink)." -- ".$querystatement);
-	$therecord=mysql_fetch_array($queryresult);
+	$queryresult=$db->query($querystatement);
+
+	$therecord=$db->fetchArray($queryresult);
 	
 	$querystatement="SELECT invoices.id,invoices.type,
 					if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
 					totalti
 					FROM invoices WHERE invoices.clientid=".$clientid." ORDER BY type,thedate";
-	$invoiceresult=mysql_query($querystatement,$dblink);
-	if(!$invoiceresult) reportError(300,"Could Not Retrieve Invoices: ".mysql_error($dblink)." -- ".$querystatement);
+	$invoiceresult=$db->query($querystatement);
 
 	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category, notes.completed,
 					ELT(notes.importance+3,\"&nbsp;\",\"&middot;\",\"-\",\"*\",\"!\",\"!!\")  as importance
 					FROM notes WHERE notes.attachedtabledefid=2 AND notes.attachedid=".$clientid." 
 					ORDER BY notes.completed,notes.category,notes.type,notes.importance DESC,notes.creationdate";
-	$noteresult=mysql_query($querystatement,$dblink);
-	if(!$noteresult) reportError(300,"Could Not Retrieve Notes: ".mysql_error($dblink)." -- ".$querystatement);
+	$noteresult=$db->query($querystatement);
+	
+	
+	$invoiceEditFile = getAddEditFile($db,3);
+	$noteEditFile = getAddEditFile($db,12);
+	
 ?>
 <div class="bodyline" id="theDetails">
 <h1><?php echo htmlQuotes($therecord["name"])?></h1>
@@ -77,15 +78,15 @@ function showClient($clientid,$basepath){
 	<?php if($therecord["type"]!="prospect") {?>
 
 	<div class="salesNotesButtons">
-		<button id="invoiceedit" type="button" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo getAddEditFile(3)?>')"><span>edit</span></button>
-		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile(3,"add")?>')"><span>new</span></button>			
+		<button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
+		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($db,3,"add")?>')"><span>new</span></button>			
 	</div>
 	
 	<h2>Sales</h2>
 	
 	<div class="fauxP">
 	<div id="salesTable" class="smallQueryTableHolder">
-		<?php if(!mysql_num_rows($invoiceresult)) {?>
+		<?php if(!$db->numRows($invoiceresult)) {?>
 			<div class="small"><em>no records</em></div>
 		<?php } else {?>
 		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
@@ -95,10 +96,10 @@ function showClient($clientid,$basepath){
 				<th align="left">Date</th>
 				<th align="right" width="100%">Total</th>
 			</tr>
-		<?php while($invoicerecord=mysql_fetch_array($invoiceresult)) {
+		<?php while($invoicerecord=$db->fetchArray($invoiceresult)) {
 				if($invoicerecord["type"]=="VOID")
 					$invoicerecord["totalti"]="-----"
-		?><tr onclick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')">
+		?><tr onclick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')" ondblclick="selectedInvoice=<?php echo $invoicerecord["id"]?>;addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')">
 			<td><?php echo $invoicerecord["id"]?></td>
 			<td><?php echo $invoicerecord["type"]?></td>
 			<td><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
@@ -112,15 +113,15 @@ function showClient($clientid,$basepath){
 	
 	
 	<div class="salesNotesButtons">
-		<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','note','<?php echo getAddEditFile(12)?>')"><span>edit</span></button>
-		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile(12,"add")?>')"><span>new</span></button>
+		<button id="noteedit" type="button" class="graphicButtons disabled="disabled" buttonEditDisabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></button>
+		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($db,12,"add")?>')"><span>new</span></button>
 	</div>
 	
 	<h2>Notes</h2>
 	
 	<div class="fauxP">
 	<div id="notesTable"  class="smallQueryTableHolder">
-		<?php if(!mysql_num_rows($noteresult)) {?>
+		<?php if(!$db->numRows($noteresult)) {?>
 			<div class="small"><em>no records</em></div>
 		<?php } else {?>
 		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
@@ -131,12 +132,12 @@ function showClient($clientid,$basepath){
 				<th align="left" width="100%">title</th>
 				<th align="center">done</th>
 			</tr>
-		<?php while($noterecord=mysql_fetch_array($noteresult)) {
+		<?php while($noterecord=$db->fetchArray($noteresult)) {
 				if(strlen($noterecord["subject"])>17)
 					$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
 				if(strlen($noterecord["category"])>17)
 					$noterecord["category"]=substr($noterecord["category"],0,17)."...";
-		?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')">
+		?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')" ondblclick="selectedNote=<?php echo $noterecord["id"]?>;addEditRecord('edit','note','<?php echo $noteEditFile?>')">
 			<td align="center"><?php echo $noterecord["importance"]?></td>
 			<td><?php echo $noterecord["type"]?></td>
 			<td><?php echo $noterecord["category"]?></td>
@@ -151,7 +152,7 @@ function showClient($clientid,$basepath){
 <div id="leftSideDiv" class="box">
 		
 		<h2>Name</h2>
-		<button id="editClient" type="button" onclick="addEditRecord('edit','client','<?php echo getAddEditFile(2)?>')" class="Buttons">edit</button>
+		<button id="editClient" type="button" onclick="addEditRecord('edit','client','<?php echo getAddEditFile($db,2)?>')" class="Buttons">edit</button>
 		<?php if($therecord["firstname"] || $therecord["lastname"]) {?>
 		<p class="RDNames">name:</p>
 		<p class="RDData Uppers important"><?php echo htmlQuotes($therecord["firstname"]." ".$therecord["lastname"])?></p>
@@ -245,14 +246,13 @@ function showClient($clientid,$basepath){
 	<div id="endClient"></div>
 </div>
 <?php 
-include("../../footer.php");
 }//end function
 
 	//=================================================================================================
 	if(isset($_GET["cm"])){
 		switch($_GET["cm"]){
 			case "showClient":
-				$thereturn=showClient($_GET["id"],$_GET["base"]);
+				$thereturn=showClient($db,$_GET["id"],$_GET["base"]);
 			break;
 		}
 	}

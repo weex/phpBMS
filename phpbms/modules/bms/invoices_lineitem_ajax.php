@@ -38,7 +38,7 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 
 	if (!isset($_GET["cid"])) $_GET["cid"]="0";
 	if (!$_GET["cid"]) $_GET["cid"]="0";	
@@ -46,11 +46,11 @@
 	
 	//check prerequisites
 	$prereqstatement="select childid from prerequisites where parentid =".$_GET["id"];
-	$prereqquery = mysql_query($prereqstatement,$dblink);
+	$prereqquery = $db->query($prereqstatement);
 	
-	if (mysql_num_rows($prereqquery)) {
+	if ($db->numRows($prereqquery)) {
 		$checkpids="";
-		while ($prereqrecord= mysql_fetch_array($prereqquery))
+		while ($prereqrecord= $db->fetchArray($prereqquery))
 			$checkpids=$checkpids." or lineitems.productid=".$prereqrecord["childid"];
 
 		$checkpids=substr($checkpids,4);
@@ -60,9 +60,9 @@
 			inner join lineitems on invoices.id = lineitems.invoiceid
 			where clients.id=".$_GET["cid"]." and invoices.type != \"Void\" and invoices.type != \"Quote\" and
 			(".$checkpids.")";
-		$prquery=mysql_query($prlookupstatement,$dblink);
-		if (!$prquery) reportError(100,mysql_error($dblink)." ".$prlookupstatement);
-		if (!mysql_num_rows($prquery)){
+		$prquery=$db->query($prlookupstatement);
+
+		if (!$db->numRows($prquery)){
 			$prereqnotmet=true;
 		}
 	} // end if
@@ -72,8 +72,8 @@
 		$querystatement="SELECT id,partnumber,partname,unitprice, 
 						description, weight, unitcost, taxable
 						FROM products WHERE id=".$_GET["id"];
-		$queryresult= mysql_query($querystatement,$dblink);
-		$therecord=mysql_fetch_array($queryresult);
+		$queryresult= $db->query($querystatement);
+		$therecord=$db->fetchArray($queryresult);
 	} else {
 		$therecord["id"]="Prerequisite Not Met";
 		$therecord["partnumber"]="";

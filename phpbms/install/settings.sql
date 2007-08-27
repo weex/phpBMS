@@ -15,3 +15,5 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('decimal_symbol','.');
 INSERT INTO `settings` (`name`, `value`) VALUES ('thousands_separator',',');
 INSERT INTO `settings` (`name`, `value`) VALUES ('currency_accuracy','2');
 INSERT INTO `settings` (`name`, `value`) VALUES ('demo_enabled','false');
+INSERT INTO `settings` (`name`, `value`) VALUES ('persistent_login','0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('login_refresh','2');

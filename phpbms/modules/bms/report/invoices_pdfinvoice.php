@@ -39,12 +39,11 @@
 	session_cache_limiter('private');
 	require_once("../../../include/session.php");
 	//reload settings in latin1 (fpdf doesn't like utf)
-	loadSettings("latin1");
-	require_once("../../../include/common_functions.php");
+	$phpbmsSession->loadSettings("latin1");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	
-	if(!$_SESSION["printing"]) reportError(300,"Session Timeout Error");
+	if(!$_SESSION["printing"]) $error = new appError(300,"Session Timeout Error");
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
 	else
@@ -74,8 +73,8 @@
 						LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid)
 						LEFT JOIN shippingmethods ON shippingmethods.id=invoices.shippingmethodid
 					".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(200,"Invlaid SQL statement: ".mysql_error($dblink)." -- ".$querystatement);
+	$thequery=$db->query($querystatement);
+
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================
@@ -91,7 +90,7 @@
 	$pdf->SetMargins($leftmargin,$topmargin,$rightmargin);
 	$pdf->Open();
 
-	while($therecord=mysql_fetch_array($thequery)) {
+	while($therecord=$db->fetchArray($thequery)) {
 		$pdf->AddPage();	
 		// Next we set the Title (invoice,work order,order,quote,packing list)
 		$the_title="Invoice";
@@ -104,16 +103,16 @@
 	
 		//Next add the company info...
 		$tempwidth=1;
-		$cname=$_SESSION["company_name"];
-		$caddress=$_SESSION["company_address"]."\n".$_SESSION["company_csz"]."\n".$_SESSION["company_phone"];
+		$cname=COMPANY_NAME;
+		$caddress=COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
 		
 		
 		// Image from DB, so we need to retieve it and then add it to pdf
 		// through the extended memImage function (instead of the image function, that wants a file, not data)
 			$querystatement="SELECT file,upper(`type`)as `type` FROM files WHERE id=1";
-			$pictureresult=mysql_query($querystatement,$dblink);
-			if(!$pictureresult) reportError(300,"Error Retrieving Logo Graphic");
-			$thepicture=mysql_fetch_array($pictureresult);
+			$pictureresult=$db->query($querystatement);
+			if(!$pictureresult) $error = new appError(300,"Error Retrieving Logo Graphic");
+			$thepicture=$db->fetchArray($pictureresult);
 		
 		if($thepicture["type"]=="IMAGE/JPEG"){
 			$image = $thepicture["file"];
@@ -233,8 +232,8 @@
 		
 		// THe last person who modified the record is the person who processed the order
 		$getuserstatement="select firstname,lastname from users where id=".$therecord["modifiedby"];
-		$userquery=mysql_query($getuserstatement,$dblink);
-		$userrecord=mysql_fetch_array($userquery);
+		$userquery=$db->query($getuserstatement);
+		$userrecord=$db->fetchArray($userquery);
 		
 		$pdf->Cell(2.25,.13,$userrecord["firstname"]." ".$userrecord["lastname"],$border_debug,0,"L");
 		$pdf->SetX($paperwidth-$rightmargin-1.5);
@@ -276,13 +275,13 @@
 						lineitems.memo
 						FROM lineitems LEFT JOIN products ON lineitems.productid=products.id 
 						WHERE invoiceid=".$therecord["id"];
-		$lineitems=mysql_query($lineitemquery);
+		$lineitems=$db->query($lineitemquery);
 		if(!$lineitems) die("bad line item query: ".$lineitemquery);
 	
 		$pdf->SetXY($leftmargin,$tempnext2);
 		$pdf->SetLineWidth(.01);		
 		$pdf->SetDrawColor(200,200,200);		
-		while($thelineitem = mysql_fetch_array($lineitems)){
+		while($thelineitem = $db->fetchArray($lineitems)){
 			
 			$pdf->SetFont("Arial","",8);
 			$pdf->Cell($partnumberwidth,.13,$thelineitem["partnumber"],$border_debug,0,"L");
@@ -314,9 +313,9 @@
 		$instructions=$therecord["printedinstructions"];
 		if($therecord["discountid"]!=0){
 			$querystatement="SELECT description FROM discounts WHERE id=".$therecord["discountid"];
-			$discountresult=mysql_query($querystatement,$dblink);
-			if(!$discountresult) reportError(300,"Could Not Retrieve Discount Information: ".mysql_error($dblink)." -- ".$querystatement);
-			$discountrecord=mysql_fetch_array($discountresult);
+			$discountresult=$db->query($querystatement);
+
+			$discountrecord=$db->fetchArray($discountresult);
 			$instructions.="\n".$discountrecord["description"];
 		}
 		$tempheight=.75;
@@ -367,9 +366,9 @@
 		// If a tax area is defined, print the tax information
 		if($therecord["taxareaid"]) {
 			$taxstatement="SELECT id, name, percentage FROM tax WHERE id=".$therecord["taxareaid"];
-			$taxquery=mysql_query($taxstatement,$dblink);
-			if(!$taxquery) die ("cannot get tax: ".mysql_error($dblink)."<br />".$taxstatement);
-			$taxrecord=mysql_fetch_array($taxquery);
+			$taxquery=$db->query($taxstatement);
+
+			$taxrecord=$db->fetchArray($taxquery);
 			$pdf->SetFont("Arial","",7);
 			$pdf->SetXY($leftmargin,$tempnext+.2+.2);
 			$pdf->Cell($totaltniwidth+$taxwidth+$discountwidth,.13,"(".$taxrecord["name"]." ".$taxrecord["percentage"]."%)",$border_debug,0,"R");

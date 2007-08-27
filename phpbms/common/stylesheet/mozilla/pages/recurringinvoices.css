@@ -1,0 +1,16 @@
+/* $Rev: 145 $ | $LastChangedBy: mipalmer $ */
+/* $LastChangedDate: 2006-10-21 18:27:44 -0600 (Sat, 21 Oct 2006) $ */
+
+#topButtons{float:right;}
+#h1Title{margin-right:160px;}
+#fsAttributes{clear:both;float:right;width:150px;margin:0;padding:0;}
+#id{width:90%}
+#nameDiv{margin-right:165px;}
+#fsDescription{clear:both;}
+#cancel1,#cancel2,#update1,#update2{width:75px;}
+
+.monthDays{width:30px;}
+.yearlyMonths{width:40px;}
+
+#rightSideDiv{float:right; width:150px;}
+#leftSideDiv{margin-right:160px;}

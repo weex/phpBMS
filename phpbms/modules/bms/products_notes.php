@@ -37,10 +37,10 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 
 	require_once("../../include/search_class.php");
-	require_once("../../include/common_functions.php");	
+		
 
 	//set the table passing stuff
 	$reftableid=4;
@@ -51,8 +51,8 @@
 	$base="../../";
 
 	$refquery="select partnumber,partname from products where id=".$refid;
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);	
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);	
 	
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["partname"];
 

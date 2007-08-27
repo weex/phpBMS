@@ -37,13 +37,12 @@
  +-------------------------------------------------------------------------+
 */
 
-	function showSavedSearches($selected){
-		global $dblink;
+	function showSavedSearches($db,$selected){
 		
 		$querystatment="SELECT id,name,userid FROM usersearches WHERE tabledefid=2 and type=\"SCH\" and(userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\") order by userid";
-		$thequery = mysql_query($querystatment,$dblink);
+		$thequery = $db->query($querystatment);
 
-		$numrows=mysql_num_rows($thequery);
+		$numrows=$db->numRows($thequery);
 		?>
 		<select id="savedsearches" name="savedsearches" <?php if ($numrows<1) echo "disabled" ?> >
 			<?php if($numrows<1) {?>
@@ -51,16 +50,16 @@
 			<?php 
 				} else {
 					$numglobal=0;
-					while($therecord=mysql_fetch_array($thequery))
+					while($therecord=$db->fetchArray($thequery))
 						if($therecord["userid"]<1) $numglobal++;
-					mysql_data_seek($thequery,0);				
+					$db->seek($thequery,0);				
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
 				<?php
 					}//end if
 					$userqueryline=true;
-					while($therecord=mysql_fetch_array($thequery)){
+					while($therecord=$db->fetchArray($thequery)){
 						if ($therecord["userid"]> 0 and $userqueryline) {
 							$userqueryline=false;						
 							?><option value="NA">----- user ------</option><?php 
@@ -74,30 +73,26 @@
 	}
 	
 	
-	function showClientFields(){
-		global $dblink;
+	function showClientFields($db){
 		
 		$querystatement="describe clients";		
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult=$db->query($querystatement);
 		?><select name="choosefield" id="choosefield">
 		<?php 
-			while($therecord=mysql_fetch_array($queryresult))
+			while($therecord=$db->fetchArray($queryresult))
 				echo "<option value=\"".$therecord["Field"]."\">".$therecord["Field"]."</option>";
 		?>
 		</select><?php
 	}
 	
 	
-	function showSavedProjects(){
-		global $dblink;
-
-		global $dblink;
+	function showSavedProjects($db){
 		
 		$querystatement="SELECT id,name,userid FROM clientemailprojects WHERE userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\" order by userid";
-		$thequery = mysql_query($querystatement,$dblink);
-		if(!$thequery) reportError(300,$querystatement);
+		$thequery = $db->query($querystatement);
+		if(!$thequery) $error = new appError(300,$querystatement);
 
-		$numrows=mysql_num_rows($thequery);
+		$numrows=$db->numRows($thequery);
 		?>
 		<select name="savedprojects" id="savedprojects" <?php if ($numrows<1) echo "disabled" ?> style="width:99%;" size="9" onclick="updateSavedProjects(this)">
 			<?php if($numrows<1) {?>
@@ -105,16 +100,16 @@
 			<?php 
 				} else {
 					$numglobal=0;
-					while($therecord=mysql_fetch_array($thequery))
+					while($therecord=$db->fetchArray($thequery))
 						if($therecord["userid"]<1) $numglobal++;
-					mysql_data_seek($thequery,0);				
+					$db->seek($thequery,0);				
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
 				<?php
 					}//end if
 					$userqueryline=true;
-					while($therecord=mysql_fetch_array($thequery)){
+					while($therecord=$db->fetchArray($thequery)){
 						if ($therecord["userid"]> 0 and $userqueryline) {
 							$userqueryline=false;						
 							?><option value="NA">----- user ------</option><?php 
@@ -128,8 +123,7 @@
 	}
 	
 	
-	function saveProject($variables){
-		global $dblink;
+	function saveProject($db,$variables){
 		
 		$sqlstatement=	"INSERT INTO clientemailprojects (name,userid,emailto,emailfrom,subject,body) VALUES (";
 		$sqlstatement.=	"\"".$variables["savename"]."\", ";
@@ -145,24 +139,22 @@
 		$sqlstatement.=	"\"".$variables["subject"]."\", ";
 		$sqlstatement.=	"\"".$variables["body"]."\") ";
 
-		mysql_query($sqlstatement,$dblink);
-		return mysql_insert_id($dblink);
+		$db->query($sqlstatement);
+		return $db->insertId();
 	}
 	
-	function loadProject($id){
-		global $dblink;
+	function loadProject($db,$id){
 		
-		$sqlstatement="SELECT id,name,emailto,emailfrom,subject,body FROM clientemailprojects WHERE id=".$id;
-		$queryresult=mysql_query($sqlstatement,$dblink);
-		return mysql_fetch_array($queryresult);
+		$sqlstatement="SELECT id,name,emailto,emailfrom,subject,body FROM clientemailprojects WHERE id=".((int) $id);
+		$queryresult=$db->query($sqlstatement);
+		return $db->fetchArray($queryresult);
 		
 	}
 
-	function deleteProject($id){
-		global $dblink;
+	function deleteProject($db,$id){
 		
-		$sqlstatement="DELETE FROM clientemailprojects WHERE id=".$id." and userid=".$_SESSION["userinfo"]["id"];
-		$queryresult=mysql_query($sqlstatement,$dblink);
+		$sqlstatement="DELETE FROM clientemailprojects WHERE id=".((int) $id)." and userid=".$_SESSION["userinfo"]["id"];
+		$queryresult=$db->query($sqlstatement);
 		
 	}
 ?>

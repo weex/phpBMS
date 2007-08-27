@@ -15,6 +15,7 @@ INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (19,16,'new','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (20,16,'select','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (21,16,'edit','1',0,0);
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (16,'printex','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (22,17,'select','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (23,17,'edit','1',0,0);
 INSERT INTO `tableoptions` (`id`, `tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (56,19,'new','1',0,0);

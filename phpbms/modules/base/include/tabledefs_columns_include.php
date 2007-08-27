@@ -36,13 +36,11 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
-
-
 	function setColumnDefaults(){
 		$therecord["id"]=NULL;		
 		$therecord["displayorder"]=NULL;		
 		$therecord["wrap"]=0;		
+		$therecord["roleid"]=0;		
 
 		$therecord["size"]="";		
 		$therecord["name"]="";		
@@ -55,22 +53,22 @@
 		return $therecord;
 	}
 	
-	function getColumns($tabledefid,$columnid=false){
-		global $dblink;
-		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size,format
+	function getColumns($db,$tabledefid,$columnid=false){
+		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size,format, roleid
 		FROM tablecolumns 
-		WHERE tabledefid=".$tabledefid;
+		WHERE tabledefid=".((int) $tabledefid);
 		if($columnid) $querystatement.=" AND id=".$columnid;
 		$querystatement.=" ORDER BY displayorder";
 		
-		$queryresult=mysql_query($querystatement,$dblink) or $queryresult=mysql_error($dblink)." -- ".$querystatement;		
+		$queryresult=$db->query($querystatement);
 		return $queryresult;
 	}// end function
 
 
-	function addColumn($variables,$tabledefid){
-		global $dblink;
-		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,format,wrap)
+	function addColumn($db,$variables,$tabledefid){
+		$thereturn = false;
+
+		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,format,wrap,roleid)
 		values (";
 		$querystatement.=$tabledefid.", ";
 		$querystatement.="\"".$variables["name"]."\", ";
@@ -85,16 +83,17 @@
 		else
 			$querystatement.="NULL, ";
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
-		$querystatement.=" ".$variables["wrap"]." )";		
+		$querystatement.=" ".$variables["wrap"].", ";		
+		$querystatement.=" ".$variables["roleid"]." )";
 
-		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Added"; else $thereturn=mysql_error($dblink)." <br />".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Column Added";
 		
 		return $thereturn;
 	}// end function
 	
 
-	function updateColumn($variables){
-		global $dblink;
+	function updateColumn($db, $variables){
+
 		$querystatement="UPDATE tablecolumns set ";
 		$querystatement.="name=\"".$variables["name"]."\", ";
 		$querystatement.="`column`=\"".$variables["column"]."\", ";
@@ -107,51 +106,49 @@
 		else
 			$querystatement.="format=NULL, ";
 		if(!isset($variables["wrap"])) $variables["wrap"]=0;
-		$querystatement.="wrap=".$variables["wrap"]." ";		
+		$querystatement.="wrap=".$variables["wrap"].", ";		
+		$querystatement.="roleid=".$variables["roleid"]." ";		
 		$querystatement.="WHERE id=".$variables["columnid"];
-		if(mysql_query($querystatement,$dblink)) $thereturn ="Column Updated"; else $thereturn=mysql_error($dblink)." <br />".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Column Updated";
 		
 		return $thereturn;
 	}
 
-	function deleteColumn($id){
-		global $dblink;
+	function deleteColumn($db,$id){
 		
 		$querystatement="SELECT tabledefid,displayorder FROM tablecolumns WHERE id=".$id;
-		$theresult=mysql_query($querystatement,$dblink);
-		$therecord=mysql_fetch_array($theresult);
-				
-		
+		$theresult=$db->query($querystatement);
+		$therecord=$db->fetchArray($theresult);
+						
 		$querystatement="UPDATE tablecolumns SET displayorder=displayorder-1
 							WHERE tabledefid=".$therecord["tabledefid"]." AND displayorder>".$therecord["displayorder"];
-		if(!mysql_query($querystatement,$dblink)) $thereturn=mysql_error($dblink)." -- ".$querystatement; else {
+		if($db->query($querystatement)) {
 
 			$querystatement="DELETE FROM tablecolumns WHERE id=".$id;
-			if(mysql_query($querystatement,$dblink)) $thereturn ="Column Deleted"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+			if($db->query($querystatement)) $thereturn ="Column Deleted"; 
 		}
 				
 		return $thereturn;
 	}
 
-	function moveColumn($id,$direction="up"){
-		global $dblink;
+	function moveColumn($db,$id,$direction="up"){
 
 		if($direction=="down") $increment="1"; else $increment="-1";
 
 		$querystatement="select displayorder,tabledefid FROM tablecolumns WHERE id=".$id;
-		$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error($dblink)." -1- ".$querystatement;
-		$therecord=mysql_fetch_array($thequery);
+		$thequery=$db->query($querystatement);
+		$therecord=$db->fetchArray($thequery);
 
 		$querystatement="select max(displayorder) as themax FROM tablecolumns WHERE tabledefid=".$_GET["id"];
-		$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error($dblink)." -2- ".$querystatement;
-		$maxrecord=mysql_fetch_array($thequery);
+		$thequery=$db->query($querystatement);
+		$maxrecord=$db->fetchArray($thequery);
 		
 		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
 			$querystatement="UPDATE tablecolumns set displayorder=".$therecord["displayorder"]." WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$therecord["tabledefid"];
-			$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error($dblink)." -4- ".$querystatement;
+			$thequery=$db->query($querystatement);
 
 			$querystatement="UPDATE tablecolumns set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=mysql_query($querystatement,$dblink) or $thereturn=mysql_error($dblink)." -3- ".$querystatement;
+			$thequery=$db->query($querystatement);
 		}// end if
 		
 		if(isset($thereturn)) return $thereturn; else return "column moved";

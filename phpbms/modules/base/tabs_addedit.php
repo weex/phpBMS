@@ -38,29 +38,46 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-	include("include/tabs_addedit_include.php");
+	include("include/tables.php");
+	include("include/fields.php");
+
+	$thetable = new phpbmsTable($db,203);
+	$therecord = $thetable->processAddEditPage();
 	
-	$pageTitle="Tabs";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tabs.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		<?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
+
+	$pageTitle="Tab";	
+	$phpbms->cssIncludes[] = "pages/tabs.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
+		$theform->addField($theinput);
+				
+		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
+		$theform->addField($theinput);			
+
+		$theinput = new inputChoiceList($db,"tabgroup",$therecord["tabgroup"],"tabgroups", "tab group");
+		$theform->addField($theinput);			
+
+		$theinput = new inputCheckbox("enableonnew",$therecord["enableonnew"],"enable on new");
+		$theform->addField($theinput);			
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
 	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
@@ -69,31 +86,23 @@
 		</p>
 		
 		<p>
-			<label for="displayorder">display order</label><br />
-			 <?php fieldText("displayorder",$therecord["displayorder"],1,"Display order cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?><br />
-			 <span class="notes"><strong>Note:</strong> Lower numbers are displayed first.</span>
+			<?php $theform->showField("displayorder"); ?><br />
+			<span class="notes">Lower numbers are displayed first.</span>
 		</p>
 		
-		<p>
-			<label for="roleid">access (role)</label><br />
-			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
-		</p>
-		<p>
-			<?php fieldCheckbox("enableonnew",$therecord["enableonnew"],false)?><label for="enableonnew">enable on new record</label>
-		</p>
+		<p><?php $theform->showField("roleid")?></p>
+
+		<p><?php $theform->showField("enableonnew")?></p>
+
 	</fieldset>
 	
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>details</legend>
-			<p>
-				<label for="name" class="important">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
-			</p>
-			<p>
-				<label for="tabgroup">tab group</label><br />
-				<?php fieldChoiceList("tabgroup",$therecord["tabgroup"],"tabgroups"); ?>
-			</p>
+
+			<p><?php $theform->showField("name"); ?></p>
+
+			<p><?php $theform->showField("tabgroup"); ?></p>
 				
 			<p>
 				<label for="location">location</label><br />
@@ -112,9 +121,10 @@
 			<textarea id="notificationsql" name="notificationsql" cols="40" rows="5"><?php echo htmlQuotes($therecord["notificationsql"])?></textarea>
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>
+
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php"); ?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

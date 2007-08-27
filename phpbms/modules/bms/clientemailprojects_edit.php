@@ -38,29 +38,46 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/clientemailprojects.php");
 
-	include("include/clientemailprojects_edit_include.php");
-?><?php $pageTitle="Client E-mail Project"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/clientemailprojects.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	if(isset($_GET["backurl"])) 
+		$backurl=$_GET["backurl"]."?refid=".$_GET["refid"];
+	else
+		$backurl = NULL;
 
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+	$thetable = new clientEmailProjects($db,22,$backurl);
+	$therecord = $thetable->processAddEditPage();
 	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
+	
+	if($therecord["userid"])
+		$username = $phpbms->getUserName($therecord["userid"]);
+	else
+		$username = "global";
+	
+	$pageTitle="Client E-mail Project";
+
+	$phpbms->cssIncludes[] = "pages/clientemailprojects.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,60,128);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+			 
+	include("header.php");
+?>
+	<div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>	
 	<fieldset id="fsID">
 		<legend><label for="id">id</label></label></legend>
 		<p>
@@ -71,10 +88,9 @@
 
 	<div id="leftSideDiv">
 		<fieldset>
-			<legend><label for="name">name</label></legend>
+			<legend>name</legend>
 			<p>
-				<br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"60","maxlength"=>"128")); ?>
+				<?php $theform->showField("name"); ?>
 			</p>
 		</fieldset>
 	</div>
@@ -82,6 +98,7 @@
 	<fieldset id="fsUser">
 		<legend><label for="username">user</label></legend>
 		<p><br />
+			<input type="hidden" id="userid" name="userid" value="<?php echo $therecord["userid"]?>" />
 			<input id="username" name="username" type="text" value="<?php echo $username ?>" size="50" readonly="readonly" class="uneditable" />
 		</p>
 		<?php if($therecord["userid"]!=0) {?>
@@ -115,13 +132,12 @@
 		</p>
 	</fieldset>
 
-	<div class="box" align="right">
+	<div align="right">
 		<?php showSaveCancel(2); ?>
 		<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
 	</div>
+	<?php 
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php");?>
-</form>
-
-</body>
-</html>
+<?php include("footer.php");?>

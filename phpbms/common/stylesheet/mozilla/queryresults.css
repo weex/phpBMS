@@ -19,6 +19,7 @@
 .querytable{ 
 	border-collapse:collapse;
 	margin:0 0 5px;
+	clear:both;
 }
 
 .querytable td, .queryrow1 td, .queryrow2 td{ 
@@ -38,6 +39,12 @@
 
 .querytable th A{color: white;}
 .querytable th A:hover{color: white;}
+
+.queryGroup td{
+	border:1px solid #BBBBBB;
+	font-size: 14px;	
+	font-weight:bold;
+}
 
 .querytable td.queryfooter, .queryfooter{
 	white-space:nowrap;

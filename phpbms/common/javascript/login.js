@@ -1,7 +1,5 @@
-// Break out of frames if they exist
-if(top!=self)top.location=self.location;
+window.onload=function(){
 
-function init(){
 	var username=getObjectFromID("username");
 	var password=getObjectFromID("password");
 	var loginButton=getObjectFromID("loginButton");	
@@ -10,5 +8,26 @@ function init(){
 	password.disabled=false;
 	loginButton.disabled=false;
 	
+
+	var sqlbttn=getObjectFromID("moreinfoButton");
+	
+	if(sqlbttn){
+		var sqlDivs = new Array();
+		sqlDivs[sqlDivs.length]=getObjectFromID("moreinfo");
+	
+		var sqlLinks = new Array();
+		sqlLinks[sqlLinks.length]=sqlbttn;
+	
+		var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: true, duration:250, onComplete:function(){switchSqlButtons()}});
+	}
+
 	username.focus();		
+}
+
+function switchSqlButtons(){
+	var sqlbutton=getObjectFromID("moreinfoButton");
+	if (sqlbutton.className=="graphicButtons buttonUp")
+		sqlbutton.className="graphicButtons buttonDown"
+	else
+		sqlbutton.className="graphicButtons buttonUp";
 }

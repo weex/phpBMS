@@ -112,7 +112,7 @@ function dpHighlightDay(year,month,day){
 
 function dpUnhighlightDay(){
 	var displayinfo=getObjectFromID("dpExp");
-	displayinfo.innerHTML=displayLongDate;
+	displayinfo.innerHTML="&nbsp;";
 }
 
 

@@ -38,10 +38,10 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 
 	require_once("../../include/search_class.php");
-	require_once("../../include/common_functions.php");	
+		
 
 	//set the table passing stuff
 	$reftableid=3;
@@ -55,8 +55,8 @@
 			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name 
 			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
 			   WHERE invoices.id=".$refid;
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);	
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);	
 	
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["id"].", ".$refrecord["name"];
 

@@ -80,14 +80,14 @@
 			$lineitem=explode("[//]",$item);
 			//grab info from product.			
 			$querystatement="SELECT isprepackaged,weight,packagesperitem FROM products WHERE id=".trim($lineitem[0]);
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(100,"Could Not Retrieve Product Info: ".mysql_error($dblink)."<br /><br />".$querystatement);
-			$therecord=mysql_fetch_array($queryresult);
+			$queryresult=$db->query($querystatement);
+
+			$therecord=$db->fetchArray($queryresult);
 			$therecord["quantity"]=trim($lineitem[4]);
 			
 			//get the pricing
 			if($therecord["isprepackaged"]){
-				$UPSreturn=UPSprice($shippingmethod,$_SESSION["shipping_postalcode"],$_GET["postalcodeto"],$therecord["weight"]);
+				$UPSreturn=UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["postalcodeto"],$therecord["weight"]);
 				if (!$UPSreturn["success"]) $shipping=0; else $shipping=$UPSreturn["charge"];
 				$total_shipping+=($shipping*$therecord["quantity"]);
 			}
@@ -104,13 +104,13 @@
 	if($total_pckges){
 		$avg_weight=$total_weight/$total_pckges;
 		//check for errors on price
-		$UPSreturn=UPSprice($shippingmethod,$_SESSION["shipping_postalcode"],$_GET["shiptozip"],$avg_weight);
+		$UPSreturn=UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["shiptozip"],$avg_weight);
 		if (!$UPSreturn["success"]) $shipping=0; else $shipping=$UPSreturn["charge"];
 			$total_shipping+=($shipping*$total_pckges);
 	}//end if
 	
 	//mark up
-	$total_shipping=$total_shipping*$_SESSION["shipping_markup"];
+	$total_shipping=$total_shipping*SHIPPING_MARKUP;
 	
 ?>
 <response>

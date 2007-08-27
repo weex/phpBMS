@@ -38,10 +38,14 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/fields.php");
 
 	include("include/tabledefs_quicksearch_include.php");
+
+	//grab the table name
+	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
+	$queryresult = $db->query($querystatement);
+	$tableRecord = $db->fetchArray($queryresult);
 
 	//process page
 	$thecommand="";
@@ -52,47 +56,56 @@
 	
 	switch($thecommand){
 		case "edit":
-			$singlequicksearchsquery=getQuicksearchs($_GET["id"],$_GET["quicksearchid"]);
-			$thequicksearch=mysql_fetch_array($singlequicksearchsquery);
+			$singlequicksearchsquery=getQuicksearchs($db,$_GET["id"],$_GET["quicksearchid"]);
+			$thequicksearch=$db->fetchArray($singlequicksearchsquery);
 			$action="edit quick search item";
 		break;
 		
 		case "delete":
-			$statusmessage=deleteQuicksearch($_GET["quicksearchid"]);
+			$statusmessage=deleteQuicksearch($db,$_GET["quicksearchid"]);
 		break;
 		
 		case "add quick search item":
-			$statusmessage=addQuicksearch(addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage=addQuicksearch($db,addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit quick search item":
-			$statusmessage=updateQuicksearch(addSlashesToArray($_POST));
+			$statusmessage=updateQuicksearch($db,addSlashesToArray($_POST));
 		break;
 		
 		case "moveup":
-			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"up",$_GET["id"]);
+			$statusmessage=moveQuicksearch($db,$_GET["quicksearchid"],"up",$_GET["id"]);
 		break;
 		
 		case "movedown":
-			$statusmessage=moveQuicksearch($_GET["quicksearchid"],"down",$_GET["id"]);
+			$statusmessage=moveQuicksearch($db,$_GET["quicksearchid"],"down",$_GET["id"]);
 		break;
 	}//end switch
 	
-	$quicksearchsquery=getQuicksearchs($_GET["id"]);
+	$quicksearchsquery=getQuicksearchs($db,$_GET["id"]);
 	
-	$pageTitle="Table Definition: Quick Search";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tablequicksearch.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	$pageTitle="Table Definition Quick Search: ".$tableRecord["displayname"];
+	
+	$phpbms->cssIncludes[] = "pages/tablequicksearch.css";
 
-<?php showTabs($dblink,"tabledefs entry",4,$_GET["id"])?><div class="bodyline">
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$thequicksearch["name"],NULL,true,NULL,28,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"roleid",$thequicksearch["roleid"],"access (role)");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+	$phpbms->showTabs("tabledefs entry",4,$_GET["id"])?><div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 	<div class="fauxP">
 	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
@@ -106,7 +119,7 @@
 	<?php 
 		$topdisplayorder=-1;
 		$row=1;
-		while($therecord=mysql_fetch_array($quicksearchsquery)){ 
+		while($therecord=$db->fetchArray($quicksearchsquery)){ 
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
@@ -118,7 +131,7 @@
 	 </td>
 	 <td nowrap="nowrap"valign="top"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
 	 <td valign="top" class="small"><?php echo htmlQuotes($therecord["search"])?></td>
-	 <td valign="top" align="center" class="small" nowrap="nowrap"><?php echo displayRights($therecord["roleid"],$therecord["rolename"])?></td>
+	 <td valign="top" align="center" class="small" nowrap="nowrap"><?php echo $phpbms->displayRights($therecord["roleid"],$therecord["rolename"])?></td>
 	 <td nowrap="nowrap" valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
@@ -139,14 +152,11 @@
 		<legend><?php echo $action?></legend>
 		<input name="quicksearchid" type="hidden" value="<?php echo $thequicksearch["id"]?>" />
 		<input name="displayorder" type="hidden" value="<?php if($action=="add quick search item") echo $topdisplayorder+1; else echo $thequicksearch["displayorder"]?>" />
-		<p>
-			<label for="name" class="important">name</label><br/>
-			<?php fieldText("name",$thequicksearch["name"],1,"Quicksearch Name cannot be black","",Array("size"=>"32","maxlength"=>"64")); ?>
-		</p>
-		<p>
-			<label for="roleid">access (role)</label><br />
-			<?php fieldRolesList("roleid",$thequicksearch["roleid"],$dblink)?>	
-		</p>
+
+		<p><?php $theform->showField("name");?></p>
+
+		<p><?php $theform->showField("thefield");?></p>
+		
 		<p>
 			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />
 			<textarea id="search" name="search" cols="32" rows="2"><?php echo htmlQuotes($thequicksearch["search"]) ?></textarea>
@@ -158,6 +168,4 @@
 	</fieldset>
 	</form>
 </div>
-<?php include("../../footer.php")?>
-</body>
-</html>
+<?php include("footer.php")?>

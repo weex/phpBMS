@@ -1,0 +1,1 @@
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Recurring Invoices','search.php?id=400',204,17,1,1,NOW(),NOW(),30);

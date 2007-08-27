@@ -38,31 +38,57 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-	include("include/scheduler_addedit_include.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/scheduler.php");
+
+	$thetable = new schedulers($db,201);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
 	
 	$pageTitle="Scheduler";
 	
 	$currentpath=getcwd();
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/scheduler.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/timepicker.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		<?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	
+	$phpbms->cssIncludes[] = "pages/scheduler.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("job",$therecord["job"],"script",true,NULL,32,128,false);
+		$theform->addField($theinput);
+
+		$theinput = new inputDatePicker("startdate",$therecord["startdate"], "start date" ,true, 11, 15, false);
+		$theform->addField($theinput);
+
+		$theinput = new inputTimePicker("starttime",$therecord["starttime"], "start time" ,false,11, 15, false);
+		$theinput->setAttribute("onchange","checkEndDate();");				
+		$theform->addField($theinput);		
+		
+		$theinput = new inputDatePicker("enddate",$therecord["enddate"], "end date" ,false, 11, 15, false);
+		$theform->addField($theinput);
+
+		$theinput = new inputTimePicker("endtime",$therecord["starttime"], "end time" ,false,11, 15, false);
+		$theform->addField($theinput);		
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+			
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>	
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
@@ -71,7 +97,7 @@
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
 		
-		<p><?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
+		<p><?php $theform->showField("inactive");?></p>
 
 		<p>
 			script last run<br />
@@ -88,24 +114,23 @@
 		</fieldset>
 		<fieldset>
 			<legend>Scheduled Job</legend>
-			<p>
-				<label for="name">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
-			</p>		
+
+			<p><?php $theform->showField("name");?></p>		
+
 			<p>
 				<label for="job">script</label> <span class="notes">(path relative to <?php echo $currentpath?>)</span><br />
-				<?php fieldText("job",$therecord["job"],1,"Script cannot be blank.","",Array("size"=>"32","maxlength"=>"64",)); ?>			
+				<?php $theform->showField("job");?>
 			</p>
 			<p>
 				<label for="description">description</label><br />
-				<textarea id="description" name="description"><?php echo htmlQuotes($therecord["description"]) ?></textarea>
+				<textarea id="description" name="description" rows="4" cols="48"><?php echo htmlQuotes($therecord["description"]) ?></textarea>
 			</p>
 		</fieldset>
 		
 		<fieldset>
 			<legend>Interval</legend>
 				<p class="crontabnotation">
-					<label for="mins">min</label><br />
+					<label for="min">min</label><br />
 					<input name="min" id="min" maxlength="25" size="3" value="<?php echo $therecord["min"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
@@ -113,15 +138,15 @@
 					<input name="hrs" id="hrs" maxlength="25" size="3" value="<?php echo $therecord["hrs"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
-					<label for="dayofmonth">date</label><br />
+					<label for="date">date</label><br />
 					<input name="date" id="date"  maxlength="25" size="3" value="<?php echo $therecord["date"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
-					<label for="months">mo</label><br />
+					<label for="mo">mo</label><br />
 					<input name="mo" id="mo" maxlength="25" size="3" value="<?php echo $therecord["mo"]?>" type="text" />
 				</p>
 				<p class="crontabnotation">
-					<label for="dayofweek">day</label><br />
+					<label for="day">day</label><br />
 					<input name="day" id="day" maxlength="25" size="3" value="<?php echo $therecord["day"]?>" type="text" />
 				</p>
 			<p class="notes" id="standarNotationP">(Uses standard crontab notation.)</p>
@@ -131,20 +156,18 @@
 			<legend>Dates</legend>
 			<p>
 				<label for="startdate">start</label><br />
-				<?php fieldDatePicker("startdate",$therecord["startdate"],1,"Must enter a valid start date.",Array("size"=>"11","maxlength"=>"15"));?>	
-				&nbsp;<?php fieldTimePicker("starttime",$therecord["starttime"],0,"Must enter a valid start time.",Array("size"=>"11","maxlength"=>"15"));?>
+				<?php $theform->showField("startdate");?> &nbsp; <?php $theform->showField("starttime");?>	
 			</p>
 			<p>
 				<label for="enddate">end</label><br />
-				<?php fieldDatePicker("enddate",$therecord["enddate"],0,"Must enter a valid end date.",Array("size"=>"11","maxlength"=>"15"));?>			
-				&nbsp;<?php fieldTimePicker("endtime",$therecord["endtime"],0,"Must enter a valid end time.",Array("size"=>"11","maxlength"=>"15"));?>			
+				<?php $theform->showField("enddate");?> &nbsp; <?php $theform->showField("endtime");?>	
 			</p>
 		</fieldset>
 	</div>
 
-	<?php include("../../include/createmodifiedby.php"); ?>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php"); ?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

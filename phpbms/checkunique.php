@@ -38,14 +38,14 @@
 */
 	require ("include/session.php");
 
-	function isUnique($tablename,$column,$value,$excludeid,$dblink){
+	function isUnique($tablename,$column,$value,$excludeid,$db){
 		
 		$thereturn=false;
 		
 		$querystatement="SELECT count(id) AS thecount FROM ".$tablename." WHERE ".$column."=\"".$value."\" AND id!=".$excludeid;
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult=$db->query($querystatement);
 		if($queryresult){
-			$therecord=mysql_fetch_array($queryresult);
+			$therecord=$db->fetchArray($queryresult);
 			if($therecord["thecount"]==0)
 				$thereturn=true;
 		}
@@ -61,10 +61,10 @@
 		$_GET["xid"]=((int) $_GET["xid"]);
 		
 		$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tdid"];
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult=$db->query($querystatement);
 		if($queryresult)
-			if($therecord=mysql_fetch_array($queryresult))
-				$isunique=isUnique($therecord["maintable"],$_GET["c"],$_GET["val"],$_GET["xid"],$dblink);		
+			if($therecord=$db->fetchArray($queryresult))
+				$isunique=isUnique($therecord["maintable"],$_GET["c"],$_GET["val"],$_GET["xid"],$db);		
 	}
 	
 	header('Content-Type: text/xml');

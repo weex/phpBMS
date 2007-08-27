@@ -37,28 +37,45 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/relationships.php");
 
-	include("include/relationships_addedit_include.php");
+	$thetable = new relationships($db,10);
+	$therecord = $thetable->processAddEditPage();
 	
-	$pageTitle="Relationship";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/relationships.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
+		
+	$pageTitle="Table Relationship";
+
+	$phpbms->cssIncludes[] = "pages/relationships.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,64,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("fromfield",$therecord["fromfield"],"from field",true,NULL,32,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("tofield",$therecord["tofield"],"to field",true,NULL,32,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("inherint",$therecord["inherint"],"inherent relationship");
+		$theform->addField($theinput);
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 	
 	<fieldset id="fsID">
 		<legend>Attributes</legend>
@@ -66,52 +83,47 @@
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
 	</fieldset>
+	
 	<div id="nameDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p>
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"64","class"=>"important")); ?>
+				<?php $theform->showField("name");?>
 			</p>
 		</fieldset>	
-	<fieldset>
-		<legend>from</legend>
-		<p>
-			<label for="fromtableid">table</label><br />
-			<?php displayTables("fromtableid",$therecord["fromtableid"]) ?>		
-		</p>
-		
-		<p>
-			<label for="fromfield">field</label><br />
-			<?php fieldText("fromfield",$therecord["fromfield"],1,"From field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
-		</p>
-	</fieldset>
 	
-	<fieldset>
-		<legend>to</legend>
-		<p>
-			<label for="totableid">table</label><br />
-			<?php displayTables("totableid",$therecord["totableid"]) ?>		
-		</p>
-		
-		<p>
-			<label for="tofield">field</label><br />
-			<?php fieldText("tofield",$therecord["tofield"],1,"To field cannot be blank.","",Array("size"=>"32","maxlength"=>"64")); ?>		
-		</p>
-		
-		<p>
-			<?php fieldCheckbox("inherint",$therecord["inherint"])?><label for="inherint">inherent relationsip</label>
-		</p>
-		<p class="notes">
-			Note: Use "inherent relationship" if the "to table" is already included in the "from table" query table (see the
-			"from table's" definition)
-		</p>
-	</fieldset>
+		<fieldset>
+			<legend>From</legend>
+			<p>
+				<label for="fromtableid">from table definition</label><br />
+				<?php $thetable->displayTables("fromtableid",$therecord["fromtableid"]) ?>		
+			</p>
+			
+			<p><?php $theform->showField("fromfield"); ?></p>
+
+		</fieldset>
+	
+		<fieldset>
+			<legend>to</legend>
+			<p>
+				<label for="totableid">table</label><br />
+				<?php $thetable->displayTables("totableid",$therecord["totableid"]) ?>		
+			</p>
+			
+			<p><?php $theform->showField("tofield"); ?></p>
+			
+			<p><?php $theform->showField("inherint");?></p>
+
+			<p class="notes">
+				Note: Use "inherent relationship" if the "to table" is already included in the "from table" query table (see the
+				"from table's" definition)
+			</p>
+		</fieldset>
 	</div>
 	
-
-	<?php include("../../include/createmodifiedby.php"); ?>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php"); ?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

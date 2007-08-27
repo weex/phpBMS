@@ -38,13 +38,14 @@
 */
 	session_cache_limiter('private');
 	require_once("include/session.php");
+	
 	if(!isset($_GET["t"]) or !isset($_GET["r"]) or !isset($_GET["f"]) or !isset($_GET["mf"])) die("Invlaid Paramateers Set");
 	
 	$querystatement="SELECT ".$_GET["f"].",".$_GET["mf"]." FROM ".$_GET["t"]." WHERE id=".$_GET["r"];
-	$queryresult=mysql_query($querystatement,$dblink);
+	$queryresult=$db->query($querystatement);
 	if(!$queryresult) die("bad query".$querystatement);
-	if(mysql_num_rows($queryresult)){
-		$therecord=mysql_fetch_array($queryresult);
+	if($db->numRows($queryresult)){
+		$therecord=$db->fetchArray($queryresult);
 		header('Content-type: '.$therecord[$_GET["mf"]]);
 	
 		echo $therecord[$_GET["f"]];

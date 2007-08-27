@@ -37,83 +37,96 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
 
-	include("include/paymentmethods_addedit_include.php");
+	$thetable = new phpbmstable($db,301);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
 
-	 $pageTitle="Payment Methods"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/paymentmethods.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="javascript/paymentmethods.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	$pageTitle="Payment Method";
+
+	$phpbms->cssIncludes[] = "pages/paymentmethods.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/paymentmethods.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("priority",$therecord["priority"],NULL,false,"integer",8,8);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("onlineprocess",$therecord["onlineprocess"],"online process");
+		$theinput->setAttribute("onchange","checkScript(this);");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+			 
+	include("header.php");
+?>
+	<div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
-		<p>
-			<?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label>
-		</p>
-		<p>
-			<label for="priority">priority</label><br />
-			<?php fieldText("priority",$therecord["priority"],0,"","",Array("size"=>"8","maxlength"=>"8","class"=>"","style"=>"")); ?>			
-		</p>
+		<p><?php $theform->showField("inactive")?></p>
+
+		<p><?php $theform->showField("priority")?></p>
+
 		<p class="notes">
 			Lower priority numbered items are displayed first.
 		</p>
 	</fieldset>
-<div id="nameDiv">
-	<fieldset >
-		<legend>name / type</legend>
+	
+	<div id="nameDiv">
+		<fieldset >
+			<legend>name / type</legend>
+				<p><?php $theform->showField("name") ?></p>
+				<p>
+					<label for="type">type</label><br />
+					<select id="type" name="type">
+						<option value="" <?PHP if($therecord["type"]=="") echo "selected=\"selected\""; ?>>&lt;None&gt;</option>
+						<option value="draft" <?PHP if($therecord["type"]=="draft") echo "selected=\"selected\""; ?>>Draft</option>
+						<option value="charge"<?PHP if($therecord["type"]=="charge") echo "selected=\"selected\""; ?>>Charge</option>
+						<option value="receivable"<?PHP if($therecord["type"]=="receivable") echo "selected=\"selected\""; ?>>Receivable</option>
+					</select>
+				</p>
+				<p class="notes">Type determines which fields are shown on the invoice creation 
+				  screen. For example, if a payment method of Business Check is selected with 
+				  a type of draft then the check number, routing number and account number 
+				  fields will be shown. However, if VISA is selected with a type of charge 
+				  then the credit card number and expiration date fields will be shown.
+				</p>
+		</fieldset>
+		<fieldset >
+			<legend>processing</legend>
 			<p>
-				<label for="name">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
+				<?php $theform->showField("onlineprocess") ?>
 			</p>
-			<p>
-				<label for="type">type</label><br />
-				<select name="type">
-					<option value="" <?PHP if($therecord["type"]=="") echo "selected=\"selected\""; ?>>&lt;None&gt;</option>
-					<option value="draft" <?PHP if($therecord["type"]=="draft") echo "selected=\"selected\""; ?>>Draft</option>
-					<option value="charge"<?PHP if($therecord["type"]=="charge") echo "selected=\"selected\""; ?>>Charge</option>
-					<option value="receivable"<?PHP if($therecord["type"]=="receivable") echo "selected=\"selected\""; ?>>Receivable</option>
-				</select>
+			<p id="pProcessscript" <?php if($therecord["onlineprocess"]==0) echo "style=\"display:none\" "?>>
+				<label for="processscript">process script</label><br />
+				<input id="processscript" name="processscript" type="text" value="<?php echo htmlQuotes($therecord["processscript"])?>" size="64" maxlength="128"/>
 			</p>
-			<p class="notes">Type determines which fields are shown on the invoice creation 
-			  screen. For example, if a payment method of Business Check is selected with 
-			  a type of draft then the check number, routing number and account number 
-			  fields will be shown. However, if VISA is selected with a type of charge 
-			  then the credit card number and expiration date fields will be shown.
-			</p>
-	</fieldset>
-	<fieldset >
-		<legend>processing</legend>
-		<p>
-			<?php fieldCheckbox("onlineprocess",$therecord["onlineprocess"],false,Array("onchange"=>"checkScript(this)"))?><label for="onlineprocess">online process</label>
-		</p>
-		<p id="pProcessscript" <?php if($therecord["onlineprocess"]==0) echo "style=\"display:none\" "?>>
-			<label for="processscript">process script</label><br />
-			<input id="processscript" name="processscript" type="text" value="<?php echo htmlQuotes($therecord["processscript"])?>" size="64" maxlength="128"/>
-		</p>
-	</fieldset>
+		</fieldset>
+	</div>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-	<?php include("../../include/createmodifiedby.php"); ?>	
-	</form>
-</div>
-<?php include("../../footer.php");?>
-</body>
-</html>
+<?php include("footer.php");?>

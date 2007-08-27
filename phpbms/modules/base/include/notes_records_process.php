@@ -50,7 +50,7 @@ if(isset($_POST["command"])) {
 	case "new":
 		// relocate to new screen
 		//=====================================================================================================
-		$theurl=getAddEditFile(12)."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
+		$theurl=getAddEditFile($db,12)."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
 		goURL($theurl );
 	break;
 	case "delete":
@@ -64,13 +64,12 @@ if(isset($_POST["command"])) {
 			}
 			$dwhereclause=substr($dwhereclause,3);		
 			$thequery = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$dwhereclause.");";
-			$theresult = mysql_query($thequery);
-			if (!$theresult) die ("Couldn't Update: ".mysql_error($dblink)."<br />\n SQL STATEMENT [".$thequery."]");		
+			$theresult = $db->query($thequery);
 	break;
 	case "edit/view":
 		// relocate to edit screen
 		//=====================================================================================================
-		  goURL(getAddEditFile(12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
+		  goURL(getAddEditFile($db,12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
 	break;
 	}//end switch
 } //end if

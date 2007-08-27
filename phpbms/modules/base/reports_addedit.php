@@ -38,27 +38,48 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/reports.php");
 
-	include("include/reports_addedit_include.php");
+	$thetable = new reports($db,16);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
 
 	$pageTitle="Report";
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/reports.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons"><?php showSaveCancel(1); ?></div>
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+	$phpbms->cssIncludes[] = "pages/reports.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
+		$theform->addField($theinput);
+		
+		$theinput = new inputBasicList("type",$therecord["type"],array("Report"=>"report","PDF Report"=>"PDF Report","Export"=>"export"));
+		$theform->addField($theinput);
+		
+		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
+		$theform->addField($theinput);			
+
+		$theinput = new inputField("reportfile",$therecord["reportfile"],"report file",true,NULL,64,128);
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
@@ -68,37 +89,28 @@
 		</p>
 		<p>
 			<label for="tabledefid">report table</label><br />
-			<?php displayTables("tabledefid",$therecord["tabledefid"]);?><br />
+			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]);?><br />
 			<span class="notes">Note: Use the global option to associate the report with every table in the system.</span>
 		</p>
 		
 		<p>
-			<label for="displayorder">
-			display order</label><br />
-			<?php fieldText("displayorder",$therecord["displayorder"],0,"","integer",Array("size"=>"10","maxlength"=>"10","tabindex"=>"25")); ?><br />
+			<?php $theform->showField("displayorder"); ?><br />
 			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
-		<p>
-			<label for="roleid" >access (role)</label><br />
-			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
-		</p>
+		
+		<p><?php $theform->showField("roleid")?></p>
+		
 	</fieldset>
+	
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>details</legend>
-			<p>
-				<label for="name" class="important">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","style"=>"","class"=>"important","tabindex"=>"5")); ?>		
-			</p>
-			<p>
-				<label for="type">type</label><br />
-				<?php fieldBasicList("type",$therecord["type"],Array(Array("name"=>"report","value"=>"report"),Array("name"=>"PDF report","value"=>"PDF Report"),Array("name"=>"export","value"=>"export")),Array("tabindex"=>"15"));?>
-			</p>
-			<p>
-				<label for="reportfile">report file</label><br />
-				<?php fieldText("reportfile",$therecord["reportfile"],1,"file name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","tabindex"=>"10")); ?><br />
-				<span class="notes">Note: file name should include path</span>
-			</p>
+			
+			<p><?php $theform->showField("name"); ?></p>
+			
+			<p><?php $theform->showField("type")?></p>
+			
+			<p><?php $theform->showField("reportfile")?></p>
 			
 			<p>
 				<label for="description">description</label><br />
@@ -106,9 +118,10 @@
 			</p>
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>
+	
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php");?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

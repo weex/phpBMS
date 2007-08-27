@@ -1,4 +1,4 @@
-/*
+	/*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
  +-------------------------------------------------------------------------+
@@ -114,12 +114,19 @@ function getLeft(theitem){
 	return offsetLeft;
 }
 
-function loadXMLDoc(url,readyStateFunction,async) 
-{
+function loadXMLDoc(url,readyStateFunction,async) {
+	
+	if(!readyStateFunction)
+		readyStateFunction= null;
+
+	if(!async)
+		async = false;
+	
 	// branch for native XMLHttpRequest object
 	if (window.XMLHttpRequest) {
 		req = new XMLHttpRequest();
-		req.onreadystatechange = readyStateFunction;
+		if(req.onreadystatechange && readyStateFunction)
+			req.onreadystatechange = readyStateFunction;
 		req.open("GET", url, async);
 		req.send(null);
 	// branch for IE/Windows ActiveX version
@@ -194,6 +201,11 @@ function disableSave(){
 	if(tempButton)
 		tempButton.disabled=true;		
 }
+
+function setLoginRefresh(){	
+	window.setInterval(loadXMLDoc,(LOGIN_REFRESH*60*1000),(APP_PATH+"include/session.php"),null,false)
+}
+
 
 
 /* DATE AND TIME --------------------------------------------------------------- */

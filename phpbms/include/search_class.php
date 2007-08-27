@@ -48,42 +48,67 @@
 		var $querysortorder="";
 		var $base="";		
 		var $sqlerror="";
+		var $showGroupings = true;
+		
+		var $db;
+		
+		function displayTable($db){
+			$this->db=$db;
+		}
+		
 		
 		//given a table id, go grab the table definition information for that table
 		function getTableDef($id){
-			global $dblink;
 			$querystatement="SELECT tabledefs.id,maintable,querytable,tabledefs.displayname,addfile,editfile,deletebutton,type,
 							  defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
 							  modules.name,searchroleid,advsearchroleid,viewsqlroleid
 							  FROM tabledefs inner join modules on tabledefs.moduleid=modules.id
 							  WHERE tabledefs.id=".$id;
 			
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
+			$queryresult=$this->db->query($querystatement);
 			
-			if (mysql_num_rows($queryresult)<1) reportError(1,"table definition not found: ".$id);
+			if ($this->db->numRows($queryresult)<1) $error = new appError(1,"table definition not found: ".$id);
 			
-			$therecord=mysql_fetch_array($queryresult);
+			$therecord=$this->db->fetchArray($queryresult);
 			
 			if(!hasRights($therecord["searchroleid"]))
-				goURL($_SESSION["app_path"]."noaccess.php");
+				goURL(APP_PATH."noaccess.php");
 			
 			return $therecord;
 		}//end function getTableDef
 		
 		
+		//given a table id, go grab the grouping information
+		function getTableGroupings($id){
+			
+			$groupings = array();
+			$querystatement = "SELECT field,name as displayname, ascending, roleid
+								FROM tablegroupings WHERE tabledefid=".$id." ORDER BY displayorder";
+			$queryresult=$this->db->query($querystatement);
+						
+			while($therecord = $this->db->fetchArray($queryresult)) {
+				if(hasRights($therecord["roleid"],false))			
+					$groupings[] = $therecord;
+			}
+			return $groupings;								
+			
+		}
+		
 		
 		//given a table id, go grab the column and column information fro the table
 		function getTableColumns($id){
-			global $dblink;
-			
-			$thecolumns=Array();
-			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size,format
+				
+			$thecolumns = array();
+			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size,format,roleid
 								  FROM tablecolumns WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=mysql_query($querystatement,$dblink) ;
-			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
-			while($therecord=mysql_fetch_array($queryresult)) $thecolumns[]=$therecord;
+			$queryresult=$this->db->query($querystatement) ;
+
+			while($therecord = $this->db->fetchArray($queryresult)) {
+				if(hasRights($therecord["roleid"],false))			
+					$thecolumns[] = $therecord;
+			}
 			return $thecolumns;
+
 		}
 						
 function displayQueryHeader(){
@@ -101,9 +126,9 @@ function displayQueryHeader(){
 	<?php
 		// If sorting on this column give the option to reverse the sort order.
 		if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
-	{?>&nbsp;<a href="/" onclick="doDescSort();return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
+	{?>&nbsp;<a href="/" onclick="doDescSort();return false;"><img src="<?php echo APP_PATH?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
 <?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
-{?> &nbsp;<a href="/" onclick="doSort(<?php echo $i?>);return false;"><img src="<?php echo $_SESSION["app_path"]?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
+{?> &nbsp;<a href="/" onclick="doSort(<?php echo $i?>);return false;"><img src="<?php echo APP_PATH?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
 <?php }	?></th><?php
 		$i++;
 	}//end foreach
@@ -118,8 +143,34 @@ function displayQueryHeader(){
 			if(!isset($this->options["edit"])) $this->options["edit"]=1;
 			
 			$rownum=1;
-			mysql_data_seek($this->queryresult,0);
-			while($therecord = mysql_fetch_array($this->queryresult)){
+			$this->db->seek($this->queryresult,0);
+			
+			//groupings
+			if($this->showGroupings){
+				for($i = 0; $i < count($this->thegroupings); $i++){
+					$this->thegroupings[$i]["theValue"]="";
+				}
+
+			}
+			
+			while($therecord = $this->db->fetchArray($this->queryresult)){
+
+				// more groupings
+				if($this->showGroupings){
+					for($i = 0; $i < count($this->thegroupings); $i++){
+						if($this->thegroupings[$i]["theValue"] != $therecord["_group".($i+1)]){
+							$this->thegroupings[$i]["theValue"] = $therecord["_group".($i+1)];
+							?><tr class="queryGroup"><td colspan = "<?php echo count($this->thecolumns)?>">
+							<?php 
+								if($this->thegroupings[$i]["displayname"]) 
+									echo htmlQuotes($this->thegroupings[$i]["displayname"].": ");
+								echo $therecord["_group".($i+1)];
+							 ?>
+							</td></tr><?php
+						}
+					}
+				}
+
 				?><tr class="qr<?php echo $rownum?>" id="r-<?php echo $therecord["theid"]?>" <?php
 
 				if ($this->options["select"]) {
@@ -165,32 +216,41 @@ function displayQueryHeader(){
 */
 			//next we set the columns
 			$this->thecolumns=$this->getTableColumns($id);
+			$this->thegroupings = $this->getTableGroupings($id);
 
 		}
 		
 		
 		function issueQuery(){
-			global $dblink;
-						
+
 			//save the query for total and display purposes
 			$_SESSION["thequerystatement"] = $this->querystatement;
 			//Add limit (settings)
-			$_SESSION["thequerystatement"].=" limit ".$this->recordoffset.", ".$_SESSION["record_limit"].";";
-			$this->queryresult = mysql_query($_SESSION["thequerystatement"],$dblink);
+			$_SESSION["thequerystatement"].=" limit ".$this->recordoffset.", ".RECORD_LIMIT.";";
+						
+
+			$this->db->logError=false;
+			$this->db->stopOnError=false;
+
+			$this->queryresult = $this->db->query($_SESSION["thequerystatement"]);
+
+			$this->db->logError=true;
+			$this->db->stopOnError=true;
+
 			if($this->queryresult){
-				 $this->numrows=mysql_num_rows($this->queryresult);
-				 if($this->numrows==$_SESSION["record_limit"] or $this->recordoffset!=0){
+				 $this->numrows=$this->db->numRows($this->queryresult);
+				 if($this->numrows==RECORD_LIMIT or $this->recordoffset!=0){
 				    //if you max the record limit or are already offsetiing get the true count
 					$truecountstatement="SELECT count(distinct ".$this->thetabledef["maintable"].".id) as thecount".strstr(substr($this->querystatement,0,strpos($this->querystatement," ORDER BY"))," FROM ");
-					$truequeryresult=mysql_query($truecountstatement,$dblink); 
-					if(!$truequeryresult) reportError(100,$truecountstatement." ".mysql_error($dblink));
-					$truerecord=mysql_fetch_array($truequeryresult);
+					$truequeryresult=$this->db->query($truecountstatement); 
+
+					$truerecord=$this->db->fetchArray($truequeryresult);
 					$this->truecount=$truerecord["thecount"];
 				 }
 				 else $this->truecount=$this->numrows;
 				$this->sqlerror="";
 			}else{
-				$this->sqlerror=mysql_error($dblink);
+				$this->sqlerror=$this->db->error;
 				$this->numrows=0;
 				$this->truecount=0;
 			}
@@ -243,6 +303,10 @@ function displayQueryHeader(){
 		var $searchvalue;
 		var $fieldname;
 
+		function displaySelectTable($db){
+			$this->db = $db;
+		}
+
 		function initialize($variables){
 			parent::initialize($variables["tableid"]);
 			
@@ -257,48 +321,41 @@ function displayQueryHeader(){
 			else			
 				$this->querysortorder=$this->thetabledef["defaultsortorder"];
 		}
-		
-		function sendInfo($value,$display){?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Choose</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<script language="JavaScript" type="text/javascript">
-function sendInfo(name,thevalue,thedisplay){
-	//stupid browser incompatibilities
-		//netscape
-		var theform=opener.document.forms['record'];
-		theform[name].value=thevalue;
-		theform["display"+name].value=thedisplay;
-		if(theform[name].onchange) 
-			theform[name].onchange();
-		window.close();
-}
-</script>
-</head>
-<body>
-<?php echo "<script language=\"JavaScript\">sendInfo('".$this->fieldname."','".addslashes($value)."','".addslashes($display)."');</SCRIPT>";?>
-</body>
-</html>	<?php
-		}//end function
+			
 		
 		function issueInitialQuery(){
-			global $dblink;
-			
+
 			$querystatement="SELECT ".$this->valuefield." AS value, ".$this->displayfield." AS display FROM ".$this->thetabledef["maintable"]." WHERE ";
 			$querystatement.="(".$this->displayfield." LIKE \"".$this->searchvalue."%\") ";
+
 			if($this->whereclause)
 				$querystatement.="AND (".$this->whereclause.")";
 			
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(100,"Error Retrieving Initial Rowset: ".mysql_error($dblink)."<br />".$querystatement);
+			$queryresult=$this->db->query($querystatement);
 			
 			return $queryresult;
 		}
 		
+		
 		function issueQuery(){
-			$querycolumns="";
+			$querycolumns = "";
+			$tempSortOrder = "";
+			
+			//GROUPING SETUP
+			if($this->showGroupings){
+				$i =1 ;				
+				foreach ($this->thegroupings as $thegroup){
+					$querycolumns .= ", ".$thegroup["field"]." as \"_group".$i."\" ";
+					$tempSortOrder .= ", ".$thegroup["field"];
+					if($thegroup["ascending"] == 0)
+						$tempSortOrder.=" DESC";
+					$i++;
+				}
+				if($i > 1){
+					$tempSortOrder = substr($tempSortOrder,2).", ";
+				}
+			}
+			
 			foreach ($this->thecolumns as $therow)
 				$querycolumns.=", ".$therow["column"]." as \"".$therow["name"]."\"";
 			$querycolumns=substr($querycolumns,2);
@@ -307,7 +364,9 @@ function sendInfo(name,thevalue,thedisplay){
 			$this->querystatement.="(".$this->displayfield." LIKE \"".$this->searchvalue."%\") ";
 			if($this->whereclause)
 				$this->querystatement.="AND (".$this->whereclause.")";
-			$this->querystatement.=" ORDER BY ".$this->querysortorder;
+
+			$tempSortOrder.= $this->querysortorder;
+			$this->querystatement.=" ORDER BY ".$tempSortOrder;
 			
 			$_SESSION["tableparams"][$this->ref]["querysortorder"]=$this->querysortorder;
 			
@@ -337,15 +396,12 @@ function sendInfo(name,thevalue,thedisplay){
 		var $tableoptions;
 
 		function getTableOptions($id){
-			global $dblink;
-		
 			$options=Array();
 			$querystatement="SELECT id,name,`option`,othercommand,roleid
 								  FROM tableoptions WHERE tabledefid=".$id;
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
+			$queryresult=$this->db->query($querystatement);
 			
-			while($therecord=mysql_fetch_array($queryresult)) {
+			while($therecord=$this->db->fetchArray($queryresult)) {
 				if($therecord["othercommand"]) {
 					$options["othercommands"][$therecord["id"]]["displayname"]=$therecord["option"];
 					$options["othercommands"][$therecord["id"]]["roleid"]=$therecord["roleid"];
@@ -358,15 +414,12 @@ function sendInfo(name,thevalue,thedisplay){
 		}//end getTableOptions
 
 		function getTableQuickSearchOptions($id){
-			global $dblink;
-			
 			$findoptions=Array();
 			$querystatement="SELECT name,search,roleid
 								  FROM tablefindoptions WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
+			$queryresult=$this->db->query($querystatement);
 		
-			while($therecord=mysql_fetch_array($queryresult)){
+			while($therecord=$this->db->fetchArray($queryresult)){
 				$therecord["search"]=$this->subout($therecord["search"]);
 				$findoptions[]=$therecord;
 			}
@@ -375,15 +428,13 @@ function sendInfo(name,thevalue,thedisplay){
 		}
 		
 		function getTableSearchableFields($id){
-			global $dblink;
-		
+
 			$searchablefields=Array();
 			$querystatement="SELECT id,field,name,type
 								  FROM tablesearchablefields WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(1,mysql_error($dblink)." -- ".$querystatement);
+			$queryresult=$this->db->query($querystatement);
 		
-			while($therecord=mysql_fetch_array($queryresult)) $searchablefields[]=$therecord;
+			while($therecord=$this->db->fetchArray($queryresult)) $searchablefields[]=$therecord;
 			
 			return $searchablefields;
 		}
@@ -405,10 +456,10 @@ function sendInfo(name,thevalue,thedisplay){
 ?>
 <ul class="tabs">
 	<li id="basicSearchT" class="tabsSel"><a href="/" onclick="switchSearchTabs(this);return false">basic</a></li>
-	<?php if(hasRights($this->thetabledef["advsearchroleid"])){?><li id="advancedSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">advanced</a></li><?php } //end access ?>
-	<li id="loadSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">load search</a></li>
-	<li id="saveSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">save search</a></li>
-	<li id="advancedSortT"><a href="/" onclick="switchSearchTabs(this,'<?php echo $_SESSION["app_path"]?>');return false">sorting</a></li>
+	<?php if(hasRights($this->thetabledef["advsearchroleid"])){?><li id="advancedSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo APP_PATH?>');return false">advanced</a></li><?php } //end access ?>
+	<li id="loadSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo APP_PATH?>');return false">load search</a></li>
+	<li id="saveSearchT"><a href="/" onclick="switchSearchTabs(this,'<?php echo APP_PATH?>');return false">save search</a></li>
+	<li id="advancedSortT"><a href="/" onclick="switchSearchTabs(this,'<?php echo APP_PATH?>');return false">sorting</a></li>
 </ul>
 <div class="box" id="searchBox">
 	<div id="basicSearchTab">
@@ -487,18 +538,23 @@ function sendInfo(name,thevalue,thedisplay){
 			<td align="right">
 				<p>
 					<br />
-					<input id="saveSearch" onclick="saveMySearch('<?php echo $_SESSION["app_path"] ?>')" disabled="disabled" type="button" class="Buttons" value="save search" />
+					<input id="saveSearch" onclick="saveMySearch('<?php echo APP_PATH ?>')" disabled="disabled" type="button" class="Buttons" value="save search" />
 				</p>
 			</td>
 		</tr>
 	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div><?php 				
 	}//end function		
 		
-function displayQueryButtons() { 
+function displayQueryButtons() {
+
+	global $phpbms;
+	
+	?><div id="resultInfoDiv"><?php
+ 	
 	if(!isset($this->tableoptions["new"])){
 		 $this->tableoptions["new"]["allowed"]=0;
 		 $this->tableoptions["new"]["roleid"]=0;
-	}
+	} 
 	if(!isset($this->tableoptions["select"])) {
 		$this->tableoptions["select"]["allowed"]=0;
 		$this->tableoptions["select"]["roleid"]=0;
@@ -512,111 +568,170 @@ function displayQueryButtons() {
 		$this->tableoptions["printex"]["roleid"]=0;
 	}
 	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
-	if(hasRights($this->thetabledef["viewsqlroleid"])){?>
-	<div id="sqlstatement">
-	<fieldset>
-		<legend>SQL Statement</legend>
-		<div class="mono small" style="height:150px; overflow:auto;"><?php echo stripslashes(htmlQuotes($this->querystatement))?></div>
-	</fieldset><?php if($this->sqlerror) {?>
-	<fieldset>
-		<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
-		<div><?php echo $this->sqlerror?></div>
-	</fieldset><?php }?>
+
+	// If they have rights to see the SQL statement, spit it out here.
+	if(hasRights($this->thetabledef["viewsqlroleid"])) {
+	
+	?><div id="sqlstatement">
+		<fieldset>
+			<legend>SQL Statement</legend>
+			<div id="theSqlText" class="mono small"><?php echo stripslashes(htmlQuotes($this->querystatement))?></div>
+		</fieldset><?php 
+
+		if($this->sqlerror) {?>
+		<fieldset>
+			<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
+			<div><?php echo $this->sqlerror?></div>
+		</fieldset><?php 
+
+		}?>
 	</div>
+	
 	<?php }
+
+	?><div id="commandSet"><?php
+	
 	if($this->numrows){
-		?><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><div id="numCount" align="right" class="small"><?php
-		if ($this->truecount<=$_SESSION["record_limit"]) 
+		?>
+		<div id="numCount" align="right" class="small"><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><?php
+		
+		if ($this->truecount<=RECORD_LIMIT) 
 			echo "<div>records:&nbsp;".$this->numrows."</div>";
-		else {?>			
+		else {
+		
+		?>			
 			<input name="offset" type="hidden" value="" /><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
 			  	<?php
+				
 					$displayedoffset=0;
 					while($displayedoffset<$this->truecount){
-						?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected=\"selected\"";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+$_SESSION["record_limit"]<$this->truecount) echo ($displayedoffset+$_SESSION["record_limit"]); else echo $this->truecount;?></option><?php
-						$displayedoffset+=$_SESSION["record_limit"];
+						?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected=\"selected\"";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+RECORD_LIMIT<$this->truecount) echo ($displayedoffset+RECORD_LIMIT); else echo $this->truecount;?></option><?php
+						$displayedoffset+=RECORD_LIMIT;
 					}
+					
 				?>
 			  </select> of <?php echo $this->truecount;
 			if($this->recordoffset>0){
-				?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-$_SESSION["record_limit"] ?>;document.search.submit();"><span>prev.</span></button><?php
+				?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-RECORD_LIMIT ?>;document.search.submit();"><span>prev.</span></button><?php
 			}
 			if(($this->numrows+$this->recordoffset)<$this->truecount){
-				?><button type="button" class="graphicButtons buttonFF" onclick="document.search.offset.value=<?php echo $this->recordoffset+$_SESSION["record_limit"] ?>;document.search.submit();"><span>next</span></button><?php
+				?><button type="button" class="graphicButtons buttonFF" onclick="document.search.offset.value=<?php echo $this->recordoffset+RECORD_LIMIT ?>;document.search.submit();"><span>next</span></button><?php
 			}
 						  
-		} ?></div><?php }?>	
+		} ?></div><?php 
+	}?>	
 	
-		<div id="recordCommands">
+		<ul id="recordCommands">
 		<?php 
-		if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) 
-			{
-		?><button type="button" accesskey="n" class="graphicButtons buttonNew" onclick="addRecord()" title="new (alt+n)"><span>new</span></button><?php 
-			} 
+			$showFirst = ' id="firstToolbarItem" ';
+			
+			if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) {
+			
+			?><li <?php echo $showFirst?>>
+				<a href="#" id="newRecord" class="newRecord" accesskey="n" title="new record (alt + n)" onclick="addRecord();return false;"><span>new</span></a>
+			  </li><?php 
+			$showFirst = NULL;			  
+		} 
 			
 		if($this->numrows) {
 			if ($this->tableoptions["edit"]["allowed"] && hasRights($this->tableoptions["edit"]["roleid"])) {
-				?><button id="edit" accesskey="e" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="editThis()" title="edit (alt+e)"><span>edit</span></button><?php
+				?><li <?php echo $showFirst?>>
+					<a href="#" id="editRecord" class="editRecordDisabled" accesskey="e" onclick="return editButton();" title="edit record (alt + e)"><span>edit</span></a>
+				</li>
+				<?php
+				$showFirst = NULL;			  
 			}
 		
-			if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
-				?><button id="print" accesskey="p" type="submit" disabled="disabled" class="graphicButtons buttonPrintDisabled" name="doprint"  title="print (alt+p)"><span>print</span></button><?php
+			if($this->thetabledef["deletebutton"] == "delete") {				
+				?><li <?php echo $showFirst?>>
+					<a href="#" id="deleteRecord" class="deleteRecordDisabled" accesskey="d" onclick="confirmDelete('delete');return false" title="delete record (alt + d)"><span>delete</span></a>
+				</li>
+				<?php
+				$showFirst = NULL;			  
 			}
 
-			if($this->thetabledef["deletebutton"] == "delete") {				
-				?><button id="delete" name="dodelete" accesskey="d" type="button" title="delete (alt+d)" disabled="disabled" onclick="confirmDelete('delete')" class="graphicButtons buttonDeleteDisabled"><span>delete</span></button><?php
+			if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
+				?><li <?php echo $showFirst?>>
+					<a href="#" id="print" class="print" accesskey="p" onclick="doPrint();return false" title="print report (alt + p)"><span>print</span></a>
+					<input type="hidden" id="doprint" name="doprint" value="no" />
+				</li>
+				<?php
+				$showFirst = NULL;			  
 			}
 	
-			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){?>			
-				<select id="othercommands" name="othercommands" disabled="disabled" onchange="chooseOtherCommand(this)">
-				<option value="" selected="selected" class="choiceListBlank">commands...</option>
-				<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
-					<option value="-1" class="important"><?php echo $this->thetabledef["deletebutton"]?></option>
-				<?php } 
-				if($this->tableoptions["othercommands"]){
-					foreach($this->tableoptions["othercommands"] as $key => $value){
-						if(hasRights($value["roleid"])){
-							?><option value="<?php echo $key?>"><?php echo $value["displayname"]?></option><?php
-						}
-					}
-				}
-				?></select><?php
-		}
-		if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){?> <select id="searchSelection" onchange="perfromToSelection(this)">
-				<option class="choiceListBlank" value="">selection...</option>
-				<option value="">_____________</option>
-				<option value="selectall" title="(access key+a)">select all</option>
-				<option value="selectnone" title="(access key+x)">select none</option>
-				<option value="">_____________</option>
-				<option value="keepselected" title="(access key+k)">keep selected</option>
-				<option value="omitselected" title="(access key+o)" >omit selected</option>
-			</select><a href="/" onclick="changeSelection('selectall');return false;" accesskey="a" tabindex="0"></a><a href="/" onclick="changeSelection('selectnone');return false;" accesskey="x" tabindex="0"></a><a href="/" onclick="changeSelection('keepselected');return false;" accesskey="k" tabindex="0"></a><a href="/" onclick="changeSelection('omitselected');return false;" accesskey="o" tabindex="0"></a><?php } 
-		
-		}//end if numrows	
-		if(hasRights($this->thetabledef["viewsqlroleid"])){?><button id="showSQLButton" type="button" class="graphicButtons buttonShowSQLDown"><span>Show SQL</span></button><?php }//end rights?>
-		</div><script language="JavaScript" type="text/javascript">
-	var addFile="<?php echo $_SESSION["app_path"].$this->thetabledef["addfile"]?>";
-	var editFile="<?php echo $_SESSION["app_path"].$this->thetabledef["editfile"]?>";
-	</script><?php	
-}//end function
+			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){
+			
+				?><li <?php echo $showFirst?>>
+					<a href="#" id="otherCommandButton" class="otherCommandsDisabled" onclick="showDropDown('otherDropDown');return false" title="other commands"><span>other commands</span></a>
+					<div id="otherDropDown" class="toolbarDropDowns" style="display:none">
+						<ul>
+							<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
+								<li><a href="#" title="(alt + d)" onclick="chooseOtherCommand('-1','<?php echo $this->thetabledef["deletebutton"]?>')"><strong><?php echo $this->thetabledef["deletebutton"]?></strong></a></li>
+							<?php } 
+							if($this->tableoptions["othercommands"]){
+								foreach($this->tableoptions["othercommands"] as $key => $value){
+									if(hasRights($value["roleid"])){
+										?>
+										<li><a href="#" onclick="chooseOtherCommand('<?php echo $key ?>','')"><?php echo $value["displayname"]?></a></li>
+										<?php
+									}
+								}
+							}
+							?>
+						</ul>
+					</div><input id="othercommands" name="othercommands" type="hidden"/>
+				</li>
+				<?php
+				$showFirst = NULL;			  
+			}
+			if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){
+				?><li <?php echo $showFirst?>>
+					<a href="#" id="searchSelection" class="searchSelection" onclick="showDropDown('searchSelectionDropDown');return false" title="selection"><span>selection</span></a>
+					<div id="searchSelectionDropDown" class="toolbarDropDowns" style="display:none">
+					<ul>
+						<li><a href="#" onclick="perfromToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
+						<li><a href="#" onclick="perfromToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
+						<li class="menuSep"><a href="#" onclick="perfromToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
+						<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected rescords from view</a></li>						
+					</ul>
+					</div>
+				</li>
+				<?php 
+				$showFirst = NULL;			  
+			} 
+			
+			}//end if numrows	
+			if(hasRights($this->thetabledef["viewsqlroleid"])){
+				?>
+				<li>
+					<a href="#" id="showSQLButton" class="sqlUp" onclick="return false;" title="Show SQL Statement"><span>show SQL</span></a>
+				</li>
+				<?php }//end rights
+
+		?>
+		</ul>
+		</div></div>
+	<?php	
+	$phpbms->bottomJS[] = ' var addFile = "'.APP_PATH.$this->thetabledef["addfile"].'"';
+	$phpbms->bottomJS[] = ' var editFile = "'.APP_PATH.$this->thetabledef["editfile"].'"';
+
+}//end method
 			
 
 
 
 function displayQueryFooter(){
-	global $dblink;
 	?>
 	<tr><?php
 	foreach ($this->thecolumns as $therow){
 	?>
 		<td align="<?php echo $therow["align"]?>" class="queryfooter"><?php
 		if($therow["footerquery"]){
-			$querystatement="SELECT ".$therow["footerquery"]." FROM ".$this->therecords;
-			$queryresult=mysql_query($querystatement);
-			if(!$queryresult) reportError(502,"Footer Query Invalid");
+			$querystatement="SELECT ".$therow["footerquery"]." as thet FROM ".$this->therecords;
+			$queryresult=$this->db->query($querystatement);
 			
-			$therecord=mysql_fetch_array($queryresult);
-			echo formatVariable($therecord[0],$therow["format"]);
+			$therecord=$this->db->fetchArray($queryresult);
+			echo formatVariable($therecord["thet"],$therow["format"]);
 		} else {echo "&nbsp;";}?></td><?php 
 	}
 	//keep this in here to close the total table
@@ -629,13 +744,13 @@ function displayRelationships(){
 		 id, name 
 		 FROM relationships
 		 WHERE fromtableid=\"".$this->thetabledef["id"]."\" ORDER BY name";
-	$queryresult = mysql_query($querystatement);	
-	if (!$queryresult) reportError(1,"Error Retrieving Relationships");
-	if (mysql_num_rows($queryresult)) {
+	$queryresult = $this->db->query($querystatement);	
+	if (!$queryresult) $error = new appError(1,"Error Retrieving Relationships");
+	if ($this->db->numRows($queryresult)) {
 		?><div class="small">
 		show related records in <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
 			<option value="" selected="selected" class="choiceListBlank">area...</option><?php 
-			while($therecord = mysql_fetch_array($queryresult)){
+			while($therecord = $this->db->fetchArray($queryresult)){
 			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
 		?></select></div>
 		<?php
@@ -659,23 +774,35 @@ function displayRelationships(){
 			else{
 				$this->loadQueryDefaults();
 			}
-				
-											
-			//load table specific functions
-			if ($this->thetabledef["type"]!="view")
-				@ include($this->base."modules/".$this->thetabledef["name"]."/include/".$this->thetabledef["maintable"]."_search_functions.php");
-            else
-				@ include($this->base."modules/".$this->thetabledef["name"]."/include/".$this->thetabledef["maintable"].$this->thetabledef["id"]."_search_functions.php");
-
+															
 		}
 
 		function issueQuery(){
 			$querycolumns="";
+			$tempSortOrder = "";
+			
+			//GROUPING SETUP
+			if($this->showGroupings){
+				$i =1 ;				
+				foreach ($this->thegroupings as $thegroup){
+					$querycolumns .= ", ".$thegroup["field"]." as \"_group".$i."\" ";
+					$tempSortOrder .= ", ".$thegroup["field"];
+					if($thegroup["ascending"] == 0)
+						$tempSortOrder.=" DESC";
+					$i++;
+				}
+				if($i > 1){
+					$tempSortOrder = substr($tempSortOrder,2).", ";
+				}
+			}
+
+			
 			foreach ($this->thecolumns as $therow)
 				$querycolumns.=", ".$therow["column"]." as \"".$therow["name"]."\"";
 			$querycolumns=substr($querycolumns,2);
 						
-			$this->therecords=$this->thetabledef["querytable"]." ".$this->queryjoinclause." WHERE ".$this->querywhereclause." ORDER BY ".$this->querysortorder;
+			$tempSortOrder .= $this->querysortorder;
+			$this->therecords=$this->thetabledef["querytable"]." ".$this->queryjoinclause." WHERE ".$this->querywhereclause." ORDER BY ".$tempSortOrder;
 			$this->querystatement = "SELECT DISTINCT ".$this->thetabledef["maintable"].".id as theid,".$querycolumns." FROM ".$this->therecords;
 
 			parent::issueQuery();
@@ -688,6 +815,8 @@ function displayRelationships(){
 			$this->querysortorder=$params["querysortorder"];
 			$this->querywhereclause=$params["querywhereclause"];
 
+			$this->showGroupings =  $params["showGroupings"];
+			
 			$this->savedfindoptions=$params["savedfindoptions"];
 			$this->savedselection=$params["savedselection"];
 			$this->savedstartswithfield=$params["savedstartswithfield"];
@@ -704,6 +833,8 @@ function displayRelationships(){
 			$_SESSION["tableparams"][$this->ref]["queryjoinclause"]=$this->queryjoinclause;
 			$_SESSION["tableparams"][$this->ref]["querysortorder"]=$this->querysortorder;
 			$_SESSION["tableparams"][$this->ref]["querywhereclause"]=$this->querywhereclause;
+
+			$_SESSION["tableparams"][$this->ref]["showGroupings"]=$this->showGroupings;
 
 			$_SESSION["tableparams"][$this->ref]["savedfindoptions"]=$this->savedfindoptions;
 			$_SESSION["tableparams"][$this->ref]["savedselection"]=$this->savedselection;
@@ -734,6 +865,7 @@ function displayRelationships(){
 			$this->savedstartswith="";
 			$this->savedendswith="";
 			$this->queryjoinclause="";
+			$this->showGroupings = true;
 			
 			$this->loadQueryDefaults();
 		}
@@ -794,5 +926,94 @@ function displayRelationships(){
 		
 		}
 
+	}//end class
+
+	// SEARCH FUNCTIONS BASE CLASS ======================================================================
+	class searchFunctions{
+		
+		var $db;
+		var $tabledefid;
+		var $idsArray = array();
+		var $maintable;
+		var $deletebutton;
+		
+		function searchFunctions($db,$tabledefid,$idsArray=array()){
+						
+			$this->db = $db;
+			$this->tabledefid = (int) $tabledefid;
+			$this->idsArray = $idsArray;
+			
+			$querystatement = "SELECT maintable,deletebutton FROM tabledefs WHERE id=".$this->tabledefid;
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+						
+			$this->maintable = $therecord["maintable"];
+			$this->deletebutton = $therecord["deletebutton"];
+			
+		}//end method
+		
+		
+		function delete_record(){
+
+			$whereclause=$this->buildWhereClause();
+			
+			$endmessage="";
+			switch($this->deletebutton){
+				case "inactivate":
+					$querystatement = "UPDATE `".$this->maintable."` SET ".$this->maintable.".inactive = 1, modifiedby = ".$_SESSION["userinfo"]["id"].", modifieddate = NOW() WHERE ".$whereclause;
+					$endmessage=" marked inactive";
+				break;
+				default:
+				case "delete":
+					$querystatement = "DELETE FROM `".$this->maintable."` WHERE ".$whereclause;				
+					$endmessage=" deleted";
+			}
+			$queryresult = $this->db->query($querystatement);		
+			$message = $this->buildStatusMessage().$endmessage;
+		
+			return $message;
+		
+		}		
+		
+		function buildWhereClause($fieldphrase = NULL ,$idsArray = NULL){
+			if($fieldphrase === NULL)
+				$fieldphrase = $this->maintable.".id";
+			
+			if($idsArray === NULL)
+				$idsArray = $this->idsArray;
+				
+			$whereclause="";
+			foreach($idsArray as $theid){
+				$whereclause.=" OR ".$fieldphrase."=".$theid;
+			}
+			$whereclause=substr($whereclause,3);
+
+			return $whereclause;
+		}
+
+		function buildStatusMessage($affected = NULL,$selected = NULL){
+			if($affected === NULL)
+				$affected = $this->db->affectedRows();
+			
+			if($selected === NULL)
+				$selected = count($this->idsArray);
+		
+			switch($affected){
+				case "0":
+					$message="No records";
+				break;
+				case "1":
+					$message="1 record";		
+				break;
+				default:
+					$message=$affected." records";					
+				break;
+			}
+			if($affected!=$selected)
+				$message.=" (of ".$selected." selected)";
+			return $message;
+		}
+
+		
 	}//end class
 ?>

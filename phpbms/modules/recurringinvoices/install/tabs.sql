@@ -1,0 +1,1 @@
+INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (500,'recurrence','invoices entry','modules/recurringinvoices/invoices_recurrence.php',25,0,20,'','',1,NOW(),1,NOW());

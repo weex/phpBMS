@@ -37,22 +37,19 @@
  +-------------------------------------------------------------------------+
 */
 
-function showSystemMessages(){
-	global $dblink;
-	
+function showSystemMessages($db){
 	$querystatement="SELECT notes.id,subject,content,concat(users.firstname,\" \",users.lastname) as createdby,
 					notes.creationdate
 					FROM notes INNER JOIN users ON notes.createdby=users.id
 					WHERE type=\"SM\" ORDER BY importance DESC,notes.creationdate";
 					
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
-	
-	if(mysql_num_rows($queryresult)){ 
+	$queryresult=$db->query($querystatement);
+		
+	if($db->numRows($queryresult)){ 
 	?>
 	<div class="box" id="systemMessageContainer">	
 		<h2>System Messages</h2>
-		<?php while($therecord=mysql_fetch_array($queryresult)) {
+		<?php while($therecord=$db->fetchArray($queryresult)) {
 				$therecord["content"]=str_replace("\n","<br />",htmlQuotes($therecord["content"]));
 		?>
 		<h3 class="systemMessageLinks"><?php echo htmlQuotes($therecord["subject"])?> <span>[ <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?> <?php echo htmlQuotes($therecord["createdby"])?>]</span></h3>			
@@ -65,8 +62,10 @@ function showSystemMessages(){
 }
 
 
-function showTasks($userid,$type="Tasks"){
-	global $dblink;
+function showTasks($db,$userid,$type="Tasks"){
+
+	global $phpbms;
+
 	$querystatement="SELECT id,type,subject, completed, if(enddate < CURDATE(),1,0) as ispastdue, startdate, enddate, private, assignedbyid, assignedtoid
 				FROM notes
 				WHERE ";
@@ -98,16 +97,15 @@ function showTasks($userid,$type="Tasks"){
 	$querystatement.=" ORDER BY importance DESC,notes.enddate,notes.endtime,notes.startdate DESC,notes.starttime DESC,notes.creationdate DESC";
 
 
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
+	$queryresult=$db->query($querystatement);
 	
 	?>
-	<h3 class="tasksLinks"><?php echo $title; if(mysql_num_rows($queryresult)) {?> <span class="small">(<?php echo mysql_num_rows($queryresult)?>)</span><?php } ?></h3>
+	<h3 class="tasksLinks"><?php echo $title; if($db->numRows($queryresult)) {?> <span class="small">(<?php echo $db->numRows($queryresult)?>)</span><?php } ?></h3>
 	<div class="tasksDivs"><div>
 	<?php
 	
-	if(mysql_num_rows($queryresult)){ 	
-		while($therecord=mysql_fetch_array($queryresult)) {
+	if($db->numRows($queryresult)){ 	
+		while($therecord=$db->fetchArray($queryresult)) {
 		$className="task";		
 		if($therecord["completed"]) 
 			$className.=" taskCompleted";
@@ -120,20 +118,20 @@ function showTasks($userid,$type="Tasks"){
 		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
 		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked=\"checked\""?> onclick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
-		<a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a>
+		<a href="<?php echo getAddEditFile($db,12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a>
 		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php } ?>
-		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes(getUserName($tid))?>)</em><?php } ?>
+		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes($phpbms->getUserName($tid))?>)</em><?php } ?>
 	</p>
 	<?php } } else {
 	?><p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
 	}?></div></div> <?php 
 }
 
-function showSevenDays($userid){
+function showSevenDays($userid,$db){
 	
 	$theday=mktime(0,0,0);
 	
-	$repeatArray =getRepeatableInTime($theday,strtotime("7 days",$theday),$userid);
+	$repeatArray =getRepeatableInTime($theday,strtotime("7 days",$theday),$userid,$db);
 	
 	$today="Today - (";
 	$rownum=0;
@@ -142,9 +140,9 @@ function showSevenDays($userid){
 		?><tr><td colspan="2" class="eventDayName"><?php echo $today.strftime("%A",$theday); if($today){echo ")"; $today="";}?></td></tr><?php 
 		$donext=true;
 
-		$queryresult=getEventsForDay($theday,$userid,$repeatArray[$theday]);
-		if (mysql_num_rows($queryresult)){
-			while($therecord=mysql_fetch_array($queryresult)){
+		$queryresult=getEventsForDay($theday,$userid,$repeatArray[$theday],$db);
+		if ($db->numRows($queryresult)){
+			while($therecord=$db->fetchArray($queryresult)){
 				$times=formatFromSQLTime($therecord["starttime"])."&nbsp;";
 				if($therecord["endtime"]){
 					$times.= "- ";
@@ -154,7 +152,7 @@ function showSevenDays($userid){
 				}
 				?><tr>
 					<td class="small event" nowrap="nowrap" valign="top"><?php echo $times?></td>
-					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile(12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
+					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile($db,12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
 				</tr><?php
 			}
 		} else {
@@ -167,8 +165,7 @@ function showSevenDays($userid){
 	
 }
 
-function getRepeatableInTime($fromdate,$todate,$userid){
-	global $dblink;
+function getRepeatableInTime($fromdate,$todate,$userid,$db){
 	
 	//first we create the array
 	$theday=$fromdate;
@@ -179,10 +176,9 @@ function getRepeatableInTime($fromdate,$todate,$userid){
 	}
 	
 	$querystatement="SELECT id,startdate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE `repeat`=1 AND type=\"EV\" AND (private=0 or (private=1 and createdby=".$userid."))";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving Repeatable Events: ".mysql_error($dblink)."<br />".$querystatement);
+	$queryresult=$db->query($querystatement);
 	
-	while($therecord=mysql_fetch_array($queryresult)){		
+	while($therecord=$db->fetchArray($queryresult)){		
 		$startdate=stringToDate($therecord["startdate"],"SQL");
 		$repeatuntil=stringToDate($therecord["repeatuntildate"],"SQL");
 
@@ -268,8 +264,7 @@ function getRepeatableInTime($fromdate,$todate,$userid){
 	return $repeatList;
 }
 
-function getEventsForDay($day,$userid,$repeatArray){
-	global $dblink;
+function getEventsForDay($day,$userid,$repeatArray,$db){
 	
 	$repeatIDs="";
 	if(count($repeatArray)){
@@ -286,8 +281,7 @@ function getEventsForDay($day,$userid,$repeatArray){
 				WHERE type=\"EV\" AND (startdate=\"".dateToString($day,"SQL")."\" ".$repeatIDs.") AND (private=0 or (private=1 and createdby=".$userid.")) 
 				ORDER BY notes.starttime,notes.endtime,importance DESC";
 
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving days events: ".mysql_error($dblink)."<br />".$querystatement);
+	$queryresult=$db->query($querystatement);
 	
 	return $queryresult;
 }

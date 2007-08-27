@@ -36,136 +36,33 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+error_reporting(E_ALL);
+define("APP_DEBUG",false);
+define("noStartup",true);
 
-function loadSettings() {
-	$settingsfile = @ fopen("../../../settings.php","r");
-	if($settingsfile){
-		//loop through the settings file and load variables into the session 
-		while( !feof($settingsfile)) {
-			$line=null;
-			$key=null;
-			$value=null;
-			$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
-			if ($line){
-				$key=trim($key);
-				$value=trim($value);
-				if($key!="" and !strpos($key,"]")){	
-					$startpos=strpos($value,"\"");
-					$endpos=strrpos($value,"\"");
-					if($endpos!=false)
-						$value=substr($value,$startpos+1,$endpos-$startpos-1);
-					$variables[$key]=$value;
-				}
-			}
-		}
-		if(!isset($variables["mysql_pconnect"]))
-			$variables["mysql_pconnect"]="true";
-		fclose($settingsfile);
-		return $variables;
-	} else return "Cannot open setting.ini file";
-}
+include("../../../install/install_include.php");
+include("../../../include/session.php");
 
-function loadDBSettings($dblink,$vars){
-	$querystatement="SELECT name,value FROM settings";
-	$queryresult=mysql_query($querystatement,$dblink);
-	while($therecord=mysql_fetch_array($queryresult))
-		$vars[$therecord["name"]]=$therecord["value"];
-	return $vars;
-}
-
-	function importData($thetable){
-		global $dblink;
+	function doUpdate($db) {
+		$thereturn="Updating Business Management System Module\n";
 		
-		$tablefile = fopen($thetable.".sql","r");
-		if(!$tablefile) {
-			return "Could not open the file ".$thetable.".sql";
-		}
-		$thereturn="Importing records for '".$thetable."'\n";
-			$counter=0;
-			while(!feof($tablefile)) {
-				$sqlstatement=trim(fgets($tablefile,1024));
-				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
-					$theresult=mysql_query($sqlstatement,$dblink);
-					if(!$theresult)
-						$thereturn.=mysql_error($dblink)."\n";
-					else
-						$counter++;
-					$sqlstatement="";
-				}//end if;
-			}//end while
-	
-		$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
-		return $thereturn;
-	}//end function
-	
-	function processSQLfile($filename){
-		global $dblink;
-		
-		$thefile = @ fopen($filename,"r");
-		if(!$thefile) {
-			return "Could not open the file ".$filename.".";
-		}
-		
-		$thereturn="Processing SQL from file '".$filename."'\n";
-			while(!feof($thefile)) {
-				$sqlstatement=trim(fgets($thefile,1024));
-				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
-					$theresult=mysql_query($sqlstatement,$dblink);
-					if(!$theresult)
-						$thereturn.=mysql_error($dblink)."\n";
-					$sqlstatement="";
-				}//end if;
-			}//end while
-	
-		$thereturn.="Done processing SQL from file '".$filename."'. \n\n";
-		return $thereturn;
-	}//end function
-	
-	
-	function verifyAdminLogin($user,$pass,$encryptionSeed,$dblink){
-		$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=ENCODE(\"".$pass."\",\"".$encryptionSeed."\") AND admin=1";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
-		if (mysql_num_rows($queryresult)>0) return true;
-		return false;
-	}
-
-
-	function doUpdate() {
-		global $dblink;
-		
-		$thereturn="Updating BMS\n===================\n";
-		$vars=loadSettings();
-		if(!is_array($vars)) {
-			$thereturn="Error Loading settings.php file.\n\n";
-			return $thereturn;
-		}
-		if($vars["mysql_pconnect"]=="true")
-			$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-		else
-			$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-		mysql_select_db($vars["mysql_database"],$dblink);
-
-		$vars=loadDBSettings($dblink,$vars);
-		
-		if(!verifyAdminLogin($_GET["u"],$_GET["p"],$vars["encryption_seed"],$dblink)){
+		if(!verifyAdminLogin($db,$_GET["u"],$_GET["p"])){
 			$thereturn="Update Requires Administrative Access.\n\n";
 			return $thereturn;
 		}
 				
-		$file =  @ fopen("./version.txt","r");
-		$newVersion=fgets($file,1024);
-		@ fclose($file);
+		$newVersion = $_GET["v"];
 		
 		$querystatement="SELECT version FROM modules WHERE name=\"bms\"";
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult=$db->query($querystatement);
 		if(!$queryresult) {
 			$thereturn="Error Accessing module table in database.\n\n";
 			return $thereturn;
 		}
-		$ver=mysql_fetch_array($queryresult);
+		
+		$ver=$db->fetchArray($queryresult);
 
-		while($ver["version"]!=$newVersion){
+		while($ver["version"] != $newVersion){
 			switch($ver["version"]){
 				// ================================================================================================
 				case "0.5":
@@ -173,7 +70,7 @@ function loadDBSettings($dblink,$vars){
 		
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.51\" WHERE name=\"bms\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 					
 					$thereturn.="Update to 0.51 Finished\n\n";
@@ -184,37 +81,37 @@ function loadDBSettings($dblink,$vars){
 				case "0.51":
 					$thereturn.="Updating BMS Module to 0.6\n";
 							
-					$thereturn.=processSQLfile("updatev0.6.sql");
+					$thereturn.=processSQLfile($db,"updatev0.6.sql");
 					
-					$thereturn.=importData("choices");
-					$thereturn.=importData("menu");
-					$thereturn.=importData("reports");
-					$thereturn.=importData("tablecolumns");
-					$thereturn.=importData("tabledefs");
-					$thereturn.=importData("tablefindoptions");
-					$thereturn.=importData("tableoptions");
-					$thereturn.=importData("tablesearchablefields");
+					$thereturn.=importData($db,"choices");
+					$thereturn.=importData($db,"menu");
+					$thereturn.=importData($db,"reports");
+					$thereturn.=importData($db,"tablecolumns");
+					$thereturn.=importData($db,"tabledefs");
+					$thereturn.=importData($db,"tablefindoptions");
+					$thereturn.=importData($db,"tableoptions");
+					$thereturn.=importData($db,"tablesearchablefields");
 
 					$querystatement="SELECT clients.id,DATE_FORMAT(clients.creationdate,\"%Y-%m-%d\") as creationdate,max(invoices.orderdate) as orderdate
 									FROM `clients` LEFT JOIN invoices on clients.id=invoices.clientid 
 									WHERE clients.type=\"client\" GROUP BY clients.id;";
-					$queryresult=mysql_query($querystatement,$dblink);
-					if(!$queryresult) return (mysql_error($dblink)." --".$querystatement);
-					while($therecord=mysql_fetch_array($queryresult,$dblink)){
+					$queryresult=$db->query($querystatement);
+
+					while($therecord=$db->fetchArray($queryresult,$dblink)){
 						$querystatement="UPDATE clients set becameclient=\"";
 						if($therecord["orderdate"])
 							$querystatement.=$therecord["orderdate"];
 						else
 							$querystatement.=$therecord["creationdate"];
 						$querystatement.="\" WHERE id=".$therecord["id"];
-						$updateresult=mysql_query($querystatement,$dblink);
+						$updateresult=$db->query($querystatement);
 					}
 					$thereturn.=" - set intitial client becamclient field\n";
 					
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.6\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 
 					$thereturn.="Update to 0.6 Finished\n\n";
@@ -226,19 +123,18 @@ function loadDBSettings($dblink,$vars){
 					$thereturn.="Updating BMS Module to 0.601\n";
 
 					$querystatement="SELECT invoices.id,tax.percentage FROM invoices INNER JOIN tax on invoices.taxareaid=tax.id";
-					$queryresult=mysql_query($querystatement,$dblink);
-					if(!$queryresult) return (mysql_error($dblink)." --".$querystatement);
+					$queryresult=$db->query($querystatement);
 					
 					
-					while($therecord=mysql_fetch_array($queryresult)){
+					while($therecord=$db->fetchArray($queryresult)){
 						$querystatement="UPDATE invoices SET taxpercentage=".$therecord["percentage"]."WHERE id=".$therecord["id"];
-						$updateresult=mysql_query($querystatement,$dblink);
+						$updateresult=$db->query($querystatement);
 					}
 					$thereturn.=" - set taxpercentage on invoices\n";
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.601\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 
 
@@ -253,7 +149,7 @@ function loadDBSettings($dblink,$vars){
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.602\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 
 					$thereturn.="Update to 0.602 Finished\n\n";
@@ -263,11 +159,11 @@ function loadDBSettings($dblink,$vars){
 				case "0.602";
 					$thereturn.="Updating BMS Module to 0.61\n";
 
-					$thereturn.=processSQLfile("updatev0.61.sql");
+					$thereturn.=processSQLfile($db,"updatev0.61.sql");
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.61\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 
 					$thereturn.="Update to 0.61 Finished\n\n";
@@ -278,11 +174,11 @@ function loadDBSettings($dblink,$vars){
 				case "0.61";
 					$thereturn.="Updating BMS Module to 0.62\n";
 
-					//$thereturn.=processSQLfile("updatev0.62.sql");
+					$thereturn.=processSQLfile($db,"updatev0.62.sql");
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.62\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - modified bms record in modules table\n";
 
 					$thereturn.="Update to 0.62 Finished\n\n";
@@ -293,24 +189,24 @@ function loadDBSettings($dblink,$vars){
 				case "0.62";
 					$thereturn.="Updating BMS Module to 0.7\n";
 					
-					$thereturn.=processSQLfile("updatev0.70.sql");
+					$thereturn.=processSQLfile($db,"updatev0.70.sql");
 					
 					//update to new status system
-					$result=updateInvoiceStatus($dblink);
+					$result=updateInvoiceStatus($db);
 					if($result===true)
 						$thereturn.=" - Updated to new invoice status system\n";
 					else
 						$thereturn.=" - Failed to updated to new invoice status system\n".$result."\n\n";					
 					
 					//Update shipping from invoices
-					$result=moveShipping($dblink);
+					$result=moveShipping($db);
 					if($result===true)
 						$thereturn.=" - Created default Shipping Methods\n";
 					else
 						$thereturn.=" - Failed to create default shipping methods\n".$result."\n\n";
 					
 					//update payment From invoices
-					$result=movePayments($dblink);
+					$result=movePayments($db);
 					if($result===true)
 						$thereturn.=" - Created default payment methods\n";
 					else
@@ -318,12 +214,25 @@ function loadDBSettings($dblink,$vars){
 					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"bms\";";
-					$updateresult=mysql_query($querystatement,$dblink);
+					$updateresult=$db->query($querystatement);
 					$thereturn.=" - Updated bms module record with new version\n";
 
 					$thereturn.="Update to 0.7 Finished\n\n";
 			
 					$ver["version"]="0.7";
+				break;
+
+				// ================================================================================================
+				case "0.7";
+
+					$thereturn.= processSQLfile($db,"updatev0.80.sql");
+
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.8\" WHERE name=\"bms\";";
+					$updateresult=$db->query($querystatement);
+
+					$thereturn.="Update of Business Management System Module to 0.8 Finished\n\n";
+					$ver["version"]="0.8";
 				break;
 			}//end switch
 		}//end while
@@ -331,40 +240,34 @@ function loadDBSettings($dblink,$vars){
 
 	}//end update		
 
-	function moveShipping($dblink){
+	function moveShipping($db){
 		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
+		$queryresult=$db->query($querystatement);
 		
-		while($therecord=mysql_fetch_array($queryresult)){
+		while($therecord=$db->fetchArray($queryresult)){
 			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
-			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+			$updatequery=$db->query($querystatement);
 		}
 
 		$querystatement="SELECT id,name FROM shippingmethods";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
+		$queryresult=$db->query($querystatement);
 
-		while($therecord=mysql_fetch_array($queryresult)){
+		while($therecord=$db->fetchArray($queryresult)){
 			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["id"]."
 							WHERE shippingmethod=\"".$therecord["name"]."\"";
-			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+			$updatequery=$db->query($querystatement);
 		}
 		$querystatement="ALTER TABLE invoices DROP shippingmethod";
-		$updatequery=mysql_query($querystatement,$dblink);
-		if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+		$updatequery=$db->query($querystatement);
 		
 		return true; 		 
 	}
 
-	function movePayments($dblink){
+	function movePayments($db){
 		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
+		$queryresult=$db->query($querystatement);
 
-		while($therecord=mysql_fetch_array($queryresult)){
+		while($therecord=$db->fetchArray($queryresult)){
 			switch($therecord["paymentmethod"]){
 				case "VISA":
 				case "VISA - Debit": 
@@ -388,32 +291,27 @@ function loadDBSettings($dblink,$vars){
 			}
 			
 			$querystatement="INSERT INTO `paymentmethods` (name,`type`,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",".$type.",1,NOW())";
-			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+			$updatequery=$db->query($querystatement);
 		}
 
 		$querystatement="SELECT id,name FROM paymentmethods";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
-		while($therecord=mysql_fetch_array($queryresult)){
+		$queryresult=$db->query($querystatement);
+		while($therecord=$db->fetchArray($queryresult)){
 			$querystatement="UPDATE invoices SET paymentmethodid=".$therecord["id"]."
 							WHERE paymentmethod=\"".$therecord["name"]."\"";
-			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+			$updatequery=$db->query($querystatement);
 		}
 		$querystatement="ALTER TABLE invoices DROP paymentmethod";
-		$updatequery=mysql_query($querystatement,$dblink);
-		if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+		$updatequery=$db->query($querystatement);
 		
 		return true;
 	}
 
-	function updateInvoiceStatus($dblink){
+	function updateInvoiceStatus($db){
 		$querystatement="SELECT id,status,statusdate,orderdate,invoicedate,type FROM invoices";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return mysql_error($dblink)." -- ".$querystatement;
+		$queryresult=$db->query($querystatement);
 		
-		while($therecord=mysql_fetch_array($queryresult)){
+		while($therecord=$db->fetchArray($queryresult)){
 			$newstatus=1;
 			switch($therecord["status"]){
 				case "Open":
@@ -440,23 +338,50 @@ function loadDBSettings($dblink,$vars){
 					$statusdate=$therecord["invoicedate"];
 			}
 			$querystatement="UPDATE invoices SET statusid=".$newstatus.", statusdate=\"".$statusdate."\" WHERE id=".$therecord["id"];
-			$updatequery=mysql_query($querystatement,$dblink);
-			if(!$updatequery) return mysql_error($dblink)." -- ".$querystatement;
+			$updatequery=$db->query($querystatement);
 
 			//now create the history
 			$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate)VALUES(".$therecord["id"].",".$newstatus.",\"".$statusdate."\")";
-			$insertquery=mysql_query($querystatement,$dblink);
-			if(!$insertquery) return mysql_error($dblink)." -- ".$querystatement;
+			$insertquery=$db->query($querystatement);
 			
 		}
 		$querystatement="ALTER TABLE `invoices` DROP COLUMN `status`";
-		$dropcolumnquery=mysql_query($querystatement,$dblink);
-		if(!$dropcolumnquery) return mysql_error($dblink)." -- ".$querystatement;
+		$dropcolumnquery=$db->query($querystatement);
 		
 		return true;
-	}
+	}//end funtion
 
-		$thereturn=doUpdate();	
+	
+	$phpbmsSession = new phpbmsSession;
+	$success = $phpbmsSession->loadDBSettings(false);
+
+	include_once("include/db.php");
+	$db = new db(false);
+	$db->stopOnError = false;
+	$db->showError = false;
+	$db->logError = false;
+
+	if($success !== false){
+		
+		if(!$db->connect())
+			$thereturn = "Could Not Establish Connection To MySQL Server: Check server, user name, and password."; 			
+		else {
+			if(!$db->selectSchema())
+				$thereturn = "Database (schema) ".MYSQL_DATABASE." could not be selected";			
+			else {
+
+				$phpbmsSession->db = $db;
+				$phpbmsSession->loadSettings();
+				
+				$thereturn=doUpdate($db);	
+
+			}		
+		}
+	} else
+		$thereturn = "Could not access settings.php";	
+				
+
+
 		header('Content-Type: text/xml');
 		?><?php echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'; ?>
 <response><?php echo $thereturn?></response>

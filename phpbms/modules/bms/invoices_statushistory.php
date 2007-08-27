@@ -34,23 +34,19 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	include("../../include/session.php");
-	include("../../include/common_functions.php");
+	include("../../include/session.php");	
 	include("../../include/fields.php");
 		
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
-	$refquery="select firstname,lastname,company from clients where id=".$refid;
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);
 
 	$refquery="SELECT
 			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
 			   invoices.type
 			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
 			   WHERE invoices.id=".$refid;
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);	
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);	
 
 	$pageTitle="Status History: ".$refrecord["id"].": ".$refrecord["name"];	
 	//================================================================
@@ -67,7 +63,7 @@
 					$querystatement.=$tempdate;
 					$querystatement.=",assignedtoid=".$assignedtoid;
 					$querystatement.=" WHERE id=".((int) $historyid);
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 				}//end find if
 			}//end for each
 			$statusmessage="Statuses Updated";
@@ -76,27 +72,39 @@
 	//================================================================
 	
 	$querystatement="SELECT id,name FROM invoicestatuses WHERE inactive=0 ORDER BY priority,name";
-	$statusresult=mysql_query($querystatement,$dblink);
+	$statusresult=$db->query($querystatement);
 	
-	$querystatement="SELECT id, invoicestatusid, assignedtoid, statusdate
-					FROM invoicestatushistory WHERE invoiceid=".$refid;
-	$historyresult=mysql_query($querystatement,$dblink);
-	if(!$historyresult) reportError(300,"Error fetching status history:<br />".mysql_error($dblink));
-	while($therecord=mysql_fetch_array($historyresult))
+	$querystatement="SELECT invoicestatushistory.id, invoicestatuses.name, invoicestatusid, assignedtoid, statusdate
+					FROM invoicestatushistory INNER JOIN invoicestatuses 
+					ON invoicestatushistory.invoicestatusid = invoicestatuses.id
+					WHERE invoiceid=".$refid;
+	$historyresult=$db->query($querystatement);
+
+	while($therecord=$db->fetchArray($historyresult))
 		$history[]=$therecord;
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoicestatushistory.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<?php showTabs($dblink,"invoices entry",16,$_GET["id"]);?><div class="bodyline">
+
+	$phpbms->cssIncludes[] = "pages/invoicestatushistory.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+
+		foreach($history as $historyrecord){
+			$theinput = new inputAutofill($db, "as".$historyrecord["id"],$historyrecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)", 
+										"\"\"","users.revoked=0", $historyrecord["name"]." assigned to" , false, true, false);
+			$theform->addField($theinput);
+
+			$theinput = new inputDatePicker("sh".$historyrecord["id"],$historyrecord["statusdate"], $historyrecord["name"]." status date" ,true, 11, 15, false);
+			$theform->addField($theinput);										
+		}
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+
+	$phpbms->showTabs("invoices entry",16,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<p>
@@ -111,12 +119,13 @@
 				</tr>
 			<?php 
 				$row=1;
-				while($therecord=mysql_fetch_array($statusresult)){
+				while($therecord=$db->fetchArray($statusresult)){
 				$row==1? $row++ : $row--;
 				$historyid=false;
 				$historydate=false;
+				
 				foreach($history as $historyrecord)
-					if($historyrecord["invoicestatusid"]==$therecord["id"]) {
+					if($historyrecord["invoicestatusid"] == $therecord["id"]) {
 						$historyid=$historyrecord["id"];
 						$historydate=$historyrecord["statusdate"];
 						$assignedtoid=$historyrecord["assignedtoid"];
@@ -125,14 +134,14 @@
 				<tr class="row<?php echo $row ?> <?php if(!$historyid){?>disabledstatus<?php }?>">
 					<td><?php if($historyid) echo "<strong>".$therecord["name"]."</strong>"; else  echo $therecord["name"]?></td>
 					<td><?php if($historyid) {
-							fieldDatePicker("sh".$historyid,$historydate,true,$therecord["name"]." status date must be a valid date and not blank.",Array("size"=>"11","maxlength"=>"11","tabindex"=>"14"));
+							$theform->showField("sh".$historyid);
 						} else {
 							echo "&nbsp;";
 						}
 					?>					
 					</td>
 					<td><?php if($historyid) {
-							fieldAutofill("as".$historyid,$assignedtoid,9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128"));
+							$theform->showField("as".$historyid);
 						} else {
 							echo "&nbsp;";
 						}
@@ -148,6 +157,4 @@
 		</p>
 			
 	</form>	
-</div><?php include("../../footer.php")?>
-</body>
-</html>
+</div><?php include("footer.php")?>

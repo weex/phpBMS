@@ -38,33 +38,76 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/tabledefs.php");
 
-	include("include/tabledefs_addedit_include.php");
+	$thetable = new tableDefinitions($db,11);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
+
 	
 	$pageTitle="Table Definition";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tabledefs.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/tabledefs.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	
+	$phpbms->cssIncludes[] = "pages/tabledefs.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/tabledefs.js";
 
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
 
-<?php showTabs($dblink,"tabledefs entry",1,$therecord["id"])?><div class="bodyline">
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
-		  
+		$theinput = new inputBasicList ("type",$therecord["type"],$list = array("table"=>"table","view"=>"view","system"=>"system"));
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+		
+		$theinput = new inputAutofill($db, "moduleid",$therecord["moduleid"],21,"modules.id","modules.name", 
+										"concat('v',modules.version)","", "module", true);
+		$theinput->setAttribute("size","20");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("displayname",$therecord["displayname"],"display name",true,NULL,50,64,false);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("maintable",$therecord["maintable"],"primary table name",true,NULL,50,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("addfile",$therecord["addfile"],"add new record file",true,NULL,100,128);
+		$theform->addField($theinput);
+		
+		$theinput = new inputRolesList($db,"addroleid",$therecord["addroleid"],"add access (role)");
+		$theform->addField($theinput);
+				
+		$theinput = new inputField("editfile",$therecord["editfile"],"edit record file",true,NULL,100,128);
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"editroleid",$therecord["editroleid"],"edit access (role)");
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"searchroleid",$therecord["searchroleid"],"search access (role)");
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"advsearchroleid",$therecord["advsearchroleid"],"advanced search access (role)");
+		$theform->addField($theinput);
+
+		$theinput = new inputRolesList($db,"viewsqlroleid",$therecord["viewsqlroleid"],"view SQL statement access (role)");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+
+	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('querytable','Search/Display SQL FROM clause cannot be blank.');";
+	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('defaultwhereclause','default search cannot be blank.');";
+	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('defaultsortorder','default sort order cannot be blank.');";
+		
+	include("header.php");
+	
+	$phpbms->showTabs("tabledefs entry",1,$therecord["id"]);
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>		  
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
@@ -72,94 +115,80 @@
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
 		</p>
-		<p>
-			<label for="type" class="important">type</label><br />
-			<?php fieldBasicList("type",$therecord["type"],Array(Array("name"=>"table","value"=>"table"),Array("name"=>"view","value"=>"view"),Array("name"=>"system","value"=>"system")),Array("class"=>"important"));?>		
-		</p>
-		<div class="fauxP">
-			<label for="ds-moduleid">module</label><br />
-			<?php fieldAutofill("moduleid",$therecord["moduleid"],21,"modules.id","modules.name","concat('v',modules.version)","",Array("size"=>"20","maxlength"=>"32"),true,"Module is requred.") ?>		
-		</div>
+
+		<p><?php $theform->showField("type"); ?></p>
+
+		<p><?php $theform->showField("moduleid");?></p>
+		
 	</fieldset>
 
 	<div id="leftSideDiv">
 		<fieldset>
-			<legend><label for="displayname">display name</label></legend>
-			<p>
-				<?php fieldText("displayname",$therecord["displayname"],1,"Display Name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"important")); ?>
-			</p>				
+			<legend><label for="displayname">name</label></legend>
+			<p><?php $theform->showField("displayname"); ?></p>				
 		</fieldset>
 		
 		<fieldset>
-			<legend>Table</legend>
-			<p>
-				<label for="maintable">primary table name</label><br />
-				<?php fieldText("maintable",$therecord["maintable"],1,"Primary table name cannot be blank.","",Array("size"=>"50","maxlength"=>"64","class"=>"")); ?>
-			</p>
+			<legend>SQL table</legend>
+
+			<p><?php $theform->showField("maintable") ?></p>
+
 			<p>
 				<label for="querytable">search/display SQL FROM clause</label><br />
-				<textarea id="querytable" name="querytable" rows="3"><?php echo htmlQuotes($therecord["querytable"])?></textarea><br />
-				<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('querytable','Search/Display SQL FROM clause cannot be blank.');</script>
-				<span class="notes">
-					Note: For simple tables, entering the same information as the primary table name is sufficient.<br />
-					For complex data views that invlolve multiple tables, you will want to enter the SQL's FROM clause.<br /><br />
-					For example, for invoices, you want to show both the invoice information and the client's name, so you would enter:<br />
-					invoices INNER JOIN clients ON invoices.clientid=clients.id
-				</span>
+				<textarea id="querytable" name="querytable" rows="2" cols="48"><?php echo htmlQuotes($therecord["querytable"])?></textarea><br />
 			</p>			
+
+			<p class="notes">
+				<strong>Note:</strong> For simple tables, entering the same information as the primary table name is sufficient.
+				For complex data views that invlolve multiple tables, you will want to enter the SQL's FROM clause.
+			</p>
+			<p class="notes">	
+				For example, for invoices, you want to show both the invoice information and the client's name, so you would enter:<br /><br />
+				invoices INNER JOIN clients ON invoices.clientid=clients.id
+			</p>
 		</fieldset>
 	
 		<fieldset>
-			<legend>add/edit options</legend>
+			<legend>add / edit options</legend>
 			<p>
-				<label for="addfile">add record file</label><br />
-				<?php fieldText("addfile",$therecord["addfile"],1,"Add file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
+				<?php $theform->showField("addfile");?><br />
 				<span class="notes">file name, including path from application root, that is used for creating new records.</span>
 			</p>
-			<p>
-				add access (role)<br />
-				<?php fieldRolesList("addroleid",$therecord["addroleid"],$dblink)?>
-			</p>
+
+			<p><?php $theform->showField("addroleid");?></p>
+
 			<p>&nbsp;</p>
+
 			<p>
-				<label for="editfile">edit record file </label><br />
-				<?php fieldText("editfile",$therecord["editfile"],1,"Edit file name cannot be blank.","",Array("size"=>"100","maxlength"=>"128")); ?><br />
+				<?php $theform->showField("editfile");?><br />
 				<span class="notes">file name, including path from application root, that is used for editing existing records.</span>			
 			</p>
-			<p>
-				edit access (role)<br />
-				<?php fieldRolesList("editroleid",$therecord["editroleid"],$dblink)?>
-			</p>
+
+			<p><?php $theform->showField("editroleid");?></p>
+
 		</fieldset>
 		
 		<fieldset>
 			<legend>search screen options</legend>
-			<p>
-				<label for="searchroleid">search access (role)</label><br />
-				<?php fieldRolesList("searchroleid",$therecord["searchroleid"],$dblink)?>
-			</p>
-			<p>
-				<label for="advsearchroleid">advanced search access (role)</label><br />
-				<?php fieldRolesList("advsearchroleid",$therecord["advsearchroleid"],$dblink)?>			
-			</p>
-			<p>
-				<label for="viewsqlroleid">view sql access (role)</label><br />
-				<?php fieldRolesList("viewsqlroleid",$therecord["viewsqlroleid"],$dblink)?>
-			</p>
+			
+			<p><?php $theform->showField("searchroleid")?></p>
+			
+			<p><?php $theform->showField("advsearchroleid")?></p>
+			
+			<p><?php $theform->showField("viewsqlroleid")?></p>
+			
 			<p>
 				<label for="deletebutton">delete button name</label><br />
 				<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20" /><br />
 			</p>		
 			<p>
-				<label for="defaultwhereclause">default search</label> <span class="notes">SQL WHERE clause</span><br />
+				<label for="defaultwhereclause">default search</label> <span class="notes">(SQL WHERE clause)</span><br />
 				<textarea id="defaultwhereclause" name="defaultwhereclause" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultwhereclause"])?></textarea>			
-				<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('defaultwhereclause','default search cannot be blank.');</script>
 			</p>
 			
 			<p>
-				<label for="defaultsortorder">default sort order</label> <span class="notes">SQL ORDER BY clause</span><br />
+				<label for="defaultsortorder">default sort order</label> <span class="notes">(SQL ORDER BY clause)</span><br />
 				<textarea id="defaultsortorder" name="defaultsortorder" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultsortorder"])?></textarea>			
-				<script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('defaultsortorder','default sort order cannot be blank.');</script>
 			</p>
 			<p>
 				Does the default search (above) correspond to a quick search (find drop down) item?<br />
@@ -183,9 +212,9 @@
 		</fieldset>
 	</div>
 	
-	<?php include("../../include/createmodifiedby.php"); ?>
-	
-</form>
-</div><?php include("../../footer.php");?>
-</body>
-</html>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
+</div>
+<?php include("footer.php");?>

@@ -37,11 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 	require_once("include/session.php");
-	require_once("include/common_functions.php");
 			
-	function displayBox($month,$year,$selectedDate){
-		global $dblink;
-		
+	function displayBox($month,$year,$selectedDate,$db){
 		$thedate=mktime(0,0,0,$month,1,$year);
 		$today=mktime(0,0,0);
 		$todayArray=getdate($today);
@@ -62,11 +59,11 @@
 		<td class="dpHead"><button type="button" class="graphicButtons buttonX" id="DPCancel" onclick="closeDPBox();"><span>x</span></button></td>
 	</tr>
 	<tr>
-		<td class="dpButtons" onclick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo $month?>','<?php echo $year-1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;&lt;</td>
-		<td class="dpButtons" onclick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php if($month==1) echo "12"; else echo $month-1?>','<?php if($month==1) echo $year-1; else echo $year?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;</td>
-		<td colspan=3 class="dpButtons" onclick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo date('m',$today)?>','<?php echo $todayArray["year"]?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">Today</td>
-		<td class="dpButtons" onclick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php if($month==12) echo "1"; else echo $month+1?>','<?php if($month==12) echo $year+1; else echo $year;?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;</td>
-		<td class="dpButtons" onclick="loadMonth('<?php echo $_SESSION["app_path"]?>','<?php echo $month?>','<?php echo $year+1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;&gt;</td>
+		<td class="dpButtons" onclick="loadMonth('<?php echo APP_PATH?>','<?php echo $month?>','<?php echo $year-1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;&lt;</td>
+		<td class="dpButtons" onclick="loadMonth('<?php echo APP_PATH?>','<?php if($month==1) echo "12"; else echo $month-1?>','<?php if($month==1) echo $year-1; else echo $year?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&lt;</td>
+		<td colspan=3 class="dpButtons" onclick="loadMonth('<?php echo APP_PATH?>','<?php echo date('m',$today)?>','<?php echo $todayArray["year"]?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">Today</td>
+		<td class="dpButtons" onclick="loadMonth('<?php echo APP_PATH?>','<?php if($month==12) echo "1"; else echo $month+1?>','<?php if($month==12) echo $year+1; else echo $year;?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;</td>
+		<td class="dpButtons" onclick="loadMonth('<?php echo APP_PATH?>','<?php echo $month?>','<?php echo $year+1?>'<?php if($selDate) echo ",'".date("m/d/Y",$selDate)."'"?>)">&gt;&gt;</td>
 	</tr>
 	<tr  class="dpDayNames">
 		<td width="14.286%">S</td>
@@ -118,7 +115,7 @@
 
 	switch($_GET["cm"]){
 		case "shw":
-			displayBox($_GET["m"],$_GET["y"],$_GET["sd"]);
+			displayBox($_GET["m"],$_GET["y"],$_GET["sd"],$db);
 		break;
 	}
 	

@@ -45,15 +45,9 @@ function initializePage(){
 	showPaymentOptions();
 	var theid=getObjectFromID("id");
 	var clientid=getObjectFromID("clientid");
-	if(clientid.value!=""){
-		if(theid.value==""){
-			clientid.onchange();
-		}
-	}
-	else {
-		var displayClient=getObjectFromID("ds-clientid");
-		displayClient.focus();
-	}
+
+	var displayClient=getObjectFromID("ds-clientid");
+	displayClient.focus();
 	
 	var clientinfo=getObjectFromID("clientid");
 	clientinfo.onchange=populateShipping;
@@ -181,6 +175,7 @@ function changeTaxAmount(){
 // a hidden field for the the client ID.  It will then open a small window
 // passing the client ID, and retrieve the appropriate shipping info
 function populateShipping(){
+
 	var clientid=getObjectFromID("clientid");	
 	var theitem,thevalue;
 	var base=document.URL;
@@ -589,10 +584,12 @@ function addLine(thetd){
 	
 	//Update Total Weight
 	var totalweight=getObjectFromID("totalweight");
+	if (totalweight.value == "") totalweight.value = 0;
 	totalweight.value=Math.round((parseFloat(totalweight.value)+(parseFloat(unitweight.value)*parseFloat(quantity.value)))*1000)/1000;
 	
 	//Update Total taxable
 	var totaltaxable=getObjectFromID("totaltaxable");
+	if(totaltaxable.value == "") totaltaxable.value = 0;
 	totaltaxable.value=parseFloat(totaltaxable.value)+(currencyToNumber(extended.value)*parseFloat(taxable.value));
 
 	//Update Totals
@@ -697,6 +694,8 @@ function calculateTotal(){
 	thediscount.value=discountValue;
 
 	//calculate totaltaxable
+	if(totaltaxable.value == "")
+		totaltaxable.value = 0;
 	var numTotalTaxable=parseFloat(totaltaxable.value)-numDiscount;
 
 	//calculate and reformat subtotal
@@ -712,8 +711,7 @@ function calculateTotal(){
 	//next calculate and reformat tax
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
 	if (taxpercentagevalue!=0){
-		var numtax=Math.round(numTotalTaxable*(taxpercentagevalue/100)*Math.pow(10,CURRENCY_ACCURACY))/10^Math.pow(10,CURRENCY_ACCURACY);
-		
+		var numtax=numTotalTaxable*(taxpercentagevalue/100);		
 		if(numtax<0) numtax=0;
 	}
 	else {
@@ -725,6 +723,7 @@ function calculateTotal(){
 		taxpercentage.value=taxpercentagevalue;
 		validatePercentage(taxpercentage,5);
 	}
+
 	taxValue=numberToCurrency(numtax);
 	tax.value=taxValue;
 

@@ -38,7 +38,6 @@
 */
 
 require("../../../include/session.php");
-require("../../../include/common_functions.php");
 	
 class totalReport{
 	
@@ -50,79 +49,164 @@ class totalReport{
 	var $showlineitems=false;
 	var $padamount=20;
 
-	function initialize($variables){
-		$columnnames=explode(":::",stripslashes($variables["columnnamelist"]));
-		$columnvalues=explode(":::",stripslashes($variables["columnvaluelist"]));
-		for($i=0;$i<count($columnnames);$i++)
-			$this->selectcolumns[$columnnames[$i]]=$columnvalues[$i];
-		$this->selectcolumns=array_reverse($this->selectcolumns);
+	function totalReport($db,$variables = NULL){
+		$this->db = $db;
+
+		// first we define the available groups
+		$this->addGroup("Invoice ID","invoices.id"); //0
+		$this->addGroup("Product","concat(products.partnumber,' - ',products.partname)"); //1
+		$this->addGroup("Product Category","concat(productcategories.id,' - ',productcategories.name)",NULL,"INNER JOIN productcategories ON products.categoryid=productcategories.id"); //2
+
+		$this->addGroup("Invoice Date - Year","YEAR(invoices.invoicedate)"); //3
+		$this->addGroup("Invoice Date - Quarter","QUARTER(invoices.invoicedate)"); //4
+		$this->addGroup("Invoice Date - Month","MONTH(invoices.invoicedate)"); //5
+		$this->addGroup("Invoice Date","invoices.invoicedate","date"); //6
+
+		$this->addGroup("Order Date - Year","YEAR(invoices.orderdate)"); //7
+		$this->addGroup("Order Date - Quarter","QUARTER(invoices.orderdate)");//8
+		$this->addGroup("Order Date - Month","MONTH(invoices.orderdate)");//9
+		$this->addGroup("Order Date","invoices.orderdate","date");//10
+
+		$this->addGroup("Client","if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company)");//11
+
+		$this->addGroup("Client Sales Person","concat(salesPerson.firstname,' ',salesPerson.lastname)",NULL, "LEFT JOIN users AS salesPerson ON clients.salesmanagerid = salesPerson.id");//12
+
+		$this->addGroup("Client Lead Source","clients.leadsource");//13
+
+		$this->addGroup("Invoice Lead Source","invoices.leadsource");//14
 		
-		$this->selecttable="(((((lineitems left join products on lineitems.productid=products.id) 
-								inner join invoices on lineitems.invoiceid=invoices.id) 
-								inner join clients on invoices.clientid=clients.id) 
-								LEFT JOIN shippingmethods ON shippingmethods.name=invoices.shippingmethodid)
-								LEFT JOIN paymentmethods ON paymentmethods.name=invoices.paymentmethodid)
-								";
+		$this->addGroup("Payment Method","paymentmethods.name");//15
+		
+		$this->addGroup("Shipping Method","shippingmethods.name");//16
+		$this->addGroup("Invoice Shipping Country","invoices.country");//17
+		$this->addGroup("Invoice Shipping State / Province","invoices.state");//18
+		$this->addGroup("Invoice Shipping Postal Code","invoices.postalcode");//19
+		$this->addGroup("Invoice Shipping City","invoices.city");//20
 
-		if($variables["groupingvaluelist"]) {
-			$this->group=explode(":::",stripslashes($variables["groupingvaluelist"]));
-			$this->group=array_reverse($this->group);
-		}
-		$groupnames=explode(":::",stripslashes($variables["groupingnamelist"]));
-		foreach($groupnames as $grpname){
-			switch($grpname){
-				case "Processed by":
-					$this->selecttable="(".$this->selecttable." inner join users as users1 on invoices.modifiedby=users1.id)";
-				break;
-				case "Client Account Manager":
-					$this->selecttable="(".$this->selecttable." left join users as users2 on clients.salesmanagerid=users2.id)";
-				break;
-				case "Product Category":
-					$this->selecttable="(".$this->selecttable." inner join productcategories on products.categoryid=productcategories.id)";
-				break;
+		$this->addGroup("Web Order","invoices.weborder","boolean");//21
+
+
+		//next we do the columns		
+		$this->addColumn("Record Count","count(lineitems.id)");//0
+		$this->addColumn("Extended Price","sum(lineitems.unitprice*lineitems.quantity)","currency");//1
+		$this->addColumn("Average Extended Price","avg(lineitems.unitprice*lineitems.quantity)","currency");//2
+		$this->addColumn("Unit Price","sum(lineitems.unitprice)","currency");//3
+		$this->addColumn("Average Unit Price","avg(lineitems.unitprice)","currency");//4
+		$this->addColumn("Quantity","sum(lineitems.quantity)","real");//5
+		$this->addColumn("Average Quantity","avg(lineitems.quantity)","real");//6
+		$this->addColumn("Unit Cost","sum(lineitems.unitcost)","currency");//7
+		$this->addColumn("Average Unit Cost","avg(lineitems.unitcost)","currency");//8
+		$this->addColumn("Extended Cost","sum(lineitems.unitcost*lineitems.quantity)","currency");//9
+		$this->addColumn("Average Extended Cost","avg(lineitems.unitcost*lineitems.quantity)","currency");//10
+		$this->addColumn("Unit Weight","sum(lineitems.unitweight)","real");//11
+		$this->addColumn("Average Unit Weight","avg(lineitems.unitweight)","real");//12
+		$this->addColumn("Extended Unit Weight","sum(lineitems.unitweight*lineitems.quantity)","real");//13
+		$this->addColumn("Extended Average Unit Weight","avg(lineitems.unitweight*lineitems.quantity)","real");//14
+		
+						
+		if($variables){
+			$tempArray = explode("::", $variables["columns"]);
+
+			foreach($tempArray as $id)
+				$this->selectcolumns[] = $this->columns[$id];				
+			$this->selectcolumns = array_reverse($this->selectcolumns);
+						
+			//change
+			$this->selecttable="(((((lineitems left join products on lineitems.productid=products.id) 
+									inner join invoices on lineitems.invoiceid=invoices.id) 
+									inner join clients on invoices.clientid=clients.id) 
+									LEFT JOIN shippingmethods ON shippingmethods.name=invoices.shippingmethodid)
+									LEFT JOIN paymentmethods ON paymentmethods.name=invoices.paymentmethodid)
+									";
+	
+			if($variables["groupings"] !== ""){
+				$this->group = explode("::",$variables["groupings"]);
+				$this->group = array_reverse($this->group);
+			} else
+				$this->group = array();
+			
+			foreach($this->group as $grp){
+				if($this->groupings[$grp]["table"])
+					$this->selecttable="(".$this->selecttable." ".$this->groupings[$grp]["table"].")";
 			}
-		}
-
-		if($variables["showlineitems"])$this->showlineitems=true;
-
-		$this->whereclause=$_SESSION["printing"]["whereclause"];
-		if($this->whereclause=="") $this->whereclause="WHERE lineitems.id!=-1";		
-		if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
-	}
+	
+			$this->whereclause=$_SESSION["printing"]["whereclause"];
+			if($this->whereclause=="") $this->whereclause="WHERE invoices.id!=-1";
+			
+			switch($variables["showwhat"]){
+				case "invoices":
+					$this->showinvoices = true;
+					$this->showlineitems = false;
+					break;
+					
+				case "lineitems":
+					$this->showinvoices = true;
+					$this->showlineitems = true;
+					break;
+					
+				default:
+					$this->showinvoices = false;
+					$this->showlineitems = false;
+			}// endswitch
+						
+			if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
+		}// endif
+	}//end method
 	
 		
+	function addGroup($name, $field, $format = NULL, $tableAddition = NULL){
+		$temp = array();
+		$temp["name"] = $name;
+		$temp["field"] = $field;
+		$temp["format"] = $format;
+		$temp["table"] = $tableAddition;
+		
+		$this->groupings[] = $temp;
+	}//end method
+	
+	
+	function addColumn($name, $field, $format = NULL){
+		$temp = array();
+		$temp["name"] = $name;
+		$temp["field"] = $field;
+		$temp["format"] = $format;
+		
+		$this->columns[] = $temp;
+	}//end method
+
+
 	function showReportTable(){
 		?><table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<th>&nbsp;</th>
 		<?php
-			foreach($this->selectcolumns as $name=>$column){
-				?><th align=right nowrap="nowrap"><?php echo $name?></td><?php
+			foreach($this->selectcolumns as $thecolumn){
+				?><th align="right"><?php echo $thecolumn["name"]?></th><?php
 			}//end foreach
 		?>
 		</tr>
-		<?php $this->showGroup($this->group,"",0);?>
+		<?php $this->showGroup($this->group,"",10);?>
 		<?php $this->showGrandTotals();?>		
 		</table>
 		<?php
 	}
 	
 	function showGrandTotals(){
-		global $dblink;
+
 		$querystatement="SELECT ";
-		foreach($this->selectcolumns as $name=>$column)
-			$querystatement.=$column." AS `".$name."`,";
+		foreach($this->selectcolumns as $thecolumn)
+			$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 		$querystatement.=" count(lineitems.id) as thecount ";
 		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;		
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"showGrandTotals - Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);
-		$therecord=mysql_fetch_array($queryresult);
+		$queryresult=$this->db->query($querystatement);
+
+		$therecord=$this->db->fetchArray($queryresult);
 		?>
 		<tr>
 			<td class="grandtotals" align="right">Totals: (<?php echo $therecord["thecount"]?>)</td>
 			<?php
-				foreach($this->selectcolumns as $name=>$column){
-					?><td align="right" class="grandtotals"><?php echo $therecord[$name]?></td><?php
+				foreach($this->selectcolumns as $thecolumn){
+					?><td align="right" class="grandtotals"><?php echo formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"])?></td><?php
 				}//end foreach
 			?>
 		</tr>
@@ -130,48 +214,54 @@ class totalReport{
 	}
 	
 	function showGroup($group,$where,$indent){
-		global $dblink;
+
 		if(!$group){
 			if($this->showlineitems)
 				$this->showLineItems($where,$indent+$this->padamount);
 		} else {
-			$groupby=array_pop($group);
+			$groupby = array_pop($group);
+			
 				
 			$querystatement="SELECT ";
-			foreach($this->selectcolumns as $name=>$column)
-				$querystatement.=$column." AS `".$name."`,";
-			$querystatement.=$groupby." AS thegroup, count(lineitems.id) as thecount ";
-			$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$groupby;
-			$queryresult=mysql_query($querystatement,$dblink);
-			if(!$queryresult) reportError(500,"showGroup - Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);
-			
-			while($therecord=mysql_fetch_array($queryresult)){
+			foreach($this->selectcolumns as $thecolumn)
+				$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
+			$querystatement .= $this->groupings[$groupby]["field"]." AS thegroup, count(lineitems.id) as thecount ";
+			$querystatement .= " FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$this->groupings[$groupby]["field"];
+			$queryresult=$this->db->query($querystatement);
+
+			while($therecord=$this->db->fetchArray($queryresult)){
 				
 				$showbottom=true;
 				if($group or $this->showinvoices) {
 					$showbottom=false;
 					?>
-					<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="group<?php echo ($indent/$this->padamount)?>" style="padding-left:<?php echo ($indent+2)?>px;"><?php echo $therecord["thegroup"]?>&nbsp;</td></tr>
-					<?php }
+					<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="group" style="padding-left:<?php echo ($indent+2)?>px;"><?php echo $this->groupings[$groupby]["name"].": <strong>".formatVariable($therecord["thegroup"],$this->groupings[$groupby]["format"])."</strong>"?>&nbsp;</td></tr>
+					<?php 
+				}//endif
 					
 				if($group) {
-					$whereadd=$where." AND (".$groupby."= \"".$therecord["thegroup"]."\")";
+					$whereadd = $where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\"";					
+					if(!$therecord["thegroup"])
+						$whereadd .= " OR ISNULL(".$this->groupings[$groupby]["field"].")";
+					$whereadd .= ")";
 					$this->showGroup($group,$whereadd,$indent+$this->padamount);
 				} elseif($this->showlineitems) {
 					if($therecord["thegroup"])
-						$this->showLineItems($where." AND (".$groupby."= \"".$therecord["thegroup"]."\")",$indent+$this->padamount);
+						$this->showLineItems($where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\")",$indent+$this->padamount);
 					else
-						$this->showLineItems($where." AND (".$groupby."= \"".$therecord["thegroup"]."\" or isnull(".$groupby.") )",$indent+$this->padamount);
-				}
+						$this->showLineItems($where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\" or isnull(".$this->groupings[$groupby]["field"].") )",$indent+$this->padamount);
+				}//endif
 				
 				?>
 				<tr>
-					<td width="100%" style="padding-left:<?php echo ($indent+2)?>px;" class="group<?php echo ($indent/$this->padamount)?>">
-						<?php if($showbottom and $therecord["thegroup"]) echo $therecord["thegroup"];else echo "&nbsp;"?>
-					</td>
+					<td width="100%" style=" <?php 
+						echo "padding-left:".($indent+2)."px";
+					?>" class="groupFooter">
+						<?php echo $this->groupings[$groupby]["name"].": <strong>".formatVariable($therecord["thegroup"],$this->groupings[$groupby]["format"])."</strong>&nbsp;";?>
+					</td>					
 					<?php
-						foreach($this->selectcolumns as $name=>$column){
-							?><td align="right" class="group<?php echo ($indent/$this->padamount)?>"><?php echo $therecord[$name]?></td><?php
+						foreach($this->selectcolumns as $thecolumn){
+							?><td align="right" class="groupFooter"><?php echo formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"])?></td><?php
 						}//end foreach
 					?>
 				</tr>
@@ -179,291 +269,205 @@ class totalReport{
 			}//end while
 		}//endif		
 	}//end function
-	
+
 	
 	function showLineItems($where,$indent){
-		global $dblink;
 		
 		$querystatement="SELECT lineitems.invoiceid, 
-						if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, invoices.invoicedate,
+						if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, 
+						invoices.invoicedate, invoices.orderdate,
 						lineitems.id,products.partnumber,products.partname,quantity,lineitems.unitprice,quantity*lineitems.unitprice as extended
 						FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY lineitems.id ";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"showLineItems Bad SQL:".mysql_error($dblink)."<br /><br />".$querystatement);	
-				
-		?>
-			<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="invoices" style="padding-right:10px;padding-left:<?php echo ($indent+2)?>px;">
-				<table border="0" cellspacing="0" cellpadding="0" style="border:0px;">
-		<?php 
-		
-		while($therecord=mysql_fetch_array($queryresult)){			
-			?>
-			<tr>
-				<td class="lineitems" nowrap="nowrap"><?php echo $therecord["invoiceid"]?></td>
-				<td class="lineitems" nowrap="nowrap"><?php if($therecord["invoicedate"]) echo formatFromSQLDate($therecord["invoicedate"]); else echo "&nbsp;"?></td>
-				<td class="lineitems" width="20%"><?php echo $therecord["thename"]?></td>
-				<td width="60%" class="lineitems" nowrap="nowrap"><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
-				<td width="9%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["unitprice"])?></td>
-				<td width="8%" class="lineitems" align="center" nowrap="nowrap"><?php echo number_format($therecord["quantity"],2)?></td>
-				<td width="7%" class="lineitems" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
-			</tr>
-			<?php
-		}
-		
-		?></table></td></tr><?php 
+		$queryresult=$this->db->query($querystatement);
 
-	}
+		if($this->db->numRows($queryresult)){
+			?>
+				<tr><td class="invoices" style="padding-left:<?php echo ($indent+2)?>px;">
+					<table border="0" cellspacing="0" cellpadding="0" id="lineitems">
+						<tr>
+							<th align="left">id</th>
+							<th align="left">date</th>
+							<th width="20%" align="left" >client</th>
+							<th width="60%" align="left">product</th>
+							<th width="9%" align="right" nowrap="nowrap">price</th>
+							<th width="8%" align="right" nowrap="nowrap">qty.</th>
+							<th width="7%" align="right" nowrap="nowrap">ext.</th>
+						</tr>
+			<?php 
+			
+			while($therecord=$this->db->fetchArray($queryresult)){			
+				?>
+				<tr>			
+					<td nowrap="nowrap"><?php echo $therecord["invoiceid"]?></td>
+					<td nowrap="nowrap"><?php if($therecord["invoicedate"]) echo formatFromSQLDate($therecord["invoicedate"]); else echo "<strong>".formatFromSQLDate($therecord["orderdate"])."</strong>";?></td>
+					<td><?php echo $therecord["thename"]?></td>
+					<td width="60%" nowrap="nowrap"><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
+					<td width="9%" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["unitprice"])?></td>
+					<td width="8%" align="center" nowrap="nowrap"><?php echo formatVariable($therecord["quantity"],"real")?></td>
+					<td width="7%" align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
+				</tr>
+				<?php
+			}// endwhile
+			
+			?></table></td>
+			<?php 
+				for($i=1;$i < count($this->selectcolumns); $i++)
+					echo "<td>&nbsp;</td>"
+			?>
+			</tr><?php 
+		}// endif
+	
+	}//end method
+
 
 	function showReport(){
-	?>
-<head>
-<title>Invoice Totals</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<style type="text/css">
-<!--
-BODY,TH,TD,H1,H2{
-	font-size : 10px;
-	font-family : sans-serif;
-	color : Black; 
-}
-H1,H2{
-	font-size:18px;
-	border-bottom:4px solid black;
-	margin:0px;	
-}
-H2{ font-size:12px; border-bottom-width:2px; margin-bottom:10px;}
-div {padding:5px;}
-
-TABLE{border:3px solid black;border-bottom-width:1px;border-right-width:1px;}
-TH, TD{ padding:2px; border-right:1px solid black;border-bottom:1px solid black;}
-TH {
-	background-color:#EEEEEE;
-	font-size:16px;
-	font-weight: bold;
-	border-bottom-width:3px;
-}
-.group0{font-size:14px;border-bottom-width:2px; border-top:1px solid black; font-weight:bold; padding-bottom:5px;}
-.group1{font-size:14px;}
-.group2{font-size:12px; font-weight:bold;}
-.group3{font-size:12px;}
-.group4{font-size:10px; font-weight:bold;}
-.group5{font-size:10px; font-weight:bold;font-style::italic}
-
-.grandtotals{font-size:14px; border-top:3px double black; font-weight:bold; padding-top:8px;padding-bottom:8px; background-color:#EEEEEE;}
-
-.invoices{font-size:10px; border-bottom-style:dotted; border-bottom-width:2px;}
-.lineitems{font-size:9px;border-bottom-style:dotted; border-bottom-width:1px; border-right-width:0px;}
--->
-</style>
-</head>
-<body>
-<h1><?php echo $_POST["reporttitle"]?></h1>
-<h2>
-	<div>
-	source:<br />
-	<?php echo $_SESSION["printing"]["dataprint"]?>
-	</div>
-	<div>
-	date generated:<br />
-	<?php echo dateToString(mktime())." ".timeToString(mktime())?>
-	</div>
-</h2>
-<?php $this->showReportTable();?>
-</body>
-</html>
-	<?php	
-	}
-}//end class
-
-if(isset($_POST["command"])){
-	$myreport= new totalReport();
-	$myreport->initialize($_POST);
-	
-	$myreport->showReport();
-} else {
+		
+		if($_POST["reporttitle"])
+			$pageTitle = $_POST["reporttitle"];
+		else			
+			$pageTitle = "Line Item Totals";
+			
+		
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Line Item Totals</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<?php require("../../../head.php")?>
-	<script language="JavaScript" type="text/javascript">
-		function moveItem(id,direction,theform){
-			var additem,removeitem,tempText,tempValue;
-			
-			if(direction=="to"){
-				additem="selected"+id;
-				removeitem="available"+id;
-			}else{
-				removeitem="selected"+id;
-				additem="available"+id;
-			}
-			
-			for(i=0;i<theform[removeitem].length;i++)	{
-				if (theform[removeitem].options[i].selected) {
-					tempText=theform[removeitem].options[i].text;
-					tempValue=theform[removeitem].options[i].value;
-					theform[removeitem].options[i]=null;
-					theform[additem].options[theform[additem].options.length]= new Option(tempText,tempValue);
-					i=-1;
-				}
-			}			
-		}//end function
-		
-		function submitForm(theform){
-			var thereturn=true;
-			
-			if(theform["showwhat"].value=="lineitems"){
-				theform["showlineitems"].value=1;
-			}
-			
-			for(i=0;i<theform["selectedcolumns"].length;i++)	{
-				theform["columnnamelist"].value=theform["columnnamelist"].value+theform["selectedcolumns"].options[i].text+":::";
-				theform["columnvaluelist"].value=theform["columnvaluelist"].value+theform["selectedcolumns"].options[i].value+":::";
-			}//end for
-			theform["columnnamelist"].value=theform["columnnamelist"].value.substring(0,(theform["columnnamelist"].value.length-3));
-			theform["columnvaluelist"].value=theform["columnvaluelist"].value.substring(0,(theform["columnvaluelist"].value.length-3));
-
-			for(i=0;i<theform["selectedgroupings"].length;i++)	{
-				theform["groupingnamelist"].value=theform["groupingnamelist"].value+theform["selectedgroupings"].options[i].text+":::";
-				theform["groupingvaluelist"].value=theform["groupingvaluelist"].value+theform["selectedgroupings"].options[i].value+":::";
-			}//end for
-			theform["groupingnamelist"].value=theform["groupingnamelist"].value.substring(0,(theform["groupingnamelist"].value.length-3));
-			theform["groupingvaluelist"].value=theform["groupingvaluelist"].value.substring(0,(theform["groupingvaluelist"].value.length-3));
-			
-			if(theform["columnnamelist"].value==""){
-				alert("You must have at least one column to display");
-				thereturn=false;
-			}
-			return thereturn;
-		}//end function
-	</script>
-	
-</html><?php }?>
-	<style type="text/css">
-		.bodyline{width:550px;padding:4px;margin:10px auto;}
-		#selectedgroupings,#availablegroupings,#selectedcolumns,#availablecolumns{width:100%}
-		#print{width:75px;margin-right:3px;}
-		#cancel{width:75px;}
-	</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/pages/totalreports.css" rel="stylesheet" type="text/css" />
+<title><?php echo $pageTitle?></title>
 </head>
 
 <body>
-<div class="bodyline" style="">
-	<h1>Invoice Total Options</h1>	
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return submitForm(this)">
-		<p>	
-			<label for="reporttitle">report title</label><br />			
-			<input type="text" name="reporttitle" id="reporttitle" size="45"/>
-		</p>
-		<fieldset>
-			<legend>Grouping</legend>
-			<div class="fauxP">
-			<table border="0" cellspacing="0" cellpadding="0">
-				<tr>
-					<td width="50%">
-						<label for="selectedgroupings">selected groupings</label><br />
-						<select id="selectedgroupings" name="selectedgroupings" size="5" multiple="multiple">
-						</select>
-						<input type="hidden" name="postedgroupings" />
-					</td>
-					<td>
-						<p><br />
-						<input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);" /></p>
-						<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);" /></p>
-					</td>
-					<td width="50%">
-						<label for="availablegroupings">available groupings</label><br />
-						<select id="availablegroupings" name="availablegroupings" size="5" multiple="multiple">
-							<option value="invoices.id">Invoice ID</option>
-							<option value="concat(products.partnumber,' - ',products.partname)">Product</option>
-							<option value="concat(productcategories.id,' - ',productcategories.name)">Product Category</option>
-							<option value="invoices.invoicedate">Invoice Date</option>
-							<option value="concat(lpad(month(invoices.invoicedate),2,'0'),' - ',date_format(invoices.invoicedate,'%b'))">Invoice Date - Month</option>
-							<option value="concat(quarter(invoices.invoicedate),' - ',year(invoices.invoicedate))">Invoice Date - Quarter</option>
-							<option value="year(invoices.invoicedate)">Invoice Date - Year</option>
-							<option value="invoices.orderdate">Invoice Date</option>
-							<option value="concat(lpad(month(invoices.orderdate),2,'0'),' - ',date_format(invoices.orderdate,'%b'))">Order Date - Month</option>
-							<option value="concat(quarter(invoices.orderdate),' - ',year(invoices.orderdate))">Order Date - Quarter</option>
-							<option value="year(invoices.orderdate)">Order Date - Year</option>
-							<option value="concat(users1.firstname,' ',users1.lastname)">Processed by</option>
-							<option value="if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company)">Client Name / Company</option>
-							<option value="concat(users2.firstname,' ',users2.lastname)">Client Account Manager</option>
-							<option value="clients.leadsource">Client Lead Source</option>
-							<option value="invoices.leadsource">Lead Source</option>
-							<option value="paymentmethods.name">Payment Method</option>
-							<option value="shippingmethods.name">Shipping Method</option>
-							<option value="invoices.shipcountry">Shipping Country</option>
-							<option value="invoices.shipstate">Shipping State</option>
-							<option value="invoices.shipcity">Shipping City</option>
-							<option value="invoices.status">Invoice Status</option>
-							<option value="invoices.weborder">Web Orders</option>	
-						</select>
-						<input type="hidden" name="groupingnamelist" />
-						<input type="hidden" name="groupingvaluelist" />
-					</td>
-				</tr>
-			</table></div>
-
-		</fieldset>
-		<fieldset>
-			<legend>Columns</legend>
-			<div class="fauxP">
-			<table border="0" cellspacing="0" cellpadding="0">
-				<tr>
-					<td width="50%">
-						<label for="selectedcolumns">shown columns</label>
-						<select name="selectedcolumns" id="selectedcolumns" size="7">
-							<option value="concat('$',format(sum(invoices.totalti),2))">Invoice Total</option>						
-						</select>
-						<input type="hidden" name="postedcolumns" />
-					</td>
-					<td>
-						<p><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);" /></p>
-						<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);" /></p>
-					</td>
-					<td width="50%">
-						<label for="availablecolumns">available columns</label><br />
-						<select name="availablecolumns" id="availablecolumns" size="7">
-							<option value="count(lineitems.id)">count</option>						
-							<option value="concat('$',format(avg(lineitems.unitprice*lineitems.quantity),2))">Extended Price (average)</option>						
-							<option value="concat('$',format(avg(lineitems.unitprice),2))">Unit Price (average)</option>						
-							<option value="format(sum(lineitems.quantity),2)">Quantity</option>						
-							<option value="format(avg(lineitems.quantity),2)">Quantity (average)</option>						
-							<option value="concat('$',format(avg(lineitems.unitcost),2))">Unit Cost (average)</option>
-							<option value="concat('$',format(sum(lineitems.unitcost*lineitems.quantity),2))">Extended Cost</option>						
-							<option value="concat('$',format(avg(lineitems.unitcost*lineitems.quantity),2))">Extended Cost (average)</option>						
-							<option value="format(avg(lineitems.unitweight),2)">Unit Weight (average)</option>						
-							<option value="format(sum(lineitems.unitweight*lineitems.quantity),2)">Extended Weight</option>						
-							<option value="format(avg(lineitems.unitweight*lineitems.quantity),2)">Extended Weight (average)</option>						
-						</select>
-						<input type="hidden" name="columnnamelist" />
-						<input type="hidden" name="columnvaluelist" />
-					</td>
-				</tr>
-			</table>
-			</div>
-		</fieldset>
-		<fieldset>
-			<legend>Options</legend>
-			<p>
-			<label for="showwhat">information shown</label><br />
-			<select name="showwhat" id="showwhat">
-				<option selected="selected" value="totals">Totals Only</option>
-				<option value="invoices">Invoices</option>
-				<option value="lineitems">Invoices &amp; Line Items</option>
-			</select>
-			<input type="hidden" name="showinvoices"  />
-			<input type="hidden" name="showlineitems" />
-			</p>
-		</fieldset>
-
-		<p align="right">
-			<input name="command" type="submit" class="Buttons" id="print" value="print" />
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
-		</p>
-   </form>
-</div>
-
+	<div id="toprint">
+		<h1><span><?php echo $pageTitle?></span></h1>
+		<h2>Source: <?php echo $_SESSION["printing"]["dataprint"]?></h2>
+		<h2>Date: <?php echo dateToString(mktime())." ".timeToString(mktime())?></h2>
+	
+		<?php $this->showReportTable();?>
+	</div>
 </body>
-</html><?php }?>
+</html><?php	
+
+	}// end method
+
+
+	function showOptions($what){
+		$i=0;
+		
+		foreach($this->$what as $value){
+			?><option value="<?php echo $i; ?>"><?php echo $value["name"];?></option>
+			<?php
+			$i++;
+		}// endforeach
+		
+	}//end mothd
+
+	
+	function showSelectScreen(){
+	
+		global  $phpbms;
+
+		$pageTitle="Line Items Totals";
+		$phpbms->showMenu = false;		
+		$phpbms->cssIncludes[] = "pages/totalreports.css";		
+		$phpbms->jsIncludes[] = "modules/bms/javascript/totalreports.js";
+		
+		include("header.php");
+	
+		?>
+
+	<div class="bodyline">
+		<h1>Line Items Total Options</h1>	
+		<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return false;">
+	
+			<fieldset>
+				<legend>report</legend>
+				<p>	
+					<label for="reporttitle">report title</label><br />			
+					<input type="text" name="reporttitle" id="reporttitle" size="45"/>
+				</p>
+			</fieldset>
+			
+			<fieldset>
+				<legend>Grouping</legend>
+				
+				<div class="selectLeft fauxP">
+					<label for="selectedgroupings">selected groupings</label><br />
+					<select id="selectedgroupings" name="selectedgroupings" size="9" multiple="multiple">
+					</select>
+					<input type="hidden" id="groupings" name="groupings"/>
+				</div>
+
+				<div class="selectLeft fauxP">
+					<p><br /><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);" /></p>
+					<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);" /></p>
+				</div>
+				
+				<div class="fauxP">
+					<label for="availablegroupings">available groupings</label><br />
+					<select id="availablegroupings" name="availablegroupings" size="9" multiple="multiple">
+						<?php $this->showOptions("groupings")?>
+					</select>				
+				</div>
+	
+			</fieldset>
+			
+			<fieldset>
+				<legend>Columns</legend>
+
+				<div class="selectLeft fauxP">
+					<label for="selectedcolumns">shown columns</label><br />
+					<select name="selectedcolumns" id="selectedcolumns" size="9"></select>
+					<input type="hidden" id="columns" name="columns"/>					
+				</div>
+
+				<div class="selectLeft fauxP">
+					<p><br /><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);" /></p>
+					<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);" /></p>
+				</div>
+				
+				<div class="fauxP">
+					<label for="availablecolumns">available columns</label><br />
+					<select name="availablecolumns" id="availablecolumns" size="9">
+						<?php $this->showOptions("columns")?>
+					</select>
+				</div>
+
+			</fieldset>
+			
+			<fieldset>
+				<legend>Options</legend>
+				<p>
+				<label for="showwhat">information shown</label><br />
+				<select name="showwhat" id="showwhat">
+					<option selected="selected" value="totals">Totals Only</option>
+					<option value="invoices">Invoices</option>
+					<option value="lineitems">Invoices &amp; Line Items</option>
+				</select>
+				</p>
+			</fieldset>
+	
+			<p align="right">
+				<input name="command" type="button" class="Buttons" id="print" value="print" onclick="submitForm();"/>
+				<input name="command" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
+			</p>
+	   </form>
+	</div>
+
+		<?php
+		
+		include("footer.php");
+	}//end method
+	
+}//end class
+
+
+// Processing ===================================================================================================================
+if(!isset($dontProcess)){
+	if(isset($_POST["columns"])){
+		$myreport= new totalReport($db,$_POST);	
+		$myreport->showReport();
+	} else {
+		$myreport = new totalReport($db);	
+		$myreport->showSelectScreen();
+	}
+}?>

@@ -38,29 +38,49 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("./include/discounts.php");
 
-	include("include/discounts_addedit_include.php");
+	$thetable = new discounts($db,25);
+	$therecord = $thetable->processAddEditPage();
 	
-	$pageTitle="Discounts / Promotions";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/discounts.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/discount.js" type="text/javascript"></script>
-</head>
-<body onload="init()"><?php include("../../menu.php")?>
-<div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
+
+	$stats = $thetable->getTotals($therecord["id"]);
+	
+	$pageTitle="Discount / Promotion";
+
+	$phpbms->cssIncludes[] = "pages/discounts.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/discount.js";
+	$phpbms->onload = "init()";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+				
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputPercentage("percentvalue",$therecord["value"],"value",2,true);
+		$theform->addField($theinput);		
+		
+		$theinput = new inputCurrency("amountvalue",$therecord["value"], "value" ,true);
+		$theform->addField($theinput);	
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");
+		
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 	
 	<div id="fsAttributes">
 		<fieldset>
@@ -70,7 +90,7 @@
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="readonly" class="uneditable" />
 			</p>			
 			<p>
-				<?php fieldCheckbox("inactive",$therecord["inactive"])?> <label for="inactive">inactive</label>
+				<?php $theform->showField("inactive")?>
 			</p>		
 		</fieldset>
 		
@@ -89,9 +109,9 @@
 
 	<div id="nameDiv">
 		<fieldset>
-			<legend><label for="name">name</label></legend>
+			<legend>name</legend>
 			<p>
-				<?php fieldText("name",htmlQuotes($therecord["name"]),1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
+				<?php $theform->showField("name") ?>
 			</p>
 		</fieldset>
 		
@@ -104,12 +124,10 @@
 				<input type="radio" class="radiochecks" id="typeAmount" name="type" value="amount" <?php if($therecord["type"]=="amount") echo "checked=\"checked\"" ?> onclick="changeType()" /><label for="typeAmount">amount</label>
 			</p>
 			<p id="pValue">
-				<label for="percentvalue">value</label><br />
-				<?php fieldPercentage("percentvalue",$therecord["value"],2,1,"Value is required",Array("size"=>"10","maxlength"=>"10"));?>
+				<?php $theform->showField("percentvalue");?>
 			</p>
 			<p id="aValue">
-				<label for="amountvalue">value</label><br />
-				<?php fieldCurrency("amountvalue",$therecord["value"],1,"Value is required",Array("size"=>"10","maxlength"=>"10"))?>
+				<?php $theform->showField("amountvalue");?>
 			</p>			
 		</fieldset>
 		
@@ -121,9 +139,10 @@
 			</p>
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>
-	</form>
+	
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php")?>
-</body>
-</html>
+<?php include("footer.php");?>

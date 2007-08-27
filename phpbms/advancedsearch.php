@@ -38,21 +38,19 @@
 */
 	require("include/session.php");
 
-	function showSearch($tabledefid,$basepath){
-		global $dblink;
-		
+	function showSearch($tabledefid,$basepath,$db){
 		//First, grab table name from id	
 		$querystatement="SELECT querytable FROM tabledefs WHERE id=".$tabledefid;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-		$thetabledef=mysql_fetch_array($queryresult);
+		$queryresult = $db->query($querystatement);
+		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
+		$thetabledef=$db->fetchArray($queryresult);
 
 		//Grab query for all columns
 		$querystatement="SELECT * FROM ".$thetabledef["querytable"]." LIMIT 1";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-		$numfields = mysql_num_fields($queryresult);
-		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_table($queryresult,$i).".".mysql_field_name($queryresult,$i);
+		$queryresult = $db->query($querystatement);
+		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
+		$numfields = $db->numFields($queryresult);
+		for ($i=0;$i<$numfields;$i++) $fieldlist[]=$db->fieldTable($queryresult,$i).".".$db->fieldName($queryresult,$i);
 		?>
 		<p align="right" style="float:right">
 			<input id="ASsearchbutton" type="button" onclick="performAdvancedSearch(this)" class="Buttons" disabled="disabled" value="search" />		
@@ -94,7 +92,7 @@
 	if(isset($_GET["cmd"])){
 		switch($_GET["cmd"]){
 			case "show":
-				showSearch($_GET["tid"],$_GET["base"]);
+				showSearch($_GET["tid"],$_GET["base"],$db);
 			break;
 		}//end switch
 	}

@@ -46,17 +46,18 @@
 		var $savedSearches;
 		var $savedSorts;
 		
-		function initialize($tableid,$theids){
-			global $dblink;
-
-			$this->tableid=$tableid;
-			$this->theids=$theids;
+		var $db;		
+		
+		function printer($db,$tableid,$theids){
+			$this->db = $db;
+			$this->tableid = $tableid;
+			$this->theids = $theids;
 			
 			$querystatement="SELECT maintable FROM tabledefs 
 							WHERE id=".$this->tableid.";";
-			$queryresult=mysql_query($querystatement,$dblink);		
-			if(!$queryresult) reportError(500,"Error retreving table info.");
-			$therecord=mysql_fetch_array($queryresult);
+			$queryresult=$this->db->query($querystatement);		
+			if(!$queryresult) $error = new appError(500,"Error retreving table info.");
+			$therecord=$this->db->fetchArray($queryresult);
 			$this->maintable=$therecord["maintable"];
 
 
@@ -65,8 +66,8 @@
 				$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 			$querystatement="SELECT id,name,reportfile,type,description,displayorder FROM reports 
 							WHERE (tabledefid=0 or tabledefid=".$this->tableid.") ".$securitywhere." ORDER BY tabledefid desc, displayorder desc,name";
-			$queryresult=mysql_query($querystatement,$dblink);		
-			if(!$queryresult) reportError(500,"Error retreving reports.");
+			$queryresult=$this->db->query($querystatement);		
+			if(!$queryresult) $error = new appError(500,"Error retreving reports.");
 			$this->reports=$queryresult;
 			
 			$this->savedSearches=$this->getSaved($_SESSION["userinfo"]["id"],"SCH");
@@ -81,13 +82,12 @@
 		
 
 		function getSaved($userid,$type){
-			global $dblink;
-			
+		
 			$securitywhere="";
 			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
 				$securitywhere=" AND roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 			$querystring="SELECT id,name,userid FROM usersearches WHERE tabledefid=".$this->tableid." and type=\"".$type."\" and((userid=0 ".$securitywhere.") or userid=\"".$userid."\") order by userid,name";
-			$thequery = mysql_query($querystring,$dblink);
+			$thequery = $this->db->query($querystring);
 			return $thequery;
 		}//end function
 
@@ -99,60 +99,64 @@
 				goURL($backurl);
 		}
 		
+		
 		function showJavaScriptArray(){
-			if(mysql_num_rows($this->reports)){
-				mysql_data_seek($this->reports,0);
+			$thereturn = "";
+			if($this->db->numRows($this->reports)){
+				$this->db->seek($this->reports,0);
+				
+				while($therecord=$this->db->fetchArray($this->reports))
+					$thereturn .= "theReport[theReport.length]=new Array(".$therecord["id"].",\"".$therecord["reportfile"]."\",\"".addslashes($therecord["name"])."\",\"".$therecord["type"]."\",\",".addcslashes(addslashes($therecord["description"]),"\r\n")."\");";					
 
-				?><script language="JavaScript" type="text/javascript"><?php 
-				while($therecord=mysql_fetch_array($this->reports)){
-					?>theReport[theReport.length]=new Array(<?php echo $therecord["id"]?>,"<?php echo $therecord["reportfile"]?>","<?php echo addslashes($therecord["name"])?>","<?php echo $therecord["type"]?>","<?php echo addcslashes(addslashes($therecord["description"]),"\r\n")?>");<?php 
-				 }	 
-				?></script><?php 
-			} else { ?><script language="JavaScript" type="text/javascript">theReport[theReport.length]=new Array(0,"","No Reports Available","","");</script><?php 
+			} else { 
+				$thereturn= "theReport[theReport.length]=new Array(0,\"\",\"No Reports Available\",\"\",\"\");";
 			}
-		}
+			
+			return $thereturn;
+		}//end method
 		
 		function displayReportList(){
 			?>
-		   <select name="choosereport[]" id="choosereport" size="12" multiple onchange="switchReport(this)">
+		   <select name="choosereport[]" id="choosereport" size="12" multiple="multiple" onchange="switchReport(this)">
 			<?php
-				if(mysql_num_rows($this->reports)){
-					mysql_data_seek($this->reports,0);
+				if($this->db->numRows($this->reports)){
+					$this->db->seek($this->reports,0);
 					$displayorder=-1;
-					while($therecord=mysql_fetch_array($this->reports)){
+					while($therecord=$this->db->fetchArray($this->reports)){
 						if ($displayorder!=$therecord["displayorder"]){
 							if($displayorder>0)
-								echo "<OPTION value=\"\">----------------------------------------------------------------</option>\n";
+								echo "<option value=\"\">----------------------------------------------------------------</option>\n";
 							$displayorder=$therecord["displayorder"];
 						}
-						echo "<OPTION value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
+						echo "<option value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
 					}
 				} else {?><option value="0">No Reports Available</option><?php }
 		   ?>
 		   </select>
-		   <script>var thechoice=getObjectFromID("choosereport");thechoice.focus();thechoice.options[0].selected=true;</script>
-			<?php
+		   <?php 
+		   	$phpbms->bottomJS[] = "var thechoice=getObjectFromID(\"choosereport\");thechoice.focus();thechoice.options[0].selected=true;";
 		}
 
+
 	function showSaved($thequery,$selectname){
-		$numrows=mysql_num_rows($thequery);
+		$numrows=$this->db->numRows($thequery);
 		?>
-		<select name="<?php echo $selectname?>" id="<?php echo $selectname?>" <?php if ($numrows<1) echo "disabled" ?>>
+		<select name="<?php echo $selectname?>" id="<?php echo $selectname?>" <?php if ($numrows<1) echo "disabled=\"disabled\"" ?>>
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
 			<?php 
 				} else {
 					$numglobal=0;
-					while($therecord=mysql_fetch_array($thequery))
+					while($therecord=$this->db->fetchArray($thequery))
 						if($therecord["userid"]<1) $numglobal++;
-					mysql_data_seek($thequery,0);				
+					$this->db->seek($thequery,0);				
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
 				<?php
 					}//end if
 					$userqueryline=true;
-					while($therecord=mysql_fetch_array($thequery)){
+					while($therecord=$this->db->fetchArray($thequery)){
 						if ($therecord["userid"]> 0 and $userqueryline) {
 							$userqueryline=false;						
 							?><option value="NA">----- user ------</option><?php 
@@ -166,17 +170,16 @@
 	}//end function
 
 	function showFieldSort(){
-		global $dblink;
 
 		//Grab query for all columns (for sort purposes)
 		$querystatement="SELECT * FROM ".$this->maintable." LIMIT 1";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-		$numfields = mysql_num_fields($queryresult);
-		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_name($queryresult,$i);
+		$queryresult = $this->db->query($querystatement);
+		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
+		$numfields = $this->db->numFields($queryresult);
+		for ($i=0;$i<$numfields;$i++) $fieldlist[]=$this->db->fieldName($queryresult,$i);
 
 		?>
-		<select name="singlefield" onchange="checkForCustom(this.value)">
+		<select id="singlefield" name="singlefield" onchange="checkForCustom(this.value)">
 			<?php 
 				foreach($fieldlist as $field){
 					echo "<option value=\"".$field."\"";

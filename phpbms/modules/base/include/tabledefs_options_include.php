@@ -47,8 +47,7 @@
 		return $therecord;		
 	}
 	
-	function getOptions($tabledefid,$optionid=false){
-		global $dblink;
+	function getOptions($db,$tabledefid,$optionid=false){
 
 		$querystatement="SELECT tableoptions.id, tableoptions.name, tableoptions.option, tableoptions.othercommand, tableoptions.roleid, roles.name as rolename
 		FROM tableoptions LEFT JOIN roles ON tableoptions.roleid=roles.id
@@ -56,15 +55,14 @@
 		if($optionid) $querystatement.=" AND tableoptions.id=".$optionid;
 		$querystatement.=" ORDER BY othercommand, tableoptions.id";
 		
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
+		$queryresult=$db->query($querystatement);
 		
 		return $queryresult;
 	}// end function
 
 
-	function addOption($variables,$tabledefid){
-		global $dblink;
+	function addOption($db,$variables,$tabledefid){
+
 		$querystatement="INSERT INTO tableoptions (tabledefid, roleid, name, `option`, othercommand)
 		values (";
 		$querystatement.=$tabledefid.", ";
@@ -77,14 +75,14 @@
 			$querystatement.="\"".$variables["pdOption"]."\", ";
 		}
 		$querystatement.="\"".$variables["othercommand"]."\") ";
-		if(mysql_query($querystatement)) $thereturn ="Option Added"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Option Added";
 		
 		return $thereturn;
 	}// end function
 	
 
-	function updateOption($variables){
-		global $dblink;
+	function updateOption($db,$variables){
+
 		$querystatement="UPDATE tableoptions set ";
 		$querystatement.="othercommand=".$variables["othercommand"].", ";		
 		$querystatement.="roleid=".$variables["roleid"].", ";
@@ -97,15 +95,15 @@
 		}
 		$querystatement.="othercommand=".$variables["othercommand"]." ";
 		$querystatement.="WHERE id=".$variables["optionid"];
-		if(mysql_query($querystatement)) $thereturn ="Option Updated"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Option Updated";
 		
 		return $thereturn;
 	}
 
-	function deleteOption($id){
-		global $dblink;
+	function deleteOption($db,$id){
+
 		$querystatement="DELETE FROM tableoptions WHERE id=".$id;
-		if(mysql_query($querystatement)) $thereturn ="Option Deleted"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Option Deleted";
 		
 		return $thereturn;
 	}

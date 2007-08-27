@@ -37,8 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 
-function showTodaysClients($interval="1 DAY"){
-	global $dblink;
+function showTodaysClients($db,$interval="1 DAY"){
+
 	$querystatement="SELECT id,
 					clients.type, clients.city,clients.state,clients.postalcode,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
@@ -46,9 +46,9 @@ function showTodaysClients($interval="1 DAY"){
 					WHERE creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") 
 					ORDER BY creationdate DESC LIMIT 0,50
 	";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);	
-	if(mysql_num_rows($queryresult)){
+	$queryresult=$db->query($querystatement);
+
+	if($db->numRows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
 				<th align="left">ID</th>
@@ -58,13 +58,13 @@ function showTodaysClients($interval="1 DAY"){
 			</tr>
 		<?php 
 		$i=1;
-		while($therecord=mysql_fetch_array($queryresult)){
+		while($therecord=$db->fetchArray($queryresult)){
 			if($i==1) $i=2; else $i=1;		
 			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
 			$displayType=ucwords(str_replace(".","&nbsp;",$displayType));
 			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
-		?><tr onclick="document.location='<?php echo getAddEditFile(2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
+		?><tr onclick="document.location='<?php echo getAddEditFile($db,2)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?></td>
 			<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>
@@ -74,15 +74,15 @@ function showTodaysClients($interval="1 DAY"){
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
-			<td align="right"><?php $reccount=mysql_num_rows($queryresult);echo $reccount?> record<?php if($reccount!=1) echo "s"?></td>
+			<td align="right"><?php $reccount=$db->numRows($queryresult);echo $reccount?> record<?php if($reccount!=1) echo "s"?></td>
 		</tr>
 		</table><?php
 	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
 	}
 }
 
-function showTodaysOrders($interval="1 DAY"){
-	global $dblink;
+function showTodaysOrders($db,$interval="1 DAY"){
+
 	$querystatement="SELECT invoices.id,
 					invoicestatuses.name as status,
 					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
@@ -93,9 +93,9 @@ function showTodaysOrders($interval="1 DAY"){
 					ORDER BY invoices.creationdate DESC LIMIT 0,50
 	";
 	
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,"Error Retrieving System Messages: ".mysql_error($dblink)."<br />".$querystatement);
-	if(mysql_num_rows($queryresult)){
+	$queryresult=$db->query($querystatement);
+
+	if($db->numRows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
 				<th align="left">ID</th>
@@ -108,11 +108,11 @@ function showTodaysOrders($interval="1 DAY"){
 		$i=1;
 		$total=0;
 		$totaldue=0;
-		while($therecord=mysql_fetch_array($queryresult)){				
+		while($therecord=$db->fetchArray($queryresult)){				
 			if($i==1) $i=2; else $i=1;
 			$total+=$therecord["total"];
 			$totaldue+=$therecord["amtdue"];
-		?><tr onclick="document.location='<?php echo getAddEditFile(3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
+		?><tr onclick="document.location='<?php echo getAddEditFile($db,3)."?id=".$therecord["id"] ?>'" class="qr<?php echo $i?>">
 			<td><?php echo $therecord["id"]?></td>
 			<td nowrap="nowrap"><?php echo $therecord["status"]?></td>
 			<td><?php echo htmlQuotes($therecord["thename"])?></td>
@@ -142,13 +142,13 @@ if (hasRights(20)) {?>
 				$interval="3 DAY";
 			else
 				$interval="1 DAY";
-			showTodaysOrders($interval) 
+			showTodaysOrders($db,$interval) 
 			?>
 		</div>
 	</div>
 		
 	<button class="graphicButtons buttonDown" id="todaysClientsLink"><span>Up</span></button>	
 	<h2><a href="../../search.php?id=2">Recently Added Clients/Prospects</a></h2>
-		<div id="todaysClients"><div class="fauxP"><?php showTodaysClients($interval)?></div></div>
+		<div id="todaysClients"><div class="fauxP"><?php showTodaysClients($db,$interval)?></div></div>
 </div>
 <?php }?>				

@@ -3,18 +3,16 @@
 	$loginNoDisplayError=true;
 	
  	include("../../include/session.php");
-	include("../../include/common_functions.php");
 	
-	if(!isset($_SESSION["app_name"]))
+	if(!defined(APP_NAME))
 		loadSettings();		
 	
 	$now = gmdate('Y-m-d H:i', strtotime('now'));
 	
 	$querystatment="SELECT id,name,crontab,job,startdatetime,enddatetime FROM scheduler WHERE inactive=0 AND startdatetime<NOW() AND (enddatetime>NOW() OR enddatetime IS NULL);";
-	$queryresult=mysql_query($querystatment,$dblink);
-	if(!$queryresult) reportError(300,"Could not retrieve schedulers: ".mysql_error($dblink));
+	$queryresult=$db->query($querystatment);
 	
-	while($schedule_record=mysql_fetch_array($queryresult)){
+	while($schedule_record=$db->fetchArray($queryresult)){
 		$datetimearray=explode(" ",$schedule_record["startdatetime"]);
 		$schedule_record["startdate"]=stringToDate($datetimearray[0],"SQL");
 		$schedule_record["starttime"]=stringToTime($datetimearray[1],"24 Hour");
@@ -30,10 +28,10 @@
 			$success = @ include($schedule_record["job"]);
 			if($success){
 				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
-				mysql_query($updatestatement,$dblink);
-				sendLog($dblink,"SCHEDULER","Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed",-2);
+				$db->query($updatestatement);
+				$log = new phpbmsLog("Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER",-2);
 			} else {
-				sendLog($dblink,"ERROR","Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors.",-2);
+				$log = new phpbmsLog("Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors","SCHEDULER",-2);
 			}
 				
 		}		

@@ -51,10 +51,12 @@ window.onload=function(){
 }
 function switchSqlButtons(){
 	var sqlbutton=getObjectFromID("showSQLButton");
-	if (sqlbutton.className=="graphicButtons buttonShowSQLDown")
-		sqlbutton.className="graphicButtons buttonShowSQLUp"
+	if (sqlbutton.className=="sqlUp")
+		sqlbutton.className="sqlDn"
 	else
-		sqlbutton.className="graphicButtons buttonShowSQLDown";
+		sqlbutton.className="sqlUp";
+
+return false;
 }
 
 
@@ -80,7 +82,8 @@ function clickIt(theTR,theevent,disablectrl){
 		var theTable=theTR.parentNode;
 		for(i=0;i<theTable.childNodes.length;i++){
 			if (theTable.childNodes[i]!=theTR && theTable.childNodes[i].className){
-				theTable.childNodes[i].className="qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+				if(theTable.childNodes[i].className != "queryGroup")
+					theTable.childNodes[i].className="qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
 			}
 		}
 	}
@@ -96,13 +99,15 @@ function clickIt(theTR,theevent,disablectrl){
 		var point2=null;
 		
 		for(i=0;i<theTable.childNodes.length;i++){
-			if (theTable.childNodes[i].className){
-				theTable.childNodes[i].className="qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
-				curID=theTable.childNodes[i].id.substr(2);
-				if(curID==theID)
-					point1=i;
-				if(searchArray.indexOf("+"+curID+"+")!=-1 && point2==null) {
-					point2=i;
+			if (theTable.childNodes[i].className){				
+				if(theTable.childNodes[i].className != "queryGroup"){
+					theTable.childNodes[i].className="qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+					curID=theTable.childNodes[i].id.substr(2);
+					if(curID==theID)
+						point1=i;
+					if(searchArray.indexOf("+"+curID+"+")!=-1 && point2==null) {
+						point2=i;
+					}
 				}
 			}
 		}
@@ -118,8 +123,10 @@ function clickIt(theTR,theevent,disablectrl){
 		selIDs= new Array();
 		for(i=theStart;i<=theStop;i++){
 			if (theTable.childNodes[i].className){
-				theTable.childNodes[i].className="qh"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
-				selIDs[selIDs.length]=theTable.childNodes[i].id.substring(2);
+				if(theTable.childNodes[i].className != "queryGroup"){
+					theTable.childNodes[i].className="qh"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+					selIDs[selIDs.length]=theTable.childNodes[i].id.substring(2);
+				}
 			}
 		}
 		
@@ -149,25 +156,46 @@ function setSelIDs(theform){
 		theform["theids"].value=selIDs.join(",");
 }
 
-function chooseOtherCommand(theselect){
-	if (theselect.value!="delete_record") {
-		setSelIDs(theselect.form);
-		theselect.form.submit();
+function chooseOtherCommand(thevalue,thetext){
+	var thediv = getObjectFromID("otherDropDown");
+	var otherField = getObjectFromID("othercommands");
+	
+	otherField.value = thevalue;
+	
+	if (thevalue != "-1") {
+		setSelIDs(otherField.form);
+		otherField.form.submit();
 	} else {
-		var confirmcommand=theselect.options[theselect.selectedIndex].text
-		theselect.selectedIndex=0;
-		confirmDelete(confirmcommand);		
+		var confirmcommand=thetext
+		confirmDelete(confirmcommand);
+		thediv.style.display = "none";
 	}
 }
 
 function confirmDelete(deletename){
-	var howmany=selIDs.length+" selected record";
-	if(selIDs.length!=1)
-		howmany+="s"
-	var content="<div>Are you sure you want to "+deletename+" the "+howmany+"?</div>";
-		content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onclick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onclick=\"closeModal()\" /></div>"	
-	showModal(content,"Confirm",300) ;
+	var deleteButton = getObjectFromID("deleteRecord");
+	if(deleteButton)
+		if(deleteButton.className == "deleteRecordDisabled")
+			return false;
+		
+		var howmany=selIDs.length+" selected record";
+
+		if(selIDs.length!=1)
+			howmany+="s"
+		var content="<div>Are you sure you want to "+deletename+" the "+howmany+"?</div>";
+			content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onclick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onclick=\"closeModal()\" /></div>"	
+		showModal(content,"Confirm",300) ;
 }
+
+
+function doPrint(){
+	var doprint = getObjectFromID("doprint");
+	doprint.value = "print";
+	setSelIDs(doprint.form);
+	doprint.form.submit();
+}
+
+
 
 function doDelete(){
 	var thedelete=getObjectFromID("deleteCommand");
@@ -176,33 +204,42 @@ function doDelete(){
 	thedelete.form.submit();	
 }
 
+
 function setButtonStatus(disabledstatus){
-	var editButton=getObjectFromID("edit");
+	var editButton=getObjectFromID("editRecord");
 	var printButton=getObjectFromID("print");
-	var deleteButton=getObjectFromID("delete");
-	var otherCommands=getObjectFromID("othercommands");
+	var deleteButton=getObjectFromID("deleteRecord");
+	var otherCommands=getObjectFromID("otherCommandButton");
 	var relationship=getObjectFromID("relationship");
 		
-	if(editButton){
-		editButton.disabled=disabledstatus;
-		editButton.className="graphicButtons buttonEdit"+((disabledstatus)?"Disabled":"");
+	if(editButton)
+		editButton.className="editRecord"+((disabledstatus)?"Disabled":"");
+		
+	if(deleteButton)
+		deleteButton.className = "deleteRecord"+((disabledstatus)?"Disabled":"");
+
+	if(otherCommands) {
+		otherCommands.className = "otherCommands"+((disabledstatus)?"Disabled":"");
+		var otherDropDown = getObjectFromID("otherDropDown");
+		otherDropDown.style.display = "none";		
 	}
-	if(printButton){
-		printButton.disabled=disabledstatus;
-		printButton.className="graphicButtons buttonPrint"+((disabledstatus)?"Disabled":"");
-	}
-	if(deleteButton){
-		deleteButton.disabled=disabledstatus;
-		deleteButton.className="graphicButtons buttonDelete"+((disabledstatus)?"Disabled":"");
-	}
-	if(otherCommands) otherCommands.disabled=disabledstatus;
+		
 	if(relationship) relationship.disabled=disabledstatus;
 }
 
 
+function editButton(){
+	var editButton=getObjectFromID("editRecord");
+	if(editButton.className == "editRecord")
+		editThis();
+
+return false;
+}
+
 //double click on row
 function editThis(therow){
-	var connector
+	var connector;
+	
 	if(therow){
 		// the row is used for doubleclicking
 		var therownum=therow.id.substr(2);
@@ -220,7 +257,7 @@ function editThis(therow){
 		
 		document.location=editFile;
 	}
-}
+}//end function
 
 function addRecord(){
 	var connector;
@@ -244,9 +281,11 @@ function selectRecords(allornone){
 	theTable=getObjectFromID("queryresults").firstChild;
 	for(var i=0;i<theTable.childNodes.length;i++){
 		if(theTable.childNodes[i].className){
-			theTable.childNodes[i].className=newClass+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
-			if(!allornone)
-				selIDs[selIDs.length]=theTable.childNodes[i].id.substring(2);
+			if(theTable.childNodes[i].className != "queryGroup"){
+				theTable.childNodes[i].className=newClass+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+				if(!allornone)
+					selIDs[selIDs.length] = theTable.childNodes[i].id.substring(2);
+			}
 		}
 	}
 	setButtonStatus(allornone);
@@ -273,19 +312,38 @@ function setMainFocus(){
 	startswithfield.focus();
 }
 
-function perfromToSelection(theselect){		
+
+function showDropDown(whatDD){
+
+	var otherDD;
+	var thediv = getObjectFromID(whatDD);
+	
+	if(whatDD == "searchSelectionDropDown")		
+		otherDD = getObjectFromID("otherDropDown");
+	else
+		otherDD = getObjectFromID("searchSelectionDropDown");
+	
+	if(thediv.style.display == "none")
+		thediv.style.display = "block";
+	else
+		thediv.style.display = "none";
+
+	if(otherDD)
+		otherDD.style.display = "none";
+}
+
+
+function perfromToSelection(option){		
+
 	var thereset=getObjectFromID("reset");
-	switch(theselect.value){
-		case"":
-			theselect.selectedIndex=0;
-		break;
+	var thediv = getObjectFromID("searchSelectionDropDown");
+
+	switch(option){
 		case "selectall":
 			selectRecords("All");
-			theselect.selectedIndex=0;
 		break;
 		case "selectnone":
 			selectRecords("None");
-			theselect.selectedIndex=0;
 		break;
 		case "keepselected":
 			if(selIDs.length>0){
@@ -293,7 +351,6 @@ function perfromToSelection(theselect){
 				thereset.click();
 			} else {
 			alert("You must select records first.");
-			theselect.selectedIndex=0;			
 			}
 		break;
 		case "omitselected":
@@ -302,21 +359,14 @@ function perfromToSelection(theselect){
 				thereset.click();
 			} else {
 			alert("You must select records first.");
-			theselect.selectedIndex=0;			
 			}
 		break;
 	}
+	thediv.style.display = "none";		
+	
 }
 
-function changeSelection(optionValue){
-	var theselect=getObjectFromID("searchSelection");
-	var i;	
-	for(i=0;i<theselect.options.length;i++){
-		if(theselect.options[i].value==optionValue)
-			theselect.selectedIndex=i
-	}
-	perfromToSelection(theselect);
-}
+
 
 function switchSearchTabs(taba,base){
 	if(taba.parentNode.className=="tabsSel")

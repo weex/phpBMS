@@ -38,10 +38,13 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-
+	include("include/fields.php");
 	include("include/tabledefs_searchfields_include.php");
+
+	//grab the table name
+	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
+	$queryresult = $db->query($querystatement);
+	$tableRecord = $db->fetchArray($queryresult);
 
 	//process page
 	$thecommand="";
@@ -53,62 +56,72 @@
 	
 	switch($thecommand){
 		case "edit":
-			$singlesearchfieldsquery=getSearchfields($_GET["id"],$_GET["searchfieldid"]);
-			$thesearchfield=mysql_fetch_array($singlesearchfieldsquery);
+			$singlesearchfieldsquery=getSearchfields($db,$_GET["id"],$_GET["searchfieldid"]);
+			$thesearchfield=$db->fetchArray($singlesearchfieldsquery);
 			$action="edit search field";
 		break;
 		
 		case "delete":
-			$statusmessage=deleteSearchfield($_GET["searchfieldid"]);
+			$statusmessage=deleteSearchfield($db,$_GET["searchfieldid"]);
 		break;
 		
 		case "add search field":
-			$statusmessage=addSearchfield(addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage=addSearchfield($db,addSlashesToArray($_POST),$_GET["id"]);
 		break;
 		
 		case "edit search field":
-			$statusmessage=updateSearchfield(addSlashesToArray($_POST));
+			$statusmessage=updateSearchfield($db,addSlashesToArray($_POST));
 		break;
 		
 		case "moveup":
-			$statusmessage=moveSearchfield($_GET["columnid"],"up");
+			$statusmessage=moveSearchfield($db,$_GET["columnid"],"up");
 		break;
 		
 		case "movedown":
-			$statusmessage=moveSearchfield($_GET["columnid"],"down");
+			$statusmessage=moveSearchfield($db,$_GET["columnid"],"down");
 		break;
 	}//end switch
 	
-	$searchfieldsquery=getSearchfields($_GET["id"]);
-	$pageTitle="Table Definition: Search Fields";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tablequicksearch.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	$searchfieldsquery=getSearchfields($db,$_GET["id"]);
+	$pageTitle="Table Definition Search Fields: ".$tableRecord["displayname"];
+	
+	$phpbms->cssIncludes[] = "pages/tablequicksearch.css";
 
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputField("name",$thesearchfield["name"],NULL,true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
 
-<?php showTabs($dblink,"tabledefs entry",5,$_GET["id"])?><div class="bodyline">
+		$theinput = new  inputBasicList("type",$thesearchfield["type"],array("field"=>"field","SQL where clause"=>"whereclause"));
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("field",$thesearchfield["field"],"field name / SQL where clause",true,NULL,32,255);
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+	$phpbms->showTabs("tabledefs entry",5,$_GET["id"])?><div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 	
 	<div class="fauxP">
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">
 	<tr>
 	 <th align="left" nowrap="nowrap" class="queryheader">move</th>		
-	 <th align="center" nowrap="nowrap" class="queryheader">type</th>
-	 <th align="left" nowrap="nowrap"class="queryheader">name</th>
-	 <th align="left" width="100%"  nowrap="nowrap" class="queryheader">field</th>
-	 <th nowrap class="queryheader">&nbsp;</th>
+	 <th align="left" nowrap="nowrap" class="queryheader">type</th>
+	 <th align="left" nowrap="nowrap"class="queryheader" width="100%">name</th>
+	 <th nowrap="nowrap" class="queryheader">&nbsp;</th>
 	</tr>
 	<?php 
 		$topdisplayorder=-1;
 		$row=1;
-		while($therecord=mysql_fetch_array($searchfieldsquery)){ 
+		while($therecord=$db->fetchArray($searchfieldsquery)){ 
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
@@ -118,9 +131,11 @@
 			<button type="button" class="graphicButtons buttonDown" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=movedown&amp;columnid=".$therecord["id"]?>';"><span>dn</span></button>
 			<?php echo $therecord["displayorder"]?>
 		</td>
-		<td nowrap="nowrap" valign="top" class="small" align="center"><strong><?php echo htmlQuotes($therecord["type"]);?></strong></td>
-		<td nowrap="nowrap" valign="top" class="small"><strong><?php echo htmlQuotes($therecord["name"])?></strong></td>
-		<td valign="top"><?php echo htmlQuotes($therecord["field"])?></td>
+		<td nowrap="nowrap" valign="top" ><?php echo htmlQuotes($therecord["type"]);?></td>
+		<td valign="top">
+			<strong><?php echo htmlQuotes($therecord["name"])?></strong><br />
+			<span class="small"><?php echo htmlQuotes($therecord["field"])?></span>
+		</td>
 		<td nowrap="nowrap" valign="top">
 			 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 			 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;searchfieldid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
@@ -128,7 +143,6 @@
 	</tr>	
 	<?php } ?>
 	<tr class="queryfooter">
-		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -141,26 +155,15 @@
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 			<input id="searchfieldid" name="searchfieldid" type="hidden" value="<?php echo $thesearchfield["id"]?>" />
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
-			<p>
-				<label for="name">name</label><br />
-				<?php fieldText("name",$thesearchfield["name"],1,"Name cannot be blank","",Array("size"=>"32","maxlength"=>"64")); ?>
-			</p>
-			<p>
-				<label for="type">type</label><br />
-				<?php fieldBasicList("type",$thesearchfield["type"],Array(Array("name"=>"field","value"=>"field"),Array("name"=>"where clause","value"=>"whereclause")));?>
-			</p>
+
+			<p><?php $theform->showField("name")?></p>
+
+			<p><?php $theform->showField("type")?></p>
 			
-			<p>
-				<label for="field">field name / SQL where clause</label><br />
-				<?php fieldText("field",$thesearchfield["field"],1,"Field Name cannot be blank","",Array("size"=>"32","maxlength"=>"255")); ?>
+			<p><?php $theform->showField("field"); ?></p>
 			
-			</p>
-			<p>
-				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
-			</p>				
+			<p><input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" /></p>				
 		</form>
 	</fieldset>
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html>
+<?php include("footer.php");?>

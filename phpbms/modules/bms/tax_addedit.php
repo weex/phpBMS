@@ -37,27 +37,42 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/fields.php");
+	include("include/tables.php");
+	
+	$tax = new phpbmstable($db,6);
+	$therecord = $tax->processAddEditPage();
+	
 
-	include("include/tax_addedit_include.php");
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
 
-	 $pageTitle="Tax Area"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/tax.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	$phpbms->cssIncludes[] = "pages/tax.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputPercentage("percentage",$therecord["percentage"],NULL,5,true,28,64);
+		$theform->addField($theinput);		
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+
+	$pageTitle="Tax Area";
+	
+	include("header.php");	 
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
@@ -65,27 +80,22 @@
 			<label for="id">id</label><br />
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
 		</p>
-		<p>
-			<?php fieldCheckbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
-		</p>		
+		<p><?php $theform->showField("inactive");?></p>		
 	</fieldset>
 
 	<div id="nameDiv">
 		<fieldset >
 			<legend>name / percentage</legend>
-			<p>
-				<label for="name" class="important">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"")); ?>			
-			</p>
-			<p>
-				<label for="percentage">percentage</label><br />
-				<?php fieldPercentage("percentage",$therecord["percentage"],5,0,"Percentage must be a valid percentage.",Array("size"=>"11","maxlength"=>"10")); ?>		
-			</p>
+
+			<p><?php $theform->showField("name"); ?></p>
+
+			<p><?php $theform->showField("percentage"); ?></p>
+
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>	
-	</form>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html>
+<?php include("footer.php");?>

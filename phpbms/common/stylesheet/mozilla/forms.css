@@ -20,19 +20,21 @@ FORM{margin:0px;padding:0px;}
 .uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1; color:#666666;}
 
 .currency{text-align:right;}
-.disabledtext{color:#CCCCCC;}
+.disabledtext{color:#AAAAAA;}
 .radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
 
-.Buttons,.smallButtons {
+.Buttons,.smallButtons,.disabledButtons,.pressedButtons{
 	cursor: pointer;
 	background:url(image/button-back.png) repeat-x;
 	padding:2px 4px;
 }
 .smallButtons{font-size:10px;}
-.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover{
+.pressedButtons{background-image:url("image/button-pressed.png")}
+.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover,.pressedButtons:Hover{
 	border-color:black;
 }
 
+.disabledButtons{ color:#999999}
 
 .invisibleButtons,.invisibleTextField{
 border-style:none;

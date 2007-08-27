@@ -39,8 +39,7 @@
 	session_cache_limiter('private');
 	require_once("../../../include/session.php");
 	//reload settings in latin1 (fpdf doesn't like utf)
-	loadSettings("latin1");
-	require_once("../../../include/common_functions.php");
+	$phpbmsSession->loadSettings("latin1");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	
@@ -73,8 +72,8 @@
 						LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid)
 						LEFT JOIN shippingmethods ON shippingmethods.id=invoices.shippingmethodid
 					".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($querystatement,$dblink);
-	if(!$thequery) reportError(200,"Invlaid SQL statement: ".mysql_error($dblink)." -- ".$querystatement);
+	$thequery=$db->query($querystatement);
+
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================
@@ -90,7 +89,7 @@
 	$pdf->SetMargins($leftmargin,$topmargin,$rightmargin);
 	$pdf->Open();
 
-	while($therecord=mysql_fetch_array($thequery)) {
+	while($therecord=$db->fetchArray($thequery)) {
 		$pdf->AddPage();	
 		// Next we set the Title (invoice,work order,order,quote,packing list)
 		$the_title="Packing List";
@@ -103,15 +102,15 @@
 	
 		//Next add the company info...
 		$tempwidth=1;
-		$cname=$_SESSION["company_name"];
-		$caddress=$_SESSION["company_address"]."\n".$_SESSION["company_csz"]."\n".$_SESSION["company_phone"];
+		$cname=COMPANY_NAME;
+		$caddress=COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
 
 		// Image from DB, so we need to retieve it and then add it to pdf
 		// through the extended memImage function (instead of the image function, that wants a file, not data)
 			$querystatement="SELECT file,upper(`type`)as `type` FROM files WHERE id=1";
-			$pictureresult=mysql_query($querystatement,$dblink);
-			if(!$pictureresult) reportError(300,"Error Retrieving Logo Graphic");
-			$thepicture=mysql_fetch_array($pictureresult);
+			$pictureresult=$db->query($querystatement);
+			if(!$pictureresult) $error = new appError(300,"Error Retrieving Logo Graphic");
+			$thepicture=$db->fetchArray($pictureresult);
 		
 		if($thepicture["type"]=="IMAGE/JPEG"){
 			$image = $thepicture["file"];
@@ -251,14 +250,14 @@
 						products.packagesperitem
 						FROM lineitems LEFT JOIN products ON lineitems.productid=products.id 
 						WHERE invoiceid=".$therecord["id"];
-		$lineitems=mysql_query($lineitemquery,$dblink);
-		if(!$lineitems) reportError(300,"bad line item query: <br />".mysql_error($dblink)."<br /><br />".$lineitemquery);
+		$lineitems=$db->query($lineitemquery);
+
 	
 		$pdf->SetXY($leftmargin,$tempnext2);
 		$pdf->SetLineWidth(.01);		
 		$pdf->SetDrawColor(200,200,200);
 		$total_boxes=0;				
-		while($thelineitem = mysql_fetch_array($lineitems)){
+		while($thelineitem = $db->fetchArray($lineitems)){
 			$partnumber=$thelineitem["partnumber"];
 			if($thelineitem["isprepackaged"]) $partnumber.="*";
 			if($thelineitem["isoversized"]) $partnumber.="+";

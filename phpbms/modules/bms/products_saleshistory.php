@@ -37,10 +37,9 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/fields.php");
 	
-	if(!hasRights(30)) goURL($_SESSION["app_path"]."noaccess.php");
+	if(!hasRights(30)) goURL(APP_PATH."noaccess.php");
 	
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
@@ -73,8 +72,8 @@
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
 	$refquery="select partname from products where id=".$_GET["id"];
-	$refquery=mysql_query($refquery,$dblink);
-	$refrecord=mysql_fetch_array($refquery);
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);
 	
 	$querystatement="SELECT invoices.id as id, 
 		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
@@ -90,24 +89,31 @@
 		AND ".$thestatus."
 		HAVING thedate >=\"".$mysqlfromdate."\"
 		and thedate <=\"".$mysqltodate."\" ORDER BY thedate";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,mysql_error($dblink)." ".$querystatement);
-	$queryresult? $numrows=mysql_num_rows($queryresult): $numrows=0;
+	$queryresult=$db->query($querystatement);
 
-	$pageTitle="Product Sales History: ".$refrecord["partname"];	
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css" />
+	$queryresult? $numrows=$db->numRows($queryresult): $numrows=0;
 
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<?php showTabs($dblink,"products entry",12,$_GET["id"]);?><div class="bodyline">
+	$pageTitle="Product Sales History: ".$refrecord["partname"];
+	
+	$phpbms->cssIncludes[] = "pages/products.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]), "from" ,true);
+		$theform->addField($theinput);
+				
+		$theinput = new inputDatePicker("todate",sqlDateFromString($_POST["todate"]), "to" ,true);
+		$theform->addField($theinput);
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");
+	
+	$phpbms->showTabs("products entry",12,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
 	<div class="box">
@@ -120,15 +126,10 @@
 		   </select>								
 		</p>
 		
-		<p class="timelineP">
-		   <label for="fromdate">from</label><br />
-		   <?php fieldDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>			
-		</p>
+		<p class="timelineP"><?php $theform->showField("fromdate")?></p>
 
-		<p class="timelineP">
-			to<br />
-				<?php fieldDatePicker("todate",sqlDateFromString($_POST["todate"]),0,"",Array("size"=>"10","maxlength"=>"12"),false);?>
-		</p>
+		<p class="timelineP"><?php $theform->showField("todate")?></p>
+		
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
 	</div>
@@ -152,7 +153,7 @@
 	$avgprice=0;
 	$avgcost=0;
 	$row=1;
-	while ($therecord=mysql_fetch_array($queryresult)){
+	while ($therecord=$db->fetchArray($queryresult)){
 		if($row==1) $row=2;else $row=1;
 		$avgcost+=$therecord["cost"];
 		$avgprice+=$therecord["price"];
@@ -170,7 +171,7 @@
 	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["price"])?></td>
 	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
-    <?php } if(!mysql_num_rows($queryresult)) {?>
+    <?php } if(!$db->numRows($queryresult)) {?>
 	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
 	<?php }?>
 	<tr>
@@ -185,6 +186,4 @@
 	</tr>
    </table></div></form>	
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html><?php }?>
+<?php include("footer.php"); }//end if?>

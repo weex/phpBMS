@@ -38,29 +38,24 @@
 */
 	require("include/session.php");
 
-	function loadSavedSort($id){
-		global $dblink;
-		
+	function loadSavedSort($id,$db){
 		$querystatement="SELECT sqlclause FROM usersearches 
-						WHERE id=".$id;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot load saved sort");		
-		$therecord=mysql_fetch_array($queryresult);
+						WHERE id=".((int) $id);
+		$queryresult = $db->query($querystatement);
+
+		$therecord=$db->fetchArray($queryresult);
 		echo $therecord["sqlclause"];
 	}
 
-	function deleteSavedSort($id){
-		global $dblink;
-		
+	function deleteSavedSort($id,$db){
 		$querystatement="DELETE FROM usersearches 
-						WHERE id=".$id;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot delete saved sort<br/>".$querystatement);		
+						WHERE id=".((int) $id);
+		$queryresult = $db->query($querystatement);
 		echo "success";
 	}
 
-	function displaySavedSortList($queryresult){
-		$numrows=mysql_num_rows($queryresult);
+	function displaySavedSortList($queryresult,$db){
+		$numrows=$db->numRows($queryresult);
 		?>
 		<select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onchange="sortSavedSelect(this)" />
 			<?php if($numrows<1) {?>
@@ -68,16 +63,16 @@
 			<?php 
 				} else {
 					$numglobal=0;
-					while($therecord=mysql_fetch_array($queryresult))
+					while($therecord=$db->fetchArray($queryresult))
 						if($therecord["userid"]<1) $numglobal++;
-					mysql_data_seek($queryresult,0);				
+					$db->seek($queryresult,0);				
 			?>			
 				<?php if($numglobal>0){ ?>
 				<option value="NA" style="font-style:italic;font-weight:bold"> -- global sorts ---------</option>
 				<?php
 					}//end if
 					$userqueryline=true;
-					while($therecord=mysql_fetch_array($queryresult)){
+					while($therecord=$db->fetchArray($queryresult)){
 						if ($therecord["userid"]> 0 and $userqueryline) {
 							$userqueryline=false;						
 							?><option value="NA" style="font-style:italic;font-weight:bold"> -- user sorts---------</option><?php 
@@ -90,15 +85,12 @@
 		<?php
 	}//end function
 
-	function showSavedSorts($tabledefid,$basepath,$userid){
-		global $dblink;
-
+	function showSavedSorts($tabledefid,$basepath,$userid,$db){
 		$querystatement="SELECT id,name,userid FROM usersearches 
 						WHERE tabledefid=".$tabledefid." AND type=\"SRT\" AND (userid=0 OR userid=\"".$userid."\") ORDER BY userid, name";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve saved sort infromation");
+		$queryresult = $db->query($querystatement);
 		?><p><label for="sortSavedList">saved sorts</label><br />
-			<?php displaySavedSortList($queryresult,$basepath)?>
+			<?php displaySavedSortList($queryresult,$db)?>
 		
 		</p>
 		<p align="right" class="buttonsRight">
@@ -109,35 +101,32 @@
 		<?php
 	}
 
-	function saveSort($name,$sqlclause,$tabledefid,$userid){
-		global $dblink;
-		
+	function saveSort($name,$sqlclause,$tabledefid,$userid,$db){
 		$querystatement="insert into usersearches (userid,tabledefid,name,type,sqlclause) values (";
 		$querystatement.=$userid.", ";
 		$querystatement.="\"".$tabledefid."\", ";
 		$querystatement.="\"".$name."\", ";
 		$querystatement.="\"SRT\", ";		
 		$querystatement.="\"".$sqlclause."\")";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot Save Sort");
+
+		$queryresult = $db->query($querystatement);
+
 		echo "success";
 	}
 
-	function showSort($tabledefid,$basepath){
-		global $dblink;
-		
+	function showSort($tabledefid,$basepath,$db){
 		//First, grab table name from id	
 		$querystatement="SELECT querytable FROM tabledefs WHERE id=".$tabledefid;
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-		$thetabledef=mysql_fetch_array($queryresult);
+		$queryresult = $db->query($querystatement);
+		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
+		$thetabledef=$db->fetchArray($queryresult);
 
 		//Grab query for all columns
 		$querystatement="SELECT * FROM ".$thetabledef["querytable"]." LIMIT 1";
-		$queryresult = mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(500,"Cannot retrieve Table Information");
-		$numfields = mysql_num_fields($queryresult);
-		for ($i=0;$i<$numfields;$i++) $fieldlist[]=mysql_field_table($queryresult,$i).".".mysql_field_name($queryresult,$i);
+		$queryresult = $db->query($querystatement);
+		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
+		$numfields = $db->numFields($queryresult);
+		for ($i=0;$i<$numfields;$i++) $fieldlist[]=$db->fieldTable($queryresult,$i).".".$db->fieldName($queryresult,$i);
 		?><table border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td valign=top width="99%">
@@ -167,8 +156,8 @@
 					<div style="float:right">
 				    <br/>
 					<p><input id="sortRunSort" type="button" onclick="performAdvancedSort(this)" class="Buttons" disabled="disabled" value="run sort" style="width:90px;" /></p>
-					<p><input id="sortLoadSort" type="button" onclick="sortAskLoad('<?php echo $_SESSION["app_path"]?>')" class="Buttons" value="load sort..." style="width:90px;" /></p>
-					<p><input id="sortSaveSort" type="button" onclick="sortAskSaveName('<?php echo $_SESSION["app_path"]?>')" class="Buttons" disabled="disabled" value="save sort..." style="width:90px;" /></p>
+					<p><input id="sortLoadSort" type="button" onclick="sortAskLoad('<?php echo APP_PATH?>')" class="Buttons" value="load sort..." style="width:90px;" /></p>
+					<p><input id="sortSaveSort" type="button" onclick="sortAskSaveName('<?php echo APP_PATH?>')" class="Buttons" disabled="disabled" value="save sort..." style="width:90px;" /></p>
 					<p><input id="sortClearSort" type="button" onclick="clearSort()" class="Buttons" disabled="disabled" value="clear sort" style="width:90px;" /></p>
 					</div>
 				</td>
@@ -182,19 +171,19 @@
 	if(isset($_GET["cmd"])){
 		switch($_GET["cmd"]){
 			case "show":
-				showSort($_GET["tid"],$_GET["base"]);
+				showSort($_GET["tid"],$_GET["base"],$db);
 			break;
 			case "save":
-				saveSort($_GET["name"],$_GET["clause"],$_GET["tid"],$_SESSION["userinfo"]["id"]);
+				saveSort($_GET["name"],$_GET["clause"],$_GET["tid"],$_SESSION["userinfo"]["id"],$db);
 			break;
 			case "showSaved":
-				showSavedSorts($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"]);
+				showSavedSorts($_GET["tid"],$_GET["base"],$_SESSION["userinfo"]["id"],$db);
 			break;
 			case "deleteSaved":
-				deleteSavedSort($_GET["id"]);
+				deleteSavedSort($_GET["id"],$db);
 			break;
 			case "loadSaved":
-				loadSavedSort($_GET["id"]);
+				loadSavedSort($_GET["id"],$db);
 			break;
 		}//end switch
 	}

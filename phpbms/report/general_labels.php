@@ -37,6 +37,9 @@
  +-------------------------------------------------------------------------+
 */
 
+	//reload settings in latin1 (fpdf doesn't like utf)
+	$phpbmsSession->loadSettings("latin1");
+
 	// The label report requires the following variables to be set before creating the PDF
 	//maxrows
 	//maxcolumns
@@ -61,7 +64,7 @@
 	
 		//Generate the invoice Query
 		$reportquerystatement.=$_SESSION["printing"]["whereclause"].$sortorder;
-		$thequery=mysql_query($reportquerystatement,$dblink);
+		$thequery=$db->query($reportquerystatement);
 		if(!$thequery) die("No records, or invlaid SQL statement:<br />".$reportquerystatement);
 		//===================================================================================================
 		// Generating PDF File.
@@ -93,7 +96,7 @@
 			$totalcount++;
 		}
 		
-		while($therecord=mysql_fetch_array($thequery)) {	
+		while($therecord=$db->fetchArray($thequery)) {	
 			if($rowcount>$maxrows) {
 			   $column++;
 			   $they=$topstart;
@@ -116,15 +119,14 @@
 		$pdf->Output();
 		exit();
 	} else {
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Label Options</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../../head.php")?>
-<link href="../../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/historyreports.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
+	
+	$pageTitle = "Label Options";
+	$phpbms->showMenu = false;
+	$phpbms->cssIncludes[] = "pages/historyreports.css";
+	
+	include("header.php");
+	
+?>
 
 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print_form">
 <div class="bodyline" id="reportOptions">
@@ -140,6 +142,4 @@
 		</p>
 </div>
 </form>
-</body>
-</html>
-<?php }//end if ?>
+<?php include("footer.php"); }//end if ?>

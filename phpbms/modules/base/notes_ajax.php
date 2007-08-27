@@ -38,36 +38,32 @@
 */
 
 	require_once("../../include/session.php");
-	require_once("../../include/common_functions.php");
+	
 
-	function sendNoticeEmail($noteid) {
-		global $dblink;
+	function sendNoticeEmail($db,$noteid) {
 		
 		$querystatement="SELECT subject,assignedtoid,assignedbyid,content,type,
 						assignedtodate, assignedtotime,
 						startdate, starttime,
 						enddate, endtime
-						FROM notes WHERE id=".$noteid;
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Could not retrieve note record: ".mysql_error($dblink)."<br />".$querystatement);		
-		$therecord=mysql_fetch_array($queryresult);
+						FROM notes WHERE id=".((int) $noteid);
+		$queryresult=$db->query($querystatement);
+		$therecord=$db->fetchArray($queryresult);
 		
 		$querystatement="SELECT firstname,lastname,email FROM users WHERE id=".$therecord["assignedtoid"];
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Could not retrieve user to record: ".mysql_error($dblink)."<br />".$querystatement);		
-		$torecord=mysql_fetch_array($queryresult);
+		$queryresult=$db->query($querystatement);
+		$torecord=$db->fetchArray($queryresult);
 		if($torecord["email"]=="")
 			return "Assignee has no e-mail address set.";
 		
 		$querystatement="SELECT firstname,lastname,email FROM users WHERE id=".$therecord["assignedbyid"];
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Could not retrieve user from record: ".mysql_error($dblink)."<br />".$querystatement);		
-		$fromrecord=mysql_fetch_array($queryresult);
+		$queryresult=$db->query($querystatement);
+		$fromrecord=$db->fetchArray($queryresult);
 		if($fromrecord["email"]=="")
 			return "You have no e-mail address set.";
 		$from="".trim($fromrecord["firstname"]." ".$fromrecord["lastname"])." <".$fromrecord["email"].">";
 		
-		$subject=$_SESSION["application_name"]." Assignment: ".$therecord["subject"];
+		$subject=APPLICATION_NAME." Assignment: ".$therecord["subject"];
 		switch($therecord["type"]){
 			case "NT":
 				$therecord["type"]="note";
@@ -87,7 +83,7 @@
 		else
 			$protocol = "http";
 
-		$themessage= "You have received an e-mail notification of a ".$therecord["type"]." that has been assigned to you. To log in and view more details go to ".$protocol."://".$_SERVER["HTTP_HOST"].$_SESSION["app_path"]."\n\n";
+		$themessage= "You have received an e-mail notification of a ".$therecord["type"]." that has been assigned to you. To log in and view more details go to ".$protocol."://".$_SERVER["HTTP_HOST"].APP_PATH."\n\n";
 		$themessage.="Title: ".$therecord["subject"]."\n\n";
 		if($therecord["assignedtodate"]) {
 			$themessage.="Follow Up: ".$therecord["assignedtodate"];
@@ -122,7 +118,7 @@
 		}		
 		$themessage.="Memo:\n".$therecord["content"];
 		
-		if(!mail($torecord["email"],$subject,$themessage,"From: ".$from))
+		if(! @ mail($torecord["email"],$subject,$themessage,"From: ".$from))
 			return "Error Processing E-Mail.";
 		
 		return "E-Mail Sent.";
@@ -133,7 +129,7 @@
 		$thereturn="";
 		switch($_GET["cm"]){
 			case "sendemail":
-				$thereturn=sendNoticeEmail($_GET["id"]);
+				$thereturn=sendNoticeEmail($db,$_GET["id"]);
 			break;
 		}
 		echo $thereturn;

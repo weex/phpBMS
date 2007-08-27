@@ -37,7 +37,7 @@
 */
 
 function toggleEncryptionEdit(seedcheck){
-	var seedinput=getObjectFromID("sencryption_seed");
+	var seedinput=getObjectFromID("encryption_seed");
 	var currpassinput=getObjectFromID("currentpassword");
 	var updatebutton=getObjectFromID("updateSettings3");
 	if (seedcheck.checked){
@@ -66,7 +66,7 @@ function processForm(theform){
 		alert("Encryption Seed Must be updated separately from other settings.");
 	else {
 		if(doencryptionupdate.value==1){
-			var seedinput=getObjectFromID("sencryption_seed");
+			var seedinput=getObjectFromID("encryption_seed");
 			if(seedinput.value==""){
 				alert("Encryption seed cannot be blank.");
 				$thereturn=false;

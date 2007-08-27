@@ -40,10 +40,10 @@
 	require("../../include/session.php");
 
 	$querystatement="SELECT percentage FROM tax where id=".((int) $_GET["id"]);
-	$queryresult = mysql_query($querystatement,$dblink);
+	$queryresult = $db->query($querystatement);
 	if(!$queryresult) reporError(100,"Tax percentage could not be retrieved");
-	if(mysql_num_rows($queryresult))
-		$therecord=mysql_fetch_array($queryresult);
+	if($db->numRows($queryresult))
+		$therecord=$db->fetchArray($queryresult);
 	else
 		$therecord["percentage"]=0;
 		

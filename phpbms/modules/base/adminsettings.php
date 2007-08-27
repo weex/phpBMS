@@ -38,30 +38,90 @@
 */
 
 require_once("../../include/session.php");
-require_once("../../include/common_functions.php");
-require_once("../../include/fields.php");
+require_once("include/fields.php");
 
-require_once("include/adminsettings_include.php");
+foreach($phpbms->modules as $module => $moduleinfo)
+	if($module != "base"  && file_exists("../".$module."/adminsettings.php"))
+		include("modules/".$module."/adminsettings.php");
 
-$pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/adminsettings.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/timepicker.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/adminsettings.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?><div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return processForm(this);">
 
-	<div id="topButtons"><input id="updateSettings1" name="command" type="submit" class="Buttons" value="update settings" /></div>
+require_once("modules/base/include/adminsettings_include.php");
+$settings = new settings($db);
+
+if(!hasRights(-100))
+	goURL(APP_PATH."noaccess.php");
+
+if (isset($_POST["command"])) 
+	$statusmessage = $settings->processForm($_POST);
+
+$therecord = $settings->getSettings();
+
+$pageTitle="Configuration";
+
+$phpbms->cssIncludes[] = "pages/adminsettings.css";
+$phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
+
+	//Form Elements
+	//==============================================================
+	$theform = new phpbmsForm();
+	$theform->enctype="multiform/form-data";
 	
+	$theinput = new inputField("application_name",$therecord["application_name"],"application name",true);
+	$theform->addField($theinput);
+
+	$theinput = new inputField("record_limit",$therecord["record_limit"],"record display limit",true,"integer",5,3);
+	$theform->addField($theinput);
+		
+	$theinput = new inputField("default_load_page",$therecord["default_load_page"],"default page",true);
+	$theform->addField($theinput);
+	
+	$theinput = new inputField("encryption_seed",$therecord["encryption_seed"],"encryption_seed",true);
+	$theinput->setAttribute("readonly","readonly");
+	$theinput->setAttribute("class","uneditable");	
+	$theform->addField($theinput);
+
+	$theinput = new inputField("currency_symbol",$therecord["currency_symbol"],"currency symbol",true,NULL,4,1);
+	$theform->addField($theinput);
+
+	$theinput = new inputField("currency_accuracy",$therecord["currency_accuracy"],"currency decimal points of accuracy",true,"integer",4,1);
+	$theform->addField($theinput);
+
+	$theinput = new inputField("decimal_symbol",$therecord["decimal_symbol"],"decimal symbol",true,NULL,4,1);
+	$theform->addField($theinput);
+
+	$theinput = new inputField("thousands_separator",$therecord["thousands_separator"],"thousands separator",true,NULL,4,1);
+	$theform->addField($theinput);
+
+	$theinput = new inputCheckbox("persistent_login",$therecord["persistent_login"],"persistent login");
+	$theform->addField($theinput);
+
+	$theinput = new inputField("login_refresh",$therecord["login_refresh"],"login refresh (minutes)",true,"integer",4,1);
+	$theform->addField($theinput);
+
+
+	$theform->extraModules = array();
+	foreach($phpbms->modules as $module => $moduleinfo)
+		if($module != "base" && class_exists($module."Display")){
+		
+			$class = $module."Display";
+			$theform->extraModules[$module] = new $class();
+			if(method_exists($theform->extraModules[$module],"getFields"))
+				$additionalFields = $theform->extraModules[$module]->getFields($therecord);
+
+			foreach($additionalFields as $field)
+				$theform->addField($field);
+		}			
+	
+
+	$theform->jsMerge();
+	//==============================================================
+	//End Form Elements
+		
+	include("header.php");
+?>
+<div class="bodyline">
+	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return processForm(this);">
+		
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	
 	<div id="phpbmsSplash" class="box">
@@ -78,23 +138,117 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 		<legend>general</legend>
 		
 		<p>		
-			<label for="sapplication_name">application name</label><br/>
-			<?php fieldText("sapplication_name",$_SESSION["application_name"],1,"Application name cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?><br />
+			<?php $theform->fields["application_name"]->display();?><br />
 			<span class="notes">
-				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS")
+				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS").  Replacing
+				the aplication name will reset the session cookie, and require you to log in again.
 			</span>
 		</p>
 
 		<p>
-			<label for="srecord_limit">record display limit</label><br />
-			<?php fieldText("srecord_limit",$_SESSION["record_limit"],1,"Record limit cannot be blank and must be a valid integer.","integer",Array("size"=>"9","maxlength"=>"3")); ?>
+			<?php $theform->fields["record_limit"]->display();?>
 		</p>
 		
 		<p>
-			<label for="sdefault_load_page">default page</label><br />
-			<?php fieldText("sdefault_load_page",$_SESSION["default_load_page"],1,"Load page cannot be blank.","",Array("size"=>"32","maxlength"=>"128")); ?>		
+			<?php $theform->fields["default_load_page"]->display();?>
 		</p>
 	</fieldset>
+	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+			
+	<fieldset>
+		<legend>company</legend>
+		<p>		
+			<label for="company_name">company name</label><br />
+			<input id="company_name" name="company_name" type="text" size="40" maxlength="128" value="<?php echo htmlQuotes($therecord["company_name"]) ?>" />
+		</p>
+
+		<p>
+			<label for="company_address">address</label><br />
+			<input id="company_address" name="company_address" type="text" value="<?php echo htmlQuotes($therecord["company_address"]) ?>" size="40" maxlength="128" />
+		</p>
+		
+		<p>
+			<label for="company_csz">city, state/province and zip/postal code</label><br />
+			<input id="company_csz" name="company_csz" type="text" size="40" maxlength="128"  value="<?php echo htmlQuotes($therecord["company_csz"]) ?>" />
+		</p>
+		
+		<p>
+			<label for="company_phone">phone number</label><br />
+			<input id="company_phone" name="company_phone" type="text" value="<?php echo htmlQuotes($therecord["company_phone"]) ?>" size="40" maxlength="128" />
+		</p>
+	</fieldset>
+	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+	
+	<fieldset>
+		<legend>Display / Print</legend>
+
+		<div class="fauxP">
+			Printed Logo
+			<div id="graphicHolder"><img alt="logo" src="<?php echo APP_PATH?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
+		</div>
+		
+		<p>
+			<label for="printedlogo">upload new logo file</label> <span class="notes">(PNG ot JPEG format)</span><br />
+			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
+		</p>
+		
+		<p class="notes">
+			<strong>Note:</strong> This graphic is used on some reports. <br />
+			On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
+			If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
+		</p>
+		
+		<p>
+			<label for="stylesheet">web style set (stylesheets)</label><br />
+			<select id="stylesheet" name="stylesheet">
+				<?php $settings->displayStylesheets($therecord["stylesheet"]);?>
+			</select>		
+		</p>
+	</fieldset>
+	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+	
+	<fieldset>
+		<legend>Localization</legend>
+		<p>
+			<label for="phone_format">phone format</label><br />
+			<select id="phone_format" name="phone_format">
+				<option value="US - Strict" <?php if($therecord["phone_format"] == "US - Strict")  echo "selected=\"selected\"";?>>US - Strict</option>
+				<option value="US - Loose" <?php if($therecord["phone_format"] == "US - Loose")  echo "selected=\"selected\"";?>>US - Loose</option>
+				<option value="UK - Loose" <?php if($therecord["phone_format"] == "UK - Loose")  echo "selected=\"selected\"";?>>UK - Loose</option>
+				<option value="International" <?php if($therecord["phone_format"] == "International")  echo "selected=\"selected\"";?>>International</option>
+			</select>
+		</p>
+		<p>
+			<label for="date_format">date format</label><br />
+			<select id="date_format" name="date_format">
+				<option value="SQL" <?php if($therecord["date_format"] == "SQL")  echo "selected=\"selected\"";?>>SQL (<?php echo dateToString(mktime() ,"SQL")?>)</option>
+				<option value="English, US" <?php if($therecord["date_format"] == "English, US")  echo "selected=\"selected\"";?>>English, US (<?php echo dateToString(mktime(),"English, US")?>)</option>
+				<option value="English, UK" <?php if($therecord["date_format"] == "English, UK")  echo "selected=\"selected\"";?>>English, UK (<?php echo dateToString(mktime(),"English, UK")?>)</option>
+				<option value="Dutch, NL" <?php if($therecord["date_format"] == "Dutch, NL")  echo "selected=\"selected\"";?>>Dutch, NL (<?php echo dateToString(mktime(),"Dutch, NL")?>)</option>
+			</select>
+		</p>
+		<p>
+			<label for="time_format">time format</label><br />
+			<select id="time_format" name="time_format">
+				<option value="24 Hour" <?php if($therecord["time_format"]=="24 Hour")  echo "selected=\"selected\"";?>>24 Hour (<?php echo timeToString(mktime() ,"24 Hour")?>)</option>
+				<option value="12 Hour" <?php if($therecord["time_format"]=="12 Hour")  echo "selected=\"selected\"";?>>12 Hour (<?php echo timeToString(mktime(),"12 Hour")?>)</option>
+			</select>
+		</p>
+		<p>&nbsp;</p>
+		<p>
+			<?php $theform->fields["currency_symbol"]->display(); ?>
+		</p>
+		<p>
+			<?php $theform->fields["currency_accuracy"]->display(); ?>
+		</p>
+		<p>
+			<?php $theform->fields["decimal_symbol"]->display(); ?>
+		</p>
+		<p>
+			<?php $theform->fields["thousands_separator"]->display(); ?>
+		</p>
+	</fieldset>
+	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 	
 	<fieldset>
 		<legend>encryption seed</legend>
@@ -110,9 +264,8 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 			<input type="checkbox" value="1" name="changeseed" id="changeseed" onchange="toggleEncryptionEdit(this)" class="radiochecks"/><label for="changeseed">change seed</label>
 		</p>
 
-		<p>
-			<label for="sencryption_seed">encryption seed</label><br />
-			<?php fieldText("sencryption_seed",$_SESSION["encryption_seed"],1,"Encryption seed name cannot be blank.","",Array("size"=>"32","maxlength"=>"128","readonly"=>"readonly","class"=>"uneditable")); ?>
+		<p>	
+			<?php $theform->fields["encryption_seed"]->display();?>
 		</p>
 
 		<p>
@@ -120,130 +273,29 @@ $pageTitle="Configuration"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transit
 			<input type="password" name="currentpassword" id="currentpassword" size="32" readonly="readonly" class="uneditable"/>
 		</p>
 
-		<p>
-			<input type="hidden" id="doencryptionupdate" name="doencryptionupdate" value=""/>
-			<input type="submit" id="updateSettings3" name="command" class="Buttons" value="update encryption seed" disabled="disabled" onclick="this.form['doencryptionupdate'].value=1"/>	
-		</p>
 	</fieldset>
-		
-	<fieldset>
-		<legend>company</legend>
-		<p>		
-			<label for="scompany_name">company name</label><br />
-			<input id="scompany_name" name="scompany_name" type="text" size="40" maxlength="128" value="<?php echo htmlQuotes($_SESSION["company_name"]) ?>" />
-		</p>
+	<p class="updateButtonP">
+		<input type="hidden" id="doencryptionupdate" name="doencryptionupdate"/>
+		<input type="submit" id="updateSettings3" name="command" class="Buttons" value="update encryption seed" disabled="disabled"/>	
+	</p>
 
-		<p>
-			<label for="scompany_address">address</label><br />
-			<input id="scompany_address" name="scompany_address" type="text" value="<?php echo htmlQuotes($_SESSION["company_address"]) ?>" size="40" maxlength="128" />
-		</p>
-		
-		<p>
-			<label for="scompany_csz">city, state/province and zip/postal code</label><br />
-			<input id="scompany_csz" name="scompany_csz" type="text" size="40" maxlength="128"  value="<?php echo htmlQuotes($_SESSION["company_csz"]) ?>" />
-		</p>
-		
-		<p>
-			<label for="scompany_phone">phone number</label><br />
-			<input id="scompany_phone" name="scompany_phone" type="text" value="<?php echo htmlQuotes($_SESSION["company_phone"]) ?>" size="40" maxlength="128" />
-		</p>
-	</fieldset>
-	
 	<fieldset>
-		<legend>Display / Print</legend>
-
-		<div class="fauxP">
-			<br />Printed Logo
-			<div id="graphicHolder"><img alt="logo" src="<?php echo $_SESSION["app_path"]?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
-		</div>
-		
-		<p>
-			<label for="printedlogo">upload new logo file</label><br /><span class="notes">(PNG ot JPEG format)</span>
-			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
-			<span class="notes">
-				<strong>Note:</strong> This graphic is used on some reports. <br />
-				On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
-				If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
-			</span>
+		<legend>Security / Log in</legend>
+		<p><?php $theform->fields["persistent_login"]->display(); ?></p>
+		<p><?php $theform->fields["login_refresh"]->display(); ?></p>
+		<p class="notes"><strong>Note:</strong> persistent login will keep you logged in, even when idle.  The refresh
+			defines how often (in minutes) phpbms will send a logged in notice.
 		</p>
-		
-		
-		<p>
-			<label for="sstylesheet">web style set (stylesheets)</label><br />
-			<select id="sstylesheet" name="sstylesheet">
-			<?php 
-				$thedir="../../common/stylesheet";
-				$thedir_stream=@opendir($thedir);
-				
-				while($entry=readdir($thedir_stream)){
-					if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
-						echo "<option value=\"".$entry."\"";
-							if($entry==$_SESSION["stylesheet"]) echo " selected=\"selected\" ";
-						echo ">".$entry."</option>";
-					}
-				}
-					
-			?>
-			</select>		
-		</p>
-	</fieldset>
-	<fieldset>
-		<legend>Localization</legend>
-		<p>
-			<label for="sphone_format">phone format</label><br />
-			<select id="sphone_format" name="sphone_format">
-				<option value="US - Strict" <?php if($_SESSION["phone_format"]=="US - Strict")  echo "selected=\"selected\"";?>>US - Strict</option>
-				<option value="US - Loose" <?php if($_SESSION["phone_format"]=="US - Loose")  echo "selected=\"selected\"";?>>US - Loose</option>
-				<option value="UK - Loose" <?php if($_SESSION["phone_format"]=="UK - Loose")  echo "selected=\"selected\"";?>>UK - Loose</option>
-				<option value="International" <?php if($_SESSION["phone_format"]=="International")  echo "selected=\"selected\"";?>>International</option>
-			</select>
-		</p>
-		<p>
-			<label for="sdate_format">date format</label><br />
-			<select id="sdate_format" name="sdate_format">
-				<option value="SQL" <?php if($_SESSION["date_format"]=="SQL")  echo "selected=\"selected\"";?>>SQL (<?php echo dateToString(mktime() ,"SQL")?>)</option>
-				<option value="English, US" <?php if($_SESSION["date_format"]=="English, US")  echo "selected=\"selected\"";?>>English, US (<?php echo dateToString(mktime(),"English, US")?>)</option>
-				<option value="English, UK" <?php if($_SESSION["date_format"]=="English, UK")  echo "selected=\"selected\"";?>>English, UK (<?php echo dateToString(mktime(),"English, UK")?>)</option>
-				<option value="Dutch, NL" <?php if($_SESSION["date_format"]=="Dutch, NL")  echo "selected=\"selected\"";?>>Dutch, NL (<?php echo dateToString(mktime(),"Dutch, NL")?>)</option>
-			</select>
-		</p>
-		<p>
-			<label for="stime_format">time format</label><br />
-			<select id="stime_format" name="stime_format">
-				<option value="24 Hour" <?php if($_SESSION["time_format"]=="24 Hour")  echo "selected=\"selected\"";?>>24 Hour (<?php echo timeToString(mktime() ,"24 Hour")?>)</option>
-				<option value="12 Hour" <?php if($_SESSION["time_format"]=="12 Hour")  echo "selected=\"selected\"";?>>12 Hour (<?php echo timeToString(mktime(),"12 Hour")?>)</option>
-			</select>
-		</p>
-		<p>&nbsp;</p>
-		<p>
-			<label for="scurrency_symbol">currency symbol</label><br />
-			<?php fieldText("scurrency_symbol",$_SESSION["currency_symbol"],1,"Currency symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"8")); ?>
-		</p>
-		<p>
-			<label for="scurrency_accuracy">currency decimal points of accuracy</label><br />
-			<?php fieldText("scurrency_accuracy",$_SESSION["currency_accuracy"],1,"Currency accuracy name cannot be blank and must be a valid integer.","integer",Array("size"=>"4","maxlength"=>"1")); ?>
-		</p>
-		<p>
-			<label for="sdecimal_symbol">decimal symbol</label><br />
-			<?php fieldText("sdecimal_symbol",$_SESSION["decimal_symbol"],1,"Decimal symbol name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
-		</p>
-		<p>
-			<label for="sthousands_separator">thousands separator</label><br />
-			<?php fieldText("sthousands_separator",$_SESSION["thousands_separator"],1,"Thousands separator name cannot be blank.","",Array("size"=>"4","maxlength"=>"1")); ?>
-		</p>
-	</fieldset>
-	<?php 
-	$querystatement="SELECT name FROM modules WHERE name!=\"base\" ORDER BY name";
-	$modulequery=mysql_query($querystatement,$dblink);
+	</fieldset>	
+	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 	
-	while($modulerecord=mysql_fetch_array($modulequery)){
-		@ include "../".$modulerecord["name"]."/adminsettings.php";
-	}//end while 
-	?>
-	<div id="footerbox">
-		<input id="updateSettings2" name="command" type="submit" class="Buttons" value="update settings" />
-	</div>
+	<?php 	
+	foreach($theform->extraModules as $module)
+		if(method_exists($module,"display")){
+			$module->display($theform,$therecord);
+		?>
+		<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+	<?php }//end for ?>
 	</form>
 </div>
-<?php include("../../footer.php"); ?></body>
-</html>
+<?php include("footer.php"); ?>

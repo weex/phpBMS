@@ -38,31 +38,85 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/products.php");
 
-	include("include/products_addedit_include.php");
+	$thetable = new products($db,4);
+	$therecord = $thetable->processAddEditPage();
 	
-	$catnumber=checkNumberCategories($dblink);
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
 	
-	$pageTitle="Product"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/products.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" type="text/javascript">
-	var numcats=<?php echo $catnumber?>;
-</script>
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/product.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	$phpbms->topJS[] = "numcats = ".$thetable->checkNumberCategories().";";
+	
+	$pageTitle="Product";
+	
+	$phpbms->cssIncludes[] = "pages/products.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/product.js";
 
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		$theform->enctype = "multipart/form-data";
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("taxable",$therecord["taxable"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("partnumber",$therecord["partnumber"],"part number",true,NULL,20,32,false);
+		$theinput->setAttribute("onchange","checkPartNumber()");
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+		
+		$theinput = new inputCurrency("unitprice", $therecord["unitprice"], "sell price" ,true);
+		$theinput->setAttribute("class","important");
+		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;';	
+		$theform->addField($theinput);
+
+		$theinput = new inputCurrency("unitcost", $therecord["unitcost"], "cost");
+		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;';	
+		$theform->addField($theinput);
+		
+
+		$markup=0;
+		if($therecord["unitcost"]!=0){
+			$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
+		}				
+		$theinput = new inputPercentage("markup", $markup, "mark-up",2);
+		$theinput->setAttribute("size","10");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("weight",$therecord["weight"],NULL,false,"real",10,16,false);
+		$theform->addField($theinput);
+
+		if ($therecord["packagesperitem"])
+			$itemsperpackage=1/$therecord["packagesperitem"];
+		else
+			$itemsperpackage=NULL;
+		
+		$theinput = new inputField("packagesperitem",$itemsperpackage,NULL,false,"real",10,16,false);
+		$theform->addField($theinput);
+		
+		$theinput = new inputCheckbox("isprepackaged",$therecord["isprepackaged"],"prepackaged");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("isoversized",$therecord["isoversized"],"oversized");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");	
+?>
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php showTabs($dblink,"products entry",10,$therecord["id"]);?><div class="bodyline">
+<?php $phpbms->showTabs("products entry",10,$therecord["id"]);?><div class="bodyline">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><?php echo $pageTitle ?></h1>
@@ -76,11 +130,11 @@
 			</p>
 
 			<p>
-				<?php fieldCheckbox("inactive",$therecord["inactive"],false,array("tabindex"=>"50"))?><label for="inactive">inactive</label>
+				<?php $theform->showField("inactive")?>
 			</p>
 
 			<p>
-				<?php fieldCheckbox("taxable",$therecord["taxable"],false,array("tabindex"=>"60"))?><label for="taxable">taxable</label>
+				<?php $theform->showField("taxable")?>
 			</p>
 
 			<p>
@@ -103,7 +157,7 @@
 		<fieldset>
 			<legend><label for="memo">memo</label></legend>
 			<p>
-				<textarea cols="10" rows="11" style="width:98%" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
+				<textarea cols="10" rows="11" name="memo" id="memo" tabindex="300"><?php echo $therecord["memo"]?></textarea>
 			</p>
 		</fieldset>
 	</div>
@@ -119,12 +173,12 @@
 			
 			<p>
 				<label for="partnumber"><span class="important">part number</span> <span class="notes">(must be unique)</span></label><br />
-				<?php fieldText("partnumber",$therecord["partnumber"],1,"Part number name cannot be blank.","",Array("size"=>"20","maxlength"=>"32","class"=>"important","tabindex"=>"20","onchange"=>"checkPartNumber()")); ?>				
+				<?php $theform->showField("partnumber") ?>
 			</p>
 			
 			<div class="fauxP">
 				<label for="categoryid" class="important">product category</label><br />
-				<?php displayProductCategories($therecord["categoryid"],$dblink) ?>
+				<?php $thetable->displayProductCategories($therecord["categoryid"]) ?>
 			</div>
 			
 			<p>
@@ -146,25 +200,14 @@
 		<fieldset>
 			<legend>price / cost</legend>
 			<p>
-				<label for="unitprice" class="important">sell price</label><br />
-				<?php fieldCurrency("unitprice",$therecord["unitprice"],0,"",Array("size"=>"10","maxlength"=>"32","class"=>"important","tabindex"=>"170"))?>
-				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;</script>			
+				<?php $theform->showField("unitprice")?>
 			</p>
 
 			<p class="costsP">
-				<label for="unitcost">cost</label><br />
-				<?php fieldCurrency("unitcost",$therecord["unitcost"],0,"",Array("size"=>"10","maxlength"=>"32","tabindex"=>"150"))?>		
-				<script language="JavaScript" type="text/javascript">var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;</script>								
+				<?php $theform->showField("unitcost")?>
 			</p>			
 			<p class="costsP">
-				<label for="markup">mark-up</label><br />
-				<?php 
-					$markup=0;
-					if($therecord["unitcost"]!=0){
-						$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
-					}				
-					fieldPercentage("markup",$markup,2,0,"",Array("size"=>"10","maxlength"=>"10"));
-				?>
+				<?php $theform->showField("markup")?>
 			</p>
 			<p>
 				<br />
@@ -182,25 +225,20 @@
 			<legend>weight / shipping</legend>
 			<p>
 				<label for="weight">weight</label> (lbs.)<br />
-				<?php fieldText("weight",$therecord["weight"],0,"Weight must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"180")); ?><br />
+				<?php  $theform->showfield("weight")?><br />
 				<span class="notes"><strong>Note:</strong> Weight must be in lbs. in order for shipping to be auto-estimated correctly.</span>
 			</p>
 			
 			<p>
 				<label for="packagesperitem">items per package <span class="notes">(number of product items that can fit in a shipping package)</span></label><br />
-				<?php 
-					if ($therecord["packagesperitem"])
-						$itemsperpackage=1/$therecord["packagesperitem"];
-					else
-						$itemsperpackage=NULL;
-				?><?php fieldText("packagesperitem",$itemsperpackage,0,"Packages per item must be a valid number.","real",Array("size"=>"10","maxlength"=>"16","tabindex"=>"200")); ?>	
+				<?php $theform->showfield("packagesperitem")?>	
 			</p>
 			
 			<p>
-				<?php fieldCheckbox("isprepackaged",$therecord["isprepackaged"],false,Array("tabindex"=>"210"))?><label for="isprepackaged">pre-packaged</label> <span class="notes">(product is not packed with any other product.)</span>
+				<?php $theform->showfield("isprepackaged");?> <span class="notes">(product is not packed with any other product.)</span>
 			</p>
 			<p>
-				<?php fieldCheckbox("isoversized",$therecord["isoversized"],false,Array("tabindex"=>"210"))?><label for="isoversized">oversized</label> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
+				<?php $theform->showfield("isoversized");?> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
 			</p>
 		</fieldset>
 	</div>
@@ -208,7 +246,7 @@
 	<fieldset>
 		<legend>web</legend>
 		<p>
-			<?php fieldCheckbox("webenabled",$therecord["webenabled"],false,Array("tabindex"=>"220"))?><label for="webenabled">web enabled</label>
+			<?php $theform->showfield("webenabled");?>
 		</p>
 				
 		<div style=" <?php if(!$therecord["webenabled"]) echo "display:none;" ?>" id="webstuff">
@@ -232,7 +270,7 @@
 			<div class="fauxP">
 				thumbnail graphic<br />
 				<?php if($therecord["thumbnailmime"]) {?>
-					<img id="thumbpic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=thumbnail&mf=thumbnailmime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+					<img id="thumbpic" src="<?php echo APP_PATH ?>dbgraphic.php?t=products&f=thumbnail&mf=thumbnailmime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
 				<?php } else {?>
 					<div id="noThumb" class="tiny" align="center">no thumbnail</div>
 				<?php } ?>
@@ -245,7 +283,7 @@
 			<div class="fauxP">
 				main picture<br />
 				<?php if($therecord["picturemime"]) {?>
-					<img id="picturepic" src="<?php echo $_SESSION["app_path"] ?>dbgraphic.php?t=products&f=picture&mf=picturemime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+					<img id="picturepic" src="<?php echo APP_PATH ?>dbgraphic.php?t=products&f=picture&mf=picturemime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
 				<?php } else {?>
 					<div id="noPicture" class="tiny" align="center">no picture</div>
 				<?php } ?>
@@ -257,9 +295,7 @@
 		</div>
 	</fieldset>	
 
-	<?php include("../../include/createmodifiedby.php"); ?>	
+	<?php $theform->showCreateModify($phpbms,$therecord);?>	
 </div>
-<?php include("../../footer.php");?>
 </form>
-</body>
-</html>
+<?php include("footer.php");?>

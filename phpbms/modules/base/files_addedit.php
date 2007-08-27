@@ -38,46 +38,77 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/files.php");
 
 	if(!isset($_GET["backurl"])){
-		include("include/files_addedit_include.php");
+		$thetable = new files($db,26);
+
 		$pageTitle="File";
 	} else {
-		include("include/attachments_addedit_include.php");
+		include("include/attachments.php");
+
+		$backurl=$_GET["backurl"];
+		if(isset($_GET["refid"]))
+		$backurl.="?refid=".$_GET["refid"];
+
+		$thetable = new attachments($db,26,$backurl);
+
 		$pageTitle="File Attachment";
 	}
+
+	$therecord = $thetable->processAddEditPage();
 	
-	function getAttachments($id){
-		global $dblink;
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
+	
+
+	function getAttachments($db,$id){
 		$querystatement="SELECT tabledefs.displayname, attachments.recordid, attachments.creationdate, tabledefs.editfile
 						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.id 
 						WHERE fileid=".$id;
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) reportError(300,"Error Retrieving Attachments: ".mysql_error($dblink)." -- ".$querystatement);
+		$queryresult=$db->query($querystatement);
+
 		return $queryresult;
 	}
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/files.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="../base/javascript/file.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	$phpbms->cssIncludes[] = "pages/files.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/file.js";
 
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		$theform->enctype = "multipart/form-data";
+		
+		if(isset($therecord["id"])){
+			$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,64,128);
+			$theinput->setAttribute("class","important");
+			$theform->addField($theinput);
+		}
 
-<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons"><?php showSaveCancel(1); ?></div>
+		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
+		$theform->addField($theinput);
+		
+		if(isset($_GET["tabledefid"]) && !isset($therecord["id"])){
+			$securitywhere="";
+			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
+				$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+			$theinput = new inputAutofill($db, "fileid","",26,"files.id","files.name", 
+											"if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)",
+											"files.id!=1 ".$securitywhere, "existing file name");
+			$theinput->setAttribute("size",40);
+			$theform->addField($theinput);
+		}//end if
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
 	
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>	
 
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
@@ -85,10 +116,7 @@
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
 		</p>
-		<p id="roleidP">
-			<label for="roleid">access (role)</label><br />
-			<?php fieldRolesList("roleid",$therecord["roleid"],$dblink)?>
-		</p>
+		<p id="roleidP"><?php $theform->showField("roleid")?></p>
 	</fieldset>
 	
 	<div id="leftSideDiv">
@@ -105,8 +133,7 @@
 				<button  type="button" class="Buttons" onclick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
 			</p>
 			<p>
-				<label for="name" class="important">name</label><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"64","maxlength"=>"128","style"=>"","class"=>"important","tabindex"=>"5")); ?><br />
+				<?php $theform->showField("name")?><br />
 				<span class="notes">If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</span>
 			</p>
 			<p>
@@ -125,14 +152,7 @@
 					<span class="notes">Choose "existing file" if the file has already been uploaded into phpBMS.</span>
 				</p>
 				<p id="fileidlabel">
-					<label for="fileid-ds" >existing file name</label><br />
-					<?php 
-						
-						$securitywhere="";
-						if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
-							$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
-						fieldAutofill("fileid","",26,"files.id","files.name","if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)","files.id!=1 ".$securitywhere,Array("size"=>"40","maxlength"=>"128","style"=>"",false)) 
-					?>				
+					<?php $theform->showField("fileid");?>				
 				</p>
 			<?php }?>
 				<p id="uploadlabel">
@@ -147,8 +167,8 @@
 	</fieldset>
 	<?php 
 	if($therecord["id"]) {
-		$attchmentsquery=getAttachments($therecord["id"]);
-		if(mysql_num_rows($attchmentsquery)){
+		$attchmentsquery=getAttachments($db,$therecord["id"]);
+		if($db->numRows($attchmentsquery)){
 		?>
 		<h2>Record Attachments</h2>
 		<div class="fauxP">
@@ -161,14 +181,14 @@
 				<th align="left" nowrap="nowrap">&nbsp;</th>
 			</tr>
 		<?php
-			while($attachmentrecord=mysql_fetch_array($attchmentsquery)){
+			while($attachmentrecord=$db->fetchArray($attchmentsquery)){
 	?>
 			<tr>
 				<td nowrap="nowrap"><?php echo $attachmentrecord["displayname"] ?></td>
 				<td><?php echo $attachmentrecord["recordid"] ?></td>
 				<td align="right"><?php echo formatFromSQLDatetime($attachmentrecord["creationdate"]) ?></td>
 				<td>
-					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo $_SESSION["app_path"].$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
+					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo APP_PATH.$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
 				</td>
 			</tr>
 	<?php 
@@ -177,9 +197,10 @@
 	}?>
 	</div>
 
-	<?php include("../../include/createmodifiedby.php"); ?>
+
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php");?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

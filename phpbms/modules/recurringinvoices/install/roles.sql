@@ -1,0 +1,1 @@
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (400,'recurring invoice notification','',0,1,NOW(),1,NOW());

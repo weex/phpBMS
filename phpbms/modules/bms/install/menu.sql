@@ -15,3 +15,4 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (214,'Payment Methods','search.php?id=301',204,40,1,1,NOW(),NOW(),30);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (215,'----','',204,15,1,1,NOW(),NOW(),30);
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES (216,'invoice statuses','search.php?id=302',204,50,1,1,NOW(),NOW(),30);
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('email projects','search.php?id=22',200,100,1,1,NOW(),NOW(),-100);

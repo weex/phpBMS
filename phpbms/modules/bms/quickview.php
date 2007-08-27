@@ -37,24 +37,77 @@
  +-------------------------------------------------------------------------+
 */
 	require_once("../../include/session.php");
-	require_once("../../include/common_functions.php");	
-	require_once("./include/quickview_include.php");
-	require_once("../../include/fields.php");
+	require_once("include/fields.php");
 	
 	$pagetitle="Client/Prospect Quick View";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pagetitle?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/quickview.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="./javascript/quickview.js" type="text/javascript" ></script>
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-</head>
-<body>
-<?php include("../../menu.php");?>
+
+	$phpbms->cssIncludes[] = "pages/quickview.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/quickview.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		if(isset($_GET["cid"]))
+			$passedValue = $_GET["cid"];
+		else
+			$passedValue = NULL;
+
+		$theinput = new inputAutofill($db, "namecid",$passedValue,2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)",
+										"if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive=0","name");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["namecid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "emailcid","",2,"clients.id","clients.email",
+										"if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0","e-mail address");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["emailcid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+		
+		$theinput = new inputAutofill($db, "workphonecid","",2,"clients.id","clients.workphone",
+										"if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0","work phone");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["workphonecid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "homephonecid","",2,"clients.id","clients.homephone",
+										"if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0","home phone");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["homephonecid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "mobilephonecid","",2,"clients.id","clients.mobilephone",
+										"if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0","mobile phone");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["mobilephonecid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "mainaddresscid","",2,"clients.id","clients.address1",
+										"if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0","address");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theinput->setAttribute("class","important lookupWhats");
+		$phpbms->bottomJS[] = 'document.forms["record"]["mainaddresscid"].onchange=updateViewButton;';
+		$theform->addField($theinput);
+
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");
+	?>
 <form method="post" name="record" id="record" onsubmit="return false;" action="">
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
@@ -71,49 +124,24 @@
 				</select>				
 			</p>
 			<p id="lookupButtonsP">
-				<input type="button" value="view" id="dolookup" class="Buttons" disabled="disabled" tabindex="20" onclick="viewClient('<?php echo $_SESSION["app_path"]?>')" />
-				<input type="button" value="add new" id="addnew" class="Buttons" tabindex="20" onclick="addEditRecord('new','client','<?php echo getAddEditFile(2,"add")?>')" />
+				<input type="button" value="view" id="dolookup" class="Buttons" disabled="disabled" tabindex="20" onclick="viewClient()" />
+				<input type="button" value="add new" id="addnew" class="Buttons" tabindex="20" onclick="addEditRecord('new','client','<?php echo getAddEditFile($db,2,"add")?>')" />
 			</p>			
 			<div class="fauxP" id="lookupWhatP">
-				<p id="lookupNameLabel">
-					<label for="ds-namecid">name</label><br />
-					<?php 
-						$passedValue="";
-						if(isset($_GET["cid"]))
-							$passedValue=$_GET["cid"];
-						fieldAutofill("namecid",$passedValue,2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","class"=>"important lookupWhats","tabindex"=>"10"),0)
-					?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["namecid"].onchange=updateViewButton;</script>						
-				</p>
+
+				<p id="lookupNameLabel"><?php $theform->showField("namecid")?></p>
 				
-				<p id="lookupEmailLabel" class="disabledP">
-					<label for="ds-emailcid">e-mail address</label><br />
-					<?php fieldAutofill("emailcid","",2,"clients.id","clients.email","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["emailcid"].onchange=updateViewButton;</script>
-				</p>
-				<p id="lookupWorkPhoneLabel" class="disabledP">
-					<label for="ds-workphonecid" >work phone</label><br />
-					<?php fieldAutofill("workphonecid","",2,"clients.id","clients.workphone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["workphonecid"].onchange=updateViewButton;</script>
-				</p>
-				<p id="lookupHomePhoneLabel" class="disabledP">
-					<label for="ds-homephonecid">home phone</label><br />
-					<?php fieldAutofill("homephonecid","",2,"clients.id","clients.homephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["homephonecid"].onchange=updateViewButton;</script>
-				</p>
-				<p id="lookupMobilePhoneLabel" class="disabledP">
-					<label for="ds-mobilephonecid">mobile phone</label><br />
-					<?php fieldAutofill("mobilephonecid","",2,"clients.id","clients.mobilephone","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["mobilephonecid"].onchange=updateViewButton;</script>
-				</p>
-				<p id="lookupMainAddressLabel" class="disabledP">
-					<label for="ds-mainaddresscid" >address</label><br />
-					<?php fieldAutofill("mainaddresscid","",2,"clients.id","clients.address1","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","clients.inactive=0",Array("size"=>"45","maxlength"=>"128","style"=>"","class"=>"important lookupWhats","tabindex"=>"10"),0) ?>
-					<script language="JavaScript" type="text/javascript">document.forms["record"]["mainaddresscid"].onchange=updateViewButton;</script>
-				</p>
+				<p id="lookupEmailLabel" class="disabledP"><?php $theform->showField("emailcid")?></p>
+				
+				<p id="lookupWorkPhoneLabel" class="disabledP"><?php $theform->showField("workphonecid")?></p>
+
+				<p id="lookupHomePhoneLabel" class="disabledP"><?php $theform->showField("homephonecid")?></p>
+
+				<p id="lookupMobilePhoneLabel" class="disabledP"><?php $theform->showField("mobilephonecid")?></p>
+
+				<p id="lookupMainAddressLabel" class="disabledP"><?php $theform->showField("mainaddresscid")?></p>
 			</div>
 </div>
 <div id="clientrecord"></div>
 </form>
-</body>
-</html>
+<?php include("footer.php");?>

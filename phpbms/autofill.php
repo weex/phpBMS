@@ -37,14 +37,11 @@
  +-------------------------------------------------------------------------+
 */
 	require("include/session.php");
-	require("include/common_functions.php");
 
-	function getAutofillXML($what,$displayfield,$xtrafield,$tabledefid,$thefield,$whereclause){
-		global $dblink;
-		
+	function getAutofillXML($db,$what,$displayfield,$xtrafield,$tabledefid,$thefield,$whereclause){
 		$tblquerystatement="SELECT maintable FROM tabledefs WHERE id=".$tabledefid;
-		$queryresult=mysql_query($tblquerystatement,$dblink);
-		$therecord=mysql_fetch_array($queryresult);
+		$queryresult=$db->query($tblquerystatement);
+		$therecord=$db->fetchArray($queryresult);
 		
 		$querystatement="SELECT ".stripslashes($displayfield)." as display,
 						".stripslashes($xtrafield)." as xtra ";
@@ -64,12 +61,12 @@
 		else
 			$querystatement.=" LIMIT 10";			
 			
-		$queryresult=mysql_query($querystatement,$dblink);
+		$queryresult=$db->query($querystatement);
 		if(!$queryresult){
 			echo $querystatement;
 			$numrows=0;die();}
 		else {
-			$numrows=mysql_num_rows($queryresult);
+			$numrows=$db->numRows($queryresult);
 		}
 				
 		header('Content-Type: text/xml');
@@ -78,7 +75,7 @@
 <response>
 <numrec><?php echo $numrows ?></numrec>
 	<?php if($numrows){
-		while($therecord=mysql_fetch_array($queryresult)) {
+		while($therecord=$db->fetchArray($queryresult)) {
 	?><rec>
 <fld>display</fld>
 <val><?php echo xmlEncode($therecord["display"])?></val>
@@ -96,6 +93,6 @@
 		$_GET=addSlashesToArray($_GET);
 		if(!isset($_GET["gf"]))$_GET["gf"]="";
 		if(!isset($_GET["wc"]))$_GET["wc"]="";
-		getAutofillXML($_GET["l"],$_GET["fl"],$_GET["xt"],$_GET["tid"],$_GET["gf"],$_GET["wc"]);
+		getAutofillXML($db,$_GET["l"],$_GET["fl"],$_GET["xt"],$_GET["tid"],$_GET["gf"],$_GET["wc"]);
 	}
 ?>

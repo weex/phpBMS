@@ -38,28 +38,41 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-	include("include/roles_addedit_include.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/roles.php");
+
+	$thetable = new roles($db,200);
+	$therecord = $thetable->processAddEditPage();
 	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
+
 	$pageTitle="Role";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/roles.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/roles.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons">
-		<?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+
+	$phpbms->cssIncludes[] = "pages/roles.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/roles.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		$theform->onsubmit="return submitForm(this);";
+
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
@@ -68,16 +81,14 @@
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
 		
-		<p><?php fieldCheckbox("inactive",$therecord["inactive"])?><label for="inactive">inactive</label></p>
+		<p><?php $theform->showField("inactive")?></p>
 		
 	</fieldset>
 	
 	<div id="leftSideDiv">
 		<fieldset>
-			<legend><label for="name">name</label></legend>
-			<p>
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"28","maxlength"=>"64","class"=>"important","style"=>"width:99%")); ?>			
-			</p>
+			<legend>name</legend>
+			<p><?php $theform->showField("name") ?></p>
 		</fieldset>
 
 		<fieldset>
@@ -96,7 +107,7 @@
 			<div id="assignedusersdiv">
 				users assigned to group<br />
 				<select id="assignedusers" size="10" multiple>
-					<?php displayUsers($therecord["id"],"assigned",$dblink)?>
+					<?php $thetable->displayUsers($therecord["id"],"assigned")?>
 				</select>
 			</div>
 			<div id="usersbuttonsdiv">
@@ -110,7 +121,7 @@
 			<div id="availableusersdiv">
 				available users<br />
 				<select id="availableusers" size="10" multiple>
-					<?php displayUsers($therecord["id"],"available",$dblink)?>
+					<?php $thetable->displayUsers($therecord["id"],"available")?>
 				</select>
 			</div>
 			</div>
@@ -118,9 +129,9 @@
 		<?php }?>
 	</div>
 
-	<?php include("../../include/createmodifiedby.php"); ?>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php"); ?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

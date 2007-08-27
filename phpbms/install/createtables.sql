@@ -1,3 +1,14 @@
+CREATE TABLE `tablegroupings` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tabledefid` INTEGER UNSIGNED NOT NULL,
+  `field` TEXT NOT NULL,
+  `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  `ascending` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `name` VARCHAR(64),
+  `roleid` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY(`id`)
+);
+
 CREATE TABLE `log` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(25),
@@ -6,7 +17,7 @@ CREATE TABLE `log` (
   `value` TEXT,
   `stamp` TIMESTAMP,
   PRIMARY KEY(`id`)
-) TYPE = MyISAM;
+);
 
 CREATE TABLE choices (
   id int(11) NOT NULL auto_increment,
@@ -118,6 +129,7 @@ CREATE TABLE `tablecolumns` (
   `wrap` tinyint(1) NOT NULL default '0',
   `size` varchar(16) NOT NULL default '',
   `format` enum('date','time','currency','boolean','datetime','filelink','noencoding') default NULL,
+  `roleid` INTEGER UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
@@ -298,9 +310,9 @@ CREATE TABLE `tabs` (
   `name` varchar(45) NOT NULL,
   `tabgroup` varchar(45) NOT NULL,
   `location` varchar(128) default NULL,
-  `displayorder` int(11) default '0',
-  `enableonnew` tinyint(3) unsigned default '0',
-  `roleid` int(11) default '0',
+  `displayorder` int(11) NOT NULL default '0',
+  `enableonnew` tinyint(3) unsigned NOT NULL default '0',
+  `roleid` int(11) NOT NULL default '0',
   `tooltip` varchar(128) default NULL,
   `notificationsql` text,
   `createdby` int(11) default NULL,

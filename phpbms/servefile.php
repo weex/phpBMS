@@ -39,13 +39,13 @@
 
 session_cache_limiter('private');
 require_once("include/session.php");
-require_once("include/common_functions.php");
+
 if(isset($_GET["i"])) {
 	$querystatement="SELECT file,type,name,roleid FROM files WHERE id=".((integer)$_GET["i"]);
-	@ $queryresult=mysql_query($querystatement,$dblink);
+	@ $queryresult=$db->query($querystatement);
 	if($queryresult) {
-		if(mysql_num_rows($queryresult)){
-			$therecord=mysql_fetch_array($queryresult);
+		if($db->numRows($queryresult)){
+			$therecord=$db->fetchArray($queryresult);
 			if(hasRights($therecord["roleid"])){
 				header("Content-type: ".$therecord["type"]);
 				header("Content-Disposition: attachment; filename=\"".rawurlencode($therecord["name"])."\"");

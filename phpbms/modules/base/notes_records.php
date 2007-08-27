@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-	$displayTable= new displaySearchTable;	
+	$displayTable= new displaySearchTable($db);	
 	$displayTable->base=$base;
 	$displayTable->initialize(12);	
 	$displayTable->querywhereclause=$whereclause;
@@ -51,10 +51,17 @@
 	if(isset($_POST["command"])){
 		switch($_POST["command"]){
 			case $displayTable->thetabledef["deletebutton"]:
-				//=====================================================================================================
+			//=====================================================================================================
+			
+			include_once("modules/base/include/notes.php");
+			
 			$theids=explode(",",$_POST["theids"]);
-			$tempmessage=delete_record($theids);
+			
+			$searchFunctions = new notesSearchFunctions($db,$displayTable->thetabledef["id"],$theids);
+
+			$tempmessage = $searchFunctions->delete_record();
 			if($tempmessage) $statusmessage=$tempmessage;
+
 			break;
 		}//end switch
 	}	
@@ -73,20 +80,15 @@
 
 	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
 	
-		$displayTable->issueQuery();		
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/search.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/queryfunctions.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-	xtraParamaters="backurl="+encodeURIComponent("<?php echo $backurl ?>")+String.fromCharCode(38)+"tabledefid=<?php echo $tabledefid ?>"+String.fromCharCode(38)+"refid=<?php echo $refid ?>";
-</script>
-</head>
-<body><?php include("../../menu.php")?><?php showTabs($dblink,$tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
+	$displayTable->issueQuery();		
+
+	$phpbms->cssIncludes[] = "pages/search.css";
+	$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
+	$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid='.$reftableid.'"+String.fromCharCode(38)+"refid='.$refid.'";';
+	
+	include("header.php");
+
+	$phpbms->showTabs($tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
 		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onsubmit="setSelIDs(this);return true;">
@@ -104,6 +106,4 @@
 		</form>
 	</div>
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html><?php }//endif?>
+<?php include("../../footer.php"); }//endif?>

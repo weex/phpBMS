@@ -42,9 +42,9 @@ window.onload= function(){
 
 	var namecid=getObjectFromID("namecid");
 	if(namecid.value!=""){
-		var viewButton=getObjectFromID("dolookup");
-		viewButton.disabled=false;
-		viewButton.click();
+		var viewButton = getObjectFromID("dolookup");
+		viewButton.disabled = false;
+		viewClient();
 	} else{
 		var focusobject=getObjectFromID("ds-namecid");
 		focusobject.focus();
@@ -101,13 +101,13 @@ function updateViewButton(){
 		viewButton.focus();
 	}
 }
-function viewClient(base){
+function viewClient(){
 	var lookuptype=getObjectFromID("lookupby");
 	var clientid=getObjectFromID(lookuptype.value);
 	if (clientid.value!=""){
 		var clientrecord=getObjectFromID("clientrecord");
-		clientrecord.innerHTML="<div align=\"center\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";
-		var theURL=base+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURIComponent(base);
+		clientrecord.innerHTML="<div align=\"center\"><img src=\""+APP_PATH+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";
+		var theURL=APP_PATH+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURIComponent(APP_PATH);
 		loadXMLDoc(theURL,null,false);
 		//clientrecord.style.visibility="hidden";
 		clientrecord.innerHTML=req.responseText;
@@ -145,7 +145,7 @@ function addEditRecord(newedit,what,addeditfile){
 	document.location=theURL;
 }
 
-function selectEdit(thetr,id,noteinvoice){
+function selectEdit(thetr,id,noteinvoice){	
 	var theeditbutton=getObjectFromID(noteinvoice+"edit");	
 	var theSelected;
 	if(noteinvoice=="note")
@@ -153,8 +153,10 @@ function selectEdit(thetr,id,noteinvoice){
 	else
 		theSelected=selectedInvoice;
 	
+	
 	if(theSelected==id){
 		theeditbutton.className="graphicButtons buttonEditDisabled";
+		theeditbutton.disabled = true;
 		theSelected="";
 		thetr.className=""
 	} else {
@@ -166,6 +168,7 @@ function selectEdit(thetr,id,noteinvoice){
 		thetr.className="smallQueryTableSelected";
 		theSelected=id;
 		theeditbutton.className="graphicButtons buttonEdit";
+		theeditbutton.disabled = false;
 	}
 	if(noteinvoice=="note")
 		selectedNote=theSelected;

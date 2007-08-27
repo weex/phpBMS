@@ -36,33 +36,161 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+// uber phpbms class for common functions that reference the DB
+// it should be instanced in session.php
+class phpbms{
+	
+	var $db;
+	var $modules = array();//array of installed modules
+	var $cssIncludes = array();
+	var $jsIncludes = array();
+	var $topJS = array();
+	var $bottomJS = array();
+	
+	var $onload = "";
+	
+	var $showFooter = true;
+	var $showMenu = true;
+	
+	function phpbms($db){
+		$this->db = $db;
+		
+		$this->modules = $this->getModules();
+	}
+
+
+	function showCssIncludes(){
+		foreach($this->cssIncludes as $theinclude){
+			?><link href="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ."/".$theinclude ?>" rel="stylesheet" type="text/css" />
+			<?php
+		}
+	}
+	
+	function showJsIncludes(){
+		foreach($this->jsIncludes as $theinclude){
+			?><script language="JavaScript" src="<?php echo APP_PATH.$theinclude ?>" type="text/javascript" ></script>
+			<?php
+		}
+	}
+
+	function showExtraJs($array){
+		?><script language="JavaScript" type="text/javascript">
+		<?php
+		foreach($array as $theextra)
+			echo $theextra."\n";
+		?>
+		</script><?php
+	}
+	
+	function getModules(){
+		$modules = array();
+		
+		$querystatement = "SELECT * FROM `modules`";
+		$queryresult = $this->db->query($querystatement);
+		while($therecord = $this->db->fetchArray($queryresult))
+			$modules[$therecord["name"]] = $therecord;
+			
+		return $modules;
+	}
+	
+
+	function displayRights($roleid,$rolename = NULL){
+			switch($roleid){
+				
+				case 0:
+					echo "EVERYONE";
+				break;
+				
+				case -100:
+					echo "Administrators";
+				break;
+				
+				default:
+					if(!$rolename){
+						$querystatement = "SELECT name FROM roles WHERE id=".((int) $roleid);
+						$queryresult = $this->db->query($querystatement);
+	
+						$therecord = $this->db->fetchArray($queryresult);
+						$rolename = $therecord["name"];
+					}//end if
+					
+					echo $rolename;
+			}//end case
+	}//end method
+
+
+	function showTabs($tabgroup,$currenttabid,$recordid=0){
+			
+		$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
+		$queryresult=$this->db->query($querystatement);
+	
+		?><ul class="tabs"><?php 
+			while($therecord=$this->db->fetchArray($queryresult)){
+				?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
+					if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
+						$opener="<div>";
+						$closer="</div>";
+					} else{
+						$opener="<a href=\"".APP_PATH.$therecord["location"]."?id=".$recordid."\">";
+						$closer="</a>";
+					}
+					if($therecord["notificationsql"]!=""){
+						$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
+						$notificationresult=$this->db->query($therecord["notificationsql"]);
+	
+						if($this->db->numRows($notificationresult)!=0){
+							$notificationrecord=$this->db->fetchArray($notificationresult);
+							if(isset($notificationrecord["theresult"]))
+								if($notificationrecord["theresult"]>0){
+									$opener.="<span>";
+									$closer="</span>".$closer;
+								}
+						}
+					}
+					
+					echo $opener.$therecord["name"].$closer;
+	
+				?></li><?php 
+			}	
+		?>
+		</ul><?php
+	}//end method
+
+
+	function getUserName($id=0){
+		
+		$querystatement="select concat(firstname,\" \",lastname) as name from users where id=".((int) $id);
+		$queryresult = $this->db->query($querystatement);
+	
+		$tempinfo = $this->db->fetchArray($queryresult);
+		return trim($tempinfo["name"]);
+		
+	}// end method
+
+}// end class
+
 
 //=================================================
 //Most Common Functions of the Application go here.
 //=================================================
-function sendLog($dblink,$type,$value,$userid="NULL"){
-	if($userid!="NULL") $userid= (int) $userid;
-	$ip=$_SERVER["REMOTE_ADDR"];
 
-	$querystatement="INSERT INTO `log` (`type`,`value`,`userid`,`ip`) VALUES (";
-	$querystatement.="\"".mysql_real_escape_string($type)."\", ";
-	$querystatement.="\"".mysql_real_escape_string($value)."\", ";
-	$querystatement.=$userid.", ";
-	$querystatement.="\"".$ip."\")";
-	@ mysql_query($querystatement,$dblink) or die(mysql_error($dblink).":".$querystatement);
-	
+function xmlEncode($str){
+	$str=str_replace("&","&amp;",$str);
+	$str=str_replace("<","&lt;",$str);
+	$str=str_replace(">","&gt;",$str);
+	return $str;
 }
 
 function goURL($url){
 	if(headers_sent())
-		reportError("450","Could not redirect to: ".$url);
+		$error = new appError("450","Could not redirect to: ".$url);
 		header("Location: ".$url);
 	exit;
 }
 
-function hasRights($roleid){
+function hasRights($roleid,$checkForAdmin = true){
 	$hasrights=false;
-	if($_SESSION["userinfo"]["admin"]==1)
+	if($_SESSION["userinfo"]["admin"]==1 && $checkForAdmin)
 		$hasrights=true;
 	elseif($roleid==0)
 		$hasrights=true;
@@ -74,87 +202,10 @@ function hasRights($roleid){
 	return $hasrights;
 }
 
-function displayRights($roleid,$rolename,$dblink=false){
-	 	switch($roleid){
-			case 0:
-				echo "EVERYONE";
-			break;
-			case -100:
-				echo "Administrators";
-			break;
-			default:
-				if(!$rolename){
-					if(!$dblink)
-						reportError(400,"displayRights needs a database link if rolename is not specified");
-					$querystatement="SELECT name FROM roles WHERE id=".$roleid;
-					$queryresult=mysql_query($querystatement,$dblink);
-					if(!queryresult) reportError(400,"displayRights could not retrieve role name");
-					$therecord=mysql_fetch_array($queryresult);
-					$rolename=$therecord["name"];
-				}
-				echo $rolename;
-		}
-}
-
-//Create Tabs
-//===================================
-function showTabs($dblink,$tabgroup,$currenttabid,$recordid=0){
-	$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(400,"showTabs could not retrieve tab information: ".$tabgroup);
-	?><ul class="tabs"><?php 
-		while($therecord=mysql_fetch_array($queryresult)){
-			?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
-				if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
-					$opener="<div>";
-					$closer="</div>";
-				} else{
-					$opener="<a href=\"".$_SESSION["app_path"].$therecord["location"]."?id=".$recordid."\">";
-					$closer="</a>";
-				}
-				if($therecord["notificationsql"]!=""){
-					$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
-					$notificationresult=@ mysql_query($therecord["notificationsql"],$dblink);
-					if(!$notificationresult) {
-						echo "</li></ul>";
-						reportError(400,"Bad Notification SQL Statement in Tab Creation: ".mysql_error($dblink)." -- ".$therecord["notificationsql"]);
-					}
-					if(mysql_num_rows($notificationresult)!=0){
-						$notificationrecord=mysql_fetch_array($notificationresult);
-						if(isset($notificationrecord["theresult"]))
-							if($notificationrecord["theresult"]>0){
-								$opener.="<span>";
-								$closer="</span>".$closer;
-							}
-					}
-				}
-				
-				echo $opener.$therecord["name"].$closer;
-
-			?></li><?php 
-		}	
-	?>
-	</ul><?php
-}
-
-
-//=====================================================================
-function getUserName($id=0){
-	global $dblink;
-	if($id=="") $id=0;
-	$querystatement="select concat(firstname,\" \",lastname) as name from users where id=".$id;
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
-	$tempinfo = mysql_fetch_array($queryresult);
-	return trim($tempinfo["name"]);
-}
 
 
 // date/time functions
 //=====================================================================
-define("DATE_FORMAT",$_SESSION["date_format"]);
-define("TIME_FORMAT",$_SESSION["time_format"]);
-
 function stringToDate($datestring,$format=DATE_FORMAT){
 	$thedate=NULL;
 	if($datestring){
@@ -164,6 +215,8 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("-",$datestring);
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
+				else 
+					return false;
 			break;
 
 			case "English, US":
@@ -171,6 +224,8 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("/",$datestring);
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
+				else 
+					return false;
 			break;
 			
 			case "English, UK":
@@ -178,6 +233,8 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("/",$datestring);
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
+				else 
+					return false;
 			break;
 			
 			case "Dutch, NL":
@@ -185,6 +242,8 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("-",$datestring);
 				if(count($temparray)>1)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
+				else 
+					return false;
 			break;
 
 		}
@@ -368,14 +427,14 @@ function numberToCurrency($number){
 	$currency="";
 	if($number<0)
 		$currency.="-";
-	$currency.=$_SESSION["currency_symbol"].number_format(abs($number),$_SESSION["currency_accuracy"],$_SESSION["decimal_symbol"],$_SESSION["thousands_separator"]);
+	$currency.=CURRENCY_SYMBOL.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
 	return $currency;
 }
 
 function currencyToNumber($currency){
-	$number=str_replace($_SESSION["currency_symbol"],"",$currency);
-	$number=str_replace($_SESSION["thousands_separator"],"",$number);
-	$number=str_replace($_SESSION["decimal_symbol"],".",$number);
+	$number=str_replace(CURRENCY_SYMBOL,"",$currency);
+	$number=str_replace(THOUSANDS_SEPARATOR,"",$number);
+	$number=str_replace(DECIMAL_SYMBOL,".",$number);
 	$number=((real) $number);
 	
 	return $number;
@@ -384,6 +443,44 @@ function currencyToNumber($currency){
 
 
 //============================================================================
+function ordinal($number) {
+
+    // when fed a number, adds the English ordinal suffix. Works for any
+    // number, even negatives
+
+    if ($number % 100 > 10 && $number %100 < 14):
+        $suffix = "th";
+    else:
+        switch($number % 10) {
+
+            case 0:
+                $suffix = "th";
+                break;
+
+            case 1:
+                $suffix = "st";
+                break;
+
+            case 2:
+                $suffix = "nd";
+                break;
+
+            case 3:
+                $suffix = "rd";
+                break;
+
+            default:
+                $suffix = "th";
+                break;
+        }
+
+    endif;
+
+    return "${number}$suffix";
+
+}
+
+
 function addSlashesToArray($thearray){
 	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
 		foreach ($thearray as $key=>$value) 
@@ -403,51 +500,27 @@ function htmlQuotes($string){
 	return htmlspecialchars($string,ENT_COMPAT,"UTF-8");
 }
 
+
 function htmlFormat($string,$quotes=false){
 	$trans = get_html_translation_table(HTML_ENTITIES);
 	$encoded = strtr($string, $trans);
 	return $encoded;
 }
 
+
 function showSaveCancel($ids=1){
 	?><div class="saveCancels"><input <?php if($ids==1) {?>accesskey="s"<?php }?> title="Save (alt+s)" id="saveButton<?php echo $ids?>" name="command" type="submit" value="save" class="Buttons" /><input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" onclick="this.form.cancelclick.value=true;" <?php if($ids==1) {?>accesskey="x" <?php }?> title="(access key+x)" /></div><?php
 }
 
-function buildStatusMessage($affected,$selected){
-	switch($affected){
-		case "0":
-			$message="No records";
-		break;
-		case "1":
-			$message="1 record";		
-		break;
-		default:
-			$message=$affected." records";					
-		break;
-	}
-	if($affected!=$selected)
-		$message.=" (of ".$selected." selected)";
-	return $message;
+
+function getAddEditFile($db,$tabledefid,$addedit="edit"){
+	$querystatement="SELECT ".$addedit."file AS thefile FROM tabledefs WHERE id=".((int) $tabledefid);
+	$queryresult = $db->query($querystatement);
+
+	$therecord=$db->fetchArray($queryresult);
+	return APP_PATH.$therecord["thefile"];
 }
 
-function buildWhereClause($idArray,$phrase){
-	$whereclause="";
-	foreach($idArray as $theid){
-		$whereclause.=" or ".$phrase."=".$theid;
-	}
-	$whereclause=substr($whereclause,3);
-	return $whereclause;
-}
-
-function getAddEditFile($tabledefid,$addedit="edit"){
-	global $dblink;
-	
-	$querystatement="SELECT ".$addedit."file AS thefile FROM tabledefs WHERE id=".$tabledefid;
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(300,mysql_error($dblink)." -- ".$querystatement);
-	$therecord=mysql_fetch_array($queryresult);
-	return $_SESSION["app_path"].$therecord["thefile"];
-}
 
 function booleanFormat($bool){
 	if($bool==1)
@@ -459,25 +532,35 @@ function booleanFormat($bool){
 
 function formatVariable($value,$format){
 	switch($format){
+		case "real":
+			$value = number_format($value,2);
+			break;
+
 		case "currency":
 			$value=htmlQuotes(numberToCurrency($value));
-		break;
+			break;
+
 		case "boolean":
 			$value=booleanFormat($value);
-		break;
+			break;
+
 		case "date":
 			$value=formatFromSQLDate($value);
-		break;
+			break;
+
 		case "time":
 			$value=formatFromSQLTime($value);
-		break;
+			break;
+
 		case "datetime":
 			$value=formatFromSQLDatetime($value);
-		break;
+			break;
+
 		case "filelink":
-			$value="<button class=\"graphicButtons buttonDownload\" type=\"button\" onclick=\"document.location='".$_SESSION["app_path"]."servefile.php?i=".$value."'\"><span>download</span></button>";
-			//$value="<a href=\"".$_SESSION["app_path"]."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".$_SESSION["app_path"]."common/stylesheet/".$_SESSION["stylesheet"]."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
-		break;
+			$value="<button class=\"graphicButtons buttonDownload\" type=\"button\" onclick=\"document.location='".APP_PATH."servefile.php?i=".$value."'\"><span>download</span></button>";
+			//$value="<a href=\"".APP_PATH."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".APP_PATH."common/stylesheet/".STYLESHEET."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
+			break;
+
 		case "noencoding":
 			$value=$value;
 		break;

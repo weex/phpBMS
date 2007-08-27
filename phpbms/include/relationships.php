@@ -39,7 +39,8 @@
 
 //Perform the relationship lookup to construct join clause
 function perform_relationship($relationshipid,$theids){
-	global $dblink;
+	global $db;
+	
 	$_SESSION["passedjoinclause"]="";
 	$_SESSION["passedjoinwhere"]="";
 	
@@ -50,9 +51,9 @@ function perform_relationship($relationshipid,$theids){
 		(relationships inner join tabledefs as fromtable on relationships.fromtableid=fromtable.id) 
 		inner join tabledefs as totable on relationships.totableid=totable.id	
 		WHERE relationships.id=".$relationshipid;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,"Error Retrieving Eelationship");
-	$therelationship=mysql_fetch_array($queryresult);
+	$queryresult=$db->query($querystatement);
+
+	$therelationship=$db->fetchArray($queryresult);
 	
 	//if the relationship is inherent (already exists due to the display nature of the table)
 	// then the join clause is not needed

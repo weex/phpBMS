@@ -38,18 +38,16 @@
 */
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
+
 	require_once("include/session.php");
-	require_once("include/common_functions.php");
 	
-	if(isset($dblink)){
+	
+	function displayVersions($db){
 		$querystatement="SELECT displayname,version from modules ORDER BY id";
-		$queryresult=mysql_query($querystatement,$dblink);
-	} else
-		$queryresult="";
-	
-	function displayVersions($queryresult){
+		$queryresult=$db->query($querystatement);
+
 		if($queryresult){
-			while($therecord=mysql_fetch_array($queryresult)){
+			while($therecord=$db->fetchArray($queryresult)){
 				if($therecord["displayname"]!="Base"){
 					echo $therecord["displayname"].": ";
 					echo "v".$therecord["version"]."<br />";
@@ -59,22 +57,20 @@
 		}
 	}
 	
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>phpBMS Information</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/base.css" rel="stylesheet" type="text/css" />	
-<link href="common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/info.css" rel="stylesheet" type="text/css" />	
-</head>
-
-<body>
-<div class="bodyline" id="container">
+	$pageTitle="phpBMS Information";
+	$phpbms->cssIncludes[] = "pages/info.css";
+	
+	$phpbms->showMenu = false;
+	$phpbms->showFooter = false;
+	
+	include("header.php");
+	
+?><div class="bodyline" id="container">
 	<h1>About phpBMS</h1>
 	<p>phpBMS is commercial open source, web-based, business management software.</p>
 	
 	<div id="phpBMSLogo" class="box small">
-		<?php displayVersions($queryresult)?>
+		<?php if(isset($db)) displayVersions($db)?>
 	</div>
 	
 	<div id="companyInfo">
@@ -115,11 +111,7 @@
 			<li><strong>AJAX</strong> - Asynchronous Javascript And XML is a group of technologies that help browser based applications behave more like applications you run from your desktop.</li>
 		</ul>
 
-	<?php if(!isset($_SESSION["app_path"])) {?>
 	<p align="right">
-		<input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton"/>
+		<input type="button" value="Back" class="Buttons" onclick="document.location='<?php echo APP_PATH; if(isset($_SESSION["userinfo"])) echo DEFAULT_LOAD_PAGE?>'" id="loginButton"/>
 	</p>
-	<?php } ?>
-</div>
-</body>
-</html>
+</div><?php include("footer.php") ?>

@@ -1,0 +1,1 @@
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (400,'All Records','recurringinvoices.id!=-1',0,0);

@@ -36,153 +36,16 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	function loadSettings() {	
-		$settingsfile =  fopen("../settings.php","r");
-		if($settingsfile){
-			//loop through the settings file and load variables into the session 
-			while( !feof($settingsfile)) {
-				$line=NULL;
-				$key=NULL;
-				$value=NULL;
-				$line=fscanf($settingsfile,"%[^=]=%[^[]]",$key,$value);
-				if ($line){
-					$key=trim($key);
-					$value=trim($value);
-					if($key!="" and !strpos($key,"]")){	
-						$startpos=strpos($value,"\"");
-						$endpos=strrpos($value,"\"");
-						if($endpos!=false)
-							$value=substr($value,$startpos+1,$endpos-$startpos-1);
-						$variables[$key]=$value;
-					}
-				}
-			}
-			if(!isset($variables["mysql_pconnect"]))
-			$variables["mysql_pconnect"]="true";
-			fclose($settingsfile);
-			return $variables;
-		} else return "Cannot open setting.php file";
-	}
+error_reporting(E_ALL);
+define("APP_DEBUG",false);
+define("noStartup",true);
 
-	function loadDBSettings($dblink,$vars){
-		$querystatement="SELECT name,value FROM settings";
-		$queryresult=mysql_query($querystatement,$dblink);
-		while($therecord=mysql_fetch_array($queryresult))
-			$vars[$therecord["name"]]=$therecord["value"];
-		return $vars;
-	}
+include("install_include.php");
 
-	function importData($thetable){
-		global $dblink;
-		
-		$tablefile = fopen($thetable.".sql","r");
-		if(!$tablefile) {
-			return "Could not open the file ".$thetable.".sql";
-		}
-		$thereturn="Importing records for '".$thetable."'\n";
-			$counter=0;
-			while(!feof($tablefile)) {
-				$sqlstatement=trim(fgets($tablefile,1024));
-				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
-					$theresult=mysql_query($sqlstatement,$dblink);
-					if(!$theresult)
-						$thereturn.=mysql_error($dblink)."\n";
-					else
-						$counter++;
-					$sqlstatement="";
-				}//end if;
-			}//end while
-	
-		$thereturn.="Import of ".$counter." record(s) for '".$thetable."' complete. \n\n";
-		return $thereturn;
-	}//end function
-	
-	function processSQLfile($filename){
-		global $dblink;
-				
-		$thefile = fopen($filename,"r");
-		if(!$thefile) {
-			return "Could not open the file ".$filename.".";
-		}
-		$thereturn="Processing SQL from file '".$filename."'\n";
-			while(!feof($thefile)) {
-				$sqlstatement=trim(fgets($thefile,1024));
-				if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
-					$theresult=mysql_query($sqlstatement,$dblink);
-					if(!$theresult)
-						$thereturn.=mysql_error($dblink)."\n";
-					$sqlstatement="";
-				}//end if;
-			}//end while
-	
-		$thereturn.="Done processing SQL from file '".$filename."'. \n\n";
-		return $thereturn;
-	}//end function
-		
+include("../include/session.php");
 
-	function write_settings($settings) {
-		$settingsfile = fopen("../settings.php","r") or die ("Couldn't open Settings File");
-		//create an array of all lines
-		while( !feof($settingsfile)) {
-			$newfile[]=fgets($settingsfile,1024);
-		}
-		fclose($settingsfile);
 		
-		$newfile[]="\n";
-		foreach($settings as $settingname=>$settingvalue) {
-			$infile=false;
-			//next loop through the file, and if the setting is there, replace it
-			for($i=0;$i<count($newfile);$i++){
-				if (strpos(($newfile[$i]),$settingname)===0) {
-					$tabnumber=intval(5-strlen($settingvalue)/8);
-					$newfile[$i]=$settingname.str_repeat(chr(9),$tabnumber)."= \"".str_replace(chr(10),"\\n",$settingvalue)."\"\n";
-					$infile=true;
-					break;
-				}
-			}//
-			if(!$infile) {
-				$tabnumber=intval(5-strlen($settingname)/8);
-				$newfile[]=$settingname.str_repeat(chr(9),$tabnumber)."= \"".str_replace(chr(10),"\\n",$settingvalue)."\"\n";
-			}
-		}
-		if(end($newfile)=="\n") array_pop($newfile);
-		//now write the new file
-		$settingsfile = fopen("../settings.php","w") or die ("Couldn't open Settings File");
-		for($i=0;$i<count($newfile);$i++){
-			 fwrite($settingsfile,$newfile[$i],1024);
-		}
-		fclose($settingsfile);	
-	}//end function	
-	
-	function verifyAdminLogin($user,$pass){
-		global $dblink;
-		global $vars;
-		
-		if((real) getCurrentBaseVersion()>=.7)
-			$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND admin=1";
-		else
-			$querystatement="SELECT id FROM users WHERE login=\"".$user."\" AND password=encode(\"".$pass."\",\"".$vars["encryption_seed"]."\") AND accesslevel>=90";
-		
-		$queryresult=mysql_query($querystatement,$dblink);
-				
-		if(!$queryresult)
-			return false;
-		return (mysql_num_rows($queryresult)>0);
-	}
-
-	function getCurrentBaseVersion(){
-		global $dblink;
-
-		$querystatement="SELECT version FROM modules WHERE name=\"base\";";
-		$queryresult=mysql_query($querystatement,$dblink);
-		if(!$queryresult) return false;
-		$ver=mysql_fetch_array($queryresult);
-		return $ver["version"];			
-	}
-	
-	function runUpdate($currentVersion,$newVersion){
-		global $dblink;
-		global $vars;
+	function runUpdate($db, $currentVersion,$newVersion){
 		
 		$thereturn="";
 		while($currentVersion!=$newVersion){
@@ -193,7 +56,7 @@
 					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.51\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";
 					
 					$thereturn.="Update to 0.51 Finished\n\n";
@@ -204,26 +67,30 @@
 					$thereturn.="Updating Base Module to 0.6\n";
 										
 					//Processing Data Structure Changes
-					$thereturn.=processSQLfile("updatev0.6.sql");
+					$thereturn.=processSQLfile($db,"updatev0.6.sql");
 					
 					//Inputind new records for new structure
-					$thereturn.=importData("choices");
-					$thereturn.=importData("menu");
-					$thereturn.=importData("reports");
-					$thereturn.=importData("tablecolumns");
-					$thereturn.=importData("tabledefs");
-					$thereturn.=importData("tablefindoptions");
-					$thereturn.=importData("tableoptions");
-					$thereturn.=importData("tablesearchablefields");
+					$thereturn.=importData($db,"choices");
+					$thereturn.=importData($db,"menu");
+					$thereturn.=importData($db,"reports");
+					$thereturn.=importData($db,"tablecolumns");
+					$thereturn.=importData($db,"tabledefs");
+					$thereturn.=importData($db,"tablefindoptions");
+					$thereturn.=importData($db,"tableoptions");
+					$thereturn.=importData($db,"tablesearchablefields");
 					
+					/*
 					//Setting the new default load page
 					$newSettings["default_load_page"]="modules/base/snapshot.php";
 					write_settings($newSettings);
 					$thereturn.=" - modified default start page in settings\n";					
+					
+					depreciated in newer versions
+					*/
 										
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.6\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";
 
 					$thereturn.="Update to 0.6 Finished\n\n";
@@ -236,7 +103,7 @@
 					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.601\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";
 					
 					$thereturn.="Update to 0.601 Finished\n\n";
@@ -248,7 +115,7 @@
 					
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.602\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";
 					
 					$thereturn.="Update to 0.602 Finished\n\n";
@@ -259,20 +126,23 @@
 					$thereturn.="Updating Base Module to 0.61\n";
 					
 					//Processing Data Structure Changes
-					$thereturn.=processSQLfile("updatev0.61.sql");
+					$thereturn.=processSQLfile($db,"updatev0.61.sql");
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.61\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";
 					
-					foreach($vars as $key=>$value){
+					/*foreach($vars as $key=>$value){
 						if (strpos($key,"mysql_")!==0){
 							$querystatement="INSERT INTO settings (name,value) VALUES (\"".$key."\",\"".$value."\")";
-							$queryresult=mysql_query($querystatement,$dblink);
+							$queryresult=$db->query($querystatement);
 						}
 					}
 					$thereturn.="Moved non-mysql settings to new settings table.\n";
+					
+					DEPRECIATED
+					*/
 					
 					$filename="../report/logo.png";
 					if (function_exists('file_get_contents')) {
@@ -283,11 +153,8 @@
 					}
 					$querystatement="INSERT INTO files (id,name,description,type,accesslevel,file,createdby,creationdate,modifiedby) 
 									VALUES (1,\"logo.png\",\"Company Logo Used in PDF reports\",\"image/png\",90,\"".$file."\",2,Now(),2)";
-					$queryresult=mysql_query($querystatement,$dblink);
-					if(!$queryresult)
-						$thereturn.="Error moving logo to database.\n ";
-					else
-						$thereturn.="Moved logo to database.\n";
+					$queryresult=$db->query($querystatement);
+					$thereturn.="Moved logo to database.\n";
 
 					
 					$thereturn.="Update to 0.61 Finished\n\n";
@@ -298,11 +165,11 @@
 					$thereturn.="Updating Base Module to 0.62\n";
 					
 					//Processing Data Structure Changes
-					$thereturn.=processSQLfile("updatev0.62.sql");
+					$thereturn.=processSQLfile($db,"updatev0.62.sql");
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.62\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";				
 
 					$thereturn.="Update to 0.62 Finished\n\n";
@@ -313,86 +180,142 @@
 					$thereturn.="Updating Base Module to 0.7\n";
 					
 					//Processing Data Structure Changes
-					$thereturn.=processSQLfile("updatev0.7.sql");
+					$thereturn.=processSQLfile($db,"updatev0.7.sql");
 					
 					$querystatement="SELECT id,accesslevel FROM users WHERE accesslevel!=0";
-					$queryresult=mysql_query($querystatement,$dblink);
-					while($therecord=mysql_fetch_array($queryresult)){
+					$queryresult=$db->query($querystatement);
+					while($therecord=$db->fetchArray($queryresult)){
 						while($therecord["accesslevel"]>1){
 							if($therecord["accesslevel"]==40)
 								$therecord["accesslevel"]=$therecord["accesslevel"]-10;
 							$querystatement="INSERT INTO rolestousers (userid,roleid) VALUES (".$therecord["id"].",".$therecord["accesslevel"].")";
-							$insertresult=mysql_query($querystatement,$dblink);
+							$insertresult=$db->query($querystatement);
 							$therecord["accesslevel"]=$therecord["accesslevel"]-10;							
 						}
 					}					
 					$querystatement="ALTER TABLE `users` DROP COLUMN `accesslevel`";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 
 					$thereturn.=" - Connverted user access levels to roles.\n";				
 
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"base\";";
-					$queryresult=mysql_query($querystatement,$dblink);
+					$queryresult=$db->query($querystatement);
 					$thereturn.=" - modified base record in modules table\n";				
 
 					$thereturn.="Update to 0.7 Finished\n\n";
 					$currentVersion="0.7";
 				break;
+
+				// ================================================================================================
+				case "0.7":				
+					$thereturn.="Updating phpBMS Core to 0.7\n";
+					
+					//Processing Data Structure Changes
+					$thereturn.=processSQLfile($db,"updatev0.8.sql");
 				
+					//Updating Module Table
+					$querystatement="UPDATE modules SET version=\"0.8\" WHERE name=\"base\";";
+					$queryresult=$db->query($querystatement);
+
+					$thereturn.="______________________\n\n";
+					$thereturn.="Update to 0.8 Finished\n\n";
+					$currentVersion="0.8";
+				break;
 			}//end switch
 		}//end while
 		return $thereturn;
 	}//end function
 	
-	//==============================================================================================================================
-		$thereturn="Error Processing: No Command Given";
-		if(isset($_GET["command"])){
-			$vars=loadSettings();
-			if (!is_array($vars)) 
-				$thereturn="Could Not load settings.php file.";
-			else {
-				if($vars["mysql_pconnect"]=="true")
-					$dblink = @  mysql_pconnect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-				else
-					$dblink = @  mysql_connect($vars["mysql_server"],$vars["mysql_user"],$vars["mysql_userpass"]);
-				mysql_select_db($vars["mysql_database"],$dblink);
-				
-				$vars=loadDBSettings($dblink,$vars);
-								
-				switch($_GET["command"]){
-					case "verifyLogin":
-						if (!verifyAdminLogin($_GET["u"],$_GET["p"]))
-							$thereturn="DB Connection error or invalid administrative error.\n";
-						else
-							$thereturn="DB Connected\nAdministrative user successfully verified\n";
-					break;
 
-					case "checkBaseUpdate":
-						if (!verifyAdminLogin($_GET["u"],$_GET["p"]))
-							$thereturn="DB Connection error or invlaid adminstrative error.\n";
-						else {
-							$currenVersion=getCurrentBaseVersion();
-							if($currenVersion>=$_GET["v"])
-								$thereturn="Update not needed\nCurrent Version: ".$currenVersion;
+
+
+
+
+	//PROCESSING
+	//==============================================================================================================================
+	$thereturn="Error Processing: No Command Given";
+	if(isset($_GET["command"])){
+	
+		$phpbmsSession = new phpbmsSession;
+		$success = $phpbmsSession->loadDBSettings(false);
+
+		include_once("include/db.php");
+		$db = new db(false);
+		$db->stopOnError = false;
+		$db->showError = false;
+		$db->logError = false;
+	
+		if($success !== false){
+			
+			if(!$db->connect())
+				$thereturn = "Could Not Establish Connection To MySQL Server: Check server, user name, and password."; 			
+			else {
+				if(!$db->selectSchema())
+					$thereturn = "Database (schema) ".MYSQL_DATABASE." could not be selected";			
+				else {
+	
+					$phpbmsSession->db = $db;
+					$phpbmsSession->loadSettings();
+
+					switch($_GET["command"]){
+						case "verifyLogin":
+						//========================================================================================
+							if (!verifyAdminLogin($db,$_GET["u"],$_GET["p"],$_GET["v"]))
+								$thereturn="Invalid Administrative Login.\n";
 							else
-								$thereturn="Update Possible\nCurrent Version: ".$currenVersion;							
-						}
-					break;
-					case "updateBaseVersion":
-						if (!verifyAdminLogin($_GET["u"],$_GET["p"]))
-							$thereturn="DB Connection error or invlaid adminstrative error.\n";
-						else {
-							$currenVersion=getCurrentBaseVersion();
-							if($currenVersion>=$_GET["v"])
-								$thereturn="Update not needed\nCurrent Version: ".$currenVersion;
-							else
-								$thereturn=runUpdate($currenVersion,$_GET["v"]);
-						}
-					break;
-				}//end switch
-			}//end if
-		}//end if
+								$thereturn="Administrative Login Verified.\n";
+						break;
+	
+						case "checkBaseUpdate":
+						//========================================================================================
+							if (!verifyAdminLogin($db,$_GET["u"],$_GET["p"]))
+								$thereturn="Invalid Administrative Login.\n";
+							else {
+								$currenVersion = getCurrentVersion($db,"base");
+
+								if( ((real) $currenVersion) >= ((real) $_GET["v"]) )
+									$thereturn="No Update Neeeded for phpBMS Core.";
+								else
+									$thereturn="phpBMS Core Update Possible\n Current Data Version: ".$currenVersion;							
+							}
+						break;
+
+						case "checkModuleUpdate":
+						//========================================================================================
+							if (!verifyAdminLogin($db,$_GET["u"],$_GET["p"]))
+								$thereturn="Invalid Administrative Login.\n";
+							else {
+								$currenVersion = getCurrentVersion($db,$_GET["m"]);
+
+								if( ((real) $currenVersion) >= ((real) $_GET["mv"]) )
+									$thereturn="No Update Neeeded for Current Module.";
+								else
+									$thereturn="Module Update Possible\n Current Data Version: ".$currenVersion;							
+							}
+						break;
+
+						case "updateBaseVersion":
+						//========================================================================================
+							if (!verifyAdminLogin($db,$_GET["u"],$_GET["p"]))
+								$thereturn="Invalid Administrative Login.\n";
+							else {
+								$currenVersion = getCurrentVersion($db,"base");
+
+								if( ((real) $currenVersion) >= ((real) $_GET["v"]) )
+									$thereturn="No Update Neeeded for phpBMS Core.";
+								else
+									$thereturn = runUpdate($db, $currenVersion, $_GET["v"]);							
+							}
+						break;
+					}//end switch					
+	
+	
+				}		
+			}
+		} else
+			$thereturn = "Could not access settings.php";	
+	}
 				
 		
 		header('Content-Type: text/xml');

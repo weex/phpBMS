@@ -485,11 +485,11 @@ function goParent(addeditfile){
 	document.location=theURL;
 }
 
-function sendEmailNotice(base){
-	var content="<div align=\"center\" class=\"important\"><img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Processing...</strong></div>";
+function sendEmailNotice(){
+	var content="<div align=\"center\" class=\"important\"><img src=\""+APP_PATH+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Processing...</strong></div>";
 	showModal(content,"Sending Email",300);
 	var theid=getObjectFromID("id");
-	var theURL=base+"modules/base/notes_ajax.php?cm=sendemail&id="+theid.value;
+	var theURL=APP_PATH+"modules/base/notes_ajax.php?cm=sendemail&id="+theid.value;
 	loadXMLDoc(theURL,null,false);
 	content=req.responseText+"<DIV align=\"right\"><button class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	var modalcontent=getObjectFromID("modalContent");

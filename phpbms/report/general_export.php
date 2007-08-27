@@ -37,8 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 	require("../include/session.php");
-	if(!isset($_GET["tid"])) reportError(200,"URL variable missing: tid");
-	if(!is_numeric($_GET["tid"])) reportError(300,"URL variable invalid type: tid");
+	if(!isset($_GET["tid"])) $error = new appError(200,"URL variable missing: tid");
+	if(!is_numeric($_GET["tid"])) $error = new appError(300,"URL variable invalid type: tid");
 
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
@@ -49,22 +49,21 @@
 	header('Content-Disposition: attachment; filename="export.txt"');
 	
 	$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tid"];
-	$thequery=mysql_query($querystatement,$dblink);                   
-	if(!$thequery)	reportError(100,"Could not retrieve table information");
-	$therecord=mysql_fetch_array($thequery);
+	$thequery=$db->query($querystatement);                   
+	if(!$thequery)	$error = new appError(100,"Could not retrieve table information");
+	$therecord=$db->fetchArray($thequery);
 	
 	$querystatement="SELECT * FROM ".$therecord["maintable"]." ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($querystatement,$dblink);                   
+	$thequery=$db->query($querystatement);                   
 
-	if(!$thequery) die("Invalid sql statement. If you entered the where clause manually, make sure you include the word 'where'. ".$querystatement);
-	$num_fields=mysql_num_fields($thequery);
+	$num_fields=$db->numFields($thequery);
 
 	for($i=0;$i<$num_fields;$i++){
-		echo mysql_field_name($thequery,$i).",";
+		echo $db->fieldName($thequery,$i).",";
 	}
 	echo "\n";
 
-	while($therecord=mysql_fetch_array($thequery)){
+	while($therecord=$db->fetchArray($thequery)){
 		for($i=0;$i<$num_fields;$i++){
 			echo "\"".$therecord[$i]."\",";
 		}

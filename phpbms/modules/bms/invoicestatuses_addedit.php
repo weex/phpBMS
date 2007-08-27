@@ -37,28 +37,52 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
 
-	include("include/invoicestatuses_addedit_include.php");
+	include("include/invoicestatuses.php");
 
-	 $pageTitle="Invoice Statuses"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoicestatuses.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	$thetable = new invoiceStatus($db,302);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
+
+	$pageTitle="Invoice Status";
+	$phpbms->cssIncludes[] = "pages/invoicestatuses.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("priority",$therecord["priority"],NULL,false,"integer",8,8);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("invoicedefault",$therecord["invoicedefault"],"new order default");
+		$theform->addField($theinput);
+		
+		$theinput = new inputAutofill($db, "defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
+										"\"\"","users.revoked!=1", "assigned to");
+		$theinput->setAttribute("size",45);
+		$theinput->setAttribute("maxlength",128);
+		$theform->addField($theinput);
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");
+
+?>
 <div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
@@ -66,39 +90,36 @@
 			<label for="id">id</label><br />
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
 		</p>
-		<p>		
-			<?php fieldCheckbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive">inactive</label>
-		</p>
-		<p>
-			<label for="priority">priority</label><br />
-			<?php fieldText("priority",$therecord["priority"],$required=true,$message="Priority must be a valid integer.",$type="integer",$attributes=Array("size"=>"4","maxlength"=>"4"))?>
-		</p>
-		<p class="notes">
-			Lower priority numbered items are displayed first.
-		</p>
+		
+		<p><?php $theform->showField("inactive")?></p>
+
+		<p><?php $theform->showField("priority")?></p>
+
+		<p class="notes">Lower priority numbered items are displayed first.</p>
+		
 	</fieldset>
 
 	<div id="nameDiv">
 		<fieldset >
-			<legend><label for="name">name</label></legend>
-			<p><br />
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"45","maxlength"=>"128","class"=>"important","style"=>"")); ?>			
-			</p>
+			<legend>name</legend>
+
+			<p><?php $theform->showField("name");?></p>
+
 		</fieldset>
 		<fieldset>
 			<legend>Defaults</legend>
 			<p><br />
-				<?php fieldCheckbox("invoicedefault",$therecord["invoicedefault"],false,Array("tabindex"=>"4"))?><label for="invoicedefault">new order default</label>				
+				<?php $theform->showField("invoicedefault")?>
 			</p>
 			<p>
-				<label for="defaultassignedtoid">assigned to</label><br />
-				<?php fieldAutofill("defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"45","maxlength"=>"128")) ?>
+				<?php $theform->showField("defaultassignedtoid")?>
 			</p>
 		</fieldset>
 	</div>
-	<?php include("../../include/createmodifiedby.php"); ?>	
-	</form>
+	
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php");?>
-</body>
-</html>
+<?php include("footer.php");?>

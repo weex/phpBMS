@@ -14,7 +14,7 @@
  | - Redistributions of source code must retain the above copyright        |
  |   notice, this list of conditions and the following disclaimer.         |
  |                                                                         |
- | - Redistributions in binary form must reproduce the above copyright     |
+ | - Redistributions in binary form must reproduce the above copyright     |		
  |   notice, this list of conditions and the following disclaimer in the   |
  |   documentation and/or other materials provided with the distribution.  |
  |                                                                         |
@@ -37,357 +37,783 @@
  +-------------------------------------------------------------------------+
 */
 
-//============================================================================================
-// This file houses creation of the input boxes, from booleans to text boxes, to list picks
-// most inputs will require the fields.js file to be loaded in the corresponding calling file 
-//============================================================================================
-
-// common text input
-//============================================================================================
-function fieldText($name,$value="",$required=false,$message="",$type="",$attributes="") {
-
-	/* 
-	   name =		Name of the field
-	   value =		Value for field
-	   required =	true/false wether the field is validated by javascript before submitting for blank values
-	   message =	message displayed if not validate
-	   type =		Type of field (integer, phone, email, wwww, real, date) to validate for
-	   attribute =	Associateive array for extra tag properties.  the key is the attribute and the value is the
-					attribute value;	
-	*/
-	?><input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo htmlQuotes($value) ?>" <?php 
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><?php if ($required) { ?><script language="JavaScript" type="text/javascript"><!-- 
-	requiredArray[requiredArray.length]=new Array("<?php echo $name ?>","<?php echo $message ?>");
-	// --></script><?php } //end required if 
-	if ($type) {?><script language="JavaScript" type="text/javascript"><!-- 
-		<?php echo $type?>Array[<?php echo $type?>Array.length]=new Array("<?php echo $name ?>","<?php echo $message ?>");
-	// --></script><?php }//end $type if
-}//end function
-
-
-//============================================================================================
-function fieldCheckbox($name,$value="",$disabled=false,$attributes=""){
-	/*
-	   name =		Name of the field
-	   value =		Value for field when checked
-	   disabled =	Wethere the check box is checkable
-	   attribute =	Associateive array for extra tag properties.  the key is the attribute and the value is the
-					attribute value.
-	*/
+class phpbmsForm{
 	
-	if ($disabled) {
-		echo "<input name=\"".$name."\" type=\"hidden\" value=\"".$value."\" />";
-		$name.="forshow";
+	var $jsIncludes = array("common/javascript/fields.js");
+	var $topJS = array(
+					"requiredArray= new Array();",
+					"integerArray= new Array();",
+					"phoneArray= new Array();",
+					"emailArray= new Array();",
+					"wwwArray= new Array();",
+					"realArray= new Array();",
+					"dateArray= new Array();",
+					"timeArray= new Array();",
+				 );
+	var $bottomJS = array();
+	
+	var $fields = array();
+	
+	
+	function phpbmsForm($action = NULL, $method="post", $name="record", $onsubmit="return validateForm(this);", $dontSubmit = true){
+		if ($action == NULL)
+			$action = $_SERVER["REQUEST_URI"];
+			
+		$this->action= $action;
+		$this->method = $method;
+		$this->name = $name;
+		$this->onsubmit = $onsubmit;
+		
+		$this->dontSubmit = $dontSubmit;
+		
+	}
+
+	function startForm($pageTitle){
+
+		?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php 
+			if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
+		?>><?php 
+		if($this->dontSubmit){
+			?><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div><?php
+		} ?>
+		<div id="topButtons"><?php showSaveCancel(1); ?></div>
+		<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1><?php	
+		
+	}//end method
+	
+	
+	function showCreateModify($phpbms, $therecord){
+	?>
+<div id="createmodifiedby" >
+	<div id="savecancel2"><?php showSaveCancel(2)?></div>
+	<table>
+		<tr id="cmFirstRow">
+			<td class="cmTitles">
+				<input name="createdby" type="hidden" value="<?php $therecord["createdby"] ?>" />
+				<input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
+				created			
+			</td>
+			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
+			<td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
+		</tr>
+		<tr>
+			<td class="cmTitles">
+				<input name="modifiedby" type="hidden" value="<?php $therecord["modifiedby"] ?>" />
+				<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
+				<input name="modifieddate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?>"/>
+				modified
+			</td>
+			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["modifiedby"]))?></td>
+			<td><?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?></td>
+		</tr>
+	</table>
+</div>
+	<?php
+	}//end method
+
+	
+	function endForm(){
+		?></form><?php
 	}
 	
-	?><input name="<?php echo $name ?>" id="<?php echo $name ?>" type="checkbox" value="1" <?php 
-	if ($value) echo "checked=\"checked\" ";
-	if ($disabled) echo "disabled=\"disabled\" ";
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> class="radiochecks" /><?php 
+	
+	function addField($inputObject){
+		if(is_object($inputObject))
+			$this->fields[$inputObject->id] = $inputObject;
+	}
+	
+	
+	function showField($fieldname){
+		if(isset($this->fields[$fieldname])){
+			if(is_object($this->fields[$fieldname])){
+				if(method_exists($this->fields[$fieldname],"display"))
+					$this->fields[$fieldname]->display();
+				else
+					echo "Error in form contruction (wrong object): ".$fieldname;
+			} else
+				echo "Error in form contruction: ".$fieldname;
+		}else
+			echo "Field Not Defined: ".$fieldname;
+	}
+	
+	
+	function jsMerge(){		
+		global $phpbms;
+		
+		$phpbms->jsIncludes = array_merge($phpbms->jsIncludes,$this->jsIncludes);
+		$phpbms->topJS = array_merge($this->topJS,$phpbms->topJS);
+		$phpbms->bottomJS = array_merge($this->bottomJS,$phpbms->bottomJS);
+		
+		//next we go through the list of fields
+		foreach($this->fields as $field){
+			$toAdd = $field->getJSMods();
+			
+			foreach($toAdd["jsIncludes"] as $jsinclude)
+				if(!in_array($jsinclude,$phpbms->jsIncludes))
+					$phpbms->jsIncludes[] = $jsinclude;
+
+			$phpbms->topJS = array_merge($phpbms->topJS,$toAdd["topJS"]);
+			$phpbms->bottomJS = array_merge($phpbms->bottomJS,$toAdd["bottomJS"]);			
+		}
+	}
 }
 
+
 //============================================================================================
-function fieldBasicList($name,$value="",$list="",$attributes=""){
+//============================================================================================
+class inputField{
 	/*
-	   name =		Name of the field
-	   value =		Value for selefted item
-	   list =		Array of associateive arrays.  Each
-	   				Associateive array house keys name, and value
-	   attribute =	Associateive array for extra tag properties.  the key is the attribute and the value is the
-					attribute value.
+		id =				id/name of input
+
+		value =			Value of input
+		displayName =	Name to displayed in label, and on default messages when not overriden 
+		required =		true/false wether the field is validated by javascript before submitting for blank values
+		type =			Type of field (integer, phone, email, wwww, real, date) to validate against
+	   
+		size =			size of the input
+		maxlength		max length of the input
+	   
+		displayLabel		(boolean default = true) use this if you want the object to display a label tag above the input 
+	   					when displaying
+						
+						==overridable variables==
+						
+		message =		message displayed if not validated
+		name =			if your input needs a name different from the id
+	   
+	   					== variable setting methods ==
+						
+		setAttribute($name,$values)
+						
+						Use this method to set an additional HTML property for the input
+						e.g. setAttribute("onclick","someJavascriptFunction()")
+						
+						== methods ==
+		getJSMods()
+		
+						Typically this get called from the form container object, but
+						you can use it to get an array of all the Javascript this input affects (include, top JS, and bottom JS)
+						
+		display()
+						
+						Use this method to display the input in your page.				
 	*/
 
-	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php 
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> > <?php
-		foreach($list as $theitem){
-			$theitem["value"]=str_replace("\"","&quot;",$theitem["value"]);
-			?><option value="<?php echo $theitem["value"]?>" <?php if ($theitem["value"]==$value) echo " selected=\"selected\" "?> ><?php echo $theitem["name"]?></option>
-			<?php
+	var $id;
+	var $name;
+	var $value;
+	
+	var $displayName ="";
+	var $message = "";
+	var $displayLabel = true;
+	
+	var $_attributes = array();
+	
+	var $required = false;
+	var $type = NULL;
+	
+	var $jsIncludes = array();
+	
+	function inputField($id, $value, $displayName = NULL ,$required = false, $type = NULL, $size = 32, $maxlength = 128, $displayLabel = true){
+		$this->id = $id;
+		$this->name = $id;
+		if($displayName == "")
+			$this->displayName = $id;
+		else
+			$this->displayName = $displayName;
+			
+		if($size)
+			$this->_attributes["size"] = $size;
+		if($maxlength)
+			$this->_attributes["maxlength"] = $maxlength;
+		
+		$this->displayLabel = $displayLabel;
+		
+		$this->value = $value;
+
+		$this->required = $required;
+		$this->type = $type;
+	}
+	
+	
+	function setAttribute($name,$value){
+		$this->_attributes[strtolower($name)] = $value;
+	}
+
+	
+	function getJSMods(){
+		$thereturn = array("jsIncludes" => array(), "topJS" => array(), "bottomJS" => array());
+		
+		foreach($this->jsIncludes as $theinclude)
+			$thereturn["jsIncludes"][] = $theinclude;
+
+		if($this->required){
+			$message = $this->message;
+			if($message == "")
+				$message = $this->displayName." cannot be blank.";
+			$thereturn["topJS"][] = "requiredArray[requiredArray.length]=new Array(\"".$this->name."\",\"".$message."\");";
 		}
-	?></select>
-	<?php
-}
+		
+		if($this->type){
+			$message = $this->message;			
+			if($message == ""){
+				switch($this->type){
+					case "integer":
+						$message = $this->displayName." must be a valid whole number.";
+					break;
+					case "real":
+						$message = $this->displayName." must be a valid number.";
+					break;
+					case "phone":
+						$message = $this->displayName." must be a valid phone number.";
+					break;
+					case "www":
+						$message = $this->displayName." must be a valid web address.";
+					break;
+					case "email":
+						$message = $this->displayName." must be a valid email address.";
+					break;
+					case "date":
+						$message = $this->displayName." must be a valid date.";
+					break;
+					case "time":
+						$message = $this->displayName." must be a valid time.";
+					break;					
+				}
+			}//end if
+			$thereturn["topJS"][] = $this->type."Array[".$this->type."Array.length]=new Array(\"".$this->name."\",\"".$message."\");";
+		}
+		
+		return $thereturn;
+	}//end if
+	
+	
+	function displayAttributes(){
+		foreach($this->_attributes as $key => $value)
+			echo " ".$key."=\"".$value."\"";		
+	}
+	
+	
+	function showLabel(){
+		?><label for="<?php echo $this->id?>" <?php 
+			if(isset($this->_attributes["class"]))
+				if(strpos($this->_attributes["class"],"important") !== false)
+					echo 'class="important"';
+		?>><?php echo $this->displayName?></label><br /><?php
+	}
+	
+	
+	function display(){
+		
+		if($this->displayLabel)
+			$this->showLabel();
+		
+		?><input type="text" id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php 
+			if($this->value !== "") 
+				echo " value=\"".htmlQuotes($this->value)."\"";
+			$this->displayAttributes();
+		?> /><?php
+		
+		switch($this->type){
+			case "email":
+				?><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonEmail" onclick="openEmail('<?php echo $this->id?>')" title="Send E-Mail"><span>send e-mail</span></button><?php
+			break;
+			
+			case "www":
+				?><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonWWW" onclick="openWebpage('<?php echo $this->id?>')" title="Visit site in new window"><span>visit site</span></button><?php
+			break;
+		}
+		
+	}//end method
+}//end class
+
+
 
 //============================================================================================
-function fieldDataTableList($name,$value="",$table="",$valuefield="",$displayfield,$attributes="",$whereclause="",$orderclause="",$hasblank=true){
+class inputCheckbox extends inputField{
 	/*
-	   name =			Name of the field
-	   value =			Value for selefted item
+	   value =			Whether the check box is checked
+	   disabled =		Whether the check box is checkable
+	*/
+	function inputCheckbox($id,$value = false, $displayName = NULL, $disabled = false, $displayLabel = true){
+		
+		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
+		
+		if($disabled)
+			$this->_attributes["disabled"] = "disabled";		
+	}//end method
+	
+	function showLabel(){
+		$classText="";
+		if(isset($this->_attributes["class"]))
+			if(strpos($this->_attributes["class"],"important") !== false)
+				$classText="important";
+		if(isset($this->_attributes["disabled"])){
+			if($classText!="")
+				$classText.=" ";
+			$classText.="disabledtext";
+		}
+		if($classText!="")
+			$classText = ' class="'.$classText.'"';
+			
+		?><label id="<?php echo $this->id?>Label" for="<?php echo $this->id?>" <?php echo $classText?>><?php echo $this->displayName?></label><?php
+	}
+
+
+	function display(){
+		?><input type="checkbox" id="<?php echo $this->id?>" name="<?php echo $this->name?>" value="1" class="radiochecks" <?php 
+			if($this->value) echo "checked=\"checked\" ";
+			$this->displayAttributes();
+		?> /> <?php 
+		
+		if($this->displayLabel)
+			$this->showLabel();
+	}
+}//end class
+
+
+//============================================================================================
+class inputBasicList extends inputField{
+	/*
+	   list =	associative array of key (display), => value (value) for the option tags
+	*/
+	function inputBasicList ($id,$value = "",$list = array(), $displayName = NULL, $displayLabel = true){
+		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
+		
+		$this->thelist = $list;
+	}
+	
+	function display(){
+	
+		if($this->displayLabel)
+			$this->showLabel();
+	
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
+			$this->displayAttributes();		
+		?> > <?php
+			foreach($this->thelist as $key => $value){
+											
+				?><option value="<?php echo htmlQuotes($value)?>" <?php if ($value == $this->value) echo " selected=\"selected\" "?> ><?php echo $key?></option><?php echo "\n";
+
+			}//end for
+		?></select>
+		<?php
+	}
+}
+
+
+//============================================================================================
+class inputDataTableList extends inputField{
+	/*
 	   table =			SQL table clause to pull from
 	   valuefield =		SQL column clasue to use for the value
 	   displayfield		SQL column clause to use for display
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	   hasblank =		boolean, wehterh <none> (0) can be an option
+
 	   whereclause = 	SQL WHERE clause (minus the WHERE)
 	   orderclasue = 	SQL ORDER BY clause (minus the ORDER BY)
+	   hasblank =		boolean, wehterh <none> (0) can be an option
 	*/
-
-	global $dblink;
 	
-	$querystatement = "SELECT (".$valuefield.") AS thevalue, (".$displayfield.") as thedisplay FROM (".$table.")";
-	if($whereclause)
-		$querystatement.=" WHERE ".$whereclause;
-	if($orderclause)
-		$querystatement.=" ORDER BY ".$orderclause;
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,"Error creating drop down: ".mysql_error($dblink)." -- ".$querystatement)
+	function inputDataTableList($db, $id, $value, $table, $valuefield, $displayfield, 
+								$whereclause = "", $orderclause = "", $hasblank = true, $displayName=NULL, $displayLabel = true){
+								
+		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
+		
+		$this->hasblank = $hasblank;
+		$this->db = $db;
+
+		$querystatement = "SELECT (".$valuefield.") AS thevalue, (".$displayfield.") as thedisplay FROM (".$table.")";
+		if($whereclause)
+			$querystatement.=" WHERE ".$whereclause;
+		if($orderclause)
+			$querystatement.=" ORDER BY ".$orderclause;
+		
+		$this->queryresult=$this->db->query($querystatement);
+
+	}//end method
 	
-	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php 
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> ><?php
-		if($hasblank)?><option value="0" <?php if ($value==0 || $value=="") echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
-		while($therecord=mysql_fetch_array($queryresult)){
-			?><option value="<?php echo htmlQuotes($therecord["thevalue"])?>" <?php if ($therecord["thevalue"]==$value) echo " selected=\"selected\" "?> ><?php echo htmlQuotes($therecord["thedisplay"])?></option>
-			<?php
-		}
-	?></select>
-	<?php
-}
+	function display(){
+		
+		if($this->displayLabel)
+			$this->showLabel();
+
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
+			$this->displayAttributes();
+		?> ><?php
+			if($this->hasblank)?><option value="0" <?php if ($this->value==0 || $this->value=="") echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
+
+			while($therecord=$this->db->fetchArray($this->queryresult)){
+				?><option value="<?php echo htmlQuotes($therecord["thevalue"])?>" <?php if ($therecord["thevalue"]==$this->value) echo " selected=\"selected\" "?> ><?php echo htmlQuotes($therecord["thedisplay"])?></option>
+				<?php
+			}
+		?></select>
+		<?php 		
+		
+	}
+}//end class
 
 
-// choicelist
 //============================================================================================
-function fieldChoiceList($name,$value="",$listname,$attributes=array(),$blankvalue="none"){
+class inputChoiceList extends inputField{
 	/*
-	name =			Name of the field
-	value =			Value for field
 	listname = 		name of database list to retrieve
-	attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-					attribute value.
 	blankvalue =	What to display for a blank value.
 	*/
-	
-	global $dblink;
-	
-	$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$listname."\" ORDER BY thevalue;";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$querystatement) reportError(100,"SQL Statement Could not be executed.");
+	function inputChoiceList($db, $id, $value, $listname, $displayName="", $blankvalue="none", $displayLabel = true){
+		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
+		
+		$this->db = $db;
+		$this->listname = $listname;
+		$this->blankvalue = $blankvalue;
+		
+		$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$this->listname."\" ORDER BY thevalue;";
+		$this->queryresult = $this->db->query($querystatement);
+		
+		$this->jsIncludes[] = "common/javascript/choicelist.js";
 
-	?><select name="<?php echo $name?>" id="<?php echo $name?>" <?php if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";?> onchange="changeChoiceList(this,'<?php echo $_SESSION["app_path"]?>','<?php echo $listname?>','<?php echo $blankvalue?>');"  onfocus="setInitialML(this)">
-	<?php 
-		$inlist=false;
-		while($therecord=mysql_fetch_array($queryresult)){
-			$display=$therecord["thevalue"];
-			$theclass="";
-			$selected="";
-			if($therecord["thevalue"]==""){
-				$display="&lt;".$blankvalue."&gt;";
-				$theclass=" class=\"choiceListBlank\" ";
-			}
-			if($therecord["thevalue"]==$value){
-				$selected=" selected=\"selected\"";
-				$inlist=true;
-			}
-			if($value=="" and $therecord["thevalue"])
-			?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?> <?php echo $selected?>><?php echo $display?></option><?php
-		}//end while
-		if(!$inlist){
-			if ($value==""){
-				$display="&lt;".$blankvalue."&gt;";
-				$theclass=" class=\"choiceListBlank\" ";
-			}
-			else{
-				$display=$value;
+	}//end method
+
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
+			$this->displayAttributes();
+			?> onchange="changeChoiceList(this,'<?php echo APP_PATH?>','<?php echo $this->listname?>','<?php echo $blankvalue?>');"  onfocus="setInitialML(this)">
+		<?php 
+			$inlist=false;
+			while($therecord = $this->db->fetchArray($this->queryresult)){
+
+				$display=$therecord["thevalue"];
 				$theclass="";
-			}
-			?><option value="<?php echo $value?>" <?php echo $theclass?> selected="selected"><?php echo $display?></option><?php					
-		}//end if
-	?>
-<option value="*mL*" class="choiceListModify">modify list...</option></select><?php 
-}//end function
+				$selected="";
+				if($therecord["thevalue"]==""){
+					$display="&lt;".$this->blankvalue."&gt;";
+					$theclass=" class=\"choiceListBlank\" ";
+				}
+				if($therecord["thevalue"]==$this->value){
+					$selected=" selected=\"selected\"";
+					$inlist=true;
+				}
+				if($this->value=="" and $therecord["thevalue"])
+				?><option value="<?php echo $therecord["thevalue"]?>" <?php echo $theclass?> <?php echo $selected?>><?php echo $display?></option><?php
+			}//end while
+			if(!$inlist){
+				if ($this->value==""){
+					$display="&lt;".$this->blankvalue."&gt;";
+					$theclass=" class=\"choiceListBlank\" ";
+				}
+				else{
+					$display=$this->value;
+					$theclass="";
+				}
+				?><option value="<?php echo $this->value?>" <?php echo $theclass?> selected="selected"><?php echo $display?></option><?php					
+			}//end if
+		?>
+	<option value="*mL*" class="choiceListModify">modify list...</option></select><?php 
+
+	}
+
+}//end class
 
 
 //============================================================================================
-function fieldEmail($name,$value="",$attributes=array()){
-	/*
-	   name =			Name of the field
-	   value =			Value for field 
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	*/
-	$value=str_replace("\"","&quot;",$value);	
-	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonEmail" onclick="openEmail('<?php echo $name?>')" title="Send E-Mail"><span>send e-mail</span></button>
-	<script language="JavaScript" type="text/javascript">emailArray[emailArray.length]=new Array('<?php echo $name?>','One or more e-mail fields are invalid.');</script><?php	
-}
+class inputCurrency extends inputField{
 
-//============================================================================================
-function fieldWebAddress($name,$value="http://",$attributes=array()){
-	/*
-	   name =			Name of the field
-	   value =			Value for field 
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	*/
+	function inputCurrency($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 12, $displayLabel = true){
 	
-	if(!$value) $value="http://";
-	$value=str_replace("\"","&quot;",$value);	
-	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";
-	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonWWW" onclick="openWebpage('<?php echo $name?>')" title="Visit site in new window"><span>visit site</span></button>
-	<script language="JavaScript" type="text/javascript">wwwArray[wwwArray.length]=new Array('<?php echo $name?>','One or more web page fields are invalid.');</script>	
-	<?php
-}
+		$type = NULL;
+		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
+	}
 
+
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+
+		if(!is_numeric($this->value)) $this->value = 0;
+		$this->value = htmlQuotes(numberToCurrency($this->value));
+		
+		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
+		$this->_attributes["onchange"] = "validateCurrency(this);".$this->_attributes["onchange"];
+
+		if(!isset($this->_attributes["class"])) 
+			$this->_attributes["class"] = "";
+		else
+			$this->_attributes["class"] = " ".$this->_attributes["class"];
+		
+		$this->_attributes["class"] = "currency".$this->_attributes["class"];
+
+		
+		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $this->value?>" <?php
+			$this->displayAttributes();
+		?>/><?php
+
+	}//end method
+
+}//end class
 
 
 //============================================================================================
-function fieldCurrency($name,$value=0,$required=false,$message="",$attributes="") {
-	/*
-	   name =			Name of the field
-	   value =			Value for field
-	   required =		true/false wether the field is validated by javascript before submitting for blank values
-	   message =		message displayed if not validate						
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	*/
-
-	if(!is_numeric($value)) $value=0;
-	$value=htmlQuotes(numberToCurrency($value));
+class inputTextarea extends inputField{
 	
-	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) 
-		foreach($attributes as $attribute => $tvalue) 
-			if($attribute!="onchange" && $attribute!="class")echo " ".$attribute."=\"".$tvalue."\"";
-	?> onchange="validateCurrency(this);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"] ?>" class="currency<?php if(isset($attributes["class"])) echo " ".$attributes["class"] ?>" /><?php
+	function inputTextarea($id, $value, $displayName = NULL ,$required = false, $rows = 5, $cols= 48, $displayLabel = true){
+		parent::inputField($id, $value, $displayName, $required, NULL, NULL, NULL, $displayLabel);
 
-	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
-}
+		unset($this->_attributes["size"]);
+		unset($this->_attributes["maxlength"]);
+
+		$this->_attributes["rows"] = $rows;
+		$this->_attributes["cols"] = $cols;		
+			
+	}
+	
+
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+		
+		?><textarea id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php 
+			$this->displayAttributes();
+		?>><?php echo htmlQuotes($this->value)?></textarea><?php
+	
+	}//end method
+
+}//end class
+
 
 //============================================================================================
-function fieldPercentage($name,$value,$precision=1,$required=false,$message="",$attributes="") {
+class inputPercentage extends inputField{
 	/*
-	   name =			Name of the field
-	   value =			Value for field 
-	   precision =		Number of decimal points to round the percentage
-	   required =		true/false wether the field is validated by javascript before submitting for blank values
-	   message =		message displayed if not validate						
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
+	precision = 	decimal points of accuracy to display
 	*/
+	function inputPercentage($id, $value, $displayName = NULL , $precision = 1, $required = false, $size = 9, $maxlength = 10, $displayLabel = true){
+		
+		$this->precision = (int) $precision;
+		
+		$type = NULL;
+		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
+	}
 
-	if(is_numeric($value)) $value=$value."%";	
-	?><input name="<?php echo $name?>" id="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="onchange") echo " ".$attribute."=\"".$tvalue."\"";
-	?> onchange="validatePercentage(this,<?php echo $precision ?>);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"] ?>" style="text-align:right;" /><?php
-	if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end required if
-}
 
 
-//============================================================================================
-function fieldDatePicker($name,$value,$required=0,$message="",$attributes="") {
-	/*
-	   name =			Name of the field
-	   value =			Value for field (SQL formatted date)
-	   required =		true/false wether the field is validated by javascript before submitting for blank values
-	   message =		message displayed if not validate						
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	*/
-	$value=formatFromSQLDate($value);
-	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) 
-		foreach($attributes as $attribute => $tvalue) 
-			if($attribute!="onchange") 
-				echo " ".$attribute."=\"".$tvalue."\"";				
-	?> onchange="formatDateField(this);<?php if(isset($attributes["onchange"])) echo $attributes["onchange"]?>" /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick date</span></button>
-	<?php if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
-	?><script language="JavaScript" type="text/javascript">dateArray[dateArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
-}//end function
+	function display() {
+	
+		if($this->displayLabel)
+			$this->showLabel();
 
-//============================================================================================
-function fieldTimePicker($name,$value,$required=0,$message="",$attributes="") {
-	/*
-	   name =			Name of the field
-	   value =			Value for field (SQL formatted time)
-	   required =		true/false wether the field is validated by javascript before submitting for blank values
-	   message =		message displayed if not validate						
-	   attribute =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	*/
-	$value=formatFromSQLTime($value);
-	?> <input id="<?php echo $name?>" name="<?php echo $name?>" type="text" value="<?php echo $value?>" <?php
-	if ($attributes) foreach($attributes as $attribute => $tvalue) echo " ".$attribute."=\"".$tvalue."\"";				
-	?> /><button id="<?php echo $name?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo $_SESSION["app_path"]?>','<?php echo $name?>');"><span>pick time</span></button>
-	<?php if ($required) {?><script language="JavaScript" type="text/javascript">requiredArray[requiredArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php }//end if
-	?><script language="JavaScript" type="text/javascript">timeArray[timeArray.length]=new Array('<?php echo $name?>','<?php echo $message?>');</script><?php 
-}//end function
+		if(is_numeric($this->value)) $this->value = $this->value."%";	
+		
+		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
+		$this->_attributes["onchange"] = "validatePercentage(this,".$this->precision.");".$this->_attributes["onchange"];
+
+		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $this->value?>" <?php
+			$this->displayAttributes();
+		?> style="text-align:right;"/><?php
+
+	}//end methdo
+
+}//end class
 
 
 //============================================================================================
-function fieldAutofill($fieldname,$initialvalue,$tabledefid,$getfield,$displayfield,$extrafield="",$whereclause="",$attributes="",$required=false,$message="",$blankout=true){
-	/*
-	   fieldname =		Name(id) of the input 
+class inputDatePicker extends inputField{
+
+	function inputDatePicker($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 15, $displayLabel = true){
+		$type = "date";
+		
+		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
+		
+		$this->jsIncludes[] = "common/javascript/datepicker.js";
+	}
+	
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+
+		$value = formatFromSQLDate($this->value);
+		
+		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
+		$this->_attributes["onchange"] = "formatDateField(this);".$this->_attributes["onchange"];
+		
+		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $value?>" <?php
+			$this->displayAttributes();
+		?>/><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo APP_PATH?>','<?php echo $this->id?>');"><span>pick date</span></button><?php
+		
+	}//end method
+	
+}//end class
+
+
+//============================================================================================
+class inputTimePicker extends inputField{
+
+	function inputTimePicker($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 15, $displayLabel = true){
+		$type = "time";
+		
+		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
+				
+		$this->jsIncludes[] = "common/javascript/timepicker.js";
+	}
+
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+
+		$value = formatFromSQLTime($this->value);
+				
+		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $value?>" <?php
+			$this->displayAttributes();
+		?>/><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo APP_PATH?>','<?php echo $this->id?>');"><span>pick time</span></button><?php
+		
+	}//end method
+
+}//end class
+
+ 
+//============================================================================================
+class inputRolesList extends inputField{
+
+	function inputRolesList($db,$id,$selected,$displayName = NULL, $required = false, $displayLabel = true){
+				
+		parent::inputField($id, $selected, $displayName, $required, NULL, NULL, NULL, $displayLabel);
+
+		$this->db = $db;
+		
+		$querystatement = "SELECT name, id FROM roles WHERE inactive = 0";
+		$this->queryresult = $this->db->query($querystatement);
+			
+	}
+	
+	
+	function display(){
+		if($this->displayLabel)
+			$this->showLabel();
+		
+			?><select id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php $this->displayAttributes();?>>
+			<option value="0" <?php if($this->value==0) echo "selected=\"selected\""?>>EVERYONE</option>
+			<?php while($therecord = $this->db->fetchArray($this->queryresult)){ ?>
+			<option value="<?php echo $therecord["id"]?>" <?php if($this->value==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>	
+			<?php }?>
+			<option value="-100" <?php if($this->value == -100) echo "selected=\"selected\""?>>Administrators</option>
+			</select><?php
+
+	}
+	
+}//end class
+
+
+//============================================================================================
+class inputAutofill extends inputField{
+/*
 	   initialvalue =	Value for get field (usually and id)
 	   tabledefid = 		id of table to pull information from
 	   getfield =		Field to match value from
 	   displayfield = 	Field to display
 	   extrafield =		Extra table information to display on drop down
 	   whereclause =	SQL where clause (without WHERE) narrowing search lookup
-	   attributes =		Associateive array for extra tag properties.  the key is the attribute and the value is the
-						attribute value.
-	   required =		true/false wether the field is validated by javascript before submitting for blank values
-	   message =		message displayed if not validate						
 	   blankout =		Wether to blank out invlaid entries
-	*/
-	
-	global $dblink;
-	
-	//First let's grab the Table information
-	$querystatement="SELECT maintable,querytable from tabledefs where id=".$tabledefid;	
-	$queryresult=mysql_query($querystatement,$dblink);
-	$tableinfo=mysql_fetch_array($queryresult);
-	
-	$querystatement="SELECT ".$displayfield." AS display FROM ".$tableinfo["maintable"]." WHERE ".$getfield."=\"".$initialvalue."\" LIMIT 1;";
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(100,"Could not retrieve autofill inital data.<br />".$querystatement);
-	if(mysql_num_rows($queryresult))
-		$displayresult = mysql_fetch_array($queryresult);
-	else
-		$displayresult["display"]="";
+*/
+	function inputAutofill($db, $id, $initialvalue, $tabledefid, $getfield, $displayfield, 
+										$extrafield="", $whereclause="", $displayName = NULL, $required=false, 
+										$blankout=true, $displayLabel = true)  {
+		$size = 32;
+		$maxlength = 128;
+		
+		parent::inputField($id, $initialvalue, $displayName,$required, NULL, $size, $maxlength, $displayLabel);
+		
+		$this->db = $db;
+		
+		$this->tabledefid = $tabledefid;
+		$this->getfield = $getfield;
+		$this->displayfield = $displayfield;
+		$this->extrafield = $extrafield;
+		$this->whereclause = $whereclause;
+		
+		$this->blankout = $blankout;
+		
+		//First let's grab the Table information
+		$querystatement = "SELECT maintable,querytable from tabledefs where id=".$tabledefid;	
+		$queryresult = $this->db->query($querystatement);
+		$tableinfo = $this->db->fetchArray($queryresult);
 
-	?>
-	<input type="hidden" name="<?php echo $fieldname?>" id="<?php echo $fieldname?>" value="<?php echo $initialvalue?>" />
-	<script language="JavaScript" type="text/javascript">
-		autofill["<?php echo $fieldname?>"]=new Array();
-		autofill["<?php echo $fieldname?>"]["ch"]="";
-		autofill["<?php echo $fieldname?>"]["uh"]="";
-		autofill["<?php echo $fieldname?>"]["fl"]="<?php echo urlencode(stripslashes($displayfield)) ?>";
-		autofill["<?php echo $fieldname?>"]["xt"]="<?php echo urlencode(stripslashes($extrafield)) ?>";
-		autofill["<?php echo $fieldname?>"]["td"]=<?php echo urlencode(stripslashes($tabledefid)) ?>;
-		autofill["<?php echo $fieldname?>"]["gf"]="<?php echo urlencode(stripslashes($getfield)) ?>";
-		autofill["<?php echo $fieldname?>"]["wc"]="<?php echo urlencode(stripslashes($whereclause)) ?>";
-		autofill["<?php echo $fieldname?>"]["bo"]=<?php if ($blankout) echo "true"; else echo "false" ?>;
-		autofill["<?php echo $fieldname?>"]["vl"]="<?php echo htmlQuotes($displayresult["display"]) ?>";
-		appPath="<?php echo $_SESSION["app_path"]?>";
-	</script>
-	<input type="text" name="ds-<?php echo $fieldname?>" id="ds-<?php echo $fieldname?>"  class="autofillField <?php if(isset($attributes["class"])) echo $attributes["class"] ?>" title="Use '%' for wildcard." <?php 
-		if ($attributes) foreach($attributes as $attribute => $tvalue) if($attribute!="class") echo " ".$attribute."=\"".$tvalue."\"";
-	?> value="<?php echo htmlQuotes($displayresult["display"]) ?>" onkeyup="autofillChange(this);return true;" onblur="setTimeout('blurAutofill(\'<?php echo $fieldname ?>\')', 50)"  onkeydown="captureKey(event)" />
-	<?php if ($required) {
-		?><script language="JavaScript" type="text/javascript">
-			var display=getObjectFromID("ds-<?php echo $fieldname?>");
-			display.autocomplete="off";
-			requiredArray[requiredArray.length]=new Array('<?php echo $fieldname?>','<?php echo $message?>');
-		</script><?php
-	}//end required if
-}//end function
+		$querystatement = "SELECT ".$displayfield." AS display FROM ".$tableinfo["maintable"]." WHERE ".$getfield."=\"".$initialvalue."\" LIMIT 1;";
+		$queryresult = $this->db->query($querystatement);
 
-function fieldRolesList($name,$selected,$dblink){
-	$querystatement="SELECT name,id FROM roles WHERE inactive=0";
-	$queryresult=mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(310,"Error Retrieving Roles");
-	?><select id="<?php echo $name?>" name="<?php echo $name?>">
-	<option value="0" <?php if($selected==0) echo "selected=\"selected\""?>>EVERYONE</option>
-	<?php while($therecord=mysql_fetch_array($queryresult)){ ?>
-	<option value="<?php echo $therecord["id"]?>" <?php if($selected==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>	
-	<?php }?>
-	<option value="-100" <?php if($selected==-100) echo "selected=\"selected\""?>>Administrators</option>
-	</select><?php
-}
+		if($this->db->numRows($queryresult))
+			$displayresult = $this->db->fetchArray($queryresult);
+		else
+			$displayresult["display"]="";
+		
+		$this->displayValue = $displayresult["display"];
+		
+	}//end method
+	
+	
+	function getJSMods(){
+		$thereturn = array("jsIncludes" => array(), "topJS" => array(), "bottomJS" => array());
+		
+		$thereturn["jsIncludes"][] = "common/javascript/autofill.js";
+
+		if($this->required){
+			$message = $this->message;
+			if($message == "")
+				$message = $this->displayName." cannot be blank.";
+			$thereturn["topJS"][] = "requiredArray[requiredArray.length]=new Array(\"".$this->name."\",\"".$message."\");";
+		}
+		
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"] = new Array();';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["ch"] = "";';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["uh"] = "";';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["fl"] = "'.urlencode(stripslashes($this->displayfield)).'"';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["xt"] = "'.urlencode(stripslashes($this->extrafield)).'"';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["td"] = '.urlencode(stripslashes($this->tabledefid)).';';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["gf"] = "'.urlencode(stripslashes($this->getfield)).'"';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["wc"] = "'.urlencode(stripslashes($this->whereclause)).'"';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["bo"] = '.(($this->blankout) ? 'true' : 'false').'';
+		$thereturn["topJS"][] = 'autofill["'.$this->id.'"]["vl"] = "'.htmlQuotes($this->displayValue).'"';
+		$thereturn["topJS"][] = 'appPath = "'.APP_PATH.'"';
+
+		$thereturn["bottomJS"][] = 'var display=getObjectFromID("ds-'.$this->id.'");';
+		$thereturn["bottomJS"][] = 'display.autocomplete="off";';								
+				
+		return $thereturn;
+	}//end if
+
+
+	function showLabel(){
+		?><label for="ds-<?php echo $this->id?>"><?php echo $this->displayName?></label><br /><?php
+	}
+
+	
+	function display(){
+	
+		if($this->displayLabel)
+			$this->showLabel();
+
+		if(!isset($this->_attributes["class"])) 
+			$this->_attributes["class"] = "";
+		else
+			$this->_attributes["class"] = " ".$this->_attributes["class"];
+		
+		$this->_attributes["class"] = "autofillField".$this->_attributes["class"];
+
+			
+		?><input type="hidden" name="<?php echo $this->id?>" id="<?php echo $this->id?>" value="<?php echo $this->value?>" />
+			<input type="text" name="ds-<?php echo $this->id?>" id="ds-<?php echo $this->id?>"  title="Use % for wildcard searches." <?php 
+			
+			$this->displayAttributes();
+		
+			?> value="<?php echo htmlQuotes($this->displayValue) ?>" onkeyup="autofillChange(this);return true;" onblur="setTimeout('blurAutofill(\'<?php echo $this->id ?>\')', 50)"  onkeydown="captureKey(event)" />
+			<?php 
+		
+	}//end method			
+
+	
+}//end class
+
 ?>

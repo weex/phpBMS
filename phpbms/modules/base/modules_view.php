@@ -38,26 +38,33 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/fields.php");
+	include("include/tables.php");
 
-	include("include/modules_view_include.php");
+	$thetable = new phpbmsTable($db,21);
+	$therecord = $thetable->processAddEditPage();
+
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
 	
 	$pageTitle="Installed Modules";
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/modules.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+	
+	$phpbms->cssIncludes[] = "pages/modules.css";
 
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">			
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+		
+	include("header.php");
+	
+?>
+
 <div class="bodyline">
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">			
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>	
 	
 		<fieldset id="fsAttributes">
@@ -90,15 +97,14 @@
 			<legend><label for="description">description</label></legend>
 			<p>
 				<br />
-				<textarea id="description" name="description" rows=7 cols="56" readonly="readonly" class="uneditable"><?php echo htmlQuotes($therecord["description"])?></textarea>
+				<textarea id="description" name="description" rows="7" cols="56" readonly="readonly" class="uneditable"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
 		
-		<p class="box" align="right">
+		<p align="right">
 			<input name="cancelclick" type="hidden" value="0" />
 			<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" onclick="this.form.cancelclick.value=true;" />
 		</p>
-</div>
 </form>
-</body>
-</html>
+</div>
+<?php include("footer.php");?>

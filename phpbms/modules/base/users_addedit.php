@@ -38,74 +38,103 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
-	include("include/users_addedit_include.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/users.php");
+
+	$thetable = new users($db,9);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];	
 	
 	$pageTitle="User";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/users.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/users.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return submitForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<div class="bodyline">
-	<div id="topButtons"><?php showSaveCancel(1); ?></div>
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 	
+	$phpbms->cssIncludes[] = "pages/users.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/users.js";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		$theform->onsubmit="return submitForm(this);";
+		
+		$theinput = new inputCheckbox("admin",$therecord["admin"],"administrator");
+		$theform->addField($theinput);
+		
+		$theinput = new inputCheckbox("revoked",$therecord["revoked"],"access revoked");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("portalaccess",$therecord["portalaccess"],"portal access");
+		$theform->addField($theinput);
+
+
+		$theinput = new inputField("firstname",$therecord["firstname"],"first name",true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("lastname",$therecord["lastname"],"last name",false,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("login",$therecord["login"],"log in name",true,NULL,32,64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("email",$therecord["email"],"e-mail address",false,"email",32,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("phone",$therecord["phone"],"phone/extension",false,"phone",32,64);
+		$theform->addField($theinput);
+		
+		$theinput = new inputChoiceList($db,"department",$therecord["department"],"department");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements	
+			
+	include("header.php");
+	
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle)?>		
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>		
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>		
 		</p>
 
-		<p><?php fieldCheckbox("admin",$therecord["admin"])?><label for="admin">administrator</label></p>
-		
+		<p><?php $theform->showField("admin");?></p>
 
-		<p><?php fieldCheckbox("revoked",$therecord["revoked"])?><label for="revoked">revoke access</label></p>		
+		<p><?php $theform->showField("revoked");?></p>
 
-		<p>
-			<?php fieldCheckbox("portalaccess",$therecord["portalaccess"])?><label for="admin">portal access</label><br />
-			<span class="notes">
-				user accounts marked as portal access cannot login to phpBMS, but are used by external applications
-				when creating/modifiying information from outside the application for recording purposes.
-			</span>
+		<p><?php $theform->showField("portalaccess");?></p>
+
+		<p class="notes">
+			user accounts marked as portal access cannot login to phpBMS, but are used by external applications
+			when creating/modifiying information from outside the application for recording purposes.
 		</p>
 	</fieldset>
 	
 	<div id="leftSideDiv">
 		<fieldset id="fsName">
 			<legend>name</legend>
-			<p id="firstnameP">
-				<label for="firstname" class="important" >first name</label><br />
-				<?php fieldText("firstname",$therecord["firstname"],1,"First name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>			
-			</p>
-			<p>
-				<label for="lastname" class="important">last name</label><br />
-				<?php fieldText("lastname",$therecord["lastname"],1,"Last name cannot be blank.","",Array("size"=>"32","maxlength"=>"64","class"=>"important")); ?>					
-			</p>
+
+			<p id="firstnameP"><?php $theform->showField("firstname");?></p>
+
+			<p><?php $theform->showField("lastname");?></p>
+
 		</fieldset>
 
 		<fieldset>
 			<legend>log in</legend>
-			<p>
-				<label for="login" class="important">name</label><br />
-				<?php fieldText("login",$therecord["login"],1,"Login cannot be blank.","",Array("size"=>"32","maxlength"=>"32","class"=>"important")); ?>
-			</p>
+
+			<p><?php $theform->showField("login");?></p>
 
 			<p>
 				<label for="lastlogin" >last log in</label><br />
-				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo formatFromSQLDate($therecord["lastlogin"]); ?>" size="32" maxlength="64" readonly="readonly" class="uneditable"  />			
+				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo formatFromSQLDateTime($therecord["lastlogin"]); ?>" size="32" maxlength="64" readonly="readonly" class="uneditable"  />			
 			</p>
 
 			<p>
@@ -121,18 +150,13 @@
 
 		<fieldset>
 			<legend>contact / user information</legend>
-			<p>
-				<label for="email">e-mail address</label><br />
-				<?php fieldEmail("email",$therecord["email"],Array("size"=>"32","maxlength"=>"128")); ?>						
-			</p>
-			<p>
-				<label for="phone">phone/extension</label><br />
-				<input type="text" id="phone" name="phone" value="<?php echo htmlQuotes($therecord["phone"]) ?>" size="32" maxlength="32" />
-			</p>
-			<p>
-			<label for="department">department</label><br />
-				<?php fieldChoiceList("department",$therecord["department"],"department"); ?>			
-			</p>
+
+			<p><?php $theform->showField("email");?></p>
+
+			<p><?php $theform->showField("phone");?></p>
+			
+			<p><?php $theform->showField("department");?></p>
+
 			<p>
 				<label for="employeenumber">employee number</label><br />
 				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />			
@@ -146,8 +170,8 @@
 			<div class="fauxP">
 			<div id="assignedrolesdiv">
 				assigned roles<br />
-				<select id="assignedroles" size="10" multiple>
-					<?php displayRoles($therecord["id"],"assigned",$dblink)?>
+				<select id="assignedroles" size="10" multiple="multiple">
+					<?php $thetable->displayRoles($therecord["id"],"assigned")?>
 				</select>
 			</div>
 			<div id="rolebuttonsdiv">
@@ -160,8 +184,8 @@
 			</div>
 			<div id="availablerolesdiv">
 				available roles<br />
-				<select id="availableroles" size="10" multiple>
-					<?php displayRoles($therecord["id"],"available",$dblink)?>
+				<select id="availableroles" size="10" multiple="multiple">
+					<?php $thetable->displayRoles($therecord["id"],"available")?>
 				</select>
 			</div>
 			</div>
@@ -169,9 +193,9 @@
 		<?php }?>
 	</div>	
 
-	<?php include("../../include/createmodifiedby.php"); ?>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php")?>
-</form>
-</body>
-</html>
+<?php include("footer.php");?>

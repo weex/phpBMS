@@ -38,37 +38,123 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/invoices.php");
 
-	include("include/invoices_addedit_include.php");
+	if(!isset($_GET["backurl"])) 
+		$backurl = NULL; 
+	else{ 
+		$backurl = $_GET["backurl"];
+		if(isset($_GET["refid"]))
+			$backurl .= "?refid=".$_GET["refid"];
+	}
+
+	$thetable = new invoices($db,3,$backurl);
+	$therecord = $thetable->processAddEditPage();
+
+	$phpbms->cssIncludes[] = "pages/invoice.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/invoice.js";
 	
-	$pageTitle=$therecord["type"];
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
+
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputDatePicker("orderdate", $therecord["orderdate"], "order date");
+		$theform->addField($theinput);
+	
+		$theinput = new inputDatePicker("invoicedate", $therecord["invoicedate"], "invoice date");
+		$theform->addField($theinput);
+
+		$theinput = new inputDatePicker("requireddate", $therecord["requireddate"], "required date");
+		$theform->addField($theinput);
+
+		$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order","Invoice"=>"Invoice","VOID"=>"VOID"), $displayName = NULL, $displayLabel = true);
+		$theinput->setAttribute("onchange","checkType(this)");
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputDatePicker("statusdate", $therecord["statusdate"], "status date");
+		$theinput->setAttribute("onchange","updateStatusChange();");
+		$theform->addField($theinput);
+		
+		
+		$theinput = new inputAutofill($db, "assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
+										"\"\"","users.revoked!=1", "assigned to");					
+		$theinput->setAttribute("size","30");
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)",
+										"if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"", "client", true,true,false);					
+		$theinput->setAttribute("size","51");
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckBox("weborder",$therecord["weborder"],NULL, false, false);
+		$theform->addField($theinput);
+		
+		$theinput = new inputChoiceList($db,"leadsource",$therecord["leadsource"],"leadsource", "lead source");
+		$theform->addField($theinput);
+		
+
+		$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
+										"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true,false);					
+		$theinput->setAttribute("size","16");
+		$theinput->setAttribute("maxlength","32");
+		$theform->addField($theinput);
+		$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
+			
+		$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
+										"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true,false);
+		$theinput->setAttribute("size","20");
+		$theinput->setAttribute("maxlength","128");
+		$theform->addField($theinput);
+		$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
+		
+		$theinput = new inputPercentage("taxpercentage",$therecord["taxpercentage"], "tax percentage" , 5);
+		$theinput->setAttribute("onchange","clearTaxareaid()");
+		$theform->addField($theinput);
+		
+		
+		$theinput = new inputField("accountnumber",$therecord["accountnumber"],  "account number" ,false, "integer", 20, 64);
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("routingnumber",$therecord["routingnumber"],  "routing number" ,false, "integer", 30, 64);
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+
+	
+	$pageTitle=ucwords($therecord["type"]);
 	
 	$_SESSION["printing"]["tableid"]=3;
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/invoice.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-<script language="JavaScript" src="javascript/invoice.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/datepicker.js" type="text/javascript"></script>
-<?php $shippingMethods=getShipping($dblink,$therecord["shippingmethodid"])?>
-<?php $paymentMethods=getPayments($dblink,$therecord["paymentmethodid"])?>
-</head>
-<body onload="initializePage()"><?php include("../../menu.php")?>
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php showTabs($dblink,"invoices entry",15,$therecord["id"]);?><div class="bodyline">
+	
+	$shippingMethods = $thetable->getShipping($therecord["shippingmethodid"]);
+	$paymentMethods = $thetable->getPayments($therecord["paymentmethodid"]);
+
+	if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice")
+		$phpbms->bottomJS[] = 'disableSaves(document.forms["record"]);';
+
+	$phpbms->onload = "initializePage()";
+	
+	include("header.php");	
+
+
+?><form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>" 
+	method="post" name="record" 
+	onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
+<?php $phpbms->showTabs("invoices entry",15,$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
 		  		?><div id="printButton">
-				<input name="doprint" type="button" value="print" accesskey="p" onclick="doPrint('<?php echo $_SESSION["app_path"]?>',<?php echo $therecord["id"]?>)" class="Buttons" />
+				<input name="doprint" type="button" value="print" accesskey="p" onclick="doPrint('<?php echo APP_PATH?>',<?php echo $therecord["id"]?>)" class="Buttons" />
 			</div><?php 
 			}//end if
 			showSaveCancel(1); ?>
@@ -79,21 +165,11 @@
 			<legend>attributes</legend>
 			
 			<div id="attributesRight">
-				<p>
-					<label for="orderdate">order date</label><br />
-					<?php fieldDatePicker("orderdate",$therecord["orderdate"],0,"Order date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"10"),false);?>
-				</p>
-				<p>
-					<label for="invoicedate">invoice date</label>
-					<br />
-					<?php fieldDatePicker("invoicedate",$therecord["invoicedate"],0,"Invoice date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"11"),false);?>
-				</p>
+				<p><?php $theform->fields["orderdate"]->display(); ?></p>
 				
-				<p>
-					<label for="requireddate">required date</label>
-					<br />
-					<?php fieldDatePicker("requireddate",$therecord["requireddate"],0,"Required date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13"),false);?>
-				</p>
+				<p><?php $theform->fields["invoicedate"]->display(); ?></p>				
+				
+				<p><?php $theform->fields["requireddate"]->display(); ?></p>
 			</div>
 		
 			<div>
@@ -104,18 +180,12 @@
 				</p>
 				
 				<p>
-				<label for="type" class="important">type</label><br />
 					<?php  if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice") {?>
-						<input id="type" name="type" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="readonly" class="uneditable important" tabindex=9 />
+						<label for="type" class="important">type</label><br />
+						<input id="type" name="type" type="text" value="<?php echo htmlQuotes($therecord["type"])?>" size="11" maxlength="11" readonly="readonly" class="uneditable important" />
 					<?php }else {
-						$thechoices=array();
-						$thechoices[]=array("name"=>"Quote","value"=>"Quote");
-						$thechoices[]=array("name"=>"Order","value"=>"Order");
-						if(hasRights(30)) $thechoices[]=array("name"=>"Invoice","value"=>"Invoice");
-						$thechoices[]=array("name"=>"VOID","value"=>"VOID");
-						fieldBasicList("type",$therecord["type"],$thechoices,array("onchange"=>"checkType(this)","class"=>"important","style"=>"width:90px","tabindex"=>"9"));
-					}
-					?><input type="hidden" id="oldType" name="oldType" value="<?php echo $therecord["type"]?>"/>
+						$theform->fields["type"]->display();
+					}?><input type="hidden" id="oldType" name="oldType" value="<?php echo $therecord["type"]?>"/>
 				</p>
 		
 				<p>
@@ -130,16 +200,14 @@
 			<legend>Status</legend>
 			<p>
 				<label for="statusid" class="important">current status</label><br />
-				<?php displayStatusDropDown($therecord["statusid"],$dblink)?>
+				<?php $thetable->displayStatusDropDown($therecord["statusid"])?>
 				<input type="hidden" id="statuschanged" name="statuschanged" value="<?php if($therecord["id"]=="") echo "1"; else echo "0"?>" />
 			</p>
 			<p>
-				<label for="statusdate">status date</label><br />
-				<?PHP fieldDatePicker("statusdate",$therecord["statusdate"],0,"Status date must be a valid date",Array("size"=>"11","maxlength"=>"11","tabindex"=>"13","onchange"=>"updateStatusChange();"),false);?>
+				<?PHP $theform->fields["statusdate"]->display();?>
 			</p>
 			<p>
-				<label for="assignedtoid">assigned to</label><br />
-				<?php fieldAutofill("assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked!=1",Array("size"=>"30","maxlength"=>"128")) ?>
+				<?php $theform->fields["assignedtoid"]->display(); ?>
 			</p>
 		
 		</fieldset>
@@ -149,12 +217,9 @@
 		<fieldset >
 			<legend><label for="ds-clientid">client</label></legend>
 			<div class="important fauxP">
-				  <?php fieldAutofill("clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)","if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"",Array("size"=>"51","maxlength"=>"128","class"=>"important","tabindex"=>"1"),1,"The record must have a client chosen.") ?>
-				  <script language="JavaScript" type="text/javascript">
-					document.forms["record"]["clientid"].onchange=populateShipping;
-				  </script>
-				  <?php if($therecord["id"]){?>
-				  <input name="viewclient" type="button" value="view client" onclick="viewClient('<?php echo getAddEditFile(2) ?>')" class="smallButtons" tabindex="1" />
+				  <?php $theform->fields["clientid"]->display(); 
+				  if($therecord["id"]){?>
+				  <input name="viewclient" type="button" value="view client" onclick="viewClient('<?php echo getAddEditFile($db,2) ?>')" class="smallButtons" tabindex="1" />
 				  <?php }//end if?>
 			</div>
 		</fieldset>
@@ -186,12 +251,11 @@
 		<fieldset>
 			<legend>details</legend>
 			<p>	<label for="weborder">web / confirmation number</label><br />
-				<?php fieldCheckbox("weborder",$therecord["weborder"],0,array("tabindex"=>"14"));?>
-				<input name="webconfirmationno" type="text" value="<?php echo $therecord["webconfirmationno"] ?>" size="64" maxlength="64" tabindex="14" />
+				<?php $theform->fields["weborder"]->display();?>
+				<input name="webconfirmationno" type="text" value="<?php echo htmlQuotes($therecord["webconfirmationno"]) ?>" size="64" maxlength="64" tabindex="14" />
 			</p>
 			<p>
-				<label for="leadsource">lead source</label><br />
-				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"14")); ?>			
+				<?php $theform->fields["leadsource"]->display() ?>			
 			</p>			
 		</fieldset>
 	</div>
@@ -204,7 +268,7 @@
 	<input id="unitcost" name="unitcost" type="hidden" value="0" />
 	<input id="unitweight" name="unitweight" type="hidden" value="0"/>
 	<input id="taxable" name="taxable" type="hidden" value="1"/>
-	<input id="imgpath" name="imgpath" type="hidden" value="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/image" />
+	<input id="imgpath" name="imgpath" type="hidden" value="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image" />
 	
 	<table border="0" cellpadding="0" cellspacing="0" id="LITable">
 		<tr id="LIHeader">
@@ -218,29 +282,19 @@
 		</tr>
 		<?php if($therecord["type"]!="Invoice"){?>
 		<tr id="LIAdd">
-			<td nowrap="nowrap">
-			<?php fieldAutofill("partnumber","",4,"products.id","products.partnumber","products.partname","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"16","maxlength"=>"32","tabindex"=>"15"),false,"") ?>
-			<script language="JavaScript" type="text/javascript">
-					document.forms["record"]["partnumber"].onchange=populateLineItem;
-			</script>
-			</td>
-			<td nowrap="nowrap">
-			<?php fieldAutofill("partname","",4,"products.id","products.partname","products.partnumber","products.status=\"In Stock\" and products.inactive=0",Array("size"=>"20","maxlength"=>"128","tabindex"=>"16"),false,"") ?>
-			<script language="JavaScript" type="text/javascript">
-					document.forms["record"]["partname"].onchange=populateLineItem;
-			</script>
-			</td>
+			<td nowrap="nowrap"><?php $theform->fields["partnumber"]->display();?></td>
+			<td nowrap="nowrap"><?php $theform->fields["partname"]->display();?></td>
 			<td><input name="memo" type="text" id="memo" size="12" maxlength="255" tabindex="17" /></td>
 			<td align="right" nowrap="nowrap"><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" onchange="calculateExtended()" class="fieldCurrency"  tabindex="18"  /></td>
 			<td align="center" nowrap="nowrap"><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" onchange="calculateExtended()" tabindex="19"  /></td>
 			<td align="right" nowrap="nowrap"><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="readonly" /></td>
 			<td nowrap="nowrap" align="center"><button type="button" onclick="addLine(this.parentNode);" tabindex="20" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
-  	$lineitemsresult=getLineItems($therecord["id"]);
+  	$lineitemsresult = $thetable->getLineItems($therecord["id"]);
 		
 	if($lineitemsresult) {
 	?><tr id="LISep"><td colspan="7"></td></tr><?php 
-	while($lineitem=mysql_fetch_array($lineitemsresult)){
+	while($lineitem=$db->fetchArray($lineitemsresult)){
   ?><tr class="lineitems" id="LIN<?php echo $lineitem["id"]?>">
 			<td nowrap="nowrap" class="lineitemsLeft important"><?php if($lineitem["partnumber"]) echo htmlQuotes($lineitem["partnumber"]); else echo "&nbsp;";?></td>
 			<td width="150"><strong><?php if($lineitem["partname"]) echo htmlQuotes($lineitem["partname"]); else echo "&nbsp;";?></strong></td>
@@ -259,7 +313,7 @@
 					<legend>Discount / Promotion</legend>
 					<p id="pDiscount">
 						<label for="discountid">discount</label><br />
-						<?php showDiscountSelect($therecord["discountid"],$dblink)?>
+						<?php $thetable->showDiscountSelect($therecord["discountid"])?>
 					</p>
 					<input type="hidden" id="discount" name="discount" value="<?php echo $therecord["discount"]?>" />
 				</fieldset>
@@ -270,11 +324,10 @@
 					<legend>Tax</legend>
 					<p>
 						<label for="taxareaid">tax area</label><br />
-						<?php showTaxSelect($therecord["taxareaid"],$dblink)?>
+						<?php $thetable->showTaxSelect($therecord["taxareaid"])?>
 					</p>
 					<p>
-						<label for="taxpercentage">tax percentage</label><br />
-						<?php fieldPercentage("taxpercentage",$therecord["taxpercentage"],5,0,"Tax percentage must be a valid percentage.",Array("size"=>"9","maxlength"=>"9","onchange"=>"clearTaxareaid()","tabindex"=>"22")); ?>						
+						<?php $theform->fields["taxpercentage"]->display();?>						
 					</p>
 				</fieldset>
 			</div>
@@ -289,7 +342,7 @@
 					
 					<p>
 						<label for="shippingmethodid">ship via</label><br />
-						<?php  showShippingSelect($therecord["shippingmethodid"],$shippingMethods);
+						<?php  $thetable->showShippingSelect($therecord["shippingmethodid"],$shippingMethods);
 							$shipButtonDisable="";
 							if($therecord["shippingmethodid"]==0)
 								$shipButtonDisable="Disabled";
@@ -310,7 +363,7 @@
 						</p>
 						<p><label for="shippingNoticeResults">estimation results</label><br /><textarea readonly="readonly" id="shippingNoticeResults" rows="5" cols=""></textarea></p>
 						<p align="right">
-							<button type="button" class="Buttons" onclick="performShippingEstimate('<?php echo $_SESSION["app_path"] ?>')">estimate</button>
+							<button type="button" class="Buttons" onclick="performShippingEstimate('<?php echo APP_PATH ?>')">estimate</button>
 							<button type="button" class="Buttons" onclick="closeModal()">done</button>
 						</p>
 					</div>
@@ -328,7 +381,7 @@
 					<?php if(hasRights(20)){ ?>
 					<p>
 						<label for="paymentmethodid">payment method</label><br />
-						<?php showPaymentSelect($therecord["paymentmethodid"],$paymentMethods);
+						<?php $thetable->showPaymentSelect($therecord["paymentmethodid"],$paymentMethods);
 							$paymentButtonDisable="";
 							if($therecord["paymentmethodid"]==0)
 								$paymentButtonDisable="Disabled";
@@ -348,12 +401,10 @@
 							<input id="bankname" name="bankname" type="text" value="<?php echo htmlQuotes($therecord["bankname"]) ?>" size="30" maxlength="64" tabindex="26"/>
 						</p>
 						<p id="pAccountNumber">
-							<label for="accountnumber">account number</label><br />
-							<?php fieldText("accountnumber",$therecord["accountnumber"],false,"Account number must be a valid integer","integer",Array("size"=>"20","maxlength"=>"64")); ?>
+							<?php $theform->fields["accountnumber"]->display();?>
 						</p>
 						<p>
-							<label for="routingnumber">routing number</label><br />
-							<?php fieldText("routingnumber",$therecord["routingnumber"],false,"Routing number must be a valid integer","integer",Array("size"=>"30","maxlength"=>"64")); ?>
+							<?php $theform->fields["routingnumber"]->display();?>
 						</p>
 					</div>	
 					<div id="ccpaymentinfo">
@@ -381,7 +432,7 @@
 						</p>
 						<p><label for="paymentNoticeResults">payment process results</label><br /><textarea readonly="readonly" id="paymentNoticeResults" rows="5" cols=""></textarea></p>
 						<p align="right">
-							<button type="button" class="Buttons" onclick="performPaymentProcess('<?php echo $_SESSION["app_path"] ?>')">process payment</button>
+							<button type="button" class="Buttons" onclick="performPaymentProcess('<?php echo APP_PATH ?>')">process payment</button>
 							<button type="button" class="Buttons" onclick="closeModal()">done</button>
 						</p>
 					</div>
@@ -462,10 +513,7 @@
 		<textarea id="printedinstructions" name="printedinstructions" cols="45" rows="3" tabindex="38"><?php echo $therecord["printedinstructions"]?></textarea>	
 	</p>
 </fieldset>		
-<?php include("../../include/createmodifiedby.php"); ?>
-<?php if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice"){?>
-<script language="JavaScript" type="text/javascript">disableSaves(document.forms["record"]);</script>
-<?php }// end if ?>
-</div><?php include("../../footer.php");?>
-</form></body>
-</html>
+<?php $theform->showCreateModify($phpbms,$therecord) ?>
+</div>
+</form>
+<?php include("footer.php");?>

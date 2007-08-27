@@ -38,28 +38,40 @@
 */
 
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
 
-	include("include/productcategories_addedit_include.php");
+	$thetable = new phpbmsTable($db,7);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
 	
 	$pageTitle="Product Category";
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="<?php echo $_SESSION["app_path"] ?>common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/productcategories.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
-<div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-	<div id="topButtons">
-		  <?php showSaveCancel(1); ?>
-	</div>
-	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
+	
+	$phpbms->cssIncludes[] = "pages/productcategories.css";
+
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+				
+		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,128);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	
+	include("header.php");
+?><div class="bodyline">
+	<?php $theform->startForm($pageTitle);?>
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
@@ -68,16 +80,15 @@
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" style="" />
 		</p>
 		<p>
-			<?php fieldCheckbox("inactive",$therecord["inactive"],false)?><label for="inactive">inactive</label>
+			<?php $theform->showField("inactive")?>
 		</p>		
 	</fieldset>
 	
 	<div id="leftDiv">
 		<fieldset>
-			<legend><label for="name">name</label></legend>
+			<legend>name</legend>
 			<p>
-				<?php fieldText("name",$therecord["name"],1,"Name cannot be blank.","",Array("size"=>"40","maxlength"=>"64","class"=>"important")); ?>
-				<br />
+				<?php $theform->showField("name")?>
 			</p>			
 		</fieldset>
 		<fieldset>
@@ -88,7 +99,7 @@
 		<fieldset>
 			<legend>web</legend>
 			<p>
-				<?php fieldCheckbox("webenabled",$therecord["webenabled"])?><label for="webenabled">web enabled</label>
+				<?php $theform->showField("webenabled")?>
 			</p>
 			<p>
 				<label for="webdisplayname">web display name</label><br />
@@ -97,9 +108,9 @@
 		</fieldset>
 	</div>
 
-	<?php include("../../include/createmodifiedby.php"); ?>
-	</form>
+	<?php 
+		$theform->showCreateModify($phpbms,$therecord);
+		$theform->endForm();
+	?>
 </div>
-<?php include("../../footer.php")?>
-</body>
-</html>
+<?php include("footer.php");?>

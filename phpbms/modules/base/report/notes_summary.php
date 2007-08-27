@@ -52,7 +52,7 @@
 	$querystatement="SELECT users.firstname, users.lastname, notes.id, notes.creationdate,
 						notes.subject,notes.content 
 						FROM notes INNER JOIN users on notes.createdby=users.id ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=mysql_query($querystatement,$dblink);
+	$thequery=$db->query($querystatement);
 	if(!$thequery) die("No records, or invlaid SQL statement:<br />".$querystatement);
 	//===================================================================================================
 	// Generating PDF File.
@@ -85,7 +85,7 @@
 	
 	$pdf->SetY($topmargin+.43+.1);
 	$pdf->SetLineWidth(.01);
-	while($therecord=mysql_fetch_array($thequery)) {
+	while($therecord=$db->fetchArray($thequery)) {
 		$pdf->SetFont("Arial","",9);
 		$pdf->SetX($leftmargin+.125);
 		$pdf->Cell($tempwidth-.5,.17,"ID: ".$therecord["id"],$border_debug,1,"L");

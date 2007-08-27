@@ -1,0 +1,21 @@
+CREATE TABLE recurringinvoices(
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `invoiceid` INTEGER UNSIGNED NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `until` DATE,
+  `every` INTEGER UNSIGNED NOT NULL DEFAULT 1,
+  `times` INTEGER UNSIGNED,
+  `eachlist` VARCHAR(128),
+  `ontheday` INTEGER UNSIGNED,
+  `ontheweek` INTEGER UNSIGNED,
+  `includepaymenttype` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `includepaymentdetails` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `statusid` INTEGER UNSIGNED NOT NULL,
+  `assignedtoid` INTEGER UNSIGNED,
+  `name` VARCHAR(255),
+  `firstrepeat` DATE,
+  `lastrepeat` DATE,
+  `timesrepeated` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  `notificationroleid` INTEGER UNSIGNED,
+  PRIMARY KEY(`id`)
+);

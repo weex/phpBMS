@@ -1,0 +1,56 @@
+/* select screen styles */
+
+.bodyline{width:550px;margin:10px auto 0;}
+#footer{width:550px; margin:0 auto;}
+.selectLeft{
+	float:left;
+}
+
+#selectedgroupings, #availablegroupings, #availablecolumns, #selectedcolumns{width:220px;} 
+#print,#cancel{width:70px;}
+
+/* the report styles*/
+#toprint{font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+
+#toprint h1{font-size:24px;padding:3px;border-bottom:4px solid black; margin: 0 0 5px;}
+#toprint h2{font-size:16px; font-weight:normal; padding:0 5px 0;margin:0 5px 5px;}
+
+
+#toprint TABLE{border:2px solid black; border-collapse:collapse}
+
+#toprint TH, #toprint TD{padding:5px 10px; border:1px solid #666666;}
+
+#toprint TH {
+	vertical-align:bottom;
+	background:#EEEEEE;
+	font-size:14px;
+	font-weight: bold;
+	padding-bottom:2px;
+	border-bottom-width:3px;
+}
+
+#toprint .group{font-size:14px; background-color:#F9F9F9; padding-top:15px; border-color:#999999}
+#toprint .groupFooter{border-top-width:2px;}
+
+#toprint .grandtotals{font-size:16px; border-top:5px double black; font-weight:bold; padding-top:8px;padding-bottom:8px; background-color:#EEEEEE;}
+
+#toprint .invoices{font-size:12px;}
+
+
+#toprint #lineitems{border:0;}
+#toprint #lineitems th, #toprint #lineitems td{
+	font-size:9px;
+	padding:5px;
+	border:0;
+}
+#toprint #lineitems th{
+	background:none;
+	border-bottom:1px solid #666666;
+	color:black;
+}
+#toprint #lineitems td{
+	color:#444444;
+	border:1px dotted #999999;
+	border-top-width:0;
+	vertical-align:top;
+}

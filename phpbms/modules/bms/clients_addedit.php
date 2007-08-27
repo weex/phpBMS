@@ -37,31 +37,112 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	include("../../include/common_functions.php");
-	include("../../include/fields.php");
+	include("include/tables.php");
+	include("include/fields.php");
+	include("include/clients.php");
 
-	include("include/clients_addedit_include.php");
+	if(!isset($_GET["backurl"])) 
+		$backurl = NULL; 
+	else{ 
+		$backurl = $_GET["backurl"];
+		if(isset($_GET["refid"]))
+			$backurl .= "?refid=".$_GET["refid"];
+	}
+
+	$thetable = new clients($db,2,$backurl);
+	$therecord = $thetable->processAddEditPage();
+	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
 	
 	$pageTitle=ucwords($therecord["type"]);
+
 	if($therecord["inactive"])
 		$pageTitle="Inactive ".$pageTitle;
-	
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo $pageTitle ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<?php require("../../head.php")?>
-<link href="../../common/stylesheet/<?php echo $_SESSION["stylesheet"] ?>/pages/client.css" rel="stylesheet" type="text/css" />
-<script language="JavaScript" src="javascript/client.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/fields.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/choicelist.js" type="text/javascript"></script>
-<script language="JavaScript" src="../../common/javascript/autofill.js" type="text/javascript"></script>
-</head>
-<body><?php include("../../menu.php")?>
+		
+		
+	$phpbms->cssIncludes[] = "pages/client.css";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/client.js";
 
-<form action="<?php echo htmlQuotes($_SERVER["REQUEST_URI"]); if(isset($_GET["invoiceid"])) echo "&amp;invoiceid=".$_GET["invoiceid"];  ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php showTabs($dblink,"clients entry",6,$therecord["id"]); ?>
+		//Form Elements
+		//==============================================================
+		$theform = new phpbmsForm();
+		
+		$phpbms->bottomJS[] = 'var thefirstname=getObjectFromID("firstname");thefirstname.focus();';
+		
+		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+		$theform->addField($theinput);
+		
+		$theinput = new inputBasicList("type",$therecord["type"],array("prospect"=>"prospect","client"=>"client"), "type");
+		$theinput->setAttribute("class","important");
+		$theinput->setAttribute("onchange","changeClientType(this)");
+		$disabled=false;
+		if($therecord["type"]=="client")
+			$disabled = $thetable->checkForInvoices($therecord["id"]);
+		if($disabled)
+			$theinput->setAttribute("disabled","disabled");
+		$theform->addField($theinput);
+		
+		$theinput = new inputChoiceList($db, "category",$therecord["category"],"clientcategories");
+		$theform->addField($theinput);
+
+		$theinput = new inputAutofill($db, "salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)", 
+										"\"\"","users.revoked=0 AND users.id > 1", "sales person");
+		$theform->addField($theinput);
+		
+		$theinput = new inputChoiceList($db, "leadsource",$therecord["leadsource"],"leadsource", "lead source");
+		$theinput->setAttribute("class","small");
+		$theform->addField($theinput);
+		
+		$theinput = new inputDataTableList($db, "paymentmethodid",$therecord["paymentmethodid"],"paymentmethods","id","name",
+								"inactive=0", "priority,name", true, "payment method");
+		$theform->addField($theinput);
+
+		$theinput = new inputDataTableList($db, "shippingmethodid",$therecord["shippingmethodid"],"shippingmethods","id","name",
+								"inactive=0", "priority,name", true, "shipping method");
+		$theform->addField($theinput);
+		
+		$theinput = new inputDataTableList($db, "discountid",$therecord["discountid"],"discounts","id","name",
+								"inactive=0", "name", true, "discount");
+		$theform->addField($theinput);
+
+		$theinput = new inputDataTableList($db, "taxareaid",$therecord["taxareaid"],"tax","id","name",
+								"inactive=0", "name", true, "tax area");
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("workphone",$therecord["workphone"],"work phone",false,"phone",25,32);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("homephone",$therecord["homephone"],"home phone",false,"phone",25,32);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("mobilephone",$therecord["mobilephone"],"mobile phone",false,"phone",25,32);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("fax",$therecord["fax"],NULL,false,"phone",25,32);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("otherphone",$therecord["otherphone"],"other phone",false,"phone",25,32);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("email",$therecord["email"],NULL,false,"email",68,128);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("webaddress",$therecord["webaddress"],NULL,false,"www",68,128);
+		$theform->addField($theinput);
+
+		$theform->jsMerge();
+		//==============================================================
+		//End Form Elements
+	 
+	include("header.php");	
+
+	$action = htmlQuotes($_SERVER["REQUEST_URI"]);
+	if(isset($_GET["invoiceid"]))
+		$action .= "&amp;invoiceid=".$_GET["invoiceid"];
+?>
+<form action="<?php echo $action; ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
+<?php $phpbms->showTabs("clients entry",6,$therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>
@@ -72,7 +153,7 @@
 	<div id="rightSideDiv">
 		<?php if(isset($_GET["invoiceid"])){?>
 		<p id="backtoorderP">
-			<input name="gotoinvoice" id="gotoinvoice" type="button" value="return to order" onclick="location.href='<?php echo getAddEditFile(3) ?>?id=<?php echo $_GET["invoiceid"] ?>'" class="Buttons" />
+			<input name="gotoinvoice" id="gotoinvoice" type="button" value="return to order" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $_GET["invoiceid"] ?>'" class="Buttons" />
 		</p>
 		<?php } ?>			
 		<fieldset>
@@ -82,74 +163,39 @@
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" tabindex="0" />
 			</p>
 				
-			<p>
-				<label for="type" class="important">type</label><br />
-				<?php 
-					$disabled=false;
-					if($therecord["type"]=="client")
-						$disabled=checkForInvoices($therecord["id"],$dblink);
-							
-					$attributes["class"]="important";
-					$attributes["tabindex"]="5";
-					$attributes["onchange"]="changeClientType(this)";
-					if($disabled)
-						$attributes["disabled"]="disabled";
-					fieldBasicList("type",$therecord["type"],Array(Array("name"=>"prospect","value"=>"prospect"),Array("name"=>"client","value"=>"client")),$attributes);
-				?>
-			</p>
+			<p><?php $theform->showField("type");?></p>
 			
-			<p>
-				<?php fieldCheckbox("inactive",$therecord["inactive"],false,Array("tabindex"=>"4"))?><label for="inactive" class="important">inactive</label>
-			</p>
+			<p><?php $theform->showField("inactive")?></p>
 			
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
 				<label for="becameclient">became a client</label><br />
 				<input type="text" id="becameclient" name="becameclient" readonly="readonly" class="uneditable" value="<?php echo formatFromSQLDate($therecord["becameclient"])?>" size="8" />
 			</p>
 			
-			<p>
-				<label for="category">category</label><br />
-				<?php fieldChoiceList("category",$therecord["category"],"clientcategories",array("tabindex"=>"5")); ?>
-			</p>
+			<p><?php $theform->showField("category")?></p>
 			
 		</fieldset>
 	
 		<fieldset>
 			<legend>sales</legend>
-			<div class="fauxP">
-				<label for="ds-salesmanagerid">sales manager</label><br />
-				<?php fieldAutofill("salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)","\"\"","users.revoked=0 AND users.id > 1",Array("maxlength"=>"64","tabindex"=>"25")) ?>
-			</div>
+			<p><?php $theform->showField("salesmanagerid")?></p>
 			
-			<p>
-				<label for="leadsource">lead source</label><br />
-				<?php fieldChoiceList("leadsource",$therecord["leadsource"],"leadsource",Array("tabindex"=>"26","class"=>"small")); ?>
-			</p>
+			<p><?php $theform->showField("leadsource")?></p>
 		</fieldset>
 				
 		<fieldset>
 			<legend>order defaults</legend>
-			<p>
-				<label for="paymentmethodid">payment method</label><br />
-				<?php fieldDataTableList("paymentmethodid",$therecord["paymentmethodid"],$table="paymentmethods","id","name","","inactive=0","priority,name")?>
-			</p>
 
-			<p>
-				<label for="shippingmethodid">shipping method</label><br />
-				<?php fieldDataTableList("shippingmethodid",$therecord["shippingmethodid"],$table="shippingmethods","id","name","","inactive=0","priority,name")?>
-			</p>
+			<p><?php $theform->showField("paymentmethodid")?></p>
 
-			<p>
-				<label for="discountid">discount</label><br />
-				<?php fieldDataTableList("discountid",$therecord["discountid"],$table="discounts","id","name","","inactive=0","name")?>
-			</p>
+			<p><?php $theform->showField("shippingmethodid")?></p>
 
-			<p>
-				<label for="taxareaid">tax area</label><br />
-				<?php fieldDataTableList("taxareaid",$therecord["taxareaid"],$table="tax","id","name","","","name")?>
-			</p>
+			<p><?php $theform->showField("discountid")?></p>
+
+			<p><?php $theform->showField("taxareaid")?></p>
 
 		</fieldset>
+
 		<fieldset>
 			<legend>e-Commerce Login</legend>
 			<p>
@@ -160,9 +206,9 @@
 				<label for="password">password</label><br />
 				<input id="password" name="password" value="<?php echo htmlQuotes($therecord["password"])?>" maxlength="32" size="20"/>
 			</p>
-			<p>
-				<button class="Buttons" onclick="generateUserAndPass()" type="button">Generate</button>
-			</p>
+
+			<p><button class="Buttons" onclick="generateUserAndPass()" type="button">Generate</button></p>
+
 			<p class="notes">Client user names and passwords are <strong>not</strong> used for clients' to log in directly to phpBMS.</p>
 		</fieldset>
 	</div>
@@ -173,7 +219,6 @@
 			<p id="firstnameP">
 				<label for="firstname" class="important">first name</label><br />
 				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" tabindex="1" />
-				<script language="JavaScript" type="text/javascript">var thefirstname=getObjectFromID("firstname");thefirstname.focus()</script>
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />
@@ -187,40 +232,20 @@
 							
 		<fieldset>					
 			<legend>contact</legend>
-			<p class="phonelefts">
-				<label for="workphone">work phone</label><br />
-				<?php fieldText("workphone",$therecord["workphone"],0,"Work phone must be in valid format.","phone",Array("tabindex"=>"6","size"=>"25","maxlength"=>"32")); ?>			
-			</p>
-			
-			<p>
-				<label for="homephone">home phone</label><br />
-				<?php fieldText("homephone",$therecord["homephone"],0,"Home phone must be in valid format.","phone",Array("tabindex"=>"7","size"=>"25","maxlength"=>"32")); ?>				
-			</p>
-			
-			<p class="phonelefts">
-				<label for="mobilephone">mobile phone</label><br />
-				<?php fieldText("mobilephone",$therecord["mobilephone"],0,"Mobile phone must be in valid format.","phone",Array("tabindex"=>"8","size"=>"25","maxlength"=>"32")); ?>						
-			</p>
 
-			<p>
-				<label for="fax">fax number</label><br />
-					<?php fieldText("fax",$therecord["fax"],0,"Fax number must be in valid format.","phone",Array("tabindex"=>"9","size"=>"25","maxlength"=>"32")); ?>				
-			</p>
+			<p class="phonelefts"><?php $theform->showField("workphone")?></p>
 			
-			<p>
-				<label for="otherphone">other phone</label><br />
-				<?php fieldText("otherphone",$therecord["otherphone"],0,"Other phone must be in valid format.","phone",Array("tabindex"=>"10","size"=>"25","maxlength"=>"32")); ?>				
-			</p>
+			<p><?php $theform->showField("homephone")?></p>
 			
-			<p>
-				<label for="email">e-mail address</label><br />
-				<?php fieldEmail("email",$therecord["email"],Array("tabindex"=>"11","size"=>"68","maxlength"=>"128")); ?>
-			</p>
+			<p class="phonelefts"><?php $theform->showField("mobilephone")?></p>
+
+			<p><?php $theform->showField("fax")?></p>
 			
-			<p>
-				<label for="webaddress">web site</label><br />
-				<?php fieldWebAddress("webaddress",$therecord["webaddress"],Array("tabindex"=>"12","size"=>"68","maxlength"=>"128")); ?>
-			</p>
+			<p><?php $theform->showField("otherphone")?></p>
+			
+			<p><?php $theform->showField("email")?></p>
+			
+			<p><?php $theform->showField("webaddress")?></p>
 		</fieldset>
 		
 		<fieldset>
@@ -285,9 +310,7 @@
 			</p>
 		</fieldset>
 		
-	</div><?php include("../../include/createmodifiedby.php"); ?>
+	</div><?php $theform->showCreateModify($phpbms,$therecord);?>
 	</div>
-	<?php include("../../footer.php")?>
 </form>
-</body>
-</html>
+<?php include("footer.php")?>

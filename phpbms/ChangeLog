@@ -1,4 +1,17 @@
 phpBMS v0.7
+http://phpbms.org/browser/tags/phpbms-0.8
+ * Recurring invoices
+ * Objected oriented code changeover
+ * SQL Export Report
+ * Invoice Total Tax Report
+ * New list view interface
+ * New List View Groupings
+ * Various Bug fixes
+ * List View Column access roles
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.8
+
+phpBMS v0.7
 http://phpbms.org/browser/tags/phpbms-0.7
  
  * Support for multiple phone formats

@@ -48,74 +48,74 @@
 		return $therecord;	
 	}
 	
-	function getSearchfields($tabledefid,$searchfieldid=false){
-		global $dblink;
+	function getSearchfields($db,$tabledefid,$searchfieldid=false){
+
 		$querystatement="SELECT id, field, name, displayorder,type
 		FROM tablesearchablefields 
 		WHERE tabledefid=".$tabledefid;
 		if($searchfieldid) $querystatement.=" AND id=".$searchfieldid;
 		$querystatement.=" ORDER BY displayorder";
 		
-		$thequery=mysql_query($querystatement) or $thequery=mysql_error($dblink)." -- ".$querystatement;		
+		$thequery=$db->query($querystatement);
 		return $thequery;
 	}// end function
 
 
-	function addSearchfield($variables,$tabledefid){
-		global $dblink;
-		$querystatement="INSERT INTO tablesearchablefields (tabledefid, field, name, displayorder,type)
+	function addSearchfield($db,$variables,$tabledefid){
+
+		$querystatement = "INSERT INTO tablesearchablefields (tabledefid, field, name, displayorder,type)
 		values (";
 		$querystatement.=$tabledefid.", ";
 		$querystatement.="\"".$variables["field"]."\", ";
 		$querystatement.="\"".$variables["name"]."\", ";
 		$querystatement.="\"".$variables["displayorder"]."\", ";		
 		$querystatement.="\"".$variables["type"]."\")";		
-		if(mysql_query($querystatement)) $thereturn ="Search Field Added"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Search Field Added";
 		
 		return $thereturn;
 	}// end function
 	
 
-	function updateSearchfield($variables){
-		global $dblink;
+	function updateSearchfield($db,$variables){
+
 		$querystatement="UPDATE tablesearchablefields set ";
 		$querystatement.="field=\"".$variables["field"]."\", ";
 		$querystatement.="type=\"".$variables["type"]."\", ";
 		$querystatement.="name=\"".$variables["name"]."\" ";
 		$querystatement.="WHERE id=".$variables["searchfieldid"];
-		if(mysql_query($querystatement)) $thereturn ="Search Field Updated"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+		if($db->query($querystatement)) $thereturn ="Search Field Updated";
 		
 		return $thereturn;
 	}
 
-	function deleteSearchfield($id){
-		global $dblink;
-		$querystatement="DELETE FROM tablesearchablefields WHERE id=".$id;
-		if(mysql_query($querystatement)) $thereturn ="Search Field Deleted"; else $thereturn=mysql_error($dblink)." -- ".$querystatement;
+	function deleteSearchfield($db,$id){
+
+ 		$querystatement="DELETE FROM tablesearchablefields WHERE id=".$id;
+
+		if($db->query($querystatement)) $thereturn ="Search Field Deleted";
 		
 		return $thereturn;
 	}
 
-	function moveSearchfield($id,$direction="up"){
-		global $dblink;
+	function moveSearchfield($db,$id,$direction="up"){
 
 		if($direction=="down") $increment="1"; else $increment="-1";
 
 		$querystatement="select displayorder FROM tablesearchablefields WHERE id=".$id;
-		$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -1- ".$querystatement;
-		$therecord=mysql_fetch_array($thequery);
+		$thequery = $db->query($querystatement);
+		$therecord = $db->fetchArray($thequery);
 
 		$querystatement="select max(displayorder) as themax FROM tablesearchablefields WHERE tabledefid=".$_GET["id"];
-		$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -2- ".$querystatement;
-		$maxrecord=mysql_fetch_array($thequery);
+		$thequery=$db->query($querystatement);
+		$maxrecord=$db->fetchArray($thequery);
 		
 		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
 			$querystatement="UPDATE tablesearchablefields set displayorder=".$therecord["displayorder"]." 
 								WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$_GET["id"];
-			$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -4- ".$querystatement;
+			$thequery=$db->query($querystatement);
 
 			$querystatement="UPDATE tablesearchablefields set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=mysql_query($querystatement) or $thereturn=mysql_error($dblink)." -3- ".$querystatement;
+			$thequery=$db->query($querystatement);
 		}// end if
 		
 		if(isset($thereturn)) return $thereturn; else return "Position Moved";

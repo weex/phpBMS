@@ -7,7 +7,7 @@
 				<input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
 				created			
 			</td>
-			<td><?php echo htmlQuotes($createdby)?></td>
+			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
 			<td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
 		</tr>
 		<tr>
@@ -17,7 +17,7 @@
 				<input name="modifieddate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?>"/>
 				modified
 			</td>
-			<td><?php echo htmlQuotes($modifiedby)?></td>
+			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["modifiedby"]))?></td>
 			<td><?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?></td>
 		</tr>
 	</table>

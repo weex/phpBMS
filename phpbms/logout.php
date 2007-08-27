@@ -1,6 +1,8 @@
 <?php
-	session_name("phpBMSv08ID");
-	session_start();
+	$loginNoKick = true;
+	$loginNoDisplayError =true;
+	include("include/session.php");
+	
 	session_destroy();
 	header("Location: index.php");
 ?>

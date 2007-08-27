@@ -38,10 +38,10 @@
 */
 
 	require("../../include/session.php");
-	include("../../include/common_functions.php");
+	
 	
 	$result="Error";
-	if($_SESSION["demo_enabled"]=="true"){
+	if(DEMO_ENABLED=="true"){
 		$result="Sending e-mail disabled in demonstration mode";
 	} else {	
 		if(!isset($_GET["id"])){
@@ -49,11 +49,11 @@
 		} else {
 			$themessage=$_SESSION["massemail"]["body"];
 			$querystatement="SELECT * FROM clients WHERE id=".( (int) $_GET["id"]);
-			$queryresult=mysql_query($querystatement,$dblink);
+			$queryresult=$db->query($querystatement);
 			if($queryresult){
-				$therecord=mysql_fetch_array($queryresult);
+				$therecord=$db->fetchArray($queryresult);
 				
-				$themessage=str_replace("[[todays_date]]",dateToString(mktime()),$themessage);
+				$themessage=stripslashes(str_replace("[[todays_date]]",dateToString(mktime()),$themessage));
 				foreach($therecord as $key=>$value)
 					$themessage=str_replace("[[".$key."]]",$value,$themessage);
 				

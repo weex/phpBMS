@@ -43,11 +43,10 @@
 						paymentmethodid,shippingmethodid,discountid,taxareaid
 						FROM clients
 						WHERE clients.id=".((integer)$_GET["id"]);
-	$queryresult = mysql_query($querystatement,$dblink);
-	if(!$queryresult) reportError(500,"Cannot retrieve Client info: ".mysql_error($dblink)." <br/><br/> ".$querystatement);
+	$queryresult = $db->query($querystatement);
 	
-	if(mysql_num_rows($queryresult)) {
-		$therecord=mysql_fetch_array($queryresult);
+	if($db->numRows($queryresult)) {
+		$therecord=$db->fetchArray($queryresult);
 		
 		if ($therecord["shiptoaddress1"]){
 			$theadd1=$therecord["shiptoaddress1"];

@@ -38,17 +38,17 @@
 */
 	$loginNoKick=true;
 	$loginNoDisplayError=true;;
-	require("include/session.php")
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>phpBMS Browser Requirements</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="common/stylesheet/mozilla/base.css" rel="stylesheet" type="text/css" />
-<link href="common/stylesheet/mozilla/pages/requirements.css" rel="stylesheet" type="text/css" />
-</head>
-
-<body><div class="bodyline" id="container">	
+	require("include/session.php");
+	
+	$pageTitle = "phpBMS Browser Requirements";
+	
+	$phpbms->cssIncludes[] = "pages/requirements.css";
+	
+	$phpbms->showMenu = false;
+	$phpbms->showFooter = false;
+	
+	include("header.php")
+?><div class="bodyline" id="container">	
 	<div class="box" id="logo" style=""><span>phpBMS</span></div>
 	<h1>phpBMS Browser Requirements</h1>
 	<h2 id="cba">Client Browser Aplication</h2>
@@ -102,6 +102,4 @@
 	<p align="right">
 		<input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton"/>
 	</p>
-</div>
-</body>
-</html>
+</div><?php include("footer.php");?>
