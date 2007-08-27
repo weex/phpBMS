@@ -388,14 +388,14 @@ if(class_exists("phpbmsTable")){
 					$variables["repeattype"] = "";
 					$variables["repeatuntil"] = NULL;				
 				}
-	
+
 				if($variables["assignedtoid"] != $variables["assignedtochange"]){
-					if($variables["assignedtoid"] != "NULL")
+					if($variables["assignedtoid"] != "")
 						$variables["assignedbyid"] = $userid; 
 					else
-						$variables["assignedbyid"] = $userid; 
+						$variables["assignedbyid"] = ""; 
 				}
-		
+
 			return $variables;
 		}
 		

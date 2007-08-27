@@ -119,8 +119,8 @@ function showTasks($db,$userid,$type="Tasks"){
 		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
 		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked=\"checked\""?> onclick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
 		<a href="<?php echo getAddEditFile($db,12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a>
-		<?php if($type=="Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php } ?>
-		<?php if($type!="Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes($phpbms->getUserName($tid))?>)</em><?php } ?>
+		<?php if($type == "Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php } ?>
+		<?php if($type != "Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes($phpbms->getUserName($tid))?>)</em><?php } ?>
 	</p>
 	<?php } } else {
 	?><p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
