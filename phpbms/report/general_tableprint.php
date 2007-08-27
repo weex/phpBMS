@@ -45,7 +45,7 @@
 	else
 		$sortorder="";
 	
-	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".((int $_GET["tid"]);
+	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".((int) $_GET["tid"]);
 	$thequery=$db->query($querystatement);                   
 	if(!$thequery)	$error = new appError(100,"Could not retrieve table information");
 	$therecord=$db->fetchArray($thequery);
