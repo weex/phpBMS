@@ -8,11 +8,8 @@
 
 .buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; 
 	font-size:11px; padding:1px; padding-bottom:0px; 
-	-moz-border-radius-topleft:8px;
-	-moz-border-radius-topright:8px;
 }
-.buttonSection{border-top:0;  padding-top:0; padding-bottom:1px; 	-moz-border-radius:0px;
-}
+.buttonSection{border-top:0;  padding-top:0; padding-bottom:1px;}
 
 .norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; border-bottom:1px solid #999999;}
 

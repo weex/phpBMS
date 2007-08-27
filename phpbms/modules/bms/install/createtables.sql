@@ -162,7 +162,7 @@ CREATE TABLE prerequisites (
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) default NULL,
-  `inactive` TINYINT UNSIGNED DEFAULT 0,
+  `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `description` text,
   `webenabled` tinyint(1) NOT NULL default 0,
   `webdisplayname` varchar(64) default '',

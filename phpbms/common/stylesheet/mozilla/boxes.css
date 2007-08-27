@@ -2,7 +2,6 @@
 /* $LastChangedDate$ */
 
 fieldset,.bodyline,.box{ 
-	-moz-border-radius:8px;
 	border: 1px #E4ECEC outset; 
 	padding:0px;
 	margin-bottom:5px;
@@ -15,7 +14,6 @@ fieldset,.bodyline,.box{
 	clear:both;
 	border-color:#CAD1D1;
 	border-style:solid;
-	-moz-border-radius:0;
 	padding:10px;margin-top:0px;
 }
 
