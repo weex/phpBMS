@@ -1,6 +1,6 @@
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (1,2,'Prospects','clients.type = \"prospect\"   and clients.inactive=0',1,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,2,'Today\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=0 and clients.inactive=0',3,0);
-INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (8,2,'Yesterday\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate)=1 and clients.inactive=0',4,0);
+INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (8,2,'Yesterday\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=1 and clients.inactive=0',4,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (9,2,'Last Week\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))<7 and clients.inactive=0',5,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (10,2,'Clients','clients.type = \"client\" and clients.inactive=0',0,0);
 INSERT INTO `tablefindoptions` (`id`, `tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (11,2,'Inactive Clients','clients.type = \"client\" and clients.inactive=1',6,0);

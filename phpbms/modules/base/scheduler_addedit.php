@@ -78,7 +78,7 @@
 		$theinput = new inputDatePicker("enddate",$therecord["enddate"], "end date" ,false, 11, 15, false);
 		$theform->addField($theinput);
 
-		$theinput = new inputTimePicker("endtime",$therecord["starttime"], "end time" ,false,11, 15, false);
+		$theinput = new inputTimePicker("endtime",$therecord["endtime"], "end time" ,false,11, 15, false);
 		$theform->addField($theinput);		
 
 		$theform->jsMerge();

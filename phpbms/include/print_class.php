@@ -106,7 +106,7 @@
 				$this->db->seek($this->reports,0);
 				
 				while($therecord=$this->db->fetchArray($this->reports))
-					$thereturn .= "theReport[theReport.length]=new Array(".$therecord["id"].",\"".$therecord["reportfile"]."\",\"".addslashes($therecord["name"])."\",\"".$therecord["type"]."\",\",".addcslashes(addslashes($therecord["description"]),"\r\n")."\");";					
+					$thereturn .= "theReport[theReport.length]=new Array(".$therecord["id"].",\"".$therecord["reportfile"]."\",\"".addslashes($therecord["name"])."\",\"".$therecord["type"]."\",\"".addcslashes(addslashes($therecord["description"]),"\r\n")."\");";					
 
 			} else { 
 				$thereturn= "theReport[theReport.length]=new Array(0,\"\",\"No Reports Available\",\"\",\"\");";

@@ -37,7 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 @ define("APP_DEBUG",false);
-//error_reporting(E_ALL);
+if(APP_DEBUG)
+	error_reporting(E_ALL);
 
 class appError{
  	var $number=0;
@@ -278,9 +279,8 @@ class phpbmsSession{
 			return false;
 		}
 	}//end function
-
 	
-	function loadSettings($encoding="utf8"){
+	function loadSettings($encoding = "utf8"){
 		// We are going to make sure that we are using utf8 
 		// but it works only in mySQL 5, so we supress errors
 		// when trying it.
@@ -290,7 +290,7 @@ class phpbmsSession{
 		$this->db->logError = false;
 		$this->db->stopOnError = false;
 	
-		$this->db->query("SET NAMES ".$encoding);
+		$this->db->setEncoding($encoding);
 	
 		$this->db->logError = true;
 	
@@ -303,20 +303,23 @@ class phpbmsSession{
 			return false;
 		} else {
 			while($therecord=$this->db->fetchArray($queryresult))
-				define(strtoupper($therecord["name"]),$therecord["value"]);
+				if(!defined(strtoupper($therecord["name"])))
+					define(strtoupper($therecord["name"]),$therecord["value"]);
 
 			// This following code is for windows boxen, because they lack some server varables as well
 			// formating options for the strftime function
 			if(!isset($_SERVER['REQUEST_URI'])) {
 				$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
 				
-				define("HOUR_FORMAT","%I");
+				if(!defined("HOUR_FORMAT"))
+					define("HOUR_FORMAT","%I");
 			
 				// Append the query string if it exists and isn't null
 				if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING']))
 					$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
 			} else
-				define("HOUR_FORMAT","%l");
+				if(!defined("HOUR_FORMAT"))
+					define("HOUR_FORMAT","%l");
 
 			return true;
 		}
@@ -402,6 +405,8 @@ if(!function_exists("mysql_real_escape_string")){
 
 // Start Login verification Code
 //=================================================================================================================
+if(!isset($sqlEncoding))
+	$sqlEncoding = "utf8";
 
 if(!defined("noStartup")){
 	$scriptname = basename($_SERVER["PHP_SELF"]);
@@ -416,7 +421,7 @@ if(!defined("noStartup")){
 			$db = new db();
 			$phpbmsSession->db = $db;
 			
-			$phpbmsSession->loadSettings();
+			$phpbmsSession->loadSettings($sqlEncoding);
 			$phpbms = new phpbms($db);
 	
 			include_once("common_functions.php");
@@ -427,7 +432,7 @@ if(!defined("noStartup")){
 			$error= new appError(-710,"","No login credentials passed",true,true,true,"json");
 	} else {
 	
-		$phpbmsSession->loadDBSettings();
+		$phpbmsSession->loadDBSettings($sqlEncoding);
 	
 	
 		include_once("include/db.php");

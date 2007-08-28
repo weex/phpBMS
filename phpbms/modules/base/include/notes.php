@@ -51,7 +51,7 @@ if(class_exists("phpbmsTable")){
 			$queryresult = $this->db->query($querystatement);
 			$therecord=$this->db->fetchArray($queryresult);
 		
-			$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".$parentid." AND creationdate > \"".$therecord["creationdate"]."\"";
+			$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".((int) $parentid)." AND creationdate > \"".$therecord["creationdate"]."\"";
 			$queryresult = $this->db->query($querystatement);
 	
 			if($this->db->numRows($queryresult)) return true; else return false;
@@ -63,7 +63,7 @@ if(class_exists("phpbmsTable")){
 			$querystatement="DELETE FROM notes WHERE completed=0 AND parentid=".$parentid;
 			$queryresult = $this->db->query($querystatement);
 			
-			$querystatement="SELECT id FROM notes WHERE completed=1 AND parentid=".$parentid." ORDER BY startdate DESC LIMIT 0,1";
+			$querystatement="SELECT id FROM notes WHERE completed=1 AND parentid=".((int) $parentid)." ORDER BY startdate DESC LIMIT 0,1";
 			$queryresult = $this->db->query($querystatement);
 			if($this->db->numRows($queryresult)){
 				$therecord=$this->db->fetchArray($queryresult);
@@ -247,7 +247,7 @@ if(class_exists("phpbmsTable")){
 	
 			$therecord=$this->db->fetchArray($queryresult);
 		
-			$querystatement="SELECT id FROM notes WHERE parentid=".$parentid." AND completed=0 AND startdate=\"".dateToString($newdate,"SQL")."\"";
+			$querystatement="SELECT id FROM notes WHERE parentid=".((int) $parentid)." AND completed=0 AND startdate=\"".dateToString($newdate,"SQL")."\"";
 			$queryresult=$this->db->query($querystatement);
 	
 			if($this->db->numRows($queryresult))
@@ -280,9 +280,9 @@ if(class_exists("phpbmsTable")){
 			$querystatement.="\"".$therecord["creationdate"]."\", ";
 			$querystatement.=$therecord["createdby"].", ";
 			$querystatement.="\"".$therecord["category"]."\", ";
-			$querystatement.=$therecord["attachedtabledefid"].", ";
-			$querystatement.=$therecord["attachedid"].", ";
-			$querystatement.=$therecord["assignedtoid"].", ";
+			$querystatement.=((int) $therecord["attachedtabledefid"]).", ";
+			$querystatement.=((int) $therecord["attachedid"]).", ";
+			$querystatement.=((int) $therecord["assignedtoid"]).", ";
 			if($therecord["assignedtodate"])
 				$querystatement.="\"".$therecord["assignedtodate"]."\", ";
 			else

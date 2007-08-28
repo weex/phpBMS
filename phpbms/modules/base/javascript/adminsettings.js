@@ -56,6 +56,10 @@ function toggleEncryptionEdit(seedcheck){
 	}
 }
 
+function setEncryptionUpdate(){
+	var doencryptionupdate = getObjectFromID("doencryptionupdate")
+	doencryptionupdate.value = 1;
+}
 
 function processForm(theform){
 	var changeseed=getObjectFromID("changeseed");

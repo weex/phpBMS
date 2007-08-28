@@ -155,7 +155,7 @@
 
 		<p><?php $theform->showField("name");?></p>
 
-		<p><?php $theform->showField("thefield");?></p>
+		<p><?php $theform->showField("roleid");?></p>
 		
 		<p>
 			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />

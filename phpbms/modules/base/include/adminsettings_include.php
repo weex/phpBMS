@@ -97,7 +97,12 @@ class settings{
 					// If using PHP < 4.3.0 use the following:
 					$file = mysql_real_escape_string(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
 				}
-				$querystatement="UPDATE `files` SET `file` = '".$file."' WHERE id=1";
+				if($_FILES["printedlogo"]["type"] == "image/jpeg")
+					$name = "logo.jpg";
+				else
+					$name = "logo.png";
+					
+				$querystatement="UPDATE `files` SET `file` = '".$file."', `type` = '".$_FILES["printedlogo"]["type"]."', `name`='".$name."' WHERE id=1";
 				$queryresult=$this->db->query($querystatement);
 			}
 		}		
@@ -130,7 +135,7 @@ class settings{
 		$querystatement="UPDATE users SET password = ENCODE(DECODE(password,'".ENCRYPTION_SEED."'),'".$newseed."') WHERE id !=".$userid;
 		$queryresult=$this->db->query($querystatement);
 			
-		return "Encryption Seed Updated.  All passwords changed";
+		return "Encryption Seed Updated.";
 	}	
 
 

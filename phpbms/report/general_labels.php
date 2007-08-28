@@ -37,8 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 
-	//reload settings in latin1 (fpdf doesn't like utf)
-	$phpbmsSession->loadSettings("latin1");
+	//set mysql encoding to latin1 (fpdf doesn't like utf)
+	$db->setEncoding("latin1");
 
 	// The label report requires the following variables to be set before creating the PDF
 	//maxrows
@@ -123,7 +123,6 @@
 	$pageTitle = "Label Options";
 	$phpbms->showMenu = false;
 	$phpbms->cssIncludes[] = "pages/historyreports.css";
-	
 	include("header.php");
 	
 ?>

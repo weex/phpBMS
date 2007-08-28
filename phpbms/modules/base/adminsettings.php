@@ -188,7 +188,7 @@ $phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
 		</div>
 		
 		<p>
-			<label for="printedlogo">upload new logo file</label> <span class="notes">(PNG ot JPEG format)</span><br />
+			<label for="printedlogo">upload new logo file</label> <span class="notes">(PNG or JPEG format)</span><br />
 			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
 		</p>
 		
@@ -276,7 +276,7 @@ $phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
 	</fieldset>
 	<p class="updateButtonP">
 		<input type="hidden" id="doencryptionupdate" name="doencryptionupdate"/>
-		<input type="submit" id="updateSettings3" name="command" class="Buttons" value="update encryption seed" disabled="disabled"/>	
+		<input type="submit" id="updateSettings3" name="command" class="Buttons" value="update encryption seed" disabled="disabled" onclick="setEncryptionUpdate()"/>
 	</p>
 
 	<fieldset>

@@ -75,5 +75,5 @@
 		return $pdf;
 	}
 
-	require("../../../report/general_labels.php");
+	require("report/general_labels.php");
 ?>

@@ -37,9 +37,12 @@
  +-------------------------------------------------------------------------+
 */
 	session_cache_limiter('private');
+
+	//set encoding to latin1 (fpdf doesnt like utf8)
+	$sqlEncoding = "latin1";	
+
 	require_once("../../../include/session.php");
-	//reload settings in latin1 (fpdf doesn't like utf)
-	$phpbmsSession->loadSettings("latin1");
+
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
 	

@@ -102,7 +102,7 @@ class db{
 			} else return true;
 		}//end function
 
-		
+
 		function connect(){
 			// This functions connects to the database.  It uses pconnect if the variable is set;
 						
@@ -129,7 +129,7 @@ class db{
 				return true;							
 		}
 
-		
+
 		function query($sqlstatement){
 			switch($this->type){
 				case "mysql":
@@ -147,6 +147,11 @@ class db{
 			$this->error=NULL;
 			return $queryresult;
 		}//end function
+
+
+		function setEncoding($encoding = "utf8"){
+			$this->query("SET NAMES ".$encoding);
+		}
 
 
 		function numRows($queryresult){

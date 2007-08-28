@@ -467,7 +467,7 @@ function displayQueryHeader(){
 			<tr>
 				<td nowrap="nowrap" valign="top">
 					<p>
-						<label for="find">find</label><br />					
+						<label for="find">find</label><br />
 						<select name="find" id="find">
 						<?php 											
 							for($i=0;$i<count($this->findoptions);$i++) {
@@ -875,7 +875,7 @@ function displayRelationships(){
 			//=====================================================================================================
 			//start with the find pull down
 			foreach($this->findoptions as $checkoption){
-				if($params["find"]==$checkoption["name"]) {
+				if(stripslashes($params["find"])==$checkoption["name"]) {
 					$params["find"]=$checkoption["search"];
 					//keep setting
 					$this->savedfindoptions=$checkoption["name"];

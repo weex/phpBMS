@@ -50,8 +50,9 @@ if(class_exists("phpbmsTable")){
 		function insertRecord($variables, $createdby = NULL){	
 			$theid = parent::insertRecord($variables, $createdby);
 			
-			if($variables["userschanged"]==1)
-				$this->assignUsers($theid,$variables["newusers"]);
+			if(isset($variables["userschanged"]))
+				if($variables["userschanged"]==1)
+					$this->assignUsers($theid,$variables["newusers"]);
 				
 			return $theid;
 		}
