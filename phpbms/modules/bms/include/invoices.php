@@ -501,7 +501,7 @@ if(class_exists("searchFunctions")){
 	
 		function mark_asinvoice(){
 		
-			$whereclause = $this->buildWhereClause($theids,"invoices.id");
+			$whereclause = $this->buildWhereClause();
 			$whereclause = "(".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti";
 			
 			//Look up default assignedto
