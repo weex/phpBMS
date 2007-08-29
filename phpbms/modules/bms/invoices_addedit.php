@@ -100,20 +100,21 @@
 		$theinput = new inputChoiceList($db,"leadsource",$therecord["leadsource"],"leadsource", "lead source");
 		$theform->addField($theinput);
 		
-
-		$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
-										"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true,false);					
-		$theinput->setAttribute("size","16");
-		$theinput->setAttribute("maxlength","32");
-		$theform->addField($theinput);
-		$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
-			
-		$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
-										"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true,false);
-		$theinput->setAttribute("size","20");
-		$theinput->setAttribute("maxlength","128");
-		$theform->addField($theinput);
-		$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
+		if($therecord["type"]!="VOID" && $therecord["type"]!="Invoice"){
+			$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
+											"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true,false);					
+			$theinput->setAttribute("size","16");
+			$theinput->setAttribute("maxlength","32");
+			$theform->addField($theinput);
+			$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
+				
+			$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
+											"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true,false);
+			$theinput->setAttribute("size","20");
+			$theinput->setAttribute("maxlength","128");
+			$theform->addField($theinput);
+			$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
+		}
 		
 		$theinput = new inputPercentage("taxpercentage",$therecord["taxpercentage"], "tax percentage" , 5);
 		$theinput->setAttribute("onchange","clearTaxareaid()");
@@ -280,7 +281,7 @@
 			<th align="right" nowrap="nowrap" class="queryheader">extended</th>
 			<th nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
-		<?php if($therecord["type"]!="Invoice"){?>
+		<?php if($therecord["type"]!="Invoice" && $therecord["type"]!="VOID"){?>
 		<tr id="LIAdd">
 			<td nowrap="nowrap"><?php $theform->fields["partnumber"]->display();?></td>
 			<td nowrap="nowrap"><?php $theform->fields["partname"]->display();?></td>
