@@ -3,10 +3,7 @@
 	$loginNoDisplayError=true;
 	
  	include("../../include/session.php");
-	
-	if(!defined(APP_NAME))
-		loadSettings();		
-	
+		
 	$now = gmdate('Y-m-d H:i', strtotime('now'));
 	
 	$querystatment="SELECT id,name,crontab,job,startdatetime,enddatetime FROM scheduler WHERE inactive=0 AND startdatetime<NOW() AND (enddatetime>NOW() OR enddatetime IS NULL);";
@@ -17,7 +14,7 @@
 		$schedule_record["startdate"]=stringToDate($datetimearray[0],"SQL");
 		$schedule_record["starttime"]=stringToTime($datetimearray[1],"24 Hour");
 
-		if($therecord["enddatetime"]){
+		if($schedule_record["enddatetime"]){
 			$datetimearray=explode(" ",$schedule_record["enddatetime"]);
 			$schedule_record["enddate"]=stringToDate($datetimearray[0],"SQL");
 			$schedule_record["endtime"]=stringToTime($datetimearray[1],"24 Hour");
@@ -231,7 +228,7 @@
 			}
 		} elseif(strstr($mins,'*/')) {
 			$mult = str_replace('*/','',$mins);
-			$startMin = date('i',strtotime($focus->date_time_start));
+			$startMin = date('i',strtotime($recordarray["starttime"]));
 			$startFrom = ($startMin % $mult);
 			for($i=$startFrom; $i<=59; $i) {
 				if(($currentMin + $i) > 59) {
