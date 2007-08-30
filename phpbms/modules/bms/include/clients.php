@@ -132,8 +132,12 @@ if(class_exists("searchFunctions")){
 		
 		
 		function massEmail(){
-			$_SESSION["emailids"]= $this->idsArray;
-			goURL("modules/bms/clients_email.php");
+			if(DEMO_ENABLED != "true"){
+				$_SESSION["emailids"]= $this->idsArray;
+				goURL("modules/bms/clients_email.php");
+			} else {
+				return "mass e-mail feature disabled in demo";
+			}
 		}
 
 	

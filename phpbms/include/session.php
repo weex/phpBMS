@@ -349,13 +349,13 @@ class phpbmsSession{
 			return false;
 		}
 		
-		if($db->numRows($queryresult)){
+		if($this->db->numRows($queryresult)){
 			//We found a record that matches in the database
 			// populate the session and go in
-			$_SESSION["userinfo"]=$db->fetchArray($queryresult);
+			$_SESSION["userinfo"]=$this->db->fetchArray($queryresult);
 		
 			$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
-			$queryresult=@ $db->query($querystatement);
+			$queryresult=@ $this->db->query($querystatement);
 			if(!$queryresult) {
 				$error = new appError(-730,"","Error Updaingt User Login Time",true,true,true,"json");
 			} else
@@ -420,11 +420,11 @@ if(!defined("noStartup")){
 			include_once("include/db.php");
 			$db = new db();
 			$phpbmsSession->db = $db;
-			
+
+			include_once("common_functions.php");			
 			$phpbmsSession->loadSettings($sqlEncoding);
 			$phpbms = new phpbms($db);
 	
-			include_once("common_functions.php");
 	
 			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"],ENCRYPTION_SEED))
 				$error = new appError(-700,"","Login credentials incorrect",true,true,true,"json");
@@ -440,7 +440,7 @@ if(!defined("noStartup")){
 		
 		$phpbmsSession->db = $db;
 		
-		$phpbmsSession->loadSettings();
+		$phpbmsSession->loadSettings($sqlEncoding);
 		
 		include_once("common_functions.php");
 		$phpbms = new phpbms($db);
