@@ -258,10 +258,16 @@ class phpbmsSession{
 			//For legacy installations where pconnect is not set
 			if(!defined("MYSQL_PCONNECT"))
 				define("MYSQL_CONNECT",true);
-			
+
 			//this adds the phpbms root to the include path
+			if ( ! defined( "PATH_SEPARATOR" ) ) {
+			  if ( strpos( $_ENV[ "OS" ], "Win" ) !== false )
+				define( "PATH_SEPARATOR", ";" );
+			  else define( "PATH_SEPARATOR", ":" );
+			}
+
 			$pathToAdd=@ getcwd();
-			ini_set("include_path",ini_get("include_path").":".$pathToAdd);
+			ini_set("include_path",ini_get("include_path").PATH_SEPARATOR.$pathToAdd);
 			
 			//Now to set the path
 			$pathrev = strrev($_SERVER["PHP_SELF"]);
