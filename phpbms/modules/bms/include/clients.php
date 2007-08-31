@@ -62,7 +62,10 @@ if(class_exists("phpbmsTable")){
 		function prepareVariables($variables){
 			if ($variables["webaddress"]=="http://") 
 				$variables["webaddress"] = NULL;
-					
+
+			if(!isset($variables["type"]))
+				$variables["type"] = "client";
+
 			return $variables;
 		}
 		
