@@ -361,6 +361,7 @@ if(class_exists("phpbmsTable")){
 		function prepareVariables($variables){
 					
 			$variables["totaltni"] = currencyToNumber($variables["totaltni"]);
+			$variables["discountamount"] = currencyToNumber($variables["discountamount"]);
 			$variables["totaltaxable"] = ((real) $variables["totaltaxable"]);
 			$variables["totalti"] = currencyToNumber($variables["totalti"]);
 			$variables["shipping"] = currencyToNumber($variables["shipping"]);
