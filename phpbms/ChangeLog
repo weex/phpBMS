@@ -1,7 +1,7 @@
-phpBMS v0.7
+phpBMS v0.8
 http://phpbms.org/browser/tags/phpbms-0.8
  * Recurring invoices
- * Objected oriented code changeover
+ * Object oriented code overhaul
  * SQL Export Report
  * Invoice Total Tax Report
  * New list view interface
