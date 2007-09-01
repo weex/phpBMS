@@ -470,6 +470,7 @@ function deleteLine(thebutton){
 	
 	//Update Total Weight
 	var totalweight=getObjectFromID("totalweight");
+	if (totalweight.value == "") totalweight.value = 0;
 	totalweight.value=Math.round((parseFloat(totalweight.value)-(parseFloat(unitweight)*parseFloat(quantity)))*1000)/1000;
 	
 	//Update Totals
