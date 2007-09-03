@@ -333,9 +333,8 @@ class phpbmsSession{
 
 
 	function startSession(){
-		// This is in a function in case we want to do sessions differently in the future
-
-		session_name("phpBMS".str_replace(" ","",APPLICATION_NAME)."v08ID");
+		// This is in a function in case we want to do sessions differently in the future		
+		session_name("phpBMS".preg_replace('/\W/',"",APPLICATION_NAME)."v08ID");
 		session_start();
 	}
 
