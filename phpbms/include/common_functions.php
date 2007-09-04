@@ -121,37 +121,41 @@ class phpbms{
 
 	function showTabs($tabgroup,$currenttabid,$recordid=0){
 			
-		$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
+		$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip,roleid FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
 		$queryresult=$this->db->query($querystatement);
 	
 		?><ul class="tabs"><?php 
 			while($therecord=$this->db->fetchArray($queryresult)){
-				?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
-					if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
-						$opener="<div>";
-						$closer="</div>";
-					} else{
-						$opener="<a href=\"".APP_PATH.$therecord["location"]."?id=".$recordid."\">";
-						$closer="</a>";
-					}
-					if($therecord["notificationsql"]!=""){
-						$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
-						$notificationresult=$this->db->query($therecord["notificationsql"]);
-	
-						if($this->db->numRows($notificationresult)!=0){
-							$notificationrecord=$this->db->fetchArray($notificationresult);
-							if(isset($notificationrecord["theresult"]))
-								if($notificationrecord["theresult"]>0){
-									$opener.="<span>";
-									$closer="</span>".$closer;
-								}
+
+				if(hasRights($therecord["roleid"])){
+			
+					?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
+						if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
+							$opener="<div>";
+							$closer="</div>";
+						} else{
+							$opener="<a href=\"".APP_PATH.$therecord["location"]."?id=".$recordid."\">";
+							$closer="</a>";
 						}
-					}
-					
-					echo $opener.$therecord["name"].$closer;
-	
-				?></li><?php 
-			}	
+						if($therecord["notificationsql"]!=""){
+							$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
+							$notificationresult=$this->db->query($therecord["notificationsql"]);
+		
+							if($this->db->numRows($notificationresult)!=0){
+								$notificationrecord=$this->db->fetchArray($notificationresult);
+								if(isset($notificationrecord["theresult"]))
+									if($notificationrecord["theresult"]>0){
+										$opener.="<span>";
+										$closer="</span>".$closer;
+									}
+							}
+						}
+						
+						echo $opener.$therecord["name"].$closer;
+		
+					?></li><?php 
+				}//endif hasRights
+			}//end whilt	
 		?>
 		</ul><?php
 	}//end method
