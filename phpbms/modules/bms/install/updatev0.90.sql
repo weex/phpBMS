@@ -64,7 +64,7 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (302,'name','invoicestatuses.name','left','',0,'',1,'99%',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (302,'priority','invoicestatuses.priority','right','',1,'',0,'',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (302,'inactive','invoicestatuses.inactive','center','',2,'',0,'','boolean',0);
-DELEET FROM `tablegroupings` WHERE tabledefid=2 or tabledefid=3 or tabledefid = 4 or tabledefid = 5 OR tabledefid = 6 OR tabledefid = 7 OR tabledefid = 8 OR tabledefid = 18 OR tabledefid = 22 OR tabledefid = 25 OR tabledefid = 300 OR tabledefid = 301 OR tabledefid = 302;
+DELETE FROM `tablegroupings` WHERE tabledefid=2 or tabledefid=3 or tabledefid = 4 or tabledefid = 5 OR tabledefid = 6 OR tabledefid = 7 OR tabledefid = 8 OR tabledefid = 18 OR tabledefid = 22 OR tabledefid = 25 OR tabledefid = 300 OR tabledefid = 301 OR tabledefid = 302;
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (2,'clients.type',1,1,'',0);
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (3,'concat(invoices.type,\"s\")',1,1,'',0);
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (4,'productcategories.name',1,1,'',0);
