@@ -74,13 +74,15 @@ class phpbms{
 	}
 
 	function showExtraJs($array){
+		if(count($array)){
 		?><script language="JavaScript" type="text/javascript">
 		<?php
 		foreach($array as $theextra)
 			echo $theextra."\n";
 		?>
 		</script><?php
-	}
+		}//endid
+	}//end method
 	
 	function getModules(){
 		$modules = array();

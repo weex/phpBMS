@@ -18,8 +18,7 @@ function moveRole(frombox,tobox){
 	var myresult = "";
 	for(i=0;i<fromselect.length;i++){
 		if (fromselect.options[i].selected){
-			toselect.options[toselect.options.length]= new
-			Option(fromselect.options[i].text,fromselect.options[i].value)
+			toselect.options[toselect.options.length]= new Option(fromselect.options[i].text,fromselect.options[i].value)
 			fromselect.options[i] = null;
 			i=-1;
 		}//end if
@@ -28,7 +27,12 @@ function moveRole(frombox,tobox){
 	getObjectFromID("roleschanged").value=1;
 }
 
+
 function submitForm(theform){
+	if (theform["cancelclick"]){
+		if (theform["cancelclick"].value!=0) return true;
+	}
+	
 	var thereturn=true;
 	if(!checkPassword())
 		thereturn=false;

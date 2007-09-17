@@ -1,5 +1,5 @@
 window.onload = function(){
-	var sections = document.getElementsByClassName("bodyline");
+	var sections = getElementsByClassName("bodyline");
 	
 	var i;
 	for(i=0; i< sections.length; i++){
@@ -10,7 +10,7 @@ window.onload = function(){
 }
 
 function goSection(direction){
-	var sections = document.getElementsByClassName("bodyline");
+	var sections = getElementsByClassName("bodyline");
 	var currSection = 1;
 	
 	for(i=0; i< sections.length; i++){

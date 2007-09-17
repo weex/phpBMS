@@ -10,8 +10,8 @@
 	$phpbms->showCssIncludes();
 	
 	$tempjsarray[] = "common/javascript/common.js";
-	$tempjsarray[] = "include/jstransport.php";
 	$tempjsarray[] = "common/javascript/menu.js";
+	$tempjsarray[] = "include/jstransport.php";
 	$tempjsarray[] = "common/javascript/moo/prototype.lite.js";
 	$tempjsarray[] = "common/javascript/moo/moo.fx.js";
 	$tempjsarray[] = "common/javascript/moo/moo.fx.pack.js";
@@ -19,7 +19,6 @@
 	$phpbms->jsIncludes = array_merge($tempjsarray,$phpbms->jsIncludes);
 	$phpbms->showJsIncludes();
 	
-	$phpbms->topJS = array_merge(array("var spinner = new Image;spinner.src=+\"".APP_PATH."common/image/spinner.gif\";"),$phpbms->topJS);
 	if(PERSISTENT_LOGIN && isset($_SESSION["userinfo"]["id"]))
 		$phpbms->topJS[]="setLoginRefresh();";
 		
@@ -34,22 +33,30 @@ if($phpbms->showMenu){
 	
 	$topMenu = new topMenu($db);
 	$topMenu->display();
-}
 
-//See if the statusmessage is set
-if (isset($statusmessage)) {?>
-<div id="statusmessage">
-	<div id="SMLeft">
-		<div id="SMText">
-			<?php echo $statusmessage ?>
+	//See if the statusmessage is set
+	if (isset($statusmessage)) {?>
+	<div id="statusmessage">
+		<div id="SMLeft">
+			<div id="SMText">
+				<?php echo $statusmessage ?>
+			</div>
 		</div>
-	</div>
-</div><?php 
-	$phpbms->bottomJS[]='var statusM=getObjectFromID("statusmessage");
-var SMAni=new fx.Combo(statusM,{opacity:false,duration:500});
-SMAni.hide();
-statusM.style.display="block";
-SMAni.toggle();';
-} // end if 
-
+	</div><?php 
+		$phpbms->bottomJS[]='var statusM=getObjectFromID("statusmessage");
+	var SMAni=new fx.Combo(statusM,{opacity:false,duration:500});
+	SMAni.hide();
+	statusM.style.display="block";
+	SMAni.toggle();';
+	} // end if 
+	
+	?>
+	<noscript>
+		<div class="bodyline">
+			<h1>JavaScript Disabled</h1>
+			<p>phpBMS requires JavaScript to be enabled.</p>
+		</div>
+	</noscript><?php	
+	
+}//end if showMenu
 ?>

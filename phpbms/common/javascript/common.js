@@ -35,23 +35,339 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+if (typeof(phpBMS) == 'undefined') {
+    phpBMS = {};
+}
 
-document.getElementsByClassName = function(clsName){
-    var retVal = new Array();
-    var elements = document.getElementsByTagName("*");
-    for(var i = 0;i < elements.length;i++){
-        if(elements[i].className.indexOf(" ") >= 0){
-            var classes = elements[i].className.split(" ");
-            for(var j = 0;j < classes.length;j++){
-                if(classes[j] == clsName)
-                    retVal.push(elements[i]);
+
+
+/* BASE OBJECT FUNCTION -------------------------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+if (typeof(phpBMS.base) == 'undefined') {
+    phpBMS.base = {};
+}
+
+phpBMS.base.update = function (self, obj/*, ... */) {
+    if (self === null) {
+        self = {};
+    }
+    for (var i = 1; i < arguments.length; i++) {
+        var o = arguments[i];
+        if (typeof(o) != 'undefined' && o !== null) {
+            for (var k in o) {
+                self[k] = o[k];
             }
         }
-        else if(elements[i].className == clsName)
-            retVal.push(elements[i]);
     }
-    return retVal;
+    return self;
+};
+
+phpBMS.base.update(phpBMS.base, {
+
+	loadXMLDoc: function(url,readyStateFunction,async) {
+	
+		if(!readyStateFunction)
+			readyStateFunction= null;
+	
+		if(!async)
+			async = false;
+		
+		// branch for native XMLHttpRequest object
+		if (window.XMLHttpRequest) {
+			req = new XMLHttpRequest();
+			if(req.onreadystatechange && readyStateFunction)
+				req.onreadystatechange = readyStateFunction;
+			req.open("GET", url, async);
+			req.send(null);
+		// branch for IE/Windows ActiveX version
+		} else if (window.ActiveXObject) {
+			req = new ActiveXObject("Microsoft.XMLHTTP");
+			if (req) {
+				if(readyStateFunction) req.onreadystatechange = readyStateFunction;
+				req.open("GET", url, async);
+				req.send();
+			}
+		}
+	},//end function loadXMLDoc
+	
+    nameFunctions: function (namespace) {
+        var base = namespace.NAME;
+        if (typeof(base) == 'undefined') {
+            base = '';
+        } else {
+            base = base + '.';
+        }
+        for (var name in namespace) {
+            var o = namespace[name];
+            if (typeof(o) == 'function' && typeof(o.NAME) == 'undefined') {
+                try {
+                    o.NAME = base + name;
+                } catch (e) {
+                    // pass
+                }
+            }
+        }
+    }//endfunction	
+	
+});//end update
+
+phpBMS.base.EXPORT = [
+	"update",
+	"nameFunctions",
+	"loadXMLDoc"
+];
+
+phpBMS.base._exportFunctions = function (globals, module) {
+
+	var all = module.EXPORT;
+	
+    for (var i = 0; i < all.length; i++) {
+        globals[all[i]] = module[all[i]];
+    }
+};
+
+phpBMS.base.__new__ = function () {
+	var m = this;
+	
+	m.nameFunctions(this);
 }
+
+phpBMS.base.__new__();
+phpBMS.base._exportFunctions(this,phpBMS.base);
+
+/* DOM HANDLEING --------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+if (typeof(phpBMS.dom) == 'undefined') {
+    phpBMS.dom = {};
+}
+
+phpBMS.base.update(phpBMS.dom, {
+	
+	getObjectFromID: function(id){
+		var theObject;
+		
+		if(document.getElementById)
+			theObject=document.getElementById(id);
+		else
+			theObject=document.all[id];
+		return theObject;
+	},//end method
+	
+	
+	getElementsByClassName: function(clsName){
+		var retVal = new Array();
+		var elements = document.getElementsByTagName("*");
+		for(var i = 0;i < elements.length;i++){
+			if(elements[i].className.indexOf(" ") >= 0){
+				var classes = elements[i].className.split(" ");
+				for(var j = 0;j < classes.length;j++){
+					if(classes[j] == clsName)
+						retVal.push(elements[i]);
+				}
+			}
+			else if(elements[i].className == clsName)
+				retVal.push(elements[i]);
+		}
+		return retVal;
+	}//endMethod	
+
+})//end update
+
+phpBMS.dom.EXPORT = [
+	"getObjectFromID",
+	"getElementsByClassName"
+];
+phpBMS.dom.__new__ = function (win) {
+	var m = phpBMS.base;
+    this._document = document;
+    this._window = win;
+	
+	m.nameFunctions(this);
+}
+
+phpBMS.dom.__new__(this);
+phpBMS.base._exportFunctions(this,phpBMS.dom);
+
+
+/* EVENT SIGNALING ------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------- */
+if (typeof(phpBMS.signal) == 'undefined') {
+    phpBMS.signal = {};
+}
+
+phpBMS.signal._observers = [];
+
+phpBMS.signal.e = function (src, e) {
+    this._event = e || window.event;
+    this._src = src;
+};
+
+phpBMS.base.update(phpBMS.signal.e.prototype,{
+	
+	    src: function () {
+        return this._src;
+    },
+
+    event: function () {
+        return this._event;
+    },
+
+    type: function () {
+        return this._event.type || undefined;
+    },
+
+    target: function () {
+        return this._event.target || this._event.srcElement;
+    },
+
+    relatedTarget: function () {
+        if (this.type() == 'mouseover') {
+            return (this._event.relatedTarget ||
+                this._event.fromElement);
+        } else if (this.type() == 'mouseout') {
+            return (this._event.relatedTarget ||
+                this._event.toElement);
+        }
+        return undefined;
+    },
+	
+    stop: function () {
+        this.stopPropagation();
+        this.preventDefault();
+    },
+
+    stopPropagation: function () {
+        if (this._event.stopPropagation) {
+            this._event.stopPropagation();
+        } else {
+            this._event.cancelBubble = true;
+        }
+    },
+
+    preventDefault: function () {
+        if (this._event.preventDefault) {
+            this._event.preventDefault();
+        } else {
+            this._event.returnValue = false;
+        }
+    }
+	
+})//end subclass
+
+phpBMS.base.update(phpBMS.signal, {
+				   
+	_unloadCache: function(){
+
+		var self = phpBMS.signal;
+        var observers = self._observers;
+        
+        for (var i = 0; i < observers.length; i++) {
+            self._disconnect(observers[i]);
+        }
+        
+        delete self._observers;
+        
+        try {
+            window.onload = undefined;
+        } catch(e) {
+            // pass
+        }
+
+        try {
+            window.onunload = undefined;
+        } catch(e) {
+            // pass
+        }
+		
+	},//end method
+
+
+	_listener: function(srcObj, func){
+        var E = phpBMS.signal.e;
+		return function (nativeEvent) {
+			func.apply(srcObj, [new E(srcObj, nativeEvent)]);
+		};
+	},//end method
+
+
+	connect: function(srcObj, eventName, func){
+        var self = phpBMS.signal;
+		
+		var listener = self._listener(srcObj, func);
+		
+		if (srcObj.addEventListener) {
+			srcObj.addEventListener(eventName.substr(2), listener, false);
+		}else if (srcObj.attachEvent) {
+			srcObj.attachEvent(eventName, listener); // useCapture unsupported
+		}//end if
+		
+        var ident = [srcObj, eventName, listener];
+        self._observers.push(ident);
+               
+        return ident;
+		
+	},
+
+
+	_disconnect: function(ident){
+
+		var src = ident[0];
+        var sig = ident[1];
+        var listener = ident[2];
+
+		if (src.removeEventListener) {
+            src.removeEventListener(sig.substr(2), listener, false);
+        } else if (src.detachEvent) {
+            src.detachEvent(sig, listener); // useCapture unsupported
+        } 	
+	},
+
+
+	disconnect: function(ident){
+        var self = phpBMS.signal;
+        var observers = self._observers;
+
+		self._disconnect(ident);
+		observers.splice(ident, 1);
+		
+		return true;
+	}
+	
+})//end class
+
+phpBMS.signal.EXPORT = [
+	"connect",
+	"disconnect"
+]
+
+phpBMS.signal.__new__ = function (win) {
+	var m = phpBMS.base;
+    this._document = document;
+    this._window = win;
+
+    try {
+        this.connect(window, 'onunload', this._unloadCache);
+    } catch (e) {
+        // pass: might not be a browser
+    }
+
+
+	m.nameFunctions(this);
+}
+
+phpBMS.signal.__new__(this);
+
+
+
+phpBMS.base._exportFunctions(this,phpBMS.signal);
+
+
+
+
+
+
+
+
 
 // php equivilant to htmlEntitties
 String.prototype.htmlEntities = function()
@@ -75,16 +391,6 @@ String.prototype.htmlEntities = function()
 		}
 	
 	return newString;
-}
-
-//Returns an object given an id
-function getObjectFromID(id){
-	var theObject;
-	if(document.getElementById)
-		theObject=document.getElementById(id);
-	else
-		theObject=document.all[id];
-	return theObject;
 }
 
 
@@ -114,54 +420,6 @@ function getLeft(theitem){
 	return offsetLeft;
 }
 
-function loadXMLDoc(url,readyStateFunction,async) {
-	
-	if(!readyStateFunction)
-		readyStateFunction= null;
-
-	if(!async)
-		async = false;
-	
-	// branch for native XMLHttpRequest object
-	if (window.XMLHttpRequest) {
-		req = new XMLHttpRequest();
-		if(req.onreadystatechange && readyStateFunction)
-			req.onreadystatechange = readyStateFunction;
-		req.open("GET", url, async);
-		req.send(null);
-	// branch for IE/Windows ActiveX version
-	} else if (window.ActiveXObject) {
-		req = new ActiveXObject("Microsoft.XMLHTTP");
-		if (req) {
-			if(readyStateFunction) req.onreadystatechange = readyStateFunction;
-			req.open("GET", url, async);
-			req.send();
-		}
-	}
-}
-
-function addEvent(obj, evType, fn){
- if (obj.addEventListener){
-    obj.addEventListener(evType, fn, true);
-    return true;
- } else if (obj.attachEvent){
-    var r = obj.attachEvent("on"+evType, fn);
-    return r;
- } else {
-    return false;
- }
-}
-function removeEvent(obj, evType, fn, useCapture){
-  if (obj.removeEventListener){
-    obj.removeEventListener(evType, fn, useCapture);
-    return true;
-  } else if (obj.detachEvent){
-    var r = obj.detachEvent("on"+evType, fn);
-    return r;
-  } else {
-    window.status=("Handler could not be removed");
-  }
-}
 
 function getChildHeights(theObj){
 	var totalHeight=0;
@@ -193,6 +451,7 @@ function getViewportWidth() {
 	return window.undefined; 
 }
 
+
 function disableSave(){
 	var tempButton=getObjectFromID("saveButton1");
 	if(tempButton)
@@ -202,11 +461,32 @@ function disableSave(){
 		tempButton.disabled=true;		
 }
 
+
 function setLoginRefresh(){	
-	window.setInterval(loadXMLDoc,(LOGIN_REFRESH*60*1000),(APP_PATH+"include/session.php"),null,false)
+	window.setInterval(doRefresh,(LOGIN_REFRESH*60*1000));
+}
+
+function doRefresh(){
+	loadXMLDoc((APP_PATH+"include/session.php"),null,false)
+	if(req.responseText != "")
+		alert("The session has timed out due to inactivity.  You will need to reload the page, and log back in.");
 }
 
 
+function initialiseGetData(){
+  window.location.get = new Object();
+  if (window.location.search && window.location.search.length > 1){
+    var getDataArray =
+        window.location.search.substr(1).replace('+', ' ').split(/[&;]/g);
+    for (var i = 0; i < getDataArray.length; i++){
+      var keyValuePair = getDataArray[i].split('=');
+      window.location.get[unescape(keyValuePair[0])]
+           = keyValuePair.length == 1
+           ? ''
+           : unescape(keyValuePair[1]);
+    }
+  }
+}
 
 /* DATE AND TIME --------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- */
@@ -465,8 +745,10 @@ function showModal(content,title,thewidth,thetop){
 			
 	centerModal();
 	
-	addEvent(window, "resize", centerModal);
-	window.onscroll=centerModal;
+	showModal.listeners =[
+		connect(window,"onresize",centerModal),
+		connect(window,"onscroll",centerModal)		  
+	]
 }
 
 
@@ -475,15 +757,17 @@ function closeModal(){
 }
 
 function cleanupModal(){
-	removeEvent(window,"resize",centerModal,true);
-	window.onscroll=null;
 
+	for(var i=0; i<showModal.listeners.length; i++)
+		disconnect(showModal.listeners[i])
+		
 	document.body.removeChild(showModal.mask);
 	document.body.removeChild(showModal.box);
+
 	displaySelectBoxes();
 
-	showModal.mask=null;
-	showModal.box=null;
+	delete showModal.mask;
+	delete showModal.box;	
 }
 
 function centerModal(){
@@ -512,19 +796,17 @@ function centerModal(){
 	} ;
 }
 
-function hideSelectBoxes() {
-	var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
-	if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {		
+function hideSelectBoxes() {	
+	if (typeof document.body.style.maxHeight == "undefined") {
 		for(var i = 0; i < document.all.length; i++) {
 			if(document.all[i].tagName)
 				if(document.all[i].tagName == "SELECT") 
 					document.all[i].style.visibility="hidden";
 		}
-	}
+	}	
 }
 function displaySelectBoxes() {
-	var brsVersion = parseInt(window.navigator.appVersion.charAt(0), 10);
-	if (brsVersion <= 6 && window.navigator.userAgent.indexOf("MSIE") > -1) {		
+	if (typeof document.body.style.maxHeight == "undefined") {
         for(var i = 0; i < document.all.length; i++) {
                 if(document.all[i].tagName)
                         if(document.all[i].tagName == "SELECT")
@@ -540,3 +822,15 @@ function modalAlert(text){
 	showModal(text,"Alert",250);
 }
 window.alert = function(txt) {modalAlert(txt);}
+
+/* OnLoad Listener --------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	spinner = new Image;
+	spinner.src = APP_PATH+"common/image/spinner.gif";		
+
+	
+	
+	
+})//end listner

@@ -111,10 +111,9 @@
 
 		}
 						
-function displayQueryHeader(){
+function showResultHeader(){
 	?>
-	<script language="JavaScript" type="text/javascript">selIDs=new Array();</script>
-	<input name="newsort" type="hidden" value="" /><table cellspacing="0" cellpadding="0" border="0" class="querytable" id="queryresults"><tr>
+	<tr>
 	<?php
 	$columncount=count($this->thecolumns);
 	$i=1;
@@ -137,7 +136,7 @@ function displayQueryHeader(){
 }//end function
 
 		//output a query
-		function displayQueryResults() {
+		function showResultRecords() {
 			if(!isset($this->options["new"])) $this->options["new"]=1;
 			if(!isset($this->options["select"])) $this->options["select"]=1;
 			if(!isset($this->options["edit"])) $this->options["edit"]=1;
@@ -152,7 +151,7 @@ function displayQueryHeader(){
 				}
 
 			}
-			
+
 			while($therecord = $this->db->fetchArray($this->queryresult)){
 
 				// more groupings
@@ -160,16 +159,19 @@ function displayQueryHeader(){
 					for($i = 0; $i < count($this->thegroupings); $i++){
 						if($this->thegroupings[$i]["theValue"] != $therecord["_group".($i+1)]){
 							$this->thegroupings[$i]["theValue"] = $therecord["_group".($i+1)];
-							?><tr class="queryGroup"><td colspan = "<?php echo count($this->thecolumns)?>">
+							?><tr class="queryGroup"><td colspan = "<?php echo count($this->thecolumns)?>" <?php if($i) echo 'style = "padding-left:'.($i*15).'px"'?>>
 							<?php 
 								if($this->thegroupings[$i]["displayname"]) 
 									echo htmlQuotes($this->thegroupings[$i]["displayname"].": ");
 								echo $therecord["_group".($i+1)];
 							 ?>
 							</td></tr><?php
-						}
-					}
-				}
+							
+							$rownum = 1;
+							
+						}//endif
+					}//endfor
+				}//endif
 
 				?><tr class="qr<?php echo $rownum?>" id="r-<?php echo $therecord["theid"]?>" <?php
 
@@ -187,21 +189,22 @@ function displayQueryHeader(){
 					?><td align="<?php echo $thecolumn["align"]?>" <?php if(!$thecolumn["wrap"]) echo "nowrap=\"nowrap\""?>><?php echo (($therecord[$thecolumn["name"]]!=="")?formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"]):"&nbsp;")?></td><?php
 				}
 				?></tr><?php 
-			}
+			}//endwhile
+
+			
 		}//end function
 		
 		
 		// display a no results page
-		function displayNoResults(){
+		function showNoResults(){
 			$i=count($this->thecolumns);?>
-			<tr><td colspan="<?php echo $i?>" align="center" style="padding:0px;">
+			<tr class="norecords"><td colspan="<?php echo $i?>">
 				<?php if(!$this->sqlerror) {?>
-				<div class="norecords">No Records to Display</div>
+					No Results Found
 				<?php } else {?>
-				<div class="norecords">Invalid Search</div>				
+					Invalid Search
 				<?php } ?>
 			</td></tr>
-			</table>
 			<?php
 		}
 		
@@ -544,6 +547,7 @@ function displayQueryHeader(){
 		</tr>
 	</table></div><div id="advancedSortTab" style="display:none;padding:0px;margin:0px;"></div></div><?php 				
 	}//end function		
+
 		
 function displayQueryButtons() {
 
@@ -719,13 +723,33 @@ function displayQueryButtons() {
 			
 
 
+function displayResultTable(){
+	?><script language="JavaScript" type="text/javascript">selIDs=new Array();</script><input name="newsort" type="hidden" value="" />
+	<div id="queryTableContainer"><table class="querytable" border="0" cellpadding="0" cellspacing="0">
+		<thead>
+			<?php $this->showResultHeader()?>
+		</thead>
+		<tfoot>
+			<?php $this->showResultFooter()?>
+		</tfoot>
+		<tbody id="resultTbody">
+			<?php 
+				if($this->numrows>0)
+					$this->showResultRecords();
+				else
+					$this->showNoResults();					
+			?>
+		</tbody>
+	</table></div><?php
+	
+}//end method
 
-function displayQueryFooter(){
-	?>
-	<tr><?php
+
+
+function showResultFooter(){
+	?><tr class="queryfooter"><?php
 	foreach ($this->thecolumns as $therow){
-	?>
-		<td align="<?php echo $therow["align"]?>" class="queryfooter"><?php
+		?><td align="<?php echo $therow["align"]?>"><?php
 		if($therow["footerquery"]){
 			$querystatement="SELECT ".$therow["footerquery"]." as thet FROM ".$this->therecords;
 			$queryresult=$this->db->query($querystatement);
@@ -733,10 +757,11 @@ function displayQueryFooter(){
 			$therecord=$this->db->fetchArray($queryresult);
 			echo formatVariable($therecord["thet"],$therow["format"]);
 		} else {echo "&nbsp;";}?></td><?php 
-	}
+	}//end foreach
 	//keep this in here to close the total table
-	?></tr></table><?php
+	?></tr><?php
 }//end function
+
 
 function displayRelationships(){
 	// Get relationships

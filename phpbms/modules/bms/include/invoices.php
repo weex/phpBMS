@@ -100,7 +100,7 @@ if(class_exists("phpbmsTable")){
 	
 	
 		function showShippingSelect($id,$shippingMethods){
-			?><select name="shippingmethodid" id="shippingmethodid" onchange="changeShipping(this)">
+			?><select name="shippingmethodid" id="shippingmethodid" onchange="changeShipping()">
 				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
 			<?php foreach($shippingMethods as $method){?>
 				<option value="<?php echo $method["id"]?>" <?php if($id==$method["id"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>	
@@ -540,21 +540,7 @@ if(class_exists("searchFunctions")){
 		
 			return $message;
 		}
-	
-	
-		function mark_asuninvoice(){
 		
-			$whereclause = $this->buildWhereClause();
-			
-			$querystatement = "UPDATE invoices SET invoices.type=\"Order\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\"  WHERE (".$whereclause.") AND (invoices.type=\"Invoice\");";
-			$queryresult = $this->db->query($querystatement);
-			
-			$message = $this->buildStatusMessage();
-			$message.=" reset invoice status.";
-		
-			return $message;
-		}
-	
 	
 		function delete_record(){
 		

@@ -77,6 +77,7 @@ include("../../../include/session.php");
 						"reports",
 						"tablecolumns",
 						"tabledefs",
+						"tablegroupings",
 						"tablefindoptions",
 						"tableoptions",
 						"tablesearchablefields",

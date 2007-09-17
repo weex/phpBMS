@@ -4,64 +4,70 @@
 .row1{background-color:white;}
 .row2{background-color:#D9DBE1;}
 
-.dottedline { border-bottom: 2px #AAAAAA dotted;}
-
 .buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; 
 	font-size:11px; padding:1px; padding-bottom:0px; 
 }
 .buttonSection{border-top:0;  padding-top:0; padding-bottom:1px;}
 
-.norecords {background-color:#DDDDDD; font-size:16px; padding:50px; font-weight:bold; border-bottom:1px solid #999999;}
+#queryTableContainer{
+	margin:0 0 5px;
+	padding:0;
+	clear:both;
+	overflow:auto;
+}
+
 
 .querytable{ 
-	border-collapse:collapse;
-	margin:0 0 5px;
 	clear:both;
+	border:1px solid #BBBBBB;
+	border-right-width:0;
 }
 
-.querytable td, .queryrow1 td, .queryrow2 td{ 
-				border:1px solid #BBBBBB;
-				border-bottom-width:0;
-				border-top-width:0;
-				font-size: 11px;
-				padding:4px;
-				padding-bottom:2px;
-			}
+.querytable td, .querytable th{ 
+	font-size: 11px;
+	padding:6px;
+	border-right:1px solid #BBBBBB;
+}
+.norecords td {
+	font-size:16px; 
+	padding:20px; 
+	font-weight:bold; 
+	text-align:center;
+}
+
 .querytable th{
+	border-bottom:1px solid #BBBBBB;
 	background:#7B8DA1;
-	border:1px solid #BBBBBB;
-	padding:3px 5px;
+	font-size:12px;
 	color:white;
 }
-
 .querytable th A{color: white;}
 .querytable th A:hover{color: white;}
 
 .queryGroup td{
-	border:1px solid #BBBBBB;
+	background:#97A7BA;
 	font-size: 14px;	
 	font-weight:bold;
+	border-bottom:1px solid #BBBBBB;	
 }
 
-.querytable td.queryfooter, .queryfooter{
+.querytable .queryfooter td{
+	border-top:1px solid #BBBBBB;
 	white-space:nowrap;
 	background:#DDDDDD;
-	border:1px solid #BBBBBB;
-	padding:5px;
 }
 
-.qr1,.qr2{background-color:white;
+.qr1 td,.qr2 td{background-color:white;
 			cursor: pointer; 
 }
-.qr2{background-color:#EAEDF1}
+.qr2 td{background-color:#F5F6F8}
 
-.qr1:hover, .qr2:Hover {background-color:#97A7BA}
-.qr1:hover td, .qr2:Hover td {color:white}
+.qr1:hover td, .qr2:hover td{background-color:#EAEDF1;}
 
-.qh1, .qh2{background-color:black; cursor: pointer; }
-.qh1 td, .qh2 td{color:white;}
-.qh1, .qh2{background-color:black; cursor: pointer; }
+.qh1 td, .qh2 td{background-color:black; cursor: pointer; color:white;}
 .qh1 a, .qh2 a{color:white;}
+
+
 
 #sqlstatement{display:none}
 

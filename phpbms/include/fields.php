@@ -72,6 +72,7 @@ class phpbmsForm{
 
 		?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php 
 			if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
+			if(isset($this->id)) echo ' id="'.$this->id.'" ';
 		?>><?php 
 		if($this->dontSubmit){
 			?><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div><?php

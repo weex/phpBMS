@@ -36,7 +36,6 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 function showSystemMessages($db){
 	$querystatement="SELECT notes.id,subject,content,concat(users.firstname,\" \",users.lastname) as createdby,
 					notes.creationdate
@@ -75,17 +74,19 @@ function showTasks($db,$userid,$type="Tasks"){
 							   AND (completed=0 or (completed=1 and completeddate=CURDATE()))
 							   AND (assignedtoid is null or assignedtoid=0)";
 			$title="Tasks";
-			$sec=3;
-		break;
+			$id = "TS";
+			break;
+		
 		case "ReceivedAssignments":
 			$querystatement.=" assignedtoid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
 			$title="Assignments";
-			$sec=1;
-		break;
+			$id = "AS";
+			break;
+		
 		case "GivenAssignments":
 			$querystatement.=" assignedbyid=".$userid." AND (completed=0 or (completed=1 and completeddate=CURDATE()))";
 			$title="Delegations";
-			$sec=2;
+			$id = "DG";
 		break;
 	}
 	$querystatement.="AND (
@@ -106,184 +107,37 @@ function showTasks($db,$userid,$type="Tasks"){
 	
 	if($db->numRows($queryresult)){ 	
 		while($therecord=$db->fetchArray($queryresult)) {
-		$className="task";		
+
+		$className="tasks";
+
 		if($therecord["completed"]) 
-			$className.=" taskCompleted";
+			$className.=" complete";
 		else if($therecord["ispastdue"]) 
-			$className.=" taskPastDue";
-		if($therecord["private"]) $className.=" taskPrivate";
+			$className.=" pastDue";
+
+		if($therecord["private"]) $className.=" private";
+	
+		$className.=" ".$therecord["type"];
 		
+		$checkBoxID = $id.$therecord["type"]."C".$therecord["id"];
 	?>
-	<p id="TS<?php echo $therecord["id"]?>" class="small <?php echo $className?>">
-		<input type="hidden" id="TSprivate<?php echo $therecord["id"]?>" value="<?php echo $therecord["private"]?>"/>
-		<input type="hidden" id="TSispastdue<?php echo $therecord["id"]?>" value="<?php echo $therecord["ispastdue"]?>"/>
-		<input class="radiochecks" id="TSC<?php echo $therecord["id"]?>" name="TSC<?php echo $therecord["id"]?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo "checked=\"checked\""?> onclick="checkTask(<?php echo $therecord["id"]?>,'<?php echo $therecord["type"]?>')" align="middle"/>
+	<p id="<?php echo $id.$therecord["id"]?>" class="<?php echo $className?>">
+		<input class="radiochecks taskChecks" id="<?php  echo $checkBoxID?>" name="<?php  echo $checkBoxID?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo 'checked="checked"'?>  align="middle" />
 		<a href="<?php echo getAddEditFile($db,12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a>
-		<?php if($type == "Tasks") if($therecord["enddate"]) {?><em class="small">(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php } ?>
-		<?php if($type != "Tasks"){?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes($phpbms->getUserName($tid))?>)</em><?php } ?>
+		<?php 
+			if($type == "Tasks") {
+				if($therecord["enddate"]) {
+				?><em >(<?php echo htmlQuotes(formatFromSQLDate($therecord["enddate"])) ?>)</em><?php 
+				}
+			} else {
+				?> <em>(<?php if($type=="ReceivedAssignments") $tid=$therecord["assignedbyid"]; else $tid=$therecord["assignedtoid"]; echo htmlQuotes($phpbms->getUserName($tid))?>)</em><?php 
+			} ?>
 	</p>
 	<?php } } else {
 	?><p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
 	}?></div></div> <?php 
 }
 
-function showSevenDays($userid,$db){
-	
-	$theday=mktime(0,0,0);
-	
-	$repeatArray =getRepeatableInTime($theday,strtotime("7 days",$theday),$userid,$db);
-	
-	$today="Today - (";
-	$rownum=0;
-	?><table border="0" cellspacing="0" cellpadding="0" width="100%"><?php
-	for($i=0;$i<7;$i++){
-		?><tr><td colspan="2" class="eventDayName"><?php echo $today.strftime("%A",$theday); if($today){echo ")"; $today="";}?></td></tr><?php 
-		$donext=true;
 
-		$queryresult=getEventsForDay($theday,$userid,$repeatArray[$theday],$db);
-		if ($db->numRows($queryresult)){
-			while($therecord=$db->fetchArray($queryresult)){
-				$times=formatFromSQLTime($therecord["starttime"])."&nbsp;";
-				if($therecord["endtime"]){
-					$times.= "- ";
-					if($therecord["startdate"]!=$therecord["enddate"])
-						$times.=formatFromSQLDate($therecord["enddate"])." ";
-					$times.=formatFromSQLTime($therecord["endtime"])." ";
-				}
-				?><tr>
-					<td class="small event" nowrap="nowrap" valign="top"><?php echo $times?></td>
-					<td class="small event" valign="top" width="100%"><a href="<?php echo getAddEditFile($db,12)."?id=".$therecord["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($therecord["subject"])?></a></td>
-				</tr><?php
-			}
-		} else {
-			?><tr><td colspan="2" class="small event disabledtext">no events</td></tr><?php		
-		}		
-						
-		$theday=strtotime("tomorrow",$theday);
-	}//end for
-	?></table><?php
-	
-}
-
-function getRepeatableInTime($fromdate,$todate,$userid,$db){
-	
-	//first we create the array
-	$theday=$fromdate;
-	$repeatList=false;
-	while ($theday<$todate){
-		$repeatList[$theday]=array();
-		$theday=strtotime("tomorrow",$theday);
-	}
-	
-	$querystatement="SELECT id,startdate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate FROM notes WHERE `repeat`=1 AND type=\"EV\" AND (private=0 or (private=1 and createdby=".$userid."))";
-	$queryresult=$db->query($querystatement);
-	
-	while($therecord=$db->fetchArray($queryresult)){		
-		$startdate=stringToDate($therecord["startdate"],"SQL");
-		$repeatuntil=stringToDate($therecord["repeatuntildate"],"SQL");
-
-		foreach($repeatList as $targetdate=>$unused){
-			if($therecord["repeattimes"]!=-1 || $repeatuntil>=$targetdate){
-				$rpTimes=0;				
-				$testdate=$startdate;
-				switch($therecord["repeattype"]){
-					case "repeatDaily":
-						while($testdate<$targetdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$testdate=strtotime($therecord["repeatfrequency"]." days",$testdate);
-							if($testdate==$targetdate)
-								$repeatList[$targetdate][]=$therecord["id"];
-							$rpTimes++;
-						}
-					break;
-					case "repeatYearly":
-						while($testdate<$targetdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$testdate=strtotime($therecord["repeatfrequency"]." years",$testdate);
-							if($testdate==$targetdate)
-								$repeatList[$targetdate][]=$therecord["id"];
-							$rpTimes++;
-						}
-					break;
-					case "repeatMonthlybyDate":
-						while($testdate<$targetdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$testdate=strtotime($therecord["repeatfrequency"]." months",$testdate);
-							if($testdate==$targetdate)
-								$repeatList[$targetdate][]=$therecord["id"];
-							$rpTimes++;
-						}
-					case "repeatMonthlybyDay":
-						$testWeekNum=ceil(strftime("%d",$startdate)/7);
-						$targetLastDay=date("t",$targetdate);
-						while($testdate<$targetdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$testdate=strtotime($therecord["repeatfrequency"]." months",$testdate);
-							$targetWeekNum=ceil(strftime("%d",$targetdate)/7);
-														
-							if(strftime("%m %Y",$testdate)==strftime("%m %Y",$targetdate) && ($testWeekNum==$targetWeekNum || ($testWeekNum==5 && strftime("%d",$targetdate)+7>$targetLastDay)) && strftime("%A",$startdate)==strftime("%A",$targetdate))
-								$repeatList[$targetdate][]=$therecord["id"];
-							$rpTimes++;
-						}
-					case "repeatWeekly":
-						while($testdate<$targetdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$testdate=strtotime($therecord["repeatfrequency"]." weeks",$testdate);
-							
-							if(strftime("%W %Y",$testdate)==strftime("%W %Y",$targetdate)){
-								$dayAbbrev="";
-								switch(strftime("%A",$targetdate)){
-									case "Sunday":
-										$dayAbbrev="s";
-									break;
-									case "Monday":
-										$dayAbbrev="m";
-									break;
-									case "Tuesday":
-										$dayAbbrev="t";
-									break;
-									case "Wednesday":
-										$dayAbbrev="w";
-									break;
-									case "Thursday":
-										$dayAbbrev="r";
-									break;
-									case "Friday":
-										$dayAbbrev="f";
-									break;
-									case "Saturday":
-										$dayAbbrev="a";
-									break;
-									
-								}
-								if (strpos(" ".$therecord["repeatdays"],$dayAbbrev))
-									$repeatList[$targetdate][]=$therecord["id"];
-							}
-							$rpTimes++;
-						}
-					break;
-				}//end switch
-			}//end if
-		}//end foreach (day)
-	}//end while (record)
-	return $repeatList;
-}
-
-function getEventsForDay($day,$userid,$repeatArray,$db){
-	
-	$repeatIDs="";
-	if(count($repeatArray)){
-		$repeatIDs=" OR notes.id in(";
-		foreach($repeatArray as $id)
-			$repeatIDs.=$id.", ";
-		$repeatIDs=substr($repeatIDs,0,strlen($repeatIDs)-2);
-		$repeatIDs.=") ";
-	}
-	$querystatement="SELECT DISTINCT id,subject, startdate,enddate,
-				starttime,
-				endtime
-				FROM notes
-				WHERE type=\"EV\" AND (startdate=\"".dateToString($day,"SQL")."\" ".$repeatIDs.") AND (private=0 or (private=1 and createdby=".$userid.")) 
-				ORDER BY notes.starttime,notes.endtime,importance DESC";
-
-	$queryresult=$db->query($querystatement);
-	
-	return $queryresult;
-}
 ?>
 

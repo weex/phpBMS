@@ -73,7 +73,7 @@
 		$theinput = new inputDatePicker("requireddate", $therecord["requireddate"], "required date");
 		$theform->addField($theinput);
 
-		$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order","Invoice"=>"Invoice","VOID"=>"VOID"), $displayName = NULL, $displayLabel = true);
+		$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order"), $displayName = NULL, $displayLabel = true);
 		$theinput->setAttribute("onchange","checkType(this)");
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -142,8 +142,6 @@
 
 	if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice")
 		$phpbms->bottomJS[] = 'disableSaves(document.forms["record"]);';
-
-	$phpbms->onload = "initializePage()";
 	
 	include("header.php");	
 
@@ -220,7 +218,7 @@
 			<div class="important fauxP">
 				  <?php $theform->fields["clientid"]->display(); 
 				  if($therecord["id"]){?>
-				  <input name="viewclient" type="button" value="view client" onclick="viewClient('<?php echo getAddEditFile($db,2) ?>')" class="smallButtons" tabindex="1" />
+				  <button type="button" title="view client" class="graphicButtons buttonInfo" onclick="viewClient('<?php echo getAddEditFile($db,2) ?>')"><span>view client</span></button>
 				  <?php }//end if?>
 			</div>
 		</fieldset>

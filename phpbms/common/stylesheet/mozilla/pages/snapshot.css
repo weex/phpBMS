@@ -1,42 +1,58 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 #systemMessageContainer{padding:10px;}
-#systemMessageContainer h2{margin:0 0 5px 0;padding:0 0 0px 0;}
 .systemMessageLinks{font-size:12px; border-bottom:1px solid #DDDDDD; cursor:pointer; margin:5px 5px 0px; padding:3px;}
 .systemMessageLinks:hover{background-color:#DDDDDD}
 .systemMessageLinks span{color:#666666; font-size:11px; padding:0 0 0 4px;}
 .systemMessages p{padding:8px;margin:0 5px 5px;background:white;}
 
-
-#eventsBox{vertical-align:top;padding:10px;}
-#eventsBox h2{margin:0; padding:0}
-#todaysDate{float:right;padding:2px 0 0 0;margin:0;}
-
 #tasksBox{vertical-align:top;padding:10px;}
-#tasksBox h2{margin:0 0 5px; padding:0}
-#tasksBox h3{
-	margin:0;
-	cursor:pointer;font-size:13px;background:#EEEEEE url(../image/button-moveupdn.png) 99% no-repeat;
-	padding:4px;
-	border-bottom:1px solid #BBBBBB;
-	
+
+h2{
+	margin:3px 0 5px; 
+	padding:0 0 4px; 
+	border:0;
+	font-size:15px
 }
-#tasksBox h3:hover{background-color:#DDDDDD}
 
-.tasksDivs div{padding:5px 0;background:white;border-top:0;margin:0 5px;}
-.tasksDivs p{margin:0; padding:4px 4px 4px 8px; border-bottom:1px dotted #EEEEEE;}
+#tasksBox h3, #invoiceBox h3, #clientBox h3{
+	margin:0;
+	cursor:pointer;font-size:13px;background:#EEEEEE url("../image/section-down.png") 99% 3px no-repeat;
+	padding:4px;
+	border-bottom:1px solid #BBBBBB;	
+}
+#invoiceBox h3, #clientBox h3{
+	margin-bottom:10px;
+}
 
-.task a,.taskCompleted a,.taskPastDue a,.taskPrivate a{ font-weight:normal;}
-.taskPrivate a{ font-weight:bold;}
+#tasksBox h3:hover, #invoiceBox h3:hover, #clientBox h3:hover{background-color:#DDDDDD}
 
-.taskCompleted { text-decoration:line-through; color:#CCCCCC;}
-.taskCompleted a{color:#CCCCCC;}
+.tasksDivs div{padding:5px 0 0;background:white;border-top:0;margin:0 5px;}
+.tasksDivs p{margin:0; padding:4px 4px 4px 8px; border-bottom:1px solid #EEEEEE; font-size:11px;}
 
-.taskPastDue a{color:#FF0000;}
 
-.eventDayName{font-weight:bold;font-size:13px; border-bottom:1px solid #BBBBBB; padding:3px;}
-.event{padding:4px;padding-bottom:6px;}
+.tasksDivs a{font-weight:normal}
+
+.tasksDivs .private a{font-weight:bold}
+
+.tasksDivs .complete, .tasksDivs .complete a {
+	text-decoration:line-through;
+	color:#CCCCCC;
+}
+
+.tasksDivs .pastDue a{color:#FF0000;}
+
+#eventsBox #eventButtons{float:right; margin:0;padding:0;}
+#eventsBox{vertical-align:top;padding:10px;}
+#eventsBox h2{margin:0; padding:4px 0 4px;}
+#eventsBox table{border-collapse:collapse;}
+#eventsBox td{padding:10px 5px; border-bottom:1px solid #DDDDDD; font-size:11px;}
+#eventsBox .eventDayName td{font-size:13px;background:#EEEEEE;
+	font-weight:bold;
+	padding:4px;
+	border-bottom:1px solid #BBBBBB;}
+#eventsBox #today td{background:#DDDDDD}
 
 #bmsBox {padding:10px;}
-#bmsBox button{display:block;float:right;margin:2px 2px 0 0;}
+#bmsBox .rightButtons{float:right;margin:2px 2px 0 0;}
 #bmsBox h2{margin:0 0 4px;}

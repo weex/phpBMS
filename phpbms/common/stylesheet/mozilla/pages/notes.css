@@ -24,8 +24,10 @@
 #assocarea,#location{width:98%}
 #category{width:95%}
 
-#repeatoptions{display:inline}
-.repeatWeekChecks{margin-right:10px;}
-#rpmobdt{margin-bottom:5px;}
 #content{width:99%}
+
+#repeatDiv{clear:both;}
+.monthDays{width:30px;}
+.yearlyMonths{width:40px;}
+
 

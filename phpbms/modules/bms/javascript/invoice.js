@@ -36,11 +36,7 @@
  +-------------------------------------------------------------------------+
 */
 
-function returnFalse(){
-	return false;
-}
-
-function initializePage(){
+window.onload = function(){
 	calculateTotal();
 	showPaymentOptions();
 	var theid=getObjectFromID("id");
@@ -55,6 +51,9 @@ function initializePage(){
 	var assignedtoid=getObjectFromID("assignedtoid");
 	assignedtoid.onchange=updateStatusChange;
 }
+
+
+
 
 function updateAssignedTo(){
 	var status=getObjectFromID("statusid");
@@ -225,7 +224,8 @@ function populateShipping(){
 }
 
 
-function changeShipping(theselect){
+function changeShipping(){
+	var theselect = getObjectFromID("shippingmethodid");
 	var estimateShippingButton=getObjectFromID("estimateShippingButton");
 
 	var newClass="graphicButtons buttonShipDisabled";
@@ -240,9 +240,12 @@ function changeShipping(theselect){
 		}
 	} else
 		parenShipping.innerHTML="&nbsp;";
-	estimateShippingButton.className=newClass
-	estimateShippingButton.disabled=isDisabled;
+		
+	estimateShippingButton.className = newClass;
+	estimateShippingButton.disabled = isDisabled;
 }
+
+
 paymentNotice="";
 function startPaymentProcess(){
 	if(vTabTimeout!=0){
@@ -514,7 +517,7 @@ function addLine(thetd){
 		thetr.id="LISep";
 		var temptd=document.createElement("td");
 		temptd.setAttribute("colSpan",7);
-		temptd.className="dottedline lineitemsRight lineitemsLeft";
+		temptd.className="lineitemsRight lineitemsLeft";
 		temptd.style.fontSize="1px";
 		temptd.style.padding="0px";
 		temptd.innerHTML="&nbsp;";
@@ -624,7 +627,7 @@ function setLineItems(){
 	var changed=getObjectFromID("lineitemschanged");
 	var lineitems=getObjectFromID("thelineitems");
 	if(changed.value==1){
-		var allRows=document.getElementsByClassName("LIRealInfo");
+		var allRows=getElementsByClassName("LIRealInfo");
 		if(allRows.length){
 			for(var i=0;i<allRows.length;i++)
 				if(allRows[i].innerHTML!="")
@@ -765,6 +768,7 @@ function calculateExtended(){
 
 function showPaymentOptions(){
 	var paymentMethodID=getObjectFromID("paymentmethodid").value;
+
 	var checkinfo=getObjectFromID("checkpaymentinfo");
 	var ccinfo=getObjectFromID("ccpaymentinfo");
 	
@@ -776,18 +780,25 @@ function showPaymentOptions(){
 
 	//display appropriate payment details
 	switch(theType){
+
 		case "draft":
 			checkinfo.style.display="block";
 			ccinfo.style.display="none";
-		break;
+			break;
+
 		case "charge":
 			checkinfo.style.display="none";
 			ccinfo.style.display="block";
-		break;
+			break;
+
+		case "receivable":
+			break;
+			
 		default:
 			checkinfo.style.display="none";
 			ccinfo.style.display="none";
-	}
+			
+	}//endswtich
 	
 	//update parentesis display
 	var parenPayment=getObjectFromID("parenPayment");

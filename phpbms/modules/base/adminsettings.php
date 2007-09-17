@@ -286,6 +286,8 @@ $phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
 		<p class="notes"><strong>Note:</strong> persistent login will keep you logged in, even when idle.  The refresh
 			defines how often (in minutes) phpbms will send a logged in notice.
 		</p>
+		<p class="notes"><strong>Note:</strong> Does not work with Microsoft Internet Explorer versions less than 7.
+		</p>
 	</fieldset>	
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 	

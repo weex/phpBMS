@@ -1,0 +1,5 @@
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (2,'clients.type',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (3,'concat(invoices.type,\"s\")',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (4,'productcategories.name',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (8,'concat(products.partnumber,\' - \',products.partname)',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (22,'if(clientemailprojects.userid=0, \"global\", concat( users.firstname,\" \", users.lastname))',1,1,'',0);

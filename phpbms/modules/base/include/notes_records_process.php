@@ -56,15 +56,11 @@ if(isset($_POST["command"])) {
 	case "delete":
 		//a bit more complicated so we'll put it in it's own function?
 		//=====================================================================================================
+			
+			include_once("modules/base/include/notes.php");
+			$searchFunctions = new notesSearchFunctions($db,12,$theids);
+			$statusmessage = $searchFunctions->delete_record();
 
-			//passed variable is array of user ids to be revoked
-			$dwhereclause="";
-			foreach($theids as $theid){
-				$dwhereclause=$dwhereclause." or id=".$theid;
-			}
-			$dwhereclause=substr($dwhereclause,3);		
-			$thequery = "delete from notes where (createdby=".$_SESSION["userinfo"]["id"]." or assignedtoid=".$_SESSION["userinfo"]["id"].") and (".$dwhereclause.");";
-			$theresult = $db->query($thequery);
 	break;
 	case "edit/view":
 		// relocate to edit screen

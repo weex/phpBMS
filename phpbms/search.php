@@ -242,15 +242,11 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 			//Search//select
 				$displayTable->displaySearch();
 				$displayTable->displayQueryButtons();
-				$displayTable->displayQueryHeader();
-				if($displayTable->numrows>0){
-					$displayTable->displayQueryResults();
-					$displayTable->displayQueryFooter();
-				}
-				else
-					$displayTable->displayNoResults();				
+				
+				$displayTable->displayResultTable();
 				
 				$displayTable->displayRelationships();
+				
 				$displayTable->saveQueryParameters();
 		?>
 	</div>

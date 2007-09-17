@@ -110,7 +110,7 @@ var Position = {
 	}
 };
 
-document.getElementsByClassName = function(className) {
+getElementsByClassName = function(className) {
 	var children = document.getElementsByTagName('*') || document.all;
 	var elements = [];
 	$c(children).each(function(child){

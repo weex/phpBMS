@@ -40,6 +40,8 @@ window.onload=function(){
 	initializeOnClicks();
 	changeType()
 	completedCheck();
+	changeRepeatType();
+	changeRepeatEnd();
 	
 	var attachedField=getObjectFromID("attachedid");
 	if(attachedField)
@@ -57,7 +59,6 @@ window.onload=function(){
 	var thetype=getObjectFromID("thetype");
 	if(theid.value)
 		thetype.disabled=true;
-	setEnglishDates();	
 	
 	var thetitle=getObjectFromID("subject");
 	if (thetitle.value=="") thetitle.focus();
@@ -83,7 +84,7 @@ function changeType(){
 	var compdiv=getObjectFromID("thecompleted");
 	var startcheck=getObjectFromID("startcheck");
 	var endcheck=getObjectFromID("endcheck");
-	var repeatdiv=getObjectFromID("therepeat");
+	var repeatdiv = getObjectFromID("repeatDiv");
 	var parentid=getObjectFromID("parentid");
 	var prviatecheck=getObjectFromID("private");
 	var theid=getObjectFromID("id");
@@ -106,10 +107,7 @@ function changeType(){
 			endcheck.disabled=false;
 			endtext.innerHTML="due date"
 			thestatus.style.display="none";
-			if(!parentid.value){
-				repeatdiv.style.display="block";
-				doRepeat();
-			}
+			repeatdiv.style.display="block";
 			prviatecheck.disabled=false;
 			if(!theid.value) prviatecheck.checked=true;
 		break;
@@ -124,10 +122,7 @@ function changeType(){
 			endcheck.disabled=true;
 			endtext.innerHTML="end"
 			thestatus.style.display="block";			
-			if(!parentid.value){
-				repeatdiv.style.display="block";
-				doRepeat();
-			}
+			repeatdiv.style.display="block";
 			prviatecheck.disabled=false;
 			if(!theid.value) prviatecheck.checked=true;
 		break;
@@ -199,7 +194,7 @@ function dateChecked(type){
 	var thedateButton=getObjectFromID(type+"dateButton");
 	var thetimeButton=getObjectFromID(type+"timeButton");		
 	var thetext=getObjectFromID(type+"text");
-	var repeat=getObjectFromID("repeat");
+	var repeat=getObjectFromID("repeating");
 
 	if(!checkbox.checked){
 		if(type=="start" && repeat.checked){
@@ -253,8 +248,6 @@ function initializeOnClicks(){
 	ETBOC=endTimeButton.onclick;	
 	var completedDateButton=getObjectFromID("completeddateButton");
 	CDBOC=completedDateButton.onclick;	
-	var repeatUntilDateButton=getObjectFromID("repeatuntildateButton");
-	RUDB=repeatUntilDateButton.onclick;
 }
 
 function addS(freqfield){
@@ -269,212 +262,6 @@ function addS(freqfield){
 	rpType.options[3].text="Year"+plural;
 }
 
-function doRepeat(){
-	var rpdiv=getObjectFromID("therepeat");
-	var startcheck = getObjectFromID("startcheck");
-	var rpspan=getObjectFromID("repeatoptions");
-	var rpchk=getObjectFromID("repeat");
-	if(rpdiv.style.display!="none"){
-		var rpFreq=getObjectFromID("repeatfrequency");
-		var rpType=getObjectFromID("repeattype");
-		var rpUntilrdF=getObjectFromID("rprduntilforever");
-		var rpUntilrdT=getObjectFromID("rprduntilftimes");
-		var rpUntilTimes=getObjectFromID("repeattimes");
-		var rpUntilrdD=getObjectFromID("rprduntildate");
-		var rpUntilDate=getObjectFromID("repeatuntildate");
-		var rpUntilDateButton=getObjectFromID("repeatuntildateButton");
-		var rpWO=getObjectFromID("weeklyoptions");
-		var rpMO=getObjectFromID("monthlyoptions");
-		if(rpchk.checked){
-			if(!startcheck.checked){
-				alert("Setting up recurring tasks requires a start date.");
-				rpchk.checked=false;
-				return false;
-			}
-			rpspan.className="";
-			rpFreq.removeAttribute("readonly");
-			rpFreq.className="";
-			rpType.disabled=false;
-			rpUntilrdF.disabled=false;
-			rpUntilrdT.disabled=false;
-			rpUntilrdD.disabled=false;
-			if(rpUntilrdT.checked){
-				rpUntilTimes.removeAttribute("readonly");
-				rpUntilTimes.className="";
-			}
-			if(rpUntilrdD.checked){
-				rpUntilDate.removeAttribute("readonly");
-				rpUntilDate.className="";
-				rpUntilDateButton.onclick=RUDB;
-			}
-			if(rpType.value=="Weekly")
-				rpWO.style.display="block";
-			else if(rpType.value=="Monthly"){
-				rpMO.style.display="block";	
-				var rpMOdate = getObjectFromID("rpmobdt");
-				var rpMOday = getObjectFromID("rpmobda");
-				if(!rpMOdate.checked && !rpMOday.checked)
-					rpMOdate.checked=true;
-			}
-		} else
-		{
-			rpspan.className="disabledtext";			
-			rpFreq.setAttribute("readonly","readonly");
-			rpFreq.className="uneditable";
-			rpType.disabled=true;
-			rpUntilrdF.disabled=true;
-			rpUntilrdT.disabled=true;
-			rpUntilrdD.disabled=true;
-			rpUntilTimes.setAttribute("readonly","readonly");
-			rpUntilTimes.className="uneditable";
-			rpUntilDate.setAttribute("readonly","readonly");
-			rpUntilDate.className="uneditable";
-			rpUntilDateButton.onclick=returnFalse;
-			if(rpType.value=="Weekly")
-				rpWO.style.display="none";			
-			else if(rpType.value=="Monthly")
-				rpMO.style.display="none";			
-		}
-	}
-}
-
-function changeRepeatType(){
-	var rpType=getObjectFromID("repeattype");	
-	var rpWO=getObjectFromID("weeklyoptions");
-	var rpMO=getObjectFromID("monthlyoptions");
-	
-	switch(rpType.value){
-		case "Daily":
-			rpWO.style.display="none";
-			rpMO.style.display="none";
-		break;
-		case "Weekly":
-			rpWO.style.display="block";			
-			rpMO.style.display="none";
-		break;
-		case "Monthly":
-			setEnglishDates();
-			rpWO.style.display="none";
-			rpMO.style.display="block";
-			var rpMOdate = getObjectFromID("rpmobdt");
-			var rpMOday = getObjectFromID("rpmobda");
-			if(!rpMOdate.checked && !rpMOday.checked)
-				rpMOdate.checked=true;
-		break;
-		case "Yearly":
-			rpWO.style.display="none";
-			rpMO.style.display="none";
-		break;
-	}
-}
-
-function setEnglishDates(){
-	var byDateText= getObjectFromID("rpmobydate");
-	var byDayText= getObjectFromID("rpmobyday");	
-	var startdate= getObjectFromID("startdate");
-	if(startdate.value=="") return false;
-	var thedate= stringToDatetime(startdate.value)
-	var theday= parseInt(startdate.value.substring(startdate.value.indexOf("/")+1,startdate.value.lastIndexOf("/")),10);
-	
-	var dayending="th";
-	switch(thedate.getDate()){
-		case 1:
-		case 21:
-		case 31:
-			dayending="st";
-		break;
-		case 2:
-		case 22:
-			dayending="nd";
-		case 3:
-		case 23:
-			dayending="rd";
-	}
-	
-	byDateText.innerHTML=thedate.getDate()+dayending;
-	
-	
-	var whichday=Math.floor((thedate.getDate()-1)/7);
-	var dayname;
-	var which;
-	switch (thedate.getDay()){
-		case 0:
-			dayname="Sunday";
-		break;
-		case 1:
-			dayname="Monday";
-		break;
-		case 2:
-			dayname="Tuesday";
-		break;
-		case 3:
-			dayname="Wednesday";
-		break;
-		case 4:
-			dayname="Thursday";
-		break;
-		case 5:
-			dayname="Friday";
-		break;
-		case 6:
-			dayname="Saturday";
-		break;		
-	};
-	switch(whichday){
-		case 0:
-			which="First";
-		break;
-		case 1:
-			which="Second";
-		break;
-		case 2:
-			which="Third";
-		break;
-		case 3:
-			which="Fourth";
-		break;
-		case 4:
-			which="Last";
-		break;
-		
-	}
-	byDayText.innerHTML=which+" "+dayname;
-}
-
-function updateRepeatUntil(){
-	var rpUntilrdF=getObjectFromID("rprduntilforever");
-	var rpUntilrdT=getObjectFromID("rprduntilftimes");
-	var rpUntilTimes=getObjectFromID("repeattimes");
-	var rpUntilrdD=getObjectFromID("rprduntildate");
-	var rpUntilDate=getObjectFromID("repeatuntildate");
-	var rpUntilDateButton=getObjectFromID("repeatuntildateButton");
-
-	if(rpUntilrdF.checked){
-		rpUntilTimes.setAttribute("readonly","readonly");
-		rpUntilTimes.className="uneditable";
-		rpUntilDate.setAttribute("readonly","readonly");
-		rpUntilDate.className="uneditable";
-		rpUntilDateButton.onclick=returnFalse;
-	} else if(rpUntilrdT.checked) {
-		rpUntilTimes.removeAttribute("readonly");
-		rpUntilTimes.className="";
-		rpUntilDate.setAttribute("readonly","readonly");
-		rpUntilDate.className="uneditable";
-		rpUntilDateButton.onclick=returnFalse;
-		rpUntilTimes.focus()
-	} else if(rpUntilrdD.checked) {
-		rpUntilTimes.setAttribute("readonly","readonly");
-		rpUntilTimes.className="uneditable";
-		rpUntilDate.removeAttribute("readonly");
-		rpUntilDate.className="";
-		rpUntilDateButton.onclick=RUDB;
-		var today=new Date();
-		var theday= new Date(today.valueOf()+(1000*60*60*24));
-		rpUntilDate.value=dateToString(theday);
-		
-		rpUntilDate.focus()
-	}
-}
 
 function goParent(addeditfile){
 	var parentid=getObjectFromID("parentid");
@@ -485,6 +272,7 @@ function goParent(addeditfile){
 	document.location=theURL;
 }
 
+
 function sendEmailNotice(){
 	var content="<div align=\"center\" class=\"important\"><img src=\""+APP_PATH+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Processing...</strong></div>";
 	showModal(content,"Sending Email",300);
@@ -494,4 +282,281 @@ function sendEmailNotice(){
 	content=req.responseText+"<DIV align=\"right\"><button class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	var modalcontent=getObjectFromID("modalContent");
 	modalcontent.innerHTML=content;
+}
+
+
+function submitForm(theform,bypass){
+	
+	if (theform["cancelclick"])
+		if (theform["cancelclick"].value!=0) 
+			return true;
+			
+	if(!validateForm(theform)) 
+		return false;	
+	
+	if(theform["repeating"].checked){
+
+		var typeSelect = getObjectFromID("repeattype");
+		var tempButton;
+		var eachlistArray = Array();
+		var i;
+		
+		//first let's set the eachlist if necassary
+		switch(typeSelect.value){
+			case "Weekly":
+				for(i=1; i<=7; i++){
+					tempButton = getObjectFromID("dayOption"+i);
+					if(tempButton.className == "pressedButtons")
+						eachlistArray[eachlistArray.length] = tempButton.value;
+				}
+			break;
+			
+			case "Monthly":
+				var monthlyEach = getObjectFromID("monthlyEach");
+				if(monthlyEach.checked){
+					for(i=1; i<=31; i++){
+						tempButton = getObjectFromID("monthDayOption"+i);
+						if(tempButton.className == "pressedButtons monthDays")
+							eachlistArray[eachlistArray.length] = tempButton.value;
+					}
+				}
+			break;
+			
+			case "Yearly":
+				for(i=1; i<=12; i++){
+					tempButton = getObjectFromID("yearlyMonthOption"+i);
+					if(tempButton.className == "pressedButtons yearlyMonths")
+						eachlistArray[eachlistArray.length] = tempButton.value;
+				}
+			break;
+		}//end switch
+		
+		if(eachlistArray.length > 0){
+			var tempeachlist = "";
+			for(i=0; i < eachlistArray.length; i++)
+				tempeachlist += eachlistArray[i]+"::";
+			tempeachlist = tempeachlist.substr(0,tempeachlist.length-2);
+			
+			var eachlist = getObjectFromID("eachlist");
+			eachlist.value = tempeachlist;
+		}
+
+	}//end if
+
+	var lastrepeat = getObjectFromID("lastrepeat");
+	var thetype = getObjectFromID("thetype");
+	var bypass = getObjectFromID("bypass");
+
+	if(thetype.value == "TS" && lastrepeat.value && !bypass.value){
+		content = '<p><strong>Warning</strong>: Changing a repeatable task that has already been repeated will cause the repeating';
+		content +=' to reset. The connection between the current tasks already created form these repeat connections will be erased.</p>';
+		content +='<p>You may want to adjust the start date to compensate.</p>';
+		content +='<p align="right"><input type="button" class="Buttons" value="continue save" onclick="continueSubmit()" > <input type="button" class="Buttons" value="cancel" onclick="closeModal()" style="width:70px"></p>';
+		
+		showModal(content,"Confrim Change of Repeatable Task",400);
+		return false;
+	}else	
+		return true;
+
+}//end function
+
+
+function continueSubmit(){
+	var bypass = getObjectFromID("bypass");
+	bypass.value =1;
+	var saveButton = getObjectFromID('saveButton1');
+	saveButton.click()
+}
+
+//repeat functions
+//=========================================================================================================
+function checkRepeat(){
+
+	var startCheckbox = getObjectFromID("startcheck");
+	var repeatCheckbox = getObjectFromID("repeating");
+	
+	var repeatOptions = getObjectFromID("repeatOptions");
+	var repeatEnd = getObjectFromID("repeatEnding");
+	
+	if(repeatCheckbox.checked){
+		
+		if(startCheckbox.checked){
+			
+			repeatOptions.style.display = "block";
+			repeatEnd.style.display = "block";
+			
+		} else {
+			
+			repeatCheckbox.checked=false;
+			alert("You must set a start date before setting repeat options");
+			
+		}//end if
+		
+	} else {
+	
+		repeatOptions.style.display = "none";
+		repeatEnd.style.display = "none";
+		
+	}//endif
+}//end function
+
+
+function changeRepeatType(){
+	var dropDown = getObjectFromID("repeattype");
+	var i;	
+	
+	for(i=0;i<dropDown.options.length;i++){
+		var theDiv = getObjectFromID(dropDown.options[i].value+"Div");
+		if(dropDown.options[i].selected)
+			theDiv.style.display = "block";
+		else
+			theDiv.style.display = "none";
+	}
+	
+	var typetext = getObjectFromID("repeatTypeText");
+	switch(dropDown.value){
+		case "Daily":
+			typetext.innerHTML = "day(s)";
+		break;
+		case "Weekly":
+			typetext.innerHTML = "week(s) on:";
+		break;
+		case "Monthly":
+			typetext.innerHTML = "month(s)";
+		break;
+		case "Yearly":
+			typetext.innerHTML = "year(s) in:";
+		break;
+		
+	}
+	
+}//end function
+
+
+function changeRepeatEnd(){
+	var theselect = getObjectFromID("repeatend");
+	var afterSpan = getObjectFromID("repeatAfterSpan");
+	var ondatespan = getObjectFromID("repeatOndateSpan");
+	
+	switch(theselect.value){
+		case "never":
+			afterSpan.style.display = "none";
+			ondatespan.style.display = "none";
+		break;
+		case "after":
+			afterSpan.style.display = "inline";
+			ondatespan.style.display = "none";
+		break;
+		case "on date":
+			afterSpan.style.display = "none";
+			ondatespan.style.display = "inline";
+		break;
+	}//endswitch
+}//endfunction
+
+function yearlyMonthSelect(thebutton){
+	if(thebutton.className == "Buttons yearlyMonths")
+		thebutton.className = "pressedButtons yearlyMonths";
+	else{
+		var noneSelected = true;
+		var i;
+		var tempButton;
+
+		for(i=1;i<=12;i++){
+			tempButton = getObjectFromID("yearlyMonthOption"+i);
+			if(tempButton.className == "pressedButtons yearlyMonths" && tempButton != thebutton){
+				noneSelected = false;
+				break;
+			}
+		}//end for
+		
+		if(!noneSelected)
+			thebutton.className = "Buttons yearlyMonths";
+	}
+}
+
+
+function yearlyOnTheChecked(){
+	var thecheck = getObjectFromID("yearlyOnThe");
+	var ontheday = getObjectFromID("yearlyontheday");
+	var ontheweek = getObjectFromID("yearlyontheweek");		
+	
+	ontheday.disabled = !thecheck.checked;
+	ontheweek.disabled = !thecheck.checked;
+}
+
+
+function monthlyChange(){
+
+	var firstRadio = getObjectFromID("monthlyEach");
+	var dayButton;
+	var ontheday = getObjectFromID("monthlyontheday");
+	var ontheweek = getObjectFromID("monthlyontheweek");	
+	var i;
+	
+	if(firstRadio.checked){
+		//enable each day button
+		for(i=1; i<32; i++){
+			dayButton = getObjectFromID("monthDayOption"+i);
+			dayButton.disabled = false;
+		}
+		//disable onthe buttons.
+		ontheday.disabled = true;
+		ontheweek.disabled = true;		
+	} else {
+		//disable each day button
+		for(i=1; i<32; i++){
+			dayButton = getObjectFromID("monthDayOption"+i);
+			dayButton.disabled = true;
+		}
+
+		//enable onthe buttons.
+		ontheday.disabled = false;
+		ontheweek.disabled = false;		
+	}
+		
+}//end function
+
+
+function daySelect(thebutton){
+	if(thebutton.className == "Buttons")
+		thebutton.className = "pressedButtons";
+	else{
+		var noneSelected = true;
+		var i;
+		var tempButton;
+
+		for(i=1;i<=7;i++){
+			tempButton = getObjectFromID("dayOption"+i);
+			if(tempButton.className == "pressedButtons" && tempButton != thebutton){
+				noneSelected = false;
+				break;
+			}
+		}//end for
+		
+		if(!noneSelected)
+			thebutton.className = "Buttons";
+	}
+}
+
+
+function monthDaySelect(thebutton){
+	if(thebutton.className == "Buttons monthDays")
+		thebutton.className = "pressedButtons monthDays";
+	else{
+		var noneSelected = true;
+		var i;
+		var tempButton;
+
+		for(i=1;i<=31;i++){
+			tempButton = getObjectFromID("monthDayOption"+i);
+			if(tempButton.className == "pressedButtons monthDays" && tempButton != thebutton){
+				noneSelected = false;
+				break;
+			}
+		}//end for
+		
+		if(!noneSelected)
+			thebutton.className = "Buttons monthDays";
+	}
 }

@@ -66,6 +66,8 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
+		$theform->onsubmit = "return submitForm(this)";
+		$theform->id = "record";
 		
 		$temparray = array("Note"=>"NT","Task"=>"TS","Event"=>"EV","System Message"=>"SM");
 		$theinput = new inputBasicList("thetype",$therecord["type"],$temparray,"type");
@@ -84,7 +86,7 @@
 		$theform->addField($theinput);
 		
 		$theinput = new inputDatePicker("startdate",$therecord["startdate"], "start date" ,false, 11, 15, false);
-		$theinput->setAttribute("onchange","checkEndDate();setEnglishDates();");		
+		$theinput->setAttribute("onchange","checkEndDate();");				
 		$theform->addField($theinput);
 
 		$theinput = new inputTimePicker("starttime",$therecord["starttime"], "start time" ,false,11, 15, false);
@@ -122,26 +124,77 @@
 		$theinput = new inputChoiceList($db, "category",$therecord["category"],"notecategories");
 		$theform->addField($theinput);
 
-		$theinput = new inputCheckbox("repeat",$therecord["repeat"],"repeat every");
-		$theinput->setAttribute("onclick","doRepeat()");
+
+		//repeat fields
+		if($therecord["startdate"])
+			$repeatBase = stringToDate($therecord["startdate"],"SQL");
+		else
+			$repeatBase = mktime();
+		
+		$theinput = new inputCheckbox("repeating",$therecord["repeating"],"repeat");
+		$theinput->setAttribute("onchange","checkRepeat();");
 		$theform->addField($theinput);
 		
-		$theinput = new inputField("repeatfrequency",$therecord["repeatfrequency"], "repeat frequency" ,false, "integer", 2, 4, false);
-		$theinput->setAttribute("onkeyup","addS(this)");
+		$temparray = array("Daily"=>"Daily", "Weekly"=>"Weekly", "Monthly"=>"Monthly", "Yearly"=>"Yearly");
+		$theinput = new inputBasiclist("repeattype",$therecord["repeattype"],$temparray,"frequency");
+		$theinput->setAttribute("onchange","changeRepeatType();");
 		$theform->addField($theinput);
-				
-		$tempvalue="";
-		if($therecord["repeattimes"]>0) $tempvalue=$therecord["repeattimes"];
-		$theinput = new inputField("repeattimes",$tempvalue,"number of times to repeat",false,"integer",2,3,false);
-		if($therecord["repeattimes"]<1){
-			$theinput->setAttribute("class","uneditable");
-			$theinput->setAttribute("readonly","readonly");
+		
+		$theinput = new inputField("repeatevery",$therecord["repeatevery"],"frequency of repeating",false,"integer",2,4,false);
+		$theform->addField($theinput);
+		
+		$theinput = new inputBasiclist("monthlyontheweek",$therecord["repeatontheweek"],$thetable->weekArray,"on the week of",false);
+		$theinput2 = new inputBasiclist("yearlyontheweek",$therecord["repeatontheweek"],$thetable->weekArray,"on the week of",false);
+		if(!$therecord["repeatontheday"]) {
+			$theinput->setAttribute("disabled","disabled");
+			$theinput2->setAttribute("disabled","disabled");
+
+			$weekNumber = ceil(date("d",$repeatBase)/7);
+			if($weekNumber > 4) $weekNumber = 5;
+			
+			$theinput->value = $weekNumber;
+			$theinput2->value = $weekNumber;
+						
 		}
 		$theform->addField($theinput);
+		$theform->addField($theinput2);
+		
+		$temparray = array();
+		for($i=1; $i<8; $i++)
+			$temparray[nl_langinfo(constant("DAY_".$i))] = ($i==1)?(7):($i-1);
+		$theinput = new inputBasiclist("monthlyontheday",$therecord["repeatontheday"],$temparray,"on the day",false);
+		$theinput2 = new inputBasiclist("yearlyontheday",$therecord["repeatontheday"],$temparray,"on the day",false);
+		if(!$therecord["repeatontheday"]){
+			 $theinput->setAttribute("disabled","disabled");
+			 $theinput2->setAttribute("disabled","disabled");
+			 $theinput->value = strftime("%u",$repeatBase);
+			 $theinput2->value = strftime("%u",$repeatBase);
+		}
+		$theform->addField($theinput);
+		$theform->addField($theinput2);
 
-		$theinput = new inputDatePicker("repeatuntildate",$therecord["repeatuntildate"], "repeat until date",false,11,15,false);
+		$temparray = array("never"=>"never", "after"=>"after", "on date"=>"on date");
+		$thevalue = "never";
+		if($therecord["id"]){
+			if($therecord["repeattimes"])
+				$thevalue = "after";
+			elseif($therecord["repeatuntil"])
+				$thevalue = "on date";
+		}
+		$theinput = new inputBasiclist("repeatend",$thevalue,$temparray,"end");
+		$theinput->setAttribute("onchange","changeRepeatEnd();");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("repeattimes",$therecord["repeattimes"],"repeat until number of times",false,"integer",3,5,false);
 		$theform->addField($theinput);
 		
+		if(!$therecord["repeatuntil"])
+			$therecord["repeatuntil"] = dateToString(mktime(),"SQL");
+
+		$theinput = new inputDatePicker("repeatuntil", $therecord["repeatuntil"], "repeat until date" ,false, 10, 15, false);
+		$theform->addField($theinput);
+		//end repeat fields
+				
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements	
@@ -213,8 +266,9 @@
 			<p>
 				<label for="assignedbyid">assigned by</label><br />
 				<input id="assignedbydisplay" value="<?php echo $phpbms->getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable" />
+				<input type="hidden" name="assignedbyid" id="assignedbyid" value="<?php echo $therecord["assignedbyid"]?>" />
 			</p>
-			<?php if($therecord["assignedbyid"]==$_SESSION["userinfo"]["id"]){?>
+			<?php if($therecord["assignedbyid"] == $_SESSION["userinfo"]["id"]){?>
 			<p>
 				<button type="button" id="sendemailnotice" class="Buttons" onclick="sendEmailNotice()">send e-mail notice</button>
 			</p>
@@ -262,67 +316,79 @@
 		</fieldset>
 	</div>
 
+	<div id="repeatDiv">
 	
-	<div <?php if($therecord["parentid"]) echo "style=\"display:none;\""?>>
-		<fieldset id="therepeat">
-			<legend>recurrence</legend>
-			<div class="fauxP">
-				<input type="hidden" id="repeatchange" name="repeatChanges" value="<?php echo $therecord["repeatdays"]."*".$therecord["repeatfrequency"]."*".$therecord["repeattimes"]."*".$therecord["repeattype"]."*".$therecord["repeatuntildate"]?>" />
-				<?php $theform->showField("repeat")?>
-				&nbsp;&nbsp;
-				<div id="repeatoptions">						
-					<?php 
-						$theform->showField("repeatfrequency") ;
+		<div <?php if($therecord["parentid"]) echo 'style="display:none;"'?>>
+			<input type="hidden" id="bypass" name="bypass" value=""/>
+			<input type="hidden" id="eachlist" name="eachlist" value=""/>
+			<input type="hidden" id="firstrepeat" name="firstrepeat" value="<?php echo $therecord["firstrepeat"]?>"/>
+			<input type="hidden" id="lastrepeat" name="lastrepeat" value="<?php echo $therecord["lastrepeat"]?>"/>
+			<input type="hidden" id="timesrepeated" name="timesrepeated" value="<?php echo $therecord["timesrepeated"]?>"/>
+			<fieldset>
+				<legend>repeat</legend>
+				
+				<p><?php $theform->showField("repeating")?></p>
+				
+				<div id="repeatOptions" <?php if(!$therecord["repeating"]) echo 'style="display:none"'?>>
+				
+					<p><?php $theform->showField("repeattype")?></p>
+		
+					<p>every <?php $theform->showField("repeatevery")?> <span id="repeatTypeText">day(s)</span></p>
+		
+					<div id="DailyDiv"></div>
+		
+					<div id="WeeklyDiv">
+						<p><?php $thetable->showWeeklyOptions($therecord,$repeatBase)?></p>
+					</div>
+		
+					<div id="MonthlyDiv">
+						<p><input type="radio" id="monthlyEach" name="monthlyWhat" onchange="monthlyChange();" value="1" <?php if(!$therecord["repeatontheday"]) echo 'checked="checked"'?> /><label for="monthlyEach"> each</label></p>
 						
-						$plural="";
-						if($therecord["repeatfrequency"]>1) $plural="s";
-					?>
-					<select id="repeattype" name="repeattype" onchange="changeRepeatType();">
-						<option value="Daily" <?php if ($therecord["repeattype"]=="repeatDaily") echo "selected=\"selected\""?>>Day<?php echo $plural?></option>
-						<option value="Weekly" <?php if ($therecord["repeattype"]=="repeatWeekly") echo "selected=\"selected\""?>>Week<?php echo $plural?></option>
-						<option value="Monthly" <?php if (substr($therecord["repeattype"],0,13)=="repeatMonthly") echo "selected=\"selected\""?>>Month<?php echo $plural?></option>
-						<option value="Yearly" <?php if ($therecord["repeattype"]=="repeatYearly") echo "selected=\"selected\""?>>Year<?php echo $plural?></option>
-					</select><br />&nbsp;<br />
-					
-					<p id="weeklyoptions" <?php if ($therecord["repeattype"]!="repeatweekly"){?>style="display:none;"<?php }?>>
-						<span id="wos" class="repeatWeekChecks"><input name="wosc" type="checkbox" value="s" <?php if(strpos(" ".$therecord["repeatdays"],"s",0)) echo "checked=\"checked\""?> class="radiochecks" />Sun</span>
-						<span id="wom" class="repeatWeekChecks"><input name="womc" type="checkbox" value="m" <?php if(strpos(" ".$therecord["repeatdays"],"m",0)) echo "checked=\"checked\""?> class="radiochecks" />Mon</span>
-						<span id="wot" class="repeatWeekChecks"><input name="wotc" type="checkbox" value="t" <?php if(strpos(" ".$therecord["repeatdays"],"t",0)) echo "checked=\"checked\""?> class="radiochecks" />Tue</span>
-						<span id="wow" class="repeatWeekChecks"><input name="wowc" type="checkbox" value="w" <?php if(strpos(" ".$therecord["repeatdays"],"w",0)) echo "checked=\"checked\""?> class="radiochecks" />Wed</span>
-						<span id="wor" class="repeatWeekChecks"><input name="worc" type="checkbox" value="r" <?php if(strpos(" ".$therecord["repeatdays"],"r",0)) echo "checked=\"checked\""?> class="radiochecks" />Thu</span>
-						<span id="wof" class="repeatWeekChecks"><input name="wofc" type="checkbox" value="f" <?php if(strpos(" ".$therecord["repeatdays"],"f",0)) echo "checked=\"checked\""?> class="radiochecks" />Fri</span>
-						<span id="woa" class="repeatWeekChecks"><input name="woac" type="checkbox" value="a" <?php if(strpos(" ".$therecord["repeatdays"],"a",0)) echo "checked=\"checked\""?> class="radiochecks" />Sat</span>
-					</p>
-					<p id="monthlyoptions" style=" <?php if (substr($therecord["repeattype"],0,13)!="repeatMonthly"){?>display:none;<?php }?>margin-bottom:5px;">
-						<input type="radio" class="radiochecks" name="rpmo" id="rpmobdt" value="byDate" <?php if (substr($therecord["repeattype"],13)=="byDate"){?>checked<?php }?>/>On the <span id="rpmobydate"></span> of the month.<br />
-						<input type="radio" class="radiochecks" name="rpmo" id="rpmobda" value="byDay" <?php if (substr($therecord["repeattype"],13)=="byDay"){?>checked<?php }?>/><span id="rpmobyday"></span> of the month.
-					</p>
-					<p id="rpuntilforever">
-						<input id="rprduntilforever" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==0) echo "checked=\"checked\"" ?> value="0" onclick="updateRepeatUntil()"/> <label for="rprduntilforever">forever</label>
-					</p>
-					<p id="rpuntiltimes">
-						<input id="rprduntilftimes" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]>0) echo "checked=\"checked\"" ?> value="1" onclick="updateRepeatUntil()" /> <label for="rprduntilftimes">number of times</label>&nbsp;&nbsp;
-						<?php $theform->showField("repeattimes")?>
-					</p>
-					<p id="rpuntildate">
-						<input id="rprduntildate" class="radiochecks" name="rpuntil" type="radio" <?php if($therecord["repeattimes"]==-1) echo "checked=\"checked\"" ?> value="-1" onclick="updateRepeatUntil()"/> <label for="rprduntildate">until</label>&nbsp;&nbsp;
-						<?php $theform->showField("repeatuntildate")?>
-					</p>
+						<p><?php $thetable->showMonthlyOptions($therecord,$repeatBase)?></p>
+						
+						<p><input type="radio" id="monthlyOnThe" name="monthlyWhat" onchange="monthlyChange();" value="2" <?php if($therecord["repeatontheday"]) echo 'checked="checked"'?> /><label for="monthlyOnThe"> on the</label></p>
+						<p>
+							<?php $theform->showField("monthlyontheweek");?>
+							<?php $theform->showField("monthlyontheday");?>
+						</p>
+					</div>
+		
+					<div id="YearlyDiv">
+						<p><?php $thetable->showYearlyOptions($therecord,$repeatBase)?></p>
+						
+						<p><input id="yearlyOnThe" type="checkbox" name="yearlyOnThe" onclick="yearlyOnTheChecked();" value="1" <?php if($therecord["repeattype"]=="Yearly" && $therecord["repeatontheday"]) echo 'checked="checked"'?>/><label for="yearlyOnThe"> on the</label></p>
+						<p>
+							<?php $theform->showField("yearlyontheweek");?>
+							<?php $theform->showField("yearlyontheday");?>
+						</p>
+						
+					</div>
 				</div>
-			</div>
-
-		</fieldset>
-	</div>
-	<fieldset id="hasparent" class="box small" <?php if(!$therecord["parentid"]) echo "style=\"display:none;\""?>>
-		<legend>recurrence</legend>
-		<div>
-		This task/event was created from a repeated task/event.  <br />
-		Click the <strong>Edit Repeating Options</strong> button to edit the options for the repeatable parent record. 
-		<br />
-		(Any unsaved changes with the current record will be lost.)
+			</fieldset>
+	
+			<fieldset id="repeatEnding" <?php if(!$therecord["repeating"]) echo 'style="display:none"'?>>
+				<legend>end</legend>
+				<p>
+					<?php $theform->showField("repeatend")?>
+					<span id="repeatAfterSpan" style="display:none">
+						<?php $theform->showField("repeattimes")?> <label for="repeattimes">time(s)</label>
+					</span>
+					<span id="repeatOndateSpan" style="display:none">
+						<?php $theform->showField("repeatuntil")?>
+					</span>
+				</p>
+			</fieldset>
 		</div>
-		<div><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onclick="goParent('<?php echo getAddEditFile($db,12) ?>')" class="Buttons" /></div>
-	</fieldset>
+		<?php if($therecord["parentid"]){?>
+		<fieldset>
+			<legend>recurrence</legend>
+			<p>This record was created from a repeated task/event.</p>
+			<p>Click the <strong>Edit Repeating Options</strong> button to edit the options for the repeatable parent record.</p>
+			<p class="notes">Any unsaved changes with the current record will be lost.</p>			
+			<p><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onclick="goParent('<?php echo getAddEditFile($db,12) ?>')" class="Buttons" /></p>
+		</fieldset>
+		<?php }//endif ?>
+	</div>
 	<?php 
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();

@@ -59,9 +59,7 @@ class topMenu{
 
 	
 	function display(){
-	
-	global $phpbms;
-	
+		
 ?>
 <div id="menu">
 	<h1><a href="<?php echo APP_PATH.DEFAULT_LOAD_PAGE ?>" title="<?php echo htmlQuotes(APPLICATION_NAME);?>" name="toptop"><span><?php echo APPLICATION_NAME;?></span></a></h1>
@@ -81,12 +79,8 @@ class topMenu{
 					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				} else { 
 				
-				?><li><a href="#toptop"  id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems"id="submenu<?php echo $menurecord["id"]?>"><?php 
-					
-					$phpbms->bottomJS[] = 'mi=getObjectFromID("menu'.$menurecord["id"].'");mi.onmouseover=function(){checkExpand(this);}';
-					$phpbms->bottomJS[] = 'mi.onclick=function(){expandMenu(this);return false;}';
-					
-					$submenustring.= $menurecord["id"].",";
+				?><li><a href="#toptop" class="topMenus" id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php 
+										
 					$subitemsquery = $this->getSubItems($menurecord["id"]);
 					
 					if($subitemsquery){
@@ -115,11 +109,7 @@ class topMenu{
 			}//end if
 
 		}//end while
-		$submenustring=substr($submenustring,0,strlen($submenustring)-1);
 	?></ul></div><?php
-
-	global $phpbms;
-	$phpbms->bottomJS[]="var subMenuArray=\"".$submenustring."\".split(\",\");";
 
 	}//end method
 }// end class

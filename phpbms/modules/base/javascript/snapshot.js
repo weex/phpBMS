@@ -36,51 +36,106 @@
  +-------------------------------------------------------------------------+
 */
 
+theEvent = {
+	
+	idents: Array(),
+	
+	getWeek: function(e){
+		
+		var eventDate;
 
-var initArray=new Array();
+		if(e){
+			var srcObj = e.src();
+			
+			for(var i=0; i<theEvent.idents.length; i++)
+				disconnect(theEvent.idents[i]);
+					
+			switch(srcObj.id) {
+	
+				case "eventLastWeek":
+					eventDate = getObjectFromID("eventDateLast").value;
+					break;
+					
+				case "eventToday":
+					eventDate = getObjectFromID("eventDateToday").value;
+					break;
+					
+				case "eventNextWeek":
+					eventDate = getObjectFromID("eventDateNext").value;
+					break;
 
-initArray[initArray.length]=function(){
+			}//endswitch
+		}//endif
+		
+		var theURL = "snapshot_ajax.php?cm=getWeek";
+		if(eventDate)
+			theURL += "&d="+eventDate;
+			
+		var weekContainer = getObjectFromID("eventsBox");
+		loadXMLDoc(theURL,null,false);
+		weekContainer.innerHTML = req.responseText;
+
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventLastWeek"),"onclick",theEvent.getWeek);
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventToday"),"onclick",theEvent.getWeek);
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventNextWeek"),"onclick",theEvent.getWeek);		
+		
+	}//end method
+	
+}//end class
+
+
+task = {
+	
+	check: function(e){
+		var srcObj = e.src();
+		
+		var id = srcObj.id.substr(5);
+		var type =  srcObj.id.substr(2,2);
+		var section = srcObj.id.substr(0,2);
+		
+		var checkBox = srcObj;
+		var containerP = srcObj.parentNode;
+				
+		var theURL = "snapshot_ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
+
+		if(checkBox.checked){
+			
+			theURL += 1;
+			
+			containerP.className += " complete";
+						
+		} else {
+			
+			theURL += 0;
+			
+			containerP.className = containerP.className.replace(/complete/g, "");
+			
+		}//end if
+		
+		loadXMLDoc(theURL,null,false);
+		
+	}//end method
+}//end class
+
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
 	//SystemMessage Accordian
 	//we define two arrays, containing our toggles and divs.
-	var systemMessageDivs = document.getElementsByClassName('systemMessages');
-	var systemMessageLinks = document.getElementsByClassName('systemMessageLinks');
+	var taskChecks = getElementsByClassName('taskChecks');
+	for(var i=0; i<taskChecks.length; i++)
+		connect(taskChecks[i],"onclick",task.check);
+	
+	var systemMessageDivs = getElementsByClassName('systemMessages');
+	var systemMessageLinks = getElementsByClassName('systemMessageLinks');
 
-	var taskDivs = document.getElementsByClassName('tasksDivs');
-	var taskLinks = document.getElementsByClassName('tasksLinks');
+	var taskDivs = getElementsByClassName('tasksDivs');
+	var taskLinks = getElementsByClassName('tasksLinks');
 
 	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: true, duration:150});
 	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: true, duration:300});
 	taskAccordion.showThisHideOpen(taskDivs[2]);
-}
-
-window.onload= function() {
-	var i;
-	for(i=0;i<initArray.length;i++)
-		initArray[i].call();
-}
-
-
-function checkTask(id,type){
-	var thediv=getObjectFromID("TS"+id);
-	var thecheckbox=getObjectFromID("TSC"+id);
-	var isprivate=getObjectFromID("TSprivate"+id);
-	var ispastdue=getObjectFromID("TSispastdue"+id);
 	
-	var theURL="snapshot_ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
-	if(thecheckbox.checked){
-		theURL+="1";
-		thediv.className="small taskCompleted";
-	} else {
-		theURL+="0";
-		var classname=" small task";
-		if(isprivate.value==1)
-			classname+=" taskPrivate";
-		if(ispastdue.value==1)
-			classname="small taskPastDue";
-		thediv.className=classname;
-	}
-	loadXMLDoc(theURL,null,false);
-	if(req.responseText!="success")
-		alert("Error: <br />"+req.responseText);	
-	
-}
+	theEvent.getWeek();
+});

@@ -98,7 +98,6 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `rol
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (202,'printex','0',0,0);
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.type','type',0,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.ip','ip address',1,'field');
-
 UPDATE tabledefs SET defaultsortorder='if(parentmenu.name is null,menu.displayorder,parentmenu.displayorder+(menu.displayorder+1)/10000)' WHERE id=19;
 INSERT INTO `tabledefs` (`id`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (203,'Tabs','system',1,'tabs','tabs LEFT JOIN roles ON tabs.roleid=roles.id','modules/base/tabs_addedit.php',-100,'modules/base/tabs_addedit.php',-100,-100,-100,-100,'delete','tabs.id!=0','tabs.tabgroup,tabs.displayorder','','','',1,NOW(),1,NOW());
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`) VALUES (203,'tab group','tabs.tabgroup','left','',1,'',0,'',NULL);

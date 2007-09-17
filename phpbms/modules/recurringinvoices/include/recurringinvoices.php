@@ -71,9 +71,9 @@ class recurringinvoice{
 		switch($variables["type"]){
 			case "Daily":
 				if($variables["every"] != 1)
-					$thename = $variables["every"]." days";
+					$thename .= $variables["every"]." days";
 				else
-					$thename = " day ";
+					$thename .= " day ";
 				
 				$querystatement .= "NULL, NULL, NULL, ";
 			break;
@@ -178,7 +178,7 @@ class recurringinvoice{
 				$querystatement .= "NULL, '".sqlDateFromString($variables["until"])."', ";
 				break;
 		}
-		$thename .= ".";
+		$thename = trim($thename).".";
 		
 		$querystatement .= "'".mysql_real_escape_string($thename)."', ";
 		

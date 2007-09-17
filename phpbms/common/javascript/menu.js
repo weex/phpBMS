@@ -36,55 +36,106 @@
  +-------------------------------------------------------------------------+
 */
 
-function showHelp(){
-	var theURL=APP_PATH+"help/index.php";
-	loadXMLDoc(theURL,null,false);
-	showModal(req.responseText,"phpBMS Help Resources",550);
-
-	var helpToggles = document.getElementsByClassName("helpLinks");
-	var helpStuff = document.getElementsByClassName("helpDivs");
+menu = {
 	
-	var helpFX = new fx.Accordion(helpToggles, helpStuff, {height:true, opacity:false, duration:400});
-		helpFX.showThisHideOpen(helpStuff[0]);
-
-}
-
-function checkExpand(theitem){
-	var i,tempDiv;
-	var showid=theitem.id.substring(4);
-	var doswitch=false;
-	for(i=0;i<subMenuArray.length;i++){
-		tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
-		if(tempdiv.style.display=="block" && subMenuArray[i]!=showid)
-			doswitch=true;
-	}
-	if(doswitch)
-		expandMenu(theitem);
+	subMenuArray: Array(),
 	
-}
+	showHelp: function(){
+		var theURL = APP_PATH + "help/index.php";
 
-function expandMenu(theitem){
-	var i;
-	var tempdiv;
-	var showid=theitem.id.substring(4);
-	var specificdiv=getObjectFromID("submenu"+showid);
-	if(specificdiv.style.display)
-		if(specificdiv.style.display=="block"){
-			specificdiv.style.display="none";
-			displaySelectBoxes();
-			return false;
+		loadXMLDoc(theURL,null,false);
+		showModal(req.responseText,"phpBMS Help Resources",550);
+	},//endmethod
+	
+	
+	checkExpand: function(e){
+		srcObj = e.src();
+				
+		var i,tempDiv;
+		
+		var showid = srcObj.id.substring(4);
+		
+		var doswitch = false;
+		
+		for(i=0;i<menu.subMenuArray.length;i++){
+			tempdiv=getObjectFromID("submenu"+menu.subMenuArray[i]);
+			if(tempdiv.style.display=="block" && menu.subMenuArray[i]!=showid)
+				doswitch=true;
 		}
+		if(doswitch)
+			menu.expandMenu(e);
 
-	for(i=0;i<subMenuArray.length;i++){
-		if(subMenuArray[i]!=showid){
-			tempdiv=getObjectFromID("submenu"+subMenuArray[i]);
-			tempdiv.style.display="none";
+	},//end method
+	
+	
+	expandMenu: function(e){
+		srcObj = e.src();
+				
+		var i;
+		var tempdiv;
+		var tempMenu;
+		var showid = srcObj.id.substring(4);
+		
+		var specificdiv = getObjectFromID("submenu"+showid);
+
+		if(specificdiv.style.display)
+			if(specificdiv.style.display=="block"){
+				specificdiv.style.display="none";
+				srcObj.className = "topMenus";
+				displaySelectBoxes();
+				e.stop();				
+				return false;
+			}//endif
+	
+		for(i=0;i<menu.subMenuArray.length;i++){
+			if(menu.subMenuArray[i]!=showid){
+				tempdiv=getObjectFromID("submenu"+menu.subMenuArray[i]);
+				tempdiv.style.display="none";
+				
+				tempMenu = getObjectFromID("menu"+menu.subMenuArray[i]);
+				tempMenu.className = "topMenus";
+			}//endif
+		}//endfor
+		
+		var theMenuUL = getObjectFromID("menuBar")
+		for(i=0;i<theMenuUL.childNodes.length;i++){
+			if(theMenuUL.childNodes[i].tagName)
+				if(theMenuUL.childNodes[i].tagName == "LI"){
+					if(theMenuUL.childNodes[i].childNodes.length)
+						if(theMenuUL.childNodes[i].childNodes[0].className == "hovered")
+							theMenuUL.childNodes[i].childNodes[0].className = "";
+				}
+				
 		}
-	}
-	var thetop=getTop(theitem);
-	var theleft=getLeft(theitem);
-	specificdiv.style.top=(thetop+theitem.offsetHeight)+"px";
-	specificdiv.style.left=(theleft-6)+"px";
-	specificdiv.style.display="block";
-	hideSelectBoxes()
-}
+		srcObj.className = "topMenus hovered";
+		
+		var thetop=getTop(srcObj);
+		var theleft=getLeft(srcObj);
+		specificdiv.style.top=(thetop+srcObj.offsetHeight)+"px";
+		specificdiv.style.left=(theleft-6)+"px";
+		specificdiv.style.display="block";
+		hideSelectBoxes();
+
+		e.stop();
+	}//end method			
+	
+}//end class
+
+
+
+/* OnLoad Listener --------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+	var topMenus = getElementsByClassName('topMenus');
+	
+	var subMenus = getElementsByClassName('submenuitems');
+	for(var i=0; i<subMenus.length; i++)
+		menu.subMenuArray[menu.subMenuArray.length] = subMenus[i].id.substr(7);
+	
+	for(var i=0; i<topMenus.length; i++){
+		
+		connect(topMenus[i],"onmouseover",menu.checkExpand);
+		connect(topMenus[i],"onclick",menu.expandMenu);
+		
+	}//endfor
+})//end listner

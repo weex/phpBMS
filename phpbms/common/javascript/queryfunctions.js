@@ -278,13 +278,13 @@ function selectRecords(allornone){
 	if(!allornone) newClass="qh";
 	selIDs= new Array();
 	
-	theTable=getObjectFromID("queryresults").firstChild;
-	for(var i=0;i<theTable.childNodes.length;i++){
-		if(theTable.childNodes[i].className){
-			if(theTable.childNodes[i].className != "queryGroup"){
-				theTable.childNodes[i].className=newClass+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+	var tbody = getObjectFromID("resultTbody");
+	for(var i=0;i<tbody.childNodes.length;i++){
+		if(tbody.childNodes[i].className){
+			if(tbody.childNodes[i].className != "queryGroup"){
+				tbody.childNodes[i].className=newClass+tbody.childNodes[i].className.charAt(tbody.childNodes[i].className.length-1);
 				if(!allornone)
-					selIDs[selIDs.length] = theTable.childNodes[i].id.substring(2);
+					selIDs[selIDs.length] = tbody.childNodes[i].id.substring(2);
 			}
 		}
 	}

@@ -94,13 +94,8 @@
 		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();
-			$displayTable->displayQueryHeader();
-			if($displayTable->numrows>0){
-				$displayTable->displayQueryResults();
-				$displayTable->displayQueryFooter();
-			}
-			else
-				$displayTable->displayNoResults();				
+			
+			$displayTable->displayResultTable();
 		?>
 		</form>
 	</div>

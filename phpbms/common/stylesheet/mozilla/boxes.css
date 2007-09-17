@@ -2,30 +2,32 @@
 /* $LastChangedDate$ */
 
 fieldset,.bodyline,.box{ 
-	border: 1px #E4ECEC outset; 
-	padding:0px;
+	border: 1px solid #ACB7C4; 
+	padding:5px; 		
 	margin-bottom:5px;
 }
 .bodyline,#modalBox{
 	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
+	margin-left:15px;
+	margin-right:15px;
 }
 
 .bodyline{
 	clear:both;
 	border-color:#CAD1D1;
-	border-style:solid;
-	padding:10px;margin-top:0px;
+	padding:10px;
 }
 
-fieldset,.box{
-	border-color:#ACB7C4;
-	border-width:1px;
-	border-style:solid;
+fieldset,.box{	
 	margin:3px 3px 7px 3px;
-	padding:5px; 		
 }
-fieldset{padding:8px;overflow:hidden;}
+
+fieldset{
+	padding:8px;
+	overflow:hidden;
+}
+
 .box{
 	background-color:#EFF9F9;
-	border:1px solid #CCCCCC;	
+	border-color:#CCCCCC;	
 }

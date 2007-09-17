@@ -56,16 +56,11 @@
 ?>
 <div class="bodyline">
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
-
 	<?php showSystemMessages($db) ?>
 	
 	<table cellpadding="0" cellspacing="4" border="0" width="100%">
 		<tr>
-			<td id="eventsBox" class="box" width="55%">
-				<p id="todaysDate" class="tiny"><?php echo strftime("%A, %b. %e, %Y")?></p>
-				<h2><a href="../../search.php?id=24">This week's Events</a></h2>
-				<?php showSevenDays($_SESSION["userinfo"]["id"],$db)?>			
-			</td>
+			<td id="eventsBox" class="box" width="55%">&nbsp;</td>
 			<td class="tiny">&nbsp;</td>
 			<td class="box" id="tasksBox" width="45%">
 				<h2>Workload</h2>

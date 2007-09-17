@@ -64,6 +64,8 @@ vertical-align:middle;
 }
 .graphicButtons span{display:none}
 
+.buttonInfo{background:url(image/button-info.png) 0 0 no-repeat;}
+.buttonIcal{background:url(image/button-ical.png) 0 0 no-repeat; width:27px;}
 .buttonRew{background:url(image/button-rew.png) 0 0 no-repeat;}
 .buttonCheck{background:url(image/button-check.png) 0 0 no-repeat;}
 .buttonFF{background:url(image/button-ff.png) 0 0 no-repeat;}

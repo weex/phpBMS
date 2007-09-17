@@ -1,3 +1,9 @@
+ALTER TABLE users MODIFY COLUMN `firstname` VARCHAR(64) NOT NULL default '', MODIFY COLUMN `lastname` VARCHAR(64) NOT NULL default '';
+UPDATE `notes` SET `parentid` = NULL;
+ALTER TABLE `notes` DROP COLUMN `repeattype`, DROP COLUMN `repeat`, DROP COLUMN `repeatuntildate`, DROP COLUMN `repeatfrequency`, DROP COLUMN `repeatdays`, DROP COLUMN `repeattimes`;
+ALTER TABLE `notes` ADD COLUMN `repeating` SMALLINT UNSIGNED NOT NULL DEFAULT 0, ADD COLUMN `repeattype` ENUM('Daily','Weekly','Monthly','Yearly'), ADD COLUMN `repeatuntil` DATE, ADD COLUMN `repeatevery` INTEGER UNSIGNED NOT NULL DEFAULT 1, ADD COLUMN `repeattimes` INTEGER UNSIGNED, ADD COLUMN `repeateachlist` VARCHAR(128), ADD COLUMN `repeatontheday` INTEGER UNSIGNED, ADD COLUMN `repeatontheweek` INTEGER UNSIGNED, ADD COLUMN `firstrepeat` DATE, ADD COLUMN `lastrepeat` DATE, ADD COLUMN `timesrepeated` INTEGER UNSIGNED NOT NULL DEFAULT 0, ADD COLUMN `repeatname` VARCHAR(255);
+UPDATE `menus` SET `link`='javascript:menu.showHelp()' WHERE `link`='javascript:showHelp()';
+DELETE FROM tablecolumns WHERE tabledefid=9 or tabledefid=10 or tabledefid = 11 or tabledefid = 12 OR tabledefid = 16 OR tabledefid = 17 OR tabledefid = 19 OR tabledefid = 21 OR tabledefid = 23 OR tabledefid = 24 OR tabledefid = 26 OR tabledefid = 27 OR tabledefid = 200 OR tabledefid = 201 OR tabledefid = 202 OR tabledefid = 203;
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (9,'log in name','users.login','left','',1,'',0,'',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (9,'name','concat(users.firstname,\" \",users.lastname)','left','',0,'',0,'100%',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (9,'last login','users.lastlogin','left','',3,'',0,'','datetime',0);
@@ -61,3 +67,15 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (203,'display order','tabs.displayorder','center','',3,'',0,'',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (203,'id','tabs.id','left','',0,'',0,'',NULL,0);
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES (203,'access','if(tabs.roleid=0,\'EVERYONE\',if(tabs.roleid=-100,\'Administrators\',roles.name))','left','',4,'',0,'',NULL,0);
+DELETE FROM tablegroupings WHERE tabledefid=9 or tabledefid=10 or tabledefid = 11 or tabledefid = 12 OR tabledefid = 16 OR tabledefid = 17 OR tabledefid = 19 OR tabledefid = 21 OR tabledefid = 23 OR tabledefid = 24 OR tabledefid = 26 OR tabledefid = 27 OR tabledefid = 200 OR tabledefid = 201 OR tabledefid = 202 OR tabledefid = 203;
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (10,'fromtable.displayname',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (11,'modules.name',1,0,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (12,'notes.category',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (16,'if(tabledefs.displayname is null,\"global\",tabledefs.displayname)',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (17,'tabledefs.displayname',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (17,'if(usersearches.type=\"SCH\",\"Search\",\"Sort\")',2,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (19,'if(menu.parentid=0,concat( lpad(menu.displayorder,3,\"0\"), \" - \" ,menu.name )  , concat( lpad(parentmenu.displayorder,3,\"0\") , \" - \",parentmenu.name))',1,1,'',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (23,'ELT(notes.importance+3,\'6 - Lowest\',\' 5 - Low\',\'4 - Normal\',\"3 - Medium\",\'2 - High\',\'1 - Highest\')',1,1,'Importance',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (23,'notes.category',2,1,'Category',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (24,'notes.category',1,1,'category',0);
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES (203,'tabs.tabgroup',1,1,'Group',0);

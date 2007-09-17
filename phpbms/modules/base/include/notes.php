@@ -41,36 +41,122 @@ require_once("include/tables.php");
 
 if(class_exists("phpbmsTable")){
 	class notes extends phpbmsTable{
+
+	var $weekArray = array("First"=>"1", "Second"=>"2", "Third"=>"3", "Fourth"=>"4", "Last"=>"5");
+	var $dayOfWeekArray = array();
 	
-		function checkForNewerRepeats($parentid,$id){
+	
+	function notes($db,$tabledefid = 0,$backurl = NULL){
+
+		$this->dayOfWeekArray[nl_langinfo(constant("DAY_1"))] = 7;
+		for($i=1; $i<=6; $i++)
+			$this->dayOfWeekArray[nl_langinfo( constant("DAY_".($i+1)) )] = $i;
+
+		parent::phpbmsTable($db,$tabledefid,$backurl);
+
+	}
+
+	
+	function showWeeklyOptions($therecord,$repeatbase){
+		if($therecord["repeattype"] == "Weekly")
+			$daysSelected = explode("::",$therecord["repeateachlist"]);
+		else
+			$daysSelected = array(strftime("%u",$repeatbase));
+			
+		$daysAvailable = array(7,1,2,3,4,5,6);
+		
+		foreach($daysAvailable as $dayNum){
+			$tempday = ($dayNum != 7)?($dayNum+1):(1);
+			?><button id="dayOption<?php echo $dayNum?>" class="<?php 
+			
+			if(in_array($dayNum,$daysSelected))
+				echo "pressed"; 
+			
+			?>Buttons" type="button" value="<?php echo $dayNum?>" onclick="daySelect(this)"><?php 
+			
+			echo nl_langinfo(constant("ABDAY_".$tempday));
+			
+			?></button><?php
+		}
+			
+		
+	}
+	
+	function showMonthlyOptions($therecord,$repeatbase){
+		if($therecord["repeattype"] == "Monthly" && $therecord["repeateachlist"])
+			$daysSelected = explode("::",$therecord["repeateachlist"]);
+		else
+			$daysSelected = array(strftime("%e",$repeatbase));
+			
+		
+		for($dayNum = 1; $dayNum <= 31; $dayNum++){
+			?><button id="monthDayOption<?php echo $dayNum?>" class="<?php 
+			
+			if(in_array($dayNum,$daysSelected))
+				echo "pressed"; 
+			
+			?>Buttons monthDays" type="button" value="<?php echo $dayNum?>" onclick="monthDaySelect(this)" <?php 
+			
+				if($therecord["repeatontheday"])
+					echo 'disabled="disabled"';
+			
+			?>><?php 
+			
+			echo $dayNum;
+			
+			?></button><?php
+			if(($dayNum % 7) == 0) echo "<br />";
+		}			
+		
+	}//end method
+
+	
+	function showYearlyOptions($therecord,$repeatbase){
+		if($therecord["repeattype"] == "Yearly")
+			$monthsSelected = explode("::",$therecord["repeateachlist"]);
+		else
+			$monthsSelected = array(date("n",$repeatbase));
+			
+		for($monthNum = 1; $monthNum <=12; $monthNum++){
+			?><button id="yearlyMonthOption<?php echo $monthNum?>" class="<?php 
+			
+			if(in_array($monthNum,$monthsSelected))
+				echo "pressed"; 
+			
+			?>Buttons yearlyMonths" type="button" value="<?php echo $monthNum?>" onclick="yearlyMonthSelect(this)"><?php 
+			
+			echo nl_langinfo(constant("ABMON_".$monthNum));
+			
+			?></button><?php
+			if(($monthNum % 4) == 0) echo "<br />";
+		}
+	}
+
+
+		function newerRepeats($parentid,$id){
 	
 			if ($parentid=="NULL")
 				$parentid=$id;
 				
-			$querystatement="SELECT creationdate FROM notes WHERE id=".$id;
+			$querystatement="SELECT creationdate FROM notes WHERE id=".((int) $id);
 			$queryresult = $this->db->query($querystatement);
 			$therecord=$this->db->fetchArray($queryresult);
 		
-			$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".((int) $parentid)." AND creationdate > \"".$therecord["creationdate"]."\"";
+			$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".((int) $parentid)." AND creationdate > '".$therecord["creationdate"]."'";
 			$queryresult = $this->db->query($querystatement);
 	
 			if($this->db->numRows($queryresult)) return true; else return false;
 		}
 	
 	
-		function repeatTaskUpdate($parentid){
+		function resetRepeating($parentid){
 			
-			$querystatement="DELETE FROM notes WHERE completed=0 AND parentid=".$parentid;
-			$queryresult = $this->db->query($querystatement);
+			$deletstatement="DELETE FROM notes WHERE completed=0 AND parentid=".$parentid;
+			$this->db->query($deletstatement);
 			
-			$querystatement="SELECT id FROM notes WHERE completed=1 AND parentid=".((int) $parentid)." ORDER BY startdate DESC LIMIT 0,1";
-			$queryresult = $this->db->query($querystatement);
-			if($this->db->numRows($queryresult)){
-				$therecord=$this->db->fetchArray($queryresult);
-				$this->repeatTask($therecord["id"]);
-			} else {
-				$this->repeatTask($parentid);
-			}
+			$updatestatement="UPDATE notes SET parentid=NULL WHERE completed=1 AND parentid=".$parentid;
+			$queryresult = $this->db->query($updatestatement);
+
 		}
 	
 	
@@ -84,7 +170,7 @@ if(class_exists("phpbmsTable")){
 			$querystatement="UPDATE notes SET completed=".((int) $completed)." , completeddate=".$compDate." WHERE id=".((int) $id);
 			$queryresult=$this->db->query($querystatement);
 			
-			if($completed && $type="TS")
+			if($completed && $type == "TS")
 				$this->repeatTask($id);
 			
 			return "success";
@@ -92,150 +178,207 @@ if(class_exists("phpbmsTable")){
 		}
 	
 		
-		function repeatTask($id){
-			
-			$querystatement="SELECT parentid,startdate,`repeat` FROM notes WHERE id=".$id;
-			$queryresult=$this->db->query($querystatement);
-			$therecord=$this->db->fetchArray($queryresult);
-			
-			if($therecord["repeat"]==1 && $therecord["parentid"]==""){
-				$therecord["parentid"]=$id;
-			}
-	
-			if ($therecord["parentid"]){
-	
-				$lastTaskdate=stringToDate($therecord["startdate"],"SQL");
-			
-				$querystatement = "SELECT id,startdate,enddate,repeatdays,repeatfrequency,repeattimes,repeattype,repeatuntildate 
-									FROM notes WHERE id=".$therecord["parentid"];
-				$queryresult = $this->db->query($querystatement);
-	
+		function repeatTask($id, $dateToCheck = NULL){
+			if($dateToCheck == NULL) 
+				$dateToCheck = mktime(0,0,0);				
+			//see if we need to grab the parent
+			$querystatement = "SELECT parentid,repeating FROM notes WHERE id=".((int) $id);
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+				if($therecord["parentid"])
+					$id = $therecord["parentid"];
+				elseif(!$therecord["repeating"])
+					return false;
+
+			$querystatement = "SELECT notes.repeattype, notes.repeatevery, notes.startdate, notes.enddate, notes.firstrepeat, 
+								notes.lastrepeat,
+								notes.timesrepeated, notes.repeatontheday, notes.repeatontheweek, notes.repeateachlist, 
+								notes.repeatuntil, notes.repeattimes
+								FROM notes WHERE repeating=1 AND id=".((int) $id)." AND type='TS'
+							AND (notes.repeatuntil IS NULL OR notes.repeatuntil >= '".dateToString($dateToCheck,"SQL")."')
+							AND (notes.repeattimes IS NULL OR notes.repeattimes < notes.timesrepeated)";
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
 				$therecord = $this->db->fetchArray($queryresult);
-				$startdate = stringToDate($therecord["startdate"],"SQL");
-				$enddate = stringToDate($therecord["enddate"],"SQL");
-				$repeatuntil = stringToDate($therecord["repeatuntildate"],"SQL");
-				$nextdate = $startdate;
-				$rpTimes=1;
+
+				if($therecord["lastrepeat"])
+					$startDate = stringToDate($therecord["lastrepeat"],"SQL");
+				else
+					$startDate = stringToDate($therecord["startdate"],"SQL");
+				
+				if($dateToCheck <= $startDate)
+					$dateToCheck = strtotime("tomorrow",$startDate);
+
+				$dateArray = $this->getValidInRange($startDate,$dateToCheck,$therecord);
+				
+				foreach($dateArray as $date){
+					if($date != $startDate){
+						if($therecord["enddate"])
+							$enddate = stringToDate($therecord["enddate"],"SQL");
+						else
+							$enddate = NULL;
+							
+						$return = $this->createChildTask($id, $date, stringToDate($therecord["startdate"],"SQL"), $enddate );
+						if($return){
+							//child created update the parentrecord
+							$updatestatement = "UPDATE notes SET ";
+							$updatestatement .= "lastrepeat='".dateToString($date,"SQL")."',";
+							if(!$therecord["firstrepeat"])
+								$updatestatement .= "firstrepeat='".dateToString($date,"SQL")."',";
+							$updatestatement .="timesrepeated = timesrepeated+1 WHERE id =".$id;
+							
+							$this->db->query($updatestatement);
+
+							break;
+						}
+					}//endif
+				}//endforeach
+				
+			}//endif
+		}//end method
 	
-				switch($therecord["repeattype"]){
-					case "repeatDaily":
-						while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$nextdate=strtotime($therecord["repeatfrequency"]." days",$nextdate);
-							$rpTimes++;
-						}
-						if($nextdate>$lastTaskdate && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil))
-							$this->createChildTask($therecord["id"],$nextdate,$startdate,$enddate);					
-					break;
-					case "repeatYearly":
-						while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$nextdate=strtotime($therecord["repeatfrequency"]." years",$nextdate);
-							$rpTimes++;
-						}
-						if($nextdate>$lastTaskdate && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil))
-							$this->createChildTask($therecord["id"],$nextdate,$startdate,$enddate);
-					break;
-					case "repeatMonthlybyDate":
-						while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$tempdate=strtotime($therecord["repeatfrequency"]." months",$nextdate);
-							if(date("d",$startdate)==date("d",$tempdate))
-								$nextdate=$tempdate;
-							else
-								$nextdate=mktime(0,0,0,((integer) date("n",$nextdate))+$therecord["repeatfrequency"]+1,0,date("Y",$nextdate));						
-							$rpTimes++;
-						}
-						if($nextdate>$lastTaskdate && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil))
-							$this->createChildTask($therecord["id"],$nextdate,$startdate,$enddate);
-					break;
-					case "repeatMonthlybyDay":
-						while($nextdate<=$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$nextdate=strtotime($therecord["repeatfrequency"]." months",$nextdate);
-							$rpTimes++;
-						}
-						if($nextdate>$lastTaskdate && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil)){
-							$startWeekNum=ceil(strftime("%d",$startdate)/7);
-							$nextday=mktime(0,0,0,strftime("%m",$nextday),1,strftime("%Y",$nextday));
-							$nextLastDay=date("t",$nextdate);
-							$success=false;
-							while(!$success){							
-								$nextWeekNum=ceil(strftime("%d",$nextdate)/7);
-								$nextdate=strtotime("tomorrow",$nextdate);
-								if(($nextWeekNum==$startWeekNum || ($startWeekNum==5 && strftime("%d",$nextdate)+7>$nextLastDay)) && strftime("%A",$startdate)==strftime("%A",$nextdate))
-									$success=true;
-							}					
-							$this->createChildTask($therecord["id"],$nextdate,$startdate,$enddate);
-						}
-					break;
-					case "repeatWeekly":
-						while($nextdate<$lastTaskdate && ($therecord["repeattimes"]<=0 || $therecord["repeattimes"]>$rpTimes)){
-							$nextdate=strtotime($therecord["repeatfrequency"]." weeks",$nextdate);
-							$rpTimes++;
-						}
-						if($nextdate>=$lastTaskdate  && ($therecord["repeattimes"]>-1 || $nextdate<=$repeatuntil)){
-							$success=false;
-							$dayAbbrev=$this->getDayAbbrev($lastTaskdate);
-							$lastTaskPos=strpos(" ".$therecord["repeatdays"],$dayAbbrev);
-							if (strlen($therecord["repeatdays"])!=$lastTaskPos)					
-								$lastTaskPos++;
-							else {
-								while($this->getDayAbbrev($nextdate)!="s")
-									$nextdate=strtotime("yesterday",$nextdate);
-								$nextdate=strtotime($therecord["repeatfrequency"]." weeks",$nextdate);
-								$rpTimes++;							
-								if($therecord["repeattimes"]>0 && $therecord["repeattimes"]<=$rpTimes)
-									return true;
-								else
-									$lastTaskPos=1;
-							}
-								
-							$newDayAbbrev=substr($therecord["repeatdays"],$lastTaskPos-1,1);
-							if($this->getDayAbbrev($nextdate)==$newDayAbbrev)
-								$success=true;
-							else
-								$success=false;	
-							while(!$success){
-								$nextdate=strtotime("tomorrow",$nextdate);
-								if($this->getDayAbbrev($nextdate)==$newDayAbbrev)
-									$success=true;
-							}
-							$this->createChildTask($therecord["id"],$nextdate,$startdate,$enddate);
-						}
-					break;
-				}//end switch
-			}//end if
-			return true;
-		}
+
+		function getValidInRange($startDate,$endDate,$therecord){
+			$nextDate = $startDate;
 	
-	
-		function getDayAbbrev($day){
-			switch(strftime("%A",$day)){
-				case "Sunday":
-					$dayAbbrev="s";
-				break;
-				case "Monday":
-					$dayAbbrev="m";
-				break;
-				case "Tuesday":
-					$dayAbbrev="t";
-				break;
-				case "Wednesday":
-					$dayAbbrev="w";
-				break;
-				case "Thursday":
-					$dayAbbrev="r";
-				break;
-				case "Friday":
-					$dayAbbrev="f";
-				break;
-				case "Saturday":
-					$dayAbbrev="a";
-				break;
-			}//end switch	
-			return $dayAbbrev;
-		}
-	
-		
-		function createChildTask($parentid,$newdate,$startdate,$enddate){
+			//should pad the end date to make sure we get all weekly repeats
+			$endDate = strtotime("+7 days",$endDate);
+			
+			$validDates = array();
 					
+			while($nextDate <= $endDate){
+						
+				switch($therecord["repeattype"]){
+					case "Daily":
+						//==================================================================================
+						$validDates[] = $nextDate;
+						$nextDate = strtotime("+".$therecord["repeatevery"]." days",$nextDate);
+						break;
+						
+					case "Weekly":											
+						//==================================================================================
+						$weekDayArray = explode("::",$therecord["repeateachlist"]);
+	
+						//need to start from the sunday of the current week
+						$tempDate = strtotime(nl_langinfo( constant("DAY_1") ),$nextDate);
+						$tempDate = strtotime("-7 days",$tempDate);
+						
+						foreach($weekDayArray as $weekday){
+							if($weekday == 7)
+								$validDates[]=$tempDate;
+							else{
+								$weekday++; 
+								$validDates[] = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
+							}
+						}// endforeach
+																							
+						
+						$nextDate = strtotime("+".$therecord["repeatevery"]." week",$nextDate);
+						
+						break;
+					
+					case "Monthly":
+						//==================================================================================
+						$dateArray = localtime($nextDate,true);						
+						$daysInMonth = date("d", mktime(0,0,0,$dateArray["tm_mon"],0,$dateArray["tm_year"]+1900) );
+						
+						if($therecord["repeateachlist"]){
+							$dayArray = explode("::",$therecord["repeateachlist"]);
+							
+							foreach($dayArray as $theday)
+								$validDates[] = mktime(0,0,0,$dateArray["tm_mon"]+1,$theday,$dateArray["tm_year"]+1900);							
+							
+						} else{
+							// check for things like second tuesday or last friday;
+							$tempDate = mktime(0,0,0,$dateArray["tm_mon"]+1,1,$dateArray["tm_year"]+1900);
+							$weekday = $therecord["repeatontheday"];
+							$weekday = ($weekday == 7)? 1: ($weekday+1);							
+							if($therecord["repeatontheday"] != strftime("%u",$tempDate));
+								$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
+								
+							while(date("n",$tempDate) == ($dateArray["tm_mon"]+1)){
+							
+								if($therecord["repeatontheweek"] == 5){
+									// 5 is the "last" option, so we just need to see if
+									// the date falls in the last 6 days
+									if($daysInMonth - date("d",$tempDate) < 7)
+										$validDates[] = $tempDate;
+										
+								} else {
+									if( ceil(date("d",$tempDate)/7) == $therecord["repeatontheweek"])
+										$validDates[] = $tempDate;										
+								}// endif
+	
+								$tempDate = strtotime("+7 days",$tempDate);
+	
+							}// endwhile
+						}//endif
+	
+						$nextDate = strtotime("+".$therecord["repeatevery"]." months",$startDate);
+						break;
+						
+					case "Yearly":
+						//==================================================================================
+						$monthArray = explode("::",$therecord["repeateachlist"]);
+						foreach($monthArray as $monthNum){
+							$dateArray = localtime($nextDate,true);						
+							$daysInMonth = date("d", mktime(0,0,0,$monthNum,0,$dateArray["tm_year"]+1900) );
+	
+							if(!$therecord["repeatontheday"]){
+								$tempDay = ($dateArray["tm_mday"] > $daysInMonth)? $daysInMonth :$dateArray["tm_mday"];
+								$validDates[] = mktime(0,0,0,$monthNum,$tempDay,$dateArray["tm_year"]+1900);
+	
+							} else {
+								// check for things like second tuesday or last friday;
+								$tempDate = mktime(0,0,0,$monthNum,1,$dateArray["tm_year"]+1900);
+								
+								$weekday = $therecord["repeatontheday"];
+								$weekday = ($weekday == 7)? 1: ($weekday+1);							
+								if($therecord["repeatontheday"] != strftime("%u",$tempDate));
+									$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
+								
+								
+								while(date("n",$tempDate) == $monthNum){
+									if($therecord["repeatontheweek"] == 5){
+										// 5 is the "last" option, so we just need to see if
+										// the date falls in the last 6 days
+										if($daysInMonth - date("d",$tempDate) < 7)
+											$validDates[] = $tempDate;
+											
+									} else {
+										if( ceil(date("d",$tempDate)/7) == $therecord["repeatontheweek"])
+											$validDates[] = $tempDate;										
+									}// endif
+		
+									$tempDate = strtotime("+7 days",$tempDate);
+		
+								}// endwhile
+	
+							}//endif			
+	
+						}//endforeach
+	
+						$nextDate = strtotime("+".$therecord["repeatevery"]." years",$startDate);
+	
+						break;
+				}//endswitch
+							
+			}//end while
+			
+			return $validDates;
+			
+		}//end method
+		
+
+		function createChildTask($parentid, $newdate, $startdate, $enddate=NULL){
+			
+			//let's check to see if the new task already exists
+			$querystatement = "SELECT id FROM notes WHERE parentid=".$parentid." AND startdate='".dateToString($newdate,"SQL")."'";
+			$queryresult = $this->db->query($querystatement);
+			if($this->db->numRows($queryresult))
+				return false;
+								
 			$newenddate="NULL";
 			if($enddate)			
 				$newenddate="\"".dateToString($newdate+($enddate-$startdate),"SQL")."\"";
@@ -256,10 +399,10 @@ if(class_exists("phpbmsTable")){
 			if(!$therecord["assignedtoid"])
 				$therecord["assignedtoid"]="NULL";
 						
-			$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,`repeat`,repeatfrequency,repeattype,repeattimes,
+			$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,
 						type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,creationdate,createdby,category,
 						attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid) VALUES (
-						".$therecord["id"].", \"".dateToString($newdate,"SQL")."\",".$newenddate.", 0, NULL,0,1,\"repeatDaily\",0,";
+						".$therecord["id"].", \"".dateToString($newdate,"SQL")."\",".$newenddate.", 0, NULL,";
 			$querystatement.="\"".$therecord["type"]."\", ";
 			$querystatement.="\"".$therecord["subject"]."\", ";
 			$querystatement.="\"".$therecord["content"]."\", ";
@@ -294,7 +437,9 @@ if(class_exists("phpbmsTable")){
 			$querystatement.=$therecord["assignedbyid"].") ";
 			
 			$queryresult=$this->db->query($querystatement);
-		}
+			
+			return true;
+		}//end method
 	
 	
 		function getAttachedTableDefInfo($id){
@@ -316,9 +461,10 @@ if(class_exists("phpbmsTable")){
 		function getDefaults(){
 			$therecord = parent::getDefaults();
 			
-			$therecord["type"]="NT";
 			if(isset($_GET["ty"]))
-				$therecord["type"]=$_GET["ty"];		
+				$therecord["type"]=$_GET["ty"];
+			else
+				$therecord["type"]="NT";
 	
 			$therecord["private"]=true;
 	
@@ -330,15 +476,15 @@ if(class_exists("phpbmsTable")){
 				$therecord["attachedid"]=$_GET["cid"];
 			}
 	
-			$therecord["repeatfrequency"]=1;
-			$therecord["repeattype"]="repeatDaily";
+			$therecord["repeatevery"] = 1;
+			$therecord["repeattype"] = "Daily";
 			
 			return $therecord;
 		}
 		
 		
 		function formatVariables($variables,$userid){
-	
+
 				if(isset($variables["thetype"]))
 					$variables["type"] = $variables["thetype"];
 				
@@ -355,49 +501,165 @@ if(class_exists("phpbmsTable")){
 					$variables["starttime"] = NULL;
 				}
 				
-				if(isset($variables["repeat"])) {
-	
-					$tempRepeatType="repeat".$variables["repeattype"];
-					if($variables["repeattype"]=="Monthly")
-						$tempRepeatType.=$variables["rpmo"];
-						
-					$variables["repeattype"] = $tempRepeatType;
+				if(isset($variables["repeating"])) {
+					
+					$thename="Every ";
 									
-					$tempRepeatDays="";	
-					if($variables["repeattype"]=="repeatWeekly"){
-						if(isset($variables["wosc"])) $tempRepeatDays.=$variables["wosc"];
-						if(isset($variables["womc"])) $tempRepeatDays.=$variables["womc"];
-						if(isset($variables["wotc"])) $tempRepeatDays.=$variables["wotc"];
-						if(isset($variables["wowc"])) $tempRepeatDays.=$variables["wowc"];
-						if(isset($variables["worc"])) $tempRepeatDays.=$variables["worc"];
-						if(isset($variables["wofc"])) $tempRepeatDays.=$variables["wofc"];
-						if(isset($variables["woac"])) $tempRepeatDays.=$variables["woac"];
-					}
-					$variables["repeatdays"] = $tempRepeatDays;
-	
-					if($variables["rpuntil"]<1) $variables["repeattimes"]=$variables["rpuntil"];
-	
-					if($variables["repeattimes"]!=-1)
-						$variables["repeatuntildate"] = NULL;
+					switch($variables["repeattype"]){
+						case "Daily":
+							if($variables["repeatevery"] != 1)
+								$thename .= $variables["repeatevery"]." days";
+							else
+								$thename .= " day ";
+							
+							$variables["repeatechlist"] = NULL;
+							$variables["repeatontheday"] = NULL;
+							$variables["repeatontheweek"] = NULL;
+						break;
+			
+						case "Weekly":
+							if($variables["repeatevery"] != 1)
+								$thename .= $variables["repeatevery"]." weeks on";
+							else
+								$thename .= "week on";
+								
+							foreach(explode("::",$variables["eachlist"]) as $dayNum){
+								$tempday = ($dayNum != 7)?($dayNum+1):(1);
+								$thename .=" ".nl_langinfo(constant("ABDAY_".$tempday)).", ";
+							}
+							$thename = substr($thename,0,strlen($thename)-2);
+			
+							if(strpos($thename,",") != false)
+								$thename = strrev(preg_replace("/,/","dna ",strrev($thename),1));
+							
+							$variables["repeateachlist"] = $variables["eachlist"];
+							$variables["repeatontheday"] = NULL;
+							$variables["repeatontheweek"] = NULL;
+						break;
+			
+						case "Monthly":			
+							if($variables["repeatevery"] != 1)
+								$thename .= $variables["repeatevery"]." months";
+							else
+								$thename .= "month";
+			
+							$thename .= " on the";
+							if($variables["monthlyWhat"] == 1){
+							
+								foreach(explode("::",$variables["eachlist"]) as $dayNum)
+									$thename .=" ".ordinal($dayNum).", ";
+			
+								$thename = substr($thename,0,strlen($thename)-2);
+			
+								if(strpos($thename,",") != false)
+									$thename = strrev(preg_replace("/,/","dna ",strrev($thename),1));
+			
+								$variables["repeateachlist"] = $variables["eachlist"];
+								$variables["repeatontheday"] = NULL;
+								$variables["repeatontheweek"] = NULL;
+							} else {
+								foreach($this->weekArray as $key=>$value)
+									if($value == $variables["monthlyontheweek"])
+										$thename .= " ".strtolower($key);
+			
+								foreach($this->dayOfWeekArray as $key=>$value)
+									if($value == $variables["monthlyontheday"])
+										$thename .= " ".$key;
+
+								$variables["repeateachlist"] = NULL;
+								$variables["repeatontheday"] = $variables["monthlyontheday"];
+								$variables["repeatontheweek"] = $variables["monthlyontheweek"];
+							}
+						break;
 						
+						case "Yearly":
+							if($variables["repeatevery"] > 1)
+								$thename .= $variables["repeatevery"]." years";
+							else
+								$thename .= "year";
+							
+							$thename .= " in";
+							
+							foreach(explode("::",$variables["eachlist"]) as $monthNum)
+								$thename .=" ".nl_langinfo(constant("MON_".$monthNum)).", ";
+								
+							$thename = substr($thename,0,strlen($thename)-2);
+							if(strpos($thename,",") != false)
+								$thename = strrev(preg_replace("/,/","dna ",strrev($thename),1));
+								
+							$variables["repeateachlist"] = $variables["eachlist"];
+			
+							if(isset($variables["yearlyOnThe"])){
+								$thename .= " on the";
+								foreach($this->weekArray as $key=>$value)
+									if($value == $variables["yearlyontheweek"])
+										$thename .= " ".strtolower($key);
+								
+								foreach($this->dayOfWeekArray as $key=>$value)
+									if($value == $variables["yearlyontheday"])
+										$thename .= " ".$key;
+			
+								$variables["repeatontheday"] = $variables["yearlyontheday"];
+								$variables["repeatontheweek"] = $variables["yearlyontheweek"];
+
+							} else {
+							
+								$variables["repeatontheday"] = NULL;
+								$variables["repeatontheweek"] = NULL;
+								
+							}//end if
+						break;
+					}
+			
+					switch($variables["repeatend"]){
+						case "never":
+							$variables["repeatuntil"] = NULL;
+							$variables["repeattimes"] = NULL;
+							break;
+							
+						case "after":
+							$thename .= " for ".$variables["repeattimes"];
+							
+							$variables["repeatuntil"] = NULL;
+							break;
+							
+						case "on date":
+							$thename .= " until ".$variables["repeatuntil"];
+							$variables["repeattimes"] = NULL;
+							break;
+					}
+					$thename = trim($thename).".";
+					$variables["repeatname"] = $thename;
+					
+					$variables["firstrepeat"] = dateToString(stringToDate($variables["firstrepeat"],"SQL"));
+					$variables["lastrepeat"] = dateToString(stringToDate($variables["lastrepeat"],"SQL"));;
+					$variables["timesrepeated"] = NULL;					
+								
 				}else {
+
 					$variables["repeat"] = 0;
-					$variables["repeattimes"] = 0;
-					$variables["repeatdays"] = "";
-					$variables["repeatfrequency"] = 1;
-					$variables["repeattype"] = "";
-					$variables["repeatuntil"] = NULL;				
-				}
+					$variables["repeatechlist"] = NULL;
+					$variables["repeatontheday"] = NULL;
+					$variables["repeatontheweek"] = NULL;
+					$variables["repeatname"] = NULL;
+					$variables["repeatuntil"] = NULL;
+					$variables["repeattimes"] = NULL;
+					
+					$variables["firstrepeat"] = NULL;
+					$variables["lastrepeat"] = NULL;
+					$variables["timesrepeated"] = NULL;
+
+				}//endif repeat
 
 				if($variables["assignedtoid"] != $variables["assignedtochange"]){
 					if($variables["assignedtoid"] != "")
 						$variables["assignedbyid"] = $userid; 
 					else
-						$variables["assignedbyid"] = ""; 
-				}
+						$variables["assignedbyid"] = 0; 
+				}//endif
 
 			return $variables;
-		}
+		}//end method
 		
 		
 		function updateRecord($variables, $modifiedby = NULL){
@@ -405,23 +667,37 @@ if(class_exists("phpbmsTable")){
 			if($modifiedby == NULL)
 				$modifiedby = $_SESSION["userinfo"]["id"];
 			
-			$variables = $this->formatVariables($variables,$modifiedby);
-		
-			parent::updateRecord($variables, $modifiedby);
-			
-			// update repeat options where applicable.
-			if($variables["typeCheck"]=="TS" && (isset($variables["repeat"]) && $variables["parentid"]=="NULL"))
-				if($this->checkForNewerRepeats($variables["id"],$variables["id"]))
-					$this->repeatTaskUpdate($variables["id"]);
+			if($variables["typeCheck"]=="TS" && isset($variables["repeating"]) && $variables["lastrepeat"]){
+				$variables["lastrepeat"] = NULL;
+				$variables["firstrepeat"] = NULL;
+				$variables["timesrepeated"] = NULL;
+				
+				if(isset($variables["completed"]))
+					$variables["completedChange"] = 0;
 					
-			//repeat task when completed (children only)
-			if(isset($variables["completed"]) && $variables["completedChange"]!=1 && $variables["typeCheck"]=="TS" && (isset($variables["repeat"]) || $variables["parentid"]!="NULL")) {
-				if(!$this->checkForNewerRepeats($variables["parentid"],$variables["id"])){
-					$this->repeatTask($variables["id"]);
-				}
+				$this->resetRepeating($variables["id"]);
 			}
 			
-		}
+			$variables = $this->formatVariables($variables,$modifiedby);
+
+			parent::updateRecord($variables, $modifiedby);
+
+			if($variables["typeCheck"]=="TS" && isset($variables["completed"]) && $variables["completedChange"]==0) {				
+					if($variables["parentid"]){
+						if(!$this->newerRepeats($variables["parentid"],$variables["id"])){
+							$this->repeatTask($variables["parentid"]);
+						}
+							
+					} elseif(isset($variables["repeating"])) {
+						if(!$this->newerRepeats($variables["id"],$variables["id"])){
+							$this->repeatTask($variables["id"]);
+						}
+							
+					}//endif elseif
+			}//endif						
+						
+		}//end endmethod
+
 	
 		function insertRecord($variables, $createdby = NULL){
 			
@@ -432,8 +708,11 @@ if(class_exists("phpbmsTable")){
 		
 			$newid = parent::insertRecord($variables, $createdby);
 			
+			if(isset($variables["completed"]) && isset($variables["repeating"]))
+				$this->repeatTask($newid);
+			
 			return $newid;
-		}
+		}//end method
 	
 	}//end class
 }//end if
@@ -454,15 +733,22 @@ if(class_exists("searchFunctions")){
 			$message.=" marked as completed/read.";
 			
 			//for repeatable tasks, need to repeat dem!
-			$querystatement="SELECT id FROM notes WHERE type=\"TS\" AND ((parentid IS NOT NULL AND parentid!=0 ) OR `repeat`=1) AND (".$whereclause.")";
+			$querystatement="SELECT id,parentid FROM notes WHERE type='TS' AND ((parentid IS NOT NULL AND parentid!=0 ) OR `repeating`=1) AND (".$whereclause.")";
 			$queryresult = $this->db->query($querystatement);
 			if ($this->db->numRows($queryresult)){
 			
 				$thetable = new notes($this->db,12);
-				while($this->therecord=$db->fetchArray($queryresult)){
-					$thetable->repeatTask($therecord["id"]);
-				}
-			}
+
+				while($therecord=$db->fetchArray($queryresult)){
+					if($variables["parentid"])					
+						if(!$thetable->newerRepeats($therecord["parentid"],$therecord["id"]))
+							$thetable->repeatTask($therecord["parentid"]);
+					elseif(isset($therecord["repeating"]))
+						if(!$thetable->newerRepeats($therecord["id"],$therecord["id"]))
+							$thetable->repeatTask($therecord["id"]);
+				}//endwhile
+				
+			}//endif
 					
 			return $message;
 		}
@@ -475,32 +761,49 @@ if(class_exists("searchFunctions")){
 			$whereclause = $this->buildWhereClause("notes.id");
 		
 			//we need to check for incomplete repeatable child tasks
-			$querystatement="SELECT distinct notes.parentid FROM notes where notes.parentid is not null and notes.completed=0 and (".$whereclause.")";
+			$querystatement="SELECT notes.id, notes.parentid, notes.repeating, notes.completed
+			FROM notes WHERE (".$whereclause.") AND ((notes.createdby=".$_SESSION["userinfo"]["id"]." OR notes.assignedtoid=".$_SESSION["userinfo"]["id"].")
+								 OR (".$_SESSION["userinfo"]["admin"]." =1))";
+								 
 			$repeatqueryresult = $this->db->query($querystatement);
-		
-			$querystatement = "DELETE FROM notes WHERE ((notes.createdby=".$_SESSION["userinfo"]["id"]." or notes.assignedtoid=".$_SESSION["userinfo"]["id"].") OR (".$_SESSION["userinfo"]["admin"]." =1)) and (".$whereclause.") and (notes.`repeat`!=1);";
-			$queryresult = $this->db->query($querystatement);
-		
-			$message = $this->buildStatusMessage();
-			$message.=" deleted";
-			
+					
 			//repeat where applicable
 			if ($this->db->numRows($repeatqueryresult)){
 		
 				$thetable = new notes($this->db,12);
 				
+				$repeatArray=array();
+				$orphanArray= array();
 				while($therecord=$this->db->fetchArray($repeatqueryresult)){
-					$querystatement="SELECT id FROM notes WHERE completed=1 AND parentid=".$therecord["parentid"]." ORDER BY startdate DESC LIMIT 0,1";
-					$queryresult = $this->db->query($querystatement);
-
-					if($this->db->numRows($queryresult)){
-						$completedrecord=$this->db->fetchArray($queryresult);
-						$thetable->repeatTask($completedrecord["id"]);
-					} else {
-						$thetable->repeatTask($therecord["parentid"]);
-					}			
+				
+					if($therecord["parentid"] && $therecord["completed"] == 0){
+						$repeatArray[] = array("parentid" => $therecord["parentid"], "id"=> $therecord["id"]);
+					} elseif($therecord["repeating"]){
+						$orphanArray[] = array("id" => $therecord["id"]);
+					}//endif elseif
+					
+				}//endwhile
+				
+				foreach($repeatArray as $repeat){
+					if (!in_array($repeat["parentid"],$orphanArray))
+						if(!$thetable->newerRepeats($repeat["parentid"],$repeat["id"]))
+							$thetable->repeatTask($repeat["parentid"]);
+				}//end foreach
+				
+				foreach($orphanArray as $orphaner){
+					$thetable->resetRepeating($orphaner);
 				}
-			}
+				
+			}//end if
+
+			$querystatement = "DELETE FROM notes WHERE 
+								((notes.createdby=".$_SESSION["userinfo"]["id"]." OR notes.assignedtoid=".$_SESSION["userinfo"]["id"].")
+								 OR (".$_SESSION["userinfo"]["admin"]." =1)) 
+								 AND (".$whereclause.")";
+			$queryresult = $this->db->query($querystatement);
+		
+			$message = $this->buildStatusMessage();
+			$message.=" deleted";
 			
 			return $message;
 		

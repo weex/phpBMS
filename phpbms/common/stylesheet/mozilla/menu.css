@@ -1,114 +1,119 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-	#menu{
-		clear:both;
-		padding:0px;
-		margin:0 -15px 20px;
-		background:url(image/menu.png);
-		color:white;
-		height:75px;
-	}
-	#menu a, #topMenu a:hover{color:white;}
-	#menu a{text-decoration:none;}
-	#menu a:hover{text-decoration:underline;}
-
-	#menu h1{
-		background:none;
-		float:left;
-		margin:0;
-		padding:10px;
-		padding-left:15px;
-		font-weight:bold;
-		font-size:20px;
-		border:0;
-	}
-	
-	#menuRighthand{
-		float:right;
-		padding:14px 15px 0 0;
-	}
-
-	#menuBar {
-		display:block;
-		margin:0;
-		clear:both;
-		background:#697388 url("image/menubar.png") repeat-x;
-		border-top:1px solid #8693ae;
-		border-bottom:2px solid #444a58;
-		text-transform:lowercase;
-		padding:0 0 0 15px;
-		height:27px;
-	}
-	#menuBar li{float:left;list-style-type:none;margin:0;padding:0;}
-	#menuBar a{
-		display:block;
-		background-image: url("image/menulinks.png");
-		background-position:0px 0px;
-		border-right:1px solid #5a6375;
-		font-size:12px;
-		color:white;
-		padding:6px 15px;
-	}
-	#menuBar a:hover{ 
-		background-position:0px 27px;
-		text-decoration:none; 
-		background-color:#747F96;
-	}
-	#menuBar .submenuitems li{float:none;}
-	.submenusli{padding:0;margin:0;}
-	.submenuitems{
-		clear:left;
-		display:none;
-		margin-top:1px;
-		padding:2px 2px 4px 2px;
-		position:absolute;
-		background-color:white;
-		border:1px solid #999999;
-	}
-	#menuBar .submenuitems a{
-		border:0;
-		background-image:none;
-		margin:0px;
-		display:block; 
-		padding:3px 25px 3px 10px;
-		font-size:11px;
-		color:#663366;
-		white-space:nowrap;
-		font-weight:normal;
-	}
-	#menuBar .submenuitems .menuSep {border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;}
-	
-	#menuBar .submenuitems a:hover{
-		text-decoration:none; 
-		background-color:#663366;
-		color:white;
-	}
-	
-	#statusmessage{
-		background:#0B63A2 url(image/statusm-right.png) bottom right no-repeat;
-		margin:15px;
-		margin-top:-20px;
-		padding:0 5px 0 0;
-		display:none;
-	}
-	#SMLeft{background:url(image/statusm-left.png) bottom left no-repeat;padding-bottom:5px;}
-	#SMText{
-		background:url("image/statusmessage.png") 7px 5px no-repeat;
-		color:white; 
-		font-weight:bold; 
-		font-size:15px;
-		padding: 5px 5px 0px 30px;
-	}
-
-/* ------ Help Page  ---- */	
-.helpLinks{
-	margin:0;
-	cursor:pointer;font-size:13px;background:#EEEEEE url(image/button-moveupdn.png) 99% no-repeat;
-	padding:4px;
-	border-bottom:1px solid #BBBBBB;	
+#menu{
+	clear:both;
+	padding:0px;
+	background:url("image/menu.png") repeat-x;
+	color:white;
+	margin:0 0 20px;
 }
-.helpLinks:hover{background-color:#DDDDDD}
-.helpDivs {background:white; margin:0 5px; border:1px solid #EEEEEE; border-top-width:0; border-bottom-width:0;}
-.helpSectionDivs{height:280px; overflow:auto;padding:10px;}
 
+#menu a, #topMenu a:hover{
+	color:white;
+	text-decoration:none;
+}
+
+#menu a:hover{
+	text-decoration:underline;
+}
+
+
+#menu h1{
+	background:none;
+	float:left;
+	margin:0;
+	padding:9px 10px 11px;
+	padding-left:15px;
+	font-weight:bold;
+	font-size:22px;
+	border:0;
+}
+
+#menuRighthand{
+	float:right;
+	padding:14px 15px 0 0;
+}
+
+#menuBar {
+	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
+	display:block;
+	clear:both;
+	text-transform:lowercase;
+	border-bottom:1px solid #ACB7C4;
+	margin:0;
+	padding:0 0 0 5px;	
+	height:26px;
+}
+#menuBar li{
+	display:block;
+	float:left;
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+#menuBar a{
+	display:block;
+	font-size:12px;
+	font-weight:normal;
+	color:black;
+	padding:6px 10px;
+	height:15px;
+	outline:none;
+}
+#menuBar a:hover, #menuBar .hovered{ 
+	text-decoration:none; 
+	background-color:#663366;
+	color:white;
+}
+
+#menuBar .submenuitems li{float:none;}
+.submenusli{padding:0;margin:0;}
+.submenuitems{
+	clear:left;
+	display:none;
+	padding:2px 2px 4px 2px;
+	margin-top:-1px;
+	position:absolute;
+	background-color:white;
+	border:1px solid #999999;
+}
+#menuBar .submenuitems a{
+	border:0;
+	background-image:none;
+	margin:0px;
+	display:block; 
+	padding:3px 25px 3px 15px;
+	font-size:11px;
+	color:black;
+	white-space:nowrap;
+	font-weight:normal;
+}
+#menuBar .submenuitems .menuSep {border-top:1px solid #AAAAAA; padding-top:3px;margin-top:3px;}
+
+#menuBar .submenuitems a:hover{
+	text-decoration:none; 
+	background-color:#663366;
+	color:white;
+}
+
+#statusmessage{
+	background:#0B63A2 url(image/statusm-right.png) bottom right no-repeat;
+	margin:15px;
+	margin-top:-20px;
+	padding:0 5px 0 0;
+	display:none;
+}
+#SMLeft{background:url(image/statusm-left.png) bottom left no-repeat;padding-bottom:5px;}
+#SMText{
+	background:url("image/statusmessage.png") 7px 5px no-repeat;
+	color:white; 
+	font-weight:bold; 
+	font-size:15px;
+	padding: 5px 5px 0px 30px;
+}
+
+/* ------ Help Page  ---- */
+#helpBox{height:420px; overflow:auto; background:white}
+#helpBox h1{margin-top:20px;}
+#helpClose{width:70px}

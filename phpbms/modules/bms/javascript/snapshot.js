@@ -36,38 +36,37 @@
  +-------------------------------------------------------------------------+
 */
 
-initArray[initArray.length]=function(){
+bmsButton = {
+
+	press: function(e){
+		objSrc = e.src();
+		
+		id = objSrc.id.substr(3);
+		
+		document.location = "../../search.php?id="+id;
+		
+	}//end method
 	
-	var torders=getObjectFromID("todaysOrders");
-	if(torders){
-		var todaysOrdersDivs = new Array();
-		todaysOrdersDivs[todaysOrdersDivs.length]=torders;
-	
-		var todaysOrdersLinks = new Array();
-		todaysOrdersLinks[todaysOrdersLinks.length]=getObjectFromID("todaysOrdersLink");
-	
-		var todaysOrdersAccordion = new fx.Accordion(todaysOrdersLinks, todaysOrdersDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysOrdersLink")}});
-		todaysOrdersAccordion.showThisHideOpen(todaysOrdersDivs[0]);
-	}
+}//end class
 
 
-	var tclients=getObjectFromID("todaysClients")
-	if(tclients){
-		var todaysClientsDivs = new Array();
-		todaysClientsDivs[todaysClientsDivs.length]=tclients;
-	
-		var todaysClientsLinks = new Array();
-		todaysClientsLinks[todaysClientsLinks.length]=getObjectFromID("todaysClientsLink");
-	
-		var todaysClientsAccordion = new fx.Accordion(todaysClientsLinks, todaysClientsDivs, {opacity: true, duration:200, onComplete:function(){switchArrows("todaysClientsLink")}});
-		todaysClientsAccordion.showThisHideOpen(todaysClientsDivs[0]);
-	}
-}
+connect(window,"onload",function() {
 
-function switchArrows(arrowid){
-	var thearrow=getObjectFromID(arrowid);
-	if(thearrow.className=="graphicButtons buttonUp")
-		thearrow.className="graphicButtons buttonDown";
-	else
-		thearrow.className="graphicButtons buttonUp";
-}
+	var invoiceDivs = getElementsByClassName('invoiceDivs');
+	var invoiceLinks = getElementsByClassName('invoiceLinks');
+
+	var invoiceAccordion = new fx.Accordion(invoiceLinks, invoiceDivs, {opacity: true, duration:300});
+
+	var clientDivs = getElementsByClassName('clientDivs');
+	var clientLinks = getElementsByClassName('clientLinks');
+
+	var clientAccordion = new fx.Accordion(clientLinks, clientDivs, {opacity: true, duration:300});
+
+	invoiceAccordion.showThisHideOpen(invoiceDivs[0]);
+	clientAccordion.showThisHideOpen(clientDivs[0]);
+	
+	var bmsButtons = getElementsByClassName('bmsInfo');
+	for(var i=0; i<bmsButtons.length; i++)
+		connect(bmsButtons[i],"onclick",bmsButton.press);
+
+})

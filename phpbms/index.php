@@ -74,7 +74,7 @@
 			</fieldset>
 			<p id="buttonP"><button class="Buttons" type="submit" id="loginButton" disabled="disabled">Log In</button></p>
 		</form>		
-		<p id="moreinfoButtonP"><button id="moreinfoButton" type="button" class="graphicButtons buttonDown"><span>more info</span></button></p>
+		<p id="moreinfoButtonP"><button id="moreinfoButton" type="button" class="graphicButtons buttonInfo"><span>more info</span></button></p>
 		<div id="moreinfo" >
 			<div class="box">
 			<h2><a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a></h2>

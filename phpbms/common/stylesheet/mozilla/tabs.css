@@ -1,26 +1,55 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-.tabs{margin:0;padding:0 0 0 10px;height:20px;}
-.tabs LI{display:block;float:left;list-style-type:none;margin:0 2px 0 0;padding:0 5px 0 0; 
-				background:url("image/tab.gif") no-repeat;
-				background-position:100% -600px;
-				font-size:11px;
-				}
-.tabs LI A, .tabs LI div{ display:block; padding:4px 4px 4px 9px;
-				background:url("image/tab.gif") no-repeat;
-				background-position:0% -600px;
-				color:white;font-weight:normal;
+.tabs{
+	margin:0 15px;
+	padding:0 0 0 10px;
+	height:20px;
 }
+
+.bodyline .tabs{
+	margin:0
+}
+
+.tabs LI{
+	display:block;
+	float:left;
+	list-style-type:none;
+	margin:0 2px 0 0;
+	padding:0 5px 0 0; 
+	background:url("image/tab.gif") no-repeat;
+	background-position:100% -600px;
+	font-size:11px;
+}
+
+.tabs LI A, .tabs LI div{ 
+	display:block; 
+	padding:4px 4px 4px 9px;
+	background:url("image/tab.gif") no-repeat;
+	background-position:0% -600px;
+	color:white;
+	font-weight:normal;
+}
+
 .tabs LI div{color:#BBBBBB}
+
 .tabs LI:Hover{background-position:100% -400px;}
+
 .tabs LI:Hover A, .tabs LI:Hover div{background-position:0% -400px;}
 
 .tabs .tabsSel{ background-position:100% -200px;}
-.tabs .tabsSel A,.tabs .tabsSel div{color:#5F697E;background-position:0% -200px;}
+
+.tabs .tabsSel A,.tabs .tabsSel div{
+	color:#5F697E;
+	background-position:0% -200px;
+}
 
 .tabs .tabsSel:Hover{ background-position:100% 0px;}
-.tabs .tabsSel:Hover A, .tabs .tabsSel:Hover div{ color:#5F697E;background-position:0% 0px;}
+
+.tabs .tabsSel:Hover A, .tabs .tabsSel:Hover div{ 
+	color:#5F697E;
+	background-position:0% 0px;
+}
 
 .tabs LI div span,.tabs LI a span{
 	background:url(image/note.png) 100% 1px no-repeat;

@@ -22,15 +22,15 @@
  |   be used to endorse or promote products derived from this software     |
  |   without specific prior written permission.                            |
  |                                                                         |
- | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS     |
+ | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONtrIBUTORS     |
  | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT       |
  | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A |
  | PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
- | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,   |
+ | OWNER OR CONtrIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,   |
  | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT        |
  | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,   |
  | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY   |
- | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT     |
+ | THEORY OF LIABILITY, WHETHER IN CONtrACT, StrICT LIABILITY, OR TORT     |
  | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE   |
  | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    |
  |                                                                         |
@@ -54,119 +54,125 @@
 	}
 		
 ?>
-<div class="box">
-	<h3 class="helpLinks">About This Program</h3>
-	<div class="helpDivs">
-		<div class="helpSectionDivs">
-			<p align="right" style="float:right;"><img src="<?php echo APP_PATH?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
-			<h3>phpBMS - Commercial Open Source Business Management Web Application</h3>
-			<p class="small">v<?php displayVersions($db,$queryresult)?></p>
-			<p>Copyright &reg; 2004-2007 Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
-			<p>
-				<strong>Kreotek, LLC</strong><br />
-				610 Quantum<br />
-				Rio Rancho, NM 87124<br />
-				<a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a><br />
-				1-800-731-8026<br />
-			</p>
-		</div>
-	</div>
-	<h3 class="helpLinks">Keyboard Shortcuts</h3>
-	<div class="helpDivs">
-		<div class="helpSectionDivs">
-			<p>&nbsp;</p>
-			<p>
-				phpBMS takes advanage of HTML's accesskey property to allow
-				you to use your keyboard to navigate pages.  Some browsers and OS's
-				might have different modifier keys, so check your
-				browser documentation.  In windows, when using Internet Explorer and Firefox &lt 2.0, hold
-				down the Alt key followed by the shortcut.  When using Firefox &gt 2.0 in windows hold down Alt-Shift buttons 
-				followed by the shortcut. In opera hold down Shift-Esc then
-				the shortut.  On a Mac, use the ctrl key in both Firefox &lt; 2.0 and Safari. 
-			</p>
-			<h4>Search/List Screens</h4>
-			<div class="fauxP">
+<div class="box" id="helpBox">
+
+	<h1>About This Program</h3>
+	<blockquote>
+		<p align="right" style="float:right;"><img src="<?php echo APP_PATH?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
+		
+		<h3>phpBMS - Commercial Open Source Business Management Web Application</h3>
+		
+		<p class="small"><?php displayVersions($db,$queryresult)?></p>
+		
+		<p>Copyright &reg; 2004-2007 Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
+	
+		<p>
+			<strong>Kreotek, LLC</strong><br />
+			610 Quantum<br />
+			Rio Rancho, NM 87124<br />
+			<a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a><br />
+			1-800-731-8026<br />
+		</p>
+	</blockquote>
+
+	<h1>Keyboard Shortcuts</h1>
+	<blockquote>
+		<p>
+			phpBMS takes advanage of HTML's accesskey property to allow
+			you to use your keyboard to navigate pages.  Some browsers and OS's
+			might have different modifier keys, so check your
+			browser documentation.  In windows, when using Internet Explorer and Firefox &lt 2.0, hold
+			down the Alt key followed by the shortcut.  When using Firefox &gt 2.0 in windows hold down Alt-Shift buttons 
+			followed by the shortcut. In opera hold down Shift-Esc then
+			the shortut.  On a Mac, use the ctrl key in both Firefox &lt; 2.0 and Safari. 
+		</p>
+	
+		<h2>Search/List Screens</h2>
+		<div class="fauxP">
 			<table border="0" cellpadding="0" cellspacing="0" class="querytable" width="300">
-				<TR>
+				<tr>
 					<th valign="bottom" class="queryheader" align="right" width="100%">Command</th>
 					<th valign="bottom" class="queryheader" align="center">Key</th>
-				</TR>
-				<TR class="qr1" >
-					<TD align="right">New Record</TD>
-					<td align="center">N</td>
-				</TR>
-				<TR class="qr2" >
-					<TD align="right">Edit Record</TD>
-					<td align="center">E</td>
-				</TR>
-				<TR class="qr1" >
-					<TD align="right">Print</TD>
-					<td align="center">P</td>
-				</TR>
-				<TR class="qr2" >
-					<TD align="right">Delete (where applicable)</TD>
-					<td align="center">D</td>
-				</TR>
-				<TR class="qr1" >
-					<TD align="right">Select All</TD>
-					<td align="center">A</td>
-				</TR>
-				<TR class="qr2" >
-					<TD align="right">Select None</TD>
-					<td align="center">X</td>
-				</TR>
-				<TR class="qr1" >
-					<TD align="right">Keep Highlighted</TD>
-					<td align="center">K</td>
-				</TR>
-				<TR class="qr2">
-					<TD align="right">Omit Highlighted</TD>
-					<td align="center">O</td>
-				</TR>
-				<tr class="queryfooter">
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
 				</tr>
-				</table>
-			</div>
-			<h4>Add/Edit Screens</h4>
-			<div class="fauxP">
-			<table border="0" cellpadding="0" cellspacing="0" class="querytable" width="300">
-				<TR>
-					<th valign="bottom" class="queryheader" align="right" width="100">Command</th>
-					<th valign="bottom" class="queryheader" align="center">Key</th>
-				</TR>
-				<TR class="qr1">
-					<TD align="right">Save Record</TD>
-					<td align="center">S</td>
-				</TR>
-				<TR class="qr2">
-					<TD align="right">Cancel</TD>
+				<tr class="qr1" >
+					<td align="right">New Record</td>
+					<td align="center">N</td>
+				</tr>
+				<tr class="qr2" >
+					<td align="right">Edit Record</td>
+					<td align="center">E</td>
+				</tr>
+				<tr class="qr1" >
+					<td align="right">Print</td>
+					<td align="center">P</td>
+				</tr>
+				<tr class="qr2" >
+					<td align="right">Delete (where applicable)</td>
+					<td align="center">D</td>
+				</tr>
+				<tr class="qr1" >
+					<td align="right">Select All</td>
+					<td align="center">A</td>
+				</tr>
+				<tr class="qr2" >
+					<td align="right">Select None</td>
 					<td align="center">X</td>
-				</TR>
+				</tr>
+				<tr class="qr1" >
+					<td align="right">Keep Highlighted</td>
+					<td align="center">K</td>
+				</tr>
+				<tr class="qr2">
+					<td align="right">Omit Highlighted</td>
+					<td align="center">O</td>
+				</tr>
 				<tr class="queryfooter">
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
 				</tr>
 			</table>
-			</div>
 		</div>
-	</div>
-	<h3 class="helpLinks">Community Support at www.phpbms.org</h3>
-	<div class="helpDivs">
-		<div class="helpSectionDivs">
+	
+		<h2>Add/Edit Screens</h2>
+		<div class="fauxP">
+			<table border="0" cellpadding="0" cellspacing="0" class="querytable" width="300">
+				<tr>
+					<th valign="bottom" class="queryheader" align="right" width="100%">Command</th>
+					<th valign="bottom" class="queryheader" align="center">Key</th>
+				</tr>
+				<tr class="qr1">
+					<td align="right">Save Record</td>
+					<td align="center">S</td>
+				</tr>
+				<tr class="qr2">
+					<td align="right">Cancel</td>
+					<td align="center">X</td>
+				</tr>
+				<tr class="queryfooter">
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</blockquote>
+
+
+	<h1>Community Support at www.phpbms.org</h1>
+	
+	<blockquote>
 		<ul>
 			<li><p><a href="http://www.phpbms.org" target="_blank">phpBMS project Web Site</a> - Main site for phpBMS development, documentation, and user support.</p></li>
 			<li><p><a href="http://phpbms.org/wiki/PhpbmsFaq" target="_blank">phpBMS FAQ</a> - Frequently asked questions </p></li>
 			<li><p><a href="http://www.phpbms.org/forum" target="_blank">phpBMS User Support forum</a> - A place for user and developer discussions.</p></li>
 			<li><p><a href="http://phpbms.org/wiki/PhpbmsGuide" target="_blank">phpBMS Wiki Documentation </a> - Wiki driven user documentation starting point.</p></li>
 		</ul>
-		</div>
-	</div>
-	<h3 class="helpLinks">Customization and Paid Support Options</h3>
-	<div class="helpDivs">
-		<div class="helpSectionDivs">
-		<h4>Paid Technical, Development and Installation Support</h4>
+	</blockquote>
+
+	<h1>Customization and Paid Support Options</h1>
+
+	<blockquote>
+		<h2>Paid Technical, Development and Installation Support</h2>
+	
 		<p>
 			Know that your mission critical business software is backed by
 			toll-free phone and e-mail support provided by the very people
@@ -177,7 +183,7 @@
 			Visit <a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a> or call
 			<strong>1-800-731-8026</strong> for more information.
 		</p>
-		<h4>Customizing phpBMS</h4>
+		<h2>Customizing phpBMS</h2>
 		<p>
 			No two businesses are run the exact same way. Every individual buiness has uniques needs. Don't conform
 			your business processes to your software, make your software work the way your business does.
@@ -191,7 +197,6 @@
 			Visit <a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a> or call
 			<strong>1-800-731-8026</strong> for more information.
 		</p>
-		</div>
-	</div>
+	</blockquote>
 </div>
-<p align="right"><button type="button" class="Buttons" onclick="closeModal()"><span> done </span></button></p>
+<p align="right"><button id="helpClose" type="button" class="Buttons" onclick="closeModal()"><span>close</span></button></p>

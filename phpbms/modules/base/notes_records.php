@@ -38,7 +38,7 @@
 */
 
 	$displayTable= new displaySearchTable($db);	
-	$displayTable->base=$base;
+	$displayTable->base = $base;
 	$displayTable->initialize(12);	
 	$displayTable->querywhereclause=$whereclause;
 	$displayTable->tableoptions["printex"]=0;
@@ -95,13 +95,8 @@
 		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();
-			$displayTable->displayQueryHeader();
-			if($displayTable->numrows>0){
-				$displayTable->displayQueryResults();
-				$displayTable->displayQueryFooter();
-			}
-			else
-				$displayTable->displayNoResults();				
+
+			$displayTable->displayResultTable();
 		?>
 		</form>
 	</div>
