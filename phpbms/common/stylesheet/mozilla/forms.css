@@ -36,10 +36,11 @@ FORM{margin:0px;padding:0px;}
 
 .disabledButtons{ color:#999999}
 
-.invisibleButtons,.invisibleTextField{
-border-style:none;
-background-color:transparent;
+.invisibleButtons, .invisibleTextField, .invisibleTextField:focus{
+	border-style:none;
+	background-color:transparent;
 }
+
 .invisibleButtons{
 display:inline;
 margin:0;

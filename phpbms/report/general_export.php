@@ -36,37 +36,96 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require("../include/session.php");
-	if(!isset($_GET["tid"])) $error = new appError(200,"URL variable missing: tid");
-	if(!is_numeric($_GET["tid"])) $error = new appError(300,"URL variable invalid type: tid");
+	if(!class_exists("phpbmsReport"))
+		include("report_class.php");
 
-	if($_SESSION["printing"]["sortorder"])
-		$sortorder=$_SESSION["printing"]["sortorder"];
-	else
-		$sortorder="";
+	class generalExport extends phpbmsReport {
+	
+		var $maintable = "";
+		var $resultOutput = "";
 		
-	header("Content-type: text/plain");
-	header('Content-Disposition: attachment; filename="export.txt"');
+		function generalExport($db, $tabledefid){
+		
+			$this->tabledefid = ((int) $tabledefid);
+			
+			parent::phpbmsReport($db);
+
+			$querystatement = "
+				SELECT 
+					maintable 
+				FROM 
+					tabledefs
+				WHERE 
+					id=".((int) $tabledefid);
+					
+			$queryresult = $db->query($querystatement); 
+			$therecord=$db->fetchArray($queryresult);
+			
+			$this->maintable = $therecord["maintable"];
+			
+		}//end method
+
+		
+		function generate(){
+		
+			$querystatement = "
+				SELECT 
+					* 
+				FROM 
+					".$this->maintable;
+
+			$querystatement = $this->assembleSQL($querystatement);
+			
+			$queryresult = $this->db->query($querystatement);
+
+			$num_fields = $this->db->numFields($queryresult);
+		
+			for($i=0;$i<$num_fields;$i++)			
+				$this->reportOutput .= ",".$this->db->fieldName($queryresult, $i);
+
+			$this->reportOutput = substr($this->output, 1)."\n";
+		
+			while($therecord = $this->db->fetchArray($queryresult)){
+			
+				foreach($therecord as $value)
+					$this->reportOutput.= ',"'.$value.'"';
+
+				$this->reportOutput = substr($this->output, 1)."\n";
+
+			}//endwhile
+			
+		
+		}//end method
+		
+		
+		function show(){
+
+			header("Content-type: text/plain");
+			header('Content-Disposition: attachment; filename="export.txt"');		
+			
+			echo $this->reportOutput;
+			
+		}//end method
+		
+	}//end class
 	
-	$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tid"];
-	$thequery=$db->query($querystatement);                   
-	if(!$thequery)	$error = new appError(100,"Could not retrieve table information");
-	$therecord=$db->fetchArray($thequery);
 	
-	$querystatement="SELECT * FROM ".$therecord["maintable"]." ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=$db->query($querystatement);                   
+	//PROCESSING 
+	//========================================================================
+	
+	if(!isset($noOutput)){
 
-	$num_fields=$db->numFields($thequery);
-
-	for($i=0;$i<$num_fields;$i++){
-		echo $db->fieldName($thequery,$i).",";
-	}
-	echo "\n";
-
-	while($therecord=$db->fetchArray($thequery)){
-		for($i=0;$i<$num_fields;$i++){
-			echo "\"".$therecord[$i]."\",";
-		}
-		echo "\n";
-	}
+		session_cache_limiter('private');
+	
+		require("../include/session.php");
+		if(!isset($_GET["tid"])) 
+			$error = new appError(200,"URL variable missing: tid");
+	
+		$report = new generalExport($db, $_GET["tid"]);
+		$report->setupFromPrintScreen();
+		$report->generate();	
+		$report->show();	
+		
+	}//end if
+	
 ?>

@@ -59,7 +59,12 @@ $therecord = $settings->getSettings();
 $pageTitle="Configuration";
 
 $phpbms->cssIncludes[] = "pages/adminsettings.css";
+
+
 $phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
+foreach($phpbms->modules as $module => $moduleinfo)
+	if($module != "base"  && file_exists("../".$module."/javascript/adminsettings.js"))
+		$phpbms->jsIncludes[] = "modules/".$module."/javascript/adminsettings.js";
 
 	//Form Elements
 	//==============================================================
@@ -296,7 +301,6 @@ $phpbms->jsIncludes[] = "modules/base/javascript/adminsettings.js";
 		if(method_exists($module,"display")){
 			$module->display($theform,$therecord);
 		?>
-		<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 	<?php }//end for ?>
 	</form>
 </div>

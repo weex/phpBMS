@@ -36,20 +36,34 @@
  +-------------------------------------------------------------------------+
 */
 
-bmsButton = {
+bmsSnapshot = {
 
-	press: function(e){
+	infoPress: function(e){
 		objSrc = e.src();
 		
 		id = objSrc.id.substr(3);
 		
 		document.location = "../../search.php?id="+id;
 		
+	},//end method
+	
+	receiptLink: function(e){
+		
+		var row = e.src();
+		var theid = row.id.substr(7);
+		
+		var addedit = getObjectFromID("receiptEdit");
+		
+		theURL = addedit.value + "?id=" + theid;
+		document.location = theURL;
+		
 	}//end method
 	
 }//end class
 
 
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
 connect(window,"onload",function() {
 
 	var invoiceDivs = getElementsByClassName('invoiceDivs');
@@ -62,11 +76,21 @@ connect(window,"onload",function() {
 
 	var clientAccordion = new fx.Accordion(clientLinks, clientDivs, {opacity: true, duration:300});
 
+	var arDivs = getElementsByClassName('arDivs');
+	var arLinks = getElementsByClassName('arLinks');
+
+	var arAccordion = new fx.Accordion(arLinks, arDivs, {opacity: true, duration:300});
+
 	invoiceAccordion.showThisHideOpen(invoiceDivs[0]);
 	clientAccordion.showThisHideOpen(clientDivs[0]);
 	
 	var bmsButtons = getElementsByClassName('bmsInfo');
 	for(var i=0; i<bmsButtons.length; i++)
-		connect(bmsButtons[i],"onclick",bmsButton.press);
+		connect(bmsButtons[i],"onclick",bmsSnapshot.buttonPress);
+
+	var receipts = getElementsByClassName('receiptLinks');
+	for(i=0; i<receipts.length; i++)
+		connect(receipts[i], "onclick", bmsSnapshot.receiptLink);
+
 
 })

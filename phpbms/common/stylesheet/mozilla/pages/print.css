@@ -1,7 +1,7 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-#mainbody{width:585px;margin:50px auto 0;padding:0}
+#mainbody{width:585px;margin:50px auto 0;}
 #footer{width:585px; margin:5px auto 0;}
 
 #fsReportInformation{float:right;width:300px;margin-top:0px;}
@@ -11,8 +11,14 @@
 #selectReportsDiv{margin-right:0;width:235px}
 
 #showoptions{width:100px}
-#showoptions span{display:inline;padding-left:15px;	color : #455372; 
-	font-weight:bold; }
+
+#showoptions span{
+	display:inline;
+	padding-left:15px;
+	color : #455372; 
+	font-weight:bold;
+}
+
 #showoptions:hover span{text-decoration:underline;}
 
 #moreoptions{display:none;}
@@ -26,4 +32,4 @@
 
 #printFooter{text-align:right}
 #printButton,#cancel{width:75px;}
-#choosereport{width:205px;height:170px;}
+#choosereport{width:100%;height:170px;}

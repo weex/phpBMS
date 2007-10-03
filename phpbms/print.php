@@ -133,8 +133,8 @@ if($tablePrinter->openwindows) $phpbms->bottomJS[] = $tablePrinter->openwindows;
 
 include("header.php");
 ?>
-<div id="mainbody">
-<div class="bodyline">
+<div >
+<div class="bodyline" id="mainbody">
 	<h1><?php echo $pageTitle ?><a name="top"></a></h1>
 	
 <form action="print.php" method="post" name="print">

@@ -15,11 +15,11 @@
 			$fields[] = $theinput;
 
 			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","id","name",
-									"inactive=0", "priority,name", true, "default payment method");
+									"inactive=0 AND `type` != 'receivable'", "priority,name", true, "default payment method");
 			$fields[] = $theinput;
 	
 			$theinput = new inputDataTableList($db, "default_shipping",$therecord["default_shipping"],"shippingmethods","id","name",
-									"inactive=0", "priority,name", true, "default shipping method");
+									"`inactive`=0", "priority,name", true, "default shipping method");
 			$fields[] = $theinput;
 			
 			$theinput = new inputDataTableList($db, "default_discount",$therecord["default_discount"],"discounts","id","name",
@@ -30,8 +30,36 @@
 									"inactive=0", "name", true, "default tax area");
 			$fields[] = $theinput;
 
+			$theinput = new inputBasicList("default_clienttype",$therecord["default_clienttype"],array("prospect"=>"prospect","client"=>"client"), "default type");
+			$fields[] = $theinput;
+	
+			$theinput = new inputCheckbox("default_hascredit",$therecord["default_hascredit"],"has credit by default");
+			$fields[] = $theinput;
 
-		
+			$theinput = new inputCurrency("default_creditlimit", $therecord["default_creditlimit"], "default credit limit");
+			$fields[] = $theinput;
+			
+			$theinput = new inputField("term1_days",$therecord["term1_days"],"term 1 length",false,"integer",4,4);
+			$theinput->setAttribute("class","important");
+			$fields[] = $theinput;			
+
+			$theinput = new inputField("term1_percentage",$therecord["term1_percentage"],"term 1 percentage",false,"real",4,4);
+			$fields[] = $theinput;			
+
+			$theinput = new inputField("term2_days",$therecord["term2_days"],"term 2 length",false,"integer",4,4);
+			$theinput->setAttribute("class","important");
+			$fields[] = $theinput;			
+
+			$theinput = new inputField("term2_percentage",$therecord["term2_percentage"],"term 2 percentage",false,"real",4,4);
+			$fields[] = $theinput;			
+
+			$theinput = new inputField("term3_days",$therecord["term3_days"],"term 3 length",false,"integer",4,4);
+			$theinput->setAttribute("class","important");
+			$fields[] = $theinput;			
+
+			$theinput = new inputField("term3_percentage",$therecord["term3_percentage"],"term 3 percentage",false,"real",4,4);
+			$fields[] = $theinput;			
+
 			return $fields;
 		}
 		
@@ -57,6 +85,7 @@
 		<?php $theform->showField("shipping_postalcode");?>
 	</p>
 </fieldset>
+<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 
 <fieldset>
 	<legend>invoices</legend>
@@ -72,7 +101,39 @@
 
 	<p><?php $theform->showField("default_taxarea");?></p>
 </fieldset>
+<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+
+<fieldset>
+	<legend>clients</legend>
+	
+	<p><?php echo $theform->showField("default_clienttype");?></p>
+
+	<p><?php echo $theform->showField("default_hascredit");?></p>
+
+	<p><?php echo $theform->showField("default_creditlimit");?></p>
+
+</fieldset>
+<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+
+<fieldset>
+	<legend>Accounts Receivable</legend>
+	
+	<p><?php echo $theform->showField("term1_days");?> days</p>
+
+	<p><?php echo $theform->showField("term1_percentage");?> %</p>
+
+	<p><?php echo $theform->showField("term2_days");?> days</p>
+
+	<p><?php echo $theform->showField("term2_percentage");?> %</p>
+
+	<p><?php echo $theform->showField("term3_days");?> days</p>
+
+	<p><?php echo $theform->showField("term3_percentage");?> %</p>
+
+</fieldset>
+<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
+
 <?php
-		}
-	}
+		}//end method
+	}//end class
 ?>

@@ -26,3 +26,7 @@ INSERT INTO choices VALUES (125,'shippingmethod','');
 INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','products entry');
 INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','clients entry');
 INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('tabgroups','invoices entry');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('receiptother','loss (write-off)');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('receiptother','error');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('receiptother','correction');
+INSERT INTO `choices` (`listname`, `thevalue`) VALUES ('receiptother','transfer');

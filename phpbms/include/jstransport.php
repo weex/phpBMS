@@ -40,4 +40,17 @@
 
 	?>LOGIN_REFRESH=<?php echo LOGIN_REFRESH?>;<?php
 
+	?>TERM1_DAYS=<?php echo TERM1_DAYS?>;<?php
+	
+	?>MONTH_NAMES_LONG= [ <?php 
+		
+		$mNames = "";
+		for($i=0; $i < 11; $i++)
+			$mNames .= ', "'.strftime("%B", mktime(0, 0, 0, $i+1, 1, 1974)).'"';
+		$mNames = substr($mNames, 2);
+		
+		echo $mNames;
+	
+	?> ];<?php 
+
 ?>

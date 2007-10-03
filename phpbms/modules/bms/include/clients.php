@@ -45,15 +45,21 @@ if(class_exists("phpbmsTable")){
 			$queryresult = $this->db->query($querystatement);
 	
 			return !($this->db->numRows($queryresult)===0);
-		}
+		}//end method
 	
 		// CLASS OVERRIDES ===================================================================
 		
 		function getDefaults(){
 			$therecord = parent::getDefaults();
+
+			$therecord["type"] = DEFAULT_CLIENTTYPE;
+			if($therecord["type"] == "client")
+				$therecord["becameclient"] = dateToString(mktime());
 			
-			$therecord["type"]="prospect";
-			$therecord["webaddress"]="http://";
+			$therecord["webaddress"] = "http://";
+
+			$therecord["hascredit"] = DEFAULT_HASCREDIT;
+			$therecord["creditlimie"] = DEFAULT_CREDITLIMIT;
 			
 			return $therecord;
 		}
@@ -67,7 +73,7 @@ if(class_exists("phpbmsTable")){
 				$variables["type"] = "client";
 
 			return $variables;
-		}
+		}//end method
 		
 	
 		function updateRecord($variables, $modifiedby = NULL){
@@ -75,7 +81,7 @@ if(class_exists("phpbmsTable")){
 			$variables = $this->prepareVariables($variables);
 			
 			return parent::updateRecord($variables, $modifiedby);
-		}
+		}//end method
 		
 		
 		function insertRecord($variables, $createdby = NULL){
@@ -84,8 +90,11 @@ if(class_exists("phpbmsTable")){
 			
 			return parent::insertRecord($variables, $createdby);
 		}//end method
+		
 	}//end class
+	
 }//end if
+
 
 if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{

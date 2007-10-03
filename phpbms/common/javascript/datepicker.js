@@ -106,8 +106,7 @@ function dpClickDay(year,month,day){
 
 function dpHighlightDay(year,month,day){
 	var displayinfo=getObjectFromID("dpExp");
-	var months=Array("January","February","March","April","May","June","July","August","September","October","November","December");
-	displayinfo.innerHTML=months[month-1]+" "+day+", "+year;
+	displayinfo.innerHTML=MONTH_NAMES_LONG[month-1]+" "+day+", "+year;
 }
 
 function dpUnhighlightDay(){
@@ -117,5 +116,11 @@ function dpUnhighlightDay(){
 
 
 function formatDateField(thefield){
-	thefield.value=dateToString(stringToDate(thefield.value));
+	
+	var formatedDate = stringToDate(thefield.value);
+	if(thefield.value != "")
+		if(isNaN(formatedDate.getMonth()))
+			formatedDate = new Date();
+		
+	thefield.value = dateToString(formatedDate);
 }

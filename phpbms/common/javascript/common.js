@@ -255,7 +255,19 @@ phpBMS.base.update(phpBMS.signal.e.prototype,{
 })//end subclass
 
 phpBMS.base.update(phpBMS.signal, {
-				   
+
+	getIdent: function(obj, eventName){
+		var self = phpBMS.signal;
+        var observers = self._observers;
+
+		for(var i = 0; i<observers.length;i++)
+			if(observers[i][0] == obj && observers[i][1] == eventName)
+				return observers[i];
+			
+		return false;
+		
+	},//end method
+
 	_unloadCache: function(){
 
 		var self = phpBMS.signal;
@@ -285,7 +297,7 @@ phpBMS.base.update(phpBMS.signal, {
 	_listener: function(srcObj, func){
         var E = phpBMS.signal.e;
 		return function (nativeEvent) {
-			func.apply(srcObj, [new E(srcObj, nativeEvent)]);
+			return func.apply(srcObj, [new E(srcObj, nativeEvent)]);
 		};
 	},//end method
 
@@ -337,7 +349,8 @@ phpBMS.base.update(phpBMS.signal, {
 
 phpBMS.signal.EXPORT = [
 	"connect",
-	"disconnect"
+	"disconnect",
+	"getIdent"
 ]
 
 phpBMS.signal.__new__ = function (win) {
@@ -357,14 +370,7 @@ phpBMS.signal.__new__ = function (win) {
 
 phpBMS.signal.__new__(this);
 
-
-
 phpBMS.base._exportFunctions(this,phpBMS.signal);
-
-
-
-
-
 
 
 
@@ -658,6 +664,13 @@ function timeToString(thetime,format){
 }
 /* CURRENCY -------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- */
+function roundForCurrency(number){
+	
+	return Math.round( number * Math.pow(10,CURRENCY_ACCURACY) ) /	Math.pow(10,CURRENCY_ACCURACY);
+	
+}
+
+
 function numberToCurrency(number){
 	var currency="";
 	if(isNaN(parseFloat(number))) number=0;
@@ -827,8 +840,13 @@ window.alert = function(txt) {modalAlert(txt);}
 /* ------------------------------------------------------- */
 connect(window,"onload",function() {
 
+
+if(typeof(APP_PATH) != "undefined"){
+
 	spinner = new Image;
 	spinner.src = APP_PATH+"common/image/spinner.gif";		
+
+}
 
 	
 	

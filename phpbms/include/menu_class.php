@@ -76,10 +76,10 @@ class topMenu{
 				if($menurecord["link"]) {
 					if(strpos($menurecord["link"],"http")!==0 && strpos($menurecord["link"],"javascript")!==0)
 						$menurecord["link"]=APP_PATH.$menurecord["link"];						
-					?><li><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
+					?><li class="firstLevel"><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
 				} else { 
 				
-				?><li><a href="#toptop" class="topMenus" id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php 
+				?><li class="firstLevel"><a href="#toptop" class="topMenus" id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php 
 										
 					$subitemsquery = $this->getSubItems($menurecord["id"]);
 					

@@ -36,7 +36,6 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-
 	require_once("../../include/session.php");	
 	require_once("include/snapshot_include.php");
 	
@@ -58,11 +57,12 @@
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
 	<?php showSystemMessages($db) ?>
 	
-	<table cellpadding="0" cellspacing="4" border="0" width="100%">
+	<div id="notesStuff">
+	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
-			<td id="eventsBox" class="box" width="55%">&nbsp;</td>
-			<td class="tiny">&nbsp;</td>
-			<td class="box" id="tasksBox" width="45%">
+			<td id="eventsBox" class="box" width="60%">&nbsp;</td>
+			<td id="spacertd">&nbsp;</td>
+			<td class="box" id="tasksBox">
 				<h2>Workload</h2>
 				<?php 
 					showTasks($db,$_SESSION["userinfo"]["id"],"GivenAssignments");
@@ -72,7 +72,8 @@
 			</td>
 		</tr>
 	</table>
-
+	</div>
+	
 	<div style="clear:both;"></div>
 
 	<?php 	

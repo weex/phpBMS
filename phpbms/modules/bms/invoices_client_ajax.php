@@ -37,76 +37,99 @@
  +-------------------------------------------------------------------------+
 */
 
-	include("../../include/session.php");
-	$querystatement="SELECT address1, address2, city, state, postalcode, country,
-						shiptoaddress1, shiptoaddress2, shiptocity, shiptostate, shiptopostalcode, shiptocountry,
-						paymentmethodid,shippingmethodid,discountid,taxareaid
-						FROM clients
-						WHERE clients.id=".((integer)$_GET["id"]);
-	$queryresult = $db->query($querystatement);
-	
-	if($db->numRows($queryresult)) {
-		$therecord=$db->fetchArray($queryresult);
+include("../../include/session.php");
+
+class clientList{
+
+	function clientList($db){
 		
-		if ($therecord["shiptoaddress1"]){
-			$theadd1=$therecord["shiptoaddress1"];
-			$theadd2=$therecord["shiptoaddress2"];
-			$thecity=$therecord["shiptocity"];
-			$thestate=$therecord["shiptostate"];
-			$thepostalcode=$therecord["shiptopostalcode"];
-			$thecountry=$therecord["shiptocountry"];
-		}
-		else {
-			$theadd1=$therecord["address1"];
-			$theadd2=$therecord["address2"];
-			$thecity=$therecord["city"];
-			$thestate=$therecord["state"];
-			$thepostalcode=$therecord["postalcode"];
-			$thecountry=$therecord["country"];		
-		}
-	} else {
-		$theadd1="";
-		$theadd2="";
-		$thecity="";
-		$thestate="";
-		$thepostalcode="";
-		$thecountry="";
-		$therecord["paymentmethodid"]=0;
-		$therecord["shippingmethodid"]=0;
-		$therecord["discountid"]=0;
-		$therecord["taxareaid"]=0;
-	}
-	header('Content-Type: text/xml');
-	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
+		$this->db = $db;
+		
+	}//end method
+
+
+	function getData($id){
+
+		$returnArray = array(
+			"address1" => "",
+			"address2" => "",
+			"city" => "",
+			"state" => "",
+			"postalcode" => "",
+			"country" => "",
+			
+			"hascredit" => 0,
+			"creditlimit" => 0,
+			"creditleft" => 0,
+
+			"paymentmethodid" => 0,
+			"shippingmethodid" => 0,
+			"discountid" => 0,
+			"taxareaid" => 0
+		);
+
+		$querystatement = "SELECT *	FROM clients WHERE id=".((int) $id);
+		$queryresult = $this->db->query($querystatement);
+		
+		$therecord = $this->db->fetchArray($queryresult);
+
+		if($therecord){		
+			foreach($returnArray as $key =>$value)
+				if($key != "creditleft")
+					$returnArray[$key] = $therecord[$key];
+		
+			if($therecord["shiptoaddress1"])
+				foreach($returnArray as $key =>$value)
+					if(strpos($key,"shipto") !== false)
+						$returnArray[str_replace("shipto","",$key)] = $therecord[$key];
+		}//endif
+		
+		if($therecord["hascredit"]){
+			//remaining AR
+			$querystatement = "SELECT SUM(`amount` - `paid`) AS amtopen FROM aritems WHERE `status` = 'open' AND clientid=".((int) $id)." AND posted=1";
+			$queryresult = $this->db->query($querystatement);
+			
+			$arrecord = $this->db->fetchArray($queryresult);
+			
+			$returnArray["creditleft"] = $therecord["creditlimit"] - $arrecord["amtopen"];
+			
+		}//end if
+		
+		return $returnArray;
+	}//end method
+
+	
+	function showXML($therecord){
+	
+		header('Content-Type: text/xml');
+		echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
+		echo '<response>';
+		
+		foreach($therecord as $key => $value){
+
+		  ?>
+		  <field><?php echo xmlEncode($key); ?></field>
+		  <value><?php echo xmlEncode($value); ?></value>
+		  <?php
+			
+		}//endforeach
+		
+		echo '</response>';
+		
+	}//end method
+	
+}//end class
+
+
+//processing
+//=========================================================================
+if(isset($_GET["id"])){
+
+	$clientInfo = new clientList($db);
+	
+	$therecord = $clientInfo->getData($_GET["id"]);
+	
+	$clientInfo->showXML($therecord);
+	
+}//end if
 ?>
-<response>
-  <field>address1</field>
-  <value><?php echo xmlEncode($theadd1) ?></value>
-
-  <field>address2</field>
-  <value><?php echo xmlEncode($theadd2) ?></value>
-
-  <field>city</field>
-  <value><?php echo xmlEncode($thecity) ?></value>
-
-  <field>state</field>
-  <value><?php echo xmlEncode($thestate) ?></value>
-
-  <field>postalcode</field>
-  <value><?php echo xmlEncode($thepostalcode) ?></value>
-
-  <field>country</field>
-  <value><?php echo xmlEncode($thecountry) ?></value>
-
-  <field>paymentmethodid</field>
-  <value><?php echo xmlEncode($therecord["paymentmethodid"]) ?></value>
-
-  <field>shippingmethodid</field>
-  <value><?php echo xmlEncode($therecord["shippingmethodid"]) ?></value>
-
-  <field>discountid</field>
-  <value><?php echo xmlEncode($therecord["discountid"]) ?></value>
-
-  <field>taxareaid</field>
-  <value><?php echo xmlEncode($therecord["taxareaid"]) ?></value>
-</response>

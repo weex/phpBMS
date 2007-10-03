@@ -184,7 +184,16 @@
 
 				}
 				autofill[basename]["vl"]=theitem.value;
+
+				//legacy onchanges
 				if(thefield.onchange) thefield.onchange();
+				
+				//check for onchange listners
+				for(var i=0; i<phpBMS.signal._observers.length; i++){
+					if(phpBMS.signal._observers[i][0] == thefield && phpBMS.signal._observers[i][1] == "onchange"){
+						phpBMS.signal._observers[i][2]();
+					}
+				}//end for
 			}
 			
 

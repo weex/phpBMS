@@ -1,0 +1,8 @@
+#rightSideDiv, #topButtons{
+	float:right;
+	width:150px;
+}
+
+#leftSideDiv, #h1Title{ margin-right: 158px; }
+
+#paymentTable .qr1 td, #paymentTable .qr1 td {cursor:auto}

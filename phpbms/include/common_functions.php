@@ -536,7 +536,7 @@ function booleanFormat($bool){
 }
 
 
-function formatVariable($value,$format){
+function formatVariable($value, $format=NULL){
 	switch($format){
 		case "real":
 			$value = number_format($value,2);

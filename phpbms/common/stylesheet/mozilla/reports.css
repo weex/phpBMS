@@ -1,0 +1,68 @@
+body{
+	background:white;
+}
+
+h1{
+	background:none;
+	padding:0;
+	margin:0.125in 0 0.0625in 0;
+	font-size:22pt;
+}
+
+p{padding:0; margin:0.03125in}
+
+#container{
+	width:6.875in;
+	margin:.03125in auto;
+}
+
+#results {
+	border-collapse:collapse; 
+	border:0.01in solid black;
+	width:100%
+}
+
+#results td, #results th{
+	border:0.01in solid black; 
+	padding:.0625in;
+	font-size:8pt;
+}
+
+#results th{
+	background:black;
+	color:white;
+	border-right-color:white;
+}
+
+#results #lastHeader{
+	border-right-color:black;
+}
+
+#results .groupHeaders td{
+	background:#CCCCCC;
+	border-bottom-width:0.02in;
+}
+
+#results .groupHeaders .name{
+	font-weight:bold;
+}
+
+#results .groupHeaders .details{
+	font-size:7pt;
+}
+
+#results .groupTotals td{
+	background:#EEEEEE;
+	border-top-width:0.02in;
+}
+
+.currency{
+	width:0.6in;
+}
+
+#grandTotals{
+	padding-top:0.625in;
+	border-top:0.04in double black;
+}
+
+#footer{display:none;}

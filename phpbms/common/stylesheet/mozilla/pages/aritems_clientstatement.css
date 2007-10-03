@@ -1,0 +1,9 @@
+#dialog, #footer{
+	width:500px;
+	margin: 5px auto 0;
+}
+#dialog{margin-top:30px}
+
+#printButton, #cancelButton{
+	width:85px;
+}

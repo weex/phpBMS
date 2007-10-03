@@ -55,6 +55,7 @@
 
 	$phpbms->cssIncludes[] = "pages/invoice.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/invoice.js";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/paymentprocess.js";
 	
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
@@ -73,19 +74,19 @@
 		$theinput = new inputDatePicker("requireddate", $therecord["requireddate"], "required date");
 		$theform->addField($theinput);
 
-		$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order"), $displayName = NULL, $displayLabel = true);
-		$theinput->setAttribute("onchange","checkType(this)");
+		$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order"), NULL, true);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
 		$theinput = new inputDatePicker("statusdate", $therecord["statusdate"], "status date");
-		$theinput->setAttribute("onchange","updateStatusChange();");
-		$theform->addField($theinput);
-		
+		$theform->addField($theinput);		
 		
 		$theinput = new inputAutofill($db, "assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
 										"\"\"","users.revoked!=1", "assigned to");					
 		$theinput->setAttribute("size","30");
+		$theform->addField($theinput);
+
+		$theinput = new inputCheckBox("readytopost",$therecord["readytopost"],"ready to post");
 		$theform->addField($theinput);
 
 		$theinput = new inputAutofill($db, "clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)",
@@ -127,6 +128,14 @@
 		$theinput = new inputField("routingnumber",$therecord["routingnumber"],  "routing number" ,false, "integer", 30, 64);
 		$theform->addField($theinput);
 
+		$theinput = new inputCurrency("creditlimit", $therecord["creditlimit"], "credit limit" );
+		$theinput->setAttribute("readonly","readonly");
+		$theform->addField($theinput);
+
+		$theinput = new inputCurrency("creditleft", $therecord["creditleft"], "credit left (before order)" );
+		$theinput->setAttribute("readonly","readonly");
+		$theform->addField($theinput);
+
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -139,6 +148,7 @@
 	
 	$shippingMethods = $thetable->getShipping($therecord["shippingmethodid"]);
 	$paymentMethods = $thetable->getPayments($therecord["paymentmethodid"]);
+	$statuses = $thetable->getStatuses($therecord["statusid"]);
 
 	if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice")
 		$phpbms->bottomJS[] = 'disableSaves(document.forms["record"]);';
@@ -147,8 +157,7 @@
 
 
 ?><form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>" 
-	method="post" name="record" 
-	onsubmit="setLineItems();return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
+	method="post" name="record" id="record"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php $phpbms->showTabs("invoices entry",15,$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">
 		  <?php if($therecord["id"]){
@@ -175,7 +184,7 @@
 				<p>
 					<label for="id">id</label>
 					<br />
-					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable" tabindex="0"  />
+					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable"  />
 				</p>
 				
 				<p>
@@ -199,7 +208,7 @@
 			<legend>Status</legend>
 			<p>
 				<label for="statusid" class="important">current status</label><br />
-				<?php $thetable->displayStatusDropDown($therecord["statusid"])?>
+				<?php $thetable->displayStatusDropDown($therecord["statusid"],$statuses)?>
 				<input type="hidden" id="statuschanged" name="statuschanged" value="<?php if($therecord["id"]=="") echo "1"; else echo "0"?>" />
 			</p>
 			<p>
@@ -208,7 +217,9 @@
 			<p>
 				<?php $theform->fields["assignedtoid"]->display(); ?>
 			</p>
-		
+			<p>
+				<?php $theform->fields["readytopost"]->display(); ?>				
+			</p>
 		</fieldset>
 	</div>
 	
@@ -307,7 +318,8 @@
 		</tr>
   <?php } } ?><tr id="LITotals">
 		<td colspan="3" rowspan="8" align="right" valign="top">
-			<div id="vContent1" class="vContent" onmouseover="window.clearTimeout(vTabTimeout);vTabTimeout=0" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)">
+
+			<div id="vContent1" class="vContent">
 				<fieldset>
 					<legend>Discount / Promotion</legend>
 					<p id="pDiscount">
@@ -318,7 +330,7 @@
 				</fieldset>
 			</div>
 
-			<div id="vContent2" class="vContent" onmouseover="window.clearTimeout(vTabTimeout);vTabTimeout=0" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)">
+			<div id="vContent2" class="vContent">
 				<fieldset>
 					<legend>Tax</legend>
 					<p>
@@ -331,7 +343,7 @@
 				</fieldset>
 			</div>
 
-			<div id="vContent3" class="vContent" onmouseover="window.clearTimeout(vTabTimeout);vTabTimeout=0" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)">
+			<div id="vContent3" class="vContent">
 				<fieldset>
 					<legend>Shipping</legend>
 					<p id="pTotalweight">
@@ -349,7 +361,7 @@
 								if($shippingMethods[$therecord["shippingmethodid"]]["canestimate"]==0)
 									$shipButtonDisable="Disabled";
 						?>
-						<button id="estimateShippingButton" type="button" onclick="startEstimateShipping()" class="graphicButtons buttonShip<?php echo $shipButtonDisable?>" <?php if($shipButtonDisable) echo "disabled=\"disabled\""?> title="Estimate Shipping"><span>Estimate Shipping</span></button>
+						<button id="estimateShippingButton" type="button" onclick="startEstimateShipping()" class="graphicButtons buttonShip<?php echo $shipButtonDisable?>" title="Estimate Shipping"><span>Estimate Shipping</span></button>
 					</p>
 					<div id="shippingNotice">
 						<p class="notes">
@@ -374,7 +386,7 @@
 				</fieldset>
 			</div>
 
-			<div id="vContent4" class="vContent"  onmouseover="window.clearTimeout(vTabTimeout);vTabTimeout=0" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)">
+			<div id="vContent4" class="vContent">
 				<fieldset>
 					<legend>Payment</legend>
 					<?php if(hasRights(20)){ ?>
@@ -388,8 +400,10 @@
 								if($paymentMethods[$therecord["paymentmethodid"]]["onlineprocess"]==0)
 									$paymentButtonDisable="Disabled";
 						?>
-						<button id="paymentProcessButton" type="button" onclick="startPaymentProcess()" class="graphicButtons buttonMoney<?php echo $paymentButtonDisable?>" <?php if($paymentButtonDisable) echo "disabled=\"disabled\""?> title="process payment online"><span>process payment online</span></button>
+						<button id="paymentProcessButton" type="button" class="graphicButtons buttonMoney<?php echo $paymentButtonDisable?>" title="process payment online"><span>process payment online</span></button>
+						<input type="hidden" id="processscript"/>
 					</p>
+					
 					<div id="checkpaymentinfo">
 						<p id="pCheckNumber">
 							<label for="checkno">check number</label><br />
@@ -405,7 +419,8 @@
 						<p>
 							<?php $theform->fields["routingnumber"]->display();?>
 						</p>
-					</div>	
+					</div>
+					
 					<div id="ccpaymentinfo">
 						<p id="fieldCCNumber">
 							<label for="ccnumber">card number</label><br />
@@ -420,21 +435,26 @@
 							<input id="ccverification" name="ccverification" type="text"  value="<?php echo htmlQuotes($therecord["ccverification"]) ?>" size="8" maxlength="7" tabindex="29" />		
 						</p>				
 					</div>
+					
+					<div id="receivableinfo">
+						
+						<input type="hidden" id="hascredit" value="<?php echo $therecord["hascredit"]?>"/>
+
+						<p><?php $theform->showField("creditlimit")?></p>
+					
+						<p><?php $theform->showField("creditleft")?></p>
+
+						<p class="notes">
+							Payments made to accounts receivable invoices are done through
+							the disbursements area.
+						</p>
+					</div>
+					
 					<p id="pTransactionid">
 						<label for="transactionid">transaction id</label><br />
 						<input type="text" id="transactionid" name="transactionid" value="<?php echo htmlQuotes($therecord["transactionid"])?>" size="32" maxlength="64" />						
 					</p>
-					<div id="paymentNotice">
-						<p class="notes">
-							The payment processing establishes an outside connection to an online
-							processing center.
-						</p>
-						<p><label for="paymentNoticeResults">payment process results</label><br /><textarea readonly="readonly" id="paymentNoticeResults" rows="5" cols=""></textarea></p>
-						<p align="right">
-							<button type="button" class="Buttons" onclick="performPaymentProcess('<?php echo APP_PATH ?>')">process payment</button>
-							<button type="button" class="Buttons" onclick="closeModal()">done</button>
-						</p>
-					</div>
+					
 					<?php } else {?>
 					<p class="notes">You do not have rights to view payment details.</p>
 					<?php } ?>
@@ -457,7 +477,7 @@
 				<div><span id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
 			</div>
 		</td>
-		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab1" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>discount<input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></div></td>
+		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab1"><div>discount<input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></div></td>
 		<td class="totalItems"><input name="discountamount" id="discountamount" type="text" value="<?php echo numberToCurrency($therecord["discountamount"])?>" size="12" maxlength="15" onchange="clearDiscount();calculateTotal();" class="fieldCurrency fieldTotal" tabindex="22"/></td>
 		<td class="totalItems">&nbsp;</td>  	
   </tr><tr>
@@ -466,12 +486,12 @@
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab2" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>tax</div></td>
+		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab2"><div>tax</div></td>
 		<td class="totalItems"><input name="tax" id="tax" type="text" value="<?php echo numberToCurrency($therecord["tax"])?>" size="12" maxlength="15" onchange="changeTaxAmount()" class="fieldCurrency fieldTotal" tabindex="22" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab3" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>shipping</div></td>
+		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab3"><div>shipping</div></td>
 		<td class="totalItems"><input name="shipping" id="shipping" type="text" value="<?php echo numberToCurrency($therecord["shipping"])?>" size="12" maxlength="15" onchange="calculateTotal();" class="fieldCurrency fieldTotal" tabindex="23" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
@@ -488,9 +508,9 @@
 		<td colspan="4" class="invoiceTotalLabels" id="totalSpacer"><div>&nbsp;</div></td>
 	</tr>
 	<tr>
-		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab4" onmouseover="vTabOver(this)" onmouseout="vTabTimeout=window.setTimeout('vTabOut()',1000)"><div>payment</div></td>
+		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab4"><div>payment</div></td>
 		<td class="totalItems"><input name="amountpaid" id="amountpaid" type="text" value="<?php echo numberToCurrency($therecord["amountpaid"])?>" size="12" maxlength="15" onchange="calculatePaidDue();"  class="important fieldCurrency fieldTotal" tabindex="24"/></td>
-		<td class="totalItems"><button type="button" onclick="payInFull()" tabindex="20" class="graphicButtons buttonCheck" title="Pay in full"><span>pay in full</span></button></td>
+		<td class="totalItems"><button id="payinfull" type="button" onclick="payInFull()" tabindex="20" class="graphicButtons buttonCheck" title="Pay in full"><span>pay in full</span></button></td>
 	</tr>
 	<tr>
 		<td colspan="2" class="invoiceTotalLabels"><div>amount due</div></td>

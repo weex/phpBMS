@@ -36,52 +36,230 @@
  +-------------------------------------------------------------------------+
 */
 
-window.onload = function(){
-	calculateTotal();
-	showPaymentOptions();
-	var theid=getObjectFromID("id");
-	var clientid=getObjectFromID("clientid");
-
-	var displayClient=getObjectFromID("ds-clientid");
-	displayClient.focus();
+// STATUS CLASS ===================================================
+//=================================================================
+invoice = {
 	
-	var clientinfo=getObjectFromID("clientid");
-	clientinfo.onchange=populateShipping;
+	submitForm: function(e){
+							
+		var theForm = getObjectFromID("record");
+		
+		if(!validateForm(theForm)){
+			if(e)
+				e.stop();
+			return false;
+		}
+		
+		//skip validation if cancel
+		cancelClick = getObjectFromID("cancelclick");
+		if(cancelClick.value !=0)
+			return true;		
+		
+		var readytopost = getObjectFromID("readytopost");
+		var amountdue = getObjectFromID("amountdue");
+		var payinfull = getObjectFromID("payinfull");
+		var totalti = getObjectFromID("totalti");
+		var creditleft = getObjectFromID("creditleft");
+		var invoicedate = getObjectFromID("invoicedate")
+		
+		var errorArray = Array();
+		if(readytopost.checked && invoicedate.value == "")
+			errorArray[errorArray.length] = "Orders marked ready to post must have an invoice date";
+		
+		if(readytopost.checked && currencyToNumber(amountdue.value)!= 0 && payinfull.style.display != "none")
+			errorArray[errorArray.length] = "Orders marked ready to post and not charged to accounts receivable mut be paid in full.";
+		
+		if(payinfull.style.display == "none" && currencyToNumber(creditleft.value) < currencyToNumber(totalti.value))
+			errorArray[errorArray.length] = "Orders ammount exceeds credit left. ("+creditleft.value+")";
+
+		if(errorArray.length > 0){
+			
+			var content = "<p>The following errors were found:</p><ul>";
+			
+			for(var i=0; i < errorArray.length; i++)
+				content += "<li>"+errorArray[i]+"</li>";
+			
+			content += "</ul>";
+			
+			alert(content);
+			
+			if(e)
+				e.stop();
+			return false
+		}//end if
+
+		setLineItems();
+
+	}//end method
 	
-	var assignedtoid=getObjectFromID("assignedtoid");
-	assignedtoid.onchange=updateStatusChange;
-}
+}//end class
+
+// STATUS CLASS ===================================================
+//=================================================================
+theStatus = {
+
+	statusChosen: function(e){
+		
+		var status=getObjectFromID("statusid");
+		var assignedto=getObjectFromID("ds-assignedtoid");
+
+		//update assignedto
+		if(statuses[status.value]["firstname"] || statuses[status.value]["lastname"]){
+			
+			assignedto.value = (statuses[status.value]["firstname"]+" "+statuses[status.value]["lastname"]).replace(/^\s+|\s+$/g,"");
+			lastLookup(assignedto);
+			
+		}//endif
+		
+		var readytopost = getObjectFromID("readytopost");
+		
+		if(statuses[status.value]["readytopost"] = 1){
+			
+			var invoicedate = getObjectFromID("invoicedate");
+			if(!invoicedate.value)
+				invoicedate.value = dateToString(new Date());
+			readytopost.checked = true;
+			
+		} else {
+			
+			readytopost.checked = false;
+			
+		}//endif
+					
+		theStatus.statusChange();
+		
+	},//end mehtod
 
 
+	checkRTP: function(e){
+		
+		var readytopost = getObjectFromID("readytopost")
+		
+		if(readytopost.checked){
+			
+			var invoicedate = getObjectFromID("invoicedate");
+			if(!invoicedate.value)
+				invoicedate.value = dateToString(new Date());
+		}//endif
+		
+	}, //end method
 
 
-function updateAssignedTo(){
-	var status=getObjectFromID("statusid");
-	var assignedto=getObjectFromID("ds-assignedtoid");
-	if(statusAssignedto["s"+status.value]){
-		assignedto.value=statusAssignedto["s"+status.value]
-		lastLookup(assignedto);
-	}
-}
+	statusChange: function(e){
 
-function updateStatusChange(){
-	var statuschanged=getObjectFromID("statuschanged");
-	statuschanged.value=1;
-}
-
-function updateStatusDate(){
-	var statusdate=getObjectFromID("statusdate");
-	var today=new Date();
-	statusdate.value=dateToString(today);
+		var statuschanged=getObjectFromID("statuschanged");
+		statuschanged.value=1;
+		
+	},//end method
 	
-	updateStatusChange();
-}
+	
+	updateDate: function(e){
+		
+		var statusdate=getObjectFromID("statusdate");
+		var today=new Date();
+		statusdate.value=dateToString(today);
+		
+		theStatus.statusChange();
+	}//end method
+	
+}//end class
+
+
+// CLIENT CLASS ===================================================
+//=================================================================
+client = {
+
+	getInfo: function(e){
+				
+	
+		var clientid=getObjectFromID("clientid");	
+		var theitem, thevalue, fieldName, ident;
+		var base=document.URL;
+		base=base.substring(0,base.indexOf("invoices_addedit.php"));
+		
+		if(clientid.value!="") {
+			var theurl=base+"invoices_client_ajax.php?id="+clientid.value;
+			loadXMLDoc(theurl,null,false);
+			response = req.responseXML.documentElement;
+			
+			for(i=0;i<response.getElementsByTagName('field').length;i++){
+				
+				fieldName = response.getElementsByTagName('field')[i].firstChild.data;
+				
+				theitem = getObjectFromID(fieldName);
+				
+				if(response.getElementsByTagName('value')[i].firstChild)
+					thevalue=response.getElementsByTagName('value')[i].firstChild.data;
+				else
+					thevalue="";
+					
+				if(!theitem)
+					alert("<b>Error</b><br /> Could not find field: "+response.getElementsByTagName('field')[i].firstChild.data);
+				else{							
+					
+					theitem.value = thevalue;
+					
+					if(theitem.id != "taxareaid" && theitem.id != "discountid"){
+						
+						//legeacy
+						if(theitem.onchange) theitem.onchange();
+						
+						ident = getIdent(theitem, "onchange");
+						if(ident)
+							ident[2]();
+						
+						//legacy
+						if(theitem.onblur) theitem.onblur();
+						
+						ident = getIdent(theitem, "onblur");
+						if(ident)
+							ident[2]();
+							
+					}//end if
+
+				}//endif
+			}//endfor
+			
+			//now need to run taxarea and discount on changes (due to AJAX calls)
+			tempitem=getObjectFromID("discountid");
+			tempitem.onchange();		
+			var tempitem=getObjectFromID("taxareaid");
+			tempitem.onchange();		
+		} else {
+			
+			//blank out current shipping
+			theitem=getObjectFromID("address1");
+			if((theitem.value!="") && confirm("Do you wish to clear the shipping information?")){
+					theitem.value="";
+					theitem=getObjectFromID("address2");
+					theitem.value="";
+					theitem=getObjectFromID("city");
+					theitem.value="";
+					theitem=getObjectFromID("state");
+					theitem.value="";
+					theitem=getObjectFromID("postalcode");
+					theitem.value="";
+					theitem=getObjectFromID("country");
+					theitem.value="";
+			}//endif
+		}//end if
+		
+		return true;
+		
+	}//end method
+
+
+}//end class
+
 
 
 function payInFull(){
-	amtpaid = getObjectFromID("amountpaid");
-	totalti = getObjectFromID("totalti");
+
+	var amtpaid = getObjectFromID("amountpaid");
+	var totalti = getObjectFromID("totalti");
+
 	amtpaid.value=totalti.value;
+	
 	calculatePaidDue();
 }
 
@@ -118,6 +296,7 @@ function getPercentage(){
 	return true;
 }
 
+
 function getDiscount(){
 	var thevalue,repsponse;
 	var discountid=getObjectFromID("discountid");	
@@ -151,6 +330,7 @@ function getDiscount(){
 	return true;
 }
 
+
 function clearTaxareaid(){
 	var taxpercent=getObjectFromID("taxpercentage");
 	var thetaxareaid=getObjectFromID("taxareaid");
@@ -159,6 +339,7 @@ function clearTaxareaid(){
 	calculateTotal();
 	parentax.innerHTML="("+taxpercent.value+")";
 }
+
 
 function changeTaxAmount(){
 	var taxpercent=getObjectFromID("taxpercentage");
@@ -170,59 +351,6 @@ function changeTaxAmount(){
 	parentax.innerHTML="("+taxpercent.value+")";
 }
 
-// This function is used when redefining the onchange property of 
-// a hidden field for the the client ID.  It will then open a small window
-// passing the client ID, and retrieve the appropriate shipping info
-function populateShipping(){
-
-	var clientid=getObjectFromID("clientid");	
-	var theitem,thevalue;
-	var base=document.URL;
-	base=base.substring(0,base.indexOf("invoices_addedit.php"));
-	
-	if(clientid.value!="") {
-		var theurl=base+"invoices_client_ajax.php?id="+clientid.value;
-		loadXMLDoc(theurl,null,false);
-		response = req.responseXML.documentElement;
-		for(i=0;i<response.getElementsByTagName('field').length;i++){
-			theitem=getObjectFromID(response.getElementsByTagName('field')[i].firstChild.data);
-			
-			thevalue="";
-			if(response.getElementsByTagName('value')[i].firstChild)
-				thevalue=response.getElementsByTagName('value')[i].firstChild.data;
-			if(!theitem)
-				alert("<b>Error</b><br /> Could not find field: "+response.getElementsByTagName('field')[i].firstChild.data);
-			else{							
-				theitem.value=thevalue;
-				if(theitem.onchange && theitem.id != "taxareaid" && theitem.id != "discountid") theitem.onchange();
-				if(theitem.onblur) theitem.onblur();
-			}
-		}
-		//now need to run taxarea and discount on changes (due to AJAX calls)
-		tempitem=getObjectFromID("discountid");
-		tempitem.onchange();		
-		var tempitem=getObjectFromID("taxareaid");
-		tempitem.onchange();		
-	} else {
-		//blank out current shipping
-		theitem=getObjectFromID("address1");
-		if((theitem.value!="") && confirm("Do you wish to clear the shipping information?")){
-				theitem.value="";
-				theitem=getObjectFromID("address2");
-				theitem.value="";
-				theitem=getObjectFromID("city");
-				theitem.value="";
-				theitem=getObjectFromID("state");
-				theitem.value="";
-				theitem=getObjectFromID("postalcode");
-				theitem.value="";
-				theitem=getObjectFromID("country");
-				theitem.value="";
-		}
-	}
-	return true;
-}
-
 
 function changeShipping(){
 	var theselect = getObjectFromID("shippingmethodid");
@@ -231,86 +359,40 @@ function changeShipping(){
 	var newClass="graphicButtons buttonShipDisabled";
 	var parenShipping=getObjectFromID("parenShipping");
 	
-	var isDisabled=true;
 	if(theselect.value!=0){
 		parenShipping.innerHTML="("+theselect.options[theselect.selectedIndex].text+")";
 		if(shippingMethods[theselect.value]["canestimate"]==1){
 			newClass="graphicButtons buttonShip";
-			isDisabled=false;
 		}
 	} else
 		parenShipping.innerHTML="&nbsp;";
 		
 	estimateShippingButton.className = newClass;
-	estimateShippingButton.disabled = isDisabled;
-}
-
-
-paymentNotice="";
-function startPaymentProcess(){
-	if(vTabTimeout!=0){
-		window.clearTimeout(vTabTimeout);
-		vTabTimeout=0;
-	}		
-	
-	if(paymentNotice==""){
-		var noticeHolder=getObjectFromID("paymentNotice")
-		paymentNotice=noticeHolder.innerHTML;
-		noticeHolder.innerHTML="";		
-	}
-	showModal(paymentNotice,"Online Payment Processing",400,10);		
 }
 
 
 shippingNotice="";
 function startEstimateShipping(){
-	if(vTabTimeout!=0){
-		window.clearTimeout(vTabTimeout);
-		vTabTimeout=0;
-	}		
 	
-	if(shippingNotice=="") {
-		var noticeHolder=getObjectFromID("shippingNotice")
-		shippingNotice=noticeHolder.innerHTML;
-		noticeHolder.innerHTML="";
-	}
-	showModal(shippingNotice,"Estimate Shipping",400,10);		
-}
-
-function performPaymentProcess(base){
-	var resultsArea=getObjectFromID("paymentNoticeResults");
-	var currentPayment=getObjectFromID("paymentmethodid").value;
-	var theURL=base+paymentMethods[currentPayment]["processscript"];
-	var therespond="";
-
-	resultsArea.value="Starting Script (this may take a moment)\n";
+	if(vTab.timeout!=0)
+		vTab.clearTO();
 	
-	//not sure what to pass, so we'll just pass the total right now.
-	var total=getObjectFromID("amountpaid").value;
+	var thebutton = getObjectFromID("estimateShippingButton");
 	
-	theURL+="?amt="+encodeURI(currencyToNumber(total));
-
-	//timestamp for client caching
-	var today=new Date();
-	theURL+="&rand="+today.getTime();
+	if(thebutton.className.indexOf("Disabled") == -1){
 		
-	loadXMLDoc(theURL,null,false);
-	if(req.responseXML){
-		var newTransactionid = req.responseXML.documentElement.getElementsByTagName('value')[0].firstChild.data;
-		
-		if(newShippingAmount==0)
-			therespond="Process returned no transaction id."
-		else{
-			var transactionid=getObjectFromID("transactionid");
-			transactionid.value=newTransactionid;
-			therespond="Process Succeeded.  Transaction id recorded";
+		if(shippingNotice=="") {
+			var noticeHolder=getObjectFromID("shippingNotice")
+			shippingNotice=noticeHolder.innerHTML;
+			noticeHolder.innerHTML="";
 		}
-	} else
-	therespond = req.responseText
+		
+		showModal(shippingNotice,"Estimate Shipping",400,10);		
+		
+	}//end if
+	
+}//end function
 
-	resultsArea.value+="Script Response:\n"+therespond+"\n";
-
-}
 
 function performShippingEstimate(base){
 	var resultsArea=getObjectFromID("shippingNoticeResults");
@@ -372,24 +454,6 @@ function performShippingEstimate(base){
 
 }
 
-//this function makes sure that amount due is 0 before allowing changing to an invoice
-function checkType(theitem){
-	if (theitem.value=="Invoice") {
-		var amountdue=getObjectFromID("amountdue");
-		var invoicedate=getObjectFromID("invoicedate");
-		if(currencyToNumber(amountdue.value)!=0){
-			theitem.value="Order";
-			alert("Payment has not been fully applied.");
-		} else{
-			if(invoicedate.value==""){
-				var today= new Date();
-				invoicedate.value=dateToString(today);
-			}
-		}
-		
-	} 
-	
-}
 
 //this function opens a page in a new window that will lookup and populate the add line item info based on a choosen partnumber
 function populateLineItem(){
@@ -488,6 +552,7 @@ function deleteLine(thebutton){
 	var lineitemschanged=getObjectFromID("lineitemschanged");
 	lineitemschanged.value=1;
 }
+
 
 var addlinenum=0;
 function addLine(thetd){
@@ -742,90 +807,146 @@ function calculateTotal(){
 // This function does ALL the kung foo for calculating the extended amount
 function calculateExtended(){
 
-	//=================================
 	// First, Check and format the price
-	//=================================
-	var thecurrency=document.forms["record"]["price"].value;
-	theprice=currencyToNumber(thecurrency);
-	newdollar=numberToCurrency(theprice);
-	document.forms["record"]["price"].value=newdollar;
-		
-	//==================================
+	var thecurrency = getObjectFromID("price");	
+	var theprice = currencyToNumber(thecurrency.value);
+	thecurrency.value = numberToCurrency(theprice);
+			
 	// Next verify that qty is a number
-	//=================================	
-	var theqty=document.forms["record"]["qty"].value;
-	theqty=currencyToNumber(theqty)
-	document.forms["record"]["qty"].value=theqty
+	var quantity = getObjectFromID("qty");
+	var qty = parseFloat(quantity.value);
+	if(qty == "NaN")
+		qty = 0;
+	quantity.value = qty;
 
-	//=============================================
 	// Last, figure extended and reformat to dollar
-	//=============================================
-	var extended=(theqty*theprice).toString();
-	extended=numberToCurrency(extended);
-	document.forms["record"]["extended"].value=extended;
-}
+	var extField = getObjectFromID("extended");
+	var extended = roundForCurrency(qty * theprice);
+	extField.value = numberToCurrency(extended);
+	
+}//end function
 
 
 function showPaymentOptions(){
-	var paymentMethodID=getObjectFromID("paymentmethodid").value;
+	var paymentmethodid = getObjectFromID("paymentmethodid");
 
 	var checkinfo=getObjectFromID("checkpaymentinfo");
 	var ccinfo=getObjectFromID("ccpaymentinfo");
+	var receivableinfo = getObjectFromID("receivableinfo");
 	
+	var amountpaid = getObjectFromID("amountpaid");
+	var payinfull = getObjectFromID("payinfull");
+	var amountdue = getObjectFromID("amountdue");
+	var totalti = getObjectFromID("totalti");
+
 	var theType;
-	if(paymentMethodID==0)
+	if(parseInt(paymentmethodid.value) == 0)
 		theType="";
 	else
-		theType=paymentMethods[paymentMethodID]["type"];
+		theType=paymentMethods[parseInt(paymentmethodid.value)]["type"];
 
 	//display appropriate payment details
 	switch(theType){
 
 		case "draft":
-			checkinfo.style.display="block";
-			ccinfo.style.display="none";
+			checkinfo.style.display = "block";
+			ccinfo.style.display = "none";
+			receivableinfo.style.display = "none";
+			amountpaid.className = "important fieldCurrency fieldTotal";
+			amountpaid.readOnly = false;
+			payinfull.style.display = "inline";
 			break;
 
 		case "charge":
-			checkinfo.style.display="none";
-			ccinfo.style.display="block";
+			checkinfo.style.display = "none";
+			receivableinfo.style.display = "none";
+			ccinfo.style.display = "block";
+			amountpaid.className = "important fieldCurrency fieldTotal";
+			amountpaid.readOnly = false;
+			payinfull.style.display = "inline";
 			break;
 
 		case "receivable":
+			//first let's check to make sure they can charge to AR
+			var hascredit = getObjectFromID("hascredit");
+			var creditleft = getObjectFromID("creditleft");
+			var totalti = getObjectFromID("totalti");
+			var clientid = getObjectFromID("clientid");
+			
+			var error = "";
+			if(!clientid.value)
+				error = "Receivable payment method cannot be set until a client is chosen";
+			
+			if(hascredit.value == 0 && error == "")
+				error = "This client has not been setup with a line of credit.";
+
+			if(currencyToNumber(creditleft.value) < currencyToNumber(totalti.value) && error == "")
+				error = "Order amount is greater than client's credit limit ("+creditleft.value+" left)";
+			
+			if(error){
+				
+				paymentmethodid.selectedIndex = 0;
+				alert(error);
+				showPaymentOptions();
+				return false;
+				
+			}//endif
+			
+			receivableinfo.style.display = "block";
+			checkinfo.style.display = "none";
+			ccinfo.style.display = "none";
+			amountpaid.value = numberToCurrency(0);
+			amountdue.value = totalti.value;
+			amountpaid.className = "important fieldCurrency fieldTotal uneditable";
+			amountpaid.readOnly = true;
+			payinfull.style.display = "none";
 			break;
 			
 		default:
+			receivableinfo.style.display = "none";
 			checkinfo.style.display="none";
 			ccinfo.style.display="none";
+			amountpaid.className = "important fieldCurrency fieldTotal";
+			amountpaid.readOnly = false;
+			payinfull.style.display = "inline";
 			
 	}//endswtich
 	
 	//update parentesis display
 	var parenPayment=getObjectFromID("parenPayment");
-	if(paymentMethodID==0)
+	if(parseInt(paymentmethodid.value) == 0)
 		parenPayment.innerHTML="&nbsp;";
 	else
-		parenPayment.innerHTML="("+paymentMethods[paymentMethodID]["name"]+")";
+		parenPayment.innerHTML="("+paymentMethods[parseInt(paymentmethodid.value)]["name"]+")";
 		
 	//next onlinceprocessing
 	var online;
 	var transactionid=getObjectFromID("pTransactionid");
 	var paymentButton=getObjectFromID("paymentProcessButton");
-	if(paymentMethodID==0)
-		online=0;
+
+	if(parseInt(paymentmethodid.value) == 0)
+		online = 0;
 	else
-		online=paymentMethods[paymentMethodID]["onlineprocess"];
-	if(online==1){
-		transactionid.style.display="block";
-		paymentButton.disabled=false;
-		paymentButton.className="graphicButtons buttonMoney";
-	}else{
-		transactionid.style.display="none";
-		paymentButton.disabled=true;
-		paymentButton.className="graphicButtons buttonMoneyDisabled";
-	}
+		online = paymentMethods[parseInt(paymentmethodid.value)]["onlineprocess"];
 	
-}
+	var processscript = getObjectFromID("processscript");
+
+	if(online==1){
+
+		processscript.value = paymentMethods[parseInt(paymentmethodid.value)]["processscript"];
+		transactionid.style.display="block";
+		paymentButton.className="graphicButtons buttonMoney";
+		
+	} else {
+		
+		processscript.value = "";
+		transactionid.style.display="none";
+		paymentButton.className="graphicButtons buttonMoneyDisabled";
+		
+	}//endif
+	
+}//endfunction
+
 
 function viewClient(addeditfile){
 	var theclient=getObjectFromID("clientid");
@@ -835,9 +956,11 @@ function viewClient(addeditfile){
 	}
 }
 
+
 function doPrint(base,id){
 		location.href=(base+"print.php?backurl="+encodeURIComponent(document.location));
 }
+
 
 function disableSaves(theform){
 	for(i=0;i<theform.length;i++){
@@ -846,6 +969,7 @@ function disableSaves(theform){
 		}
 	}
 }
+
 
 function showWebConfirmationNum(theitem){
 		webdiv=getObjectFromID("webconfirmdiv");
@@ -856,6 +980,7 @@ function showWebConfirmationNum(theitem){
 			
 }
 
+
 function clearDiscount(){
 	var discountid=getObjectFromID("discountid");
 	var discount=getObjectFromID("discount");
@@ -864,52 +989,144 @@ function clearDiscount(){
 	discountid.value="";
 }
 
-vTabTimeout=0;
-function vTabOver(thetab){
-	//cancel any timeouts
-	if(vTabTimeout!=0){
-		window.clearTimeout(vTabTimeout);
-		vTabTimeout=0;
-	}
-	//onhover any tabs that are active
-	var i;
-	var othertab;
-	var othercontent;
-	for(i=1;i<5;i++){
-		if("vTab"+i != thetab.id){
-			othertab=getObjectFromID("vTab"+i);
-			othercontent=getObjectFromID("vContent"+i)			
-			othertab.className="invoiceTotalLabels vTabs";
-			othercontent.style.display="none";
-		} else {
-			var thecontent=getObjectFromID("vContent"+i);
-		}
-	}
-	var pareninfo=getObjectFromID("parenInfo");
-	pareninfo.style.display="none";
+
+// VERTICAL TABS CLASS ============================================
+//=================================================================
+vTab = {
+	timeout: 0,
 	
-	//change to hover class
-	thetab.className="invoiceTotalLabels vTabsHover";
-	thecontent.style.display="block";
-	thecontent.style.height=(thecontent.parentNode.offsetHeight-16)+"px";
-	for(i=0;i<thecontent.childNodes.length;i++)
-		if(thecontent.childNodes[i].tagName=="FIELDSET")
-			thecontent.childNodes[i].style.height=(thecontent.offsetHeight-34)+"px";	
-	//hide other tabs and default
-	//show appropriate tab
-}
-function vTabOut(){
-	var i;
-	var thetab;
-	for(i=1;i<5;i++){
-		thetab=getObjectFromID("vTab"+i);
-		if(thetab.className=="invoiceTotalLabels vTabsHover"){
-			thetab.className="invoiceTotalLabels vTabs";
-			thecontent=getObjectFromID("vContent"+i)
-			thecontent.style.display="none";
+	over: function(e){
+		
+		thetab = e.src();
+
+		//cancel any timeouts
+		if(vTab.timeout !=0 )
+			vTab.clearTO()
+		
+		//onhover any tabs that are active
+		var i;
+		var othertab;
+		var othercontent;
+
+		for(i=1;i<5;i++){
+
+			if("vTab"+i != thetab.id){
+				othertab=getObjectFromID("vTab"+i);
+				othercontent=getObjectFromID("vContent"+i)			
+				othertab.className="invoiceTotalLabels vTabs";
+				othercontent.style.display="none";
+			} else {
+				var thecontent=getObjectFromID("vContent"+i);
+			}//end if
+			
+		}//endfor
+		
+		var pareninfo=getObjectFromID("parenInfo");
+		pareninfo.style.display="none";
+		
+		//change to hover class
+		thetab.className="invoiceTotalLabels vTabsHover";
+		thecontent.style.display="block";
+		thecontent.style.height=(thecontent.parentNode.offsetHeight-16)+"px";
+		
+		for(i=0;i<thecontent.childNodes.length;i++)
+			if(thecontent.childNodes[i].tagName=="FIELDSET")
+				thecontent.childNodes[i].style.height=(thecontent.offsetHeight-34)+"px";	
+				
+	},//end method
+	
+	
+	out: function(e){
+
+		var i;
+		var thetab;
+		
+		for(i=1;i<5;i++){
+			thetab=getObjectFromID("vTab"+i);
+			if(thetab.className=="invoiceTotalLabels vTabsHover"){
+				thetab.className="invoiceTotalLabels vTabs";
+				thecontent=getObjectFromID("vContent"+i)
+				thecontent.style.display="none";
+			}
 		}
+		
+		var pareninfo=getObjectFromID("parenInfo");
+		pareninfo.style.display="block";
+		vTab.timeout=0;
+
+	},//end method
+
+
+	clearTO: function(e){
+		
+		window.clearTimeout(vTab.timeout);
+		vTab.timeout = 0;
+		
+	},//end method
+
+
+	setTO: function(e){
+		
+		vTab.timeout = window.setTimeout("vTab.out()",1000);
+		
+	}//end method
+	
+}//end class
+
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	calculateTotal();
+	showPaymentOptions();
+
+	var displayClient=getObjectFromID("ds-clientid");
+	displayClient.focus();
+	
+	var theForm = getObjectFromID("record");
+	connect(theForm, "onsubmit", invoice.submitForm);
+	
+	var clientid = getObjectFromID("clientid");
+	connect(clientid,"onchange",client.getInfo);
+	
+	var assignedtoid = getObjectFromID("assignedtoid");
+	connect(assignedtoid, "onchange", theStatus.statusChange);
+	
+	var statusdate = getObjectFromID("statusdate");
+	connect(statusdate, "onchange", theStatus.statusChange);
+	
+	var statusid = getObjectFromID("statusid");
+	connect(statusid,"onchange", theStatus.statusChosen);
+	
+	var readytopost = getObjectFromID("readytopost");
+	connect(readytopost, "onclick", theStatus.checkRTP);
+	
+	var vTabContents = getElementsByClassName("vContent");
+	
+	for(var i=0; i< vTabContents.length; i++){
+		connect(vTabContents[i],"onmouseover",vTab.clearTO);
+		connect(vTabContents[i],"onmouseout",vTab.setTO);
 	}
-	var pareninfo=getObjectFromID("parenInfo");
-	pareninfo.style.display="block";
-	vTabTimeout=0;
-}
+
+	var vTabs = getElementsByClassName("vTabs");
+	for(var i=0; i< vTabs.length; i++){
+		connect(vTabs[i],"onmouseover",vTab.over);
+		connect(vTabs[i],"onmouseout",vTab.setTO);
+	}
+	
+	var ccnumber1 = getObjectFromID("ccnumber");
+	if(ccnumber1){
+		var toPass ={
+			amt: getObjectFromID("amountpaid"),
+			cid: getObjectFromID("clientid"),
+			tid: getObjectFromID("id"),
+			ccn: ccnumber1,
+			ccexp: getObjectFromID("ccexpiration"),
+			ccv: getObjectFromID("ccverification")
+		};
+	
+		payment.initialize(getObjectFromID("paymentProcessButton"), getObjectFromID("processscript"), toPass, getObjectFromID("transactionid"))
+		
+	}
+})

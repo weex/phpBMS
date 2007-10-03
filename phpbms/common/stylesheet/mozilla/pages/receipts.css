@@ -1,0 +1,52 @@
+#topButtons{float:right;}
+#h1Title{margin-right:160px;}
+
+#rightSide{
+	float:right;
+	width:160px;
+}
+
+#leftSide{margin-right:168px;}
+
+.paymentTypes{display:none;}
+
+#bankNameP, #routingNumberP, #ccNumberP, #transactionidP{
+	float:left; 
+	padding-right:10px;
+}
+
+#transactionDiv{display:none;}
+
+#memo{width:99%}
+
+#arRightButtons{
+	float:right;
+	padding-bottom:2px;
+}
+
+#arRightButtons button{width:120px}
+
+#distributionRemaining{font-size:12px; padding:0;margin:0}
+
+#itemsTable{margin-top:0;clear:both;}
+
+#itemsTable tbody td{padding:0;border-bottom:1px solid #BBBBBB;}
+
+#itemsTable tfoot td{
+	padding-right:0;
+	padding-left:0;
+}
+
+#itemsTable tbody td input{
+	padding-right:4px;
+	padding-left:4px;
+}
+/* new Dialog  ========================================= */
+#newItemLoadButton, #newItemCancelButton {
+	width:75px;
+}
+
+#newItemInvoiceFieldset, #newItemServiceChargeFieldset {
+	display: none;
+}
+#newItemMessage{margin-bottom:8px; display:none; padding-left:4px;}

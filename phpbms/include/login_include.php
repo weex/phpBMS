@@ -66,7 +66,7 @@
 			$updateresult = $db->query($querystatement);
 
 			$_SESSION["tableparams"]=array();
-						
+
 			goURL(DEFAULT_LOAD_PAGE);
 		} else 		
 		return "Login Failed";

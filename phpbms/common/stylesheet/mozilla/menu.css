@@ -35,11 +35,13 @@
 	padding:14px 15px 0 0;
 }
 
+
+
+
 #menuBar {
 	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
 	display:block;
 	clear:both;
-	text-transform:lowercase;
 	border-bottom:1px solid #ACB7C4;
 	margin:0;
 	padding:0 0 0 5px;	
@@ -52,23 +54,27 @@
 	margin:0;
 	padding:0;
 }
-#menuBar a{
+
+
+#menuBar .firstLevel a{
 	display:block;
+	float:left;
+	color:black;
 	font-size:12px;
 	font-weight:normal;
-	color:black;
 	padding:6px 10px;
 	height:15px;
 	outline:none;
 }
-#menuBar a:hover, #menuBar .hovered{ 
+
+#menuBar .firstLevel a:hover, #menuBar a.hovered{ 
 	text-decoration:none; 
 	background-color:#663366;
 	color:white;
 }
 
-#menuBar .submenuitems li{float:none;}
 .submenusli{padding:0;margin:0;}
+
 .submenuitems{
 	clear:left;
 	display:none;
@@ -78,7 +84,9 @@
 	background-color:white;
 	border:1px solid #999999;
 }
+#menuBar .submenuitems li{float:none;}
 #menuBar .submenuitems a{
+	float:none;
 	border:0;
 	background-image:none;
 	margin:0px;

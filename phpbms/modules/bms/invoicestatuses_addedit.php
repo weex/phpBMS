@@ -68,6 +68,9 @@
 		$theinput = new inputCheckbox("invoicedefault",$therecord["invoicedefault"],"new order default");
 		$theform->addField($theinput);
 		
+		$theinput = new inputCheckbox("setreadytopost",$therecord["setreadytopost"],"set ready to post when status selected");
+		$theform->addField($theinput);
+
 		$theinput = new inputAutofill($db, "defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
 										"\"\"","users.revoked!=1", "assigned to");
 		$theinput->setAttribute("size",45);
@@ -108,8 +111,11 @@
 		</fieldset>
 		<fieldset>
 			<legend>Defaults</legend>
-			<p><br />
+			<p>
 				<?php $theform->showField("invoicedefault")?>
+			</p>
+			<p>
+				<?php $theform->showField("setreadytopost")?>
 			</p>
 			<p>
 				<?php $theform->showField("defaultassignedtoid")?>

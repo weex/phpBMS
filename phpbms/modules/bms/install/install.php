@@ -72,6 +72,7 @@ include("../../../include/session.php");
 						"choices",
 						"menu",
 						"tabs",
+						"roles",
 						"modules",
 						"relationships",
 						"reports",

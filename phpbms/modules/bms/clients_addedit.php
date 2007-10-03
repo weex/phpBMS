@@ -77,10 +77,11 @@
 		$theinput->setAttribute("class","important");
 		$theinput->setAttribute("onchange","changeClientType(this)");
 		$disabled=false;
-		if($therecord["type"]=="client")
+		if($therecord["type"]=="client" && $therecord["id"]){
 			$disabled = $thetable->checkForInvoices($therecord["id"]);
-		if($disabled)
-			$theinput->setAttribute("disabled","disabled");
+			if($disabled)
+				$theinput->setAttribute("disabled","disabled");
+		}//endif
 		$theform->addField($theinput);
 		
 		$theinput = new inputChoiceList($db, "category",$therecord["category"],"clientcategories");

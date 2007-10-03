@@ -176,10 +176,20 @@ class recurr{
 	
 	
 	function copyInvoice($invoiceid){
-		$querystatement = "SELECT invoices.*, firstrepeat, includepaymenttype, includepaymentdetails, recurringinvoices.id as recurrid,
-							recurringinvoices.statusid AS newstatusid, recurringinvoices.assignedtoid AS newassignedtoid, notificationroleid
-							FROM invoices INNER JOIN recurringinvoices ON invoices.id = recurringinvoices.invoiceid
-							WHERE invoices.id = ".$invoiceid;
+		$querystatement = "
+			SELECT 
+				invoices.*, 
+				firstrepeat, 
+				includepaymenttype, 
+				includepaymentdetails, 
+				recurringinvoices.id AS recurrid,
+				recurringinvoices.statusid AS newstatusid, 
+				recurringinvoices.assignedtoid AS newassignedtoid,
+				notificationroleid
+			FROM 
+				invoices INNER JOIN recurringinvoices ON invoices.id = recurringinvoices.invoiceid
+			WHERE 
+				invoices.id = ".$invoiceid;
 
 		$queryresult = $this->db->query($querystatement);
 		
@@ -253,6 +263,11 @@ class recurr{
 				case "type":
 					$fieldlist[] = $name;
 					$therecord[$name] = "Order";
+					break;
+
+				case "readytopost":
+					$fieldlist[] = $name;
+					$therecord[$name] = 0;
 					break;
 
 				default:

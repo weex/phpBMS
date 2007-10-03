@@ -150,8 +150,15 @@ class db{
 
 
 		function setEncoding($encoding = "utf8"){
-			$this->query("SET NAMES ".$encoding);
-		}
+
+			switch($this->type){
+				case "mysql":			
+					@ mysql_query("SET NAMES ".$encoding, $this->db_link);
+					break;
+					
+			}//endswitch
+
+		}//end method
 
 
 		function numRows($queryresult){

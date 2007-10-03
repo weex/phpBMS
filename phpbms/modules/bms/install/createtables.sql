@@ -12,9 +12,9 @@ CREATE TABLE clientemailprojects (
 
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL auto_increment,
-  `firstname` varchar(64) default NULL,
-  `lastname` varchar(64) default NULL,
-  `company` varchar(128) default NULL,
+  `firstname` varchar(64) NOT NULL default '',
+  `lastname` varchar(64) NOT NULL default '',
+  `company` varchar(128) NOT NULL default '',
   `type` enum('prospect','client') NOT NULL default 'prospect',
   `becameclient` date default NULL,
   `inactive` tinyint(4) NOT NULL default '0',
@@ -47,6 +47,8 @@ CREATE TABLE `clients` (
   `taxareaid` int(11) default '0',
   `username` varchar(32) default NULL,
   `password` varchar(32) default NULL,
+  `hascredit` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `creditlimit` DOUBLE,
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
@@ -60,8 +62,7 @@ CREATE TABLE `clients` (
   KEY `thelastname` (`lastname`),
   KEY `thecompany` (`company`),
   KEY `thetype` (`type`)
-) TYPE=MyISAM PACK_KEYS=0;
-
+);
 
 CREATE TABLE discounts (
   id int(11) NOT NULL auto_increment,
@@ -84,6 +85,7 @@ CREATE TABLE `invoices` (
   `statusid` int(10) unsigned default NULL,
   `statusdate` date default NULL,
   `assignedtoid` int(10) unsigned default NULL,
+  `readytopost` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
   `ponumber` varchar(64) default NULL,
   `orderdate` date default NULL,
   `invoicedate` date default NULL,
@@ -130,7 +132,6 @@ CREATE TABLE `invoices` (
   KEY `client` (`clientid`)
 ) TYPE=MyISAM AUTO_INCREMENT=1000 PACK_KEYS=0;
 
-
 CREATE TABLE lineitems (
   createdby int(11) NOT NULL default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
@@ -148,7 +149,7 @@ CREATE TABLE lineitems (
   UNIQUE KEY theid (id),
   KEY invoice (invoiceid),
   KEY product (productid)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE prerequisites (
   childid int(11) NOT NULL default '0',
@@ -157,7 +158,7 @@ CREATE TABLE prerequisites (
   UNIQUE KEY theid (id),
   KEY child (childid),
   KEY parent (parentid)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
@@ -171,7 +172,7 @@ CREATE TABLE productcategories (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp(14) NOT NULL,
   PRIMARY KEY(`id`)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE products (
   categoryid int(11) NOT NULL default '0',
@@ -206,7 +207,7 @@ CREATE TABLE products (
   UNIQUE KEY theid (id),
   UNIQUE KEY thpartnum (partnumber),
   KEY status (status)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE tax (
   id int(11) NOT NULL auto_increment,
@@ -218,7 +219,7 @@ CREATE TABLE tax (
   modifiedby int(11) default NULL,
   modifieddate timestamp(14) NOT NULL,
   UNIQUE KEY theid (id)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE `shippingmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -232,7 +233,7 @@ CREATE TABLE `shippingmethods` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE `paymentmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -247,11 +248,12 @@ CREATE TABLE `paymentmethods` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM PACK_KEYS=0;
+);
 
 CREATE TABLE `invoicestatuses` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(128),
+  `setreadytopost` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
   `invoicedefault` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `defaultassignedtoid` INTEGER UNSIGNED,
   `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -261,7 +263,7 @@ CREATE TABLE `invoicestatuses` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-) TYPE = MYISAM;
+);
 
 CREATE TABLE `invoicestatushistory` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -272,3 +274,60 @@ CREATE TABLE `invoicestatushistory` (
   `assignedtoid` INTEGER UNSIGNED,
   PRIMARY KEY(`id`)
 ) TYPE = MYISAM;
+
+CREATE TABLE `aritems` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `clientid` int(10) unsigned NOT NULL,
+  `type` ENUM('invoice','credit','service charge') NOT NULL,
+  `status` ENUM('open','closed') NOT NULL,
+  `itemdate` DATE NOT NULL,
+  `relatedid` int(10) unsigned default NULL,
+  `amount` double NOT NULL default '0',
+  `paid` double NOT NULL default '0',
+  `aged1` tinyint(3) unsigned NOT NULL default '0',
+  `aged2` tinyint(3) unsigned NOT NULL default '0',
+  `aged3` tinyint(3) unsigned NOT NULL default '0',
+  `title` varchar(255) default NULL,
+  `posted` tinyint(3) unsigned NOT NULL default '0',
+  `createdby` int(10) unsigned NOT NULL,
+  `creationdate` datetime NOT NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `receipts` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `clientid` int(10) unsigned NOT NULL,
+  `amount` double NOT NULL default '0',
+  `receiptdate` date NOT NULL,
+  `status` enum('open','collected') NOT NULL default 'open',
+  `readytopost` tinyint(3) unsigned NOT NULL default '0',
+  `posted` tinyint(3) unsigned NOT NULL default '0',
+  `paymentmethodid` int(10) unsigned NOT NULL default '0',
+  `ccnumber` varchar(64) default NULL,
+  `ccexpiration` varchar(10) default NULL,
+  `ccverification` varchar(4) default NULL,
+  `bankname` varchar(64) default NULL,
+  `checkno` varchar(32) default NULL,
+  `routingnumber` int(10) unsigned default NULL,
+  `accountnumber` int(10) unsigned default NULL,
+  `transactionid` varchar(64) default NULL,
+  `paymentother` varchar(128) default NULL,
+  `memo` text,
+  `createdby` int(11) NOT NULL default '0',
+  `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp NOT NULL,
+  PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `receiptitems` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `receiptid` int(10) unsigned NOT NULL,
+  `aritemid` int(10) unsigned NOT NULL,
+  `applied` double NOT NULL default '0',
+  `discount` double NOT NULL default '0',
+  `taxadjustment` double NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+);

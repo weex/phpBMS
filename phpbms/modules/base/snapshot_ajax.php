@@ -113,17 +113,16 @@
 		<input type="hidden" id="eventDateLast" value="<?php echo strtotime("-7 days",$firstDay)?>" />
 		<input type="hidden" id="eventDateToday" value="<?php echo mktime(0,0,0)?>" />
 		<input type="hidden" id="eventDateNext" value="<?php echo strtotime("tomorrow",$lastDay)?>" />
+		<ul id="eventButtons">
+			<li><a href="ical.php<?php echo $icallink ?>" title="ical subscription link" id="icalA"><span>ical</span></a>&nbsp;</li>
+			<li><button id="eventLastWeek" type="button" title="previous week" class="smallButtons"><span>&lt;&lt;</span></button></li>
+			<li><button id="eventToday" type="button" title="today" class="smallButtons"><span>today</span></button></li>
+			<li id="lastEButton"><button id="eventNextWeek" type="button" title="next week" class="smallButtons"><span>&gt;&gt;</span></button></li>
+		</ul>
 		
-		<p id="eventButtons">
-			<a href="ical.php<?php echo $icallink ?>"><button id="bIcal" type="button" title="your calendar in ical format" class="graphicButtons buttonIcal" disabled="disabled"><span>prev. week</span></button></a>&nbsp;&nbsp;
-			<button id="eventLastWeek" type="button" title="previous week" class="smallButtons"><span>&lt;&lt;</span></button>
-			<button id="eventToday" type="button" title="today" class="smallButtons"><span>today</span></button>
-			<button id="eventNextWeek" type="button" title="next week" class="smallButtons"><span>&gt;&gt;</span></button>			
-		</p>
-		<h2>
-			Events: Week View
-		</h2>
-		<table border="0" cellspacing="0" cellpadding="0" width="100%"><?php
+		<h2>Events: Week View</h2>
+		
+		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="eventsList"><?php
 	
 		foreach($events as $date => $times){
 			

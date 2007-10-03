@@ -138,9 +138,9 @@ class invoiceList{
 					FROM 
 						(invoices INNER JOIN clients ON invoices.clientid=clients.id)
 					WHERE 
-						invoices.statusid = 4						
-						AND invoices.type='Order'
-						AND invoices.totalti-invoices.amountpaid = 0
+						invoices.type != 'Invoice'
+						AND invoices.type != 'VOID'
+						AND invoices.readytopost =1
 					ORDER BY 
 						invoices.creationdate DESC 
 					LIMIT 0,50";
@@ -228,6 +228,156 @@ class invoiceList{
 }//end class
 
 
+class accountsReceivable {
+
+	function accountsReceivable($db){
+	
+		$this->db = $db;
+	
+	}//end method
+	
+	
+	function showTotals(){
+	
+		$querystatement="
+			SELECT
+			  SUM((1-(aged1 * aged2 * aged3)) * (amount-paid)) AS current,
+			  SUM((amount-paid)*aged1*(1-aged2)) AS term1,
+			  SUM((amount-paid)*aged2*(1-aged3)) AS term2,
+			  SUM((amount-paid)*aged3) AS term3,
+			  SUM(amount-paid) AS due
+			FROM
+			  aritems
+			WHERE
+			  `status` = 'open'
+			  AND posted=1;
+  		";
+		
+		$queryresult = $this->db->query($querystatement);
+		
+		$therecord = $this->db->fetchArray($queryresult);
+		
+		?>
+			<table class="querytable" border="0" cellpadding="0" cellspacing="0" id="arTotals">
+				<thead>
+					<tr>
+						<th align="right">current</th>
+						<th align="right"><?php echo (TERM1_DAYS+1)." - ".TERM2_DAYS?></th>
+						<th align="right"><?php echo (TERM2_DAYS+1)." - ".TERM3_DAYS?></th>
+						<th align="right"><?php echo (TERM3_DAYS+1)."+"?></th>
+						<th align="right">total</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+					<?php 
+					
+						foreach($therecord as $value)
+							echo '<td align="right">'.formatVariable($value, "currency").'</td>';
+						
+					?>
+					</tr>
+				</tbody>
+			</table>
+		<?php
+	
+	}//end method
+	
+	
+	function showRTPReceipts(){
+	
+		$querystatement = "
+			SELECT 
+				if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company) AS client, 
+				receipts.id, 
+				receipts.receiptdate as 'date', 
+				paymentmethods.name as 'payment', 
+				receipts.amount as 'amount'
+			FROM 
+				((receipts INNER JOIN clients ON receipts.clientid = clients.id) LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.id) 
+			WHERE 
+				receipts.posted = 0
+				AND receipts.readytopost = 1
+			ORDER BY 
+				receipts.receiptdate";
+		
+		$queryresult = $this->db->query($querystatement);
+		
+		$querystatement = "
+			SELECT
+				COUNT(id) AS thecount,
+				SUM(amount) AS thesum
+			FROM
+				receipts
+			WHERE
+				receipts.posted = 0
+				AND receipts.readytopost = 1";
+		
+		$sumresult = $this->db->query($querystatement);
+		$sumrecord = $this->db->fetchArray($sumresult);
+		
+		if($this->db->numRows($queryresult) == 0)
+			echo "none";
+		else{
+		
+			?>
+			
+			<table border="0" cellpadding="0" cellspacing="0" class="querytable">
+				
+				<thead>
+					<tr>
+						<th align="left">id</th>
+						<th align="left">date</th>
+						<th align="left" width="100%">client</th>
+						<th align="left">payment</th>
+						<th align="right">amount</th>
+					</tr>
+				</thead>
+				
+				<tfoot>
+					<tr class="queryfooter">
+						<td colspan="5" align="right"><?php echo formatVariable($sumrecord["thesum"], "currency");?></td>
+					</tr>
+				</tfoot>
+				
+				<tbody>
+				<?php 
+				
+					$row = 1;
+					while($therecord = $this->db->fetchArray($queryresult)){
+						
+						$row = ($row==1)? 1 : 2;
+					
+						?>
+							<tr class="qr<?php echo $row?> receiptLinks" id="receipt<?php echo $therecord["id"]?>">
+								<td><?php echo $therecord["id"]?></td>
+								<td><?php echo formatVariable($therecord["date"], "date")?></td>
+								<td><?php echo formatVariable($therecord["client"])?></td>
+								<td nowrap="nowrap"><?php echo formatVariable($therecord["payment"])?></td>
+								<td align="right"><?php echo formatVariable($therecord["amount"], "currency")?></td>
+							</tr>
+						
+						<?php
+					
+					}//endwhile
+				
+				?>
+				</tbody>
+			</table>
+			
+			<?php
+		
+		}//end if	
+
+	}//end method
+	
+
+}//end class
+
+
+//PROCESSING
+//===============================================================================================
+
 if (hasRights(20) || hasRights(30)) {
 
 	$invoiceList = new invoiceList($db);
@@ -254,3 +404,24 @@ if (hasRights(20) || hasRights(30)) {
 	<div class="clientDivs"><div class="fauxP"><?php showTodaysClients($db)?></div></div>
 </div>	
 <?php }//endif has rights?>
+
+<?php 
+	if (hasRights(80)) {	
+	
+		$ar = new accountsReceivable($db);
+?>
+<div class="box" id="arBox">
+
+	<h2>Accounts Receivable <button id="bms303" type="button" title="Accounts Receivable" class="bmsInfo graphicButtons buttonInfo"><span>view ar</span></button></h2>
+
+	<h3 class="arLinks">Current AR totals</h3>
+	<div class="arDivs"><div class="fauxP"><?php $ar->showTotals()?></div></div>
+	
+	<h3 class="arLinks">Receipts Ready To Post</h3>
+	<div class="arDivs"><div class="fauxP"><?php $ar->showRTPReceipts();?></div></div>
+	<input id="receiptEdit" type="hidden" value="<?php echo getAddEditFile($db, 304)?>"/>
+
+</div>	
+<?php 
+	}//endif has rights
+?>

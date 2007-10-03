@@ -261,10 +261,17 @@ class phpbmsSession{
 
 			//this adds the phpbms root to the include path
 			if ( ! defined( "PATH_SEPARATOR" ) ) {
-			  if ( strpos( $_ENV[ "OS" ], "Win" ) !== false )
+			  
+			  //if we cannot determin the OS, we will assume its unix
+			  if(!isset($_ENV["OS"]))
+				  $_ENV["OS"] = "unix";
+			  
+			  if ( strpos( $_ENV["OS"], "Win" ) !== false )
 				define( "PATH_SEPARATOR", ";" );
-			  else define( "PATH_SEPARATOR", ":" );
-			}
+			  else 
+			  	define( "PATH_SEPARATOR", ":" );
+			  
+			}//end if
 
 			$pathToAdd=@ getcwd();
 			ini_set("include_path",ini_get("include_path").PATH_SEPARATOR.$pathToAdd);
@@ -334,6 +341,7 @@ class phpbmsSession{
 
 	function startSession(){
 		// This is in a function in case we want to do sessions differently in the future		
+		
 		session_name("phpBMS".preg_replace('/\W/',"",APPLICATION_NAME)."v08ID");
 		session_start();
 	}

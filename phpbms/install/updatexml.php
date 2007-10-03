@@ -209,7 +209,7 @@ include("../include/session.php");
 
 				// ================================================================================================
 				case "0.7":				
-					$thereturn.="Updating phpBMS Core to 0.7\n";
+					$thereturn.="Updating phpBMS Core to 0.8\n";
 					
 					//Processing Data Structure Changes
 					$thereturn.=processSQLfile($db,"updatev0.8.sql");
@@ -222,14 +222,37 @@ include("../include/session.php");
 					$thereturn.="Update to 0.8 Finished\n\n";
 					$currentVersion="0.8";
 				break;
+
+				// ================================================================================================
+				case "0.8":				
+					$thereturn .= "Updating phpBMS Core to 0.9\n";
+					
+					//Processing Data Structure Changes
+					$thereturn .= processSQLfile($db,"updatev0.9.sql");
+				
+					//Updating Module Table
+					$querystatement = "
+						UPDATE 
+							modules 
+						SET 
+							version='0.8'
+						WHERE
+							name='base'";
+							
+					$queryresult = $db->query($querystatement);
+
+					$thereturn .= "______________________\n\n";
+					$thereturn .= "Update to 0.9 Finished\n\n";
+					
+					$currentVersion = "0.9";
+					
+					break;
+
 			}//end switch
 		}//end while
 		return $thereturn;
 	}//end function
 	
-
-
-
 
 
 	//PROCESSING
@@ -275,7 +298,7 @@ include("../include/session.php");
 								$currenVersion = getCurrentVersion($db,"base");
 
 								if( ((real) $currenVersion) >= ((real) $_GET["v"]) )
-									$thereturn="No Update Neeeded for phpBMS Core.";
+									$thereturn="No Update Needed for phpBMS Core.";
 								else
 									$thereturn="phpBMS Core Update Possible\n Current Data Version: ".$currenVersion;							
 							}
@@ -289,7 +312,7 @@ include("../include/session.php");
 								$currenVersion = getCurrentVersion($db,$_GET["m"]);
 
 								if( ((real) $currenVersion) >= ((real) $_GET["mv"]) )
-									$thereturn="No Update Neeeded for Current Module.";
+									$thereturn="No Update Needed for Current Module.";
 								else
 									$thereturn="Module Update Possible\n Current Data Version: ".$currenVersion;							
 							}
@@ -303,7 +326,7 @@ include("../include/session.php");
 								$currenVersion = getCurrentVersion($db,"base");
 
 								if( ((real) $currenVersion) >= ((real) $_GET["v"]) )
-									$thereturn="No Update Neeeded for phpBMS Core.";
+									$thereturn="No Update Needed for phpBMS Core.";
 								else
 									$thereturn = runUpdate($db, $currenVersion, $_GET["v"]);							
 							}

@@ -38,7 +38,7 @@
 */
 
 	include("../../include/session.php");
-	
+
 	include("../../include/fields.php");
 
 	if(!isset($_GET["id"])) $error = new appError(300,"Passed variable not set (id)");

@@ -2,3 +2,4 @@ INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `crea
 INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (20,'sales','sales',0,1,NOW(),1,NOW());
 INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (30,'sales manager','',0,1,NOW(),1,NOW());
 INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (50,'upper manager','',0,1,NOW(),1,NOW());
+INSERT INTO `roles` (`id`, `name`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (80,'accounts receivable','Access to AR items, and receipts',0,1,NOW(),1,NOW());

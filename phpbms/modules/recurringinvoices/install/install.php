@@ -80,7 +80,6 @@ include("../../../include/session.php");
 					// is a corresponding SQL file
 					// with insert statements for all the records needing to be imported
 					
-					//NEEDS WORK
 					/*
 						Need to add entries for tabledefs, tablecolumns, tablefindoptions, tableoptions, and
 						tablesearchablefields

@@ -75,8 +75,91 @@ if(class_exists("phpbmsTable")){
 		}
 	
 	
+		function getDefaultStatus(){
+				
+			$querystatement="SELECT id FROM invoicestatuses WHERE invoicedefault=1";
+			$queryresult=$this->db->query($querystatement);
+	
+			$therecord=$this->db->fetchArray($queryresult);
+			
+			return $therecord["id"];
+		}
+		
+		
+		function getStatuses($statusid){
+			
+			global $phpbms;
+			
+			$querystatement="
+				SELECT 
+					invoicestatuses.id,
+					invoicestatuses.name,
+					invoicestatuses.invoicedefault,
+					invoicestatuses.setreadytopost,
+					users.firstname,
+					users.lastname
+				FROM 
+					(invoicestatuses LEFT JOIN users ON invoicestatuses.defaultassignedtoid=users.id)
+				WHERE 
+					invoicestatuses.inactive=0
+					OR invoicestatuses.id =".((int) $statusid)."
+				ORDER BY 
+					invoicestatuses.priority,
+					invoicestatuses.name";
+					
+			$queryresult=$this->db->query($querystatement);
+			
+			$thereturn = array();
+
+			$phpbms->topJS[] = 'statuses=Array();';
+
+			
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				$thereturn[] = $therecord;
+			
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']=Array();';
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["name"]="'.htmlQuotes($therecord["name"]).'";';
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["setreadytopost"]='.$therecord["setreadytopost"].';';
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["firstname"]="'.htmlQuotes($therecord["firstname"]).'";';
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["lastname"]="'.htmlQuotes($therecord["lastname"]).'";';				
+			
+			}//endwhile
+			
+			return $thereturn;
+		
+		}//end function
+		
+		function displayStatusDropDown($statusid,$statuses){
+	
+			?><select id="statusid" name="statusid" class="important">
+				<?php
+
+				foreach($statuses as $therecord){
+					?><option value="<?php echo $therecord["id"]?>" <?php if($statusid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
+				}//endforeach
+				
+				?>
+			</select><?php
+		}//end method
+		
 		function getPayments($paymentmethodid){
-			$querystatement="SELECT id,name,type,onlineprocess,processscript FROM paymentmethods WHERE inactive=0 OR id=".((int) $paymentmethodid)." ORDER BY priority,name";
+			$querystatement="
+				SELECT 
+					id,
+					name,
+					type,
+					onlineprocess,
+					processscript
+				FROM 
+					paymentmethods 
+				WHERE 
+					inactive=0 
+					OR id=".((int) $paymentmethodid)."
+				ORDER BY 
+					priority,
+					name";
+					
 			$queryresult=$this->db->query($querystatement);
 	
 			$thereturn = array();
@@ -275,42 +358,8 @@ if(class_exists("phpbmsTable")){
 			
 				}//end foreach
 			}//end if
-		}
-	
-	
-		function getDefaultStatus(){
-				
-			$querystatement="SELECT id FROM invoicestatuses WHERE invoicedefault=1";
-			$queryresult=$this->db->query($querystatement);
-	
-			$therecord=$this->db->fetchArray($queryresult);
-			
-			return $therecord["id"];
-		}
-		
-	
-		function displayStatusDropDown($statusid){
-			$querystatement="SELECT invoicestatuses.id,invoicestatuses.name,invoicestatuses.invoicedefault,users.firstname,users.lastname FROM 
-							(invoicestatuses LEFT JOIN users ON invoicestatuses.defaultassignedtoid=users.id)WHERE invoicestatuses.inactive=0
-							ORDER BY invoicestatuses.priority,invoicestatuses.name";
-			$queryresult=$this->db->query($querystatement);
-	
-			?><select id="statusid" name="statusid" onchange="updateAssignedTo();updateStatusDate()" class="important">
-				<?php
-				$options="";
-				while($therecord=$this->db->fetchArray($queryresult)){
-					if($therecord["firstname"]!="" || $therecord["lastname"]!="")
-						$options["s".$therecord["id"]]=trim($therecord["firstname"]." ".$therecord["lastname"]);
-					?><option value="<?php echo $therecord["id"]?>" <?php if($statusid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
-				}
-				?>
-			</select><script language="javascript" type="text/javascript">statusAssignedto=new Array;<?php 
-				if($options!="")
-					foreach($options as $key=>$value){
-						echo "statusAssignedto[\"".$key."\"] = \"".$value."\";\n";
-					}
-			?></script><?php
 		}//end method
+
 		
 		// CLASS OVERRIDES ======================================================================================
 		
@@ -318,7 +367,10 @@ if(class_exists("phpbmsTable")){
 			$therecord = parent::getDefaults();
 			
 			if(isset($_GET["cid"]))
-				$therecord["clientid"]=$_GET["cid"];
+				$therecord["clientid"] = $_GET["cid"];
+			else 
+				$therecord["clientid"]="";
+				
 			$therecord["type"] = "Order";
 			$therecord["statusid"] = $this->getDefaultStatus();
 			$therecord["orderdate"] = dateToString(mktime(),"SQL");
@@ -338,11 +390,16 @@ if(class_exists("phpbmsTable")){
 			$therecord["taxname"]=$taxinfo["name"];
 			$therecord["taxpercentage"]=$taxinfo["percentage"];
 			$therecord["amountdue"]=0;
+
+			$therecord["hascredit"]=0;
+			$therecord["creditlimit"]=0;
+			$therecord["creditleft"]=0;
 			return $therecord;
 		}
 		
 		
 		function getRecord($id){
+		
 			$therecord = parent::getRecord($id);
 	
 			$discountinfo=$this->getDiscount($therecord["discountid"]);
@@ -354,6 +411,21 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["amountdue"] = $therecord["totalti"] - $therecord["amountpaid"];
 			
+			$querystatement = "SELECT hascredit, creditlimit FROM clients WHERE id=".$therecord["clientid"];
+			$queryresult = $this->db->query($querystatement);
+			
+			$therecord = array_merge($this->db->fetchArray($queryresult), $therecord);
+
+			if($therecord["hascredit"]){
+				$querystatement = "SELECT SUM(`amount` - `paid`) AS amtopen FROM aritems WHERE `status` = 'open' AND clientid=".$therecord["clientid"]." AND posted=1";
+				$queryresult = $this->db->query($querystatement);
+				
+				$arrecord = $this->db->fetchArray($queryresult);
+				
+				$therecord["creditleft"] = $therecord["creditlimit"] - $arrecord["amtopen"];
+			} else
+				$therecord["creditleft"] =0;
+				
 			return $therecord;
 		}
 		
@@ -443,103 +515,227 @@ if(class_exists("phpbmsTable")){
 	}//end class
 }// end if
 
+
 if(class_exists("searchFunctions")){
 	class invoicesSearchFunctions extends searchFunctions{
 	
-		function mark_ashipped(){
+		function _mark_as_status($statusid){
+		
+			//Look up shippings defaults
+			$querystatement="SELECT defaultassignedtoid,setreadytopost FROM invoicestatuses WHERE id = ".$statusid;
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				$therecord = $this->db->fetchArray($queryresult);
 	
+				if($therecord["defaultassignedtoid"]!="")
+					$assignedtoid = $therecord["defaultassignedtoid"];
+				else
+					$assignedtoid="NULL";
+					
+				$readytopost = $therecord["setreadytopost"];
+			} else {
+				return "No status with id ".$statusid." found.";
+			}
+
 			$whereclause=$this->buildWhereClause();
-			$whereclause="(".$whereclause.") AND (invoices.type!=\"Invoice\" or invoices.type!=\"VOID\");";
-		
-			//Look up default assignedto
-			$querystatement="SELECT defaultassignedtoid FROM invoicestatuses WHERE id=4";
-			$queryresult = $this->db->query($querystatement);
-	
-			$therecord = $this->db->fetchArray($queryresult);
-			$assignedtoid="NULL";
-			if($therecord["defaultassignedtoid"]!="")
-				$assignedtoid=$therecord["defaultassignedtoid"];
-		
-			$querystatement = "UPDATE invoices SET invoices.statusid=4, invoices.statusdate=Now(), assignedtoid=".$assignedtoid.",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE ".$whereclause;
-			echo $querystatement;		
+			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID' AND invoices.statusid !=".$statusid;
+
+			// since marking RTP is dependent on the payment method type,
+			// items must be updated individually
+			$querystatement = "
+				SELECT 
+					invoices.id,
+					paymentmethods.type,
+					invoices.invoicedate
+				FROM
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+				WHERE
+					".$whereclause;
+			
 			$queryresult = $this->db->query($querystatement);
 			
-			$message = $this->buildStatusMessage();
-			$message.=" marked as shipped.";
-		
-			//delete/update history
-			$querystatement="SELECT id FROM invoices WHERE ".$whereclause;
-			$queryresult = $this->db->query($querystatement);
-			
+			$count=0;
 			while($therecord = $this->db->fetchArray($queryresult)){
-				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=4";
+			
+				$updatestatement = "
+					UPDATE 
+						invoices 
+					SET 
+						invoices.statusdate=NOW(), 
+						assignedtoid=".$assignedtoid.",
+						modifiedby=".$_SESSION["userinfo"]["id"].", ";
+
+				if($readytopost){
+
+					$updatestatement.="readytopost=1, ";
+
+					if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00")
+						$updatestatement.="invoicedate = NOW(), ";
+
+					if($therecord["type"] == "receivable")
+						$updatestatement.="amountpaid = 0, ";
+					else
+						$updatestatement.="amountpaid = totalti,";
+			
+				}//endif
+				
+				$updatestatement.="
+						invoices.statusid=".$statusid.",
+						modifieddate=NOW()						
+					WHERE 
+						id =".$therecord["id"];
+
+				$updateresult = $this->db->query($updatestatement);
+				
+				//delete conlflicting history
+				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=".$statusid;
 				$deleteresult = $this->db->query($querystatement);
 				
+				//insert new history
 				$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
-				$querystatement.=$therecord["id"].",4,NOW(),";
+				$querystatement.=$therecord["id"].",".$statusid.",NOW(),";
 				$querystatement.=$assignedtoid;
 				$querystatement.=")";
-				$insertresult = $this->db->query($querystatement);
-			}	
-		
+				$insertresult = $this->db->query($querystatement);				
+				
+				$count++;
+				
+			}//endwhile			
+			
+			$message = $this->buildStatusMessage($count);
+
 			return $message;
+			
+		}//end private method
+
+		
+		function mark_ashipped(){
+			
+			$statusid = 4; //The default id for "shipped";
+			
+			$message = $this->_mark_as_status($statusid);
+			
+			return $message." marked as shipped.";
+			
 		}//end method
 	
 	
+		function mark_rtp(){
+			
+			$whereclause=$this->buildWhereClause();
+			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID'";
+
+			// since marking RTP is dependent on the payment method type,
+			// items must be updated individually
+			$querystatement = "
+				SELECT 
+					invoices.id,
+					paymentmethods.type,
+					invoices.invoicedate
+				FROM
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+				WHERE
+					".$whereclause;
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			$count=0;
+			while($therecord = $this->db->fetchArray($queryresult)){
+				$updatestatement ="
+					UPDATE 
+						invoices 
+					SET 
+						modifiedby=".$_SESSION["userinfo"]["id"].", ";
+
+				if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00")
+					$updatestatement.="invoicedate = NOW(), ";
+				
+				if($therecord["type"] == "receivable")
+					$updatestatement.="amountpaid = 0, ";
+				else
+					$updatestatement.="amountpaid = totalti, ";
+
+				$updatestatement.="
+						readytopost=1,
+						modifieddate=NOW()
+					WHERE 
+						id =".$therecord["id"];
+
+				$updateresult = $this->db->query($updatestatement);
+				
+				$count++;
+				
+			}//endwhile
+
+			$message = $this->buildStatusMessage($count);
+			return $message." marked ready to post.";
+		
+		}//end method
+		
+
 		function mark_aspaid(){
 		
 			$whereclause = $this->buildWhereClause();
+			$whereclause = trim("
+				invoices.type!='Invoice'
+				AND invoices.type!='VOID' 
+				AND paymentmethods.type != 'receivable' 
+				AND (".$whereclause.")");
 				
-			$querystatement = "UPDATE invoices SET invoices.amountpaid=invoices.totalti,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\")";
+			$querystatement ="
+				SELECT
+					invoices.id
+				FROM
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id 
+				WHERE
+					".$whereclause;
+
 			$queryresult = $this->db->query($querystatement);
 			
-			$message=$this->buildStatusMessage();
-			$message.=" marked as paid in full.";			
+			$count = 0;
+			while($therecord = $this->db->fetchArray($queryresult)){
+			
+				$updatestatement = "
+					UPDATE invoices 
+					SET 
+						invoices.amountpaid=invoices.totalti,
+						modifiedby=\"".$_SESSION["userinfo"]["id"]."\", 
+						modifieddate=NOW() 
+					WHERE
+						id=".$therecord["id"];
+				
+				$this->db->query($updatestatement);
+				
+				$count++;
+				
+			}//endwhile
+			
+			
+			$message=$this->buildStatusMessage($count);
+			$message.=" paid in full.";
 		
 			return $message;
-		}
+			
+		}//end method
 	
 	
 		function mark_asinvoice(){
 		
 			$whereclause = $this->buildWhereClause();
-			$whereclause = "(".$whereclause.") AND (invoices.type!=\"Invoice\" OR invoices.type!=\"VOID\") AND invoices.amountpaid=invoices.totalti";
+		
+			include_once("include/post_class.php");
+			defineInvoicePost();
 			
-			//Look up default assignedto
-			$querystatement = "SELECT defaultassignedtoid FROM invoicestatuses WHERE id=4";
-			$queryresult = $this->db->query($querystatement);
-	
-			$therecord=$this->db->fetchArray($queryresult);
-			$assignedtoid="NULL";
-			if($therecord["defaultassignedtoid"]!="")
-				$assignedtoid=$therecord["defaultassignedtoid"];
-		
-			$querystatement = "UPDATE invoices SET invoices.type=\"Invoice\", invoices.invoicedate=ifnull(invoices.invoicedate,Now()),modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE".$whereclause;
-			$queryresult = $this->db->query($querystatement);
+			$invoicePost = new invoicePost($this->db);
 			
-			$message = $this->buildStatusMessage();
-			$message.=" converted to invoice.";
+			$count = $invoicePost->post($whereclause);
 		
-			//delete/update history
-			$querystatement="SELECT id FROM invoices WHERE (".$whereclause.") AND statusid!=4";
-			$queryresult = $this->db->query($querystatement);
+			$message = $this->buildStatusMessage($count);
+			$message .= " posted as invoice";
 			
-			while($therecord=$this->db->fetchArray($queryresult)){
-				$querystatement = "UPDATE invoices SET invoices.statusid=4,invoices.statusdate=Now(), invoices.assignedtoid=".$assignedtoid." WHERE invoices.id=".$therecord["id"];
-				$updateresult = $this->db->query($querystatement);
-		
-				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=4";
-				$deleteresult = $this->db->query($querystatement);
-				
-				$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
-				$querystatement.=$therecord["id"].",4,NOW(),";
-				$querystatement.=$assignedtoid;
-				$querystatement.=")";
-				$insertresult = $this->db->query($querystatement);
-			}
-		
 			return $message;
-		}
+		}//end method
 		
 	
 		function delete_record(){
@@ -547,7 +743,16 @@ if(class_exists("searchFunctions")){
 			//passed variable is array of user ids to be revoked
 			$whereclause = $this->buildWhereClause();
 			
-			$querystatement = "UPDATE invoices SET invoices.type=\"VOID\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND invoices.type!=\"Invoice\";";
+			$querystatement = "
+				UPDATE 
+					invoices 
+				SET 
+					invoices.type='VOID', 
+					modifiedby = ".$_SESSION["userinfo"]["id"].", 
+					modifieddate = NOW() 
+				WHERE (".$whereclause.") 
+					AND invoices.type!='Invoice';";
+					
 			$queryresult = $this->db->query($querystatement);
 			
 			$message = $this->buildStatusMessage();
@@ -558,4 +763,105 @@ if(class_exists("searchFunctions")){
 	
 	}//end class
 }//end if
+
+
+function defineInvoicePost(){
+
+	class invoicePost extends tablePost{
+		
+		function invoicePost($db, $modifiedby = NULL){
+			
+			parent::tablePost($db, $modifiedby);
+			
+		}//end method
+
+
+		function prepareWhere($whereclause=NULL){
+			
+			$this->whereclause = "";
+			
+			if($whereclause)			
+				$this->whereclause = "(".$whereclause.") AND ";
+			
+			$this->whereclause .= "invoices.type!=\"Invoice\" AND invoices.type!=\"VOID\" AND readytopost = 1";
+		
+		}//end method
+		
+		
+		function post($whereclause=NULL){
+			
+			if($whereclause)
+				$this->prepareWhere($whereclause);
+			
+			
+			$querystatement = "
+				SELECT
+					invoices.id,
+					invoices.clientid,
+					invoices.totalti,
+					invoices.invoicedate,
+					paymentmethods.type
+				FROM
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+				WHERE
+					".$this->whereclause;
+			$queryresult = $this->db->query($querystatement);
+			
+			$count =0;
+			while($therecord = $this->db->fetchArray($queryresult)){
+
+				$updatestatement = "
+					UPDATE
+						`invoices`
+					SET
+						`type` = 'Invoice', ";
+				if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00"){
+					$therecord["invoicedate"] = dateToString(mktime(0,0,0),"SQL");
+
+					$updatestatement .= "
+						`invoicedate` = NOW(), ";
+				}//end if
+				$updatestatement .= "
+						`modifiedby` = ".$this->modifiedby.",
+						`modifieddate` = NOW()
+					WHERE
+						`id` = ".$therecord["id"];
+						
+				$updateresult = $this->db->query($updatestatement);
+						
+				if($therecord["type"] == "receivable") {
+					// if type = AR, create AR item
+					
+					$arrecord["type"] = "invoice";
+					$arrecord["status"] = "open";
+					$arrecord["posted"] = 1;
+					$arrecord["amount"] = $therecord["totalti"];						
+					$arrecord["itemdate"] = dateToString(stringToDate($therecord["invoicedate"],"SQL") );
+					$arrecord["clientid"] = $therecord["clientid"];
+					$arrecord["relatedid"] = $therecord["id"];
+					
+					if(!class_exists("phpbmsTable"))
+						include("include/tables.php");
+						
+					$aritems = new phpbmsTable($this->db, 303);
+					
+					$aritems->insertRecord($arrecord,$this->modifiedby);
+					
+				}//endif
+				
+				$count++;
+				
+			}//endwhile
+			
+			return $count;
+			
+		}//end method
+		
+	}//end class invoicePost
+
+}//end function
+
+if(class_exists("tablePost")){
+	defineInvoicePost($db);
+}
 ?>

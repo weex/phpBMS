@@ -117,7 +117,6 @@ include("../include/session.php");
 										"users",
 										"settings",
 										"files",
-										"roles",		
 									);
 									foreach($tables as $table){
 										
