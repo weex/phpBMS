@@ -585,7 +585,7 @@ $nl_exists = function_exists("nl_langinfo");
 if($nl_exists)
 	$nl_exists = @ nl_langinfo(CODESET);
 
-if(!nl_exists){
+if(!$nl_exists){
 
 	function nl_langinfo($constant){
 	
