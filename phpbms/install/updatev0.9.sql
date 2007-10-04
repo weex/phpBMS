@@ -109,3 +109,4 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('220', 'About phpBMS', 'javascript:menu.showHelp()', '219', '0', '1', '1', NOW(), NOW(), '0');
 DELETE FROM tableoptions WHERE name='printex';
 INSERT INTO tableoptions (tabledefid, name, `option`,othercommand, roleid) SELECT id, "printex", 1, 0, 0 FROM tabledefs WHERE `type` != "view";
+INSERT INTO `reports` (`name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('SQL Export', 'export', '0', '0', '-100', 'report/general_sql.php', 'Generate SQL INSERT statements for records.', 1, NOW(), 1, NOW());

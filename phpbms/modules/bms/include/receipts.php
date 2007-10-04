@@ -142,11 +142,11 @@ if(class_exists("phpbmsTable")){
 			$deletestatement = "DELETE FROM aritems WHERE relatedid = ".((int) $receiptid)." AND `type` = 'deposit'";
 			$this->db->query($deletestatement);
 
-			$itemsArray = split(";;", $itemlist);
+			$itemsArray = explode(";;", $itemlist);
 
 			foreach($itemsArray as $item){
 			
-				$itemRecord = split("::", $item);
+				$itemRecord = explode("::", $item);
 				
 				if(count($itemRecord) > 1){
 
@@ -361,10 +361,10 @@ if(class_exists("searchFunctions")){
 			
 			$newWhere = "";
 			while($therecord = $this->db->fetchArray($queryresult))
-				$newWhere .= ", id = ".$therecord["id"];
+				$newWhere .= " OR id = ".$therecord["id"];
 				
 			if(strlen($newWhere))
-				$newWhere = substr($newWhere, 2);
+				$newWhere = substr($newWhere, 4);
 			else
 				$newWhere = "id = -1974";
 			
@@ -433,7 +433,7 @@ if(class_exists("searchFunctions")){
 				$checkrecord = $this->db->fetchArray($checkresult);
 				
 				if($therecord["amount"] == $checkrecord["thesum"]){
-					$newWhere .= ", id = ".$therecord["id"];
+					$newWhere .= " OR id = ".$therecord["id"];
 					$count++;
 					
 				}//endif
@@ -441,7 +441,7 @@ if(class_exists("searchFunctions")){
 			}//endif
 
 			if(strlen($newWhere))
-				$newWhere = substr($newWhere, 2);
+				$newWhere = substr($newWhere, 4);
 			else
 				$newWhere = "id = -1974";
 			
@@ -605,11 +605,11 @@ function defineReceiptPost(){
 				
 				}//endwhile
 
-				$newWhere .= ", id = ".$therecord["id"];
+				$newWhere .= " OR id = ".$therecord["id"];
 			}//endwhile
 
 			if(strlen($newWhere))
-				$newWhere = substr($newWhere, 2);
+				$newWhere = substr($newWhere, 4);
 			
 			if($newWhere){
 			

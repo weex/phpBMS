@@ -63,7 +63,7 @@
 	<div class="bodyline" id="step1">
 		<h1>Before Updating</h1>
 		
-		<p>Backup all of your data and program files before running any update.</p>
+		<p class="important">Backup all of your data and program files before running any update.</p>
 		<p>
 			By downloading and decompressing this update, you may have already replaced script files 
 			from the previous version of phpBMS. If you have decompressed these files to a separate 

@@ -164,6 +164,11 @@ class aritemsClientStatements extends phpbmsReport{
 			$totalDue = $this->currentTotal + $this->term1Total + $this->term2Total + $this->term3Total;
 			
 			$pdf->Cell(1 - 0.01, 0.17, formatVariable($totalDue, "currency"), 1, 0, "R", 1);
+			
+			$this->currentTotal = 0;
+			$this->term1Total = 0;
+			$this->term2Total = 0;
+			$this->term3Total = 0;
 
 		}//end while		
 		

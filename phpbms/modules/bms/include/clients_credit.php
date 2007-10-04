@@ -82,6 +82,7 @@
 				SELECT
 					relatedid,
 					amount,
+					`type`,
 					paid,
 					itemdate,
 					posted
@@ -95,22 +96,38 @@
 			
 			$queryresult = $this->db->query($querystatement);
 			
+			$querystatement = "
+				SELECT
+					SUM(amount) AS theamount,
+					SUM(amount - paid) AS thedue
+				FROM
+					aritems
+				WHERE
+					clientid = ".((int) $clientid)."
+					AND `status` = 'open'
+				ORDER BY
+					posted";
+			
+			$sumresult = $this->db->query($querystatement);
+			$sumrecord = $this->db->fetchArray($sumresult);
+			
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable" id="openItems">
 
 			<thead>
 				<tr>
 					<th align="left" nowrap="nowrap">doc ref</th>
+					<th align="left" nowrap="nowrap">type</th>
 					<th align="left" nowrap="nowrap">doc date</th>
 					<th align="left" nowrap="nowrap">due date</th>
-					<th align="right" width="100%" nowrap="nowrap">ammount</th>
+					<th align="right" width="100%" nowrap="nowrap">amount</th>
 					<th align="right">due</th>
 				</tr>
 			</thead>
 			
 			<tfoot>
 				<tr class="queryfooter">
-					<td colspan="4" align="right">&nbsp;</td>
-					<td align="right">&nbsp;</td>
+					<td colspan="5" align="right"><?php echo formatVariable($sumrecord["theamount"], "currency")?></td>
+					<td align="right"><?php echo formatVariable($sumrecord["thedue"], "currency")?></td>
 				</tr>
 			</tfoot>
 			
@@ -131,7 +148,7 @@
 								$title = ($therecord["posted"] == 1)? "Current" : "Pending (non-posted)";
 								
 								?><tr class="queryGroup">
-									<td colspan="5"><?php echo $title?></td>
+									<td colspan="6"><?php echo $title?></td>
 								</tr><?php
 								
 							}//end if
@@ -140,15 +157,23 @@
 						
 							?><tr class="row<?php echo $row?>">
 								<td><?php echo $therecord["relatedid"]?></td>
+								<td nowrap="nowrap"><?php echo $therecord["type"]?></td>
 								<td><?php echo formatFromSQLDate($therecord["itemdate"])?></td>
-								<td><?php echo dateToString($dueDate)?></td>
+								<td <?php if($dueDate < mktime(0,0,0)) echo 'class="important"';?>><?php 
+									
+									if($therecord["type"] == "invoice")
+										echo dateToString($dueDate);
+									else
+										echo "&nbsp;";
+								
+								?></td>
 								<td align="right"><?php echo formatVariable($therecord["amount"],"currency")?></td>
 								<td align="right"><?php echo formatVariable($therecord["amount"] - $therecord["paid"],"currency")?></td>
 							</tr><?php 
 						}//end while 
 						
 					} else {
-						?><tr class="norecords"><td colspan="5" >No open items</td></tr><?php
+						?><tr class="norecords"><td colspan="6" >No open items</td></tr><?php
 					}//endif
 				?>
 			</tbody>

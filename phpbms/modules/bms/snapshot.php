@@ -250,8 +250,7 @@ class accountsReceivable {
 			  aritems
 			WHERE
 			  `status` = 'open'
-			  AND posted=1;
-  		";
+			  AND posted=1";
 		
 		$queryresult = $this->db->query($querystatement);
 		
@@ -316,9 +315,12 @@ class accountsReceivable {
 		$sumresult = $this->db->query($querystatement);
 		$sumrecord = $this->db->fetchArray($sumresult);
 		
-		if($this->db->numRows($queryresult) == 0)
-			echo "none";
-		else{
+		if($this->db->numRows($queryresult) == 0){
+		
+			?>
+			<div class="small disabledtext">none</div>
+			<?php
+		} else {
 		
 			?>
 			

@@ -575,4 +575,53 @@ function formatVariable($value, $format=NULL){
 	}
 	return $value;
 }
+
+
+//for windows servers, we have no define time constants and nl_langinfo function
+//in a limited fashion; some windows servers still show that the function
+//exists even though it's not implemented, thus the second check;
+
+$nl_exists = function_exists("nl_langinfo");
+if($nl_exists)
+	$nl_exists = @ nl_langinfo(CODESET);
+
+if(!nl_exists){
+
+	function nl_langinfo($constant){
+	
+		echo $constant;	
+		
+	}//end function
+
+	function nl_setup(){
+	
+		$date = mktime(0,0,0,10,7,2007);
+		
+		for($i = 1; $i<=7; $i++){
+		
+			define("ABDAY_".$i, date("D", $date));
+			define("DAY_".$i, date("l"), $date);
+			
+			$date = strtotime("tomorrow", $date);
+		}//end for
+		
+		
+		for($i = 1; $i<=12; $i++){
+			
+			$date = mktime(0, 0, 0, $i, 1, 2007);
+			
+			define("ABMON_".$i, date("M", $date));
+			define("MON_".$i, date("F"), $date);
+		
+		}//end for
+				
+	}//end function
+
+	nl_setup();
+	
+
+}//end if
+
+nl_langinfo(ABMON_12);
+
 ?>

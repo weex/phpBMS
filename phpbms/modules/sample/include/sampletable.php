@@ -12,7 +12,7 @@
 	
 */  
 if(class_exists("phpbmsTable")){
-	class [tablename] extends phpbmsTable{
+	class tablename extends phpbmsTable{
 		
 		// CLASS OVERRIDES ===================================================================
 		

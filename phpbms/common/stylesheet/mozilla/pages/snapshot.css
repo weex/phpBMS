@@ -81,12 +81,24 @@ h2{
 #eventsBox {vertical-align:top;padding:10px;}
 #eventsBox h2{margin:0; padding:4px 0 4px;}
 #eventsBox #eventsList table{border-collapse:collapse;}
-#eventsBox #eventsLis td{padding:10px 5px; border-bottom:1px solid #DDDDDD; font-size:11px;}
-#eventsBox .eventDayName td{font-size:13px;background:#EEEEEE;
+
+#eventsBox #eventsList td{
+	padding:10px 5px; 
+	border-bottom:1px solid #DDDDDD; 
+	font-size:11px;
+}
+
+#eventsBox #eventsList .eventDayName td{
+	font-size:13px;
+	background:#EEEEEE;
 	font-weight:bold;
 	padding:4px;
-	border-bottom:1px solid #BBBBBB;}
-#eventsBox #today td{background:#DDDDDD}
+	border-bottom:1px solid #BBBBBB;
+}
+
+#eventsBox #today td{
+	background:#DDDDDD
+}
 
 #eventButtons {
 	float:right;
