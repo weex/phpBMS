@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -36,64 +36,142 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require("../include/session.php");
-	if(!isset($_GET["tid"])) $error = new appError(200,"URL variable missing: tid");
-	if(!is_numeric($_GET["tid"])) $error = new appError(300,"URL variable invalid type: tid");
-	
-	if($_SESSION["printing"]["sortorder"])
-		$sortorder=$_SESSION["printing"]["sortorder"];
-	else
-		$sortorder="";
-	
-	$querystatement="SELECT maintable,displayname FROM tabledefs WHERE id=".((int) $_GET["tid"]);
-	$thequery=$db->query($querystatement);                   
-	if(!$thequery)	$error = new appError(100,"Could not retrieve table information");
-	$therecord=$db->fetchArray($thequery);
-	
-	$querystatement="SELECT * FROM ".$therecord["maintable"]." ".$_SESSION["printing"]["whereclause"].$sortorder;
-	$thequery=$db->query($querystatement);                   
+	if(!class_exists("phpbmsReport"))
+		include("report_class.php");
 
-	$num_fields=$db->numFields($thequery);
+	class generalTablePrint extends phpbmsReport {
+	
+		var $maintable = "";
+		var $resultOutput = "";
+		
+		function generalTablePrint($db, $tabledefid){
+		
+			$this->tabledefid = ((int) $tabledefid);
+			
+			parent::phpbmsReport($db);
+
+			$querystatement = "
+				SELECT 
+					maintable, displayname
+				FROM 
+					tabledefs
+				WHERE 
+					id=".((int) $tabledefid);
+					
+			$queryresult = $db->query($querystatement); 
+			$therecord=$db->fetchArray($queryresult);
+			
+			$this->maintable = $therecord["maintable"];
+			$this->displayname = $therecord["displayname"];
+			
+		}//end method
+
+		
+		function generate(){
+		
+			$querystatement = "
+				SELECT 
+					* 
+				FROM 
+					".$this->maintable;
+
+			$querystatement = $this->assembleSQL($querystatement);
+			
+			$queryresult = $this->db->query($querystatement);
+
+			$num_fields = $this->db->numFields($queryresult);
+
+			ob_start();
+
+			?>
+			<div id="container">
+				<h1><?php echo formatVariable($this->displayname)?></h1>
+				<table id="results">
+					<thead>
+						<tr>
+			<?php
+			
+			for($i=0;$i<$num_fields;$i++){
+				
+				?>
+					<th <?php if($i == $num_fields-1) echo 'id="lastHeader"' ?>><?php echo $this->db->fieldName($queryresult, $i); ?></th>
+					
+				<?php 
+			
+			}//end for
+			
+			?>
+						</tr>
+					</thead>
+					
+					<tbody>
+			<?php 
+		
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				?><tr><?php 
+				
+				foreach($therecord as $value){
+					
+					?><td><?php echo formatVariable($value)?></td><?php
+				
+				}//end foreach
+
+				?></tr><?php 
+
+			}//endwhile
+
+			?>
+					</tbody>					
+					
+				</table>
+			</div>
+			<?php
+
+			$this->reportOutput = ob_get_contents();
+			ob_end_clean();			
+		
+		}//end method
+		
+		
+		function show(){
+		
+			global $phpbms;
+			$db = &$this->db;
+			
+			$phpbms->cssIncludes[] = "reports.css";
+			$phpbms->cssIncludes[] = "pages/generaltableprint.css";
+			
+			$phpbms->showMenu = false;
+			$phpbms->showFooter = false;
+			
+			include("header.php");
+			
+			echo $this->reportOutput;
+			
+			include("footer.php");
+
+		}//end method
+		
+	}//end class
+	
+	
+	//PROCESSING 
+	//========================================================================
+	
+	if(!isset($noOutput)){
+
+		session_cache_limiter('private');
+	
+		require("../include/session.php");
+		if(!isset($_GET["tid"])) 
+			$error = new appError(200,"URL variable missing: tid");
+	
+		$report = new generalTablePrint($db, $_GET["tid"]);
+		$report->setupFromPrintScreen();
+		$report->generate();	
+		$report->show();	
+		
+	}//end if
+	
 ?>
-<html>
-<head>
-<title><?php echo $therecord["displayname"]?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<style type="text/css">
-<!--
-BODY,TH,TD{
-	font-size : 10px;
-	font-family : sans-serif;
-	color : Black; 
-}
-TABLE{border:2px solid black;border-bottom-width:1px;border-right-width:1px;}
-TH, TD{ padding:2px; border-right:1px solid black;border-bottom:1px solid black;}
-TH {
-	font-size:11px;
-	font-weight: bold;
-	border-bottom-width:2px;
-}
--->
-</style>
-</head>
-<body>
-<table border="0" cellpadding="0" cellspacing="0">
-<tr>
-<?php 
-	for($i=0;$i<$num_fields;$i++){
-		echo "<th>".$db->fieldName($thequery,$i)."</th>";
-	}
-?>
-</tr>
-<?php 
-	while($therecord=$db->fetchArray($thequery)){
-		echo "<TR>\n";
-		for($i=0;$i<$num_fields;$i++){
-			echo "<TD>".($therecord[$i]?$therecord[$i]:"&nbsp;")."</td>\n";
-		}
-		echo "</TR>\n";
-	}
-?>
-</table>
-</body>
-</html>

@@ -83,14 +83,14 @@
 			for($i=0;$i<$num_fields;$i++)			
 				$this->reportOutput .= ",".$this->db->fieldName($queryresult, $i);
 
-			$this->reportOutput = substr($this->output, 1)."\n";
+			$this->reportOutput = substr($this->reportOutput, 1)."\n";
 		
 			while($therecord = $this->db->fetchArray($queryresult)){
 			
 				foreach($therecord as $value)
 					$this->reportOutput.= ',"'.$value.'"';
 
-				$this->reportOutput = substr($this->output, 1)."\n";
+				$this->reportOutput = substr($this->reportOutput, 1)."\n";
 
 			}//endwhile
 			

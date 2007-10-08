@@ -1,0 +1,10 @@
+@page { 
+
+	size:US-Letter landscape;
+
+}
+
+#container{
+	width:9.375in;
+	margin:.03125in;
+}

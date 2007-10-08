@@ -36,6 +36,25 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+	class pdfColumn{
+		
+		var $title;
+		var $fieldname;
+		var $size = 1;
+		var $format;
+		var $align = "L";
+	
+		function pdfColumn($title, $fieldname, $size = 1, $format = "", $align = "L"){
+		
+			$this->title = $title;
+			$this->fieldname = $fieldname;
+			$this->size = ((real) $size);
+			$this->format = $format;
+			$this->align = $align;
+		
+		}//end method
+	
+	}//end class
 
 	class pdfColor{
 		
@@ -111,7 +130,7 @@
 		var $styles = array();
 		
 	
-		function phpbmsPDFReport($db, $orientation='P', $unit='mm', $format='A4'){
+		function phpbmsPDFReport($db, $orientation='P', $unit='mm', $format='Letter'){
 		
 			$this->db = $db;
 			
@@ -119,23 +138,29 @@
 			
 			$this->initStyles();
 			$this->SetLineWidth(0.01);
+			
 		}//end method
 		
 		
 		function initStyles(){
 			
 			//here we set the standard styles
-			
+
+			// NORMAL			
 			$font = new pdfFont("Arial", "", 8);
 			$style = new pdfStyle($font);
 
 			$this->styles["normal"] = $style;
 
+
+			// TITLES
 			$font = new pdfFont("Arial", "B", 16);
 			$style = new pdfStyle($font);
 
 			$this->styles["title"] = $style;
 
+
+			// HEADER
 			$font = new pdfFont("Arial", "B", 8);
 			$bgC = new pdfColor(0,0,0);
 			$txtC = new pdfColor(255,255,255);
