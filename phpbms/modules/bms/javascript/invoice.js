@@ -67,7 +67,7 @@ invoice = {
 			errorArray[errorArray.length] = "Orders marked ready to post must have an invoice date";
 		
 		if(readytopost.checked && currencyToNumber(amountdue.value)!= 0 && payinfull.style.display != "none")
-			errorArray[errorArray.length] = "Orders marked ready to post and not charged to accounts receivable mut be paid in full.";
+			errorArray[errorArray.length] = "Orders marked ready to post and not charged to accounts receivable must be paid in full.";
 		
 		if(payinfull.style.display == "none" && currencyToNumber(creditleft.value) < currencyToNumber(totalti.value))
 			errorArray[errorArray.length] = "Orders ammount exceeds credit left. ("+creditleft.value+")";

@@ -246,9 +246,9 @@ class arAging{
 
 				</fieldset>
 				<p class="notes">
-					Againg should be run in a consistent timeframe.  Although
+					Aging should be run in a consistent timeframe.  Although
 					running again will not result in duplicate service charges
-					for aninvoices in the same aging period, not running
+					for an invoice in the same aging period, not running
 					the aging on the same specified date may result in client
 					statements showing the service charges too early or too late.						
 				</p>

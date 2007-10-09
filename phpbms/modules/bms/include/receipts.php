@@ -116,7 +116,7 @@ if(class_exists("phpbmsTable")){
 						<input type="hidden" id="<?php echo $recID?>DocPaid" value="<?php echo $therecord["paid"]?>" />
 						<input id="<?php echo $recID?>DocAmount" class="invisibleTextField currency" readonly="readonly" value="<?php echo formatVariable($therecord["amount"], "currency")?>" size="10" maxlength="12"/>
 					</td>
-					<td><input id="<?php echo $recID?>DocDue" class="invisibleTextField currency" readonly="readonly" value="<?php echo formatVariable($docDue, "currency")?>" size="10" maxlength="12"/></td>
+					<td><input id="<?php echo $recID?>DocDue" class="invisibleTextField currency dueFields" readonly="readonly" value="<?php echo formatVariable($docDue, "currency")?>" size="10" maxlength="12"/></td>
 					<td><input id="<?php echo $recID?>Applied" class="currency appliedFields" value="<?php echo formatVariable($therecord["applied"], "currency")?>" size="10" maxlength="12"/></td>
 					<td><input id="<?php echo $recID?>Discount" class="currency" value="<?php echo formatVariable($therecord["discount"], "currency")?>" size="10" maxlength="12"/></td>
 					<td><input id="<?php echo $recID?>TaxAdj" class="currency" value="<?php echo formatVariable($therecord["taxadjustment"], "currency")?>" size="10" maxlength="12"/></td>

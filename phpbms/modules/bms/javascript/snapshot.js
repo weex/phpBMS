@@ -86,7 +86,7 @@ connect(window,"onload",function() {
 	
 	var bmsButtons = getElementsByClassName('bmsInfo');
 	for(var i=0; i<bmsButtons.length; i++)
-		connect(bmsButtons[i],"onclick",bmsSnapshot.buttonPress);
+		connect(bmsButtons[i],"onclick",bmsSnapshot.infoPress);
 
 	var receipts = getElementsByClassName('receiptLinks');
 	for(i=0; i<receipts.length; i++)

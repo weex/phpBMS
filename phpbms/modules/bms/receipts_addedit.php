@@ -249,7 +249,8 @@
 
 			<tfoot>
 				<tr class="queryfooter">
-					<td colspan="6" align="right">total applied&nbsp;&nbsp;</td>
+					<td colspan="5" align="right">&nbsp;</td>
+					<td><input id="totaldue" class="invisibleTextField currency" size="10" maxlength="12" readonly="readonly" value="$0.00"/></td>
 					<td><input id="totalapplied" class="invisibleTextField currency" size="10" maxlength="12" readonly="readonly" value="$0.00"/></td>
 					<td colspan="3">&nbsp;</td>
 				</tr>

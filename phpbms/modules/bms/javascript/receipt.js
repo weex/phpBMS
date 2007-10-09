@@ -104,6 +104,22 @@ receipt = {
 	}, //end method
 	
 	
+	calculateTotalDue: function(e){
+		
+		var amountsDue = getElementsByClassName("dueFields");
+		
+		var amountdue = getObjectFromID("totaldue");
+		
+		var newAmount = 0;
+		
+		for (var i=0; i<amountsDue.length; i++)
+			newAmount += currencyToNumber(amountsDue[i].value);
+			
+		amountdue.value = numberToCurrency(newAmount);
+
+	}, //end method
+		
+	
 	checkRTP: function(e){
 		
 		var checkbox = getObjectFromID("readytopost");
@@ -260,7 +276,7 @@ aritems = {
 		
 		aritems.calculateTotalApplied();
 		receipt.updateDistributionRemaining();
-
+		receipt.calculateTotalDue();
 		
 	},//end method
 
@@ -275,6 +291,7 @@ aritems = {
 		
 		aritems.calculateTotalApplied();
 		receipt.updateDistributionRemaining();
+		receipt.calculateTotalDue();
 		
 		var changed = getObjectFromID("itemschanged");
 		changed.value = 1;
@@ -447,7 +464,7 @@ aritems = {
 		tempINPUT.value = numberToCurrency(itemObj.amount - itemObj.paid);
 		tempINPUT.readOnly = true;
 		tempINPUT.size = 10;
-		tempINPUT.className = "invisibleTextField currency";		
+		tempINPUT.className = "invisibleTextField currency dueFields";		
 		tempTD.appendChild(tempINPUT);
 
 		theTR.appendChild(tempTD);
@@ -520,6 +537,8 @@ aritems = {
 		var changed = getObjectFromID("itemschanged");
 		changed.value = 1;
 
+		receipt.calculateTotalDue();
+
 	},//end method
 	
 	
@@ -547,7 +566,8 @@ aritems = {
 
 		aritems.calculateTotalApplied();
 		receipt.updateDistributionRemaining();
-		
+		receipt.calculateTotalDue();
+
 	},//end method
 
 
@@ -556,14 +576,28 @@ aritems = {
 		var amount = getObjectFromID("amount");
 		
 		var theTotal = currencyToNumber(amount.value);
-		
-		if(theTotal == 0)
-			return false;
-		
+
 		var appliedFields = getElementsByClassName("appliedFields");
-		var theID, docDue, amountToApply, refid;
-		
+		var theID, docDue, amountToApply, refid, theType;
+
+		//first find all non-zero deposits and add it to the total;
 		for(var i=0; i< appliedFields.length; i++){
+			
+			theID = appliedFields[i].id.substr(0,2);
+			theType = getObjectFromID(theID+"Type");
+
+			if(theType.value == "deposit"){
+				
+				docDue = currencyToNumber(getObjectFromID(theID + "DocDue").value) + currencyToNumber(appliedFields[i].value);
+
+				if(docDue != 0)
+					theTotal += -1 * docDue;
+					
+			}//end if
+						
+		}//end for				
+
+		for(i=0; i< appliedFields.length; i++){
 			
 			theID = appliedFields[i].id.substr(0,2);
 			
@@ -572,12 +606,12 @@ aritems = {
 			if(refid.value != "")
 				docDue = currencyToNumber(getObjectFromID(theID + "DocDue").value) + currencyToNumber(appliedFields[i].value);
 			else
-				docdue = Math.pow(10, 10);
+				docDue = Math.pow(10, 10);
 			
 			if(docDue <= theTotal){
 				
 				appliedFields[i].value = docDue;
-				theTotal = Math.round( (theTotal - docDue) * Math.pow(10,CURRENCY_ACCURACY) ) / Math.pow(10,CURRENCY_ACCURACY);
+				theTotal = roundForCurrency(theTotal - docDue);
 				
 			} else{
 				
@@ -587,10 +621,7 @@ aritems = {
 			}//end if
 			
 			aritems.changeAppliedFields(false, theID);
-			
-			if(theTotal <= 0)
-				break;
-				
+							
 		}//end for		
 		
 	}, //end method
@@ -689,6 +720,7 @@ newItemDialog = {
 		var newItemDepositExisting = getObjectFromID("newItemDepositExisting");
 		
 		var theSelect = null;
+
 		switch(type.value){
 			case "deposit":
 				if(newItemDepositExisting.checked)
@@ -699,8 +731,8 @@ newItemDialog = {
 				theSelect = getObjectFromID("newItemInvoiceARID");
 				break;
 				
-			case "serviceCharge":			
-				theSelect = getObjectFromID("newItemServiceARID");
+			case "service charge":			
+				theSelect = getObjectFromID("newItemServiceChargeARID");
 				
 		}//endswitch
 
@@ -855,9 +887,10 @@ connect(window,"onload",function() {
 		
 
 	aritems.setInitialListners();
-	aritems.calculateTotalApplied();	
+	aritems.calculateTotalApplied();		
 	receipt.switchPayment();
 	receipt.updateDistributionRemaining();
+	receipt.calculateTotalDue();
 	
 	var toPass ={
 		

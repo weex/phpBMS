@@ -513,7 +513,7 @@
 		<td class="totalItems"><button id="payinfull" type="button" onclick="payInFull()" tabindex="20" class="graphicButtons buttonCheck" title="Pay in full"><span>pay in full</span></button></td>
 	</tr>
 	<tr>
-		<td colspan="2" class="invoiceTotalLabels"><div>amount due</div></td>
+		<td colspan="2" class="invoiceTotalLabels" nowrap="nowrap"><div>amount due</div></td>
 		<td class="totalItems"><input id="amountdue" name="amountdue" type="text" value="<?php echo numberToCurrency($therecord["amountdue"]) ?>" size="12" maxlength="15" onchange="calculatePaidDue();" class="important fieldCurrency fieldTotal" tabindex="24"/></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
