@@ -44,7 +44,7 @@ class MEM_IMAGE extends FPDF
 		$this->FPDF($orientation, $unit, $format);
 		//Register var stream protocol (requires PHP>=4.3.2)
 		if(function_exists('stream_wrapper_register'))
-			stream_wrapper_register('var','VariableStream');
+			@ stream_wrapper_register('var','VariableStream');
 	}
 
 	//

@@ -227,3 +227,4 @@ INSERT INTO `relationships` (`tofield`, `name`, `fromfield`, `fromtableid`, `tot
 INSERT INTO `relationships` (`tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('paymentmethodid', 'receipts', 'id', '301', '304', 1, NOW(), 1, NOW(), '1');
 INSERT INTO `relationships` (`tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('id', 'receipts', 'relatedid', '303', '304', 1, NOW(), 1, NOW(), '0');
 INSERT INTO `relationships` (`tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('assignedtoid', 'assigned to sales orders', 'id', '9', '3', 1, NOW(), 1, NOW(), '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) VALUES (3,'email_invoice','e-mail client invoice PDF',1,30);

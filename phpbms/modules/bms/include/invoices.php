@@ -518,6 +518,44 @@ if(class_exists("phpbmsTable")){
 
 if(class_exists("searchFunctions")){
 	class invoicesSearchFunctions extends searchFunctions{
+
+		function email_invoice(){
+		
+				if(DEMO_ENABLED == "true")
+					return "Functionality disabled in demo.";
+		
+				$this->db->setEncoding("latin1");
+
+				include("modules/bms/report/invoices_pdf_class.php");
+				
+				$processed = 0;
+				
+				foreach($this->idsArray as $id){
+					
+					$report = new invoicePDF($this->db, 'P', 'in', 'Letter');				
+				
+					$report->generate("invoices.id = ".$id);
+					
+					if($report->output("email"))
+						$processed++;
+						
+				}//end foreach								
+
+				$this->db->setEncoding();
+				
+				
+				$count = count($this->idsArray);
+				$message = $processed." of ".$count." invoice PDF";
+
+				if($count !== 1)
+					$message .= "s";
+					
+				$message .= " e-mailed to client.";
+
+				return $message;
+				
+		}//end method
+	
 	
 		function _mark_as_status($statusid){
 		
