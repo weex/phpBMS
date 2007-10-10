@@ -111,8 +111,8 @@ include("../../../include/session.php");
 					
 					//MAKE SURE TO set the done message for your module.
 					if(!$failure){
-						$thereturn .= "________________________\n";			
-						$thereturn .= "Done Installing BMS Data\n";
+						$thereturn .= "______________________________________\n";			
+						$thereturn .= "Done Installing Recurring Invoice Data\n";
 					}
 				} else
 					$thereturn = $tempreturn;				
