@@ -47,9 +47,8 @@ include("../../../include/session.php");
 	
 		$module = array(
 			"title" => "Recurring Invoices",
-			"name" => "recurringinvoices";
+			"name" => "recurringinvoices"
 		);
-		
 	
 		$thereturn="Updating ".$module["title"]." Module\n";
 		
@@ -79,7 +78,7 @@ include("../../../include/session.php");
 				case "1.0":
 					$nextVersion = "1.01";
 					
-					$thereturn.="Updating ".$title." Module to ".$nextVersion."\n";
+					$thereturn.="Updating ".$module["title"]." Module to ".$nextVersion."\n";
 		
 					$thereturn.= processSQLfile($db,"updatev1.01.sql");
 

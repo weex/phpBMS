@@ -8,8 +8,8 @@ SELECT, INPUT, TEXTAREA, .uneditable,button{
 	background: #F7FAFA;
 	vertical-align: middle; 
 	font-style:normal;
-	foo:1pxl;
 }
+
 SELECT{padding:0 0 0 3px;}
 
 TEXTAREA:Focus,SELECT:Focus,INPUT:Focus{background-color:white;border-color:black;}
