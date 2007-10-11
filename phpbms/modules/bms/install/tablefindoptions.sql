@@ -5,7 +5,7 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Clients','clients.type = \"client\" and clients.inactive=0',0,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Inactive Clients','clients.type = \"client\" and clients.inactive=1',6,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'All Records','clients.id != 0',7,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Orders - Ready To Post','invoices.type != \'Quote\' AND invoices.type != \'VOID\' AND invoices.readytopost =1',8,30);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Orders - Ready To Post','invoices.type = \'Order\' AND invoices.readytopost =1',8,30);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Orders - No Payment','invoices.type = \'Order\' AND invoices.paymentmethodid IS NULL or invoices.paymentmethodid = 0',9,20);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Invoices - Today','invoices.type=\"Invoice\" and invoices.invoicedate=curdate()',11,20);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Invoices - Yesterday','invoices.type=\"Invoice\" and invoices.invoicedate=date_sub(curdate(),INTERVAL 1 DAY)',12,20);
