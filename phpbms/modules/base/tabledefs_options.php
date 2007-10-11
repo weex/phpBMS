@@ -39,45 +39,25 @@
 
 	include("../../include/session.php");
 	include("include/fields.php");
-	include("./include/tabledefs_options_include.php");
+	include("modules/base/include/tabledefs_options_include.php");
 
-	//grab the table name
-	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
-	$queryresult = $db->query($querystatement);
-	$tableRecord = $db->fetchArray($queryresult);
+	if(!isset($_GET["id"]))
+		$error = new appError(100, "Passed Parameter not present.");
 
-	//process page
-	$thecommand="";
-	$action="add option";
-	$theoption=setOptionDefaults();
-	if (isset($_GET["command"])) $thecommand=$_GET["command"];
-	if (isset($_POST["command"])) $thecommand=$_POST["command"];
+	$options = new tableOptions($db, $_GET["id"]);
+
+	$pageTitle = "Table Definition Options: ".$options->getTableName();
 	
-	switch($thecommand){
-		case "edit":
-			$singleoptionquery=getOptions($db, $_GET["id"],$_GET["optionid"]);
-			$theoption=$db->fetchArray($singleoptionquery);
-			$action="edit option";
-		break;
-		
-		case "delete":
-			$statusmessage=deleteOption($db, $_GET["optionid"]);
-		break;
-		
-		case "add option":
-			$statusmessage=addOption($db, addSlashesToArray($_POST),$_GET["id"]);
-		break;
-		
-		case "edit option":
-			$statusmessage=updateOption($db, addSlashesToArray($_POST));
-		break;
-		
-	}//end switch
+	if(isset($_POST["command"]))
+		$therecord = $options->processForm(addSlashesToArray($_POST));
+	else
+		$therecord = $options->getDefaults();
+
+	if(isset($therecord["statusmessage"]))	
+		$statusmessage = $therecord["statusmessage"];
 	
-	$optionsquery=getOptions($db, $_GET["id"]);
-	
-	$pageTitle="Table Definition Options: ".$tableRecord["displayname"];
-	
+	$queryresult = $options->get();
+		
 	$phpbms->cssIncludes[] = "pages/tableoptions.css";
 	$phpbms->jsIncludes[] = "modules/base/javascript/tableoptions.js";
 
@@ -85,20 +65,35 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 	
-		$temparray["new"] = "new";
-		$temparray["select"] = "select";
-		$temparray["edit"] = "edit";
-		$temparray["reporting"] = "printex";		
-		$theinput = new inputBasicList("pdName",$theoption["name"],$temparray,"function");
+		$temparray = array(
+			"Integrated Feature" => 0,
+			"Additional Commands" => 1,
+		);
+		$theinput = new inputBasicList("type", $therecord["othercommand"], $temparray);
+		$theform->addField($theinput);
+	
+		$temparray =array(
+			"new" => "new",
+			"edit" => "edit",
+			"select" => "select",
+			"reporting" => "printex",			
+		);		
+		$theinput = new inputBasicList("ifName", $therecord["name"], $temparray, "name");
 		$theform->addField($theinput);
 		
-		$theinput = new inputField("name",$theoption["name"],"function name",false,NULL,64,64);
+		$theinput = new inputCheckBox("ifOption", $therecord["option"], "allowed");
+		$theform->addField($theinput);
+		
+		$theinput = new inputField("acName", $therecord["name"],"php method", false, NULL, 64, 64);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("option",$theoption["option"],"display name",false,NULL,64,64);
+		$theinput = new inputField("acOption", $therecord["option"], "display name", false, NULL, 64, 64);
 		$theform->addField($theinput);
 
-		$theinput = new inputRolesList($db,"roleid",$theoption["roleid"],"access (role)");
+		$theinput = new inputRolesList($db, "roleid", $therecord["roleid"], "access (role)");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("displayorder", $therecord["displayorder"], "display order", "integer", NULL, 4, 5);
 		$theform->addField($theinput);
 
 		$theform->jsMerge();
@@ -112,90 +107,83 @@
 
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 
-	<div class="fauxP">	
-	<table border="0" cellpadding="3" cellspacing="0" class="querytable">
-		<tr>
-			<th nowrap="nowrap"align="center">other</th>
-			<th nowrap="nowrap"align="left">option / function</th>
-			<th nowrap="nowrap"align="left" width="100%">name</th>
-			<th nowrap="nowrap"align="center">access</th>
-			<th nowrap="nowrap">&nbsp;</th>
-		</tr>
+	<div class="fauxP">
+	
+		<?php $options->showRecords($queryresult)?>
 
-	<?php 
-		$row=1;
-		while($therecord=$db->fetchArray($optionsquery)){ 
-		if($row==1)$row=2;else $row=1;
-	?>
-		<tr class="qr<?php echo $row?> noselects">
-			<td align="center" nowrap="nowrap"><?php echo booleanFormat($therecord["othercommand"])?></td>
-			<td nowrap="nowrap"class="small"><?php 
-				if($therecord["othercommand"]) 
-					echo $therecord["name"]; 
-				else {
-					if($therecord["option"]==1)
-						echo "allowed";
-					else
-						echo "not allowed";				
-				}
-			?></td>
-			<td nowrap="nowrap" class="important"><?php 
-	 			if($therecord["othercommand"]) echo $therecord["option"]; else echo $therecord["name"];	?>
-			</td>
-			<td nowrap="nowrap"align="center"><?php $phpbms->displayRights($therecord["roleid"],$therecord["rolename"])?></td>	
-	 
-			<td nowrap="nowrap"valign="top">
-				<button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
-				<button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;optionid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>
-			</td>
-		</tr>	
-	<?php } ?>
-		<tr class="queryfooter">
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-		</tr>
-	</table>
 	</div>
 	
-	<fieldset>
-		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
-			<input id="optionid" name="optionid" type="hidden" value="<?php echo $theoption["id"]?>" />
-			<p>command type</p>
-			<p>			
-				<input type="radio" id="oc1" name="othercommand" value="0" onclick="switchType()" class="radiochecks" <?php if(!$theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc1">pre-defined</label>
-				&nbsp;
-				
-				<input name="othercommand" id="oc2" type="radio" class="radiochecks" value="1" onclick="switchType()" <?php if($theoption["othercommand"]) echo "checked=\"checked\""?>  /><label for="oc2">other</label>
-			</p>
+	<?php 
+		if($therecord["id"]){
+
+			$title = "Edit Option";
+			$command = "update";
+
+		} else {
+
+			$title = "Add New Option";
+			$command = "add";
 			
-			<div id="pdList">
+		}
+	?>
+	
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" id="record" name="record">
 
-				<p><?php $theform->showField("pdName")?></p>
+		<fieldset>
+			<legend><?php echo $title?></legend>
 
-				<p>option</p>
-				<p>
-					<input type="radio" class="radiochecks" id="pdOptionEnabled" name="pdOption" value="1" <?php if ($theoption["option"]!==0) echo "checked=\"checked\""?> /><label for="pdOptionAllowed">allowed</label>
-					&nbsp;
-					<input type="radio" class="radiochecks" id="pdOptionNot" name="pdOption" value="0" <?php if ($theoption["option"]===0) echo "checked=\"checked\""?> /><label for="pdOptionNot">not allowed</label>
-				</p>			
+			<input type="hidden" id="command" name="command" value="<?php echo $command?>"/>
+			<input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />
+			
+			<p><?php $theform->showField("type")?></p>			
+			
+			<div id="ifDiv">
+			
+				<p class="notes">
+					Integrated features allow you to set and access to
+					main buttons on the table definitions search screen.					
+				</p>
+
+				<p><?php $theform->showField("ifName")?></p>
+
+				<p><?php $theform->showField("ifOption")?></p>
+
 			</div>
 
-			<div id="other">
-				<p><?php $theform->showField("name") ?></p>
+			<div id="acDiv">
+			
+				<p class="notes">
+					Additional command allows you to add items to the
+					other commands drop down on the search screen.
+					The PHP method name should refrence a function
+					in the tables extended searchFunctions class
+					in the [tablename].php located in the modules 
+					include folder.
+				</p>
 
-				<p><?php $theform->showField("option") ?></p>
+				<p><?php $theform->showField("acOption") ?></p>
+
+				<p><?php $theform->showField("acName") ?></p>
+				
+				<p><?php $theform->showField("displayorder")?></p>
+				
+				<p class="notes">Lower numbered display orders are displayed first, and grouped by display order.</p>
+				
 			</div>
 
 			<p><?php $theform->showField("roleid")?></p>
+						
+		</fieldset>
 
-			<p>
-				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
-			</p>
-		</form>
-	</fieldset>
+		<p align="right">
+			<button id="save" type="button" class="Buttons">save</button>
+			<?php 
+				if($therecord["id"]){
+					?><button id="cancel" type="button" class="Buttons">cancel edit</button><?php
+				}//end if
+			?>
+		</p>
+
+	</form>
 </div>
 <?php include("footer.php"); ?>

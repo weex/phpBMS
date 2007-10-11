@@ -555,6 +555,46 @@ if(class_exists("searchFunctions")){
 				return $message;
 				
 		}//end method
+
+
+		function email_quote(){
+		
+				if(DEMO_ENABLED == "true")
+					return "Functionality disabled in demo.";
+		
+				$this->db->setEncoding("latin1");
+	
+				$noOutput = true;
+				include("modules/bms/report/invoices_pdf_class.php");
+				include("modules/bms/report/invoices_pdfquote.php");
+				
+				$processed = 0;
+				
+				foreach($this->idsArray as $id){
+					
+					$report = new quotePDF($this->db, 'P', 'in', 'Letter');				
+				
+					$report->generate("invoices.id = ".$id);
+					
+					if($report->output("email"))
+						$processed++;
+						
+				}//end foreach								
+
+				$this->db->setEncoding();
+				
+				
+				$count = count($this->idsArray);
+				$message = $processed." of ".$count." quote PDF";
+
+				if($count !== 1)
+					$message .= "s";
+					
+				$message .= " e-mailed to client.";
+
+				return $message;
+				
+		}//end method	
 	
 	
 		function _mark_as_status($statusid){

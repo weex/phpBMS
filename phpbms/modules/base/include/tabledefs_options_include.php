@@ -37,75 +37,316 @@
  +-------------------------------------------------------------------------+
 */
 	
-	function setOptionDefaults(){
-		$therecord["id"]=NULL;		
-		$therecord["name"]="";		
-		$therecord["option"]="";		
-		$therecord["othercommand"]=0;		
-		$therecord["roleid"]=0;		
-
-		return $therecord;		
-	}
+	class tableOptions {
 	
-	function getOptions($db,$tabledefid,$optionid=false){
+		function tableOptions($db, $tabledefid){
+			
+			$this->db = $db;
+			$this->tabledefid = ((int) $tabledefid);
+						
+		}//end method
 
-		$querystatement="SELECT tableoptions.id, tableoptions.name, tableoptions.option, tableoptions.othercommand, tableoptions.roleid, roles.name as rolename
-		FROM tableoptions LEFT JOIN roles ON tableoptions.roleid=roles.id
-		WHERE tabledefid=".$tabledefid;
-		if($optionid) $querystatement.=" AND tableoptions.id=".$optionid;
-		$querystatement.=" ORDER BY othercommand, tableoptions.id";
+
+		function getTableName(){
+			
+			$querystatement = "
+				SELECT 
+					displayname 
+				FROM 
+					tabledefs 
+				WHERE 
+					id=".$this->tabledefid;
+					
+			$queryresult = $this->db->query($querystatement);
+			
+			$therecord = $this->db->fetchArray($queryresult);
+
+			return formatVariable($therecord["displayname"]);
 		
-		$queryresult=$db->query($querystatement);
+		}//end method
 		
-		return $queryresult;
-	}// end function
-
-
-	function addOption($db,$variables,$tabledefid){
-
-		$querystatement="INSERT INTO tableoptions (tabledefid, roleid, name, `option`, othercommand)
-		values (";
-		$querystatement.=$tabledefid.", ";
-		$querystatement.=$variables["roleid"].", ";
-		if($variables["othercommand"]==1) {
-			$querystatement.="\"".$variables["name"]."\", ";
-			$querystatement.="\"".$variables["option"]."\", ";
-		} else {
-			$querystatement.="\"".$variables["pdName"]."\", ";
-			$querystatement.="\"".$variables["pdOption"]."\", ";
-		}
-		$querystatement.="\"".$variables["othercommand"]."\") ";
-		if($db->query($querystatement)) $thereturn ="Option Added";
-		
-		return $thereturn;
-	}// end function
 	
-
-	function updateOption($db,$variables){
-
-		$querystatement="UPDATE tableoptions set ";
-		$querystatement.="othercommand=".$variables["othercommand"].", ";		
-		$querystatement.="roleid=".$variables["roleid"].", ";
-		if($variables["othercommand"]==1) {
-			$querystatement.="name=\"".$variables["name"]."\", ";
-			$querystatement.="`option`=\"".$variables["option"]."\", ";
-		} else {
-			$querystatement.="name=\"".$variables["pdName"]."\", ";
-			$querystatement.="`option`=\"".$variables["pdOption"]."\", ";
-		}
-		$querystatement.="othercommand=".$variables["othercommand"]." ";
-		$querystatement.="WHERE id=".$variables["optionid"];
-		if($db->query($querystatement)) $thereturn ="Option Updated";
+		function getDefaults(){
 		
-		return $thereturn;
-	}
-
-	function deleteOption($db,$id){
-
-		$querystatement="DELETE FROM tableoptions WHERE id=".$id;
-		if($db->query($querystatement)) $thereturn ="Option Deleted";
+			return array(
+				"id" => NULL,
+				"name" => "",
+				"option" => "",
+				"othercommand" => 0,
+				"roleid" => 0,
+				"displayorder" => 0
+			);
 		
-		return $thereturn;
-	}
+		}//end method
+		
+		
+		function get($id = NULL){
+		
+			$querystatement = "
+				SELECT
+					tableoptions.id,
+					tableoptions.name,
+					tableoptions.option,
+					tableoptions.othercommand,
+					tableoptions.displayorder,
+					tableoptions.roleid,
+					roles.name AS rolename
+				FROM
+					tableoptions LEFT JOIN roles ON tableoptions.roleid = roles.id
+				WHERE";
+			if($id)
+				$querystatement .= "
+					tableoptions.id = ".((int) $id);
+			else
+				$querystatement .= "
+					tabledefid = ".$this->tabledefid;			
+			
+			$querystatement .= "
+				ORDER BY
+					tableoptions.othercommand,
+					tableoptions.displayorder,
+					tableoptions.name";
+					
+			return $this->db->query($querystatement);
+		
+		}//end method
 
+
+		function showRecords($queryresult){
+		
+			global $phpbms;
+		
+		?><table border="0" cellpadding="3" cellspacing="0" class="querytable">
+			<thead>
+				<tr>
+					<th nowrap="nowrap"align="left" width="100%">name</th>
+					<th nowrap="nowrap"align="center">allowed</th>
+					<th nowrap="nowrap"align="left">function name</th>
+					<th nowrap="nowrap"align="left">access</th>
+					<th nowrap="nowrap"align="right">display order</th>
+					<th nowrap="nowrap">&nbsp;</th>
+				</tr>
+			</thead>
+			
+			<tfoot>
+				<tr class="queryfooter">
+					<td colspan="6">&nbsp;</td>
+				</tr>
+			</tfoot>
+
+			<tbody>
+				<?php 
+				
+					if($this->db->numRows($queryresult)){
+					
+						$row = 1;
+						
+						$other = 3;
+						
+						while($therecord = $this->db->fetchArray($queryresult)){ 
+
+							$row = ($row == 1) ? 2 : 1;
+							
+							if($therecord["othercommand"] !== $other){
+																
+								?><tr class="queryGroup"><td colspan="6"><?php echo ($therecord["othercommand"] == 1)? "Additional Commands" : "Integrated Features";?></td></tr><?php 
+
+								$other = $therecord["othercommand"];
+							}//end if
+							
+						?>
+				
+					<tr class="qr<?php echo $row?> noselects">
+					
+						<td nowrap="nowrap" class="important">
+							<?php 
+
+							if($therecord["othercommand"]) 
+								echo formatVariable($therecord["option"]); 
+							else
+								echo formatVariable($therecord["name"]);
+								
+							?>
+						</td>
+						
+						<td nowrap="nowrap" align="center">
+							<?php 
+
+							if($therecord["othercommand"]) 
+								echo "&nbsp;"; 
+							else
+								echo formatVariable($therecord["option"], "boolean");
+								
+							?>
+						</td>
+						
+						<td nowrap="nowrap" align="center">
+							<?php 
+
+							if($therecord["othercommand"]) 
+								echo formatVariable($therecord["name"]);
+							else
+								echo "&nbsp;"; 
+								
+							?>
+						</td>
+
+						<td nowrap="nowrap">
+							<?php $phpbms->displayRights($therecord["roleid"], $therecord["rolename"])?>
+						</td>	
+				 
+						<td nowrap="nowrap" align="right">
+							<?php echo $therecord["displayorder"] ?>
+						</td>	
+
+						<td nowrap="nowrap" valign="top">
+						
+							<button id="edt<?php echo $therecord["id"]?>" type="button" class="graphicButtons buttonEdit"><span>edit</span></button>
+							
+							<button id="del<?php echo $therecord["id"]?>" type="button" class="graphicButtons buttonDelete"><span>delete</span></button>
+							
+						</td>
+					</tr>	
+				<?php 
+					
+					}//endwhile
+					
+				} else { 
+				
+					?><tr class="norecords"><td colspan="6">No Options Set</td></tr><?php
+				
+				}//end if
+				
+				?>
+				</tbody>
+				
+			</table>
+			<?php 
+		
+		}//end method
+		
+		
+		function add($variables){
+		
+			if(!isset($variables["ifOption"]))
+				$variables["ifOption"] = 0;
+
+			if($variables["type"]){
+				
+				$name = $variables["acName"];
+				$option = $variables["acOption"];
+				
+			} else {
+			
+				$name = $variables["ifName"];
+				$option = $variables["ifOption"];
+
+			} //end if
+
+			$insertstatement = "
+				INSERT INTO
+					tableoptions
+
+					(tabledefid,
+					name,
+					`option`,
+					roleid,
+					displayorder,
+					othercommand)
+				VALUES (
+					".$this->tabledefid.",
+					'".$name."',
+					'".$option."',
+					".((int) $variables["roleid"]).",
+					".((int) $variables["displayorder"]).",
+					".((int) $variables["type"])."
+				)";
+			
+			$this->db->query($insertstatement);
+
+		}//end method
+
+		
+		function update($variables){
+		
+			if(!isset($variables["ifOption"]))
+				$variables["ifOption"] = 0;
+
+			$updatestatement = "
+				UPDATE
+					tableoptions
+				SET
+					roleid = ".((int) $variables["roleid"]).", 
+					displayorder = ".((int) $variables["displayorder"]).",
+					othercommand = ".((int) $variables["type"]).", ";
+			
+			if(!$variables["type"])
+				$updatestatement .= "
+					name = '".$variables["ifName"]."',
+					`option` = '".$variables["ifOption"]."'
+				";
+			else
+				$updatestatement .= "
+					name = '".$variables["acName"]."',
+					`option` = '".$variables["acOption"]."'
+				";			
+			
+			$updatestatement .= "
+				WHERE id =".((int) $variables["id"]);
+				
+			$this->db->query($updatestatement);
+
+		}//end method
+
+		
+		function delete($id){
+		
+			$deletestatement = "
+				DELETE FROM
+					tableoptions
+				WHERE
+					id = ".((int) $id);
+					
+			$this->db->query($deletestatement);
+		
+		}//end method
+				
+		
+		function processForm($variables){
+		
+			switch($variables["command"]){
+			
+				case "add":
+					$this->add($variables);
+					$therecord = $this->getDefaults();
+					$therecord["statusmessage"] = "Option added";
+					break;
+					
+				case "edit":
+					$queryresult = $this->get($variables["id"]);
+					$therecord = $this->db->fetchArray($queryresult);
+					break;
+					
+				case "update":
+					$this->update($variables);
+					$therecord = $this->getDefaults();
+					$therecord["statusmessage"] = "Option updated";
+					break;
+				
+				case "delete":
+					$this->delete($variables["id"]);
+					$therecord = $this->getDefaults();
+					$therecord["statusmessage"] = "Option deleted";
+					break;
+			
+				case "cancel":
+					$therecord = $this->getDefaults();
+					break;
+
+			}//endswitch
+			return $therecord;
+		
+		}//end method
+	
+	}//end class	
 ?>

@@ -400,20 +400,46 @@ function showResultHeader(){
 
 		function getTableOptions($id){
 			$options=Array();
-			$querystatement="SELECT id,name,`option`,othercommand,roleid
-								  FROM tableoptions WHERE tabledefid=".$id;
+			$querystatement="
+				SELECT 
+					id,
+					name,
+					`option`,
+					othercommand,
+					roleid,
+					displayorder
+				FROM 
+					tableoptions 
+				WHERE 
+					tabledefid = ".$id."
+				ORDER BY
+					othercommand,
+					displayorder,
+					id";
 			$queryresult=$this->db->query($querystatement);
 			
 			while($therecord=$this->db->fetchArray($queryresult)) {
+			
 				if($therecord["othercommand"]) {
-					$options["othercommands"][$therecord["id"]]["displayname"]=$therecord["option"];
-					$options["othercommands"][$therecord["id"]]["roleid"]=$therecord["roleid"];
+				
+					$options["othercommands"][] = array(
+						"id" => $therecord["id"],
+						"name" => $therecord["option"],
+						"roleid" => $therecord["roleid"],
+						"displayorder" => $therecord["displayorder"]
+					);
+									
 				}else{
+				
 					$options[$therecord["name"]]["allowed"]=$therecord["option"];
 					$options[$therecord["name"]]["roleid"]=$therecord["roleid"];
-				}
-			}
+					
+				}//endif
+				
+			}//endwhile
+			
 			return $options;
+			
 		}//end getTableOptions
 
 		function getTableQuickSearchOptions($id){
@@ -669,18 +695,41 @@ function displayQueryButtons() {
 					<a href="#" id="otherCommandButton" class="otherCommandsDisabled" onclick="showDropDown('otherDropDown');return false" title="other commands"><span>other commands</span></a>
 					<div id="otherDropDown" class="toolbarDropDowns" style="display:none">
 						<ul>
-							<?php if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {?>
+							<?php 
+							if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {
+							
+								?>
 								<li><a href="#" title="(alt + d)" onclick="chooseOtherCommand('-1','<?php echo $this->thetabledef["deletebutton"]?>')"><strong><?php echo $this->thetabledef["deletebutton"]?></strong></a></li>
-							<?php } 
+								<?php 
+								
+								$displayOrder = -1;
+
+							}else 
+								$displayOrder = 0;
+							
 							if($this->tableoptions["othercommands"]){
-								foreach($this->tableoptions["othercommands"] as $key => $value){
-									if(hasRights($value["roleid"])){
+							
+								foreach($this->tableoptions["othercommands"] as $command){
+
+									if(hasRights($command["roleid"])){
+										
+										if($command["displayorder"] != $displayOrder){
+										
+											$class = ' class="menuSep"';
+											$displayOrder = $command["displayorder"];
+										
+										} else 
+											$class = "";
+										
 										?>
-										<li><a href="#" onclick="chooseOtherCommand('<?php echo $key ?>','')"><?php echo $value["displayname"]?></a></li>
+										<li<?php echo $class?>><a href="#" onclick="chooseOtherCommand('<?php echo $command["id"] ?>','')"><?php echo $command["name"]?></a></li>
 										<?php
-									}
-								}
-							}
+										
+									}//end if
+									
+								}//endforeach
+								
+							}//end if
 							?>
 						</ul>
 					</div><input id="othercommands" name="othercommands" type="hidden"/>

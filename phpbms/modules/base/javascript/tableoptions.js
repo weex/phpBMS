@@ -1,16 +1,114 @@
-window.onload=function(){
-	switchType();
-}
+tableOptions = {
+	
+	switchType: function(e){
+		
+		var type = 	getObjectFromID("type");
+		var ifDiv =	getObjectFromID("ifDiv");
+		var acDiv =	getObjectFromID("acDiv");
+		
+		if(type.value == 1){
+			
+			ifDiv.style.display = "none";
+			acDiv.style.display = "block";
+			
+		} else {
+			
+			ifDiv.style.display = "block";
+			acDiv.style.display = "none";
+			
+		}//end if			
+		
+	},//end method
+	
+	
+	edit: function(e){
+		
+		tableOptions._tableButtonClick(e, "edit")
+		
+	}, //end method
+	
+	
+	del: function(e){
+	
+		tableOptions._tableButtonClick(e, "delete")
 
-function switchType(){
-	var oc1=getObjectFromID("oc1");
-	var pdFields=getObjectFromID("pdList");
-	var other=getObjectFromID("other");
-	if(oc1.checked){
-		pdFields.style.display="block";
-		other.style.display="none";
-	} else {
-		pdFields.style.display="none";
-		other.style.display="block";
-	}
-}
+	},//end method
+	
+	
+	_tableButtonClick: function(e, thecommand){
+		
+		var id = 		getObjectFromID("id");
+		var command = 	getObjectFromID("command");
+		
+		var button = e.src();
+
+		var theid = button.id.substr(3);
+		
+		id.value = theid;
+		command.value = thecommand;
+
+		tableOptions.submitForm(e); 
+
+	}, //end method
+	
+	
+	submitForm: function(e){
+				
+		var command = getObjectFromID("command");
+		var theform = getObjectFromID("record")
+		
+		if(command.value == "add" || command.value == "update"){
+
+			if(!validateForm(theform)){
+				if(e)
+					e.stop();
+				return false;
+			}//endif
+
+		}//end if
+		
+		theform.submit();
+		
+	}, //end method
+	
+	
+	cancel: function(e){
+
+		var command = 	getObjectFromID("command");
+		
+		command.value = "cancel";
+
+		tableOptions.submitForm(e); 
+
+	}//end method
+	
+}//end class
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+	
+	var type = getObjectFromID("type")
+	connect(type, "onchange", tableOptions.switchType);	
+	
+	var theForm = getObjectFromID("record");
+	connect(type, "onsubmit", function(e){e.stop();});
+	
+	var delButtons = getElementsByClassName("buttonDelete");
+	for(var i=0; i < delButtons.length; i++)
+		connect(delButtons[i], "onclick", tableOptions.del);	
+		
+	var editButtons = getElementsByClassName("buttonEdit");
+	for(var i=0; i < editButtons.length; i++)
+		connect(editButtons[i], "onclick", tableOptions.edit);	
+	
+	var cancelButton = getObjectFromID("cancel");
+	if(cancelButton)
+		connect(cancelButton, "onclick", tableOptions.cancel);
+		
+	var saveButton = getObjectFromID("save");
+	connect(saveButton, "onclick", tableOptions.submitForm);		
+	
+	tableOptions.switchType();
+	
+});//end connect

@@ -186,6 +186,7 @@ CREATE TABLE tableoptions (
   `option` varchar(128) NOT NULL default '',
   othercommand tinyint(1) NOT NULL default '0',
   roleid int(11) NOT NULL default '0',
+  `displayorder` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
 ) TYPE=MyISAM AUTO_INCREMENT=2000; 

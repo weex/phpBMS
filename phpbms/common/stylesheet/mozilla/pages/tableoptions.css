@@ -2,3 +2,5 @@
 /* $LastChangedDate$ */
 #topTitle{}
 .noselects{cursor:auto}
+
+#save, #cancel {width:75px;}

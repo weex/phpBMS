@@ -43,25 +43,31 @@
 .sqlUp{background-image: url("../image/search-toolbar-sql.png")}
 .sqlDn{background-image: url("../image/search-toolbar-sql-dn.png")}
 
-#recordCommands .toolbarDropDowns{
-	margin-top:1px;
-	padding:2px 2px 4px 2px;
-	position:absolute;
-	background:white;
-	border:1px solid #999999;
-	display:none;
-}
+	#recordCommands .toolbarDropDowns{
+		margin-top:1px;
+		padding:2px 2px 4px 2px;
+		position:absolute;
+		background:white;
+		border:1px solid #999999;
+		display:none;
+	}
 
-#recordCommands .toolbarDropDowns ul{margin:0;padding:0; height:auto}
-#recordCommands .toolbarDropDowns li{
-padding:0;
-margin:0;
-float:none;
-background:none;
-list-style-type:none;
-width:auto;
-height:auto;
-}
+	#recordCommands .toolbarDropDowns ul{
+		margin:0;
+		padding:0;
+		height:auto
+	}
+	
+	#recordCommands .toolbarDropDowns li{
+		padding:0;
+		margin:0;
+		float:none;
+		background:none;
+		list-style-type:none;
+		width:auto;
+		height:auto;
+	}
+
 	#recordCommands .toolbarDropDowns a{
 		width:auto;
 		height:auto;
@@ -75,7 +81,10 @@ height:auto;
 		white-space:nowrap;
 		font-weight:normal;
 	}
-	#recordCommands .toolbarDropDowns .menuSep {border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;}
+	
+	#recordCommands .toolbarDropDowns .menuSep {
+		border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;
+	}
 	
 	#recordCommands .toolbarDropDowns a:hover{
 		text-decoration:none; 
@@ -83,6 +92,6 @@ height:auto;
 		color:white;
 	}
 
-
-
-#sortSavedDeleteButton,#sortSavedLoadButton,#sortSavedCancelButton{width:75px;}
+	#sortSavedDeleteButton,#sortSavedLoadButton,#sortSavedCancelButton{
+		width:75px;
+	}
