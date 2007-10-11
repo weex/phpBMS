@@ -113,7 +113,7 @@ theStatus = {
 		
 		var readytopost = getObjectFromID("readytopost");
 		
-		if(statuses[status.value]["readytopost"] = 1){
+		if(statuses[status.value]["setreadytopost"] == 1){
 			
 			var invoicedate = getObjectFromID("invoicedate");
 			if(!invoicedate.value)
