@@ -126,7 +126,7 @@ theStatus = {
 			
 		}//endif
 					
-		theStatus.statusChange();
+		theStatus.updateDate();
 		
 	},//end mehtod
 

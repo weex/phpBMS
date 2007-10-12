@@ -1,3 +1,16 @@
+phpBMS v0.9
+http://phpbms.org/browser/tags/phpbms-0.9
+ * Accounts Receivable
+ * iCal formatted access to Events
+ * enhanced User Interface
+ * Switched over JavaScript programming style (more MochiKit Like)
+ * E-Mail Client Inovice/Quote PDFs
+ * New Recurring Invoice/Task/Event System
+ * Added Ordering of Table Def Options
+ * Recoded/formatted Sales Order PDFs
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.8
+
 phpBMS v0.8
 http://phpbms.org/browser/tags/phpbms-0.8
  * Recurring invoices
