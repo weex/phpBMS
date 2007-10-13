@@ -88,7 +88,7 @@
 <p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 
 <fieldset>
-	<legend>invoices</legend>
+	<legend>sales orders</legend>
 	<p>
 		<label for="invoice_default_printinstruc">default printed instructions</label><br/>
 		<textarea id="invoice_default_printinstruc" name="invoice_default_printinstruc" cols="60" rows="3" ><?php echo $therecord["invoice_default_printinstruc"]?></textarea>
