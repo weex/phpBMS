@@ -2,7 +2,7 @@
 
 	$modules["recurringinvoices"]["name"] = "Recurring Invoices";
 	
-	$modules["recurringinvoices"]["version"] = 1.01;
+	$modules["recurringinvoices"]["version"] = "1.01";
 	
 	$modules["recurringinvoices"]["description"] = 
 	"This module adds the ability to repeat invoices on a scheduled basis.";

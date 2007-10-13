@@ -63,47 +63,47 @@ include("../../../include/session.php");
 		
 		$querystatement="SELECT version FROM modules WHERE name = '".$module["name"]."'";
 		$queryresult=$db->query($querystatement);
-		if(!$queryresult) {
-			$thereturn="Error Accessing module table in database.\n\n";
-			return $thereturn;
-		}
-		
-		$ver=$db->fetchArray($queryresult);
 
-		while($ver["version"] != $newVersion){
-		
-			switch($ver["version"]){
+		if($db->numRows($queryresult)) {
 			
-				// ================================================================================================
-				case "1.0":
-					$nextVersion = "1.01";
-					
-					$thereturn.="Updating ".$module["title"]." Module to ".$nextVersion."\n";
-		
-					$thereturn.= processSQLfile($db,"updatev1.01.sql");
-
-					//Updating Module Table
-					$querystatement="
-						UPDATE 
-							modules 
-						SET 
-							version='".$nextVersion."'
-						WHERE 
-							name = '".$module["name"]."'";
-							
-					$queryresult = $db->query($querystatement);
-					
-					$thereturn.=" - Updated module record with new version \n";
-					
-					$thereturn.="Update of ".$module["name"]." to ".$nextVersion." Finished\n\n";
+			$ver=$db->fetchArray($queryresult);
+			while($ver["version"] != $newVersion){
 			
-					$ver["version"] = $nextVersion;
+				switch($ver["version"]){
+				
+					// ================================================================================================
+					case "1.0":
+						$nextVersion = "1.01";
+						
+						$thereturn.="Updating ".$module["title"]." Module to ".$nextVersion."\n";
+			
+						$thereturn.= processSQLfile($db,"updatev1.01.sql");
 	
-					break;
-					
-			}//end switch
+						//Updating Module Table
+						$querystatement="
+							UPDATE 
+								modules 
+							SET 
+								version='".$nextVersion."'
+							WHERE 
+								name = '".$module["name"]."'";
+								
+						$queryresult = $db->query($querystatement);
+						
+						$thereturn.=" - Updated module record with new version \n";
+						
+						$thereturn.="Update of ".$module["name"]." to ".$nextVersion." Finished\n\n";
+				
+						$ver["version"] = $nextVersion;
+		
+						break;
+						
+				}//end switch
+				
+			}//end while
 			
-		}//end while
+		} else 
+			$thereturn "Cannot update module ".$module["title"].": Module not installed.";
 
 		return $thereturn;
 

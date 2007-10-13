@@ -174,8 +174,6 @@ include("../../../include/session.php");
 				case "0.61";
 					$thereturn.="Updating BMS Module to 0.62\n";
 
-					$thereturn.=processSQLfile($db,"updatev0.62.sql");
-
 					//Updating Module Table
 					$querystatement="UPDATE modules SET version=\"0.62\" WHERE name=\"bms\";";
 					$updateresult=$db->query($querystatement);
@@ -335,7 +333,8 @@ include("../../../include/session.php");
 		$queryresult=$db->query($querystatement);
 		
 		while($therecord=$db->fetchArray($queryresult)){
-			$newstatus=1;
+				
+			$newstatus=1;			
 			switch($therecord["status"]){
 				case "Open":
 					$newstatus=1;
@@ -347,6 +346,7 @@ include("../../../include/session.php");
 				break;
 				case "Packed":
 					$newstatus=3;
+					$statusdate=$therecord["orderdate"];					
 				break;
 				case "Shipped":
 					$newstatus=4;
@@ -357,9 +357,11 @@ include("../../../include/session.php");
 					else
 						$statusdate=$therecord["orderdate"];
 				break;
-				if($therecord["type"]=="Invoice")
-					$statusdate=$therecord["invoicedate"];
-			}
+			}//end switch			
+
+			if($therecord["type"]=="Invoice")
+				$statusdate=$therecord["invoicedate"];
+			
 			$querystatement="UPDATE invoices SET statusid=".$newstatus.", statusdate=\"".$statusdate."\" WHERE id=".$therecord["id"];
 			$updatequery=$db->query($querystatement);
 

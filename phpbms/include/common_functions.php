@@ -589,7 +589,7 @@ if(!$nl_exists){
 
 	function nl_langinfo($constant){
 	
-		echo $constant;	
+		return $constant;	
 		
 	}//end function
 
@@ -619,9 +619,5 @@ if(!$nl_exists){
 
 	nl_setup();
 	
-
 }//end if
-
-nl_langinfo(ABMON_12);
-
 ?>

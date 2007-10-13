@@ -37,4 +37,4 @@ INSERT INTO tablecolumns VALUES (151,26,'download','files.id','center','',3,'',0
 INSERT INTO tablecolumns VALUES (148,27,'attached','attachments.creationdate','left','',2,'',0,'','datetime');
 INSERT INTO tablecolumns VALUES (147,27,'file','concat(\"<b>\",files.name,\"</b>\")','left','',0,'files.name',0,'',NULL);
 INSERT INTO tablecolumns VALUES (150,27,'download','files.id','center','',3,'',0,'','filelink');
-INSERT INTO tablecolumns VALUES (149,27,'description','files.description','left','',1,'',1,'100%',NULL);
+INSERT INTO tablecolumns VALUES (649,27,'description','files.description','left','',1,'',1,'100%',NULL);
