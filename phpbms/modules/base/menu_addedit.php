@@ -106,17 +106,17 @@
 			<legend>type</legend>
 			<p class="typeP">
 				<input type="radio" id="type1" value="cat" <?php if($therecord["link"]=="") echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();"  class="radiochecks" /><label for="type1">category</label><br />
-				<img src="menu-example-category.png" width="150" height="72" class="typeImage" alt="category" />
+				<img src="menu-example-category.png" width="220" height="167" class="typeImage" alt="category" />
 			</p>
 			
 			<p class="typeP">
 				<input type="radio" id="type2" value="search" <?php if(strpos($therecord["link"],"search.php?id=")!==false) echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();" class="radiochecks" /><label for="type2">table definition search</label><br />
-				<img src="menu-example-tabledef.png" width="150" height="72" class="typeImage" alt="table definition search" />
+				<img src="menu-example-tabledef.png" width="220" height="167" class="typeImage" alt="table definition search" />
 			</p>
 
 			<p>
 				<input type="radio" id="type3" value="link" <?php if(strpos($therecord["link"],"search.php?id=")===false && $therecord["link"]!="") echo "checked=\"checked\"" ?> name="radio" onclick="showTypeDetails();" class="radiochecks" /><label for="type3">page link</label><br />
-				<img src="menu-example-link.png" width="150" height="72" class="typeImage" alt="page link" />
+				<img src="menu-example-link.png" width="220" height="167" class="typeImage" alt="page link" />
 			</p>
 		</fieldset>
 	</div>
