@@ -75,8 +75,9 @@ class settings{
 				if(class_exists($module."Update")){
 					$class = $module."Update";
 					$extraUpdate = new $class($this->db);
-					$extraUpdate->updateSettings($variables);
-				}		
+					$variables = $extraUpdate->updateSettings($variables);
+					
+				}//end if
 	
 		// Update the settings records
 		foreach($variables as $settingname => $settingvalue){

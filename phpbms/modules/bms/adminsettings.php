@@ -1,6 +1,25 @@
 <?php 
 	//if we had specific update code for the module, we would create a class
 	//called [module]Update with a method called updateSettings($variables)
+	class bmsUpdate{
+	
+		function bmsUpdate($db){
+			
+			$this->db = $db;
+			
+		}//end method
+		
+		
+		
+		function updateSettings($variables){
+		
+			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
+			return $variables;
+		
+		}//end method
+		
+	
+	}//end class
 
 	class bmsDisplay{
 	
