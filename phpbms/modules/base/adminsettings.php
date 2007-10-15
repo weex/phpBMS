@@ -157,6 +157,13 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		<p>
 			<?php $theform->fields["default_load_page"]->display();?>
 		</p>
+
+		<p>
+			<label for="stylesheet">web style set (stylesheets)</label><br />
+			<select id="stylesheet" name="stylesheet">
+				<?php $settings->displayStylesheets($therecord["stylesheet"]);?>
+			</select>		
+		</p>		
 	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 			
@@ -181,14 +188,9 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			<label for="company_phone">phone number</label><br />
 			<input id="company_phone" name="company_phone" type="text" value="<?php echo htmlQuotes($therecord["company_phone"]) ?>" size="40" maxlength="128" />
 		</p>
-	</fieldset>
-	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-	
-	<fieldset>
-		<legend>Display / Print</legend>
 
 		<div class="fauxP">
-			Printed Logo
+			print logo
 			<div id="graphicHolder"><img alt="logo" src="<?php echo APP_PATH?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
 		</div>
 		
@@ -202,16 +204,10 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
 			If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
 		</p>
-		
-		<p>
-			<label for="stylesheet">web style set (stylesheets)</label><br />
-			<select id="stylesheet" name="stylesheet">
-				<?php $settings->displayStylesheets($therecord["stylesheet"]);?>
-			</select>		
-		</p>
+
 	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-	
+		
 	<fieldset>
 		<legend>Localization</legend>
 		<p>
