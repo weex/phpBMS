@@ -72,7 +72,7 @@ class relatedClient{
 				$thename .= ", ".$therecord["firstname"];
 
 			if($therecord["company"])
-				$thename .= " (".$therecord["firstname"].")";
+				$thename .= " (".$therecord["company"].")";
 		} else
 			$thename = $therecord["company"];
 		
