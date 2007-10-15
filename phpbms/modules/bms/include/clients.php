@@ -53,13 +53,16 @@ if(class_exists("phpbmsTable")){
 			$therecord = parent::getDefaults();
 
 			$therecord["type"] = DEFAULT_CLIENTTYPE;
-			if($therecord["type"] == "client")
+			if($therecord["type"] == "client") {
+
 				$therecord["becameclient"] = dateToString(mktime());
+				$therecord["hascredit"] = DEFAULT_HASCREDIT;
+				$therecord["creditlimit"] = DEFAULT_CREDITLIMIT;
+
+			}//end if
 			
 			$therecord["webaddress"] = "http://";
-
-			$therecord["hascredit"] = DEFAULT_HASCREDIT;
-			$therecord["creditlimie"] = DEFAULT_CREDITLIMIT;
+		
 			
 			return $therecord;
 		}
@@ -71,6 +74,13 @@ if(class_exists("phpbmsTable")){
 
 			if(!isset($variables["type"]))
 				$variables["type"] = "client";
+				
+			if($variables["type"] == "prospect"){
+			
+				$therecord["hascredit"] = 0;
+				$therecord["creditlimit"] = 0;			
+			
+			}//end if
 
 			return $variables;
 		}//end method

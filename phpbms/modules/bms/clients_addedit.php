@@ -163,6 +163,7 @@
 				<label for="id">id</label><br />
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" tabindex="0" />
 				<input type="hidden" id="hascredit" name="hascredit" value="<?php echo $therecord["hascredit"]?>"/>
+				<input type="hidden" id="creditlimit" name="hascredit" value="<?php echo $therecord["creditlimit"]?>"/>
 			</p>
 				
 			<p><?php $theform->showField("type");?></p>
