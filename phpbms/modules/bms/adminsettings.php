@@ -13,6 +13,9 @@
 		
 		function updateSettings($variables){
 		
+			if(!isset($variables["default_hascredit"]))
+				$variables["default_hascredit"] = 0;
+		
 			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
 			return $variables;
 		

@@ -36,7 +36,7 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-@ define("APP_DEBUG",true);
+// @ define("APP_DEBUG",true);
 if(APP_DEBUG)
 	error_reporting(E_ALL);
 
