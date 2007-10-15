@@ -80,7 +80,6 @@ class arAging{
 			$termDate[1] = strtotime(TERM1_DAYS." days", $itemdate);
 			$termDate[2] = strtotime(TERM2_DAYS." days", $itemdate);
 			$termDate[3] = strtotime(TERM3_DAYS." days", $itemdate);
-			$this->agingDate = mktime(0,0,0);
 			
 			for($i = 1; $i < 4; $i++){
 			
@@ -344,7 +343,7 @@ if(!isset($bypass)){
 		switch($_POST["command"]){
 		
 			case "run":			
-				$aging->run();
+				$aging->run($_POST["agingdate"]);
 				
 				if(isset($_POST["printStatements"]))
 					$aging->printClientStatements = true;

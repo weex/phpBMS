@@ -745,7 +745,7 @@ function displayQueryButtons() {
 						<li><a href="#" onclick="perfromToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
 						<li><a href="#" onclick="perfromToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
 						<li class="menuSep"><a href="#" onclick="perfromToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
-						<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected rescords from view</a></li>						
+						<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected records from view</a></li>						
 					</ul>
 					</div>
 				</li>

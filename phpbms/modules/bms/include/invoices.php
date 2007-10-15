@@ -893,12 +893,15 @@ function defineInvoicePost(){
 						`invoices`
 					SET
 						`type` = 'Invoice', ";
+						
 				if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00"){
 					$therecord["invoicedate"] = dateToString(mktime(0,0,0),"SQL");
 
 					$updatestatement .= "
 						`invoicedate` = NOW(), ";
+						
 				}//end if
+				
 				$updatestatement .= "
 						`modifiedby` = ".$this->modifiedby.",
 						`modifieddate` = NOW()
