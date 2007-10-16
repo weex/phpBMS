@@ -50,12 +50,12 @@ CREATE TABLE modules (
 ) TYPE=MyISAM;
 
 CREATE TABLE `notes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `assignedtoid` int(11) default NULL,
   `attachedid` int(11) default NULL,
   `attachedtabledefid` int(11) default NULL,
   `content` text,
   `assignedtodate` date default NULL,
-  `id` int(11) NOT NULL,
   `subject` varchar(128) default NULL,
   `type` char(2) default NULL,
   `createdby` int(11) NOT NULL default '0',
