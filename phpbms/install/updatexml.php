@@ -235,7 +235,7 @@ include("../include/session.php");
 						UPDATE 
 							modules 
 						SET 
-							version='0.8'
+							version='0.9'
 						WHERE
 							name='base'";
 							
