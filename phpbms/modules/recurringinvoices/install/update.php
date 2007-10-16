@@ -103,7 +103,7 @@ include("../../../include/session.php");
 			}//end while
 			
 		} else 
-			$thereturn "Cannot update module ".$module["title"].": Module not installed.";
+			$thereturn = "Cannot update module ".$module["title"].": Module not installed.";
 
 		return $thereturn;
 
