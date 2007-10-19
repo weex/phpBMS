@@ -53,4 +53,11 @@
 	
 	?> ];<?php 
 
+	if(isset($phpbms->modules["bms"])){
+	
+		?>TERM1_DAYS=<?php echo TERM1_DAYS?>;<?php
+	
+	}//end if
+	
+
 ?>
