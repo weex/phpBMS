@@ -181,7 +181,7 @@ class phpbmsLog{
 		if($value)
 			$this->value=$value;
 		if($type)
-			$this->error=$type;
+			$this->type=$type;
 		if($userid)
 			$this->userid=((int) $userid);
 		
