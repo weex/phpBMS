@@ -564,6 +564,7 @@
 						$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
 				}//endswitch
 			}//end foreach
+			$this->totalsinfo[1]->size = 0;			
 			
 			$pdf->SetXY($pdf->leftmargin, $nextPos);			
 
