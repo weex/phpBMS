@@ -315,9 +315,16 @@ class phpbmsSession{
 			$error= new appError(-310,"If you have not ran the update script for phpBMS, please run it before logging in.","Could Not Retrieve Settings From Database");
 			return false;
 		} else {
-			while($therecord=$this->db->fetchArray($queryresult))
+			while($therecord=$this->db->fetchArray($queryresult)){
+			
+				//old versions used a reserved constant in certain php versions
+				if($therecord["name"] == "currency_symbol")
+					$therecord["name"] = "currency_sym";
+					
 				if(!defined(strtoupper($therecord["name"])))
 					define(strtoupper($therecord["name"]),$therecord["value"]);
+					
+			}//end while
 
 			// This following code is for windows boxen, because they lack some server varables as well
 			// formating options for the strftime function

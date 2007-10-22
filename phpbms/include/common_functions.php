@@ -433,12 +433,12 @@ function numberToCurrency($number){
 	$currency="";
 	if($number<0)
 		$currency.="-";
-	$currency.=CURRENCY_SYMBOL.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
+	$currency.=CURRENCY_SYM.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
 	return $currency;
 }
 
 function currencyToNumber($currency){
-	$number=str_replace(CURRENCY_SYMBOL,"",$currency);
+	$number=str_replace(CURRENCY_SYM,"",$currency);
 	$number=str_replace(THOUSANDS_SEPARATOR,"",$number);
 	$number=str_replace(DECIMAL_SYMBOL,".",$number);
 	$number=((real) $number);

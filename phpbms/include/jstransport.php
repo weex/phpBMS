@@ -30,7 +30,7 @@
 	?>TIME_FORMAT="<?php echo htmlQuotes(TIME_FORMAT)?>";<?php
 
 	//currency formating
-	?>CURRENCY_SYMBOL="<?php echo htmlQuotes(CURRENCY_SYMBOL)?>";<?php
+	?>CURRENCY_SYM="<?php echo htmlQuotes(CURRENCY_SYM)?>";<?php
 
 	?>CURRENCY_ACCURACY=<?php echo CURRENCY_ACCURACY?>;<?php
 

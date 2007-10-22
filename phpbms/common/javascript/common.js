@@ -678,7 +678,7 @@ function numberToCurrency(number){
 	if(number<0)
 		currency+="-";
 	number=Math.abs(number);
-	currency+=CURRENCY_SYMBOL;
+	currency+=CURRENCY_SYM;
 	if(number>0 && number <0)
 		currency+="0";
 
@@ -703,7 +703,7 @@ function currencyToNumber(currency){
 		thousSep="\\"+thousSep;
 	var objRegExp  = new RegExp(thousSep,"g");
 	currency=currency.replace(objRegExp,"");
-	currency=currency.replace(CURRENCY_SYMBOL,"");
+	currency=currency.replace(CURRENCY_SYM,"");
 	currency=currency.replace(DECIMAL_SYMBOL,".");
 	if(currency)
 		number=parseFloat(currency);

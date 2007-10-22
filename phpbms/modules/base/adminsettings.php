@@ -85,7 +85,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	$theinput->setAttribute("class","uneditable");	
 	$theform->addField($theinput);
 
-	$theinput = new inputField("currency_symbol",$therecord["currency_symbol"],"currency symbol",true,NULL,4,1);
+	$theinput = new inputField("currency_sym",$therecord["currency_sym"],"currency symbol",true,NULL,4,1);
 	$theform->addField($theinput);
 
 	$theinput = new inputField("currency_accuracy",$therecord["currency_accuracy"],"currency decimal points of accuracy",true,"integer",4,1);
@@ -237,7 +237,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		</p>
 		<p>&nbsp;</p>
 		<p>
-			<?php $theform->fields["currency_symbol"]->display(); ?>
+			<?php $theform->fields["currency_sym"]->display(); ?>
 		</p>
 		<p>
 			<?php $theform->fields["currency_accuracy"]->display(); ?>

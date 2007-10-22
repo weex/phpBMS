@@ -10,7 +10,7 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('stylesheet','mozilla');
 INSERT INTO `settings` (`name`, `value`) VALUES ('phone_format','US - Loose');
 INSERT INTO `settings` (`name`, `value`) VALUES ('date_format','English, US');
 INSERT INTO `settings` (`name`, `value`) VALUES ('time_format','12 Hour');
-INSERT INTO `settings` (`name`, `value`) VALUES ('currency_symbol','$');
+INSERT INTO `settings` (`name`, `value`) VALUES ('currency_sym','$');
 INSERT INTO `settings` (`name`, `value`) VALUES ('decimal_symbol','.');
 INSERT INTO `settings` (`name`, `value`) VALUES ('thousands_separator',',');
 INSERT INTO `settings` (`name`, `value`) VALUES ('currency_accuracy','2');
