@@ -119,7 +119,7 @@ class recurr{
 						}// endwhile
 					}//endif
 
-					$nextDate = strtotime("+".$therecord["every"]." months",$startDate);
+					$nextDate = strtotime("+".$therecord["every"]." months",$nextDate);
 					break;
 					
 				case "Yearly":
@@ -163,7 +163,7 @@ class recurr{
 
 					}//endforeach
 
-					$nextDate = strtotime("+".$therecord["every"]." years",$startDate);
+					$nextDate = strtotime("+".$therecord["every"]." years",$nextDate);
 
 					break;
 			}//endswitch

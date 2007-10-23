@@ -315,7 +315,7 @@ if(class_exists("phpbmsTable")){
 							}// endwhile
 						}//endif
 	
-						$nextDate = strtotime("+".$therecord["repeatevery"]." months",$startDate);
+						$nextDate = strtotime("+".$therecord["repeatevery"]." months", $nextDate);
 						break;
 						
 					case "Yearly":
@@ -359,7 +359,7 @@ if(class_exists("phpbmsTable")){
 	
 						}//endforeach
 	
-						$nextDate = strtotime("+".$therecord["repeatevery"]." years",$startDate);
+						$nextDate = strtotime("+".$therecord["repeatevery"]." years",$nextDate);
 	
 						break;
 				}//endswitch
