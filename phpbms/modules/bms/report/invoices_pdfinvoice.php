@@ -41,6 +41,9 @@
 //=============================================================================
 if(!isset($noOutput)){
 
+	//IE needs caching to be set to private in order to display PDFS
+	session_cache_limiter('private');
+
 	//set encoding to latin1 (fpdf doesnt like utf8)
 	$sqlEncoding = "latin1";	
 	require_once("../../../include/session.php");
