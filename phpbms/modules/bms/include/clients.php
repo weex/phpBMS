@@ -129,10 +129,31 @@ if(class_exists("searchFunctions")){
 			//passed variable is array of user ids to be revoked
 			$whereclause = $this->buildWhereClause();
 		
-			$querystatement = "update clients set comments=concat(\"Information Packet Sent\",char(10),comments), modifiedby=".$_SESSION["userinfo"]["id"]." where ".$whereclause.";";
+			$querystatement = "
+				UPDATE
+					clients 
+				SET
+					clients.comments = concat('Information Packet Sent', char(10), clients.comments), 
+					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
+					clients.modifieddate = NOW()
+				WHERE (".$whereclause.") AND clients.comments IS NOT NULL";
 			$queryresult = $this->db->query($querystatement);
 			
-			$message = $this->buildStatusMessage();
+			$affected = $this->db->affectedRows();
+
+			$querystatement = "
+				UPDATE
+					clients 
+				SET
+					clients.comments = 'Information Packet Sent', 
+					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
+					clients.modifieddate = NOW()
+				WHERE (".$whereclause.") AND clients.comments IS NULL";
+			$queryresult = $this->db->query($querystatement);
+
+			$affected += $this->db->affectedRows();
+			
+			$message = $this->buildStatusMessage($affected);
 			$message.=" marked as info packet sent.";
 			return $message;
 		}

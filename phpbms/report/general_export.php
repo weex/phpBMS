@@ -86,14 +86,19 @@
 			$this->reportOutput = substr($this->reportOutput, 1)."\n";
 		
 			while($therecord = $this->db->fetchArray($queryresult)){
-			
+				
+				$line = "";
+				
 				foreach($therecord as $value)
-					$this->reportOutput.= ',"'.$value.'"';
+					$line .= ',"'.mysql_real_escape_string($value).'"';
 
-				$this->reportOutput = substr($this->reportOutput, 1)."\n";
+				$line = substr($line, 1)."\n";
+
+				$this->reportOutput .= $line;
 
 			}//endwhile
 			
+			$this->reportOutput = substr($this->reportOutput, 0, strlen($this->reportOutput)-1);
 		
 		}//end method
 		
