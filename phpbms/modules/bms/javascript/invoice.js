@@ -872,6 +872,7 @@ function showPaymentOptions(){
 			var creditleft = getObjectFromID("creditleft");
 			var totalti = getObjectFromID("totalti");
 			var clientid = getObjectFromID("clientid");
+			var type = getObjectFromID("type");
 			
 			var error = "";
 			if(!clientid.value)
@@ -895,8 +896,13 @@ function showPaymentOptions(){
 			receivableinfo.style.display = "block";
 			checkinfo.style.display = "none";
 			ccinfo.style.display = "none";
-			amountpaid.value = numberToCurrency(0);
-			amountdue.value = totalti.value;
+
+			if(type.value != "Invoice"){
+
+				amountpaid.value = numberToCurrency(0);
+				amountdue.value = totalti.value;
+				
+			}//endif
 			amountpaid.className = "important fieldCurrency fieldTotal uneditable";
 			amountpaid.readOnly = true;
 			payinfull.style.display = "none";
