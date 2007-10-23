@@ -127,7 +127,7 @@
 						
 			$pdf->setStyle("normal");
 			$pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
-			$pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
+			$pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
 			
 			$pdf->SetXY($pdf->leftmargin, $nextPos);
 		
