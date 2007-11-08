@@ -148,7 +148,9 @@
 			FROM
 				lineitems LEFT JOIN products ON lineitems.productid = products.id
 			WHERE
-				lineitems.invoiceid =".((int) $this->invoicerecord["id"]);
+				lineitems.invoiceid =".((int) $this->invoicerecord["id"])."
+			ORDER BY
+				displayorder;
 
 			$queryresult = $this->db->query($querystatement);
 			

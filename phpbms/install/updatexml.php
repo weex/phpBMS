@@ -248,6 +248,31 @@ include("../include/session.php");
 					
 					break;
 
+				// ================================================================================================
+				case "0.9":				
+					$thereturn .= "Updating phpBMS Core to 0.92\n";
+					
+					//Processing Data Structure Changes
+					//$thereturn .= processSQLfile($db,"updatev0.9.sql");
+				
+					//Updating Module Table
+					$querystatement = "
+						UPDATE 
+							modules 
+						SET 
+							version='0.92'
+						WHERE
+							name='base'";
+							
+					$queryresult = $db->query($querystatement);
+
+					$thereturn .= "_______________________\n\n";
+					$thereturn .= "Update to 0.92 Finished\n\n";
+					
+					$currentVersion = "0.92";
+					
+					break;
+
 			}//end switch
 		}//end while
 		return $thereturn;

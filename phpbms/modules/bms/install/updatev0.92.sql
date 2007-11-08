@@ -1,0 +1,2 @@
+ALTER TABLE `lineitems` ADD COLUMN `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+INSERT INTO `reports` (`name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('Receipt', 'PDF Report', '304', '10', '80', 'modules/bms/report/receipts_pdf.php', 'PDF print out of receipt for processing or client records', 1, NOW(), 1, NOW());

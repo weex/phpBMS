@@ -39,8 +39,11 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 	padding:3px 9px;
 	color:white;
 }
-#LISep td{ height:2px;font-size:1px;padding:0px;}
+
 .LIRealInfo{display:none;}
+
+#LIAdd TD{border-bottom:2px solid #999999}
+#LITotals TD{border-top:2px solid #999999}
 
 #ds-partnumber{width:90px;}
 #ds-partname{width:135px;}
@@ -48,20 +51,59 @@ P,.fauxP{margin:0;padding:0 5px 10px;}
 #partnameHeader div{width:120px;}
 #memoHeader{width:100%}
 
-#price{width:60px;}
-#memo{width:100%}
-#qty{text-align:center;width:50px;}
-#extended,.fieldTotal{width:75px;}
+#memo, .lineitemMemos{width:100%;padding-right:0;border-right:0;}
+#price, .lineitemPrices{width:60px;}
+#qty, .lineitemQuantities{text-align:right;width:50px;}
+#extended, .fieldTotal, .lineitemExtendeds{width:75px;}
+
+.lineitemMemos, .lineitemPrices, .lineitemQuantities, .lineitemExtendeds{}
 
 .fieldTotal{height:16px;}
-.lineitems td{height:22px; font-size:11px; vertical-align:top;padding-left:4px;}
-.lineitemsRight{ border-right:1px solid #CCCCCC;}
-.lineitemsLeft{ border-left:1px solid #CCCCCC;}
-.lineitemsBottom{ border-bottom:1px solid #CCCCCC;}
+
+.lineitemsButtonDivs{
+	display:none;
+	position:absolute;
+	background:white;
+	padding-bottom:4px;
+	padding-right:2px;
+}
+
+.lineitems .lineitemsButtonTDs{
+	vertical-align:top;
+}
+
+.lineitemsButtonDivs button{
+	margin-top:4px;
+}
+
+.lineitems td{
+	overflow:hidden;
+	background:none;
+	vertical-align:middle;
+	padding:0;
+	font-size:11px;
+	border-color:#AAAAAA;
+	border-left:0;
+	border-right:0;
+}
+
+.lineitems p{margin:4px;padding:0;}
+
+.lineitems:hover td{
+	background:white;
+}
+
+.lineitemMemos{
+	width:100%
+}
+
+.lineitemsRight{ border-right:1px solid #AAAAAA;}
+.lineitemsLeft{ border-left:1px solid #AAAAAA;}
+.lineitemsBottom{ border-bottom:1px solid #AAAAAA;}
+
 .totalItems,.invoiceTotalLabels,#parenInfo div span{border-bottom:1px solid #CCCCCC}
 .invoiceTotalLabels{padding-left:25px;}
 .invoiceTotalLabels div{height:24px; line-height:24px;vertical-align:bottom;}
-
 
 #parenInfo div{height:25px;clear:right;}
 #parenInfo div span{

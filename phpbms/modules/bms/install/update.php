@@ -255,6 +255,28 @@ include("../../../include/session.php");
 
 					break;
 					
+				// ================================================================================================
+				case "0.9";
+
+					$thereturn.= processSQLfile($db,"updatev0.92.sql");
+
+					//Updating Module Table
+					$updatestatement = "
+						UPDATE 
+							modules 
+						SET 
+							version='0.92' 
+						WHERE 
+							name='bms';";
+
+					$db->query($updatestatement);
+
+					$thereturn .= "Update of Business Management System Module to 0.92 Finished\n\n";
+
+					$ver["version"] = "0.92";
+
+					break;
+
 			}//end switch
 		}//end while
 		return $thereturn;

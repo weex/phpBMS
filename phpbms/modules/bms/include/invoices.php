@@ -238,8 +238,8 @@ if(class_exists("phpbmsTable")){
 			$querystatement="SELECT id,name,type,value FROM discounts WHERE inactive!=1 ORDER BY name";
 			$queryresult=$this->db->query($querystatement);
 	
-			?><select name="discountid" id="discountid" onchange="getDiscount()" size="8">
-				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+			?><select name="discountid" id="discountid" size="8">
+				<option value="0" <?php if($id==0) echo 'selected="selected"'?>>&lt;none&gt;</option>
 				<?php 
 					while($therecord=$this->db->fetchArray($queryresult)){
 						if($therecord["type"]=="amount")
@@ -273,25 +273,7 @@ if(class_exists("phpbmsTable")){
 	
 			return $therecord;
 		}
-	
-	
-		function getLineItems($id){
-			if(!$id) return false;
-	
-			$querystatement="SELECT lineitems.id,lineitems.productid,
-			
-						products.partnumber as partnumber, products.partname as partname, lineitems.taxable,
-						lineitems.quantity as quantity, lineitems.unitprice, 
-						lineitems.unitprice as numprice, lineitems.unitcost as unitcost, lineitems.unitweight as unitweight, lineitems.memo as memo,
-						lineitems.unitprice*lineitems.quantity as extended 
-						FROM lineitems LEFT JOIN products on lineitems.productid=products.id 
-						WHERE lineitems.invoiceid=".$id;
-						
-			$queryresult=$this->db->query($querystatement);
-	
-			return $queryresult;	
-		}
-	
+		
 	
 		function getTax($id){
 			$therecord["name"]="";
@@ -311,54 +293,6 @@ if(class_exists("phpbmsTable")){
 			$therecord["name"]= htmlQuotes($therecord["name"]);
 			return $therecord;
 		}
-	
-	
-		function addLineItems($values,$invoiceid,$userid){
-			
-			$querystatement="DELETE FROM lineitems WHERE  invoiceid=".$invoiceid;
-			$queryresult=$this->db->query($querystatement);
-				
-			if($values){
-				$lineitems= explode("{[]}",$values);		
-				foreach($lineitems as $lineitem) {
-					$fields=explode("[//]",$lineitem);
-					$querystatement="INSERT INTO lineitems 
-									(invoiceid, productid, quantity, unitcost, unitprice,
-									unitweight, taxable, memo, createdby, creationdate, modifiedby) VALUES (";
-					$querystatement.=$invoiceid.", ";
-					if(trim($fields[0])!="" and trim($fields[0])!="0"){
-						$querystatement.=trim($fields[0]).", ";
-						}
-					else
-						$querystatement.="NULL, ";
-					if(trim($fields[4])!="" and trim($fields[4])!="0")
-						$querystatement.=trim($fields[4]).", ";
-					else
-						$querystatement.="0, ";
-					if(trim($fields[1])!="" and trim($fields[1])!="0")
-						$querystatement.=trim($fields[1]).", ";
-					else
-						$querystatement.="0, ";
-					if(trim($fields[3])!="" and trim($fields[3])!="0")
-						$querystatement.=trim($fields[3]).", ";
-					else
-						$querystatement.="0, ";
-					if(trim($fields[2])!="" and trim($fields[2])!="0")
-						$querystatement.=trim($fields[2]).", ";
-					else
-						$querystatement.="0, ";
-					if(trim($fields[6])!="" and trim($fields[6])!="0")
-						$querystatement.=trim($fields[6]).", ";
-					else
-						$querystatement.="0, ";
-					$querystatement.="\"".trim(html_entity_decode($fields[5]))."\",";
-					$querystatement.=$userid.", NOW(), ".$userid." )";
-			
-					$queryresult=$this->db->query($querystatement);
-			
-				}//end foreach
-			}//end if
-		}//end method
 
 		
 		// CLASS OVERRIDES ======================================================================================
@@ -482,12 +416,17 @@ if(class_exists("phpbmsTable")){
 		
 			if(parent::updateRecord($variables, $modifiedby)){
 	
-				if($variables["lineitemschanged"]==1)
-					$this->addLineItems($variables["thelineitems"],$variables["id"],$modifiedby);
+				if($variables["lineitemschanged"]==1){
+
+					$lineitems = new lineitems($this->db, $variables["id"], $modifiedby);
+					$lineitems->set($variables["thelineitems"]);					
+				
+				}//endif
 			
 				if($variables["statuschanged"]==1)
 					$this->updateStatus($variables["id"],$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);		
-			}
+					
+			}//end if
 			
 			//reset field after updating (if unset by rights management)
 			$this->getTableInfo();
@@ -504,8 +443,12 @@ if(class_exists("phpbmsTable")){
 	
 			$newid = parent::insertRecord($variables, $createdby);
 	
-			if($variables["lineitemschanged"]==1)
-				$this->addLineItems($variables["thelineitems"],$newid,$createdby);
+			if($variables["lineitemschanged"]==1){
+				
+				$lineitems = new lineitems($this->db, $newid, $createdby);
+				$lineitems->set($variables["thelineitems"]);
+				
+			}//end if
 		
 			if($variables["statuschanged"]==1)
 				$this->updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);
@@ -513,6 +456,165 @@ if(class_exists("phpbmsTable")){
 			return $newid;
 		}
 	}//end class
+
+
+	// LINE ITEMS CLASS 
+	// ==============================================================================================
+	class lineitems{
+	
+		var $queryresult = NULL;
+	
+		function lineitems($db, $invoiceid){
+			
+			$this->db = $db;
+			$this->invoiceid = ((int) $invoiceid);
+			
+		}//end method
+		
+		
+		function get(){
+		
+			$querystatement = "
+				SELECT
+					products.partname,
+					products.partnumber,
+
+					lineitems.id,
+					lineitems.productid,
+					lineitems.taxable,
+					lineitems.quantity,
+					lineitems.unitprice, 
+					lineitems.unitcost, 
+					lineitems.unitweight,
+					lineitems.memo
+				FROM
+					lineitems LEFT JOIN products ON lineitems.productid = products.id
+				WHERE
+					invoiceid = ".$this->invoiceid."
+				ORDER BY
+					lineitems.displayorder";
+					
+			$this->queryresult = $this->db->query($querystatement);
+		
+		}//end method
+		
+		
+		function show(){
+		
+			if($this->queryresult === NULL)
+				$this->get();
+		
+			$count = 1;
+			while($therecord = $this->db->fetchArray($this->queryresult)){
+			
+				?><tr id="li<?php echo $count?>" class="lineitems">
+				
+					<td colspan="2" class="lineitemsLeft">
+						<input type="hidden" id="li<?php echo $count?>ProductID" value="<?php echo $therecord["productid"]?>"/>
+						<input type="hidden" id="li<?php echo $count?>Taxable" value="<?php echo $therecord["taxable"]?>"/>
+						<input type="hidden" id="li<?php echo $count?>UnitWeight" class="lineitemWeights" value="<?php echo $therecord["unitweight"]?>"/>
+						<input type="hidden" id="li<?php echo $count?>UnitCost" class="lineitemCosts" value="<?php echo $therecord["unitcost"]?>"/>
+						<div>
+							<?php if($therecord["partnumber"] || $therecord["partname"] ) {?>
+							<p><?php echo formatVariable($therecord["partnumber"]) ?></p>
+							<p class="important"><?php echo formatVariable($therecord["partname"])?></p>
+							<?php } else
+									echo "&nbsp;";
+							?>
+						</div>
+					</td>
+					
+					<td><input id="li<?php echo $count?>Memo" class="lineitemMemos" value="<?php echo formatVariable($therecord["memo"])?>"/></td>
+					
+					<td><input id="li<?php echo $count?>UnitPrice" class="fieldCurrency lineitemPrices" value="<?php echo formatVariable($therecord["unitprice"], "currency")?>"/></td>
+					<td><input id="li<?php echo $count?>Quantity" class="lineitemQuantities" value="<?php echo formatVariable($therecord["quantity"], "real")?>"/></td>
+					<td><input id="li<?php echo $count?>Extended" class="uneditable fieldCurrency lineitemExtendeds" readonly="readonly" value="<?php echo formatVariable($therecord["quantity"] * $therecord["unitprice"], "currency")?>"/></td>
+					
+					<td class="lineitemsButtonTDs">
+						<div id="li<?php echo $count?>ButtonsDiv" class="lineitemsButtonDivs">
+							<button type="button" id="li<?php echo $count?>ButtonDelete" class="graphicButtons buttonMinus LIDelButtons" title="Remove line item"><span>-</span></button><br />
+							<button type="button" id="li<?php echo $count?>ButtonMoveUp" class="graphicButtons buttonUp LIUpButtons" title="Move Item Up"><span>Up</span></button><br />
+							<button type="button" id="li<?php echo $count?>ButtonMoveDown" class="graphicButtons buttonDown LIDnButtons" title="Move Item Down"><span>Dn</span></button><br />
+						</div>						
+					</td>
+					
+				</tr><?php
+			
+				$count++;
+			
+			}//endwhile
+		
+		}//end method
+		
+		
+		function set($itemlist, $userid = NULL){
+		
+			if(!$userid)
+				$userid = $_SESSION["userinfo"]["id"];
+		
+			$deletestatement = "
+				DELETE FROM
+					lineitems
+				WHERE
+					invoiceid = ".$this->invoiceid;
+			
+			$this->db->query($deletestatement);
+			
+			$itemsArray = explode(";;", $itemlist);
+			
+			$count = 0;
+			
+			foreach($itemsArray as $item){
+			
+				$itemRecord = explode("::", $item);
+				
+				if(count($itemRecord > 1)){
+				
+					$insertstatement ="
+						INSERT INTO
+							lineitems(
+								invoiceid, 
+								productid, 
+								memo,
+								taxable, 
+								unitweight,
+								unitcost,
+								unitprice,
+								quantity,
+								displayorder,
+								createdby,
+								creationdate,
+								modifiedby,
+								modifieddate
+							)
+						VALUES (
+							".$this->invoiceid.",
+							".((int) $itemRecord[0]).",
+							'".$itemRecord[1]."',
+							".((int) $itemRecord[2]).",
+							".((real) $itemRecord[3]).",
+							".((real) $itemRecord[4]).",
+							".((real) $itemRecord[5]).",
+							".((real) $itemRecord[6]).",
+							".$count.",
+							".$userid.",
+							NOW(),
+							".$userid.",
+							NOW()							
+						)";
+					
+					$this->db->query($insertstatement);
+						
+					$count++;
+					
+				}//end if
+				
+			}//endforeach						
+		
+		}//end method
+	
+	}//end class
+	
 }// end if
 
 

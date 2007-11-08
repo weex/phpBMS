@@ -8,6 +8,6 @@
 	"This module adds the ability to repeat invoices on a scheduled basis.";
 	
 	$modules["recurringinvoices"]["requirements"] = 
-	"phpBMS Corre v0.9 or greater; BMS module v0.9 or greater; phpBMS Scheduler activated through cron or other scheduling program.";
+	"phpBMS Core v0.9 or greater; BMS module v0.9 or greater; phpBMS Scheduler activated through cron or other scheduling program.";
 
 ?>

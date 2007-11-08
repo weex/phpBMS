@@ -85,12 +85,101 @@ invoice = {
 			
 			if(e)
 				e.stop();
-			return false
+			return false;
+			
 		}//end if
 
-		setLineItems();
+		var lineitemsChanged = getObjectFromID("lineitemschanged");
+		if(lineitemsChanged.value ==1)
+			lineitems.prepareForPost()
 
-	}//end method
+	}, //end method
+	
+	
+	
+	updateTotalCost: function(){
+		
+		var totalCost = getObjectFromID("totalcost");
+		
+		var newCost = 0;
+		
+		var costs = getElementsByClassName("lineitemCosts");
+		for(var i = 0; i<costs.length; i++)
+			if(costs[i].value !== "")
+				newCost += parseFloat(costs[i].value);
+			
+		totalCost.value = newCost
+		
+	},// end function
+	
+	
+	updateTotalWeight: function(){
+
+		var totalWt = getObjectFromID("totalweight");
+		
+		var newWt = 0;
+		
+		var wts = getElementsByClassName("lineitemWeights");
+		for(var i = 0; i<wts.length; i++)
+			if(wts[i].value !== "")
+				newWt += parseFloat(wts[i].value);
+			
+		totalWt.value = newWt;
+
+	},//end function
+	
+	
+	updateTotalTaxable: function(){
+		
+		var lineitems = getElementsByClassName("lineitems");
+		
+		var totaltaxable = getObjectFromID("totaltaxable")
+		
+		var newtaxable = 0;
+		
+		var taxable, extended
+		
+		for(var i=0; i<lineitems.length; i++){
+			
+			taxable = getObjectFromID(lineitems[i].id + "Taxable");
+			
+			if(taxable.value == 1)
+				newtaxable += currencyToNumber(getObjectFromID(lineitems[i].id + "Extended").value);
+			
+		}//end for
+		
+		totaltaxable.value = newtaxable;
+		
+	},//end function
+	
+	
+	updateSubTotal: function(){
+		
+		var totalBD = getObjectFromID("totalBD");
+		
+		var lineitemExtendeds = getElementsByClassName("lineitemExtendeds");
+		
+		var newTBD = 0;
+		
+		for(var i = 0; i < lineitemExtendeds.length; i++)
+			if(lineitemExtendeds[i].value !== "")
+				newTBD += currencyToNumber(lineitemExtendeds[i].value);
+				
+		totalBD.value = newTBD;
+
+	}, //end function
+	
+		
+	doAllTotals: function(){
+		
+		invoice.updateTotalCost();
+		invoice.updateTotalWeight();
+		invoice.updateTotalTaxable();
+		invoice.updateSubTotal();
+		
+		calculateTotal();
+		
+	}//end function
 	
 }//end class
 
@@ -252,6 +341,441 @@ client = {
 }//end class
 
 
+// LINEITEMS CLASS ================================================
+//=================================================================
+lineitems = {
+	
+	hoverIn: function(e){
+		
+		srcObj = e.src();
+
+		lineitems._hover(srcObj, "in");
+
+	},//end function
+
+
+	hoverOut: function(e){
+
+		srcObj = e.src();
+		
+		lineitems._hover(srcObj, "out");
+
+	}, //end function
+	
+	
+	_hover: function(tr,way){
+		
+		var type = getObjectFromID("type");
+		
+		if(type.value == "Order" || type.value =="Quote"){
+			
+			var display = "none";
+			
+			if(way == "in")
+				display = "block";
+				
+			var buttonDiv = getObjectFromID(tr.id+"ButtonsDiv");
+			buttonDiv.style.display = display;
+		
+		}//end if
+		
+	}, //end function
+
+
+	add: function(e){
+						
+		var thelastrow = getObjectFromID("LITotals");
+		var tbody = thelastrow.parentNode;
+		
+		var productid = getObjectFromID("partnumber");
+		var partnumber = getObjectFromID("ds-partnumber");
+		var partname = getObjectFromID("ds-partname");
+		var memo = getObjectFromID("memo");
+		var unitweight = getObjectFromID("unitweight");
+		var unitcost = getObjectFromID("unitcost");
+		var unitprice = getObjectFromID("price");
+		var quantity = getObjectFromID("qty");
+		var taxable = getObjectFromID("taxable");
+		var extended = getObjectFromID("extended");
+	
+		if(unitcost.value == "")
+			unitcost.value = "0";
+			
+		if(unitweight.value=="")
+			unitweight.value="0";
+		
+		//Create the line
+		var thetr = document.createElement("tr");
+		
+		thetr.id="li" + lineitems._getNextID();
+
+		thetr.className="lineitems";
+		
+		
+		//first TD holds hidden fields and displays part name and number
+		var temptd = document.createElement("td");
+		temptd.setAttribute("colSpan",2);
+		temptd.className="lineitemsLeft";
+		
+		//inputs		
+		var tempinput = document.createElement("input");
+		tempinput.setAttribute("type", "hidden");
+		tempinput.id = thetr.id + "ProductID";
+		tempinput.value = productid.value;
+		temptd.appendChild(tempinput);
+		
+		tempinput = document.createElement("input");
+		tempinput.setAttribute("type", "hidden");
+		tempinput.id = thetr.id + "Taxable";
+		tempinput.value = taxable.value;
+		temptd.appendChild(tempinput);
+		
+		tempinput = document.createElement("input");
+		tempinput.setAttribute("type", "hidden");
+		tempinput.className = "lineitemWeights";
+		tempinput.id = thetr.id + "UnitWeight";
+		tempinput.value = unitweight.value;
+		temptd.appendChild(tempinput);
+		
+		tempinput = document.createElement("input");
+		tempinput.setAttribute("type", "hidden");
+		tempinput.className = "lineitemCosts";
+		tempinput.id = thetr.id + "UnitCost";
+		tempinput.value = unitcost.value;
+		temptd.appendChild(tempinput);
+
+		var tempdiv = document.createElement("div");
+		if(partnumber.value || partname.value)
+			tempdiv.innerHTML = '<p>' + partnumber.value + '</p><p class="important">' + partname.value + '</p>';
+		else
+			tempdiv.innerHTML = "&nbsp;";
+		
+		temptd.appendChild(tempdiv);
+
+		thetr.appendChild(temptd);
+		
+		//next td is for memo
+		temptd = document.createElement("td");
+
+		tempinput = document.createElement("input");
+		tempinput.id = thetr.id + "Memo";
+		tempinput.className = "lineitemMemos"
+		tempinput.value = memo.value;
+
+		connect(tempinput, "onchange", lineitems.markChanged);
+
+		temptd.appendChild(tempinput);
+
+		thetr.appendChild(temptd);
+
+		//next td is for unit price
+		temptd = document.createElement("td");
+
+		tempinput = document.createElement("input");
+		tempinput.id = thetr.id + "UnitPrice";
+		tempinput.className = "fieldCurrency lineitemPrices"
+		tempinput.value = unitprice.value;
+
+		connect(tempinput, "onchange", lineitems.calculateExtended);
+		
+		temptd.appendChild(tempinput);
+
+		thetr.appendChild(temptd);
+
+		//next td is for quantity
+		temptd = document.createElement("td");
+
+		tempinput = document.createElement("input");
+		tempinput.id = thetr.id + "Quantity";
+		tempinput.className = "lineitemQuantities"
+		tempinput.value = quantity.value;
+
+		connect(tempinput, "onchange", lineitems.calculateExtended);
+		
+		temptd.appendChild(tempinput);
+
+		thetr.appendChild(temptd);
+
+		//next td is for extended
+		temptd = document.createElement("td");
+
+		tempinput = document.createElement("input");
+		tempinput.id = thetr.id + "Extended";
+		tempinput.className = "uneditable fieldCurrency lineitemExtendeds"
+		tempinput.readOnly = true;
+		tempinput.value = extended.value;
+		temptd.appendChild(tempinput);
+
+		thetr.appendChild(temptd);
+		
+		//last td is for buttons
+		
+		temptd=document.createElement("td");
+		temptd.className = "lineitemsButtonTDs";
+		
+		var content = '<div id="' + thetr.id + 'ButtonsDiv" class="lineitemsButtonDivs">' +
+		'					<button type="button" id="' + thetr.id + 'ButtonDelete" class="graphicButtons buttonMinus LIDelButtons" title="Remove line item"><span>-</span></button><br />' +
+		'					<button type="button" id="' + thetr.id + 'ButtonMoveUp" class="graphicButtons buttonUp LIUpButtons" title="Move Item Up"><span>Up</span></button><br />' +
+		'					<button type="button" id="' + thetr.id + 'ButtonMoveDown" class="graphicButtons buttonDown LIDnButtons" title="Move Item Down"><span>Dn</span></button><br />' +
+		'				</div>';
+
+		temptd.innerHTML = content;
+		
+		thetr.appendChild(temptd);
+	
+		tbody.insertBefore(thetr,thelastrow);
+		
+		// connect the TR listners
+		connect(thetr, "onmouseover", lineitems.hoverIn);
+		connect(thetr, "onmouseout", lineitems.hoverOut);		
+
+		var delButton = getObjectFromID(thetr.id+"ButtonDelete");
+		connect(delButton, "onclick", lineitems.del);
+		
+		var moveUpButton = getObjectFromID(thetr.id+"ButtonMoveUp");
+		connect(moveUpButton, "onclick", lineitems.moveUp);
+
+		var moveDnButton = getObjectFromID(thetr.id+"ButtonMoveDown");
+		connect(moveDnButton, "onclick", lineitems.moveDn);
+
+		//Update Totals
+		invoice.doAllTotals();
+		
+		//clear line
+		productid.value="";
+		partnumber.value="";
+		partname.value="";
+		memo.value="";
+		taxable.value=1;
+		unitweight.value=0
+		unitcost.value=0
+		unitprice.value=numberToCurrency(0);
+		quantity.value="1";
+		extended.value=numberToCurrency(0);
+		autofill["partname"]["ch"]="";
+		autofill["partname"]["uh"]="";
+		autofill["partname"]["vl"]="";	
+		autofill["partnumber"]["ch"]="";
+		autofill["partnumber"]["uh"]="";
+		autofill["partnumber"]["vl"]="";
+		
+		lineitems.markChanged();
+	
+	}, // end function
+	
+	
+	markChanged: function(){
+		
+		var lineitemschanged = getObjectFromID("lineitemschanged");
+		lineitemschanged.value = 1;	
+
+	}, //end function
+	
+	
+	_getNextID: function(){
+		
+		var theid = 0
+		
+		trs = getElementsByClassName("lineitems");
+		for(var i = 0; i< trs.length; i++)
+			if(parseInt(trs[i].id.substr(2)) > theid)
+				theid = parseInt(trs[i].id.substr(2));
+		
+		theid++;
+		
+		return theid;
+		
+	}, //end function
+	
+
+	calculateExtended: function(e){
+		
+		theTR = e.src().parentNode.parentNode;
+
+		if(theTR.id == "LIAdd"){
+			
+			var thecurrency = getObjectFromID("price");	
+			var quantity = getObjectFromID("qty");
+			var extField = getObjectFromID("extended");				
+			
+		} else {
+			
+			var thecurrency = getObjectFromID(theTR.id+"UnitPrice");	
+			var quantity = getObjectFromID(theTR.id+"Quantity");
+			var extField = getObjectFromID(theTR.id+"Extended");	
+			
+		}//end if
+	
+		// First, Check and format the price
+		var theprice = currencyToNumber(thecurrency.value);
+		thecurrency.value = numberToCurrency(theprice);
+				
+		// Next verify that qty is a number
+		var qty = parseFloat(quantity.value);
+	
+		if(isNaN(qty))
+			qty = 0;
+			
+		quantity.value = qty;
+	
+		// Last, figure extended and reformat to dollar
+		var extended = roundForCurrency(qty * theprice);
+		extField.value = numberToCurrency(extended);
+		
+		//if this is a modification, we also need to calculate totals and mark line items changed
+		if(theTR.id != "LIAdd"){
+
+			invoice.doAllTotals();
+			lineitems.markChanged();
+
+		}//end if
+		
+	},//end function
+	
+	
+	del: function(e){
+		
+		var theTR = e.src().parentNode.parentNode.parentNode;
+		var tbody = theTR.parentNode;
+		
+		//remove all listners
+		var ident = getIdent(theTR, "onmouseover");				
+		if(ident) disconnect(ident);
+
+		ident = getIdent(theTR, "onmouseout");
+		if(ident) disconnect(ident);
+		
+		var memo = getObjectFromID(theTR.id+"Memo")
+		ident = getIdent(memo, "onchange");
+		if(ident) disconnect(ident);
+
+		var unitprice = getObjectFromID(theTR.id+"UnitPrice")
+		ident = getIdent(unitprice, "onchange");
+		if(ident) disconnect(ident);
+
+		var qty = getObjectFromID(theTR.id+"Quantity")
+		ident = getIdent(qty, "onchange");
+		if(ident) disconnect(ident);
+
+		var delButton = getObjectFromID(theTR.id+"ButtonDelete")
+		ident = getIdent(delButton, "onclick");
+		if(ident) disconnect(ident);
+
+		var mvUpButton = getObjectFromID(theTR.id+"ButtonMoveUp")
+		ident = getIdent(mvUpButton, "onclick");
+		if(ident) disconnect(ident);
+
+		var mvDnButton = getObjectFromID(theTR.id+"ButtonMoveDn")
+		ident = getIdent(mvDnButton, "onclick");
+		if(ident) disconnect(ident);
+
+		tbody.removeChild(theTR);
+
+		invoice.doAllTotals();
+		lineitems.markChanged();
+		
+	},//end function
+
+
+	moveUp: function(e){
+
+		var theTR = e.src().parentNode.parentNode.parentNode;
+		
+		lineitems._move(theTR, "up");
+		
+	},//end function
+	
+	
+	moveDn: function(e){
+
+		var theTR = e.src().parentNode.parentNode.parentNode;
+		
+		lineitems._move(theTR, "dn");
+		
+	},//end function
+
+
+	_move: function(theTR, direction){
+		
+		var tbody = theTR.parentNode;		
+		
+		var lineitemsArray = getElementsByClassName("lineitems");
+		
+		if(direction == "up"){
+			
+			if(theTR == lineitemsArray[0])
+				return false;
+				
+		} else {
+
+			if(theTR == lineitemsArray[lineitemsArray.length-1])
+				return false;
+				
+		}//end if
+		
+		var beforeTR = null;
+		
+		for(var i = 0; i < lineitemsArray.length; i++)
+			if(lineitemsArray[i] == theTR)
+				if(direction == "up")
+					beforeTR = lineitemsArray[i-1];
+				else
+					if(i+2 == lineitemsArray.length)
+						beforeTR = getObjectFromID("LITotals");
+					else
+						beforeTR = lineitemsArray[i+2];
+						
+		tbody.removeChild(theTR);
+		tbody.insertBefore(theTR, beforeTR);
+		
+		lineitems._hover(theTR, "out");
+		
+		lineitems.markChanged();
+		
+	},//end function
+	
+	
+	prepareForPost: function(){
+		
+		var thelist = "";
+		
+		lineitemsArray = getElementsByClassName("lineitems");
+		
+		var theid, productid, taxable, unitweight, unitcost, unitprice, qty;
+		
+		for(var i=0; i<lineitemsArray.length; i++){
+			
+			theid = lineitemsArray[i].id;
+			productid = getObjectFromID(theid + "ProductID");
+			taxable = getObjectFromID(theid + "Taxable");
+			unitweight = getObjectFromID(theid + "UnitWeight");
+			unitcost = getObjectFromID(theid + "UnitCost");
+			unitprice = getObjectFromID(theid + "UnitPrice");
+			qty = getObjectFromID(theid + "Quantity");
+			memo = getObjectFromID(theid + "Memo")
+			
+			thelist += 	productid.value + "::" + 
+						memo.value.replace(/[(::)(;;)]/g,"-") + "::" +
+						taxable.value + "::" +
+						unitweight.value + "::" +
+						unitcost.value + "::" +
+						currencyToNumber(unitprice.value) + "::" +
+						qty.value + ";;";						
+			
+		}//end for
+		
+		if(thelist.length > 1)
+			thelist = thelist.substr(0, thelist.length-2);
+		
+		var itemslist = getObjectFromID("thelineitems");
+		itemslist.value = thelist
+		
+	}//end function
+	
+}//end class
+
+
+
 
 function payInFull(){
 
@@ -261,6 +785,7 @@ function payInFull(){
 	amtpaid.value=totalti.value;
 	
 	calculatePaidDue();
+	
 }
 
 // These function are used when redefining the onchange property of 
@@ -293,40 +818,6 @@ function getPercentage(){
 	}
 	calculateTotal();
 
-	return true;
-}
-
-
-function getDiscount(){
-	var thevalue,repsponse;
-	var discountid=getObjectFromID("discountid");	
-	var parendiscount=getObjectFromID("parenDiscount");
-
-	if(discountid.value==0)
-		parendiscount.innerHTML="&nbsp;";
-	else
-		parendiscount.innerHTML="("+discountid.options[discountid.selectedIndex].text+")";
-	
-	var base=document.URL;
-	base=base.substring(0,base.indexOf("invoices_addedit.php"));
-	var	theitem=getObjectFromID("discount");
-
-	var theurl=base+"invoices_discount_ajax.php?id="+discountid.value;
-	//need this to be synchronous, so the window does not close and 
-	//yack.
-	loadXMLDoc(theurl,null,false);
-	if(!req.responseXML) {
-		alert(req.responseText);
-		return false;
-	}
-	response = req.responseXML.documentElement;
-	thevalue = response.getElementsByTagName('value')[0].firstChild.data;
-	
-	theitem.value=thevalue;
-	var thediscount=getObjectFromID("discountamount");
-	thediscount.value=numberToCurrency(0);
-	
-	calculateTotal();
 	return true;
 }
 
@@ -510,200 +1001,6 @@ function populateLineItem(){
 }
 
 
-//This function set the line item to be deleted
-function deleteLine(thebutton){
-	var thetd=thebutton.parentNode;
-	var thetr=thetd.parentNode;
-
-	var attribs;
-	if(thetd.firstChild.innerHTML)
-		attribs= thetd.firstChild.innerHTML.split("[//]",7);
-	else
-		attribs= thetd.childNodes[1].innerHTML.split("[//]",7);
-	
-	var unitcost= attribs[1];
-	var quantity= attribs[4];
-	var unitprice= attribs[3];
-	var unitweight= attribs[2];	
-	var taxable= attribs[6];	
-
-	//Update Total Taxable
-	var totaltaxable=getObjectFromID("totaltaxable");
-	totaltaxable.value=totaltaxable.value-(unitprice*quantity*taxable);
-
-	//Update Total Cost
-	var totalcost=getObjectFromID("totalcost");
-	totalcost.value=Math.round((parseFloat(totalcost.value)-(parseFloat(unitcost)*parseFloat(quantity)))*100)/100;
-	
-	//Update Total Weight
-	var totalweight=getObjectFromID("totalweight");
-	if (totalweight.value == "") totalweight.value = 0;
-	totalweight.value=Math.round((parseFloat(totalweight.value)-(parseFloat(unitweight)*parseFloat(quantity)))*1000)/1000;
-	
-	//Update Totals
-	var totalBD=getObjectFromID("totalBD");
-	totalBD.value=parseFloat(totalBD.value)-(unitprice*quantity);
-	calculateTotal();
-
-	// Remove The Line
-	var thetbody=thetr.parentNode;
-	thetbody.removeChild(thetr);
-	
-	var lineitemschanged=getObjectFromID("lineitemschanged");
-	lineitemschanged.value=1;
-}
-
-
-var addlinenum=0;
-function addLine(thetd){
-	var thetable=thetd.parentNode.parentNode;
-	var thelastrow=getObjectFromID("LITotals")
-	
-	var productid=getObjectFromID("partnumber");
-	var partnumber=getObjectFromID("ds-partnumber");
-	var partname=getObjectFromID("ds-partname");
-	var memo=getObjectFromID("memo");
-	var unitweight=getObjectFromID("unitweight");
-	var unitcost=getObjectFromID("unitcost");
-	var unitprice=getObjectFromID("price");
-	var quantity=getObjectFromID("qty");
-	var extended=getObjectFromID("extended");
-	var taxable=getObjectFromID("taxable");
-	var imgPath=getObjectFromID("imgpath");
-
-	if(unitcost.value=="")
-		unitcost.value="0";
-	if(unitweight.value=="")
-		unitweight.value="0";
-	
-	var sep=getObjectFromID("LISep");
-	if(!sep){
-		var thetr=document.createElement("tr");
-		thetr.id="LISep";
-		var temptd=document.createElement("td");
-		temptd.setAttribute("colSpan",7);
-		temptd.className="lineitemsRight lineitemsLeft";
-		temptd.style.fontSize="1px";
-		temptd.style.padding="0px";
-		temptd.innerHTML="&nbsp;";
-		thetr.appendChild(temptd);
-		thetable.insertBefore(thetr,thelastrow);	
-	}
-	//Create the line
-	var thetr=document.createElement("tr");
-	thetr.id="LINN"+addlinenum++;
-	thetr.className="lineitems";
-	
-	temptd=document.createElement("td");
-	temptd.setAttribute("nowrap","nowrap");
-	temptd.setAttribute("valign","top");
-	temptd.className="lineitemsLeft important";
-	temptd.innerHTML=(partnumber.value=="")?"&nbsp;":partnumber.value;
-	thetr.appendChild(temptd);
-	
-	temptd=document.createElement("td");
-	temptd.setAttribute("valign","top");
-	temptd.className="important";
-	temptd.innerHTML=(partname.value=="")?"&nbsp;":partname.value;
-	thetr.appendChild(temptd);
-
-	temptd=document.createElement("td");
-	temptd.setAttribute("valign","top");
-	temptd.innerHTML=(memo.value=="")?"&nbsp;":memo.value;
-	thetr.appendChild(temptd);
-
-	temptd=document.createElement("td");
-	temptd.setAttribute("valign","top");
-	temptd.setAttribute("align","right");
-	temptd.innerHTML=(unitprice.value=="")?numberToCurrency(0):unitprice.value;
-	thetr.appendChild(temptd);
-
-	temptd=document.createElement("td");
-	temptd.setAttribute("valign","top");
-	temptd.setAttribute("align","center");
-	temptd.innerHTML=(quantity.value=="")?"0":quantity.value;
-	thetr.appendChild(temptd);
-
-	temptd=document.createElement("td");
-	temptd.setAttribute("valign","top");
-	temptd.setAttribute("align","right");
-	temptd.innerHTML=(extended.value=="")?numberToCurrency(0):extended.value;
-	thetr.appendChild(temptd);
-
-	temptd=document.createElement("td");
-	temptd.setAttribute("align","center");
-	temptd.style.padding="0px";
-	var content="<span class=\"LIRealInfo\">";
-	content+=productid.value+"[//]";
-	content+=unitcost.value+"[//]";
-	content+=unitweight.value+"[//]";
-	content+=currencyToNumber(unitprice.value)+"[//]";
-	content+=quantity.value+"[//]";
-	content+=memo.value+"[//]";
-	content+=taxable.value+"</span>";
-	content+="<button type=\"button\" onclick=\"return deleteLine(this)\" class=\"graphicButtons buttonMinus\"><span>-</span></button>";
-	temptd.innerHTML=content
-	thetr.appendChild(temptd);
-
-	thetable.insertBefore(thetr,thelastrow);	
-	
-	//Update Total Cost
-	var totalcost=getObjectFromID("totalcost");
-	totalcost.value=Math.round((parseFloat(totalcost.value)+(parseFloat(unitcost.value)*parseFloat(quantity.value)))*100)/100;
-	
-	//Update Total Weight
-	var totalweight=getObjectFromID("totalweight");
-	if (totalweight.value == "") totalweight.value = 0;
-	totalweight.value=Math.round((parseFloat(totalweight.value)+(parseFloat(unitweight.value)*parseFloat(quantity.value)))*1000)/1000;
-	
-	//Update Total taxable
-	var totaltaxable=getObjectFromID("totaltaxable");
-	if(totaltaxable.value == "") totaltaxable.value = 0;
-	totaltaxable.value=parseFloat(totaltaxable.value)+(currencyToNumber(extended.value)*parseFloat(taxable.value));
-
-	//Update Totals
-	var totalBD=getObjectFromID("totalBD");
-	totalBD.value=parseFloat(totalBD.value)+currencyToNumber(extended.value);
-	calculateTotal();
-	
-	//clear line
-	productid.value="";
-	partnumber.value="";
-	partname.value="";
-	memo.value="";
-	taxable.value=1;
-	unitweight.value=0
-	unitcost.value=0
-	unitprice.value=numberToCurrency(0);
-	quantity.value="1";
-	extended.value=numberToCurrency(0);
-	autofill["partname"]["ch"]="";
-	autofill["partname"]["uh"]="";
-	autofill["partname"]["vl"]="";	
-	autofill["partnumber"]["ch"]="";
-	autofill["partnumber"]["uh"]="";
-	autofill["partnumber"]["vl"]="";
-
-	var lineitemschanged=getObjectFromID("lineitemschanged");
-	lineitemschanged.value=1;	
-}
-
-function setLineItems(){
-	var changed=getObjectFromID("lineitemschanged");
-	var lineitems=getObjectFromID("thelineitems");
-	if(changed.value==1){
-		var allRows=getElementsByClassName("LIRealInfo");
-		if(allRows.length){
-			for(var i=0;i<allRows.length;i++)
-				if(allRows[i].innerHTML!="")
-					lineitems.value+=allRows[i].innerHTML+"{[]}";
-			if(lineitems.value.length>4)
-				lineitems.value=lineitems.value.substring(0,lineitems.value.length-4);
-		}
-	}
-}
-
-
 //this function sets the default shipped date information for shipping appropriately
 function setShipped(){
 	var thecheckbox=getObjectFromID("statusShipped");
@@ -737,6 +1034,7 @@ function calculatePaidDue(){
 
 //this function adds all the tax,shipping,subtotal, and totaling stuff
 function calculateTotal(){
+	
 	var thetotalBD=getObjectFromID("totalBD");
 	var subtotal=getObjectFromID("totaltni");
 	var thediscount=getObjectFromID("discountamount");
@@ -804,28 +1102,6 @@ function calculateTotal(){
 	calculatePaidDue();
 }
 
-// This function does ALL the kung foo for calculating the extended amount
-function calculateExtended(){
-
-	// First, Check and format the price
-	var thecurrency = getObjectFromID("price");	
-	var theprice = currencyToNumber(thecurrency.value);
-	thecurrency.value = numberToCurrency(theprice);
-			
-	// Next verify that qty is a number
-	var quantity = getObjectFromID("qty");
-	var qty = parseFloat(quantity.value);
-	if(qty == "NaN")
-		qty = 0;
-	quantity.value = qty;
-
-	// Last, figure extended and reformat to dollar
-	var extField = getObjectFromID("extended");
-	var extended = roundForCurrency(qty * theprice);
-	extField.value = numberToCurrency(extended);
-	
-}//end function
-
 
 function showPaymentOptions(){
 	var paymentmethodid = getObjectFromID("paymentmethodid");
@@ -878,10 +1154,10 @@ function showPaymentOptions(){
 			if(!clientid.value)
 				error = "Receivable payment method cannot be set until a client is chosen";
 			
-			if(hascredit.value == 0 && error == "")
-				error = "This client has not been setup with a line of credit.";
+			if(hascredit.value == 0 && error == "" && type.value != "Invoice" && type.value != "VOID")
+				error = "This client is not currenlty set up with a line of credit.";
 
-			if(currencyToNumber(creditleft.value) < currencyToNumber(totalti.value) && error == "")
+			if(currencyToNumber(creditleft.value) < currencyToNumber(totalti.value) && error == "" && type.value != "Invoice" && type.value != "VOID")
 				error = "Order amount is greater than client's credit limit ("+creditleft.value+" left)";
 			
 			if(error){
@@ -995,6 +1271,51 @@ function clearDiscount(){
 	discountid.value="";
 }
 
+// DISCOUNT CLASS
+//=================================================================
+discount = {
+	
+	get: function(e){
+		
+		var thevalue, repsponse;
+		var discountid = getObjectFromID("discountid");	
+		var parendiscount = getObjectFromID("parenDiscount");
+	
+		if(discountid.value == 0)
+			parendiscount.innerHTML = "&nbsp;";
+		else
+			parendiscount.innerHTML = "("+discountid.options[discountid.selectedIndex].text+")";
+		
+		var base = document.URL;
+		base=base.substring(0,base.indexOf("invoices_addedit.php"));
+		
+		var	theitem = getObjectFromID("discount");
+	
+		var theurl = base+"invoices_discount_ajax.php?id="+discountid.value;
+		
+		loadXMLDoc(theurl,null,false);
+		
+		if(!req.responseXML) {
+			
+			alert(req.responseText);
+			return false;
+			
+		}
+		
+		response = req.responseXML.documentElement;
+		thevalue = response.getElementsByTagName('value')[0].firstChild.data;
+		
+		theitem.value = thevalue;
+		var thediscount = getObjectFromID("discountamount");
+		thediscount.value = numberToCurrency(0);
+		
+		calculateTotal();
+		return true;		
+		
+	}//end if
+	
+}//end class
+
 
 // VERTICAL TABS CLASS ============================================
 //=================================================================
@@ -1033,11 +1354,11 @@ vTab = {
 		//change to hover class
 		thetab.className="invoiceTotalLabels vTabsHover";
 		thecontent.style.display="block";
-		thecontent.style.height=(thecontent.parentNode.offsetHeight-16)+"px";
+		thecontent.style.height=(thecontent.parentNode.offsetHeight-18)+"px";
 		
 		for(i=0;i<thecontent.childNodes.length;i++)
 			if(thecontent.childNodes[i].tagName=="FIELDSET")
-				thecontent.childNodes[i].style.height=(thecontent.offsetHeight-34)+"px";	
+				thecontent.childNodes[i].style.height=(thecontent.offsetHeight-36)+"px";	
 				
 	},//end method
 	
@@ -1135,4 +1456,54 @@ connect(window,"onload",function() {
 		payment.initialize(getObjectFromID("paymentProcessButton"), getObjectFromID("processscript"), toPass, getObjectFromID("transactionid"))
 		
 	}
+	
+	
+	var discountid = getObjectFromID("discountid");
+	connect(discountid, "onchange", discount.get);
+	
+	//lineitems	
+	var addButton = getObjectFromID("lineitemAddButton");
+		if(addButton)
+			connect(addButton, "onclick", lineitems.add);
+			
+	var unitprice = getObjectFromID("price");
+		if(unitprice)
+			connect(unitprice, "onchange", lineitems.calculateExtended)
+
+	var quantity = getObjectFromID("qty");
+		if(quantity)
+			connect(quantity, "onchange", lineitems.calculateExtended)
+
+	var trs = getElementsByClassName("lineitems");
+	for(i=0; i<trs.length; i++){
+		
+		connect(trs[i], "onmouseover", lineitems.hoverIn)
+		connect(trs[i], "onmouseout", lineitems.hoverOut)
+		
+	}//endfor
+	
+	var qtys = getElementsByClassName("lineitemQuantities");
+	for(i = 0; i < qtys.length; i++)
+		connect(qtys[i], "onchange", lineitems.calculateExtended);
+
+	var unitprices = getElementsByClassName("lineitemPrices");
+	for(i = 0; i < unitprices.length; i++)
+		connect(unitprices[i], "onchange", lineitems.calculateExtended);
+		
+	var memos = getElementsByClassName("lineitemMemos");
+	for(i = 0; i < memos.length; i++)
+		connect(memos[i], "onchange", lineitems.markChanged);
+	
+	var lineitemDelButtons = getElementsByClassName("LIDelButtons");
+	for(i = 0; i < lineitemDelButtons.length; i++)
+		connect(lineitemDelButtons[i], "onclick", lineitems.del);
+
+	var lineitemUpButtons = getElementsByClassName("LIUpButtons");
+	for(i = 0; i < lineitemUpButtons.length; i++)
+		connect(lineitemUpButtons[i], "onclick", lineitems.moveUp);
+
+	var lineitemDnButtons = getElementsByClassName("LIDnButtons");
+	for(i = 0; i < lineitemDnButtons.length; i++)
+		connect(lineitemDnButtons[i], "onclick", lineitems.moveDn);
+
 })

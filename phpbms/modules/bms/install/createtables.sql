@@ -133,12 +133,9 @@ CREATE TABLE `invoices` (
 ) TYPE=MyISAM AUTO_INCREMENT=1000 PACK_KEYS=0;
 
 CREATE TABLE lineitems (
-  createdby int(11) NOT NULL default '0',
-  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   id int(11) NOT NULL auto_increment,
   invoiceid int(11) NOT NULL default '0',
-  modifiedby int(11) default NULL,
-  modifieddate timestamp(14) NOT NULL,
+  `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0
   productid int(11) default NULL,
   quantity double default NULL,
   unitcost double default NULL,
@@ -146,6 +143,10 @@ CREATE TABLE lineitems (
   unitweight double default NULL,
   memo text,
   taxable tinyint(4) NOT NULL default '1',
+  createdby int(11) NOT NULL default '0',
+  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
+  modifiedby int(11) default NULL,
+  modifieddate timestamp(14) NOT NULL,
   UNIQUE KEY theid (id),
   KEY invoice (invoiceid),
   KEY product (productid)

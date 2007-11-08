@@ -62,11 +62,15 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		$theinput = new inputBasicList("type",$therecord["type"],array("Search"=>"SCH","Sort"=>"SRT"));
+		$theinput = new inputField("id", $therecord["id"], NULL, false, NULL, 5);
 		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("disabled","disabled");
-		$theform->addField($theinput);			
+		$theinput->setAttribute("readonly","readonly");
+		$theform->addField($theinput);
 
+		$theinput = new inputBasicList("typeDisplay", $therecord["type"], array("Search"=>"SCH","Sort"=>"SRT"), "type");
+		$theinput->setAttribute("disabled","disabled");
+		$theform->addField($theinput);
+		
 		if($therecord["userid"]==0){
 			$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
 			$theform->addField($theinput);			
@@ -87,12 +91,13 @@
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
-		</p>
+
+		<p><?php $theform->showField("id"); ?></p>
 		
-		<p><?php $theform->showField("type"); ?></p>
+		<p>
+			<?php $theform->showField("typeDisplay"); ?>
+			<input type="hidden" id="type" name="type" value="<?php echo $therecord["type"]?>" />
+		</p>
 		
 		<p>
 			<label for="tabledefid">table</label><br />

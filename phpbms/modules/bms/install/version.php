@@ -2,7 +2,7 @@
 
 	$modules["bms"]["name"] = "Buisness Management System (BMS)";
 	
-	$modules["bms"]["version"] = 0.9;
+	$modules["bms"]["version"] = 0.92;
 	
 	$modules["bms"]["description"] = 
 	"The Business Magagement functionality of phpBMS.  This module includes clients/propsetcs, quote/order/invoice, and products sections.";
