@@ -253,7 +253,7 @@ include("../include/session.php");
 					$thereturn .= "Updating phpBMS Core to 0.92\n";
 					
 					//Processing Data Structure Changes
-					//$thereturn .= processSQLfile($db,"updatev0.9.sql");
+					$thereturn .= processSQLfile($db,"updatev0.92.sql");
 				
 					//Updating Module Table
 					$querystatement = "

@@ -1,3 +1,10 @@
+phpBMS v0.92
+http://phpbms.org/browser/tags/phpbms-0.92
+ * Sales Order line item editing
+ * Sales Order line item re-ordering
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.92
+
 phpBMS v0.9
 http://phpbms.org/browser/tags/phpbms-0.9
  * Accounts Receivable
@@ -9,7 +16,7 @@ http://phpbms.org/browser/tags/phpbms-0.9
  * Added Ordering of Table Def Options
  * Recoded/formatted Sales Order PDFs
 
-The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.8
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.9
 
 phpBMS v0.8
 http://phpbms.org/browser/tags/phpbms-0.8

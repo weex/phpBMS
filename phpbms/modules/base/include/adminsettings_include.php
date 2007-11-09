@@ -83,9 +83,50 @@ class settings{
 		foreach($variables as $settingname => $settingvalue){
 			if(defined(strtoupper($settingname))){
 				if(constant(strtoupper($settingname)) != $settingvalue){
-					$updatestatement = "UPDATE settings SET value ='".$settingvalue."' WHERE name='".mysql_real_escape_string($settingname)."'";
+				
+					$updatestatement = "
+						UPDATE 
+							settings 
+						SET 
+							value ='".$settingvalue."' 
+						WHERE 
+							name='".mysql_real_escape_string($settingname)."'";
+							
 					$updateresult = $this->db->query($updatestatement);
-				}
+					
+					if(!$this->db->affectedRows()){
+
+						//check to see why the update did not work
+						$querystatement = "
+							SELECT 
+								name
+							FROM
+								settings
+							WHERE
+								name = '".mysql_real_escape_string($settingname)."'";
+						
+						$queryresult = $this->db->query($querystatement);
+						
+						if(!$this->db->numRows($queryresult)){
+						
+							//insert the setting if need be
+							$insertstatement ="
+								INSERT INTO
+									settings (
+										`value`,
+										`name`,
+									) VALUES {
+										'".$settingvalue."',
+										'".mysql_real_escape_string($settingname)."'
+									}";
+									
+							$this->db-query($insertstatement);
+							
+						}//end if
+					
+					}//end if
+					
+				}//end if
 			}
 		}//end foreach
 		
