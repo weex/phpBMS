@@ -893,57 +893,71 @@ function startEstimateShipping(){
 
 
 function performShippingEstimate(base){
-	var resultsArea=getObjectFromID("shippingNoticeResults");
 
-	var currentShipping=getObjectFromID("shippingmethodid").value;
-	var theURL=base+shippingMethods[currentShipping]["estimationscript"];
-	var shiptozip=getObjectFromID("postalcode");	
-	var therespond="";
+	var resultsArea = getObjectFromID("shippingNoticeResults");
 
-	resultsArea.value="Starting Script (this may take a moment)\n";
+	var currentShipping = getObjectFromID("shippingmethodid").value;
+	
+	var theURL = base+shippingMethods[currentShipping]["estimationscript"];
+	
+	var shiptozip = getObjectFromID("postalcode");	
+
+	var therespond= "";
+
+	resultsArea.value = "Starting Script (this may take a moment)\n";
 	
 	theURL+="?shipvia="+encodeURI(shippingMethods[currentShipping]["name"]);
 	
-		// get table (tbody)
-		var thetable=getObjectFromID("LIHeader").parentNode;
-		//for each line that starts with LIN  get the last childs first child
-		var therow;
-		var j;
-		var attribs;
-		var lipair="";
-		for(var i=0;i<thetable.childNodes.length;i++){
-			if(thetable.childNodes[i].tagName){
-				therow=thetable.childNodes[i];
-				if(therow.id.substring(0,3)=="LIN"){
-					for(j=0;j<therow.childNodes.length;j++){
-						if(therow.childNodes[j].className==""){
-							var k=0;
-							for(k=0;k<therow.childNodes[j].childNodes.length;k++)
-								if(therow.childNodes[j].childNodes[k])
-									if(therow.childNodes[j].childNodes[k].className=="LIRealInfo")
-										theURL+="&LI"+i+"="+encodeURI(therow.childNodes[j].childNodes[k].innerHTML);
-						}
-					}					
-				}
-			}
-		}	
+	//Get line items
+	var theLineItems = getElementsByClassName("lineitems");
+	var productid = null;
+	var productArray = Array();
+	var j;
+	
+	for(var i=0; i< theLineItems.length; i++){
+		
+		productid = getObjectFromID(theLineItems[i].id + "ProductID");
 
-	theURL+="&shiptozip="+encodeURI(shiptozip.value);
+		if(productid.value){
+			
+			productArray[productArray.length] = getObjectFromID(theLineItems[i].id + "Quantity").value;
+			productArray[productArray.length] = currencyToNumber(getObjectFromID(theLineItems[i].id + "UnitPrice").value);
+			productArray[productArray.length] = getObjectFromID(theLineItems[i].id + "UnitCost").value;
+			productArray[productArray.length] = getObjectFromID(theLineItems[i].id + "UnitWeight").value;
+			productArray[productArray.length] = getObjectFromID(theLineItems[i].id + "Taxable").value;
+		
+			theURL += "&LI" + i + "=" + encodeURI(productid.value);
+				
+			for(j = 0; j< productArray.length; j++)				
+				theURL += encodeURI("::" + productArray[j]);				
+			
+		}//endif
+		
+	}//endfor
+
+	theURL+="&postalcodeto="+encodeURI(shiptozip.value);
+
 	//timestamp for client caching
-	var today=new Date();
-	theURL+="&rand="+today.getTime();
+	var today = new Date();
+	theURL += "&rand=" + today.getTime();
 	
 	loadXMLDoc(theURL,null,false);
+
 	if(req.responseXML){
+		
 		var newShippingAmount = req.responseXML.documentElement.getElementsByTagName('value')[0].firstChild.data;
 		
-		if(newShippingAmount==0)
-			therespond="Estimation returned 0.  Check the client's postal code, and the line item products shipping setup."
-		else{
+		if(newShippingAmount==0){
+			
+			therespond = "Estimation returned 0 or Failed.  Check the client's postal code, " + 
+			             "and the line item products shipping setup.";
+		} else {
+			
 			var shipping=getObjectFromID("shipping");
 			shipping.value=newShippingAmount;
 			calculateTotal();
 			therespond="Shipping Amount Updated";
+			
 		}
 	} else
 	therespond = req.responseText

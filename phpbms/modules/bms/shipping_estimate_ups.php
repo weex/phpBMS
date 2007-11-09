@@ -44,7 +44,7 @@
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 	
-	if(!isset($_GET["shipvia"]) || !isset($_GET["shiptozip"])){
+	if(!isset($_GET["shipvia"]) || !isset($_GET["postalcodeto"])){
 	?><response>
 	<value>0</value>
 </response><?php
@@ -74,30 +74,42 @@
 	$total_shipping=0;
 	$total_weight=0;
 
-	foreach($_GET as $name=>$item){
+	foreach($_GET as $name => $item){
+	
 		if(strpos($name,"LI")!==false){
-			//convert data to array
-			$lineitem=explode("[//]",$item);
+		
+			//convert data to array			
+			$lineitem = explode("::",$item);
+
 			//grab info from product.			
 			$querystatement="SELECT isprepackaged,weight,packagesperitem FROM products WHERE id=".trim($lineitem[0]);
 			$queryresult=$db->query($querystatement);
 
 			$therecord=$db->fetchArray($queryresult);
-			$therecord["quantity"]=trim($lineitem[4]);
+			$therecord["quantity"] = trim($lineitem[1]) ;
 			
 			//get the pricing
 			if($therecord["isprepackaged"]){
-				$UPSreturn=UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["postalcodeto"],$therecord["weight"]);
-				if (!$UPSreturn["success"]) $shipping=0; else $shipping=$UPSreturn["charge"];
+
+				$UPSreturn = UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["postalcodeto"],$therecord["weight"]);
+				if (!$UPSreturn["success"])
+					$shipping=0; 
+				else 
+					$shipping=$UPSreturn["charge"];
+					
 				$total_shipping+=($shipping*$therecord["quantity"]);
-			}
-			else {
+				
+			} else {
+			
 				// for non prepackaged add up total weight and total packages
 				$total_pckges+=$therecord["quantity"]*$therecord["packagesperitem"];
 				$total_weight+=$therecord["quantity"]*$therecord["weight"];
-			}
-		}
-	}
+				
+			}//end if
+			
+		}//end if
+		
+	}//endforeach
 	
 	$total_pckges=ceil($total_pckges);
 
