@@ -88,7 +88,7 @@ CREATE TABLE `notes` (
   `lastrepeat` date default NULL,
   `timesrepeated` int(10) unsigned NOT NULL default '0',
   `repeatname` varchar(255) default NULL,
-  UNIQUE KEY `theid` (`id`)
+  PRIMARY KEY (`id`)
 );
 
 CREATE TABLE relationships (
@@ -202,7 +202,7 @@ CREATE TABLE tablesearchablefields (
 ) TYPE=MyISAM AUTO_INCREMENT=2000;
 
 CREATE TABLE users (
-  id int(11) NOT NULL auto_increment,
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
   login varchar(64) NOT NULL default '',
   password blob,
   firstname varchar(64) NOT NULL default '',
@@ -219,9 +219,8 @@ CREATE TABLE users (
   employeenumber varchar(64) default '',
   admin tinyint(4) NOT NULL default '0',
   portalaccess tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (id),
-  UNIQUE KEY theid (id)
-) TYPE=MyISAM PACK_KEYS=0;
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=100;
 
 CREATE TABLE usersearches (
   id int(11) NOT NULL auto_increment,

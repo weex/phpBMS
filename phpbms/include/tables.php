@@ -356,7 +356,7 @@ class phpbmsTable{
 		$insertvalues = substr($insertvalues, 0, strlen($insertvalues)-2);
 
 		$insertstatement = "INSERT INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
-		
+
 		$insertresult = $this->db->query($insertstatement);
 		
 		return $this->db->insertId();

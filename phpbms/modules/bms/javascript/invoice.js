@@ -36,7 +36,7 @@
  +-------------------------------------------------------------------------+
 */
 
-// STATUS CLASS ===================================================
+// INVOICE CLASS ===================================================
 //=================================================================
 invoice = {
 	
@@ -310,8 +310,8 @@ client = {
 			}//endfor
 			
 			//now need to run taxarea and discount on changes (due to AJAX calls)
-			tempitem=getObjectFromID("discountid");
-			tempitem.onchange();		
+			discount.get();
+			
 			var tempitem=getObjectFromID("taxareaid");
 			tempitem.onchange();		
 		} else {
@@ -591,6 +591,13 @@ lineitems = {
 	calculateExtended: function(e){
 		
 		theTR = e.src().parentNode.parentNode;
+		
+		lineitems._calculateExtended(theTR)
+		
+	}, //end function
+
+
+	_calculateExtended: function(theTR){		
 
 		if(theTR.id == "LIAdd"){
 			
@@ -984,15 +991,25 @@ function populateLineItem(){
 
 			} else {
 				for(i=0;i<response.getElementsByTagName('field').length;i++){
+					
 					tempitem=getObjectFromID(response.getElementsByTagName('field')[i].firstChild.data);
-					if(!tempitem) alert("Field not found: "+response.getElementsByTagName('field')[i].firstChild.data);
+					if(!tempitem) 
+						alert("Field not found: "+response.getElementsByTagName('field')[i].firstChild.data);
+
 					thevalue="";
+
 					if(response.getElementsByTagName('value')[i].firstChild)
 						thevalue=response.getElementsByTagName('value')[i].firstChild.data;
+						
 					tempitem.value=thevalue;
+					if(tempitem.id == "price")
+						lineitems._calculateExtended(tempitem.parentNode.parentNode);
+						
 					if(tempitem.onchange && tempitem.name=="price") tempitem.onchange();
-				}
-		
+					
+				}//endfor
+				
+				
 				if(this.form["memo"]) this.form["memo"].focus();
 			}
 		
