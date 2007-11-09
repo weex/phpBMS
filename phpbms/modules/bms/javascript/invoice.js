@@ -1077,7 +1077,7 @@ function calculateTotal(){
 	var discountFromID=getObjectFromID("discount");
 	
 	//calculate and reformat discount
-	var numDiscount,discountValue;
+	var numDiscount;
 	if(discountFromID.value=="" || discountFromID.value=="0" || discountFromID.value=="0%"){
 		numDiscount=currencyToNumber(thediscount.value);
 	} else {
@@ -1088,8 +1088,8 @@ function calculateTotal(){
 			numDiscount=parseFloat(discountFromID.value);
 		}
 	}
-	discountValue=numberToCurrency(numDiscount);
-	thediscount.value=discountValue;
+
+	thediscount.value= numberToCurrency(numDiscount);
 
 	//calculate totaltaxable
 	if(totaltaxable.value == "")

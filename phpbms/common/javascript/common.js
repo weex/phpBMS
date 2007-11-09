@@ -672,28 +672,49 @@ function roundForCurrency(number){
 
 
 function numberToCurrency(number){
+	
 	var currency="";
+	
 	if(isNaN(parseFloat(number))) number=0;
 
 	if(number<0)
 		currency+="-";
-	number=Math.abs(number);
-	currency+=CURRENCY_SYM;
+
+	number = Math.abs(number);
+	
+	currency += CURRENCY_SYM;
+	
 	if(number>0 && number <0)
 		currency+="0";
 
-	var withThousands=parseInt(number).toString();
+	var lessthanone = Math.round( (number-parseInt(number)) * (Math.pow(10,CURRENCY_ACCURACY)) );
+	
+	if(lessthanone >= Math.pow(10,CURRENCY_ACCURACY)){
+
+		number++;
+			
+		lessthanone -= Math.pow(10,CURRENCY_ACCURACY);
+		
+	}//end if
+	
+	lessthanone = lessthanone.toString()
+	
+	while(lessthanone.length<CURRENCY_ACCURACY)
+		lessthanone = "0" + lessthanone;		
+
+	var withThousands = parseInt(number).toString();
   	var objRegExp  = new RegExp('(-?[0-9]+)([0-9]{3})');
+
 	while(objRegExp.test(withThousands))
        withThousands = withThousands.replace(objRegExp, '$1'+THOUSANDS_SEPARATOR+'$2');
-
-	var lessthanone=Math.round((number-parseInt(number))*(Math.pow(10,CURRENCY_ACCURACY))).toString();
-	while(lessthanone.length<CURRENCY_ACCURACY)
-		lessthanone="0"+lessthanone;
+		
 	currency+=withThousands;
+
 	if(CURRENCY_ACCURACY!=0)
 		currency+=DECIMAL_SYMBOL+lessthanone;
+		
 	return currency;
+	
 }
 
 function currencyToNumber(currency){
