@@ -567,8 +567,7 @@ if(class_exists("phpbmsTable")){
 			foreach($itemsArray as $item){
 			
 				$itemRecord = explode("::", $item);
-				
-				if(count($itemRecord > 1)){
+				if(count($itemRecord) > 1){
 				
 					$insertstatement ="
 						INSERT INTO

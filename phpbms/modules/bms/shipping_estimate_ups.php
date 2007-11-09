@@ -116,7 +116,7 @@
 	if($total_pckges){
 		$avg_weight=$total_weight/$total_pckges;
 		//check for errors on price
-		$UPSreturn=UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["shiptozip"],$avg_weight);
+		$UPSreturn=UPSprice($shippingmethod,SHIPPING_POSTALCODE,$_GET["postalcodeto"],$avg_weight);
 		if (!$UPSreturn["success"]) $shipping=0; else $shipping=$UPSreturn["charge"];
 			$total_shipping+=($shipping*$total_pckges);
 	}//end if
