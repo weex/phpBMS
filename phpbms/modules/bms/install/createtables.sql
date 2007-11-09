@@ -135,7 +135,7 @@ CREATE TABLE `invoices` (
 CREATE TABLE lineitems (
   id int(11) NOT NULL auto_increment,
   invoiceid int(11) NOT NULL default '0',
-  `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0
+  `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0,
   productid int(11) default NULL,
   quantity double default NULL,
   unitcost double default NULL,
