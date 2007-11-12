@@ -204,6 +204,7 @@
 		function _addPage(){
 		
 			$pdf = &$this->pdf;
+			
 				
 			$pdf->AddPage();	
 			$this->page++;
@@ -217,10 +218,18 @@
 			$pdf->setStyle("title");
 			$pdf->SetXY(-1*($titleWidth+$pdf->rightmargin), $pdf->topmargin);
 			$pdf->Cell($titleWidth, $titleHeight,$this->title, $pdf->borderDebug,1,"R");
-						
-			//SOLD TO
-			$startY = $pdf->GetY() + 0.75;
 			
+			$startY = $pdf->GetY() + 0.75;
+
+			//page number?
+			$pdf->setStyle("normal");
+			$pageNoWidth = 1;
+			$pdf->SetFontSize(8);
+			$pdf->SetXY(-1*($pageNoWidth + $pdf->rightmargin), $pdf->topmargin + $titleHeight + 0.25);
+			$pdf->Cell($pageNoWidth, 0.17, "page: ".$this->page, $pdf->borderDebug,1,"R");
+
+			
+			//SOLD TO
 			$boxHeight = 1.75;
 			$boxWidth = ($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin)/2 -0.0625;
 
