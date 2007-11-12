@@ -150,7 +150,7 @@
 			WHERE
 				lineitems.invoiceid =".((int) $this->invoicerecord["id"])."
 			ORDER BY
-				displayorder;
+				displayorder";
 
 			$queryresult = $this->db->query($querystatement);
 			
