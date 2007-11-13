@@ -291,8 +291,7 @@
 			$coords["y"] = $pdf->GetY();
 			
 			foreach($this->lineitems as $column)
-				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);				
-
+				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
 			
 			return $coords;
 

@@ -2,6 +2,8 @@ phpBMS v0.92
 http://phpbms.org/browser/tags/phpbms-0.92
  * Sales Order line item editing
  * Sales Order line item re-ordering
+ * New Receipt report
+ * page numbering on Sales Order PDF reports
 
 The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.92
 
