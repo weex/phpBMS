@@ -411,6 +411,10 @@
 				
 					$this->_addPage();
 					
+					$pdf->setStyle("normal");
+					
+					$pdf->SetY($pdf->GetY() + 0.18 + 0.0625);
+					
 				}//end if
 
 				foreach($this->lineitems as $column){
