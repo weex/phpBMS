@@ -103,11 +103,19 @@ invoice = {
 		
 		var newCost = 0;
 		
-		var costs = getElementsByClassName("lineitemCosts");
-		for(var i = 0; i<costs.length; i++)
-			if(costs[i].value !== "")
-				newCost += parseFloat(costs[i].value);
+		var items = getElementsByClassName("lineitems")
+		var qty, cost;
+		
+		for(var i = 0; i<items.length; i++){
 			
+			cost = getObjectFromID(items[i].id + "UnitCost");
+			qty = getObjectFromID(items[i].id + "Quantity");
+
+			if( !isNaN(parseFloat(cost.value)) && !isNaN(parseFloat(qty.value)) )	
+				newCost += roundForCurrency(parseFloat(cost.value) * parseFloat(qty.value));
+			
+		}//endfor
+
 		totalCost.value = newCost
 		
 	},// end function
@@ -119,11 +127,19 @@ invoice = {
 		
 		var newWt = 0;
 		
-		var wts = getElementsByClassName("lineitemWeights");
-		for(var i = 0; i<wts.length; i++)
-			if(wts[i].value !== "")
-				newWt += parseFloat(wts[i].value);
+		var items = getElementsByClassName("lineitems")
+		var qty, wt;
+		
+		for(var i = 0; i<items.length; i++){
 			
+			wt = getObjectFromID(items[i].id + "UnitWeight");
+			qty = getObjectFromID(items[i].id + "Quantity");
+
+			if( !isNaN(parseFloat(wt.value)) && !isNaN(parseFloat(qty.value)) )	
+				newWt += parseFloat(wt.value) * parseFloat(qty.value);
+			
+		}//endfor
+					
 		totalWt.value = newWt;
 
 	},//end function
