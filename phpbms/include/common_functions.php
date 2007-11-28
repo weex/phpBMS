@@ -491,7 +491,7 @@ function addSlashesToArray($thearray){
 	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
 		foreach ($thearray as $key=>$value) 
 			if(is_array($value))
-				$thearray[$key]= addSlsashesToArray($value);
+				$thearray[$key]= addSlashesToArray($value);
 			else
 				$thearray[$key] = stripslashes($value);
 	

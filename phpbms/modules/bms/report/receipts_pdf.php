@@ -453,7 +453,7 @@
 				
 				if($this->receiptrecord["posted"])					
 					$line["docdue"] = $line["amount"] - $line["paid"];					
-				elseif($therecord["relatedid"])
+				elseif($line["relatedid"])
 					$line["docdue"] = $line["amount"] - $line["paid"] - $line["applied"] - $line["discount"] - $line["taxadjustment"];	
 				else
 					$line["docDue"] = 0;
