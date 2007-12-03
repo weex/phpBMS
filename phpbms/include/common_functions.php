@@ -488,19 +488,28 @@ function ordinal($number) {
 
 
 function addSlashesToArray($thearray){
-	if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
+
+	//This function prepares an array for SQL manipulation.
+	
+	if(get_magic_quotes_runtime() || get_magic_quotes_gpc()){
+	
 		foreach ($thearray as $key=>$value) 
 			if(is_array($value))
 				$thearray[$key]= addSlashesToArray($value);
 			else
-				$thearray[$key] = stripslashes($value);
-	
-	foreach ($thearray as $key=>$value)
-		if(!is_array($value))
-			$thearray[$key] = mysql_real_escape_string($value);
+				$thearray[$key] = mysql_real_escape_string(stripslashes($value));
+				
+	} else 	
+		foreach ($thearray as $key=>$value)
+			if(is_array($value))
+				$thearray[$key]= addSlashesToArray($value);				
+			else
+				$thearray[$key] = mysql_real_escape_string($value);
 	
 	return $thearray;
-}
+	
+}//end function
+
 
 function htmlQuotes($string){
 	return htmlspecialchars($string,ENT_COMPAT,"UTF-8");

@@ -778,7 +778,7 @@ lineitems = {
 			memo = getObjectFromID(theid + "Memo")
 			
 			thelist += 	productid.value + "::" + 
-						memo.value.replace(/[(::)(;;)]/g,"-") + "::" +
+						memo.value.replace(/::|;;/g,"-") + "::" +
 						taxable.value + "::" +
 						unitweight.value + "::" +
 						unitcost.value + "::" +
