@@ -46,9 +46,14 @@
 	
 	$phpbms->jsIncludes[] = "modules/base/javascript/snapshot.js";
 	
-	foreach($phpbms->modules as $modulename => $modinfo)
+	foreach($phpbms->modules as $modulename => $modinfo){
 		if(file_exists("../".$modulename."/javascript/snapshot.js") && $modulename != "base")
 			$phpbms->jsIncludes[] = "modules/".$modulename."/javascript/snapshot.js";
+			
+		if(file_exists("../../common/stylesheet/".STYLESHEET."/pages/".$modulename."/snapshot.css"))
+			$phpbms->cssIncludes[] = "pages/".$modulename."/snapshot.css";
+		
+	}//end if
 	
 	require("header.php");
 	
