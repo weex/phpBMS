@@ -635,7 +635,7 @@
 							 
 					$message .= "--{$mime_boundary}\n" . 
 							 "Content-Type: {application/pdf};\n" . 
-							 " name=\"".$this->title.$this->invoicerecord["id"]."\"\n" . 
+							 " name=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" . 
 							 "Content-Disposition: attachment;\n" . 
 							 " filename=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" . 
 							 "Content-Transfer-Encoding: base64\n\n" . 
