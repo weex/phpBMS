@@ -385,10 +385,12 @@ class totalReport{
 
 
 	function showOptions($what){
+		?><option value="0">----- Choose One -----</option>
+		<?php
 		$i=0;
 		
 		foreach($this->$what as $value){
-			?><option value="<?php echo $i; ?>"><?php echo $value["name"];?></option>
+			?><option value="<?php echo $i+1; ?>"><?php echo $value["name"];?></option>
 			<?php
 			$i++;
 		}// endforeach
@@ -397,103 +399,89 @@ class totalReport{
 
 	
 	function showSelectScreen(){
-	
-		global  $phpbms;
+    
+        global  $phpbms;
 
-		$pageTitle="Invoice Totals";
-		$phpbms->showMenu = false;		
-		$phpbms->cssIncludes[] = "pages/totalreports.css";		
-		$phpbms->jsIncludes[] = "modules/bms/javascript/totalreports.js";
+        $pageTitle="Invoice Total";
+        $phpbms->showMenu = false;		
+        $phpbms->cssIncludes[] = "pages/totalreports.css";		
+        $phpbms->jsIncludes[] = "modules/bms/javascript/totalreports.js";
+        
+        include("header.php");
+
+        ?>
+
+        <div class="bodyline">
+            <h1>Invoice Total Options</h1>
+            <form id="GroupForm" action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="GroupForm">
+            
+                <fieldset>
+                    
+                    <legend>report</legend>
+                    <p>	
+                        <label for="reporttitle">report title</label><br />			
+                        <input type="text" name="reporttitle" id="reporttitle" size="45"/>
+                    </p>
+                
+		</fieldset>
+                
+                <fieldset>
+                    
+                    <legend>groupings</legend>
+                    <input id="groupings" type="hidden" name="groupings"/>
+                    <div id="theGroups">
+                        <div id="Group1">
+                            <select id="Group1Field">
+                                <?php $this->showOptions("groupings")?>
+                            </select>
+                            <button type="button" id="Group1Minus" class="graphicButtons buttonMinusDisabled"><span>-</span></button>
+                            <button type="button" id="Group1Plus" class="graphicButtons buttonPlus"><span>+</span></button>
+                        </div>
+                    </div>
+                    
+                </fieldset>
 		
-		include("header.php");
-	
-		?>
-
-	<div class="bodyline">
-		<h1>Invoice Total Options</h1>	
-		<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return false;">
-	
-			<fieldset>
-				<legend>report</legend>
-				<p>	
-					<label for="reporttitle">report title</label><br />			
-					<input type="text" name="reporttitle" id="reporttitle" size="45"/>
-				</p>
-			</fieldset>
+		<fieldset>
 			
-			<fieldset>
-				<legend>Grouping</legend>
-				
-				<div class="selectLeft fauxP">
-					<label for="selectedgroupings">selected groupings</label><br />
-					<select id="selectedgroupings" name="selectedgroupings" size="9" multiple="multiple">
-					</select>
-					<input type="hidden" id="groupings" name="groupings"/>
-				</div>
-
-				<div class="selectLeft fauxP">
-					<p><br /><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('groupings','to',this.form);" /></p>
-					<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('groupings','from',this.form);" /></p>
-				</div>
-				
-				<div class="fauxP">
-					<label for="availablegroupings">available groupings</label><br />
-					<select id="availablegroupings" name="availablegroupings" size="9" multiple="multiple">
-						<?php $this->showOptions("groupings")?>
-					</select>				
-				</div>
-	
-			</fieldset>
-			
-			<fieldset>
-				<legend>Columns</legend>
-
-				<div class="selectLeft fauxP">
-					<label for="selectedcolumns">shown columns</label><br />
-					<select name="selectedcolumns" id="selectedcolumns" size="9"></select>
-					<input type="hidden" id="columns" name="columns"/>					
-				</div>
-
-				<div class="selectLeft fauxP">
-					<p><br /><br /><input type="button" value="&lt;&lt;" class="Buttons" onclick="moveItem('columns','to',this.form);" /></p>
-					<p><input type="button" value="&gt;&gt;" class="Buttons" onclick="moveItem('columns','from',this.form);" /></p>
-				</div>
-				
-				<div class="fauxP">
-					<label for="availablecolumns">available columns</label><br />
-					<select name="availablecolumns" id="availablecolumns" size="9">
+			<legend>columns</legend>
+			<input id="columns" type="hidden" name="columns"/>
+			<div id="theColumns">
+				<div id="Column1">
+					<select id="Column1Field">
 						<?php $this->showOptions("columns")?>
 					</select>
+					<button type="button" id="Column1Minus" class="graphicButtons buttonMinusDisabled"><span>-</span></button>
+					<button type="button" id="Column1Plus" class="graphicButtons buttonPlus"><span>+</span></button>
 				</div>
-
-			</fieldset>
-			
-			<fieldset>
-				<legend>Options</legend>
-				<p>
-				<label for="showwhat">information shown</label><br />
-				<select name="showwhat" id="showwhat">
-					<option selected="selected" value="totals">Totals Only</option>
-					<option value="invoices">Invoices</option>
-					<option value="lineitems">Invoices &amp; Line Items</option>
-				</select>
-				</p>
-			</fieldset>
-	
-			<p align="right">
-				<input name="command" type="button" class="Buttons" id="print" value="print" onclick="submitForm();"/>
-				<input name="command" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
-			</p>
-	   </form>
-	</div>
-
-		<?php
+			</div>
+		</fieldset>
 		
-		include("footer.php");
-	}//end method
-	
-}//end class
+		<fieldset>
+			<legend>Options</legend>
+			<p>
+			<label for="showwhat">information shown</label><br />
+			<select name="showwhat" id="showwhat">
+				<option selected="selected" value="totals">Totals Only</option>
+				<option value="invoices">Invoices</option>
+				<option value="lineitems">Invoices &amp; Line Items</option>
+			</select>
+			</p>
+		</fieldset>
+                
+                <p align="right">
+                    <button id="print" type="button" class="Buttons">Print</button>
+                    <button id="cancel" type="button" class="Buttons">Cancel</button>
+                </p>
+                
+            </form>
+        </div>
 
+        <?php
+        
+        include("footer.php");
+    }//end method
+
+}//endclass
 
 // Processing ===================================================================================================================
 if(!isset($dontProcess)){
