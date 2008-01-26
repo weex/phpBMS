@@ -1,0 +1,1 @@
+UPDATE `menu` SET menu.name = 'System' WHERE name = 'Settings';
