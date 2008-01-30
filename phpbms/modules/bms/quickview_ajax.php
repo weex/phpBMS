@@ -75,7 +75,6 @@ function showClient($db,$clientid,$basepath){
 <h1><?php echo htmlQuotes($therecord["name"])?></h1>
 
 <div id="rightSideDiv" class="box">
-	<?php if($therecord["type"]!="prospect") {?>
 
 	<div class="salesNotesButtons">
 		<button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
@@ -108,7 +107,6 @@ function showClient($db,$clientid,$basepath){
 		<?php }?></table><?php }?>	
 	</div>
 	</div>
-	<?php }?>
 	
 	
 	

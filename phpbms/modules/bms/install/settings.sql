@@ -14,3 +14,4 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('term2_days','60');
 INSERT INTO `settings` (`name`, `value`) VALUES ('term2_percentage','15');
 INSERT INTO `settings` (`name`, `value`) VALUES ('term3_days','90');
 INSERT INTO `settings` (`name`, `value`) VALUES ('term3_percentage','20');
+INSERT INTO `settings` (`name`, `value`) VALUES ('prospects_on_orders','1');

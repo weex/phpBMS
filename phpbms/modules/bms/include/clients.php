@@ -50,25 +50,27 @@ if(class_exists("phpbmsTable")){
 		// CLASS OVERRIDES ===================================================================
 		
 		function getDefaults(){
+
 			$therecord = parent::getDefaults();
 
 			$therecord["type"] = DEFAULT_CLIENTTYPE;
+			
 			if($therecord["type"] == "client") {
 
-				$therecord["becameclient"] = dateToString(mktime());
+				$therecord["becameclient"] = dateToString(mktime(), "SQL");
 				$therecord["hascredit"] = DEFAULT_HASCREDIT;
 				$therecord["creditlimit"] = DEFAULT_CREDITLIMIT;
 
 			}//end if
 			
 			$therecord["webaddress"] = "http://";
-		
 			
 			return $therecord;
 		}
 		
 	
 		function prepareVariables($variables){
+		
 			if ($variables["webaddress"]=="http://") 
 				$variables["webaddress"] = NULL;
 
@@ -76,13 +78,14 @@ if(class_exists("phpbmsTable")){
 				$variables["type"] = "client";
 				
 			if($variables["type"] == "prospect"){
-			
-				$therecord["hascredit"] = 0;
-				$therecord["creditlimit"] = 0;			
+
+				$variables["hascredit"] = 0;
+				$variables["creditlimit"] = 0;
 			
 			}//end if
 
 			return $variables;
+			
 		}//end method
 		
 	
@@ -91,6 +94,7 @@ if(class_exists("phpbmsTable")){
 			$variables = $this->prepareVariables($variables);
 			
 			return parent::updateRecord($variables, $modifiedby);
+			
 		}//end method
 		
 		
@@ -163,15 +167,71 @@ if(class_exists("searchFunctions")){
 		function delete_prospects(){
 		
 			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			$clientWhereClause = $this->buildWhereClause();
+						
+			//next get any quotes that we may have to delete
+			$invoiceWhereClause = $this->buildWhereClause("clientid");
+			$invoicestatement = "
+				SELECT
+					invoices.id
+				FROM
+					invoices INNER JOIN clients ON invoices.clientid = clients.id
+				WHERE
+					(".$invoiceWhereClause.")
+					AND clients.type='prospect'";
+					
+			$invoiceresult = $this->db->query($invoicestatement);
 			
-			$querystatement = "DELETE FROM clients where (".$whereclause.") and type=\"prospect\";";
-			$queryresult = $this->db->query($querystatement);
+			//build invoice id array
+			$invoiceids = array();
+			while($therecord = $this->db->fetchArray($invoiceresult))
+				$invoiceids[] = $therecord["id"];
+			
+			if(count($invoiceids)) {
+				$invoiceWhereClause = $this->buildWhereClause("invoices.id", $invoiceids);
+				
+				$lineitemWhereClause = $this->buildWhereClause("invoiceid", $invoiceids);
+	
+				$lineItemDeleteStatement = "
+					DELETE FROM
+						lineitems
+					WHERE
+						".$lineitemWhereClause;
+	
+				$queryresult = $this->db->query($lineItemDeleteStatement);
+	
+				$statushistoryDeleteStatement = "
+					DELETE FROM
+						invoicestatushistory
+					WHERE
+						".$lineitemWhereClause;
+	
+				$queryresult = $this->db->query($statushistoryDeleteStatement);
+				
+				$invoiceDeleteStatement = "
+					DELETE FROM
+						invoices
+					WHERE					
+						".$invoiceWhereClause;
+
+				$queryresult = $this->db->query($invoiceDeleteStatement);
+
+			}//end if
+
+			$deletestatement = "
+				DELETE FROM 
+					clients
+				WHERE 
+					(".$clientWhereClause.") 
+					AND clients.type='prospect'";
+					
+			$queryresult = $this->db->query($deletestatement);
 		
 			$message = $this->buildStatusMessage();
 			$message.=" deleted.";
 			return $message;	
-		}
+			
+		}// end method
 		
 		
 		function massEmail(){

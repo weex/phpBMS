@@ -1,13 +1,84 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-/* The following lines is put in  until the site is reformatted*/
-LABEL{display:inline;margin:0;padding:0}
-DIV{padding:0;margin:0;}
-P,.fauxP{margin:0;padding:0 5px 10px;}
-.alt{display:none;}
-.bodyline{display:block}
-/* The following lines is put in  until the site is reformatted*/
+#clientdisplay{
+	background-image:url("../image/search.gif");
+	background-repeat:no-repeat;
+	background-position:left;
+	padding-left:17px;
+}
+
+#clientSearchBox{
+	border:1px solid #999999;
+	background:white;
+	width:300px;
+	position:absolute;
+}
+
+#CSBResults{
+ overflow:auto;
+}
+
+#CSBResults DIV{
+	 color:#666666;
+	 padding:5px;
+	 font-style:italic;
+}
+
+#CSBResults A{
+	width:245px;/* 295 - 5 - 30 */
+	display:block;
+	color:#663366;
+	font-weight:normal;
+	padding:5px 3px 5px 30px;
+	background-repeat:no-repeat;
+	background-position:8px 8px;
+}
+
+#CSBResults A:hover, #CSBResults A.CSBSelected{
+	text-decoration:none;
+	background-color:#663366;
+	color:white;
+}
+
+#CSBAddNewButton{
+	width:70px;
+	text-align:right;
+}
+
+.client{
+	background-image:url("../image/client.png");
+}
+
+.prospect{
+	background-image:url("../image/prospect.png");
+}
+
+#CSBResults SPAN{
+	display:block;
+}
+
+.CSBMain{
+	font-weight:bold;
+}
+
+.CSBExtra{
+	font-size:9px;
+}
+
+#CSBHeader{
+	background:#EEEEEE;
+	text-align:right;	
+	padding:5px;
+	height:16px;
+}
+
+#CSBFooter{
+	background:#EEEEEE;
+	text-align:right;
+	font-size:10px;
+	padding:5px;
+}
 
 #h1WithPrint{margin-right:230px;}
 #h1WithoutPrint{margin-right:160px;}

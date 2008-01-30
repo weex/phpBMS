@@ -274,32 +274,476 @@ theStatus = {
 //=================================================================
 client = {
 
-	getInfo: function(e){
-				
+	triggerLookup: false,	
 	
+	displayValue: "",
+	
+	committedDisplayValue: "",
+	
+	searchBox: null,
+	
+	changeDisplay: function(e){
+		
+		//this sets the time out to do an ajax lookup when they are done typing their search criteria.
+		
+		var display = e.src();
+		
+		if (display.value!=client.displayValue && display.value!=""){
+		
+			if(client.triggerLookup)
+				window.clearTimeout(client.triggerLookup);
+			
+			client.triggerLookup = window.setTimeout("client.lookup()",250);
+			
+		} else {
+			//it's possible they hit the down, up arrow, or the return button
+
+			var key = e.event().keyCode;
+
+			switch(key){
+				
+				case 40:
+					//move highlight down
+					client.moveSearchHighlight("down");
+					break;
+		
+				case 38:
+					//move highlight down
+					client.moveSearchHighlight("up");
+					break;
+				
+				case 27:
+					//cancel
+					client.cancelSearch();
+				
+			}//endswitch
+
+		}//endif
+		
+	},//end method
+	
+	
+	moveSearchHighlight: function(direction){
+		
+		var csbResults = getObjectFromID("CSBResults");
+		var currentItem = 0
+		var classes
+		
+		if(direction=="down")
+			direction = 1;
+		else
+			direction =-1;
+		
+		for(var i=0; i < csbResults.childNodes.length; i++){
+			
+			if(csbResults.childNodes[i].className)
+				if(csbResults.childNodes[i].className.indexOf("CSBSelected") !== -1){
+					currentItem = i;
+					classes = csbResults.childNodes[i].className.split(" ");
+					csbResults.childNodes[i].className = classes[0] + " " + classes[1];
+				}
+							
+		}//endfor
+
+		var newItem = currentItem + direction
+		
+		while(newItem >= 0 && newItem < csbResults.childNodes.length){
+			
+			if(csbResults.childNodes[newItem].className){
+				
+				csbResults.childNodes[newItem].className += " CSBSelected";
+				newItem = -1000;
+				
+			}else 
+				newItem += direction
+				
+		}//endwhile
+		
+	}, //endif
+	
+
+	searchResultsConnects: Array(),
+
+	lookup: function(offset){
+		
+		// We need to do an ajax lookup based on the criteria.
+		// Fisrt we need to see if the holding box is visible.
+		// if not we need to create it		
+		if (!client.searchBox)
+			client.createSearchBox();
+			
+
+		var csbResults = getObjectFromID("CSBResults");
+
+		if(!offset){
+			offset = 0;
+			csbResults.style.height="";
+		}
+			
+			
+		var closeButton = getObjectFromID("CSBCloseButton");		
+		closeButton.className = "graphicButtons buttonSpinner";
+		
+		var clientdisplay = getObjectFromID("clientdisplay");
+		client.displayValue = clientdisplay.value;
+
+		var base = document.URL;
+		base = base.substring(0,base.indexOf("invoices_addedit.php"));
+
+		var theurl = base + "invoices_client_ajax.php?w=term&t=" + encodeURI(clientdisplay.value);
+		
+		if(offset != 0)
+			theurl += "&o=" + offset;
+		
+		for(var i=0; i<client.searchResultsConnects.length; i++)
+			disconnect(client.searchResultsConnects[i])
+
+		loadXMLDoc(theurl,null,false);
+				
+		response = req.responseXML.documentElement;
+		
+		var numRecords = response.childNodes.length
+		
+		var totalRecords = response.attributes.getNamedItem("total").value;
+
+		var newText="";		
+		var fields;
+		var name;
+		var loc;
+
+		if(numRecords) {
+			for(var i=0; i<numRecords; i++){
+				
+				fields = {};
+				name="";
+				loc="";
+				
+				for(j=0; j < response.childNodes[i].childNodes.length; j++)
+					if(response.childNodes[i].childNodes[j].tagName == "field")
+						fields[response.childNodes[i].childNodes[j].attributes.getNamedItem("name").value] = response.childNodes[i].childNodes[j].attributes.getNamedItem("value").value;
+				
+				if(fields["company"]){
+					
+					name = fields["company"];
+					if(fields["lastname"])
+						name += ' (' + fields["lastname"] + ', ' + fields["firstname"] + ')';
+						
+				} else {
+					
+					name = fields["lastname"] + ', ' + fields["firstname"];
+					
+				}//endif
+				
+				if(fields["city"])
+					loc += fields["city"];
+
+				if(fields["state"])
+					loc += ', ' + fields["state"];
+
+				if(fields["postalcode"])
+					loc += ' ' + fields["postalcode"];
+
+				if(fields["country"])
+					loc += ' (' + fields["country"] + ')';
+					
+				if(!loc)
+					loc = 'unspecified location';
+
+				newText += '\
+					<a href="#" class="CSBSearchItems ' + fields["type"] + '" id="CSB-' + fields["id"] + '" tabindex="4000">\
+						<span class="CSBMain">' + name + '</span>\
+						<span class="CSBExtra">' + loc + '</span>\
+					</a>';
+
+								
+			}//endfor
+			
+			if(offset + numRecords < totalRecords){
+				//add more button for searches that have lots of records
+				newText += '\
+					<div id="CSBMoreDiv">\
+						<button type="button" id="CSBmoreButton" class="smallButtons" value="' + (offset + numRecords) + '">more results...</button>\
+				</div>';				
+
+
+			}//end if
+			
+		} else {
+			
+			newText = '<div>No Clients or Prospects Found Matching Criteria</div>';
+			
+		}//endif
+			
+		if(!offset)
+			csbResults.innerHTML = newText;
+		else
+			csbResults.innerHTML += newText;
+		
+		var searchItems = getElementsByClassName("CSBSearchItems");
+		client.searchResultsConnects = Array();
+		
+		for(i=0; i < searchItems.length; i++)
+			client.searchResultsConnects[client.searchResultsConnects.length] = connect(searchItems[i], "onclick", client.clickSearchResult);			
+			
+		var moreButton = getObjectFromID("CSBmoreButton");
+
+		if(moreButton)
+			client.searchResultsConnects[client.searchResultsConnects.length] = connect(moreButton, "onclick", client.getMoreResults);			
+
+		closeButton.className = "graphicButtons buttonX";
+		
+	},//end method
+	
+	
+	
+	getMoreResults: function(e){
+		
+		window.clearTimeout(client.blurIdent);
+		client.blurIdent = false;
+		
+		var button = e.src();
+		
+		var thediv = button.parentNode;
+		
+		thediv.parentNode.removeChild(thediv);
+		
+		var csbResults = getObjectFromID("CSBResults");
+		
+		csbResults.style.height = "330px";
+		
+		var offset = button.value 
+		button.id = "invalid-removed";
+		
+		client.lookup(offset);	
+		
+		var clientdisplay = getObjectFromID("clientdisplay");
+		clientdisplay.focus();
+		
+	},//end method
+	
+	
+	clickSearchResult: function(e){
+		
+		window.clearTimeout(client.blurIdent);
+		client.blurIdent = false;
+		
+		client.chooseSearchItem(e.src());
+		e.stop();
+		
+	},//end method
+	
+	
+	blurIdent: false,
+	
+	blurDisplay: function(e){
+		
+		client.blurIdent = window.setTimeout("client._blurDisplay()",200);
+		
+	},//end method
+	
+	
+	_blurDisplay: function(){
+		
+		var clientdisplay = getObjectFromID("clientdisplay");
+		
+		if(client.searchBox || clientdisplay.value != client.committedDisplayValue){
+			
+			var highlight = getElementsByClassName("CSBSelected");
+
+			if(highlight.length !== 0){
+				
+				client.chooseSearchItem(highlight[0])
+				
+			} else {
+				
+				client.cancelSearch();
+				
+			}//end if
+			
+		}//end if
+		
+		client.blurIdent = false;
+		
+	},//end method
+	
+	
+	chooseSearchItem: function(atag){
+		
+		var clientid = getObjectFromID("clientid");
+		var clientdisplay = getObjectFromID("clientdisplay");
+		var clienttype = getObjectFromID("clienttype")
+		
+		clientid.value = atag.id.substr(4);
+		
+		for(var i=0; i< atag.childNodes.length; i++)
+			if(atag.childNodes[i].className)
+				if(atag.childNodes[i].className == "CSBMain")
+					clientdisplay.value = atag.childNodes[i].innerHTML;
+		
+		var classes = atag.className.split(" ");
+		clienttype.value = classes[1];
+		
+		client.committedDisplayValue = clientdisplay.value;
+		client.displayValue = clientdisplay.value;
+		
+		//remove the box
+		clientdisplay.parentNode.removeChild(client.searchBox);
+		
+		client.searchBox = null;
+		
+		// need to change invoice type if set to order or quote
+		// and no invoice id set
+		var id = getObjectFromID("id");
+		if(!id.value){
+			
+			var thetype = getObjectFromID("type");
+			if(thetype.value == "Order" || thetype.value == "Quote"){
+				if(clienttype.value == "prospect")
+					thetype.selectedIndex = 0;
+				else
+					thetype.selectedIndex = 1;
+					
+			}//end if			
+			
+		}//endif
+		
+		client.getInfo()
+		
+	},//end method
+	
+	
+	searchBoxConnects: Array(false,false),
+
+	createSearchBox: function(){
+		
+		//need to grab search box for reference x and ys
+		var clientdisplay = getObjectFromID("clientdisplay");
+		
+		if(client.searchBoxConnects[0])
+			disconnect(client.searchBoxConnects[0]);
+
+		if(client.searchBoxConnects[1])
+			disconnect(client.searchBoxConnects[1]);
+
+		client.searchBox = document.createElement("div");
+		client.searchBox.id = "clientSearchBox";
+
+		var thetop = getTop(clientdisplay) + clientdisplay.offsetHeight;
+		var theleft = getLeft(clientdisplay);
+
+		client.searchBox.style.top = thetop + "px";
+		client.searchBox.style.left = theleft + "px";
+
+		client.searchBox.innerHTML='\
+			<div id="CSBHeader"><button type="button" id="CSBCloseButton" class="graphicButtons buttonSpinner" tabindex="4000"><span>close</span></button></div>\
+			<div id="CSBResults"></div>\
+			<div id="CSBFooter"><button type="button" class="graphicButtons buttonPlus" id="CSBAddNewButton" title="Add New Client or Prospect" tabindex="4000">Add New</button></div>';
+		
+		clientdisplay.parentNode.appendChild(client.searchBox);
+		
+		var addNewButton = getObjectFromID("CSBAddNewButton");
+		var closeButton = getObjectFromID("CSBCloseButton");
+		
+		client.searchBoxConnects[0] = connect(addNewButton,"onclick",client.confirmClient);
+		client.searchBoxConnects[1] = connect(closeButton,"onclick",client.cancelSearch);
+		
+	},//end method
+	
+	
+	cancelSearch: function(e){
+		
+		var clientdisplay = getObjectFromID("clientdisplay");
+				
+		if(client.searchBox)		
+			clientdisplay.parentNode.removeChild(client.searchBox);
+		
+		clientdisplay.value = client.committedDisplayValue;
+		client.displayValue = client.committedDisplayValue;
+		client.searchBox = null;
+		
+	},//end method
+	
+	
+	confirmConnects: Array(false,false),
+	
+	confirmDirection: "new",
+
+	confirmClient: function(e){
+		
+		if(client.confirmConnects[0])
+			disconnect(client.confirmConnects[0])
+		
+		if(client.confirmConnects[1])
+			disconnect(client.confirmConnects[1])
+
+		var theButton = e.src();
+		
+		var content='\
+			<p>You are about to navigate away from the sales order screen.  If you have not saved will be lost</p>\
+			<p align="right"><button type="button" class="Buttons" id="clientContinueButton">continue</button> <button type="button" class="Buttons" id="clientCancelButton">cancel</button></p>';
+		
+		showModal(content,"Confirm",350);
+		
+		var continueButton = getObjectFromID("clientContinueButton");
+		var cancelButton = getObjectFromID("clientCancelButton");
+		
+		client.confirmConnects[0] = connect(cancelButton, "onclick", closeModal);
+		client.confirmConnects[1] = connect(continueButton, "onclick", client.goClient);
+		
+		if(theButton.id == "CSBAddNewButton")
+			client.confirmDirection = "new";
+		else
+			client.confirmDirection = "edit";
+		
+	},//end method	
+		
+
+	goClient: function(){		
+		
+		var addeditfile = getObjectFromID("clientAddEditFile");
+		var theURL = "";
+		
+		theURL = addeditfile.value;
+		
+		if(client.confirmDirection == "edit"){
+
+			var theclient = getObjectFromID("clientid");
+			var theid = getObjectFromID("id");
+			
+			if (theclient.value != "" &&  theclient.value!=0)
+				theURL += "?id=" + theclient.value + "&invoiceid=" + theid.value;
+
+		}//end if
+		
+		location.href =  theURL;
+		
+	},//end method
+	
+	
+
+
+	getInfo: function(e){
+					
 		var clientid=getObjectFromID("clientid");	
 		var theitem, thevalue, fieldName, ident;
-		var base=document.URL;
-		base=base.substring(0,base.indexOf("invoices_addedit.php"));
+		var base = document.URL;
+		base = base.substring(0,base.indexOf("invoices_addedit.php"));
 		
 		if(clientid.value!="") {
-			var theurl=base+"invoices_client_ajax.php?id="+clientid.value;
+			var theurl=base+"invoices_client_ajax.php?w=id&t="+clientid.value;
 			loadXMLDoc(theurl,null,false);
 			response = req.responseXML.documentElement;
 			
 			for(i=0;i<response.getElementsByTagName('field').length;i++){
 				
-				fieldName = response.getElementsByTagName('field')[i].firstChild.data;
+				fieldName = response.getElementsByTagName('field')[i].attributes.getNamedItem("name").value;
 				
 				theitem = getObjectFromID(fieldName);
 				
-				if(response.getElementsByTagName('value')[i].firstChild)
-					thevalue=response.getElementsByTagName('value')[i].firstChild.data;
-				else
-					thevalue="";
+				thevalue = response.getElementsByTagName('field')[i].attributes.getNamedItem("value").value;
 					
 				if(!theitem)
-					alert("<b>Error</b><br /> Could not find field: "+response.getElementsByTagName('field')[i].firstChild.data);
+					alert("<b>Error</b><br /> Could not find field: " + fieldName);
 				else{							
 					
 					theitem.value = thevalue;
@@ -1277,13 +1721,6 @@ function showPaymentOptions(){
 }//endfunction
 
 
-function viewClient(addeditfile){
-	var theclient=getObjectFromID("clientid");
-	var theid=getObjectFromID("id");
-	if (theclient.value!="" &&  theclient.value!=0){
-		location.href=addeditfile+"?id="+theclient.value+"&invoiceid="+theid.value;
-	}
-}
 
 
 function doPrint(base,id){
@@ -1455,14 +1892,33 @@ connect(window,"onload",function() {
 	calculateTotal();
 	showPaymentOptions();
 
-	var displayClient=getObjectFromID("ds-clientid");
-	displayClient.focus();
+	var clientid = getObjectFromID("clientid");
+	var clientdisplay = getObjectFromID("clientdisplay");
+	var viewClientButton = getObjectFromID("viewClientButton");
+	var id = getObjectFromID("id");
+
+	clientdisplay.setAttribute('autocomplete','off');
+	connect(clientdisplay, "onkeyup", client.changeDisplay);
+	connect(clientdisplay, "onblur", client.blurDisplay);
+	connect(viewClientButton, "onclick", client.confirmClient);
+	
+	if(!clientid.value){
+		
+		clientdisplay.focus();
+		
+	} else {
+		
+		client.displayValue = clientdisplay.value;
+		client.committedDisplayValue = clientdisplay.value;
+		
+	}//end if
+
+	if(!id.value)
+		viewClientButton.style.display = "none";
 	
 	var theForm = getObjectFromID("record");
 	connect(theForm, "onsubmit", invoice.submitForm);
 	
-	var clientid = getObjectFromID("clientid");
-	connect(clientid,"onchange",client.getInfo);
 	
 	var assignedtoid = getObjectFromID("assignedtoid");
 	connect(assignedtoid, "onchange", theStatus.statusChange);
@@ -1552,5 +2008,21 @@ connect(window,"onload",function() {
 	var lineitemDnButtons = getElementsByClassName("LIDnButtons");
 	for(i = 0; i < lineitemDnButtons.length; i++)
 		connect(lineitemDnButtons[i], "onclick", lineitems.moveDn);
+		
+	if(!id.value && clientdisplay.value){
+		
+		client.getInfo();
+		
+		var clienttype = getObjectFromID("clienttype");
+		if(clienttype.value == "prospect"){
+			
+			var thetype = getObjectFromID("type");
+			
+			thetype.selectedIndex = 0;
+			
+		}//end if
+		
+	}//end if
+
 
 })

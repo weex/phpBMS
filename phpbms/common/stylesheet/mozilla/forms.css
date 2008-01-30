@@ -97,6 +97,11 @@ vertical-align:middle;
 .buttonTimeStamp{background:url(image/button-timestamp.png) 100% 0 no-repeat;padding-right:20px;font-size:11px;margin-right:6px;color:black;width:auto;}
 .buttonDownload{background:url(image/button-download.png) 0 0 no-repeat;}
 
+.buttonSpinner{
+	cursor:auto;
+	background:url("../../image/spinner.gif") 0 0 no-repeat;
+}
+
 .buttonShowSQLUp{width:35px;background:url(image/button-sql-up.png) 0 0 no-repeat;}
 .buttonShowSQLDown{width:35px;background:url(image/button-sql-down.png) 0 0 no-repeat;}
 

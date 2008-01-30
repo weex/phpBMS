@@ -16,6 +16,9 @@
 			if(!isset($variables["default_hascredit"]))
 				$variables["default_hascredit"] = 0;
 		
+			if(!isset($variables["prospects_on_orders"]))
+				$variables["prospects_on_orders"] = 0;
+
 			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
 			return $variables;
 		
@@ -80,7 +83,10 @@
 			$fields[] = $theinput;			
 
 			$theinput = new inputField("term3_percentage",$therecord["term3_percentage"],"term 3 percentage",false,"real",4,4);
-			$fields[] = $theinput;			
+			$fields[] = $theinput;
+			
+			$theinput = new inputCheckbox("prospects_on_orders",$therecord["prospects_on_orders"],"allow prospects on sales orders");
+			$fields[] = $theinput;							
 
 			return $fields;
 		}
@@ -111,10 +117,14 @@
 
 <fieldset>
 	<legend>sales orders</legend>
+
+	<p><?php $theform->showField("prospects_on_orders");?></p>
+
 	<p>
 		<label for="invoice_default_printinstruc">default printed instructions</label><br/>
 		<textarea id="invoice_default_printinstruc" name="invoice_default_printinstruc" cols="60" rows="3" ><?php echo $therecord["invoice_default_printinstruc"]?></textarea>
 	</p>
+
 	<p><?php $theform->showField("default_payment");?></p>
 
 	<p><?php $theform->showField("default_shipping");?></p>

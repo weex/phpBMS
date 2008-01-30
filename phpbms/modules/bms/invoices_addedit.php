@@ -91,12 +91,6 @@
 		$theinput = new inputCheckBox("readytopost",$therecord["readytopost"],"ready to post");
 		$theform->addField($theinput);
 
-		$theinput = new inputAutofill($db, "clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)",
-										"if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")","clients.inactive!=1 AND clients.type=\"client\"", "client", true,true,false);					
-		$theinput->setAttribute("size","51");
-		$theinput->setAttribute("class","important");
-		$theform->addField($theinput);
-
 		$theinput = new inputCheckBox("weborder",$therecord["weborder"],NULL, false, false);
 		$theform->addField($theinput);
 		
@@ -143,7 +137,7 @@
 		//End Form Elements
 
 	
-	$pageTitle=ucwords($therecord["type"]);
+	$pageTitle = "Sales Order";
 	
 	$_SESSION["printing"]["tableid"]=3;
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
@@ -226,14 +220,12 @@
 	</div>
 	
 	<div id="fsTops">
-		<fieldset >
-			<legend><label for="ds-clientid">client</label></legend>
-			<div class="important fauxP">
-				  <?php $theform->fields["clientid"]->display(); 
-				  if($therecord["id"]){?>
-				  <button type="button" title="view client" class="graphicButtons buttonInfo" onclick="viewClient('<?php echo getAddEditFile($db,2) ?>')"><span>view client</span></button>
-				  <?php }//end if?>
-			</div>
+		<fieldset>
+			<legend><label for="clientdisplay">client</label></legend>
+			<p>
+				<input type="hidden" id="clientAddEditFile" value="<?php echo getAddEditFile($db,2) ?>"/>
+				<?php $thetable->showClientField($therecord["clientid"]);?>
+			</p>
 		</fieldset>
 		
 		<fieldset>

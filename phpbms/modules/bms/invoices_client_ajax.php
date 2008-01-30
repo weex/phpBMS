@@ -41,6 +41,8 @@ include("../../include/session.php");
 
 class clientList{
 
+	var $recordcount = 0;
+
 	function clientList($db){
 		
 		$this->db = $db;
@@ -48,7 +50,7 @@ class clientList{
 	}//end method
 
 
-	function getData($id){
+	function getSingleRecord($id){
 
 		$returnArray = array(
 			"address1" => "",
@@ -95,24 +97,115 @@ class clientList{
 			
 		}//end if
 		
+		$this->recordcount = 1;
+		
 		return $returnArray;
+		
+	}//end method
+
+
+	function findRecords($term, $offset=0){
+	
+		$term = trim(mysql_real_escape_string($term));
+		
+		$terms = explode(" ",$term);
+		
+		
+		$prospects="";
+		
+		if(!PROSPECTS_ON_ORDERS)
+			$prospects = "AND clients.type = 'client'";
+		
+		$wheres="";
+		foreach($terms as $value){
+		
+			$wheres .="
+				AND (
+					clients.company LIKE '".$value."%'
+					OR clients.company LIKE '% ".$value."%'
+					OR clients.firstname LIKE '".$value."%'
+					OR clients.lastname LIKE '".$value."%'
+					OR clients.lastname LIKE '%-".$value."%'
+				)";
+		
+		}//endforeach
+	
+		$querystatement = "
+			SELECT
+				id,
+				firstname,
+				lastname,
+				company,
+				type,
+				city,
+				state,
+				postalcode,
+				country
+			FROM
+				clients
+			WHERE
+				clients.inactive = 0
+				".$prospects."
+				".$wheres."
+			ORDER BY
+				IF(ISNULL(clients.company),'Z',clients.company),
+				IF(ISNULL(clients.lastname),'Z',clients.lastname),
+				clients.firstname
+			LIMIT ".((int) $offset).", 8";
+
+		$countstatement = "
+			SELECT 
+				COUNT(id) AS thecount
+			FROM
+				clients
+			WHERE
+				clients.inactive = 0
+				".$prospects."
+				".$wheres;
+
+		$queryresult = $this->db->query($countstatement);
+		$therecord = $this->db->fetchArray($queryresult);
+		$this->recordcount = $therecord["thecount"];
+				
+		return $this->db->query($querystatement);
+	
 	}//end method
 
 	
-	function showXML($therecord){
+	function showXML($result){
 	
 		header('Content-Type: text/xml');
 		echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
-		echo '<response>';
+		echo '<response total="'.$this->recordcount.'">';
 		
-		foreach($therecord as $key => $value){
+		
+		if(is_array($result)){
 
-		  ?>
-		  <field><?php echo xmlEncode($key); ?></field>
-		  <value><?php echo xmlEncode($value); ?></value>
-		  <?php
+			foreach($result as $key => $value){
+	
+				?><field name="<?php echo xmlEncode($key); ?>" value="<?php echo xmlEncode($value); ?>" />
+				<?php
+				
+			}//endforeach
+
+		} else {
+		
+			while($therecord = $this->db->fetchArray($result)){
 			
-		}//endforeach
+				echo '<record>';
+	
+				foreach($therecord as $key => $value){
+		
+					?><field name="<?php echo xmlEncode($key); ?>" value="<?php echo xmlEncode($value); ?>" />
+					<?php
+					
+				}//endforeach
+	
+				echo '</record>';
+				
+			}//endwhile
+			
+		}//endif		
 		
 		echo '</response>';
 		
@@ -123,13 +216,26 @@ class clientList{
 
 //processing
 //=========================================================================
-if(isset($_GET["id"])){
+if(isset($_GET["w"])){
 
 	$clientInfo = new clientList($db);
 	
-	$therecord = $clientInfo->getData($_GET["id"]);
+	switch($_GET["w"]){
 	
-	$clientInfo->showXML($therecord);
+		case "id":
+			$theresult = $clientInfo->getSingleRecord($_GET["t"]);
+			break;
+			
+		case "term":
+			if(!isset($_GET["o"]))
+				$_GET["o"] = 0;
+			$theresult = $clientInfo->findRecords($_GET["t"],((int) $_GET["o"]));
+			break;
+	
+	}//endswtich
+	
+	if(isset($theresult))	
+		$clientInfo->showXML($theresult);
 	
 }//end if
 ?>

@@ -39,6 +39,51 @@
 if(class_exists("phpbmsTable")){
 	class invoices extends phpbmsTable{
 	
+		function showClientField($id){
+		
+			if($id){
+				
+				$querystatement="
+					SELECT 
+						firstname,
+						lastname,
+						company,
+						type
+					FROM
+						clients
+					WHERE
+						id=".$id;
+
+				$queryresult = $this->db->query($querystatement);
+				
+				$therecord = $this->db->fetchArray($queryresult);
+
+				$display = $therecord["company"];				
+
+				if($display){
+					
+					if($therecord["lastname"])
+						$display .= " (".$therecord["lastname"].", ".$therecord["firstname"].")";
+					
+				} else {
+				
+					$display = $therecord["lastname"].", ".$therecord["firstname"];
+				
+				}//endif
+				
+				
+			}//endif
+			
+		
+			?>
+				<input type="hidden" id="clientid" name="clientid"  <?php if($id) echo 'value="'.$id.'"'?> />
+				<input type="hidden" id="clienttype" name="clienttype"  <?php if($id) echo 'value="'.$therecord["type"].'"'?> />
+				<input type="text" id="clientdisplay" name="clientdisplay" size="51" <?php if($id) echo 'value="'.$display.'"'?> />
+				<button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo"><span>view client</span></button><?php 
+						
+		}//end method
+		
+	
 		function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid){
 	
 			$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$invoiceid." AND invoicestatusid=".$statusid;
@@ -129,6 +174,7 @@ if(class_exists("phpbmsTable")){
 			return $thereturn;
 		
 		}//end function
+
 		
 		function displayStatusDropDown($statusid,$statuses){
 	
@@ -141,9 +187,12 @@ if(class_exists("phpbmsTable")){
 				
 				?>
 			</select><?php
+
 		}//end method
+
 		
 		function getPayments($paymentmethodid){
+
 			$querystatement="
 				SELECT 
 					id,
@@ -179,10 +228,12 @@ if(class_exists("phpbmsTable")){
 			}
 			
 			return $thereturn;
-		}
+
+		}//end function
 	
 	
 		function showShippingSelect($id,$shippingMethods){
+
 			?><select name="shippingmethodid" id="shippingmethodid" onchange="changeShipping()">
 				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
 			<?php foreach($shippingMethods as $method){?>
@@ -190,11 +241,27 @@ if(class_exists("phpbmsTable")){
 			<?php } ?>
 			</select>
 			<?php 
-		}
+
+		}//end function
 	
 	
 		function getShipping($shippingmethodid){
-			$querystatement="SELECT id,name,canestimate,estimationscript FROM shippingmethods WHERE inactive=0 OR id=".((int) $shippingmethodid)." ORDER BY priority,name";
+
+			$querystatement="
+				SELECT 
+					id,
+					name,
+					canestimate,
+					estimationscript
+				FROM 
+					shippingmethods 
+				WHERE 
+					inactive=0
+					OR id=".((int) $shippingmethodid)." 
+				ORDER BY 
+					priority,
+					name";
+					
 			$queryresult=$this->db->query($querystatement);
 	
 			$thereturn=array();
@@ -213,10 +280,12 @@ if(class_exists("phpbmsTable")){
 			}
 
 			return $thereturn;
-		}
+
+		}//end function
 	
 	
 		function showTaxSelect($id){
+
 			$id=(int) $id;
 			$querystatement="SELECT id,name,percentage FROM tax WHERE inactive=0 OR id=".$id." ORDER BY name";
 			$queryresult=$this->db->query($querystatement);
@@ -230,10 +299,11 @@ if(class_exists("phpbmsTable")){
 				?>
 			</select><?php
 			
-		}
+		}//end function
 	
 	
 		function showDiscountSelect($id){
+
 			$id=(int) $id;
 			$querystatement="SELECT id,name,type,value FROM discounts WHERE inactive!=1 ORDER BY name";
 			$queryresult=$this->db->query($querystatement);
@@ -250,10 +320,12 @@ if(class_exists("phpbmsTable")){
 					}
 				?>
 			</select><?php
-		}
+
+		}//end function
 	
 	
 		function getDiscount($id){
+
 			$therecord["name"]="";
 			$therecord["value"]=0;
 			
@@ -272,10 +344,12 @@ if(class_exists("phpbmsTable")){
 			$therecord["name"]=htmlQuotes($therecord["name"]);
 	
 			return $therecord;
-		}
+
+		}//end function
 		
 	
 		function getTax($id){
+
 			$therecord["name"]="";
 			
 			if(((int) $id)!=0){
@@ -291,9 +365,26 @@ if(class_exists("phpbmsTable")){
 			}
 			
 			$therecord["name"]= htmlQuotes($therecord["name"]);
+			
 			return $therecord;
-		}
 
+		}//end function
+
+
+		function prospectToClient($clientid){
+		
+			$updatestatement = "
+				UPDATE
+					clients
+				SET
+					type='client',
+					becameclient = NOW()
+				WHERE
+					id=".$clientid;
+			
+			$this->db->query($updatestatement);
+		
+		}//end function
 		
 		// CLASS OVERRIDES ======================================================================================
 		
@@ -428,6 +519,9 @@ if(class_exists("phpbmsTable")){
 					
 			}//end if
 			
+			if($variables["clienttype"] == "prospect" && $variables["clienttype"] == "Order")
+				$this->prospectToClient($variables["id"]);
+			
 			//reset field after updating (if unset by rights management)
 			$this->getTableInfo();
 		}
@@ -452,6 +546,9 @@ if(class_exists("phpbmsTable")){
 		
 			if($variables["statuschanged"]==1)
 				$this->updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);
+
+			if($variables["clienttype"] == "prospect" && $variables["clienttype"] == "Order")
+				$this->prospectToClient($variables["id"]);
 	
 			return $newid;
 		}
@@ -803,7 +900,7 @@ if(class_exists("searchFunctions")){
 		function mark_rtp(){
 			
 			$whereclause=$this->buildWhereClause();
-			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID'";
+			$whereclause="(".$whereclause.") AND invoices.type='Order'";
 
 			// since marking RTP is dependent on the payment method type,
 			// items must be updated individually
@@ -857,8 +954,7 @@ if(class_exists("searchFunctions")){
 		
 			$whereclause = $this->buildWhereClause();
 			$whereclause = trim("
-				invoices.type!='Invoice'
-				AND invoices.type!='VOID' 
+				invoices.type='Order'
 				AND paymentmethods.type != 'receivable' 
 				AND (".$whereclause.")");
 				
@@ -962,7 +1058,7 @@ function defineInvoicePost(){
 			if($whereclause)			
 				$this->whereclause = "(".$whereclause.") AND ";
 			
-			$this->whereclause .= "invoices.type!=\"Invoice\" AND invoices.type!=\"VOID\" AND readytopost = 1";
+			$this->whereclause .= "invoices.type='Order' AND readytopost = 1";
 		
 		}//end method
 		
