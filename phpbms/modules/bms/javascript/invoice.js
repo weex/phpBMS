@@ -456,14 +456,16 @@ client = {
 
 								
 			}//endfor
-			
-			if(offset + numRecords < totalRecords){
+console.log("offset:" + offset);
+console.log("numRecords:" + numRecords);
+console.log("totalRecords:" + totalRecords);
+			if(parseInt(offset) + parseInt(numRecords) < parseInt(totalRecords)){
+
 				//add more button for searches that have lots of records
 				newText += '\
 					<div id="CSBMoreDiv">\
-						<button type="button" id="CSBmoreButton" class="smallButtons" value="' + (offset + numRecords) + '">more results...</button>\
+						<button type="button" id="CSBmoreButton" class="smallButtons" value="' + (parseInt(offset) + parseInt(numRecords)) + '">more results...</button>\
 				</div>';				
-
 
 			}//end if
 			
