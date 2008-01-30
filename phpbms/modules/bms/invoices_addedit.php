@@ -222,10 +222,10 @@
 	<div id="fsTops">
 		<fieldset>
 			<legend><label for="clientdisplay">client</label></legend>
-			<p>
+			<div class="fauxP">
 				<input type="hidden" id="clientAddEditFile" value="<?php echo getAddEditFile($db,2) ?>"/>
 				<?php $thetable->showClientField($therecord["clientid"]);?>
-			</p>
+			</div>
 		</fieldset>
 		
 		<fieldset>

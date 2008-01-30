@@ -379,8 +379,7 @@ client = {
 			offset = 0;
 			csbResults.style.height="";
 		}
-			
-			
+						
 		var closeButton = getObjectFromID("CSBCloseButton");		
 		closeButton.className = "graphicButtons buttonSpinner";
 		
@@ -473,7 +472,7 @@ client = {
 			newText = '<div>No Clients or Prospects Found Matching Criteria</div>';
 			
 		}//endif
-			
+
 		if(!offset)
 			csbResults.innerHTML = newText;
 		else
@@ -634,10 +633,19 @@ client = {
 		client.searchBox.style.top = thetop + "px";
 		client.searchBox.style.left = theleft + "px";
 
-		client.searchBox.innerHTML='\
-			<div id="CSBHeader"><button type="button" id="CSBCloseButton" class="graphicButtons buttonSpinner" tabindex="4000"><span>close</span></button></div>\
-			<div id="CSBResults"></div>\
-			<div id="CSBFooter"><button type="button" class="graphicButtons buttonPlus" id="CSBAddNewButton" title="Add New Client or Prospect" tabindex="4000">Add New</button></div>';
+		var newDiv = document.createElement("div");
+		newDiv.id = "CSBHeader";
+		newDiv.innerHTML = '<button type="button" id="CSBCloseButton" class="graphicButtons buttonSpinner" tabindex="4000"><span>close</span></button>';
+		client.searchBox.appendChild(newDiv)
+		
+		newDiv = document.createElement("div");
+		newDiv.id = "CSBResults";
+		client.searchBox.appendChild(newDiv)
+
+		newDiv = document.createElement("div");
+		newDiv.id = "CSBFooter";
+		newDiv.innerHTML = '<button type="button" class="graphicButtons buttonPlus" id="CSBAddNewButton" title="Add New Client or Prospect" tabindex="4000">Add New</button>';
+		client.searchBox.appendChild(newDiv)
 		
 		clientdisplay.parentNode.appendChild(client.searchBox);
 		
