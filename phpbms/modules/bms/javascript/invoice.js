@@ -456,9 +456,7 @@ client = {
 
 								
 			}//endfor
-console.log("offset:" + offset);
-console.log("numRecords:" + numRecords);
-console.log("totalRecords:" + totalRecords);
+
 			if(parseInt(offset) + parseInt(numRecords) < parseInt(totalRecords)){
 
 				//add more button for searches that have lots of records
