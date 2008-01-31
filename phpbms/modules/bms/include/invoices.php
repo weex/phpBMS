@@ -504,7 +504,7 @@ if(class_exists("phpbmsTable")){
 				unset($this->fields["routingnumber"]);
 				unset($this->fields["transactionid"]);
 			}
-		
+
 			if(parent::updateRecord($variables, $modifiedby)){
 	
 				if($variables["lineitemschanged"]==1){
@@ -519,8 +519,8 @@ if(class_exists("phpbmsTable")){
 					
 			}//end if
 			
-			if($variables["clienttype"] == "prospect" && $variables["clienttype"] == "Order")
-				$this->prospectToClient($variables["id"]);
+			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")
+				$this->prospectToClient($variables["clientid"]);
 			
 			//reset field after updating (if unset by rights management)
 			$this->getTableInfo();
@@ -547,8 +547,8 @@ if(class_exists("phpbmsTable")){
 			if($variables["statuschanged"]==1)
 				$this->updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);
 
-			if($variables["clienttype"] == "prospect" && $variables["clienttype"] == "Order")
-				$this->prospectToClient($variables["id"]);
+			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")
+				$this->prospectToClient($variables["clientid"]);
 	
 			return $newid;
 		}
