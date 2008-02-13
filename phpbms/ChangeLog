@@ -1,3 +1,11 @@
+phpBMS v0.94
+http://phpbms.org/browser/tags/phpbms-0.94
+ * Ability to create Quotes for Prospects
+ * New interface for choosing clients on sales orders
+ * PDF email attachments nw have .PDF extension
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.94
+
 phpBMS v0.92
 http://phpbms.org/browser/tags/phpbms-0.92
  * Sales Order line item editing

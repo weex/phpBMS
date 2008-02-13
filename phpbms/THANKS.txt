@@ -1,4 +1,5 @@
 This file will contain all the people who have contributed to phpBMS
 ====================================================================
 
-Hauge Quality Water - http://haguekc.com/
+ * Hauge Quality Water - http://haguekc.com/
+ * Black Tie: Audio, Lighting & Video - http://blacktie.com.mx
