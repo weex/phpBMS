@@ -60,7 +60,8 @@ invoice = {
 		var payinfull = getObjectFromID("payinfull");
 		var totalti = getObjectFromID("totalti");
 		var creditleft = getObjectFromID("creditleft");
-		var invoicedate = getObjectFromID("invoicedate")
+		var invoicedate = getObjectFromID("invoicedate");
+		var clientid = getObjectFromID("clientid");
 		
 		var errorArray = Array();
 		if(readytopost.checked && invoicedate.value == "")
@@ -70,7 +71,10 @@ invoice = {
 			errorArray[errorArray.length] = "Orders marked ready to post and not charged to accounts receivable must be paid in full.";
 		
 		if(payinfull.style.display == "none" && currencyToNumber(creditleft.value) < currencyToNumber(totalti.value))
-			errorArray[errorArray.length] = "Orders ammount exceeds credit left. ("+creditleft.value+")";
+			errorArray[errorArray.length] = "Orders amount exceeds credit left. ("+creditleft.value+")";
+
+		if(clientid.value.length == 0)
+			errorArray[errorArray.length] = "Client cannot be blank";
 
 		if(errorArray.length > 0){
 			
