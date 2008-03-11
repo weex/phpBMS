@@ -681,13 +681,13 @@ function numberToCurrency(number){
 		currency+="-";
 
 	number = Math.abs(number);
-	
 	currency += CURRENCY_SYM;
 	
 	if(number>0 && number <0)
 		currency+="0";
 
 	var lessthanone = Math.round( (number-parseInt(number)) * (Math.pow(10,CURRENCY_ACCURACY)) );
+	number = parseInt(number);
 	
 	if(lessthanone >= Math.pow(10,CURRENCY_ACCURACY)){
 
