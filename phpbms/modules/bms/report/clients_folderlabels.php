@@ -53,7 +53,16 @@
 	$labelheight=1;
 	$labelwidth=2+(5/8);
 	
-	$reportquerystatement="select firstname,lastname,company,city,state from clients ";
+	$reportquerystatement="
+		SELECT
+			clients.firstname,
+			clients.lastname,
+			clients.company,
+			addresses.city,
+			addresses.state
+		FROM 
+			((clients INNER JOIN addresstorecord on clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) 
+			INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)";
 						
 	$border_debug=0;
 
@@ -70,7 +79,10 @@
 		$pdf->MultiCell(2.25,.2,$thename,$border_debug,2,"L");
 		$pdf->SetFont("Arial","",9);
 		$pdf->SetX($thex+(1/8));
-		$pdf->Cell(2.25,.13,$therecord["city"].", ".$therecord["state"],$border_debug,2,"L");
+		$location = $therecord["city"].", ".$therecord["state"];
+		if($location = ", ")
+			$location = "unspecified location";
+		$pdf->Cell(2.25,.13,$location,$border_debug,2,"L");
 		
 		return $pdf;
 	}

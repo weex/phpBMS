@@ -43,3 +43,6 @@ INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorde
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (202,'log.ip','ip address',1,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.name','name',1,'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES (203,'tabs.tabgroup','group',0,'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('204', 'tabledefs.displayname', 'table', '2', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('204', 'smartsearches.name', 'name', '1', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('204', 'modules.displayname', 'module', '3', 'field');

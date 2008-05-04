@@ -110,9 +110,7 @@
 		$theinput = new inputChoiceList($db, "status",$therecord["status"],"notestatus");
 		$theform->addField($theinput);
 		
-		$theinput = new inputAutofill($db, "assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)", 
-										"\"\"","users.revoked=0", "assigned to", false, true, false);
-		$theinput->setAttribute("size","20");
+		$theinput = new inputSmartSearch($db, "assignedtoid", "Pick Active User", $therecord["assignedtoid"], "assigned to", false, 18, 255, false);
 		$theform->addField($theinput);
 		
 		$theinput = new inputDatePicker("assignedtodate",$therecord["assignedtodate"], "follow up date");
@@ -257,10 +255,10 @@
 		
 		<fieldset>
 			<legend><label for="ds-assignedtoid">assigned to</label></legend>
-			<p>
+			<div class="fauxP">
 				<?php $theform->showField("assignedtoid");?>
 				<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
-			</p>
+			</div>
 
 			<?php if($therecord["assignedbyid"]!=0){ ?>
 			<p>

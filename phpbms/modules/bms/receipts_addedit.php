@@ -80,10 +80,7 @@
 		$theinput->setAttribute("disabled","disabled");
 		$theform->addField($theinput);
 
-		$theinput = new inputAutofill($db, "clientid",$therecord["clientid"],2,"clients.id","if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company)",
-										"if(clients.city!=\"\",concat(clients.city,\", \",clients.state),\"\")",
-										"clients.inactive!=1 AND clients.type='client' AND clients.hascredit = 1", "client", true);					
-		$theinput->setAttribute("size","51");
+		$theinput = new inputSmartSearch($db, "clientid", "Pick Client With Credit", $therecord["clientid"], "client", true, 51);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 		
@@ -160,7 +157,7 @@
 		<fieldset>
 			<legend>Client / Amount</legend>
 			
-			<p><?php $theform->showField("clientid")?></p>
+			<div class="fauxP"><?php $theform->showField("clientid")?></div>
 			
 			<p><?php $theform->showField("amount")?></p>
 			

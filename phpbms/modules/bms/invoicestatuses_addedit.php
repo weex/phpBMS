@@ -71,10 +71,7 @@
 		$theinput = new inputCheckbox("setreadytopost",$therecord["setreadytopost"],"set ready to post when status selected");
 		$theform->addField($theinput);
 
-		$theinput = new inputAutofill($db, "defaultassignedtoid",$therecord["defaultassignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
-										"\"\"","users.revoked!=1", "assigned to");
-		$theinput->setAttribute("size",45);
-		$theinput->setAttribute("maxlength",128);
+		$theinput = new inputSmartSearch($db, "defaultassignedtoid", "Pick Active User", $therecord["defaultassignedtoid"], "assigned to", false, 42);
 		$theform->addField($theinput);
 		
 		$theform->jsMerge();

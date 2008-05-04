@@ -122,10 +122,7 @@
 		else
 			$theid=0;
 		
-		$theinput = new inputAutofill($db, "email",$theid,9,"users.id","concat(users.firstname,\" \",users.lastname,\" [\",users.email,\"]\")","\"\"","users.revoked=0 AND users.email!=\"\"","from",false,false);
-		$theinput->setAttribute("size",64);
-		$theinput->setAttribute("maxlength",128);
-		$phpbms->bottomJS[] = 'document.forms["record"]["emailcid"].onchange=updateViewButton;';
+		$theinput = new inputSmartSearch($db, "email", "Pick Active User Email", $theid, "from");
 		$theform->addField($theinput);
 		
 		$theform->jsMerge();

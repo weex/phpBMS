@@ -98,3 +98,53 @@ function changeClientType(theselect){
 	var newTitle=theselect.value.substr(0,1).toUpperCase()+theselect.value.substr(1);
 	thetitle.innerHTML="<span>"+newTitle+"</span>"
 }
+
+client = {
+	
+	mapIt: function(){
+
+		var q = "";
+
+		var tempInput = getObjectFromID("address1");
+		q += encodeURI(tempInput.value)
+
+		var tempInput = getObjectFromID("address2");
+		if(tempInput.value)
+			q += encodeURI(" " + tempInput.value);
+
+		var tempInput = getObjectFromID("city");
+		if(tempInput.value)
+			q += encodeURI(", " + tempInput.value);
+
+		var tempInput = getObjectFromID("state");
+		if(tempInput.value)
+			q += encodeURI(", " + tempInput.value);
+
+		var tempInput = getObjectFromID("postalcode");
+		if(tempInput.value)
+			q += encodeURI(" " + tempInput.value);
+
+		var tempInput = getObjectFromID("country");
+		if(tempInput.value)
+			q += encodeURI(" " + tempInput.value);
+
+		if(q) {
+			
+			var theurl = "http://maps.google.com/maps?f=q&hl=en&geocode=&ie=UTF8&z=16&iwloc=addr&q=" + q;		
+			window.open(theurl);
+		
+		} else
+			alert("No valid address given");
+			
+	}//end method
+	
+}//endstruct
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	var mapIt = getObjectFromID("buttonMap");
+	connect(mapIt, "onclick", client.mapIt);
+
+})

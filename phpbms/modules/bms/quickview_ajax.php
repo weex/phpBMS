@@ -38,221 +38,339 @@
 */
 
 require("../../include/session.php");
+require("include/tables.php");
 require("include/fields.php");
+require("include/clients.php");
+require("include/addresses.php");
+require("include/addresstorecord.php");
 
-function showClient($db,$clientid,$basepath){
+class quickView{
 	
-	$querystatement="SELECT clients.id, clients.firstname, clients.lastname, clients.company,
-					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
-					clients.type, clients.inactive, clients.category,
-					clients.address1,clients.address2,clients.city,clients.state,clients.postalcode,clients.country,
-					clients.shiptoaddress1,clients.shiptoaddress2,clients.shiptocity,clients.shiptostate,clients.shiptopostalcode,clients.shiptocountry,
-					clients.workphone,clients.homephone,clients.mobilephone,clients.fax, clients.email,clients.webaddress,clients.comments
-					FROM clients WHERE id=".$clientid;
-					
-	$queryresult=$db->query($querystatement);
-
-	$therecord=$db->fetchArray($queryresult);
+	function quickView($db){
 	
-	$querystatement="SELECT invoices.id,invoices.type,
-					if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
-					totalti
-					FROM invoices WHERE invoices.clientid=".$clientid." ORDER BY type,thedate";
-	$invoiceresult=$db->query($querystatement);
-
-	$querystatement="SELECT notes.id,notes.type,notes.subject,notes.category, notes.completed,
-					ELT(notes.importance+3,\"&nbsp;\",\"&middot;\",\"-\",\"*\",\"!\",\"!!\")  as importance
-					FROM notes WHERE notes.attachedtabledefid=2 AND notes.attachedid=".$clientid." 
-					ORDER BY notes.completed,notes.category,notes.type,notes.importance DESC,notes.creationdate";
-	$noteresult=$db->query($querystatement);
+		$this->db = $db;
+				
+	}//end method - id
 	
 	
-	$invoiceEditFile = getAddEditFile($db,3);
-	$noteEditFile = getAddEditFile($db,12);
+	function get($clientid){
 	
-?>
-<div class="bodyline" id="theDetails">
-<h1><?php echo htmlQuotes($therecord["name"])?></h1>
-
-<div id="rightSideDiv" class="box">
-
-	<div class="salesNotesButtons">
-		<button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
-		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($db,3,"add")?>')"><span>new</span></button>			
-	</div>
-	
-	<h2>Sales</h2>
-	
-	<div class="fauxP">
-	<div id="salesTable" class="smallQueryTableHolder">
-		<?php if(!$db->numRows($invoiceresult)) {?>
-			<div class="small"><em>no records</em></div>
-		<?php } else {?>
-		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<tr>
-				<th align="left">ID</th>
-				<th align="left">Type</th>
-				<th align="left">Date</th>
-				<th align="right" width="100%">Total</th>
-			</tr>
-		<?php while($invoicerecord=$db->fetchArray($invoiceresult)) {
-				if($invoicerecord["type"]=="VOID")
-					$invoicerecord["totalti"]="-----"
-		?><tr onclick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')" ondblclick="selectedInvoice=<?php echo $invoicerecord["id"]?>;addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')">
-			<td><?php echo $invoicerecord["id"]?></td>
-			<td><?php echo $invoicerecord["type"]?></td>
-			<td><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
-			<td align="right"><?php echo numberToCurrency($invoicerecord["totalti"])?></td>
-		</tr>
-		<?php }?></table><?php }?>	
-	</div>
-	</div>
-	
-	
-	
-	<div class="salesNotesButtons">
-		<button id="noteedit" type="button" class="graphicButtons disabled="disabled" buttonEditDisabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></button>
-		<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($db,12,"add")?>')"><span>new</span></button>
-	</div>
-	
-	<h2>Notes</h2>
-	
-	<div class="fauxP">
-	<div id="notesTable"  class="smallQueryTableHolder">
-		<?php if(!$db->numRows($noteresult)) {?>
-			<div class="small"><em>no records</em></div>
-		<?php } else {?>
-		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
-			<tr>
-				<th align="center">!</th>
-				<th align="left">type</th>
-				<th align="left">category</th>
-				<th align="left" width="100%">title</th>
-				<th align="center">done</th>
-			</tr>
-		<?php while($noterecord=$db->fetchArray($noteresult)) {
-				if(strlen($noterecord["subject"])>17)
-					$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
-				if(strlen($noterecord["category"])>17)
-					$noterecord["category"]=substr($noterecord["category"],0,17)."...";
-		?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')" ondblclick="selectedNote=<?php echo $noterecord["id"]?>;addEditRecord('edit','note','<?php echo $noteEditFile?>')">
-			<td align="center"><?php echo $noterecord["importance"]?></td>
-			<td><?php echo $noterecord["type"]?></td>
-			<td><?php echo $noterecord["category"]?></td>
-			<td><?php echo $noterecord["subject"]?></td>
-			<td align="center"><?php echo booleanFormat($noterecord["completed"])?></td>
-		</tr>
-		<?php }?></table><?php }?>
-	</div>
-	</div>
-</div>
-
-<div id="leftSideDiv" class="box">
+		$clientid = (int) $clientid;
 		
-		<h2>Name</h2>
-		<button id="editClient" type="button" onclick="addEditRecord('edit','client','<?php echo getAddEditFile($db,2)?>')" class="Buttons">edit</button>
-		<?php if($therecord["firstname"] || $therecord["lastname"]) {?>
-		<p class="RDNames">name:</p>
-		<p class="RDData Uppers important"><?php echo htmlQuotes($therecord["firstname"]." ".$therecord["lastname"])?></p>
-		<?php } ?>
-		<?php if($therecord["company"]){?>
-		<p class="RDNames">company:</p>
-		<p class="RDData Uppers important"><?php echo htmlQuotes($therecord["company"])?></p>
-		<?php } ?>
-
-		<p class="RDNames"><br/>type:</p>
-		<p class="RDData important"><br/><?php echo htmlQuotes($therecord["type"])?></p>
-
-		<?php if($therecord["category"]){?>
-		<p class="RDNames">category:</p>
-		<p class="RDData important"><?php echo htmlQuotes($therecord["category"])?></p>
-		<?php } ?>
-
-		<h2>Address</h2>
-		<p class="RDNames">main:</p>
-		<p class="RDData important"><?php 
+		$thetable = new clients($this->db,2);
 		
-			$theaddress=htmlQuotes($therecord["address1"])."<br />";
-			if($therecord["address2"]) $theaddress.=htmlQuotes($therecord["address2"])."<br />";
-			if($therecord["city"]) $theaddress.=htmlQuotes($therecord["city"]).", ";
-			$theaddress.=htmlQuotes($therecord["state"])." ";
-			$theaddress.=htmlQuotes($therecord["postalcode"])." ";
-			$theaddress.=htmlQuotes($therecord["country"]);
+		$clientRecord = $thetable->getRecord($clientid);
+		
+		$clientRecord["invoices"] = $this->_getInvoices($clientid);
+		$clientRecord["notes"] = $this->_getnotes($clientid);
+		
+		return $clientRecord;
+		
+	}//end method - get
+
+	
+	function _getInvoices($clientid){
+
+		$querystatement = "
+			SELECT 
+				invoices.id,
+				invoices.type,
+				if(invoices.type='Invoice',invoices.invoicedate,invoices.orderdate) as thedate,
+				totalti
+			FROM 
+				invoices 
+			WHERE 
+				invoices.clientid=".$clientid." 
+			ORDER BY 
+				type,
+				thedate";
+
+		return $this->_buildRecordArray($this->db->query($querystatement));
+		
+	}//end method - _getInvoices
+
+	
+	function _getNotes($clientid){
+	
+		$querystatement = "
+			SELECT 
+				notes.id,
+				notes.type,
+				notes.subject,
+				notes.category, 
+				notes.completed
+			FROM 
+				notes 
+			WHERE 
+				notes.attachedtabledefid=2 
+				AND notes.attachedid=".$clientid." 
+			ORDER BY 
+				notes.completed,
+				notes.category,
+				notes.type,
+				notes.importance DESC,
+				notes.creationdate";
+
+		return $this->_buildRecordArray($this->db->query($querystatement));
+	
+	}//end method - _getNotes
+	
+	
+	function _buildRecordArray($queryresult){
+	
+		$returnArray = array();
+		
+		while($therecord = $this->db->fetchArray($queryresult))
+			$returnArray[] = $therecord;
 			
-			echo $theaddress?>
-		</p>
+		return $returnArray;
+	
+	}//end method - _buildRecordArray
+
+	
+	function display($clientInfo){
+
+	$invoiceEditFile = getAddEditFile($this->db,3);
+	$noteEditFile = getAddEditFile($this->db,12);
+	$clientEditFile = getAddEditFile($this->db,2);
+
+	?><div class="bodyline" id="theDetails">
+
+		<div id="rightSideDiv">
 		
-		<?php 
+			<fieldset>
+				<legend>sales</legend>
+				<p>
+					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($this->db,3,"add")?>')"><span>new</span></button>							
+					<button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
+				</p>
+				<div class="fauxP">
+				<div id="salesTable" class="smallQueryTableHolder">
+					<?php if(!count($clientInfo["invoices"])) {?>
+						<div class="small"><em>no records</em></div>
+					<?php } else {?>
+					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+						<tr>
+							<th align="left">ID</th>
+							<th align="left">Type</th>
+							<th align="left">Date</th>
+							<th align="right" width="100%">Total</th>
+						</tr>
+					<?php foreach($clientInfo["invoices"] as $invoicerecord) {
+							if($invoicerecord["type"]=="VOID")
+								$invoicerecord["totalti"]="-----"
+					?><tr onclick="selectEdit(this,<?php echo $invoicerecord["id"]?>,'invoice')" ondblclick="selectedInvoice=<?php echo $invoicerecord["id"]?>;addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')">
+						<td><?php echo $invoicerecord["id"]?></td>
+						<td><?php echo $invoicerecord["type"]?></td>
+						<td nowrap="nowrap"><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
+						<td align="right"><?php echo numberToCurrency($invoicerecord["totalti"])?></td>
+					</tr>
+					<?php }?></table><?php }?>	
+				</div>
+				</div>
+				
+			</fieldset>
+			
+			<fieldset>
+				<legend>notes</legend>
+
+				<div class="fauxP">
+				<p>
+					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($this->db,12,"add")?>')"><span>new</span></button>
+					<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" disabled="disabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></button>
+				</p>
+				<div id="notesTable"  class="smallQueryTableHolder">
+					<?php if(!count($clientInfo["notes"])) {?>
+						<div class="small"><em>no records</em></div>
+					<?php } else {?>
+					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
+						<tr>
+							<th align="center">!</th>
+							<th align="left">type</th>
+							<th align="left">category</th>
+							<th align="left" width="100%">title</th>
+							<th align="center">done</th>
+						</tr>
+					<?php foreach($clientInfo["notes"] as $noterecord) {
+							if(strlen($noterecord["subject"])>17)
+								$noterecord["subject"]=substr($noterecord["subject"],0,17)."...";
+							if(strlen($noterecord["category"])>17)
+								$noterecord["category"]=substr($noterecord["category"],0,17)."...";
+					?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')" ondblclick="selectedNote=<?php echo $noterecord["id"]?>;addEditRecord('edit','note','<?php echo $noteEditFile?>')">
+						<td align="center"><?php echo $noterecord["importance"]?></td>
+						<td><?php echo $noterecord["type"]?></td>
+						<td><?php echo $noterecord["category"]?></td>
+						<td><?php echo $noterecord["subject"]?></td>
+						<td align="center"><?php echo booleanFormat($noterecord["completed"])?></td>
+					</tr>
+					<?php }?></table><?php }?>
+				</div>
+				</div>
+				
+			</fieldset>
 		
-		$theaddress=htmlQuotes($therecord["shiptoaddress1"])."<br />";
-		if($therecord["shiptoaddress2"]) $theaddress.=htmlQuotes($therecord["shiptoaddress2"])."<br />";
-		if($therecord["shiptocity"]) $theaddress.=htmlQuotes($therecord["shiptocity"]).", ";
-		$theaddress.=htmlQuotes($therecord["shiptostate"])." ";
-		$theaddress.=htmlQuotes($therecord["shiptopostalcode"])." ";
-		$theaddress.=htmlQuotes($therecord["shiptocountry"]);
+		</div>
+	
+		<div id="leftSideDiv">
+			
+			<fieldset id="crTile" class="fs<?php echo $clientInfo["type"]?>">
+			
+				<h1><?php 
+					if($clientInfo["company"])
+						echo htmlQuotes($clientInfo["company"]);
+					else
+						echo htmlQuotes($clientInfo["firstname"]." ".$clientInfo["lastname"]);
+				?> <button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo" onclick="addEditRecord('edit','client','<?php echo $clientEditFile?>')"><span>view client</span></button></h1>
+				
+				<?php 
+				if($clientInfo["company"] && $clientInfo["firstname"] && $clientInfo["lastname"]){
+				
+					?><p id="crName"><?php echo htmlQuotes($clientInfo["firstname"])?> <?php echo htmlQuotes($clientInfo["lastname"])?></p><?php 
+				
+				}//endif
+				?>
+			
+				<?php 
+				
+				$location = "";
+				$location .= htmlQuotes($clientInfo["address1"]);
+				
+				if($clientInfo["address2"])
+					$location .= "<br />".htmlQuotes($clientInfo["address2"]);
+				
+				if($clientInfo["city"] || $clientInfo["state"] || $clientInfo["postalcode"]){
+					
+					$location .= "<br/>".htmlQuotes($clientInfo["city"]);
+					if($clientInfo["city"] && $clientInfo["state"])
+						$location .= ", ";
+					$location .= htmlQuotes($clientInfo["state"]);
+					$location .= " ".htmlQuotes($clientInfo["postalcode"]);
+					
+				}//endif
+				
+				if($clientInfo["country"])
+					$location .= "<br />".htmlQuotes($clientInfo["country"]);
+				
+				if($location == "")
+					$location = "unspecified location";
+						
+				?><p id="crLocation"><?php echo $location?></p>			
+			
+			</fieldset>
+			
+			<fieldset>
+				<legend>Contact</legend>
+				<?php if($clientInfo["workphone"] || $clientInfo["homephone"] || $clientInfo["mobilephone"] || $clientInfo["otherphone"] || $clientInfo["fax"]){ ?>
 
-		if($theaddress!="<br />  "){?>
-		<p class="RDNames">shipping:</p>
-		<p class="RDData important"><?php echo $theaddress?></p>
-		<?php } ?>
-
-		<h2>Contact</h2>
-
-		<?php if($therecord["workphone"]){?>
-		<p class="RDNames">work phone:</p>
-		<p class="RDData important"><?php echo htmlQuotes($therecord["workphone"])?></p>
-		<?php } ?>
-
-		<?php if($therecord["homephone"]){?>
-		<p class="RDNames">home phone:</p>
-		<p class="RDData important"><?php echo htmlQuotes($therecord["homephone"])?></p>
-		<?php } ?>
-
-		<?php if($therecord["mobilephone"]){?>
-		<p class="RDNames">mobile phone:</p>
-		<p class="RDData important"><?php echo htmlQuotes($therecord["mobilephone"])?></p>
-		<?php } ?>
-
-		<?php if($therecord["fax"]){?>
-		<p class="RDNames">fax:</p>
-		<p class="RDData important"><?php echo htmlQuotes($therecord["fax"])?></p>
-		<?php } ?>
+					<p class="RDNames">phone</p>
+					
+					<div class="fauxP RDData">
+						<ul>
+						<?php if($clientInfo["workphone"]){ ?>
+							<li><?php echo $clientInfo["workphone"] ?> (w)</li>
+						<?php }?>
+										
+						<?php if($clientInfo["homephone"]){ ?>
+							<li><?php echo $clientInfo["homephone"] ?> (h)</li>
+						<?php }?>
 		
-		<p>&nbsp;</p>
+						<?php if($clientInfo["mobilephone"]){ ?>
+							<li><?php echo $clientInfo["mobilephone"] ?> (m)</li>
+						<?php }?>
 		
-		<?php if($therecord["email"]){?>
-		<p class="RDNames">e-mail addres:</p>
-		<p class="RDData important">
-			<button type="button" class="graphicButtons buttonEmail" onclick="document.location='mailto:<?php echo $therecord["email"]?>'"><span>send email</span></button>
-			&nbsp;<a href="mailto:<?php echo $therecord["email"]?>"><?php echo htmlQuotes($therecord["email"])?></a>
-		</p>
-		<?php } ?>
+						<?php if($clientInfo["otherphone"]){ ?>
+							<li><?php echo $clientInfo["otherphone"] ?> (o)</li>
+						<?php }?>
+		
+						<?php if($clientInfo["fax"]){ ?>
+							<li><?php echo $clientInfo["fax"] ?> (fax)</li>
+						<?php }?>						
+						</ul>
+					</div>
+					
+				<?php }?>
+				
+				<?php if($clientInfo["email"]){ ?>
+					<p class="RDNames">e-mail</p>
+					<p class="RDData">
+						<button type="button" class="graphicButtons buttonEmail" onclick="document.location='mailto:<?php echo $clientInfo["email"]?>'"><span>send email</span></button>
+						&nbsp;<a href="mailto:<?php echo $clientInfo["email"]?>"><?php echo htmlQuotes($clientInfo["email"])?></a>					
+					</p>
+				<?php }?>
+				
 
-		<?php if($therecord["webaddress"]){?>
-		<p class="RDNames">web site:</p>
-		<p class="RDData important">
-			<button type="button" class="graphicButtons buttonWWW" onclick="window.open('<?php echo $therecord["webaddress"]?>')"><span>visit site</span></button>
-			&nbsp;<a href="<?php echo $therecord["webaddress"]?>" target="_blank"><?php echo htmlQuotes($therecord["webaddress"])?></a>
-		</p>
-		<?php } ?>
+				<?php if($clientInfo["webaddress"]){ ?>
+					<p class="RDNames">web site</p>
+					<p class="RDData">
+						<button type="button" class="graphicButtons buttonWWW" onclick="window.open('<?php echo $clientInfo["webaddress"]?>')"><span>visit site</span></button>
+						&nbsp;<a href="<?php echo $clientInfo["webaddress"]?>" target="_blank"><?php echo htmlQuotes($clientInfo["webaddress"])?></a>
+					</p>
+				<?php }?>
+			</fieldset>
+					
+			<fieldset>
+				<legend>Details</legend>
+				
+				<?php if($clientInfo["becameclient"]){ ?>
+					<p class="RDNames">became client</p>
+					<p class="RDData">
+						<?php echo formatVariable($clientInfo["becameclient"],"date")?>
+					</p>
+				<?php }?>
 
-		<?php if($therecord["comments"]){?>
-		<h2>Memo</h2>
-		<p id="RDMemo"><?php echo str_replace("\n","<br />",htmlQuotes($therecord["comments"]))?></p>
-		<?php } ?>
+				<?php if($clientInfo["category"]){ ?>
+					<p class="RDNames">category</p>
+					<p class="RDData">
+						<?php echo htmlQuotes($clientInfo["category"])?>
+					</p>
+				<?php }?>
+				
+				<?php if($clientInfo["leadsource"]){ ?>
+					<p class="RDNames">lead source</p>
+					<p class="RDData">
+						<?php echo htmlQuotes($clientInfo["leadsource"])?>
+					</p>
+				<?php }?>
+
+				<?php if($clientInfo["salesmanagerid"]){
+					global $phpbms; ?>
+					<p class="RDNames">sales person</p>
+					<p class="RDData">
+						<?php echo htmlQuotes($phpbms->getUserName($clientInfo["salesmanagerid"]))?>
+					</p>
+				<?php }?>
+								
+			</fieldset>
+			
+			
+			<?php if($clientInfo["comments"]){?>
+			<fieldset>
+				<legend>memo</legend>
+				<p>
+					<?php echo htmlQuotes($clientInfo["comments"])?>
+				</p>
+			</fieldset>
+			<?php }?>
+			
+		</div>
+		<p id="theclear">&nbsp;</p>
 	</div>
-	<div id="endClient"></div>
-</div>
-<?php 
-}//end function
+	<?php
+	
+	}//endMethod - get
 
-	//=================================================================================================
-	if(isset($_GET["cm"])){
-		switch($_GET["cm"]){
-			case "showClient":
-				$thereturn=showClient($db,$_GET["id"],$_GET["base"]);
-			break;
-		}
-	}
+}//end class
+
+// PROCESSING =====================================================================================
+// =================================================================================================
+if(isset($_GET["id"])){
+
+	$quickView = new quickView($db);
+	
+	$clientInfo = $quickView->get($_GET["id"]);
+	
+	$quickView->display($clientInfo);
+
+}//endif - id
 
 ?>

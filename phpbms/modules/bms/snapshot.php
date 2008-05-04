@@ -45,13 +45,24 @@ function showTodaysClients($db){
 		$interval="1 DAY";
 
 
-	$querystatement="SELECT id,
-					clients.type, clients.city,clients.state,clients.postalcode,
-					if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
-					FROM clients
-					WHERE creationdate>= DATE_SUB(NOW(),INTERVAL ".$interval.") 
-					ORDER BY creationdate DESC LIMIT 0,50
-	";
+	$querystatement="
+		SELECT 
+			clients.id,
+			clients.type,
+			addresses.city,
+			addresses.state,
+			addresses.postalcode,
+			clients.firstname,
+			clients.lastname,
+			clients.company
+		FROM 
+			(clients INNER JOIN addresstorecord ON clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1)
+			INNER JOIN addresses ON addresstorecord.addressid = addresses.id
+		WHERE 
+			clients.creationdate >= DATE_SUB(NOW(),INTERVAL ".$interval.") 
+		ORDER BY 
+			clients.creationdate DESC LIMIT 0,50";
+			
 	$queryresult=$db->query($querystatement);
 
 	if($db->numRows($queryresult)){
@@ -65,15 +76,30 @@ function showTodaysClients($db){
 		<?php 
 		$i=1;
 		while($therecord=$db->fetchArray($queryresult)){
-			if($i==1) $i=2; else $i=1;		
-			$displayType=str_pad($therecord["type"],10,".",STR_PAD_RIGHT);
-			$displayType=ucwords(str_replace(".","&nbsp;",$displayType));
-			$displayCSZ=$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
+		
+			$i = ($i==1) ? 2: 1;
+
+			$clientDisplay = $therecord["company"];
+			
+			$name = $therecord["lastname"].", ".$therecord["lastname"];
+			if($name = ", ")
+				$name = "";
+				
+			if(!$clientDisplay)
+				$clientDisplay .= $name;
+			else
+				if($name)
+					$clientDisplay .=  " (".$name.")";
+						
+			$displayCSZ = $therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
+			if($displayCSZ == ",  ")
+				$displayCSZ = "(unspecified location)";
+			
 			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?><tr onclick="document.location='<?php echo getAddEditFile($db,2)."?id=".$therecord["id"] ?>&amp;backurl='+encodeURIComponent('<?php echo APP_PATH."modules/base/snapshot.php"?>')" class="qr<?php echo $i?>">
 			<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?></td>
 			<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?></td>
-			<td><?php echo htmlQuotes($therecord["thename"])?></td>
+			<td><?php echo htmlQuotes($clientDisplay)?></td>
 			<td align="right" nowrap="nowrap"><?php echo $displayCSZ?></td>
 		</tr><?php }?>
 		<tr class="queryfooter">

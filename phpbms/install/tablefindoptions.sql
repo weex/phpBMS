@@ -49,3 +49,4 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,'entries within last week','log.stamp> DATE_SUB(CURDATE(),INTERVAL 1 WEEK)',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (202,'all entries','log.id!=-1',2,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (203,'All Records','tabs.id!=-1',0,-100);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('204', 'All Records', 'smartsearches.id!=-1', '0', '0');

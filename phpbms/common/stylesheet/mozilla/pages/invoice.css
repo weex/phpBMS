@@ -1,83 +1,14 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-#clientdisplay{
-	background-image:url("../image/search.gif");
-	background-repeat:no-repeat;
-	background-position:left;
-	padding-left:17px;
-}
-
-#clientSearchBox{
-	border:1px solid #999999;
-	background:white;
-	width:300px;
-	position:absolute;
-}
-
-#CSBResults{
- overflow:auto;
-}
-
-#CSBResults DIV{
-	 color:#666666;
-	 padding:5px;
-	 font-style:italic;
-}
-
-#CSBResults A{
-	width:245px;/* 295 - 5 - 30 */
-	display:block;
-	color:#663366;
-	font-weight:normal;
-	padding:5px 3px 5px 30px;
-	background-repeat:no-repeat;
-	background-position:8px 8px;
-}
-
-#CSBResults A:hover, #CSBResults A.CSBSelected{
-	text-decoration:none;
-	background-color:#663366;
-	color:white;
-}
-
-#CSBAddNewButton{
-	width:70px;
-	text-align:right;
-}
-
-.client{
+.SBResults A.client{
+	padding-left:30px;
 	background-image:url("../image/client.png");
 }
 
-.prospect{
+.SBResults A.prospect{
+	padding-left:30px;
 	background-image:url("../image/prospect.png");
-}
-
-#CSBResults SPAN{
-	display:block;
-}
-
-.CSBMain{
-	font-weight:bold;
-}
-
-.CSBExtra{
-	font-size:9px;
-}
-
-#CSBHeader{
-	background:#EEEEEE;
-	text-align:right;	
-	padding:5px;
-	height:16px;
-}
-
-#CSBFooter{
-	background:#EEEEEE;
-	text-align:right;
-	font-size:10px;
-	padding:5px;
 }
 
 #h1WithPrint{margin-right:230px;}
@@ -87,19 +18,96 @@
 #printButton{ text-align:right;float:left;}
 #printButton input{width:75px;}
 
-#address1,#address2,#country,#leadsource{width:364px;}
-
 #fsAttributes{clear:both;float:right;width:260px;}
 #attributesRight{float:right;padding-top:0px;}
 #type{width:90px}
 #statusid{width:98%}
-#ds-assignedtoid{width:99%}
+#leadsource{
+	width:98%
+}
 
 
 #fsTops{margin-right:270px;}
-#address1{margin-bottom:2px;}
-.cszP{float:left;}
-#countryP{clear:left;}
+
+#billingAddressDiv, #shiptoAddressDiv{
+	clear:left;
+	border:1px solid #ACB7C4;
+	padding:8px;
+	margin:0 4px 4px;
+}
+
+.addressButtons{
+	width:75px;
+}
+
+#shiptoAddressDiv{
+	display:none;
+}
+
+#address1, #shiptoaddress1{
+	margin-top:2px;
+	margin-bottom:2px;
+}
+
+#fsAddresses{
+	display:block;
+	border:0;
+	margin:0;
+	padding:0;
+}
+
+#fsAddresses legend{
+	display:none;
+}
+
+.cityState{
+	float:left;
+}
+
+
+.showoptions{
+	width:100px;
+}
+
+.showoptions span{
+	display:inline;
+	padding-left:15px;
+	color : #455372; 
+	font-weight:bold;
+}
+
+#addressOptionsDivBilling, #addressOptionsDivShipTo {
+	display:none;
+}
+
+#LAPickDiv{
+	height:200px;
+	overflow:auto;
+	background:white;
+	border:1px solid #abb1b1;;
+}
+
+.LAPickAs {
+	display:block;
+	padding:8px;
+	border-bottom:1px solid #CCCCCC;
+	font-weight:normal;
+	color:black;
+}
+
+.LAPickAs:hover{
+	text-decoration:none;
+	background: #CCCCCC;
+}
+
+.LASel{
+	color:white;
+	background:black;
+}
+
+.LASel:Hover{
+	background:black;
+}
 
 #lineItemsFS{clear:both;}
 
@@ -119,8 +127,10 @@
 #ds-partnumber{width:90px;}
 #ds-partname{width:135px;}
 
-#partnameHeader div{width:120px;}
-#memoHeader{width:100%}
+#memoHeader{
+	width:100%;
+}
+
 
 #memo, .lineitemMemos{width:100%;padding-right:0;border-right:0;}
 #price, .lineitemPrices{width:60px;}
@@ -176,20 +186,33 @@
 .invoiceTotalLabels{padding-left:25px;}
 .invoiceTotalLabels div{height:24px; line-height:24px;vertical-align:bottom;}
 
-#parenInfo div{height:25px;clear:right;}
-#parenInfo div span{
-	display:block;
-	float:right;
-	line-height:24px;height:24px;
-	padding:0 4px;
+#parenInfo{
+	margin:0;
+	padding:0;
+	border:0;
+	border-collapse:separate;
+}
+
+#parenInfo td{
+	text-align:right;
+	line-height:24px;
 	color:#666666;
+	padding:0 4px 0 4px;
+	border:0;
+	border-bottom:1px solid #CCCCCC;
+}
+
+#parenInfo td.blanks{
+	line-height:25px;
+	border:0;
+}
+
+#parenInfo td#parenSpacer{
+	height:55px;
 }
 
 #totalSpacer{height:55px;line-height:55px;border:0;}
 #totalSpacer span{border:0;}
-div #parenSpacer{height:55px;clear:right}
-div #parenSpacer span{height:55px;line-height:55px;border:0;}
-
 
 .vTabs,.vTabsHover{cursor:pointer;color:#455372;background:url(../image/button-rew.png) 5px 4px no-repeat;}
 .vTabsHover,.vContent{background-color:#DDDDDD;}

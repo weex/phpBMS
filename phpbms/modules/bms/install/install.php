@@ -74,6 +74,7 @@ include("../../../include/session.php");
 						"tabs",
 						"roles",
 						"modules",
+						"smartsearches",
 						"relationships",
 						"reports",
 						"tablecolumns",

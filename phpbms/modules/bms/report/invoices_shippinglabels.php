@@ -50,8 +50,28 @@
 	$labelheight=1;
 	$labelwidth=2+(5/8);
 	
-	$reportquerystatement="select clients.firstname,clients.lastname,clients.company,invoices.address1,invoices.address2,invoices.city,invoices.state,invoices.postalcode,invoices.country 
-						FROM invoices INNER JOIN clients on invoices.clientid=clients.id ";
+	$reportquerystatement="
+		SELECT
+			clients.firstname,
+			clients.lastname,
+			clients.company,
+			invoices.address1,
+			invoices.address2,
+			invoices.city,
+			invoices.state,
+			invoices.postalcode,
+			invoices.country,
+			invoices.shiptosameasbilling,
+			invoices.shiptoname,
+			invoices.shiptoaddress1,
+			invoices.shiptoaddress2,
+			invoices.shiptocity,
+			invoices.shiptostate,
+			invoices.shiptopostalcode,
+			invoices.shiptocountry
+		FROM 
+			invoices INNER JOIN clients on invoices.clientid=clients.id 
+		";
 						
 	$border_debug=0;
 
@@ -59,15 +79,30 @@
 		//offset lef tby 1/8" and top by 1/16th
 		$pdf->SetXY($thex+(1/8),$they+1/16);
 		$pdf->SetFont("Arial","B",9);
-		if($therecord["lastname"]){
-			$thename=$therecord["lastname"].", ".$therecord["firstname"];
-			if($therecord["company"]) $thename.="\n".$therecord["company"];
-		} else {
-			$thename=$therecord["company"];		
-		}
+
+		$thename = $therecord["company"];
+		if($thename)
+			$thename .= "\n";
+		$thename .= trim($therecord["firstname"]." ".$therecord["lastname"]);
+		
+		if(!$therecord["shiptosameasbilling"] && !!$therecord["shiptoname"])
+			$thename = $therecord["shiptoname"];
+
 		$pdf->MultiCell(2.25,.135,$thename,$border_debug,2,"L");
 		$pdf->SetFont("Arial","",8);
 		$pdf->SetX($thex+(1/8));
+		
+		if(!$therecord["shiptosameasbilling"]){
+			
+			$therecord["address1"] = $therecord["shiptoaddress1"];
+			$therecord["address2"] = $therecord["shiptoaddress2"];
+			$therecord["city"] = $therecord["shiptocity"];
+			$therecord["state"] = $therecord["shiptostate"];
+			$therecord["postalcode"] = $therecord["shiptopostalcode"];
+			$therecord["country"] = $therecord["shiptocountry"];
+			
+		}//endif - shiptosameasbilling
+		
 		$pdf->Cell(2.25,.12,$therecord["address1"],$border_debug,2,"L");
 		if($therecord["address2"]) $pdf->Cell(2.25,.12,$therecord["address2"],$border_debug,2,"L");
 		$pdf->Cell(2.25,.12,$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"],$border_debug,2,"L");

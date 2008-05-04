@@ -100,7 +100,10 @@ function dpClickDay(year,month,day){
 	var thefield=getObjectFromID(showDP.datefieldID);
 	var thedate=new Date(parseInt(year,10),parseInt(month,10)-1,parseInt(day,10));
 	thefield.value=dateToString(thedate);
+
 	if(thefield.onchange) thefield.onchange.call(thefield);
+	trigger(thefield,"onchange");
+	
 	closeDPBox();
 }
 

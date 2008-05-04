@@ -47,8 +47,19 @@ if(class_exists("phpbmsTable")){
 			return !($this->db->numRows($queryresult)===0);
 		}//end method
 	
+	
 		// CLASS OVERRIDES ===================================================================
+		// ===================================================================================
+
+		function clients($db,$tabledefid = 0,$backurl = NULL){
+			
+			$this->phpbmsTable($db,$tabledefid,$backurl);
+			
+			$this->address = new addresstorecord($db, 306);
+			
+		}//end function - init
 		
+
 		function getDefaults(){
 
 			$therecord = parent::getDefaults();
@@ -65,10 +76,61 @@ if(class_exists("phpbmsTable")){
 			
 			$therecord["webaddress"] = "http://";
 			
-			return $therecord;
-		}
+			//now for the address information.
+			$addressinfo = $this->address->getDefaults();
+			unset($addressinfo["id"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
+			$addressinfo["addressid"] = NULL;
+			
+			return array_merge($therecord, $addressinfo);
+						
+		}//end function - getDefaults
 		
 	
+		function getRecord($id){
+
+			$id = (int) $id;
+			
+			$therecord = parent::getRecord($id);
+			
+			if($therecord["id"]){
+				//need to grab the address as well
+				
+				$querystatement = "
+					SELECT
+						id
+					FROM
+						addresstorecord
+					WHERE
+						tabledefid = 2
+						AND `primary` = 1
+						AND recordid = ".$id;
+
+				$queryresult = $this->db->query($querystatement);
+				
+				$addressinfo = $this->db->fetchArray($queryresult);
+
+				if($addressinfo) {
+					
+					$addressinfo = $this->address->getRecord($addressinfo["id"]);
+				
+				} else {
+
+					$addressinfo = $this->address->getDefaults();
+					$addressinfo["addressid"] = NULL;
+					
+				}//endif			
+
+				unset($addressinfo["id"], $addressinfo["notes"], $addressinfo["email"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
+
+				$therecord = array_merge($therecord, $addressinfo);
+			
+			}//endif
+			
+			return $therecord;
+		
+		}//end function - getRecord
+		
+
 		function prepareVariables($variables){
 		
 			if ($variables["webaddress"]=="http://") 
@@ -93,17 +155,54 @@ if(class_exists("phpbmsTable")){
 			
 			$variables = $this->prepareVariables($variables);
 			
-			return parent::updateRecord($variables, $modifiedby);
+			$thereturn = parent::updateRecord($variables, $modifiedby);
 			
-		}//end method
+			//need to update the address
+			$variables["id"] = $variables["addressid"];
+			// don't want to blank out extra address information
+			// if it was added later.
+			unset($this->address->fields["email"]);
+			unset($this->address->fields["phone"]);
+			unset($this->address->fields["notes"]);
+			unset($this->address->fields["title"]);
+			unset($this->address->fields["createdby"]);
+			unset($this->address->fields["creationdate"]);
+
+			$this->address->updateRecord($variables, $modifiedby);
+
+			//restore the fields
+			$this->address->getTableInfo();
+			
+			return $thereturn;
+			
+		}//end method - updateRecord
 		
 		
 		function insertRecord($variables, $createdby = NULL){
 			
 			$variables = $this->prepareVariables($variables);
 			
-			return parent::insertRecord($variables, $createdby);
-		}//end method
+			$newid = parent::insertRecord($variables, $createdby);
+			
+			//need to create the address and addresstorecord id
+			// make sure we are not setting extra info
+			unset($this->address->fields["email"]);
+			unset($this->address->fields["phone"]);
+			unset($this->address->fields["notes"]);
+			$variables["title"] = "Main Addresss";
+			$variables["tabledefid"] = 2;
+			$variables["recordid"] = $newid;
+			$variables["defaultshipto"] = 1;
+			$variables["primary"] = 1;
+			
+			$this->address->insertRecord($variables, $createdby);
+
+			//restore the fields
+			$this->address->getTableInfo();
+			
+			return $newid;
+			
+		}//end method - insertRecord
 		
 	}//end class
 	

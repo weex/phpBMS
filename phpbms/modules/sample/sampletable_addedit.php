@@ -96,7 +96,7 @@
 	$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
 	// if you need to define a body onlload function, do so with the phpbms property
-	$phpbms->onload = "initializePage()";
+	$phpbms->onload[] = "initializePage()";
 
 
 	// Next we need to define any special fields that will be used in the form

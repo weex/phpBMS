@@ -36,92 +36,9 @@
  +-------------------------------------------------------------------------+
 */
 
-window.onload= function(){
-	var clientrecord=getObjectFromID("clientrecord");
-	document.comboFX=new fx.Combo(clientrecord,{height:true,opacity:true,duration:300})
-
-	var namecid=getObjectFromID("namecid");
-	if(namecid.value!=""){
-		var viewButton = getObjectFromID("dolookup");
-		viewButton.disabled = false;
-		viewClient();
-	} else{
-		var focusobject=getObjectFromID("ds-namecid");
-		focusobject.focus();
-	}
-	selectedInvoice="";
-	selectedNote="";
-
-}
-
-function updateLookup(theselect){
-	var nameDiv=getObjectFromID("lookupNameLabel");
-	var emailDiv=getObjectFromID("lookupEmailLabel");
-	var workPhoneDiv=getObjectFromID("lookupWorkPhoneLabel");
-	var homePhoneDiv=getObjectFromID("lookupHomePhoneLabel");
-	var mobilePhoneDiv=getObjectFromID("lookupMobilePhoneLabel");
-	var mainAddressDiv=getObjectFromID("lookupMainAddressLabel");
-	nameDiv.style.display="none";
-	emailDiv.style.display="none";
-	workPhoneDiv.style.display="none";
-	homePhoneDiv.style.display="none";
-	mobilePhoneDiv.style.display="none";
-	mainAddressDiv.style.display="none";
-	switch(theselect.value){
-		case "namecid":
-			nameDiv.style.display="block";
-		break;
-		case "emailcid":
-			emailDiv.style.display="block";
-		break;
-		case "workphonecid":
-			workPhoneDiv.style.display="block";
-		break;
-		case "homephonecid":
-			homePhoneDiv.style.display="block";
-		break;
-		case "mobilephonecid":
-			mobilePhoneDiv.style.display="block";
-		break;
-		case "mainaddresscid":
-			mainAddressDiv.style.display="block";
-		break;
-	}
-}
-
-function updateViewButton(){
-	var lookuptype=getObjectFromID("lookupby");
-	var viewButton=getObjectFromID("dolookup");
-	var clientid=getObjectFromID(lookuptype.value);
-
-	if(clientid.value=="")
-		viewButton.disabled=true;
-	else {
-		viewButton.disabled=false;
-		viewButton.focus();
-	}
-}
-function viewClient(){
-	var lookuptype=getObjectFromID("lookupby");
-	var clientid=getObjectFromID(lookuptype.value);
-	if (clientid.value!=""){
-		var clientrecord=getObjectFromID("clientrecord");
-		clientrecord.innerHTML="<div align=\"center\"><img src=\""+APP_PATH+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong></div>";
-		var theURL=APP_PATH+"modules/bms/quickview_ajax.php?cm=showClient&id="+clientid.value+"&base="+encodeURIComponent(APP_PATH);
-		loadXMLDoc(theURL,null,false);
-		//clientrecord.style.visibility="hidden";
-		clientrecord.innerHTML=req.responseText;
-		var goalHeight=clientrecord.offsetHeight;
-		if(document.comboFX){
-			document.comboFX.hide();
-			document.comboFX.toggle();
-		}
-	}
-}
-
 function addEditRecord(newedit,what,addeditfile){
-	var lookuptype=getObjectFromID("lookupby");
-	var clientid=getObjectFromID(lookuptype.value);	
+
+	var clientid=getObjectFromID("clientid");	
 	var theURL=addeditfile;
 	var currentURL=""+document.location;
 	currentURL = currentURL.substring(0,currentURL.indexOf(".php")+4);
@@ -176,3 +93,102 @@ function selectEdit(thetr,id,noteinvoice){
 		selectedInvoice=theSelected;
 	
 }
+
+
+
+
+
+
+quickView = {
+
+	changeLookup: function(e){
+		
+		var dropDown = e.src();
+		var smartSearchID = getObjectFromID("sdbid-clientid");
+		
+		smartSearchID.value = dropDown.value;
+		
+	},//end method - changeLookup
+	
+	
+	changeClient: function(e){
+		
+		var clientid = e.src();
+		var viewButton = getObjectFromID("viewButton");
+		
+		if(clientid.value)
+			viewButton.className = "Buttons"
+		else
+			viewButton.className = "dsiabledButtons";
+		
+	},//end method - changeClient
+	
+
+	viewClient: function(){
+		
+		var clientid = getObjectFromID("clientid");
+		var viewButton = getObjectFromID("viewButton");
+		
+		if (clientid.value != "" && viewButton.className != "disabledButtons"){
+			
+			var clientrecord = getObjectFromID("clientrecord");
+			
+			clientrecord.innerHTML = '<div align="center"><img src="' + APP_PATH + 'common/image/spinner.gif" alt="0" width="16" height="16" align="absmiddle"><strong>Loading...</strong></div>';
+
+			var theURL = APP_PATH + "modules/bms/quickview_ajax.php?cm=showClient&id=" + clientid.value;
+			
+			loadXMLDoc(theURL,null,false);
+
+			clientrecord.innerHTML = req.responseText;
+			
+			var goalHeight = clientrecord.offsetHeight;
+			
+			if(document.comboFX){
+				
+				document.comboFX.hide();
+				document.comboFX.toggle();
+				
+			}//endif
+			
+		}//endif - clientid
+		
+	}//end method - viewClient
+
+}//end class
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	var clientrecord = getObjectFromID("clientrecord");
+	document.comboFX = new fx.Combo(clientrecord,{height:true,opacity:true,duration:300});
+
+	var lookupby = getObjectFromID("lookupby");
+	connect(lookupby, "onchange", quickView.changeLookup);
+
+	var clientid = getObjectFromID("clientid");
+	connect(clientid, "onchange", quickView.changeClient);
+	
+	if(clientid.value != ""){
+		
+		var viewButton = getObjectFromID("viewButton");
+
+		viewButton.className = "Buttons";
+
+		quickView.viewClient();
+		
+	} else{
+		
+		var focusobject = getObjectFromID("ds-clientid");
+
+		focusobject.focus();
+		
+	}//endif - clientid
+	
+	var viewButton = getObjectFromID("viewButton");
+	connect(viewButton, "onclick", quickView.viewClient)
+	
+	selectedInvoice = "";
+	selectedNote = "";
+	
+})

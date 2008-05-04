@@ -107,14 +107,38 @@ phpBMS.base.update(phpBMS.base, {
                 }
             }
         }
-    }//endfunction	
+    },//endfunction
 	
+	
+	htmlDecode: function(string){
+
+			var ret, tarea = document.createElement('textarea');
+			tarea.innerHTML = string;
+			ret = tarea.value;
+			return ret;
+
+	},//end function
+
+
+	reportError: function(error){
+		
+		if(console){
+			if(console.log)
+				console.log(error);
+		} else
+			alert(error);
+		
+	}//end method - reportError
+
+
 });//end update
 
 phpBMS.base.EXPORT = [
 	"update",
 	"nameFunctions",
-	"loadXMLDoc"
+	"loadXMLDoc",
+	"htmlDecode",
+	"reportError"
 ];
 
 phpBMS.base._exportFunctions = function (globals, module) {
@@ -170,7 +194,7 @@ phpBMS.base.update(phpBMS.dom, {
 		}
 		return retVal;
 	}//endMethod	
-
+	
 })//end update
 
 phpBMS.dom.EXPORT = [
@@ -296,6 +320,14 @@ phpBMS.base.update(phpBMS.signal, {
 
 	_listener: function(srcObj, func){
         var E = phpBMS.signal.e;
+		
+		if(!srcObj || !func){
+			
+			reportError("ListnerError srcObj:" + srcObj + " func:" + func);
+			return false;
+			
+		}//endif
+			
 		return function (nativeEvent) {
 			return func.apply(srcObj, [new E(srcObj, nativeEvent)]);
 		};
@@ -303,6 +335,16 @@ phpBMS.base.update(phpBMS.signal, {
 
 
 	connect: function(srcObj, eventName, func){
+		
+		if(!srcObj || !eventName || !func){
+			
+			var err = "Invalid Entry for connect: srcObj:" + srcObj + " eventName:" + eventName + " func:" + func
+			reportError(err);			
+			
+			return false;
+			
+		}//endif 
+		
         var self = phpBMS.signal;
 		
 		var listener = self._listener(srcObj, func);
@@ -315,7 +357,6 @@ phpBMS.base.update(phpBMS.signal, {
 		
         var ident = [srcObj, eventName, listener];
         self._observers.push(ident);
-               
         return ident;
 		
 	},
@@ -338,19 +379,46 @@ phpBMS.base.update(phpBMS.signal, {
 	disconnect: function(ident){
         var self = phpBMS.signal;
         var observers = self._observers;
-
-		self._disconnect(ident);
-		observers.splice(ident, 1);
 		
-		return true;
-	}
+        for (var i = 0; i < observers.length; i++) {
+            var pident = observers[i];
+			if(pident == ident){
+
+
+				self._disconnect(ident);
+				observers.splice(i, 1)
+				return true;
+			}
+		}
+		return false;
+	},
+
+	trigger: function(src, sig){
+		
+        var self = phpBMS.signal;
+        var observers = self._observers;
+
+        var E = phpBMS.signal.e;
+        for (var i = 0; i < observers.length; i++) {
+            var ident = observers[i];
+            if (ident[0] === src && ident[1] === sig) {
+                try {
+                    ident[2].apply([new E(src, sig)]);
+                } catch (err) {
+					reportError(err)
+                }
+            }//endif
+        }//endfor
+		
+	}//end method - signal
 	
 })//end class
 
 phpBMS.signal.EXPORT = [
 	"connect",
 	"disconnect",
-	"getIdent"
+	"getIdent",
+	"trigger"
 ]
 
 phpBMS.signal.__new__ = function (win) {
@@ -855,6 +923,14 @@ function modalAlert(text){
 	text+="<DIV align=\"right\"><button id=\"modalOK\" accesskey=\"o\" type=\"button\" class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	showModal(text,"Alert",250);
 }
+
+/* Function Overloads and Extensions --------------------- */
+/* ------------------------------------------------------- */
+String.prototype.trim = function() {
+	a = this.replace(/^\s+/, '');
+	return a.replace(/\s+$/, '');
+};
+
 window.alert = function(txt) {modalAlert(txt);}
 
 /* OnLoad Listener --------------------------------------- */

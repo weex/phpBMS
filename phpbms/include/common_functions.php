@@ -46,9 +46,8 @@ class phpbms{
 	var $jsIncludes = array();
 	var $topJS = array();
 	var $bottomJS = array();
-	
-	var $onload = "";
-	
+	var $onload = array();
+		
 	var $showFooter = true;
 	var $showMenu = true;
 	
@@ -83,6 +82,7 @@ class phpbms{
 		</script><?php
 		}//endid
 	}//end method
+
 	
 	function getModules(){
 		$modules = array();
@@ -578,7 +578,23 @@ function formatVariable($value, $format=NULL){
 
 		case "noencoding":
 			$value=$value;
-		break;
+			break;
+		
+		
+		case "bbcode":
+			$value=htmlQuotes($value);
+						
+			// This list needs to be expanded
+			$bbcodelist["[b]"] = "<strong>";
+			$bbcodelist["[/b]"] = "</strong>";
+			$bbcodelist["[br]"] = "<br />";
+			$bbcodelist["[space]"] = "&nbsp;";
+			
+			foreach($bbcodelist as $bbcode => $translation)
+				$value = str_replace($bbcode, $translation, $value);
+							
+			break;
+			
 		default:
 			$value=htmlQuotes($value);
 	}

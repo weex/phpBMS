@@ -114,6 +114,7 @@ include("../include/session.php");
 										"tablegroupings",
 										"tableoptions",
 										"tablesearchablefields",
+										"smartsearches",
 										"users",
 										"settings",
 										"files",

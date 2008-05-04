@@ -19,6 +19,9 @@
 			if(!isset($variables["prospects_on_orders"]))
 				$variables["prospects_on_orders"] = 0;
 
+			if(!isset($variables["clear_payment_on_invoice"]))
+				$variables["clear_payment_on_invoice"] = 0;
+
 			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
 			return $variables;
 		
@@ -88,6 +91,9 @@
 			$theinput = new inputCheckbox("prospects_on_orders",$therecord["prospects_on_orders"],"allow prospects on sales orders");
 			$fields[] = $theinput;							
 
+			$theinput = new inputCheckbox("clear_payment_on_invoice",$therecord["clear_payment_on_invoice"],"clear payment information when posting");
+			$fields[] = $theinput;
+
 			return $fields;
 		}
 		
@@ -132,6 +138,13 @@
 	<p><?php $theform->showField("default_discount");?></p>
 
 	<p><?php $theform->showField("default_taxarea");?></p>
+
+	<p><?php $theform->showField("clear_payment_on_invoice");?></p>
+	<p class="notes">
+		With this option enabled, sensitive payment information will be removed or obfuscated when
+		a sales order or receipt is posted as an invoice or voided/deleted.
+	</p>
+
 </fieldset>
 <p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
 

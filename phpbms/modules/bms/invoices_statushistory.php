@@ -90,8 +90,8 @@
 		$theform = new phpbmsForm();
 
 		foreach($history as $historyrecord){
-			$theinput = new inputAutofill($db, "as".$historyrecord["id"],$historyrecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)", 
-										"\"\"","users.revoked=0", $historyrecord["name"]." assigned to" , false, true, false);
+			
+			$theinput = new inputSmartSearch($db, "as".$historyrecord["id"], "Pick Active User", $historyrecord["assignedtoid"], $historyrecord["name"]." assigned to", false, 36,255,false);
 			$theform->addField($theinput);
 
 			$theinput = new inputDatePicker("sh".$historyrecord["id"],$historyrecord["statusdate"], $historyrecord["name"]." status date" ,true, 11, 15, false);

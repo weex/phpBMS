@@ -299,11 +299,40 @@ include("../../../include/session.php");
 
 					break;
 
+				// ================================================================================================
+				case "0.94";
+
+					$thereturn.= processSQLfile($db,"updatev0.96.sql");
+					
+					if(v096updateInvoiceAddresses($db))
+						$thereturn .= "Updating invoice addresses.\n\n";					
+
+					if(v096transferClientAddresses($db))
+						$thereturn .= "Transfer client addresses.\n\n";					
+
+					//Updating Module Table
+					$updatestatement = "
+						UPDATE 
+							modules 
+						SET 
+							version='0.96' 
+						WHERE 
+							name='bms';";
+
+					$db->query($updatestatement);
+
+					$thereturn .= "Update of Business Management System Module to 0.96 Finished\n\n";
+
+					$ver["version"] = "0.96";
+
+					break;
+
 			}//end switch
 		}//end while
 		return $thereturn;
 
-	}//end update		
+	}//end update
+
 
 	function moveShipping($db){
 		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
@@ -327,6 +356,7 @@ include("../../../include/session.php");
 		
 		return true; 		 
 	}
+
 
 	function movePayments($db){
 		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
@@ -420,7 +450,218 @@ include("../../../include/session.php");
 		return true;
 	}//end funtion
 
+
+	function v096updateInvoiceAddresses($db){
 	
+		$querystatement = "
+			SELECT
+				invoices.id,
+				clients.address1,
+				clients.address2,
+				clients.city,
+				clients.state,
+				clients.postalcode,
+				clients.country
+			FROM
+				invoices INNER JOIN clients ON invoices.clientid = clients.id";
+				
+		$queryresult = $db->query($querystatement);
+		
+		while($therecord = $db->fetchArray($querystatement)){
+		
+			$updatestatement = "
+				UPDATE
+					invoices
+				SET
+					shiptoaddress1 = address1,
+					shiptoaddress2 = address2,
+					shiptocity = city,
+					shiptostate = state,
+					shiptopostalcode = postalcode,
+					shiptocountry = country,
+					address1 = 	'".$therecord["address1"]."',
+					address2 =	'".$therecord["address2"]."',
+					city = 		'".$therecord["city"]."',
+					state = 	'".$therecord["state"]."',
+					postalcode ='".$therecord["postalcode"]."',
+					country = 	'".$therecord["country"]."',
+				WHERE
+					id = ".$therecord["id"];
+		
+		}//endwhile - record
+	
+	}//end function - v096updateInvoiceAddresses
+
+
+	function v096transferClientAddresses($db){
+	
+		//retrieve all client records with ship to addresses
+		$querystatement = "
+			SELECT
+				id,
+				address1,
+				address2,
+				city,
+				state,
+				postalcode,
+				country,
+				shiptoaddress1,
+				shiptoaddress2,
+				shiptocity,
+				shiptostate,
+				shiptopostalcode,
+				shiptocountry
+			FROM
+				clients";
+		
+		$queryresult = $db->query($querystatement);
+		
+		while($therecord = $db->fetchArray($queryresult)){
+		
+			// for each client with a ship to, we need to create
+			// an address record (and addresstorecord record)
+			
+			// Create the address record
+			$address["title"] = "Primary";
+			$address["address1"] = $therecord["address1"];
+			$address["address2"] = $therecord["address2"];
+			$address["city"] = $therecord["city"];
+			$address["state"] = $therecord["state"];
+			$address["postalcode"] = $therecord["postalcode"];
+			$address["country"] = $therecord["country"];
+			
+			$newid = insertAddress($db, $address);			
+			
+			$a2r["clientid"] = $therecord["id"];
+			$a2r["addressid"] = $newid;
+			$a2r["primary"] = 1;
+			
+			if($therecord["shiptoaddress1"]){
+			
+				$a2r["defaultshipto"] = 0;
+				insertA2R($db, $a2r);
+			
+				$address["title"] = "Shipping";
+				$address["address1"] = $therecord["shiptoaddress1"];
+				$address["address2"] = $therecord["shiptoaddress2"];
+				$address["city"] = $therecord["shiptocity"];
+				$address["state"] = $therecord["shiptostate"];
+				$address["postalcode"] = $therecord["shiptopostalcode"];
+				$address["country"] = $therecord["shiptocountry"];
+				
+				$newid = insertAddress($db, $address);			
+				
+				$a2r["addressid"] = $newid;
+				$a2r["primary"] = 0;
+				$a2r["defaultshipto"] = 1;
+			
+			} else {
+			
+				$a2r["defaultshipto"] = 1;
+				
+			}//endif - shiptoaddress1
+
+			insertA2R($db, $a2r);		
+			
+		}//endwhile
+		
+		//Lastly, we need to remove the shipto fields
+		$alterstatement = "
+			ALTER TABLE `clients` 
+				DROP COLUMN `address1`,
+				DROP COLUMN `address2`,
+				DROP COLUMN `city`,
+				DROP COLUMN `state`,
+				DROP COLUMN `postalcode`,
+				DROP COLUMN `country`,
+				DROP COLUMN `shiptoaddress1`,
+				DROP COLUMN `shiptoaddress2`,
+				DROP COLUMN `shiptocity`,
+				DROP COLUMN `shiptostate`,
+				DROP COLUMN `shiptopostalcode`,
+				DROP COLUMN `shiptocountry`";	
+
+		$db->query($alterstatement);
+	
+	}//end function
+	
+	
+	function insertA2R($db, $variables){
+	
+		// Create the relation record
+		$insertstatement = "
+			INSERT INTO
+				addresstorecord
+			(
+				tabledefid,
+				recordid,
+				addressid,
+				`primary`,
+				createdby,
+				creationdate,
+				modifiedby,
+				modifieddate
+			) VALUES (
+				2,
+				".$variables["clientid"].",
+				".$variables["addressid"].",
+				".$variables["primary"].",
+				".$variables["defaultshipto"].",
+				NOW(),
+				1,
+				NOW()
+			)";
+		
+		$db->query($insertstatement);	
+			
+	}//end function - insertA2R
+	
+	
+	function insertAddress($db, $variables){
+	
+			$insertaddress = "
+				INSERT INTO
+					addresses 
+				(
+					title,
+					address1,
+					address2,
+					city,
+					state,
+					postalcode,
+					country,
+					createdby,
+					creationdate,
+					modifiedby,
+					modifieddate
+				) VALUES (
+					'"variables["title"]"',
+					'".$variables["address1"]."',
+					'".$variables["address2"]."',
+					'".$variables["city"]."',
+					'".$variables["state"]."',
+					'".$variables["postalcode"]."',
+					'".$variables["country"]."',
+					1,
+					NOW(),
+					1,
+					NOW()
+				)
+			";
+			
+			$db->query($insertaddress);
+			
+			//make sure to get the new address id
+			return $db->insertId();		
+	
+	}//end function - insertAddress
+		
+	
+
+
+	//=========================================================
+	// Processor
+	//=========================================================
 	$phpbmsSession = new phpbmsSession;
 	$success = $phpbmsSession->loadDBSettings(false);
 

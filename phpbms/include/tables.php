@@ -302,14 +302,14 @@ class phpbmsTable{
 		$updatestatement = substr($updatestatement, 0, strlen($updatestatement)-2);
 		
 		$updatestatement .= " WHERE `id`=".((int) $variables["id"]);
-				
+
 		$updateresult = $this->db->query($updatestatement);
 		
 		return true;
 	}
 	
 	
-	function insertRecord($variables,$createdby = NULL){
+	function insertRecord($variables,$createdby = NULL, $overrideID = false){
 	
 		if($createdby === NULL)
 			if(isset($_SESSION["userinfo"]["id"]))
@@ -326,19 +326,24 @@ class phpbmsTable{
 			if(!isset($thefield["select"])){
 				switch($fieldname){
 					case "id":
-					break;
+						if(isset($variables["id"]))
+							if($overrideID && $variables["id"]){
+								$fieldlist .= "id, ";
+								$insertvalues .= ((int) $variables["id"]).", ";
+							}//endif
+						break;
 					
 					case "createdby":
 					case "modifiedby":
 						$fieldlist .= $fieldname.", ";					
 						$insertvalues .= ((int) $createdby).", ";
-					break;
+						break;
 	
 					case "creationdate":
 					case "modifieddate":
 						$fieldlist .= $fieldname.", ";
 						$insertvalues .= "NOW(), ";
-					break;
+						break;
 					
 					default:
 						if(!isset($variables[$fieldname]) && strpos($thefield["flags"],"not_null") !== false)
@@ -347,8 +352,8 @@ class phpbmsTable{
 						if(isset($variables[$fieldname])){
 							$fieldlist .= "`".$fieldname."`, ";
 							$insertvalues .= $this->prepareFieldForSQL($variables[$fieldname],$thefield["type"],$thefield["flags"]).", ";
-						}
-					break;
+						}//endif - fieldname
+						break;
 				}//end switch field name
 			}//end if
 		}//end foreach
@@ -356,7 +361,6 @@ class phpbmsTable{
 		$insertvalues = substr($insertvalues, 0, strlen($insertvalues)-2);
 
 		$insertstatement = "INSERT INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
-
 		$insertresult = $this->db->query($insertstatement);
 		
 		return $this->db->insertId();

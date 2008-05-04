@@ -139,8 +139,7 @@
 		$theform->addField($theinput);
 
 
-		$theinput = new inputAutofill($db, "assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
-										"\"\"","users.revoked!=1", "assigned to");					
+		$theinput = new inputSmartSearch($db, "assignedtoid", "Pick Active User", $therecord["assignedtoid"], "assigned to", false, 36);
 		$theinput->setAttribute("size","30");
 		$theform->addField($theinput);
 
@@ -259,7 +258,7 @@
 				
 				<p><?php $thetable->showStatusDropDown($therecord["statusid"]);?></p>
 				
-				<p><?php $theform->showField("assignedtoid");?></p>
+				<div class="fauxP"><?php $theform->showField("assignedtoid");?></div>
 	
 
 				<p><?php $thetable->showRolesDropDown($therecord["notificationroleid"]);?></p>

@@ -110,6 +110,7 @@
 		$formatArray["Boolean (yes / no)"] = "boolean";
 		$formatArray["File Link"] = "filelink";
 		$formatArray["No Encoding (HTML acceptable)"] = "noencoding";
+		$formatArray["BBCode (Limited BBCode conversion)"] = "bbcode";
 		$theinput = new inputBasicList ("format", $thecolumn["format"], $formatArray);
 		$theform->addField($theinput);
 

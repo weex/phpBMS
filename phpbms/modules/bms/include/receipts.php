@@ -617,7 +617,19 @@ function defineReceiptPost(){
 					UPDATE
 						receipts
 					SET
-						posted = 1,
+						posted = 1,";
+
+				if(CLEAR_PAYMENT_ON_INVOICE){
+					$updatestatement .="
+						ccverification = REPEAT('*',LENGTH(ccverification)),
+						ccexpiration =  REPEAT('*',LENGTH(ccexpiration)),
+						routingnumber =  NULL,
+						accountnumber =  NULL,
+						ccnumber = LPAD(SUBSTRING(ccnumber,-4),LENGTH(ccnumber),'*'),
+					";
+				}//endif						
+						
+				$updatestatement .="
 						modifiedby = ".$_SESSION["userinfo"]["id"].",
 						modifieddate = NOW()
 					WHERE

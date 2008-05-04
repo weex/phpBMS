@@ -37,32 +37,45 @@
  +-------------------------------------------------------------------------+
 */
 
+session_cache_limiter('private');
+
 include("../../include/session.php");
 
-class clientList{
+class clientInfo{
 
-	var $recordcount = 0;
-
-	function clientList($db){
+	function clientInfo($db){
 		
 		$this->db = $db;
 		
-	}//end method
+	}//end method - init
 
 
-	function getSingleRecord($id){
+	function get($id){
+	
+		$id = ((int) $id);
+		
+		$return = $this->_getClient($id);
+		
+		$return["billingaddress"] = $this->_getAddress($id, "primary");
+		
+		$return["shiptoaddress"] = $this->_getAddress($id, "defaultshipto");
+		
+		if($return["hascredit"])
+			$return["creditleft"] = $this->_getCreditLeft($id, $return["creditlimit"]);
 
+		return $return;
+		
+	}//end method - get
+
+
+
+	function _getClient($id){
+	
 		$returnArray = array(
-			"address1" => "",
-			"address2" => "",
-			"city" => "",
-			"state" => "",
-			"postalcode" => "",
-			"country" => "",
-			
 			"hascredit" => 0,
 			"creditlimit" => 0,
 			"creditleft" => 0,
+			"type" => "client",
 
 			"paymentmethodid" => 0,
 			"shippingmethodid" => 0,
@@ -70,172 +83,127 @@ class clientList{
 			"taxareaid" => 0
 		);
 
-		$querystatement = "SELECT *	FROM clients WHERE id=".((int) $id);
-		$queryresult = $this->db->query($querystatement);
+		$querystatement = "
+			SELECT
+				*
+			FROM
+				clients
+			WHERE
+				id = ".$id;
+				
+		$therecord = $this->db->fetchArray($this->db->query($querystatement));
 		
-		$therecord = $this->db->fetchArray($queryresult);
-
 		if($therecord){		
 			foreach($returnArray as $key =>$value)
 				if($key != "creditleft")
 					$returnArray[$key] = $therecord[$key];
-		
-			if($therecord["shiptoaddress1"])
-				foreach($returnArray as $key =>$value)
-					if(strpos($key,"shipto") !== false)
-						$returnArray[str_replace("shipto","",$key)] = $therecord[$key];
 		}//endif
-		
-		if($therecord["hascredit"]){
-			//remaining AR
-			$querystatement = "SELECT SUM(`amount` - `paid`) AS amtopen FROM aritems WHERE `status` = 'open' AND clientid=".((int) $id)." AND posted=1";
-			$queryresult = $this->db->query($querystatement);
-			
-			$arrecord = $this->db->fetchArray($queryresult);
-			
-			$returnArray["creditleft"] = $therecord["creditlimit"] - $arrecord["amtopen"];
-			
-		}//end if
-		
-		$this->recordcount = 1;
-		
+	
 		return $returnArray;
-		
-	}//end method
+	
+	}//end method - _getClient
 
 
-	function findRecords($term, $offset=0){
+	function _getAddress($clientID, $type){
 	
-		$term = trim(mysql_real_escape_string($term));
+		$returnArray = array(
+			"id" => "",
+			"address1" => "",
+			"address2" => "",
+			"city" => "",
+			"state" => "",
+			"postalcode" => "",
+			"country" => "",
+			"shiptoname" => "",
+		);
 		
-		$terms = explode(" ",$term);
-		
-		
-		$prospects="";
-		
-		if(!PROSPECTS_ON_ORDERS)
-			$prospects = "AND clients.type = 'client'";
-		
-		$wheres="";
-		foreach($terms as $value){
-		
-			$wheres .="
-				AND (
-					clients.company LIKE '".$value."%'
-					OR clients.company LIKE '% ".$value."%'
-					OR clients.firstname LIKE '".$value."%'
-					OR clients.lastname LIKE '".$value."%'
-					OR clients.lastname LIKE '%-".$value."%'
-				)";
-		
-		}//endforeach
-	
 		$querystatement = "
 			SELECT
-				id,
-				firstname,
-				lastname,
-				company,
-				type,
-				city,
-				state,
-				postalcode,
-				country
+				addresses.*
 			FROM
-				clients
+				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.id
 			WHERE
-				clients.inactive = 0
-				".$prospects."
-				".$wheres."
-			ORDER BY
-				IF(ISNULL(clients.company),'Z',clients.company),
-				IF(ISNULL(clients.lastname),'Z',clients.lastname),
-				clients.firstname
-			LIMIT ".((int) $offset).", 8";
+				addresstorecord.tabledefid = 2
+				AND addresstorecord.recordid = ".$clientID."
+				AND addresstorecord.".$type." = 1";
 
-		$countstatement = "
+		$therecord = $this->db->fetchArray($this->db->query($querystatement));
+		
+		if($therecord)
+			foreach($returnArray as $key =>$value)
+				$returnArray[$key] = $therecord[$key];
+										
+		return $returnArray;
+	
+	}//end method - _getAddress
+
+
+	function _getCreditLeft($clientID, $creditlimit){
+	
+		$querystatement = "
 			SELECT 
-				COUNT(id) AS thecount
-			FROM
-				clients
-			WHERE
-				clients.inactive = 0
-				".$prospects."
-				".$wheres;
-
-		$queryresult = $this->db->query($countstatement);
-		$therecord = $this->db->fetchArray($queryresult);
-		$this->recordcount = $therecord["thecount"];
+				SUM(`amount` - `paid`) AS amtopen 
+			FROM 
+				aritems 
+			WHERE 
+				`status` = 'open' 
+				 AND clientid=".$clientID."
+				 AND posted=1";
 				
-		return $this->db->query($querystatement);
-	
-	}//end method
-
-	
-	function showXML($result){
-	
-		header('Content-Type: text/xml');
-		echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
-		echo '<response total="'.$this->recordcount.'">';
+		$arrecord = $this->db->fetchArray($this->db->query($querystatement));
 		
-		
-		if(is_array($result)){
-
-			foreach($result as $key => $value){
+		return  ((real) $creditlimit) - ((real) $arrecord["amtopen"]);		
 	
-				?><field name="<?php echo xmlEncode($key); ?>" value="<?php echo xmlEncode($value); ?>" />
-				<?php
+	}//end method - _getCreditLeft
+
+		
+
+	function display($record){
+	
+		$output = "{";
+
+		foreach($record as $key=>$value){
+		
+			if(!is_array($value)){
 				
-			}//endforeach
-
-		} else {
-		
-			while($therecord = $this->db->fetchArray($result)){
+				$output.= $key.":'".str_replace("'", "\'", formatVariable($value))."',";
 			
-				echo '<record>';
-	
-				foreach($therecord as $key => $value){
-		
-					?><field name="<?php echo xmlEncode($key); ?>" value="<?php echo xmlEncode($value); ?>" />
-					<?php
-					
-				}//endforeach
-	
-				echo '</record>';
-				
-			}//endwhile
+			} else {
 			
-		}//endif		
+				$output .= $key.":{";
+				
+				foreach($value as $skey => $svalue)
+					$output.= $skey.":'".str_replace("'", "\'", formatVariable($svalue))."',";
+						
+				$output = substr($output, 0, strlen($output)-1);
+			
+				$output .= "},";		
+				
+			}//endif is_array
 		
-		echo '</response>';
-		
-	}//end method
+		}//endforeach - record
+
+		$output = substr($output, 0, strlen($output)-1);
+
+		$output .= "}";		
+
+		header("Content-type: text/plain");
+		echo $output;
+
+	}//end method - display
 	
 }//end class
 
 
 //processing
 //=========================================================================
-if(isset($_GET["w"])){
+if(isset($_GET["id"])){
 
-	$clientInfo = new clientList($db);
+	$clientInfo = new clientInfo($db);
+
+	$clientRecord = $clientInfo->get($_GET["id"]);
 	
-	switch($_GET["w"]){
-	
-		case "id":
-			$theresult = $clientInfo->getSingleRecord($_GET["t"]);
-			break;
-			
-		case "term":
-			if(!isset($_GET["o"]))
-				$_GET["o"] = 0;
-			$theresult = $clientInfo->findRecords($_GET["t"],((int) $_GET["o"]));
-			break;
-	
-	}//endswtich
-	
-	if(isset($theresult))	
-		$clientInfo->showXML($theresult);
+	$clientInfo->display($clientRecord);
 	
 }//end if
 ?>

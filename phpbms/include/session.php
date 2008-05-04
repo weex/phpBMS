@@ -247,7 +247,7 @@ class phpbmsSession{
 						if($endpos!=false)
 							$value=substr($value,$startpos+1,$endpos-$startpos-1);
 						if(strpos($key,"mysql_")===0){
-							define(strtoupper($key),$value);							
+							define(strtoupper($key),$value);
 						}
 					}
 				}
@@ -323,7 +323,6 @@ class phpbmsSession{
 					
 				if(!defined(strtoupper($therecord["name"])))
 					define(strtoupper($therecord["name"]),$therecord["value"]);
-					
 			}//end while
 
 			// This following code is for windows boxen, because they lack some server varables as well
@@ -349,7 +348,7 @@ class phpbmsSession{
 	function startSession(){
 		// This is in a function in case we want to do sessions differently in the future		
 		
-		session_name("phpBMS".preg_replace('/\W/',"",APPLICATION_NAME)."v08ID");
+		session_name("phpBMS".preg_replace('/\W/',"",APPLICATION_NAME)."v096ID");
 		session_start();
 	}
 

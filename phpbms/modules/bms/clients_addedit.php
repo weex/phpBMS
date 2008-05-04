@@ -39,6 +39,8 @@
 	include("../../include/session.php");
 	include("include/tables.php");
 	include("include/fields.php");
+	include("include/addresses.php");
+	include("include/addresstorecord.php");
 	include("include/clients.php");
 
 	if(!isset($_GET["backurl"])) 
@@ -87,8 +89,7 @@
 		$theinput = new inputChoiceList($db, "category",$therecord["category"],"clientcategories");
 		$theform->addField($theinput);
 
-		$theinput = new inputAutofill($db, "salesmanagerid",$therecord["salesmanagerid"],9,"users.id","concat(users.firstname,\" \",users.lastname)", 
-										"\"\"","users.revoked=0 AND users.id > 1", "sales person");
+		$theinput = new inputSmartSearch($db, "salesmanagerid", "Pick Active User", $therecord["salesmanagerid"], "sales person");
 		$theform->addField($theinput);
 		
 		$theinput = new inputChoiceList($db, "leadsource",$therecord["leadsource"],"leadsource", "lead source");
@@ -129,7 +130,7 @@
 		$theinput = new inputField("email",$therecord["email"],NULL,false,"email",68,128);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("webaddress",$therecord["webaddress"],NULL,false,"www",68,128);
+		$theinput = new inputField("webaddress",$therecord["webaddress"],"web address",false,"www",68,128);
 		$theform->addField($theinput);
 
 		$theform->jsMerge();
@@ -161,7 +162,7 @@
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" tabindex="0" />
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 				<input type="hidden" id="hascredit" name="hascredit" value="<?php echo $therecord["hascredit"]?>"/>
 				<input type="hidden" id="creditlimit" name="creditlimit" value="<?php echo $therecord["creditlimit"]?>"/>
 			</p>
@@ -181,7 +182,7 @@
 	
 		<fieldset>
 			<legend>sales</legend>
-			<p><?php $theform->showField("salesmanagerid")?></p>
+			<div class="fauxP"><?php $theform->showField("salesmanagerid")?></div>
 			
 			<p><?php $theform->showField("leadsource")?></p>
 		</fieldset>
@@ -221,15 +222,15 @@
 			<legend>name / company</legend>
 			<p id="firstnameP">
 				<label for="firstname" class="important">first name</label><br />
-				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" tabindex="1" />
+				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" />
 			</p>
 			<p>
 				<label for="lastname" class="important">last name</label><br />
-				<input id="lastname" name="lastname" type="text" value="<?php echo htmlQuotes($therecord["lastname"])?>" size="32" maxlength="65" class="important" tabindex="2" />				
+				<input id="lastname" name="lastname" type="text" value="<?php echo htmlQuotes($therecord["lastname"])?>" size="32" maxlength="65" class="important" />				
 			</p>
 			<p>
 				<label for="company" class="important">company</label><br />
-				<input name="company" type="text" id="company" value="<?php echo htmlQuotes($therecord["company"])?>" size="71" maxlength="128" class="important" tabindex="3" />
+				<input name="company" type="text" id="company" value="<?php echo htmlQuotes($therecord["company"])?>" size="71" maxlength="128" class="important"/>
 			</p>
 		</fieldset>	
 							
@@ -252,64 +253,42 @@
 		</fieldset>
 		
 		<fieldset>
-			<legend><label for="address1">billing / main address</label></legend>
+			<legend>
+				<label for="address1">primary address</label>
+				<button type="button" class="graphicButtons buttonMap" id="buttonMap" title="show map"><span>map</span></button>
+			</legend>
+			
 			<p>
-				<input id="address1" name="address1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address1"])?>" tabindex="13"/><br />
-				<input id="address2" name="address2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address2"])?>" tabindex="14"/>
+				<input type="hidden" id="addressid" name="addressid" value="<?php echo $therecord["addressid"]?>"/>
+				<input id="address1" name="address1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address1"])?>" /><br />
+				<input id="address2" name="address2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["address2"])?>" />
 			</p>
 
 			<p class="csz">
 				<label for="city">city</label><br />
-				<input name="city" type="text" id="city" value="<?php echo htmlQuotes($therecord["city"])?>" size="35" maxlength="64" tabindex="15"/>
+				<input name="city" type="text" id="city" value="<?php echo htmlQuotes($therecord["city"])?>" size="35" maxlength="64" />
 			</p>
 
 			<p class="csz">
 				<label for="state">state/province</label><br />
-				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="10" maxlength="20" tabindex="16" />
+				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="10" maxlength="20" />
 			</p>
 			<p>
 				<label for="postalcode">zip/postal code</label><br />
-				<input name="postalcode" type="text" id="postalcode" value="<?php echo htmlQuotes($therecord["postalcode"])?>" size="12" maxlength="15" tabindex="17" />				
+				<input name="postalcode" type="text" id="postalcode" value="<?php echo htmlQuotes($therecord["postalcode"])?>" size="12" maxlength="15" />				
 			</p>
 			<p>
 				<label for="country">country</label><br />
-				<input id="country" name="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="44" maxlength="128" tabindex="18"/>
+				<input id="country" name="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="44" maxlength="128" />
 			</p>
 			
 		</fieldset>
 		
-		<fieldset>
-			<legend><label for="shiptoaddress1">shipping address</label></legend>
-			<p>
-				<span class="notes">(if different from billing/main address)</span><br />
-				<input id="shiptoaddress1" name="shiptoaddress1" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["shiptoaddress1"])?>" tabindex="19" /><br />
-				<input id="shiptoaddress2" name="shiptoaddress2" type="text" size="71" maxlength="128" value="<?php echo htmlQuotes($therecord["shiptoaddress2"])?>" tabindex="20" />
-			</p>
-
-			<p class="csz">
-				<label for="shiptocity">city</label><br />
-				<input id="shiptocity" name="shiptocity" type="text" value="<?php echo htmlQuotes($therecord["shiptocity"])?>" size="35" maxlength="64" tabindex="21" />				
-			</p>
-
-			<p class="csz">
-				<label for="shiptostate">state/province</label><br />
-				<input id="shiptostate" name="shiptostate" type="text" value="<?php echo htmlQuotes($therecord["shiptostate"])?>" size="10" maxlength="20" tabindex="22" />				
-			</p>
-			
-			<p>
-				<label for="shiptopostalcode">zip/postal code</label><br />
-				<input id="shiptopostalcode" name="shiptopostalcode" type="text" value="<?php echo htmlQuotes($therecord["shiptopostalcode"])?>" size="12" maxlength="15" tabindex="23" />				
-			</p>
-			<p>
-				<label for="shiptocountry">country</label><br />
-				<input id="shiptocountry" name="shiptocountry" type="text" value="<?php echo htmlQuotes($therecord["shiptocountry"])?>" size="44" maxlength="128" tabindex="24"/>				
-			</p>
-		</fieldset>
 		
 		<fieldset>
 			<legend><label for="comments">memo</label></legend>
 			<p>
-			<textarea name="comments" cols="20" rows="8" id="comments" tabindex="30"><?php echo $therecord["comments"]?></textarea>
+			<textarea name="comments" cols="20" rows="10" id="comments"><?php echo $therecord["comments"]?></textarea>
 			</p>
 		</fieldset>
 		

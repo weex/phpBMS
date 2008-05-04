@@ -58,13 +58,24 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
+		$theinput = new inputField("id",$therecord["id"],NULL,false,NULL,9,64);
+		$theinput->setAttribute("class","uneditable");
+		$theinput->setAttribute("readonly","readonly");
+		$theform->addField($theinput);
+
 		$theinput = new inputBasicList ("type",$therecord["type"],$list = array("table"=>"table","view"=>"view","system"=>"system"));
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 		
-		$theinput = new inputAutofill($db, "moduleid",$therecord["moduleid"],21,"modules.id","modules.name", 
-										"concat('v',modules.version)","", "module", true);
-		$theinput->setAttribute("size","20");
+		if(!$therecord["id"]){
+		
+			$theinput = new inputField("newid","","new id",false,"integer",9);
+			$theform->addField($theinput);
+		
+		}//endif - id
+						
+		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname", 
+								"", "", false, "module");							
 		$theform->addField($theinput);
 
 		$theinput = new inputField("displayname",$therecord["displayname"],"display name",true,NULL,50,64,false);
@@ -111,10 +122,19 @@
 	
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+
+		<p><?php $theform->showField("id"); ?></p>
+
+		<?php if(!$therecord["id"]){?>
+		<p><?php $theform->showField("newid"); ?><br />
+			<span class="notes">Optionally, you can
+			specify the id to be used.  Make sure that
+			the id is not already in use.  Base module
+			ids run in the 200s, bms in the 300s, recurring
+			invoices in the 400s.			
+			</span>
 		</p>
+		<?php }?>
 
 		<p><?php $theform->showField("type"); ?></p>
 

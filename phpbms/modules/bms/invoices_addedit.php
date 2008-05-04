@@ -53,10 +53,11 @@
 	$thetable = new invoices($db,3,$backurl);
 	$therecord = $thetable->processAddEditPage();
 	
-	$lineitems = new lineitems($db, $therecord["id"]);
+	$lineitems = new lineitems($db, $therecord["id"], $therecord["type"]);
 
 	$phpbms->cssIncludes[] = "pages/invoice.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/invoice.js";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/invoiceaddress.js";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/paymentprocess.js";
 	
 	if(isset($therecord["phpbmsStatus"]))
@@ -67,6 +68,9 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 		
+		$theinput = new inputSmartSearch($db, "clientid", "Pick Sales Order Client", $therecord["clientid"], "client", true, 68, 255, false);
+		$theform->addField($theinput);
+
 		$theinput = new inputDatePicker("orderdate", $therecord["orderdate"], "order date");
 		$theform->addField($theinput);
 	
@@ -82,10 +86,8 @@
 
 		$theinput = new inputDatePicker("statusdate", $therecord["statusdate"], "status date");
 		$theform->addField($theinput);		
-		
-		$theinput = new inputAutofill($db, "assignedtoid",$therecord["assignedtoid"],9,"users.id","concat(users.firstname,\" \",users.lastname)",
-										"\"\"","users.revoked!=1", "assigned to");					
-		$theinput->setAttribute("size","30");
+
+		$theinput = new inputSmartSearch($db, "assignedtoid", "Pick Active User", $therecord["assignedtoid"], "assigned to", false, 36);
 		$theform->addField($theinput);
 
 		$theinput = new inputCheckBox("readytopost",$therecord["readytopost"],"ready to post");
@@ -98,20 +100,67 @@
 		$theform->addField($theinput);
 		
 		if($therecord["type"]!="VOID" && $therecord["type"]!="Invoice"){
-			$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
-											"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true,false);					
-			$theinput->setAttribute("size","16");
-			$theinput->setAttribute("maxlength","32");
+
+
+			$theinput = new inputSmartSearch($db, "productid", "Pick Product", "", NULL, false, 36, 255, false);
 			$theform->addField($theinput);
-			$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
-				
-			$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
-											"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true,false);
-			$theinput->setAttribute("size","20");
-			$theinput->setAttribute("maxlength","128");
-			$theform->addField($theinput);
-			$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
-		}
+
+		}//endif = ORDER
+		
+		$theinput = new inputField("address1",$therecord["address1"],"address",false,NULL,71,128,false);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("address2",$therecord["address2"],NULL,false,NULL,71,128, false);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("city",$therecord["city"],NULL,false,NULL,35,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("state",$therecord["state"],"state/province",false,NULL,10,20);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("postalcode",$therecord["postalcode"],"zip/postal code",false,NULL,12,15);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("country",$therecord["country"],NULL,false,NULL,44,128);
+		$theform->addField($theinput);		
+
+		$theinput = new inputCheckBox("shiptosameasbilling",$therecord["shiptosameasbilling"],"shipping address same as billing");
+		$theform->addField($theinput);
+
+		$saveOptionList = array(
+			"sales order only" => "orderOnly",
+			"update client address" => "updateAddress",
+			"create new client address" => "createAddress"
+		);
+		$theinput = new inputBasicList("billingsaveoptions","orderOnly",$saveOptionList, "saving");
+		$theform->addField($theinput);
+
+
+		$theinput = new inputField("shiptoname",$therecord["shiptoname"],"ship to name",false,NULL,71,128);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptoaddress1",$therecord["shiptoaddress1"],"address",false,NULL,71,128, false);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptoaddress2",$therecord["shiptoaddress2"],NULL,false,NULL,71,128, false);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptocity",$therecord["shiptocity"],"city",false,NULL,35,64);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptostate",$therecord["shiptostate"],"state/province",false,NULL,10,20);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptopostalcode",$therecord["shiptopostalcode"],"zip/postal code",false,NULL,12,15);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("shiptocountry",$therecord["shiptocountry"],"country",false,NULL,44,128);
+		$theform->addField($theinput);
+
+		$theinput = new inputBasicList("shiptosaveoptions","orderOnly",$saveOptionList, "address save options");
+		$theform->addField($theinput);
+
 		
 		$theinput = new inputPercentage("taxpercentage",$therecord["taxpercentage"], "tax percentage" , 5);
 		$theinput->setAttribute("onchange","clearTaxareaid()");
@@ -197,7 +246,12 @@
 					<br />
 					<input name="ponumber" id="ponumber" type="text" value="<?php echo htmlQuotes($therecord["ponumber"])?>" size="11" maxlength="64"/>
 				</p>
-			</div>			
+			</div>
+			
+			<p>
+				<?php $theform->fields["leadsource"]->display() ?>			
+			</p>			
+
 		</fieldset>
 		
 		<fieldset>
@@ -210,57 +264,119 @@
 			<p>
 				<?PHP $theform->fields["statusdate"]->display();?>
 			</p>
-			<p>
+			<div class="fauxP">
 				<?php $theform->fields["assignedtoid"]->display(); ?>
-			</p>
+			</div>
 			<p>
-				<?php $theform->fields["readytopost"]->display(); ?>				
+				<?php $theform->showField("readytopost"); ?>				
 			</p>
 		</fieldset>
 	</div>
 	
 	<div id="fsTops">
 		<fieldset>
-			<legend><label for="clientdisplay">client</label></legend>
+			<legend><label for="ds-clientid">client</label></legend>
 			<div class="fauxP">
 				<input type="hidden" id="clientAddEditFile" value="<?php echo getAddEditFile($db,2) ?>"/>
-				<?php $thetable->showClientField($therecord["clientid"]);?>
+				<?php $thetable->showClientType($therecord["clientid"])?>
+				<?php $theform->showField("clientid")?>
+				<button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo"><span>view client</span></button>
 			</div>
 		</fieldset>
 		
-		<fieldset>
-			<legend><label for="address1">shipping address</label></legend>		
-			<p>
-				<input name="address1" id="address1" type="text" value="<?php echo htmlQuotes($therecord["address1"])?>" size="65" maxlength="128" /><br />
-				<input name="address2" id="address2" type="text"  value="<?php echo htmlQuotes($therecord["address2"])?>" size="65" maxlength="128" />
-			</p>
-			<p class="cszP">
-				<label for="city">city</label><br />
-				<input name="city" type="text" id="city" value="<?php echo htmlQuotes($therecord["city"])?>" size="35" maxlength="64" />			
-			</p>
-			<p class="cszP">
-				<label for="state">state/prov</label><br />
-				<input name="state" type="text" id="state" value="<?php echo htmlQuotes($therecord["state"])?>" size="10" maxlength="20" />
-			</p>
-			<p class="cszP">
-				<label for="postalcode">zip/postal code</label><br />
-				<input name="postalcode" type="text" id="postalcode" value="<?php echo htmlQuotes($therecord["postalcode"])?>" size="12" maxlength="15" />
-			</p>
-			<p id="countryP">
-				<label for="country">country</label><br />
-				<input name="country" id="country" type="text" value="<?php echo htmlQuotes($therecord["country"])?>" size="45" maxlength="64"/>
-			</p>
+		<fieldset id="fsAddresses">
+			<legend>addresses</legend>
+			<ul class="tabs">
+				<li class="tabsSel"><a href="#" id="tabBilling">billing address</a></li>
+				<li><a href="#" id="tabShipTo">shipping address</a></li>
+			</ul>
+			<div id="billingAddressDiv">
+				<input type="hidden" id="billingaddressid" name="billingaddressid" value="<?php echo $therecord["billingaddressid"]?>" />
+				<p>	
+					<label for="address1">address</label>
+					<button type="button" class="graphicButtons buttonMap" id="buttonMapBilling" title="show map"><span>map</span></button>
+					<br />
+					<?php $theform->showField("address1");?><br />
+					<?php $theform->showField("address2");?>
+				</p>
+								
+				<p class="cityState"><?php $theform->showField("city");?></p>
+				
+				<p class="cityState"><?php $theform->showField("state");?></p>
+
+				<p><?php $theform->showField("postalcode");?></p>	
+
+				<p>
+					<?php $theform->showField("country");?>
+				</p>
+				
+				<p>
+					<?php $theform->showField("shiptosameasbilling")?>
+				</p>
+				
+				<p><button id="buttonAddressBilling" class="graphicButtons buttonDown showoptions" type="button"><span>more options</span></button></p>
+				
+				<div id="addressOptionsDivBilling">
+					<fieldset>
+						<legend>address</legend>
+						<p><label>replace</label><br />
+							<button type="button" class="<?php if(!$therecord["clientid"]) {?>disabled<?php }//endif - clientid?>Buttons addressButtons" id="addressLoadButtonBilling">load...</button>
+							<button type="button" class="Buttons addressButtons" id="addressClearButtonBilling">clear</button>
+						</p>
+						<p><?php $theform->showField("billingsaveoptions")?></p>
+					</fieldset>
+				</div>
+				
+			</div>
+
+			<div id="shiptoAddressDiv">
+				<input type="hidden" id="shiptoaddressid" name="shiptoaddressid" value="<?php echo $therecord["shiptoaddressid"]?>" />
+				<p>
+					<?php $theform->showField("shiptoname");?>
+					<br /><span class="notes">(if different from client)</span>
+				</p>
+				<p>	
+					<label for="shiptoaddress1">address</label>
+					<button type="button" class="graphicButtons buttonMap" id="buttonMapShipping" title="show map"><span>map</span></button>
+					<br />
+					<?php $theform->showField("shiptoaddress1");?><br />
+					<?php $theform->showField("shiptoaddress2");?>
+				</p>
+				<p class="cityState">
+					<?php $theform->showField("shiptocity");?>
+				</p>
+				<p class="cityState">
+					<?php $theform->showField("shiptostate");?>
+				</p>
+				<p>
+					<?php $theform->showField("shiptopostalcode");?>
+				</p>
+				<p>
+					<?php $theform->showField("shiptocountry");?>
+				</p>
+				
+				<p><button id="buttonAddressShipTo" class="graphicButtons buttonDown showoptions" type="button"><span>more options</span></button></p>
+
+				<div id="addressOptionsDivShipTo">
+					<fieldset>
+						<legend>address</legend>
+						<p><label>replace</label><br />
+							<button type="button" class="<?php if(!$therecord["clientid"]) {?>disabled<?php }//endif - clientid?>Buttons addressButtons" id="addressLoadButtonShipping">load...</button>
+							<button type="button" class="Buttons addressButtons" id="addressClearButtonShipping">clear</button>
+						</p>
+						<p><?php $theform->showField("shiptosaveoptions")?></p>
+					</fieldset>								
+				</div>
+				
+			</div>
 		</fieldset>
 
 		<fieldset>
-			<legend>details</legend>
+			<legend>web</legend>
 			<p>	<label for="weborder">web / confirmation number</label><br />
 				<?php $theform->fields["weborder"]->display();?>
 				<input name="webconfirmationno" type="text" value="<?php echo htmlQuotes($therecord["webconfirmationno"]) ?>" size="64" maxlength="64"/>
 			</p>
-			<p>
-				<?php $theform->fields["leadsource"]->display() ?>			
-			</p>			
 		</fieldset>
 	</div>
 
@@ -270,6 +386,8 @@
 	<input type="hidden" name="thelineitems" id="thelineitems" />
 	<input type="hidden" id="lineitemschanged" name="lineitemschanged" />
 	
+	<input id="partnumber" name="partnumber" type="hidden" value="" />
+	<input id="partname" name="partname" type="hidden" value="" />
 	<input id="unitcost" name="unitcost" type="hidden" value="0" />
 	<input id="unitweight" name="unitweight" type="hidden" value="0"/>
 	<input id="taxable" name="taxable" type="hidden" value="1"/>
@@ -278,8 +396,7 @@
 	<table border="0" cellpadding="0" cellspacing="0" id="LITable">
 		<thead>
 			<tr id="LIHeader">
-				<th nowrap="nowrap" class="queryheader" align="left">part number</th>
-				<th nowrap="nowrap" class="queryheader" align="left" id="partnameHeader"><div>name</div></th>
+				<th nowrap="nowrap" class="queryheader" align="left" colspan="2">product</th>
 				<th nowrap="nowrap" class="queryheader" align="left" id="memoHeader">memo</th>
 				<th align="right" nowrap="nowrap" class="queryheader">price</th>
 				<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
@@ -291,8 +408,7 @@
 		<tbody>
 		<?php if($therecord["type"]!="Invoice" && $therecord["type"]!="VOID"){?>
 		<tr id="LIAdd">
-			<td nowrap="nowrap"><?php $theform->fields["partnumber"]->display();?></td>
-			<td nowrap="nowrap"><?php $theform->fields["partname"]->display();?></td>
+			<td colspan="2"><?php $theform->showField("productid")?></td>
 			<td><input name="memo" type="text" id="memo" size="12" maxlength="255" /></td>
 			<td align="right" nowrap="nowrap"><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" class="fieldCurrency" /></td>
 			<td align="center" nowrap="nowrap"><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" /></td>
@@ -447,21 +563,26 @@
 				</fieldset>
 			</div>
 
-			<div id="parenInfo">
-				<div><span id="parenDiscount"><?php if($therecord["discountname"])  echo "(".$therecord["discountname"].")"; else echo "&nbsp;"; ?></span></div>
-				<div>&nbsp;</div>
-				<div><span id="parenTax"><?php 
-					if($therecord["taxname"] || ((int) $therecord["taxpercentage"])!=0){
-						echo "(";
-						if($therecord["taxname"]) echo $therecord["taxname"].": ";
-						echo $therecord["taxpercentage"]."%)";
-					} else echo "&nbsp;";				
-				?></span></div>
-				<div><span id="parenShipping"><?php if($therecord["shippingmethodid"]!=0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
-				<div>&nbsp;</div>
-				<div id="parenSpacer"><span>&nbsp;</span></div>
-				<div><span id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></span></div>
-			</div>
+			<table border="0" cellpadding="0" cellspacing="0" id="parenInfo">
+				<tbody>
+					<tr><td id="parenDiscount"><?php if($therecord["discountname"])  echo "(".htmlQuotes($therecord["discountname"]).")"; else echo "&nbsp;"; ?></td></tr>
+					<tr><td class="blanks">&nbsp;</td></tr>
+					<tr><td id="parenTax">
+						<?php 
+							if($therecord["taxname"] || ((int) $therecord["taxpercentage"])!=0){
+								echo "(";
+								if($therecord["taxname"]) echo formatVariable($therecord["taxname"]).": ";
+								echo $therecord["taxpercentage"]."%)";
+							} else echo "&nbsp;";				
+						?>
+					</td></tr>
+					<tr><td id="parenShipping"><?php if($therecord["shippingmethodid"]!=0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
+					<tr><td class="blanks">&nbsp;</td></tr>
+					<tr><td id="parenSpacer" class="blanks">&nbsp;</td></tr>
+					<tr><td id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
+				</tbody>
+			</table>
+			
 		</td>
 		<td colspan="2" class="invoiceTotalLabels vTabs" id="vTab1"><div>discount<input type="hidden" id="totalBD" name="totalBD" value="<?php echo $therecord["totaltni"]+$therecord["discountamount"]?>" /></div></td>
 		<td class="totalItems"><input name="discountamount" id="discountamount" type="text" value="<?php echo numberToCurrency($therecord["discountamount"])?>" size="12" maxlength="15" onchange="clearDiscount();calculateTotal();" class="fieldCurrency fieldTotal"/></td>
@@ -518,7 +639,9 @@
 		<label for="printedinstructions">printed instructions</label><br />
 		<textarea id="printedinstructions" name="printedinstructions" cols="45" rows="3"><?php echo $therecord["printedinstructions"]?></textarea>	
 	</p>
-</fieldset>		
+
+</fieldset>
+
 <?php $theform->showCreateModify($phpbms,$therecord) ?>
 </div>
 </form>

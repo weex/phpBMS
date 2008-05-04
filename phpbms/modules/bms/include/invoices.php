@@ -39,47 +39,27 @@
 if(class_exists("phpbmsTable")){
 	class invoices extends phpbmsTable{
 	
-		function showClientField($id){
+		function showClientType($id){
 		
-			if($id){
+			if(((int) $id) != 0){
 				
 				$querystatement="
 					SELECT 
-						firstname,
-						lastname,
-						company,
 						type
 					FROM
 						clients
 					WHERE
-						id=".$id;
-
-				$queryresult = $this->db->query($querystatement);
-				
-				$therecord = $this->db->fetchArray($queryresult);
-
-				$display = $therecord["company"];				
-
-				if($display){
-					
-					if($therecord["lastname"])
-						$display .= " (".$therecord["lastname"].", ".$therecord["firstname"].")";
-					
-				} else {
-				
-					$display = $therecord["lastname"].", ".$therecord["firstname"];
-				
-				}//endif
-				
-				
-			}//endif
-			
+						id=".((int) $id);
 		
-			?>
-				<input type="hidden" id="clientid" name="clientid"  <?php if($id) echo 'value="'.$id.'"'?> />
-				<input type="hidden" id="clienttype" name="clienttype"  <?php if($id) echo 'value="'.$therecord["type"].'"'?> />
-				<input type="text" id="clientdisplay" name="clientdisplay" size="51" <?php if($id) echo 'value="'.$display.'"'?> />
-				<button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo"><span>view client</span></button><?php 
+				$therecord = $this->db->fetchArray($this->db->query($querystatement));
+
+			} else {		
+			
+				$therecord["type"] = "client";
+				
+			}//endif id
+
+			?><input type="hidden" id="clienttype" name="clienttype"  <?php if($id) echo 'value="'.$therecord["type"].'"'?> /><?php 
 						
 		}//end method
 		
@@ -495,6 +475,7 @@ if(class_exists("phpbmsTable")){
 			$variables = $this->prepareVariables($variables);
 	
 			if(!hasRights(20)){
+			
 				unset($this->fields["paymentmethodid"]);
 				unset($this->fields["checkno"]);
 				unset($this->fields["bankname"]);
@@ -503,19 +484,141 @@ if(class_exists("phpbmsTable")){
 				unset($this->fields["accountnumber"]);
 				unset($this->fields["routingnumber"]);
 				unset($this->fields["transactionid"]);
-			}
+
+			}//endif			
 
 			if(parent::updateRecord($variables, $modifiedby)){
 	
 				if($variables["lineitemschanged"]==1){
 
-					$lineitems = new lineitems($this->db, $variables["id"], $modifiedby);
-					$lineitems->set($variables["thelineitems"]);					
+					$lineitems = new lineitems($this->db, $variables["id"]);
+					$lineitems->set($variables["thelineitems"], $modifiedby);		
 				
 				}//endif
 			
 				if($variables["statuschanged"]==1)
 					$this->updateStatus($variables["id"],$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);		
+
+				// Check to see if we need to update/create the client addresses from the 
+				// billing address
+				if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
+				
+					require_once("addresses.php");
+					require_once("addresstorecord.php");
+					
+					switch($variables["billingsaveoptions"]){
+					
+						case "updateAddress":
+							if($variables["billingaddressid"]){
+							
+								$address = new addresses($this->db,306);
+								
+								$addressRecord = $address->getRecord($variables["billingaddressid"]);
+								
+								$addressRecord["address1"] = $variables["address1"];
+								$addressRecord["address2"] = $variables["address2"];
+								$addressRecord["city"] = $variables["city"];
+								$addressRecord["state"] = $variables["state"];
+								$addressRecord["postalcode"] = $variables["postalcode"];
+								$addressRecord["country"] = $variables["country"];
+
+								$address->updateRecord($addressRecord, $modifiedby);
+								
+							}//end if
+							break;
+							
+						case "createAddress":
+							$addresstorecord = new addresstorecord($this->db,306);
+							
+							$atrRecord["address1"] = $variables["address1"];
+							$atrRecord["address2"] = $variables["address2"];
+							$atrRecord["city"] = $variables["city"];
+							$atrRecord["state"] = $variables["state"];
+							$atrRecord["postalcode"] = $variables["postalcode"];
+							$atrRecord["country"] = $variables["country"];
+							$atrRecord["recordid"] = $variables["clientid"];
+							$atrRecord["tabledefid"] = 2;
+							$atrRecord["primary"] = 0;
+							$atrRecord["shiptodefault"] = 0;
+							$atrRecord["notes"] = "Created from sales order #".$variables["id"];
+							
+							$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
+							
+							$atrRecord = $addresstorecord->getRecord($newAtrID);
+
+							//Need to connect the sales order to the new address record
+							$updatestatement = "
+								UPDATE
+									invoices
+								SET
+									billingaddressid = ".$atrRecord["id"]."
+								WHERE
+									id = ".$variables["id"];
+
+							$this->db->query($updatestatement);
+							
+							break;
+					
+					}//endswitch billingsaveoptions
+					
+					switch($variables["shiptosaveoptions"]){
+
+						case "updateAddress":
+							if($variables["shiptoaddressid"]){
+							
+								$address = new addresses($this->db,306);
+								
+								$addressRecord = $address->getRecord($variables["shiptoaddressid"]);
+								
+								$addressRecord["shiptoname"] = $variables["shiptoname"];
+								$addressRecord["address1"] = $variables["shiptoaddress1"];
+								$addressRecord["address2"] = $variables["shiptoaddress2"];
+								$addressRecord["city"] = $variables["shiptocity"];
+								$addressRecord["state"] = $variables["shiptostate"];
+								$addressRecord["postalcode"] = $variables["shiptopostalcode"];
+								$addressRecord["country"] = $variables["shiptocountry"];
+
+								$address->updateRecord($addressRecord, $modifiedby);
+								
+							}//end if
+							break;
+
+						case "createAddress":
+							$addresstorecord = new addresstorecord($this->db,306);
+							
+							$atrRecord["shiptoname"] = $variables["shiptoname"];
+							$atrRecord["address1"] = $variables["shiptoaddress1"];
+							$atrRecord["address2"] = $variables["shiptoaddress2"];
+							$atrRecord["city"] = $variables["shiptocity"];
+							$atrRecord["state"] = $variables["shiptostate"];
+							$atrRecord["postalcode"] = $variables["shiptopostalcode"];
+							$atrRecord["country"] = $variables["shiptocountry"];
+							$atrRecord["recordid"] = $variables["clientid"];
+							$atrRecord["tabledefid"] = 2;
+							$atrRecord["primary"] = 0;
+							$atrRecord["shiptodefault"] = 0;
+							$atrRecord["notes"] = "Created from sales order #".$variables["id"];
+							
+							$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
+							
+							$atrRecord = $addresstorecord->getRecord($newAtrID);
+							
+							//Need to connect the sales order to the new address record
+							$updatestatement = "
+								UPDATE
+									invoices
+								SET
+									shiptoaddressid = ".$atrRecord["id"]."
+								WHERE
+									id = ".$variables["id"];
+
+							$this->db->query($updatestatement);
+							
+							break;
+												
+					}//endif
+				
+				}//end if
 					
 			}//end if
 			
@@ -539,8 +642,8 @@ if(class_exists("phpbmsTable")){
 	
 			if($variables["lineitemschanged"]==1){
 				
-				$lineitems = new lineitems($this->db, $newid, $createdby);
-				$lineitems->set($variables["thelineitems"]);
+				$lineitems = new lineitems($this->db, $newid);
+				$lineitems->set($variables["thelineitems"],$createdby);
 				
 			}//end if
 		
@@ -561,10 +664,11 @@ if(class_exists("phpbmsTable")){
 	
 		var $queryresult = NULL;
 	
-		function lineitems($db, $invoiceid){
+		function lineitems($db, $invoiceid, $invoicetype = "Order"){
 			
 			$this->db = $db;
 			$this->invoiceid = ((int) $invoiceid);
+			$this->invoicetype = $invoicetype;
 			
 		}//end method
 		
@@ -606,7 +710,7 @@ if(class_exists("phpbmsTable")){
 			
 				?><tr id="li<?php echo $count?>" class="lineitems">
 				
-					<td colspan="2" class="lineitemsLeft">
+					<td colspan="2" class="lineitemsLeft" <?php if($this->invoicetype == "Void" || $this->invoicetype == "Invoice") echo 'nowrap="nowrap"'?>>
 						<input type="hidden" id="li<?php echo $count?>ProductID" value="<?php echo $therecord["productid"]?>"/>
 						<input type="hidden" id="li<?php echo $count?>Taxable" value="<?php echo $therecord["taxable"]?>"/>
 						<input type="hidden" id="li<?php echo $count?>UnitWeight" class="lineitemWeights" value="<?php echo $therecord["unitweight"]?>"/>
@@ -1022,7 +1126,19 @@ if(class_exists("searchFunctions")){
 				UPDATE 
 					invoices 
 				SET 
-					invoices.type='VOID', 
+					invoices.type='VOID',";
+					
+			if(CLEAR_PAYMENT_ON_INVOICE){
+				$querystatement .="
+					ccverification = REPEAT('*',LENGTH(ccverification)),
+					ccexpiration =  REPEAT('*',LENGTH(ccexpiration)),
+					routingnumber =  NULL,
+					accountnumber =  NULL,
+					ccnumber = LPAD(SUBSTRING(ccnumber,-4),LENGTH(ccnumber),'*'),
+				";
+			}//endif
+			
+			$querystatement .="
 					modifiedby = ".$_SESSION["userinfo"]["id"].", 
 					modifieddate = NOW() 
 				WHERE (".$whereclause.") 
@@ -1038,6 +1154,19 @@ if(class_exists("searchFunctions")){
 	
 	}//end class
 }//end if
+
+
+function obfuscatePayment($variables){
+
+	$variables["ccverification"] = str_repeat("*",strlen($variables["ccverification"]));
+	$variables["ccexpiration"] = str_repeat("*",strlen($variables["ccexpiration"]));
+	$variables["routingnumber"] = "NULL";
+	$variables["accountnumber"] = "NULL";
+	$variables["ccnumber"] = str_repeat("*",strlen($variables["ccnumber"] -4 )).substr($variables["ccnumber"], -4);
+
+	return $variables;
+
+}//end function - obfuscatePayment
 
 
 function defineInvoicePost(){
@@ -1075,7 +1204,12 @@ function defineInvoicePost(){
 					invoices.clientid,
 					invoices.totalti,
 					invoices.invoicedate,
-					paymentmethods.type
+					paymentmethods.type,
+					invoices.ccnumber,
+					invoices.ccexpiration,
+					invoices.ccverification,
+					invoices.routingnumber,
+					invoices.accountnumber
 				FROM
 					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
 				WHERE
@@ -1090,6 +1224,27 @@ function defineInvoicePost(){
 						`invoices`
 					SET
 						`type` = 'Invoice', ";
+
+				if(CLEAR_PAYMENT_ON_INVOICE){
+				   				
+					$therecord = obfuscatePayment($therecord);
+					
+					if($therecord["ccnumber"])
+						$updatestatement .= "ccnumber = '".$therecord["ccnumber"]."', ";
+
+					if($therecord["ccexpiration"])
+						$updatestatement .= "ccexpiration = '".$therecord["ccexpiration"]."', ";
+				
+					if($therecord["ccverification"])
+						$updatestatement .= "ccverification = '".$therecord["ccverification"]."', ";
+
+					if($therecord["routingnumber"])
+						$updatestatement .= "routingnumber = NULL, ";
+
+					if($therecord["accountnumber"])
+						$updatestatement .= "accountnumber = NULL, ";
+						
+				}//endif - CLEAR_PAYMENT_ON_INVOICE
 						
 				if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00"){
 					$therecord["invoicedate"] = dateToString(mktime(0,0,0),"SQL");

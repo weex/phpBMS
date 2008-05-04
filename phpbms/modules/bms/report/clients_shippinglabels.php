@@ -43,7 +43,7 @@
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
 	else
-		$sortorder="  ORDER BY concat(lastname,firstname,company)";
+		$sortorder="  ORDER BY clients.company, clients.lastname, clients.company";
 
 	$maxrows=10;
 	$maxcolumns=3;
@@ -53,9 +53,20 @@
 	$labelheight=1;
 	$labelwidth=2+(5/8);
 	
-	$reportquerystatement="select firstname,lastname,company,shiptoaddress1,shiptoaddress2,
-						shiptocity,shiptostate,shiptopostalcode,shiptocountry 
-						FROM clients ";
+	$reportquerystatement="
+		SELECT
+			clients.firstname,
+			clients.lastname,
+			clients.company,
+			addresses.address1,
+			addresses.address2,
+			addresses.city,
+			addresses.state,
+			addresses.postalcode,
+			addresses.country
+		FROM 
+			((clients INNER JOIN addresstorecord on clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.defaultshipto=1) 
+			INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)";
 						
 	$border_debug=0;
 
@@ -63,21 +74,24 @@
 		//offset lef tby 1/8" and top by 1/16th
 		$pdf->SetXY($thex+(1/8),$they+1/16);
 		$pdf->SetFont("Arial","B",9);
-		if($therecord["lastname"]){
-			$thename=$therecord["lastname"].", ".$therecord["firstname"];
-			if($therecord["company"]) $thename.="\n".$therecord["company"];
-		} else {
-			$thename=$therecord["company"];		
-		}
+		
+		$thename = $therecord["company"];
+		if($thename)
+			$thename .= "\n";
+		$thename .= trim($therecord["firstname"]." ".$therecord["lastname"]);
+					
 		$pdf->MultiCell(2.25,.135,$thename,$border_debug,2,"L");
 		$pdf->SetFont("Arial","",8);
 		$pdf->SetX($thex+(1/8));
-		$pdf->Cell(2.25,.12,$therecord["shiptoaddress1"],$border_debug,2,"L");
-		if($therecord["shiptoaddress2"]) $pdf->Cell(2.25,.12,$therecord["shiptoaddress2"],$border_debug,2,"L");
-		$pdf->Cell(2.25,.12,$therecord["shiptocity"].", ".$therecord["shiptostate"]." ".$therecord["shiptopostalcode"],$border_debug,2,"L");
-		if($therecord["shiptocountry"]) $pdf->Cell(2.25,.12,$therecord["shiptocountry"],$border_debug,2,"L");
+		$pdf->Cell(2.25,.12,$therecord["address1"],$border_debug,2,"L");
+		if($therecord["address2"]) 
+			$pdf->Cell(2.25,.12,$therecord["address2"],$border_debug,2,"L");
+		$pdf->Cell(2.25,.12,$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"],$border_debug,2,"L");
+		if($therecord["country"]) 
+			$pdf->Cell(2.25,.12,$therecord["country"],$border_debug,2,"L");	
 		
 		return $pdf;
 	}
+
 	require("../../../report/general_labels.php");
 ?>

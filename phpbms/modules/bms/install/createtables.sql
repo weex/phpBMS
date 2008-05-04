@@ -34,12 +34,6 @@ CREATE TABLE `clients` (
   `state` varchar(20) default NULL,
   `postalcode` varchar(15) default NULL,
   `country` varchar(64) default '',
-  `shiptoaddress1` varchar(128) default NULL,
-  `shiptoaddress2` varchar(128) default NULL,
-  `shiptocity` varchar(64) default NULL,
-  `shiptostate` varchar(20) default NULL,
-  `shiptopostalcode` varchar(15) default NULL,
-  `shiptocountry` varchar(64) default '',
   `comments` text,
   `paymentmethodid` int(10) unsigned default '0',
   `shippingmethodid` int(10) unsigned default '0',
@@ -331,4 +325,38 @@ CREATE TABLE `receiptitems` (
   `discount` double NOT NULL default '0',
   `taxadjustment` double NOT NULL default '0',
   PRIMARY KEY  (`id`)
+);
+
+CREATE TABLE `addresses` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(128),
+  `shiptoname` VARCHAR(128),
+  `address1` VARCHAR(128),
+  `address2` VARCHAR(128),
+  `city` VARCHAR(64),
+  `state` VARCHAR(20),
+  `postalcode` VARCHAR(15),
+  `country` VARCHAR(64),
+  `phone` VARCHAR(25),
+  `email` VARCHAR(128),
+  `notes` TEXT,
+  `createdby` INTEGER UNSIGNED NOT NULL,
+  `creationdate` DATETIME NOT NULL,
+  `modifiedby` INTEGER UNSIGNED,
+  `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
+);
+
+CREATE TABLE `addresstorecord` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tabledefid` INTEGER UNSIGNED NOT NULL,
+  `recordid` INTEGER UNSIGNED NOT NULL,
+  `addressid` INTEGER UNSIGNED NOT NULL,
+  `defaultshipto` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `primary` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `createdby` INTEGER UNSIGNED NOT NULL,
+  `creationdate` DATETIME NOT NULL,
+  `modifiedby` INTEGER UNSIGNED,
+  `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
 );

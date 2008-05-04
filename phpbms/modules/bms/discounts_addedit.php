@@ -54,7 +54,7 @@
 
 	$phpbms->cssIncludes[] = "pages/discounts.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/discount.js";
-	$phpbms->onload = "init()";
+	$phpbms->onload[] = "init();";
 
 		//Form Elements
 		//==============================================================

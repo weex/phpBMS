@@ -2,7 +2,7 @@
 
 	$modules["base"]["name"] = "phpBMS base";
 	
-	$modules["base"]["version"] = 0.94;
+	$modules["base"]["version"] = 0.96;
 	
 	$modules["base"]["description"] = 
 	"The basic phpBMS framkework.  This is the minimum module required in order for the web applicatoin to work.";

@@ -1,0 +1,34 @@
+#topButtons{
+	float:right;
+	width:200px;
+}
+
+#h1Title{
+	margin-right:230px;
+}
+
+#rightSideDiv {
+	float:right;
+	width:170px;
+}
+
+.leftSideDiv{
+	padding-top:1px;
+	margin-right: 178px;
+}
+
+#address1{
+	margin-bottom:2px;
+}
+
+.csz {
+	float:left;
+}
+
+#notes {
+	width:98%
+}
+
+#selectExistingP {
+	display:none;
+}

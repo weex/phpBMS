@@ -127,19 +127,19 @@ CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
   `tabledefid` int(11) NOT NULL default '0',
   `name` varchar(64) NOT NULL default '',
-  `column` varchar(255) NOT NULL default '',
+  `column` text,
   `align` varchar(16) NOT NULL default '',
   `footerquery` varchar(255) default '',
   `displayorder` int(11) NOT NULL default '0',
   `sortorder` varchar(128) default '',
   `wrap` tinyint(1) NOT NULL default '0',
   `size` varchar(16) NOT NULL default '',
-  `format` enum('date','time','currency','boolean','datetime','filelink','noencoding') default NULL,
-  `roleid` INTEGER UNSIGNED NOT NULL DEFAULT '0',
+  `format` enum('date','time','currency','boolean','datetime','filelink','noencoding','bbcode') default NULL,
+  `roleid` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
-) TYPE=MyISAM AUTO_INCREMENT=5000;
+) AUTO_INCREMENT=5000;
 
 CREATE TABLE `tabledefs` (
   `id` int(11) NOT NULL auto_increment,
@@ -147,7 +147,7 @@ CREATE TABLE `tabledefs` (
   `type` varchar(16) NOT NULL default 'table',
   `moduleid` int(11) NOT NULL default '0',
   `maintable` varchar(64) NOT NULL default '',
-  `querytable` varchar(255) NOT NULL default '',
+  `querytable` text,
   `editfile` varchar(128) default NULL,
   `editroleid` int(11) NOT NULL default '0',
   `addfile` varchar(100) default '',
@@ -327,3 +327,24 @@ CREATE TABLE `tabs` (
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
 );
+
+CREATE TABLE `smartsearches` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(128) NOT NULL,
+  `fromclause` text NOT NULL,
+  `valuefield` varchar(255) NOT NULL,
+  `displayfield` text NOT NULL,
+  `secondaryfield` text NOT NULL,
+  `classfield` text NOT NULL,
+  `searchfields` text NOT NULL,
+  `filterclause` text NOT NULL,
+  `rolefield` text,
+  `tabledefid` int(10) unsigned default NULL,
+  `moduleid` int(10) unsigned default NULL,
+  `createdby` int(10) unsigned NOT NULL,
+  `creationdate` datetime NOT NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp,
+  PRIMARY KEY  (`id`)
+);
+

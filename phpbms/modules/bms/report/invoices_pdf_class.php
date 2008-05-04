@@ -132,12 +132,6 @@
 					clients.firstname,
 					clients.lastname,
 					clients.company,
-					clients.address1 AS billtoaddress1,
-					clients.address2 AS billtoaddress2,
-					clients.city AS billtocity,
-					clients.state AS billtostate,
-					clients.postalcode AS billtopostalcode,
-					clients.country AS billtocountry,
 					clients.homephone,
 					clients.workphone,
 					clients.email,
@@ -272,7 +266,9 @@
 
 			$pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
 			$pdf->SetFont("Arial", "B", 10);
-			$pdf->Cell($boxWidth - 0.125, 0.17, $companyDisplay, $pdf->borderDebug, 2, "L");
+			
+			$shipDisplay = (!$this->invoicerecord["shiptosameasbilling"] && $this->invoicerecord["shiptoname"])? $this->invoicerecord["shiptoname"] :$companyDisplay;
+			$pdf->Cell($boxWidth - 0.125, 0.17, $shipDisplay, $pdf->borderDebug, 2, "L");
 			
 			$shipto = $this->_setShipTo();
 			$pdf->SetFont("Arial", "", 10);
@@ -300,15 +296,15 @@
 
 		function _setBillTo(){
 
-			$billto = $this->invoicerecord["billtoaddress1"];
+			$billto = $this->invoicerecord["address1"];
 			
-			if($this->invoicerecord["billtoaddress2"])
-				$billto .= "\n".$this->invoicerecord["billtoaddress2"];
+			if($this->invoicerecord["address2"])
+				$billto .= "\n".$this->invoicerecord["address2"];
 				
-			$billto .="\n".$this->invoicerecord["billtocity"].", ".$this->invoicerecord["billtostate"]." ".$this->invoicerecord["billtopostalcode"];
+			$billto .="\n".$this->invoicerecord["city"].", ".$this->invoicerecord["state"]." ".$this->invoicerecord["postalcode"];
 			
-			if($this->invoicerecord["billtocountry"])
-				$billto .=" ".$this->invoicerecord["billtocountry"];
+			if($this->invoicerecord["country"])
+				$billto .=" ".$this->invoicerecord["country"];
 				
 			$phoneemail = "";
 			if($this->invoicerecord["workphone"] || $this->invoicerecord["homephone"]){
@@ -334,16 +330,20 @@
 
 		
 		function _setShipTo(){
-
-			$shipto = $this->invoicerecord["address1"];
 			
-			if($this->invoicerecord["address2"])
-				$shipto .= "\n".$this->invoicerecord["address2"];
+			$added = ($this->invoicerecord["shiptosameasbilling"])? "" : "shipto";
+			
+			$shipto = "";
+							
+			$shipto .= $this->invoicerecord[$added."address1"];
+			
+			if($this->invoicerecord[$added."address2"])
+				$shipto .= "\n".$this->invoicerecord[$added."address2"];
 				
-			$shipto .="\n".$this->invoicerecord["city"].", ".$this->invoicerecord["state"]." ".$this->invoicerecord["postalcode"];
+			$shipto .="\n".$this->invoicerecord[$added."city"].", ".$this->invoicerecord[$added."state"]." ".$this->invoicerecord[$added."postalcode"];
 			
-			if($this->invoicerecord["country"])
-				$shipto .=" ".$this->invoicerecord["country"];				
+			if($this->invoicerecord[$added."country"])
+				$shipto .=" ".$this->invoicerecord[$added."country"];				
 			
 			if($this->showShipNameInShipTo)
 				if($this->invoicerecord["shippingname"])

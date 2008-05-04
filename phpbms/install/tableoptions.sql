@@ -63,3 +63,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `rol
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('203', 'select', '1', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('203', 'new', '1', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('203', 'printex', '1', '0', '0', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('204', 'new', '1', '0', '0', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('204', 'edit', '1', '0', '0', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('204', 'printex', '1', '0', '0', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('204', 'select', '1', '0', '0', '0');

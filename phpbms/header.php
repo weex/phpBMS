@@ -23,9 +23,20 @@
 		$phpbms->topJS[]="setLoginRefresh();";
 		
 	$phpbms->showExtraJs($phpbms->topJS);
+	
+	if($phpbms->onload) {
+		?><script language="JavaScript" type="text/javascript">
+			connect(window,"onload",function() {		
+			<?php
+					foreach($phpbms->onload as $theextra)
+						echo $theextra."\n";
+			?>
+			})
+		</script><?php
+	}//end if onload
 ?>
 </head>
-<body <?php if($phpbms->onload) echo "onload=\"".$phpbms->onload."\""?>>
+<body>
 <?php 
 
 if($phpbms->showMenu){

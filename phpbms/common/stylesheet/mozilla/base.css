@@ -85,3 +85,77 @@
 	.saveCancels{text-align:right;}
 	#saveButton1,#saveButton2{width:68px;margin-right:3px;}
 	#cancelButton1,#cancelButton2{width:68px;}
+	
+/* ============================================================================== */
+/* Smart Searches                                                                 */
+/* ============================================================================== */
+.inputSmartSearch{
+	background-image:url("image/magnify.gif");
+	background-position:right;
+	background-repeat:no-repeat;
+	padding-right:10px;
+}
+
+.smartSearchBox{
+	border:1px solid #999999;
+	background:white;
+	position:absolute;
+}
+
+.SBResults{
+ overflow:auto;
+}
+
+.SBResults DIV{
+	 color:#666666;
+	 padding:5px;
+	 font-style:italic;
+}
+
+.SBResults A{
+/*	width:245px;/* 295 - 5 - 30 */
+	display:block;
+	color:#663366;
+	font-weight:normal;
+	padding:6px 5px 6px 5px;
+	background-repeat:no-repeat;
+	background-position:8px 8px;
+}
+
+.SBResults A:hover, .SBResults A.SBSelected{
+	text-decoration:none;
+	background-color:#663366;
+	color:white;
+}
+
+.SBAddNewButton{
+	width:70px;
+	text-align:right;
+}
+
+.SBResults SPAN{
+	display:block;
+}
+
+.SBMain{
+	font-weight:bold;
+}
+
+.SBExtra{
+	font-size:9px;
+	padding-left:5px;
+}
+
+.SBHeader{
+	background:#EEEEEE;
+	text-align:right;	
+	padding:5px;
+	height:16px;
+}
+
+.SBFooter{
+	background:#EEEEEE;
+	text-align:right;
+	font-size:10px;
+	padding:5px;
+}

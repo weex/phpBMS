@@ -36,83 +36,120 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+session_cache_limiter('private');
 
-	include("../../include/session.php");
+include("../../include/session.php");
+
+class productLookup{
+
+	function productLookup($db){
 	
-
-	if (!isset($_GET["cid"])) $_GET["cid"]="0";
-	if (!$_GET["cid"]) $_GET["cid"]="0";	
-	$prereqnotmet=false;
+		$this->db = $db;
 	
-	//check prerequisites
-	$prereqstatement="select childid from prerequisites where parentid =".$_GET["id"];
-	$prereqquery = $db->query($prereqstatement);
+	}//end method - init
+
 	
-	if ($db->numRows($prereqquery)) {
-		$checkpids="";
-		while ($prereqrecord= $db->fetchArray($prereqquery))
-			$checkpids=$checkpids." or lineitems.productid=".$prereqrecord["childid"];
+	function meetsPrereq($productid, $clientid){
 
-		$checkpids=substr($checkpids,4);
-		// See if they have ordered the stuff
-		$prlookupstatement="SELECT invoices.id from 
-			(clients inner join invoices on clients.id=invoices.clientid) 
-			inner join lineitems on invoices.id = lineitems.invoiceid
-			where clients.id=".$_GET["cid"]." and invoices.type != \"Void\" and invoices.type != \"Quote\" and
-			(".$checkpids.")";
-		$prquery=$db->query($prlookupstatement);
+		// This method return true if the client/product
+		// combination return no prerequisites or 
+		// if all prerequisites products have been 
+		// at least ordered by the client.
+				
+		$querystatement = "
+			SELECT
+				childid
+			FROM
+				prerequisites
+			WHERE
+				parentid = ".((int) $productid);
+				
+		$queryresult = $this->db->query($querystatement);
+		
+		if($this->db->numRows($queryresult)){
+		
+			$whereclause = "";
+			while($therecord = $this->db->fetchArray($queryresult))
+				$whereclause .= " OR lineitems.productid = ".$therecord["childid"];
 
-		if (!$db->numRows($prquery)){
-			$prereqnotmet=true;
-		}
-	} // end if
+			$whereclause = substr($whereclause, 4);
+			
+			$checkstatement = "
+				SELECT
+					invoices.id
+				FROM
+					invoices INNER JOIN lineitems ON lineitems.invoiceid = invoices.id
+				WHERE
+					invoices.clientid = ".((int) $clientid)."
+					AND invoices.type != 'Void'
+					AND invoices.type != 'Quote'
+					AND (".$whereclause.")
+				";
+
+			if($this->db->numRows($this->db->query($checkstatement)) > 0 || $clientid == "");
+				return false;
+				
+		}//endif - numRows
+		
+		return true;
+	
+	}//end method - checkPrereq
 	
 	
-	if(!$prereqnotmet) {
-		$querystatement="SELECT id,partnumber,partname,unitprice, 
-						description, weight, unitcost, taxable
-						FROM products WHERE id=".$_GET["id"];
-		$queryresult= $db->query($querystatement);
-		$therecord=$db->fetchArray($queryresult);
-	} else {
-		$therecord["id"]="Prerequisite Not Met";
-		$therecord["partnumber"]="";
-		$therecord["partname"]="";
-		$therecord["unitprice"]="";
-		$therecord["description"]="";
-		$therecord["taxable"]="";
-		$therecord["weight"]="";
-		$therecord["unitcost"]="";
-	}
+	function getInfo($productid){
 	
-	header('Content-Type: text/xml');
-	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
-?>
-<response>
-	<field>partnumber</field>
-	<value><?php echo $therecord["id"]?></value>
-
-	<field>ds-partnumber</field>
-	<value><?php echo xmlEncode($therecord["partnumber"]) ?></value>
+		$querystatement = "
+			SELECT 
+				*
+			FROM
+				products
+			WHERE
+				id = ".((int) $productid);
+		
+		return $this->db->fetchArray($this->db->query($querystatement));
 	
-	<field>partname</field>
-	<value><?php echo $therecord["id"] ?></value>
+	}//end method - getInfo
+	
+	
+	function display($record){
+		
+		$output = "{ prereqMet: ";
+		if($record){
+			
+			$output .= "true, record: {";
+			
+			foreach($record as $key=>$value)
+				$output .= $key.": '".str_replace("'","\\'",htmlQuotes($value))."',";
+			
+			$output = substr($output,0,-1)."}";
+		
+		} else {
+		
+			$output .= "false";
+		
+		}//endif - record
+	
+		$output .= "}";
+		
+		header("Content-type: text/plain");
+		echo $output;		
+	
+	}//end method display
 
-	<field>ds-partname</field>
-	<value><?php echo xmlEncode($therecord["partname"]) ?></value>
+}//end class - productLookup
 
-	<field>taxable</field>
-	<value><?php echo xmlEncode($therecord["taxable"]) ?></value>
 
-	<field>memo</field>
-	<value><?php echo xmlEncode($therecord["description"]) ?></value>
+//processing
+//=========================================================================
+if(isset($_GET["cid"]) && isset($_GET["id"])){
+	
+	$lookup = new productLookup($db);
+	
+	if($lookup->meetsPrereq($_GET["id"], $_GET["cid"]))	
+		$therecord = $lookup->getInfo($_GET["id"]);
+	else
+		$therecord = false;		
 
-	<field>price</field>
-	<value><?php echo xmlEncode(numberToCurrency($therecord["unitprice"])) ?></value>
-
-	<field>unitcost</field>
-	<value><?php echo $therecord["unitcost"] ?></value>
-
-	<field>unitweight</field>
-	<value><?php echo $therecord["weight"] ?></value>
-</response>
+	$lookup->display($therecord);
+	
+}//end if

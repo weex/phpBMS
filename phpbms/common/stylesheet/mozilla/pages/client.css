@@ -7,8 +7,11 @@
 #rightSideDiv{clear:both;float:right;width:200px;}
 #leftSideDiv{padding-top:1px;margin-right:210px;}
 
-#id, #becameclient, #ds-salesmanagerid, #ccnumber, #ds-taxareaid, #comments{width:98%}
+#id, #becameclient, #ccnumber, #ds-taxareaid, #comments{width:98%}
 #type, #category, #leadsource,#paymentmethodid,#shippingmethodid,#discountid,#taxareaid{width:99%}
+#ds-salesmanagerid{
+	width:90%
+}
 
 #backtoorderP{padding-top:9px;}
 #gotoinvoice{width:100%}
@@ -16,7 +19,7 @@
 #firstnameP{float:left;}
 
 .phonelefts{float:left}
-#address1,#shiptoaddress1{margin-bottom:2px;}
+#address1{margin-bottom:2px;}
 
 .csz{float:left}
 

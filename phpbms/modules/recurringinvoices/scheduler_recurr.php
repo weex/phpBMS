@@ -21,7 +21,7 @@ class recurr{
 							FROM recurringinvoices INNER JOIN invoices ON recurringinvoices.invoiceid = invoices.id
 							WHERE invoices.invoicedate <= '".dateToString($dateToCheck,"SQL")."' 
 							AND (recurringinvoices.until IS NULL OR recurringinvoices.until >= '".dateToString($dateToCheck,"SQL")."')
-							AND (recurringinvoices.times IS NULL OR recurringinvoices.times < recurringinvoices.timesrepeated)";
+							AND (recurringinvoices.times IS NULL OR recurringinvoices.times > recurringinvoices.timesrepeated)";
 
 		$queryresult = $this->db->query($querystatement);
 		

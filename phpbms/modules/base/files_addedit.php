@@ -91,14 +91,10 @@
 		$theform->addField($theinput);
 		
 		if(isset($_GET["tabledefid"]) && !isset($therecord["id"])){
-			$securitywhere="";
-			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
-				$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
-			$theinput = new inputAutofill($db, "fileid","",26,"files.id","files.name", 
-											"if(length(files.description)>20,concat(left(files.description,17),\"...\"),files.description)",
-											"files.id!=1 ".$securitywhere, "existing file name");
-			$theinput->setAttribute("size",40);
+		
+			$theinput = new inputSmartSearch($db, "fileid", "Pick File", "", "exisiting file", false, 40);		
 			$theform->addField($theinput);
+			
 		}//end if
 
 		$theform->jsMerge();
@@ -151,9 +147,9 @@
 					<input type="radio"  class="radiochecks" name="newexisting" id="existingfile" value="existing" onclick="switchFile()" /><label for="existingfile">existing file</label><br />
 					<span class="notes">Choose "existing file" if the file has already been uploaded into phpBMS.</span>
 				</p>
-				<p id="fileidlabel">
+				<div class="fauxP" id="fileidlabel">
 					<?php $theform->showField("fileid");?>				
-				</p>
+				</div>
 			<?php }?>
 				<p id="uploadlabel">
 					<label for="upload">upload new file</label><br />

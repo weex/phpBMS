@@ -40,24 +40,51 @@
 	
 	include("../../include/fields.php");
 
-	$refquery="select partname from products where id=".$_GET["id"];
+	$refquery="select partname from products where id=".((int) $_GET["id"]);
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);	
 
 if(isset($_POST["command"])){
+
 	switch($_POST["command"]){
+	
 		case"delete":
-			$thequery="delete from prerequisites where id=".$_POST["deleteid"];
-			$theresult=$db->query($thequery);
-		break;
+			$deletestatement = "
+				DELETE FROM 
+					prerequisites 
+				WHERE
+					id=".((int) $_POST["deleteid"]);
+			
+			$db->query($deletestatement);
+			
+			$statusmessage = "Prerequisite removed.";
+			break;
+			
 		case"add":
-			if($_POST["partnumber"]!=$_GET["id"] && $_POST["partnumber"]!=""){
-				$thequery="insert into prerequisites (parentid,childid) VALUES(".$_GET["id"].",\"".$_POST["partnumber"]."\");";
-				$theresult=$db->query($thequery);
-			}
-		break;
-	}
-}
+			if($_POST["productid"]!=$_GET["id"] && $_POST["productid"]!=""){
+			
+				$insertstatement = "
+					INSERT INTO 
+						prerequisites 
+						(parentid,
+						childid) 
+					VALUES
+						(".((int) $_GET["id"]).", 
+						".((int)$_POST["productid"]).")";
+						
+				$db->query($insertstatement);
+				
+				$statusmessage = "Prerequisite added.";
+				
+			} else {
+			
+				$statusmessage = "Prerequisite not added.";
+				
+			}//endif
+			break;	
+	}//endswitch - comand
+	
+}//endif - command
 
 	$prerequstatement="SELECT DISTINCT prerequisites.id,partnumber,partname,description 
 						FROM prerequisites INNER JOIN products ON prerequisites.childid=products.id 
@@ -73,21 +100,10 @@ if(isset($_POST["command"])){
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
-		$theinput = new inputAutofill($db, "partnumber","",4,"products.id","products.partnumber",
-										"products.partname","products.status=\"In Stock\" and products.inactive=0","partnumber", false,true);					
-		$theinput->setAttribute("size","16");
-		$theinput->setAttribute("maxlength","32");
+
+		$theinput = new inputSmartSearch($db, "productid", "Pick Product", "", "product", false, 51, 255);
 		$theform->addField($theinput);
-		$phpbms->bottomJS[] = 'document.forms["record"]["partnumber"].onchange=populateLineItem;';
-			
-		$theinput = new inputAutofill($db, "partname","",4,"products.id","products.partname",
-										"products.partnumber","products.status=\"In Stock\" and products.inactive=0","part name", false,true);
-		$theinput->setAttribute("size","20");
-		$theinput->setAttribute("maxlength","128");
-		$theform->addField($theinput);
-		$phpbms->bottomJS[] = 'document.forms["record"]["partname"].onchange=populateLineItem;';
-		
+				
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -108,11 +124,13 @@ if(isset($_POST["command"])){
 		 <th align="left" width="100%" class="queryheader">Description</th>
 		 <th align="center" nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
-		<?php 	
+		<?php 
+		$row = 1;	
 		if($numrows){
 			while ($prereq=$db->fetchArray($prereqresult)){
+			$row = ($row == 1)? 2: 1;
 	?>
-		<tr>
+		<tr class="qr<?php echo $row?>">
 			<td align="left" nowrap="nowrap"><?php echo $prereq["partnumber"] ?></td>
 			<td align="left" nowrap="nowrap"><?php echo $prereq["partname"] ?></td>
 			<td align="left" width="100%"><?php echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
@@ -138,11 +156,9 @@ if(isset($_POST["command"])){
 	</div>
 
 	<fieldset>
-		<legend>add new prerequisite product</legend>
+		<legend>add new prerequisite</legend>
 
-		<div class="preqAdd fauxP"><?php $theform->showField("partnumber")?></div>
-
-		<div class="preqAdd fauxP"><?php $theform->showField("partname")?></div>
+		<div class="preqAdd fauxP"><?php $theform->showField("productid")?></div>
 		
 		<p id="addButtonP"><br />
 			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button> 

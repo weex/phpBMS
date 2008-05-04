@@ -53,7 +53,21 @@ if(class_exists("phpbmsTable")){
 		}
 		
 		function insertRecord($variables,$createdby = NULL){
-			$newid = parent::insertRecord($variables,$createdby);
+
+			if(!isset($variables["newid"]))
+				$variables["newid"] = "";
+				
+			if($variables["newid"]){
+				//this will set a specific ID to be used.				
+				$variables["id"] = $variables["newid"];
+				parent::insertRecord($variables,$createdby,true);
+				$newid =  $variables["newid"];
+			
+			} else {
+			
+				$newid = parent::insertRecord($variables,$createdby);
+				
+			}//endif - newid
 			
 			//we need to create the some default supporting records
 			//first a single column.

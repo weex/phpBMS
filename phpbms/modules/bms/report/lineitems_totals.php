@@ -78,13 +78,17 @@ class totalReport{
 		$this->addGroup("Payment Method","paymentmethods.name");//15
 		
 		$this->addGroup("Shipping Method","shippingmethods.name");//16
-		$this->addGroup("Invoice Shipping Country","invoices.country");//17
-		$this->addGroup("Invoice Shipping State / Province","invoices.state");//18
-		$this->addGroup("Invoice Shipping Postal Code","invoices.postalcode");//19
-		$this->addGroup("Invoice Shipping City","invoices.city");//20
+		$this->addGroup("Invoice Shipping Country","invoices.shiptocountry");//17
+		$this->addGroup("Invoice Shipping State / Province","invoices.shiptostate");//18
+		$this->addGroup("Invoice Shipping Postal Code","invoices.shiptopostalcode");//19
+		$this->addGroup("Invoice Shipping City","invoices.shiptocity");//20
 
 		$this->addGroup("Web Order","invoices.weborder","boolean");//21
 
+		$this->addGroup("Invoice billing Country","invoices.country");//22
+		$this->addGroup("Invoice Billing State / Province","invoices.state");//23
+		$this->addGroup("Invoice Billing Postal Code","invoices.postalcode");//24
+		$this->addGroup("Invoice Billing City","invoices.city");//25
 
 		//next we do the columns		
 		$this->addColumn("Record Count","count(lineitems.id)");//0
