@@ -267,70 +267,150 @@ if(class_exists("searchFunctions")){
 		
 			//passed variable is array of user ids to be revoked
 			$clientWhereClause = $this->buildWhereClause();
-						
-			//next get any quotes that we may have to delete
-			$invoiceWhereClause = $this->buildWhereClause("clientid");
-			$invoicestatement = "
+
+			$querystatement = "
 				SELECT
-					invoices.id
+					id
 				FROM
-					invoices INNER JOIN clients ON invoices.clientid = clients.id
-				WHERE
-					(".$invoiceWhereClause.")
-					AND clients.type='prospect'";
-					
-			$invoiceresult = $this->db->query($invoicestatement);
-			
-			//build invoice id array
-			$invoiceids = array();
-			while($therecord = $this->db->fetchArray($invoiceresult))
-				$invoiceids[] = $therecord["id"];
-			
-			if(count($invoiceids)) {
-				$invoiceWhereClause = $this->buildWhereClause("invoices.id", $invoiceids);
-				
-				$lineitemWhereClause = $this->buildWhereClause("invoiceid", $invoiceids);
-	
-				$lineItemDeleteStatement = "
-					DELETE FROM
-						lineitems
-					WHERE
-						".$lineitemWhereClause;
-	
-				$queryresult = $this->db->query($lineItemDeleteStatement);
-	
-				$statushistoryDeleteStatement = "
-					DELETE FROM
-						invoicestatushistory
-					WHERE
-						".$lineitemWhereClause;
-	
-				$queryresult = $this->db->query($statushistoryDeleteStatement);
-				
-				$invoiceDeleteStatement = "
-					DELETE FROM
-						invoices
-					WHERE					
-						".$invoiceWhereClause;
-
-				$queryresult = $this->db->query($invoiceDeleteStatement);
-
-			}//end if
-
-			$deletestatement = "
-				DELETE FROM 
 					clients
-				WHERE 
-					(".$clientWhereClause.") 
-					AND clients.type='prospect'";
+				WHERE
+					(".$clientWhereClause.")
+					AND clients.type = 'prospect'";
 					
-			$queryresult = $this->db->query($deletestatement);
+			$queryresult = $this->db->query($querystatement);
+			
+			//build array of ids to be removed
+			$deleteIDs = array();
+			while($therecord = $this->db->fetchArray($queryresult))
+				array_push($deleteIDs, $therecord["id"]);
+
+			if(count($deleteIDs)){
+			
+				$a2rWhere = $this->buildWhereClause("recordid", $deleteIDS);
+
+				//First we get a list of all the addresses for the prospect
+				$querystatement = "
+					SELECT DISTINCT
+						addressid
+					FROM
+						addresstorecord
+					WHERE
+						tabledefid = 2
+						AND (".$a2rWhere.")";
+						
+				$a2rResult = $this->db->query($querystatement);
+				
+				$addressIDs = array();
+				while($a2r = $this->db->fetchArray($a2rResult))
+					array_push($addressIDs, $a2r["addressid"]);
+					
+				// delete all a2r records for prospect	
+				$deletestatement = "
+					DELETE FROM
+						addresstorecord
+					WHERE
+						tabledefid = 2
+						AND (".$a2rWhere.")";
+						
+				$this->db->query($deletestatement);
+				
+				//now go get a list of orphaned addresses
+				$querystatement = "
+					SELECT 
+						addresses.id, 
+						addresstorecord.id as a2rid 
+					FROM 
+						addresses LEFT JOIN addresstorecord ON addresstorecord.addressid = addresses.id
+					WHERE
+						".$this->buildWhereClause("addresses.id", $addressIDs);
+						
+				$addressResult = $this->db->query($querystatement);
+				
+				$addressIDs = array();
+				while($address = $this->db->fetchArray($addressResult))
+					if(!$address["a2rid"])
+						array_push($addressIDs, $address["id"]);
+						
+				if(count($addressIDs)){
+				
+					//delete orphaned addresses		
+					$deletestatement = "
+						DELETE FROM 
+							addresses
+						WHERE
+							".$this->buildWhereClause("addresses.id", $addressIDs);
+							
+					$this->db->query($deletestatement);
+					
+				}//endif - addressids
+
+				//next get any quotes that we may have to delete
+				$invoiceWhereClause = $this->buildWhereClause("clientid", $deleteIDs);
+				$invoicestatement = "
+					SELECT
+						invoices.id
+					FROM
+						invoices
+					WHERE
+						".$invoiceWhereClause;
+						
+				$invoiceresult = $this->db->query($invoicestatement);
+				
+				//build invoice id array
+				$invoiceids = array();
+				while($therecord = $this->db->fetchArray($invoiceresult))
+					array_push($invoiceids, $therecord["id"]);
+				
+				if(count($invoiceids)) {
+					$invoiceWhereClause = $this->buildWhereClause("invoices.id", $invoiceids);
+					
+					$lineitemWhereClause = $this->buildWhereClause("invoiceid", $invoiceids);
 		
-			$message = $this->buildStatusMessage();
+					$lineItemDeleteStatement = "
+						DELETE FROM
+							lineitems
+						WHERE
+							".$lineitemWhereClause;
+		
+					$queryresult = $this->db->query($lineItemDeleteStatement);
+		
+					$statushistoryDeleteStatement = "
+						DELETE FROM
+							invoicestatushistory
+						WHERE
+							".$lineitemWhereClause;
+		
+					$queryresult = $this->db->query($statushistoryDeleteStatement);
+					
+					$invoiceDeleteStatement = "
+						DELETE FROM
+							invoices
+						WHERE					
+							".$invoiceWhereClause;
+	
+					$queryresult = $this->db->query($invoiceDeleteStatement);
+	
+				}//end if
+
+				//lastly we remove the prospect record
+				$delWhere = $this->buildWhereClause("clients.id", $deleteIDS);
+
+				$deletestatement = "
+					DELETE FROM 
+						clients
+					WHERE 
+						".$delWhere;
+						
+				$this->db->query($deletestatement);
+							
+			}//endif - count deleteIDS												
+
+		
+			$message = $this->buildStatusMessage(count($deleteIDs));
 			$message.=" deleted.";
 			return $message;	
 			
-		}// end method
+		}// end method - delete_prospects
 		
 		
 		function massEmail(){

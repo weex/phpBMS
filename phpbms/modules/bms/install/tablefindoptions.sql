@@ -1,10 +1,10 @@
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Prospects','clients.type = \"prospect\"   and clients.inactive=0',1,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Today\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=0 and clients.inactive=0',3,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Yesterday\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=1 and clients.inactive=0',4,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Last Week\'s Prospects','clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))<7 and clients.inactive=0',5,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Clients','clients.type = \"client\" and clients.inactive=0',0,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'Inactive Clients','clients.type = \"client\" and clients.inactive=1',6,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (2,'All Records','clients.id != 0',7,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Prospects', 'clients.type = \"prospect\"   and clients.inactive=0', '1', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Today\'s Prospects', 'clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=0 and clients.inactive=0', '3', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Yesterday\'s Prospects', 'clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))=1 and clients.inactive=0', '4', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Last Week\'s Prospects', 'clients.type = \"prospect\" and (TO_DAYS(now())-TO_DAYS(clients.creationdate))<7 and clients.inactive=0', '5', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Clients', 'clients.type = \"client\" and clients.inactive=0', '0', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'Inactive Clients', 'clients.type = \"client\" and clients.inactive=1', '6', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('2', 'All Records', 'clients.id != 0', '7', '0');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Orders - Ready To Post','invoices.type = \'Order\' AND invoices.readytopost =1',8,30);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Orders - No Payment','invoices.type = \'Order\' AND invoices.paymentmethodid IS NULL or invoices.paymentmethodid = 0',9,20);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (3,'Invoices - Today','invoices.type=\"Invoice\" and invoices.invoicedate=curdate()',11,20);
@@ -48,10 +48,9 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,'Active Records','productcategories.inactive=0',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (7,'Inactive Records','productcategories.inactive=1',2,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (8,'All Records','prerequisites.id != 0',1,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (18,'matching names','clients.firstname=dupclients.firstname and clients.lastname=dupclients.lastname and clients.id<>dupclients.ID',1,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (18,'Matching Names and Postal Code','clients.firstname=dupclients.firstname and clients.lastname=dupclients.lastname and clients.postalcode=dupclients.postalcode and clients.id<>dupclients.ID',2,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (18,'Matching Addresses','clients.address1=dupclients.address1 and clients.id<>dupclients.ID',3,0);
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (18,'Matching Home Phone','clients.homephone=dupclients.homephone and clients.id<>dupclients.ID',4,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('18', 'match names', 'clients.firstname=dclients.firstname AND clients.lastname=dclients.lastname AND clients.lastname != \'\' AND clients.firstname != \'\' AND  clients.id<>dclients.id', '1', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('18', 'match names and postal code', 'clients.firstname=dclients.firstname AND clients.lastname=dclients.lastname AND addresses.postalcode = daddresses.postalcode AND clients.lastname != \'\' AND clients.firstname != \'\' AND addresses.postalcode != \'\' AND clients.id<>dlients.ID', '2', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('18', 'match addresses', 'addresses.address1=addresses..address1 AND clients.id<>dclients.id', '3', '0');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (22,'all records','clientemailprojects.id!=-1',0,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (22,'global projects','clientemailprojects.userid=0',1,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (25,'all records','discounts.id!=0',0,0);
@@ -73,3 +72,5 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (304,'All Records','receipts.id!=-1',5,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (304,'non-posted','receipts.posted = 0',0,0);
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES (304,'posted','receipts.posted = 1',4,0);
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('305', 'All Records', 'addresstorecord.id!=-1', '0', '0');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('306', 'All Records', 'addresses.id!=-1', '0', '0');
