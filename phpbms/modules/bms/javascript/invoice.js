@@ -209,14 +209,15 @@ theStatus = {
 
 	statusChosen: function(e){
 		
-		var status=getObjectFromID("statusid");
-		var assignedto=getObjectFromID("ds-assignedtoid");
+		var status = getObjectFromID("statusid");
+		var assignedto = getObjectFromID("ds-assignedtoid");
+		var assignedtoid = getObjectFromID("assignedtoid");
 
 		//update assignedto
 		if(statuses[status.value]["firstname"] || statuses[status.value]["lastname"]){
 			
 			assignedto.value = (statuses[status.value]["firstname"]+" "+statuses[status.value]["lastname"]).replace(/^\s+|\s+$/g,"");
-			lastLookup(assignedto);
+			assignedtoid.value = statuses[status.value]["userid"]
 			
 		}//endif
 		

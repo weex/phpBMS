@@ -138,28 +138,31 @@ addresses = {
 		
 		theButton = e.src();
 		
-		addresses.loadSection = theButton.id.substr(17);
-		
-		var clientid = getObjectFromID("clientid");
-		
-		var theurl = "invoices_addresses_ajax.php?w=l&id="+clientid.value;
-		
-		loadXMLDoc(theurl,null,false);		
-		
-		var content = req.responseText;
-		
-		showModal(content, "Load Client Address", 400);
-		
-		var cancelButton = getObjectFromID("LACancelButton")
-		addresses.loadConnects[0] = connect(cancelButton, "onclick", addresses.closeLoad);
-		
-		var loadButton = getObjectFromID("LALoadButton")
-		addresses.loadConnects[1] = connect(loadButton, "onclick", addresses.loadAddress);
+		if(theButton.className.indexOf("disabled") === -1){
 
-		var atags = getElementsByClassName("LAPickAs");
-		for(var i=0; i<atags.length;i++)
-			addresses.loadConnects[addresses.loadConnects.length] = connect(atags[i], "onclick", addresses.pickAddress);
-		
+			addresses.loadSection = theButton.id.substr(17);
+			
+			var clientid = getObjectFromID("clientid");
+			
+			var theurl = "invoices_addresses_ajax.php?w=l&id="+clientid.value;
+			
+			loadXMLDoc(theurl,null,false);		
+			
+			var content = req.responseText;
+			
+			showModal(content, "Load Client Address", 400);
+			
+			var cancelButton = getObjectFromID("LACancelButton")
+			addresses.loadConnects[0] = connect(cancelButton, "onclick", addresses.closeLoad);
+			
+			var loadButton = getObjectFromID("LALoadButton")
+			addresses.loadConnects[1] = connect(loadButton, "onclick", addresses.loadAddress);
+	
+			var atags = getElementsByClassName("LAPickAs");
+			for(var i=0; i<atags.length;i++)
+				addresses.loadConnects[addresses.loadConnects.length] = connect(atags[i], "onclick", addresses.pickAddress);
+				
+		}//endif - disabled
 		
 	},//end method - showLoad
 

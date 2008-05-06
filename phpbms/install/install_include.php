@@ -8,7 +8,7 @@ function processSQLfile($db,$filename){
 
 	$thereturn="Processing SQL from file '".$filename."'\n";
 		while(!feof($thefile)) {
-			$sqlstatement=trim(fgets($thefile,1024));
+			$sqlstatement=trim(fgets($thefile,2048));
 			if(strrpos($sqlstatement,";")==strlen($sqlstatement)-1){
 				$theresult=$db->query($sqlstatement);
 				if($db->error)

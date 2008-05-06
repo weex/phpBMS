@@ -1,16 +1,40 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-#topButtons{float:right;width:160px;}
-#topTitle{margin-right:160px;}
+#topButtons{
+	float:right;
+	width:160px;
+}
 
-#rightsideDiv{clear:both;float:right;width:200px;margin:0;padding:0;}
-#id{width:98%}
-#memo{width:98%;height:255px;}
+#topTitle{
+	margin-right:160px;
+}
 
-#leftsideDiv{margin-right:230px;padding-top:1px;}
-#description{width:99%}
-.costsP{float:left;padding-top:3px;}
+#rightsideDiv{
+	clear:both;
+	float:right;
+	width:220px;
+	margin:0;
+	padding:0;
+}
+
+#id, #categoryid, #status, #type, #memo{
+	width:98%
+}
+
+#leftsideDiv{
+	margin-right:228px;
+	padding-top:1px;
+}
+
+.costsP{
+	float:left;
+	padding-top:3px;
+}
+
+#weightP{
+	clear:left;
+}
 
 #webstuff{display:none}
 #keywords,#webdescription{width:98%}

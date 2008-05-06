@@ -467,7 +467,7 @@ include("../../../include/session.php");
 				
 		$queryresult = $db->query($querystatement);
 		
-		while($therecord = $db->fetchArray($querystatement)){
+		while($therecord = $db->fetchArray($queryresult)){
 		
 			$updatestatement = "
 				UPDATE
@@ -484,11 +484,15 @@ include("../../../include/session.php");
 					city = 		'".$therecord["city"]."',
 					state = 	'".$therecord["state"]."',
 					postalcode ='".$therecord["postalcode"]."',
-					country = 	'".$therecord["country"]."',
+					country = 	'".$therecord["country"]."'
 				WHERE
 					id = ".$therecord["id"];
+
+				$db->query($updatestatement);
 		
 		}//endwhile - record
+	
+		return true;
 	
 	}//end function - v096updateInvoiceAddresses
 
@@ -597,6 +601,7 @@ include("../../../include/session.php");
 				recordid,
 				addressid,
 				`primary`,
+				defaultshipto,
 				createdby,
 				creationdate,
 				modifiedby,
@@ -607,6 +612,7 @@ include("../../../include/session.php");
 				".$variables["addressid"].",
 				".$variables["primary"].",
 				".$variables["defaultshipto"].",
+				1,
 				NOW(),
 				1,
 				NOW()
@@ -635,7 +641,7 @@ include("../../../include/session.php");
 					modifiedby,
 					modifieddate
 				) VALUES (
-					'"variables["title"]"',
+					'".$variables["title"]."',
 					'".$variables["address1"]."',
 					'".$variables["address2"]."',
 					'".$variables["city"]."',

@@ -121,6 +121,7 @@ if(class_exists("phpbmsTable")){
 					invoicestatuses.name,
 					invoicestatuses.invoicedefault,
 					invoicestatuses.setreadytopost,
+					invoicestatuses.defaultassignedtoid,
 					users.firstname,
 					users.lastname
 				FROM 
@@ -146,6 +147,7 @@ if(class_exists("phpbmsTable")){
 				$phpbms->topJS[] = 'statuses['.$therecord["id"].']=Array();';
 				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["name"]="'.htmlQuotes($therecord["name"]).'";';
 				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["setreadytopost"]='.$therecord["setreadytopost"].';';
+				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["userid"]="'.htmlQuotes($therecord["defaultassignedtoid"]).'";';
 				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["firstname"]="'.htmlQuotes($therecord["firstname"]).'";';
 				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["lastname"]="'.htmlQuotes($therecord["lastname"]).'";';				
 			

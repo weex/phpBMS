@@ -341,8 +341,8 @@ smartSearch = {
 		smartSearch.searchBox[ssID] = null;
 		
 		smartSearch.inDropDown[ssID] = false;
-		searchDisplay.blur();
-		searchDisplay.focus();
+		//searchDisplay.blur();
+		//searchDisplay.focus();
 
 	},//end method
 
