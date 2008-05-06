@@ -36,6 +36,11 @@
  +-------------------------------------------------------------------------+
 */
 
+function addClient(){
+	var clientaddedit = getObjectFromID("addeditfile");
+	addEditRecord("new","client",clientaddedit.value);
+}
+
 function addEditRecord(newedit,what,addeditfile){
 
 	var clientid=getObjectFromID("clientid");	
@@ -187,6 +192,9 @@ connect(window,"onload",function() {
 	
 	var viewButton = getObjectFromID("viewButton");
 	connect(viewButton, "onclick", quickView.viewClient)
+	
+	var addButton = getObjectFromID("addButton");
+	connect(addButton, "onclick", addClient);
 	
 	selectedInvoice = "";
 	selectedNote = "";

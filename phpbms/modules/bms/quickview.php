@@ -67,7 +67,7 @@
 	
 	include("header.php");
 	?>
-<form method="post" name="record" id="record" onsubmit="return false;">
+<form method="post" name="record" id="record" onsubmit="return false;" action="#">
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
 
@@ -83,7 +83,7 @@
 
 		<?php $theform->showField("clientid")?>		
 
-		<input type="hidden" id="addeditfile" name="<?php echo getAddEditFile($db,2,"add")?>" />
+		<input type="hidden" id="addeditfile" value="<?php echo getAddEditFile($db,2,"add")?>" />
 		<input type="button" value="view" id="viewButton" class="disabledButtons" />
 		<input type="button" value="add new" id="addButton" class="Buttons" />
 	</div>
