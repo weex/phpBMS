@@ -412,13 +412,12 @@ if(!function_exists("mysql_real_escape_string")){
 	   return $string;
    }
   
-   function html_entity_decode($string){
-	   return preg_replace_callback(
-		   '/&#([0-9]+);/u',
-		   'utf8_replaceEntity',
-		   $string
-	   );
-   }	
+	if(!function_exists("mysql_real_escape_string")){
+		function html_entity_decode($string){
+			return preg_replace_callback('/&#([0-9]+);/u','utf8_replaceEntity',$string);
+		}//end function
+	}//end if
+
 }// end PHP<4.3 compatibility
 
 
