@@ -163,7 +163,7 @@ if(class_exists("addresses")){
 			
 				$this->createAddressToRecord($variables, $variables["existingaddressid"], $createdby);
 				
-				$newid = $variables["existingaddressid"];
+				$newAtrID = $variables["existingaddressid"];
 			
 			} else {
 
