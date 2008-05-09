@@ -125,9 +125,11 @@
 		<fieldset >
 			<legend>sql</legend>
 
-			<p><?php $theform->showField("fromclasue"); ?></p>
+			<p><?php $theform->showField("fromclause"); ?></p>
 
 			<p><?php $theform->showField("valuefield"); ?></p>
+
+			<p><?php $theform->showField("searchfields"); ?></p>
 
 			<p><?php $theform->showField("displayfield"); ?></p>
 

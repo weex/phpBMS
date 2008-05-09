@@ -61,7 +61,7 @@
 		//==============================================================
 		//End Form Elements
 	
-		$lookUp["name / address"] = $theinput->getSearchInfo("Pick Sales Order Client");
+		$lookUp["name"] = $theinput->getSearchInfo("Pick Sales Order Client");
 		$lookUp["e-mail address"] = $theinput->getSearchInfo("Pick Client By Email");
 		$lookUp["phone"] = $theinput->getSearchInfo("Pick Client By Phone");
 	
