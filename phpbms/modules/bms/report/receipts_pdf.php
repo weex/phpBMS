@@ -135,12 +135,12 @@
 					clients.firstname,
 					clients.lastname,
 					clients.company,
-					clients.address1,
-					clients.address2,
-					clients.city,
-					clients.state,
-					clients.postalcode,
-					clients.country,
+					addresses.address1,
+					addresses.address2,
+					addresses.city,
+					addresses.state,
+					addresses.postalcode,
+					addresses.country,
 					clients.homephone,
 					clients.workphone,
 					clients.email,
@@ -153,7 +153,10 @@
 															
 				FROM
 					receipts INNER JOIN clients ON receipts.clientid = clients.id
-					INNER JOIN users ON receipts.modifiedby = users.id
+					INNER JOIN users ON receipts.modifiedby = users.id INNER JOIN
+					addresstorecord ON addresstorecord.tabledefid = 2 AND addresstorecord.primary = 1
+					AND addresstorecord.recordid = clients.id INNER JOIN addresses
+					ON addresstorecord.addressid = addresses.id
 					LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.id";
 					
 			$querystatement = $this->assembleSQL($querystatement);
@@ -560,8 +563,10 @@
 		
 			$size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin;
 
+			$tempTotalsinfo = $this->totalsinfo;
+
 			if($this->receiptrecord["remaining"]){
-			
+
 				$this->totalsinfo[1]->size = 1;
 				$size -= 1;
 			
@@ -576,6 +581,7 @@
 			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
 			
 			$pdf->setStyle("header");
+
 			foreach($this->totalsinfo as $column)
 				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
 			
@@ -594,9 +600,12 @@
 
 			}//end foreach
 
-			$this->totalsinfo[1]->size = 0;			
-			
+			if(isset($this->totalsinfo[1]))
+				$this->totalsinfo[1]->size = 0;			
+							
 			$pdf->SetXY($pdf->leftmargin, $nextPos);			
+
+			$this->totalsinfo = $tempTotalsinfo;
 
 		}//end method
 		
