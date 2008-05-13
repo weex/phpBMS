@@ -107,7 +107,7 @@ include("version.php");
 			</li>
 			<li>
 				<p><strong>mysql_database</strong>: the name of the database to be used by phpBMS. <br />
-				If the database has not been created, You can use <a href="#step2">step two</a> to create a new database for phpBMS.</p>
+				If the database has not been created, you will be given the opportunity to create the database.</p>
 			</li>
 			<li>
 				<p><strong>mysql_user</strong>: the name of the user PHP will use to access the database.</p>

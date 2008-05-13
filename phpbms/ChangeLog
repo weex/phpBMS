@@ -1,3 +1,10 @@
+phpBMS v0.96
+ * Support For Multiple Client Addresses
+ * Separate Bill To and Ship To Addresses on Sales Orders
+ * Automatic removal of old CC/Bank routing information on Invoices 
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.96
+
 phpBMS v0.94
 http://phpbms.org/browser/tags/phpbms-0.94
  * Ability to create Quotes for Prospects
