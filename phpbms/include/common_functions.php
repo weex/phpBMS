@@ -512,8 +512,28 @@ function addSlashesToArray($thearray){
 
 
 function htmlQuotes($string){
-	return htmlspecialchars($string,ENT_COMPAT,"UTF-8");
+
+	global $sqlEncoding;
+	if(!isset($sqlEncoding))
+		$sqlEncoding = "";
+		
+	switch ($sqlEncoding){
+	
+		case "latin1":
+			$encoding = "ISO-8859-15";
+			break;
+		
+		case "utf8":
+		default:
+			$encoding = "UTF-8";
+			break;
+	
+	}//endswitch
+	
+	return htmlspecialchars($string, ENT_COMPAT, $encoding);
+
 }
+
 
 
 function htmlFormat($string,$quotes=false){

@@ -439,7 +439,6 @@
 							
 							if($value == "&middot;")
 								$value = " ";
-								
 							if($column->fieldname == $this->lineitems[count($this->lineitems)-1]->fieldname)
 								$ln = 2;
 							
@@ -549,7 +548,7 @@
 			foreach($this->totalsinfo as $column)
 				switch($column->fieldname){
 					case "shipping":
-					case "discountamount":
+					case "discountamount":					
 						if($this->invoicerecord[$column->fieldname])
 							$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
 						break;
