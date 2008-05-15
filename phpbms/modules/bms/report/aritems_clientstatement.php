@@ -83,12 +83,12 @@ class aritemsClientStatements extends phpbmsReport{
 				clients.firstname,
 				clients.lastname,
 				clients.company,
-				clients.address1,
-				clients.address2,
-				clients.city,
-				clients.postalcode,
-				clients.state,
-				clients.country,
+				addresses.address1,
+				addresses.address2,
+				addresses.city,
+				addresses.postalcode,
+				addresses.state,
+				addresses.country,
 				clients.creditlimit,
 				clients.homephone,
 				clients.workphone,
@@ -96,8 +96,15 @@ class aritemsClientStatements extends phpbmsReport{
 				users.firstname AS salesfirstname,
 				users.lastname AS saleslastname
 			FROM
-				(aritems INNER JOIN clients ON aritems.clientid = clients.id)
-				LEFT JOIN users ON clients.salesmanagerid = users.id";
+				(aritems INNER JOIN clients 
+					ON aritems.clientid = clients.id 
+				INNER JOIN addresstorecord 
+					ON addresstorecord.tabledefid = 2 AND addresstorecord.primary = 1
+					AND addresstorecord.recordid = clients.id 
+				INNER JOIN addresses
+					ON addresstorecord.addressid = addresses.id				
+				)LEFT JOIN users 
+					ON clients.salesmanagerid = users.id";
 				
 		$this->sortorder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
 		
