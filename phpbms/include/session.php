@@ -376,7 +376,7 @@ class phpbmsSession{
 			$querystatement="UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
 			$queryresult=@ $this->db->query($querystatement);
 			if(!$queryresult) {
-				$error = new appError(-730,"","Error Updaingt User Login Time",true,true,true,"json");
+				$error = new appError(-730,"","Error Updating User Login Time",true,true,true,"json");
 			} else
 				$thereturn=true;
 		}
@@ -433,7 +433,7 @@ if(!defined("noStartup")){
 	//Testing for API login
 	if(strpos($scriptname,"api_")!==false){
 		if(isset($_POST["phpbmsusername"]) && isset($_POST["phpbmspassword"])){
-			$phpbmsSession->loadDBSettings();
+			$phpbmsSession->loadDBSettings(APP_DEBUG);
 			
 			include_once("include/db.php");
 			$db = new db();
@@ -444,13 +444,13 @@ if(!defined("noStartup")){
 			$phpbms = new phpbms($db);
 	
 	
-			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"],ENCRYPTION_SEED))
+			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"]))
 				$error = new appError(-700,"","Login credentials incorrect",true,true,true,"json");
 		} else
 			$error= new appError(-710,"","No login credentials passed",true,true,true,"json");
 	} else {
 	
-		$phpbmsSession->loadDBSettings($sqlEncoding);
+		$phpbmsSession->loadDBSettings(APP_DEBUG);
 	
 	
 		include_once("include/db.php");
