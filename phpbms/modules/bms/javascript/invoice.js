@@ -791,13 +791,15 @@ lineitems = {
 
 		smartSearch.blankSearch("productid");
 
-		memo.value="";
-		taxable.value=1;
-		unitweight.value=0
-		unitcost.value=0
-		unitprice.value=numberToCurrency(0);
-		quantity.value="1";
-		extended.value=numberToCurrency(0);
+		memo.value = "";
+		taxable.value = 1;
+		unitweight.value = 0
+		unitcost.value = 0
+		unitprice.value = numberToCurrency(0);
+		quantity.value = "1";
+		extended.value = numberToCurrency(0);
+		partname.value = "";
+		partnumber.value = "";
 		
 		lineitems.markChanged();
 		
