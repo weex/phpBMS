@@ -918,10 +918,14 @@ function displaySelectBoxes() {
 }
 
 function modalAlert(text){
+	
 	text=""+text;
 	text.replace("\n","<br />");
 	text+="<DIV align=\"right\"><button id=\"modalOK\" accesskey=\"o\" type=\"button\" class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	showModal(text,"Alert",250);
+
+	var okButton = getObjectFromID("modalOK");
+	okButton.focus();
 }
 
 /* Function Overloads and Extensions --------------------- */
