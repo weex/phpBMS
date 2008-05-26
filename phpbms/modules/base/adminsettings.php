@@ -202,7 +202,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		<p class="notes">
 			<strong>Note:</strong> This graphic is used on some reports. <br />
 			On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
-			If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG</strong>.
+			If you are uploading a PNG, <strong>it must be an 8-bit (256 color) non-interlaced PNG without transparency or alpha channels/layers.</strong>.
 		</p>
 
 	</fieldset>
