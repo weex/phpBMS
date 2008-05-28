@@ -464,6 +464,82 @@ if(class_exists("phpbmsTable")){
 			return $variables;
 		}
 		
+		function addressUpdate($variables, $invoiceid, $modifiedby, $method){
+		// Updates/Inserts address records (billing or shipping )for the sales order's corresponding client
+			switch($method){
+				case "shipping":
+					$varprefix = "shipto";
+					$idprefix = "shipto";
+				break;
+				
+				case "billing":
+					$varprefix = "";
+					$idprefix = "billing";
+				break;
+			}//endswitch
+			
+			switch($variables[$idprefix."saveoptions"]){
+			
+				case "updateAddress":
+					if($variables[$idprefix."addressid"]){
+						
+						$address = new addresses($this->db, 306);
+						
+						$addressRecord = $address->getRecord($variables[$idprefix."addressid"]);
+						
+						if($varprefix == "shipto")
+							$addressRecord["shiptoname"] = $variables["shiptoname"];
+						$addressRecord["address1"] = $variables[$varprefix."address1"];
+						$addressRecord["address2"] = $variables[$varprefix."address2"];
+						$addressRecord["city"] = $variables[$varprefix."city"];
+						$addressRecord["state"] = $variables[$varprefix."state"];
+						$addressRecord["postalcode"] = $variables[$varprefix."postalcode"];
+						$addressRecord["country"] = $variables[$varprefix."country"];
+						
+						$address->updateRecord($addressRecord, $modifiedby);
+						
+					}//endif
+					
+					break;
+			
+				case "createAddress":
+					$addresstorecord = new addresstorecord($this->db,306);
+					
+					if($varprefix == "shipto")
+						$addressRecord["shiptoname"] = $variables["shiptoname"];
+					$atrRecord["address1"] = $variables[$varprefix."address1"];
+					$atrRecord["address2"] = $variables[$varprefix."address2"];
+					$atrRecord["city"] = $variables[$varprefix."city"];
+					$atrRecord["state"] = $variables[$varprefix."state"];
+					$atrRecord["postalcode"] = $variables[$varprefix."postalcode"];
+					$atrRecord["country"] = $variables[$varprefix."country"];
+					$atrRecord["recordid"] = $variables[$varprefix."clientid"];
+					$atrRecord["tabledefid"] = 2;
+					$atrRecord["primary"] = 0;
+					$atrRecord["shiptodefault"] = 0;
+					$atrRecord["notes"] = "Created from sales order #".$invoiceid;
+					
+					$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
+					
+					$atrRecord = $addresstorecord->getRecord($newAtrID);
+			
+					//Need to connect the sales order to the new address record
+					$updatestatement = "
+						UPDATE
+							invoices
+						SET
+							".$idprefix."addressid = ".$atrRecord["id"]."
+						WHERE
+							id = ".$invoiceid;
+					
+					$this->db->query($updatestatement);
+					
+					break;
+			
+			}//endswitch - saveoptions
+			
+		}//end method - addressUpdate
+		
 		
 		function updateRecord($variables, $modifiedby = NULL){
 	
@@ -504,124 +580,15 @@ if(class_exists("phpbmsTable")){
 				// Check to see if we need to update/create the client addresses from the 
 				// billing address
 				if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
-				
+					
 					require_once("addresses.php");
 					require_once("addresstorecord.php");
 					
-					switch($variables["billingsaveoptions"]){
+					$this->addressUpdate($variables, $variables["id"], $modifiedby, "billing");
+					$this->addressUpdate($variables, $variables["id"], $modifiedby, "shipping");
 					
-						case "updateAddress":
-							if($variables["billingaddressid"]){
-							
-								$address = new addresses($this->db,306);
-								
-								$addressRecord = $address->getRecord($variables["billingaddressid"]);
-								
-								$addressRecord["address1"] = $variables["address1"];
-								$addressRecord["address2"] = $variables["address2"];
-								$addressRecord["city"] = $variables["city"];
-								$addressRecord["state"] = $variables["state"];
-								$addressRecord["postalcode"] = $variables["postalcode"];
-								$addressRecord["country"] = $variables["country"];
-
-								$address->updateRecord($addressRecord, $modifiedby);
-								
-							}//end if
-							break;
-							
-						case "createAddress":
-							$addresstorecord = new addresstorecord($this->db,306);
-							
-							$atrRecord["address1"] = $variables["address1"];
-							$atrRecord["address2"] = $variables["address2"];
-							$atrRecord["city"] = $variables["city"];
-							$atrRecord["state"] = $variables["state"];
-							$atrRecord["postalcode"] = $variables["postalcode"];
-							$atrRecord["country"] = $variables["country"];
-							$atrRecord["recordid"] = $variables["clientid"];
-							$atrRecord["tabledefid"] = 2;
-							$atrRecord["primary"] = 0;
-							$atrRecord["shiptodefault"] = 0;
-							$atrRecord["notes"] = "Created from sales order #".$variables["id"];
-							
-							$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
-							
-							$atrRecord = $addresstorecord->getRecord($newAtrID);
-
-							//Need to connect the sales order to the new address record
-							$updatestatement = "
-								UPDATE
-									invoices
-								SET
-									billingaddressid = ".$atrRecord["id"]."
-								WHERE
-									id = ".$variables["id"];
-
-							$this->db->query($updatestatement);
-							
-							break;
-					
-					}//endswitch billingsaveoptions
-					
-					switch($variables["shiptosaveoptions"]){
-
-						case "updateAddress":
-							if($variables["shiptoaddressid"]){
-							
-								$address = new addresses($this->db,306);
-								
-								$addressRecord = $address->getRecord($variables["shiptoaddressid"]);
-								
-								$addressRecord["shiptoname"] = $variables["shiptoname"];
-								$addressRecord["address1"] = $variables["shiptoaddress1"];
-								$addressRecord["address2"] = $variables["shiptoaddress2"];
-								$addressRecord["city"] = $variables["shiptocity"];
-								$addressRecord["state"] = $variables["shiptostate"];
-								$addressRecord["postalcode"] = $variables["shiptopostalcode"];
-								$addressRecord["country"] = $variables["shiptocountry"];
-
-								$address->updateRecord($addressRecord, $modifiedby);
-								
-							}//end if
-							break;
-
-						case "createAddress":
-							$addresstorecord = new addresstorecord($this->db,306);
-							
-							$atrRecord["shiptoname"] = $variables["shiptoname"];
-							$atrRecord["address1"] = $variables["shiptoaddress1"];
-							$atrRecord["address2"] = $variables["shiptoaddress2"];
-							$atrRecord["city"] = $variables["shiptocity"];
-							$atrRecord["state"] = $variables["shiptostate"];
-							$atrRecord["postalcode"] = $variables["shiptopostalcode"];
-							$atrRecord["country"] = $variables["shiptocountry"];
-							$atrRecord["recordid"] = $variables["clientid"];
-							$atrRecord["tabledefid"] = 2;
-							$atrRecord["primary"] = 0;
-							$atrRecord["shiptodefault"] = 0;
-							$atrRecord["notes"] = "Created from sales order #".$variables["id"];
-							
-							$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
-							
-							$atrRecord = $addresstorecord->getRecord($newAtrID);
-							
-							//Need to connect the sales order to the new address record
-							$updatestatement = "
-								UPDATE
-									invoices
-								SET
-									shiptoaddressid = ".$atrRecord["id"]."
-								WHERE
-									id = ".$variables["id"];
-
-							$this->db->query($updatestatement);
-							
-							break;
-												
-					}//endif
-				
 				}//end if
-					
+				
 			}//end if
 			
 			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")
@@ -641,7 +608,17 @@ if(class_exists("phpbmsTable")){
 			$variables = $this->prepareVariables($variables);
 	
 			$newid = parent::insertRecord($variables, $createdby);
-	
+			
+			if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
+				
+				require_once("addresses.php");
+				require_once("addresstorecord.php");
+				
+				$this->addressUpdate($variables, $newid, $createdby, "billing");
+				$this->addressUpdate($variables, $newid, $createdby, "shipping");
+				
+			}//end if
+			
 			if($variables["lineitemschanged"]==1){
 				
 				$lineitems = new lineitems($this->db, $newid);
@@ -656,7 +633,9 @@ if(class_exists("phpbmsTable")){
 				$this->prospectToClient($variables["clientid"]);
 	
 			return $newid;
-		}
+		
+		}//end method - insertRecord
+		
 	}//end class
 
 
