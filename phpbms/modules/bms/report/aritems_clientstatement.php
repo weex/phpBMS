@@ -57,16 +57,16 @@ class aritemsClientStatements extends phpbmsReport{
 			$this->statementDate = $statementDate;
 		else
 			$this->statementDate = mktime(0,0,0);
-			
+		
 		$this->showPayments = $showPayments;			
 		$this->showClosed = $showClosed;
-			
-	}//end method
+		
+	}//end method aritemsClientStatements
 	
 	
 	function generate($whereclause = ""){
-	
-
+		
+		
 		if($whereclause)
 			$this->whereclause = $whereclause;
 			
@@ -74,8 +74,8 @@ class aritemsClientStatements extends phpbmsReport{
 			$this->whereclause = "
 				aritems.status = 'open'
 				AND aritems.posted = 1";
-
-
+		
+		
 		//first we need to get the list of clients.				
 		$querystatement = "
 			SELECT DISTINCT 
@@ -109,16 +109,16 @@ class aritemsClientStatements extends phpbmsReport{
 		$this->sortorder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
 		
 		$querystatement = $this->assembleSQL($querystatement);
-
+		
 		$clientresult = $this->db->query($querystatement);
-	
+		
 		if(!class_exists("phpbmsPDFReport"))
 			include("report/pdfreport_class.php");
-					
+			
 		$this->pdf = new phpbmsPDFReport($this->db, "P","in","Letter");
-				
+		
 		$pdf = &$this->pdf;
-
+		
 		$this->itemColumns = array(
 			array("field" => "itemdate", "title" => "date", "size" => 1, "align" => "L", "nl" => 0),
 			array("field" => "type", "title" => "type", "size" => 1, "align" => "L", "nl" => 0),
@@ -129,22 +129,22 @@ class aritemsClientStatements extends phpbmsReport{
 		);
 		
 		$this->itemColumns[4]["size"] = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 5;
-
+		
 		//uncomment the following line to help troubleshoot formatting
 		//$pdf->borderDebug = 1;
 		$pdf->hasComapnyHeader = true;
 		$pdf->SetMargins();
-				
+		
 		while($clientrecord = $this->db->fetchArray($clientresult)){
 			
 			$this->page = 1;
 			
 			$this->clientrecord = $clientrecord;
-		
+			
 			$this->_addPage();
 			
 			$this->_addItems();
-
+			
 			//footer
 			$pdf->setXY($pdf->leftmargin, 8.5 + $pdf->topmargin);
 			
@@ -158,7 +158,7 @@ class aritemsClientStatements extends phpbmsReport{
 			$pdf->Cell(1 - 0.02, 0.17, "+".TERM3_DAYS, 1, 0, "R", 1);
 			$pdf->SetX($pdf->GetX()+.02);					
 			$pdf->Cell(1 - 0.02, 0.17, "Total Due", 1, 2, "R", 1);
-
+			
 			$pdf->SetX($pdf->leftmargin);	
 			
 			$pdf->setStyle("normal");
@@ -176,7 +176,7 @@ class aritemsClientStatements extends phpbmsReport{
 			$this->term1Total = 0;
 			$this->term2Total = 0;
 			$this->term3Total = 0;
-
+			
 		}//end while		
 		
 	}//end method
@@ -352,7 +352,7 @@ class aritemsClientStatements extends phpbmsReport{
 			FROM
 				aritems
 			WHERE
-				posted =1
+				posted = 1
 				AND clientid = ".((int) $this->clientrecord["clientid"]);
 
 		if(!$this->showClosed)
@@ -400,16 +400,20 @@ class aritemsClientStatements extends phpbmsReport{
 						
 					}//end if
 					
-					$therecord["dayspd"] = $daysover;
+					if($therecord["due"] > 0)
+						$therecord["dayspd"] = $daysover;
+					else
+						$therecord["dayspd"] = "(paid in full)";
 					
 				}//endif
 				
+				$keydate = $therecord["itemdate"];
 				$therecord["itemdate"] = formatFromSQLDate($therecord["itemdate"]);
 				$therecord["amount"] = formatVariable($therecord["amount"], "currency");
 				
 				$therecord["due"] = formatVariable($therecord["due"], "currency");
 				
-				$returnArray[$therecord["itemdate"]."-".$therecord["id"]] = $therecord;
+				$returnArray[$keydate."-".$therecord["id"]] = $therecord;
 				
 			}//end if
 			
@@ -466,7 +470,7 @@ class aritemsClientStatements extends phpbmsReport{
 		}//end if
 		
 		ksort($returnArray);
-
+		
 		return $returnArray;
 
 	}//end method
@@ -565,12 +569,12 @@ class aritemsClientStatements extends phpbmsReport{
 		$this->showClosed = isset($variables["showclosed"]);
 		
 		$this->showPayments = isset($variables["showpayments"]);
-			
+		
 		if(!isset($variables["selrecords"]))
 			$variables["selrecords"] = "allOpen";
-			
-		switch($variables["selrecords"]){
 		
+		switch($variables["selrecords"]){
+			
 			case "allOpen":
 				$this->generate();
 				break;
@@ -583,7 +587,7 @@ class aritemsClientStatements extends phpbmsReport{
 				$this->setupFromPrintScreen();
 				$this->generate();	
 				break;
-		
+			
 		}//endswitch
 		
 		$this->output();	
