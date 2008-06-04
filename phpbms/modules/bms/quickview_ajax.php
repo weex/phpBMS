@@ -98,7 +98,7 @@ class quickView{
 				notes.type,
 				notes.subject,
 				notes.category, 
-				notes.completed,
+				notes.completed
 			FROM 
 				notes 
 			WHERE 
