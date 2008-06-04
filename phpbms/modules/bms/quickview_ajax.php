@@ -98,7 +98,7 @@ class quickView{
 				notes.type,
 				notes.subject,
 				notes.category, 
-				notes.completed
+				notes.completed,
 			FROM 
 				notes 
 			WHERE 
@@ -185,7 +185,6 @@ class quickView{
 					<?php } else {?>
 					<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
 						<tr>
-							<th align="center">!</th>
 							<th align="left">type</th>
 							<th align="left">category</th>
 							<th align="left" width="100%">title</th>
@@ -197,7 +196,6 @@ class quickView{
 							if(strlen($noterecord["category"])>17)
 								$noterecord["category"]=substr($noterecord["category"],0,17)."...";
 					?><tr onclick="selectEdit(this,<?php echo $noterecord["id"]?>,'note')" ondblclick="selectedNote=<?php echo $noterecord["id"]?>;addEditRecord('edit','note','<?php echo $noteEditFile?>')">
-						<td align="center"><?php echo $noterecord["importance"]?></td>
 						<td><?php echo $noterecord["type"]?></td>
 						<td><?php echo $noterecord["category"]?></td>
 						<td><?php echo $noterecord["subject"]?></td>
