@@ -45,7 +45,7 @@
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
-	if(!isset($_POST["date_order"])) $_POST["date_order"]="desc";
+	if(!isset($_POST["date_order"])) $_POST["date_order"]="DESC";
 
 	if($_POST["command"]=="print")	{
 			$_SESSION["printing"]["whereclause"]="WHERE products.id=".$_GET["id"];
@@ -68,29 +68,37 @@
 			$searchdate="orderdate";
 		break;
 	}
-    $date_order_reverse = $_POST['date_order'] == 'desc' ? 'asc' : 'desc';
+        $dateOrder = ($_POST['date_order'] == 'DESC') ? 'ASC' : 'DESC';
 
 	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
-	$refquery="select partname from products where id=".$_GET["id"];
+	$refquery="select partname from products where id=".((int)$_GET["id"]);
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
 	
-	$querystatement="SELECT invoices.id as id, 
-		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
-		if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
-		lineitems.quantity as qty, 
-		lineitems.unitprice*lineitems.quantity as extended,
-		lineitems.unitprice as price, lineitems.unitcost as cost, 
-		lineitems.unitcost*lineitems.quantity as extendedcost
-		FROM((products inner join lineitems on products.id=lineitems.productid) 
-				inner join invoices on lineitems.invoiceid=invoices.id) 
-					inner join clients on invoices.clientid=clients.id
-		WHERE products.id=".$_GET["id"]." 
-		AND ".$thestatus."
-		HAVING thedate >=\"".$mysqlfromdate."\"
-		and thedate <=\"".$mysqltodate."\" ORDER BY thedate " .$_POST["date_order"];
+	$querystatement="
+		SELECT
+				invoices.id AS id, 
+				IF(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) AS thedate, 
+				CONCAT(\"<strong>\",IF(clients.lastname!=\"\",CONCAT(clients.lastname,\", \",clients.firstname,IF(clients.company!=\"\",CONCAT(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\") AS client,
+				lineitems.quantity AS qty, 
+				lineitems.unitprice*lineitems.quantity AS extended,
+				lineitems.unitprice AS price,
+				lineitems.unitcost AS cost, 
+				lineitems.unitcost*lineitems.quantity AS extendedcost
+		FROM
+				((products INNER JOIN lineitems ON products.id=lineitems.productid) 
+				INNER JOIN invoices ON lineitems.invoiceid=invoices.id) 
+					INNER JOIN clients ON invoices.clientid=clients.id
+		WHERE
+				products.id=".((int)$_GET["id"])." 
+				AND ".$thestatus."
+		HAVING
+				thedate >=\"".$mysqlfromdate."\"
+				AND thedate <=\"".$mysqltodate."\"
+		ORDER BY
+				thedate " .$dateOrder;
 	$queryresult=$db->query($querystatement);
 
 	$queryresult? $numrows=$db->numRows($queryresult): $numrows=0;
@@ -142,7 +150,7 @@
 	<tr>
 	 <th align="center" nowrap="nowrap" class="queryheader" colspan="2">ID</th>
 	 <th align="center" nowrap="nowrap" class="queryheader">
-	 	<a onclick="javascript:document.getElementById('date_order').value='<?php echo $date_order_reverse; ?>'; document.record.submit();">Order Date</a>
+	 	<a href="#" onclick="javascript:document.getElementById('date_order').value='<?php echo $dateOrder; ?>'; document.record.submit(); return false;">Date</a>
 	 </th>
 	 <th nowrap="nowrap" class="queryheader" width="100%" align="left">Client</th>
 	 <th align="center" nowrap="nowrap" class="queryheader">Qty.</th>
@@ -168,7 +176,7 @@
 ?>
 	<tr class="row<?php echo $row?>">
 	 <td>
-		<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+		<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $therecord["id"]?>&amp;backurl=<?php echo urlencode($_SERVER["REQUEST_URI"]); ?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
 	 </td>
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["id"]?></td>
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
@@ -180,18 +188,20 @@
 	 <td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["extended"])?></td>
 	</tr>
     <?php } if(!$db->numRows($queryresult)) {?>
-	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
-	<?php }?>
+	<tr class="norecords"><td colspan="9">No Sales Data for Given Timeframe</td></tr>
+	<?php }else{?>
 	<tr>
 	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td class="queryfooter">&nbsp;</td>
+	 <td align="center" class="queryfooter">&nbsp;</td>
+	 <td align="center" class="queryfooter">&nbsp;</td>
 	 <td align="center" class="queryfooter"><?php echo number_format($totalquantity,2)?></td>
 	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo numberToCurrency($avgcost)?></td>
 	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalcostextended)?></td>
 	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo numberToCurrency($avgprice)?></td>
 	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
+        <?php }//end if --numrows-- ?>
    </table></div></form>	
 </div>
 <?php include("footer.php"); }//end if?>
