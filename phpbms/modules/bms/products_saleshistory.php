@@ -45,6 +45,7 @@
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
+	if(!isset($_POST["date_order"])) $_POST["date_order"]="desc";
 
 	if($_POST["command"]=="print")	{
 			$_SESSION["printing"]["whereclause"]="WHERE products.id=".$_GET["id"];
@@ -67,6 +68,7 @@
 			$searchdate="orderdate";
 		break;
 	}
+    $date_order_reverse = $_POST['date_order'] == 'desc' ? 'asc' : 'desc';
 
 	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
@@ -88,7 +90,7 @@
 		WHERE products.id=".$_GET["id"]." 
 		AND ".$thestatus."
 		HAVING thedate >=\"".$mysqlfromdate."\"
-		and thedate <=\"".$mysqltodate."\" ORDER BY thedate";
+		and thedate <=\"".$mysqltodate."\" ORDER BY thedate " .$_POST["date_order"];
 	$queryresult=$db->query($querystatement);
 
 	$queryresult? $numrows=$db->numRows($queryresult): $numrows=0;
@@ -132,13 +134,16 @@
 		
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
+		<input name="date_order" id="date_order" type="hidden" value="<?php echo $_POST["date_order"]; ?>" />
 	</div>
 
    <div class="fauxP">   
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
 	<tr>
-	 <th align="center" nowrap="nowrap" class="queryheader">ID</th>
-	 <th align="center" nowrap="nowrap" class="queryheader">Order Date</th>
+	 <th align="center" nowrap="nowrap" class="queryheader" colspan="2">ID</th>
+	 <th align="center" nowrap="nowrap" class="queryheader">
+	 	<a onclick="javascript:document.getElementById('date_order').value='<?php echo $date_order_reverse; ?>'; document.record.submit();">Order Date</a>
+	 </th>
 	 <th nowrap="nowrap" class="queryheader" width="100%" align="left">Client</th>
 	 <th align="center" nowrap="nowrap" class="queryheader">Qty.</th>
 	 <th align="right" nowrap="nowrap" class="queryheader">Unit Cost</th>
@@ -162,6 +167,9 @@
 		$totalcostextended+=$therecord["extendedcost"];
 ?>
 	<tr class="row<?php echo $row?>">
+	 <td>
+		<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+	 </td>
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["id"]?></td>
 	 <td align="center" nowrap="nowrap"><?php echo $therecord["thedate"]?formatFromSQLDate($therecord["thedate"]):"&nbsp;" ?></td>
 	 <td nowrap="nowrap"><?php echo $therecord["client"]?></td>
