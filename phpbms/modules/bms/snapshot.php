@@ -49,12 +49,12 @@ function showTodaysClients($db){
 		SELECT 
 			clients.id,
 			clients.type,
-			addresses.city,
-			addresses.state,
-			addresses.postalcode,
-			clients.firstname,
-			clients.lastname,
-			clients.company
+			CONCAT('[b]',IF(clients.company != '', CONCAT(clients.company,IF(clients.lastname != '' OR clients.firstname != '', CONCAT(' (',if(clients.lastname != '', clients.lastname, '{blank}'),', ',if(clients.firstname != '', clients.firstname, '{blank}'),')'), '')), IF(clients.lastname != '' OR clients.firstname != '', CONCAT(if(clients.lastname != '', clients.lastname, '{blank}'),', ',if(clients.firstname != '', clients.firstname, '{blank}')), '')),'[/b][br][space]', IF(addresses.city != '' OR addresses.state !='' OR addresses.postalcode != '', CONCAT(IF(addresses.city != '',addresses.city,''),', ',IF(addresses.state != '', addresses.state, ''),' ',IF(addresses.postalcode != '', addresses.postalcode, '')),'(no location)'))
+			AS info,
+			clients.email,
+			IF(clients.workphone != '' OR clients.homephone != '' OR clients.mobilephone != '' OR clients.otherphone != '',IF(clients.workphone != '', concat(clients.workphone, ' (w)'), IF(clients.homephone != '', concat(clients.homephone, ' (h)'), IF(clients.mobilephone != '', concat(clients.mobilephone, ' (m)'), IF(clients.otherphone != '', concat(clients.otherphone, ' (o)'), '')))) ,'')
+			AS phone,
+			clients.creationdate
 		FROM 
 			(clients INNER JOIN addresstorecord ON clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1)
 			INNER JOIN addresses ON addresstorecord.addressid = addresses.id
@@ -68,50 +68,44 @@ function showTodaysClients($db){
 	if($db->numRows($queryresult)){
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable">
 			<tr>
-				<th align="left">ID</th>
-				<th align="left">Type</th>
-				<th align="left" width="100%">Name</th>
-				<th nowrap="nowrap" align="right">Location</th>
+				<th align="left">type</th>
+				<th align="left" width="100%">name / location</th>
+				<th align="left">e-mail</th>
+				<th align="left">phone</th>
+				<th nowrap="nowrap" align="right">date created</th>
 			</tr>
 		<?php 
 		$i=1;
 		while($therecord=$db->fetchArray($queryresult)){
 		
 			$i = ($i==1) ? 2: 1;
-
-			$clientDisplay = $therecord["company"];
 			
-			$name = $therecord["lastname"].", ".$therecord["firstname"];
-			if($name == ", ")
-				$name = "";
-				
-			if(!$clientDisplay)
-				$clientDisplay .= $name;
-			else
-				if($name)
-					$clientDisplay .=  " (".$name.")";
-						
-			$displayCSZ = $therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"];
-			if($displayCSZ == ",  ")
-				$displayCSZ = "(unspecified location)";
-			
-			if($displayCSZ==",  ") $displayCSZ="&nbsp;";
 		?><tr onclick="document.location='<?php echo getAddEditFile($db,2)."?id=".$therecord["id"] ?>&amp;backurl='+encodeURIComponent('<?php echo APP_PATH."modules/base/snapshot.php"?>')" class="qr<?php echo $i?>">
-			<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?></td>
-			<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?></td>
-			<td><?php echo htmlQuotes($clientDisplay)?></td>
-			<td align="right" nowrap="nowrap"><?php echo $displayCSZ?></td>
-		</tr><?php }?>
+			<td align="left" nowrap="nowrap"><?php echo formatVariable($therecord["type"])?></td>
+			<td align="left"><?php echo formatVariable($therecord["info"], "bbcode")?></td>
+			<td align="left" nowrap="nowrap"><?php echo formatVariable($therecord["email"]) ?></td>
+			<td align="left" nowrap="nowrap"><?php echo formatVariable($therecord["phone"]) ?></td>
+			<td align="right" nowrap="nowrap"><?php echo formatVariable($therecord["creationdate"], "date"); ?></td>
+		</tr>
+		
+		<?php }//end while --queryresult--?>
+		
 		<tr class="queryfooter">
+			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td align="right"><?php $reccount=$db->numRows($queryresult);echo $reccount?> record<?php if($reccount!=1) echo "s"?></td>
 		</tr>
 		</table><?php
-	} else {?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
-	}
-}
+		
+	} else {
+		
+		?><div class="small disabledtext">no clients/prospects entered in last day</div><?php
+		
+	}//end if --queryresult--
+	
+}//end function --showTodaysClients
 
 class invoiceList{
 	var $db;
