@@ -81,8 +81,8 @@ function showTodaysClients($db){
 
 			$clientDisplay = $therecord["company"];
 			
-			$name = $therecord["lastname"].", ".$therecord["lastname"];
-			if($name = ", ")
+			$name = $therecord["lastname"].", ".$therecord["firstname"];
+			if($name == ", ")
 				$name = "";
 				
 			if(!$clientDisplay)
