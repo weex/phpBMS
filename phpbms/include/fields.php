@@ -447,7 +447,12 @@ class inputDataTableList extends inputField{
 		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
 			$this->displayAttributes();
 		?> ><?php
-			if($this->hasblank)?><option value="0" <?php if ($this->value==0 || $this->value=="") echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
+			if($this->hasblank){
+				?><option value="0" <?php
+				if ($this->value==0 || $this->value==""){
+					echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
+				}//end if --value--
+			}//end if --hasblank--
 
 			while($therecord=$this->db->fetchArray($this->queryresult)){
 				?><option value="<?php echo htmlQuotes($therecord["thevalue"])?>" <?php if ($therecord["thevalue"]==$this->value) echo " selected=\"selected\" "?> ><?php echo htmlQuotes($therecord["thedisplay"])?></option>
