@@ -86,7 +86,16 @@
 
 			return $querystatement;
 			
-		}//end method		
+		}//end method
+		
+		function _showNoRecords(){
+			
+			?>
+			<h1 id="noRecord">No Records</h1>
+			<p>No valid records for this report.</p>
+			<?php
+			
+		}//end method --_showNoRecords--
 	
 	}//end class
 
