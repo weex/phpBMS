@@ -286,7 +286,7 @@ if(class_exists("searchFunctions")){
 
 			if(count($deleteIDs)){
 			
-				$a2rWhere = $this->buildWhereClause("recordid", $deleteIDS);
+				$a2rWhere = $this->buildWhereClause("recordid", $deleteIDs);
 
 				//First we get a list of all the addresses for the prospect
 				$querystatement = "
@@ -393,7 +393,7 @@ if(class_exists("searchFunctions")){
 				}//end if
 
 				//lastly we remove the prospect record
-				$delWhere = $this->buildWhereClause("clients.id", $deleteIDS);
+				$delWhere = $this->buildWhereClause("clients.id", $deleteIDs);
 
 				$deletestatement = "
 					DELETE FROM 
