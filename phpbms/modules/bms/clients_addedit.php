@@ -132,6 +132,9 @@
 
 		$theinput = new inputField("webaddress",$therecord["webaddress"],"web address",false,"www",68,128);
 		$theform->addField($theinput);
+		
+		$theinput = new inputField("taxid", $therecord["taxid"], "tax id", false, "", 25, 32);
+		$theform->addField($theinput);
 
 		$theform->jsMerge();
 		//==============================================================
@@ -250,6 +253,8 @@
 			<p><?php $theform->showField("email")?></p>
 			
 			<p><?php $theform->showField("webaddress")?></p>
+			
+			<p><?php $theform->showField("taxid")?></p>
 		</fieldset>
 		
 		<fieldset>

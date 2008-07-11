@@ -146,7 +146,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			<?php $theform->fields["application_name"]->display();?><br />
 			<span class="notes">
 				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS").  Replacing
-				the aplication name will reset the session cookie, and require you to log in again.
+				the application name will reset the session cookie, and require you to log in again.
 			</span>
 		</p>
 
@@ -187,6 +187,11 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		<p>
 			<label for="company_phone">phone number</label><br />
 			<input id="company_phone" name="company_phone" type="text" value="<?php echo htmlQuotes($therecord["company_phone"]) ?>" size="40" maxlength="128" />
+		</p>
+	
+		<p>
+			<label for="company_taxid">company tax id</label><br />
+			<input id="company_taxid" name="company_taxid" type="text" value="<?php echo htmlQuotes($therecord["company_taxid"]) ?>" size="40" maxlength="128" />
 		</p>
 
 		<div class="fauxP">

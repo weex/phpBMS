@@ -326,6 +326,28 @@ include("../../../include/session.php");
 					$ver["version"] = "0.96";
 
 					break;
+				
+				// ================================================================================================
+				case "0.96";
+
+					$thereturn.= processSQLfile($db,"updatev0.98.sql");
+					
+					//Updating Module Table
+					$updatestatement = "
+						UPDATE 
+							modules 
+						SET 
+							version='0.98' 
+						WHERE 
+							name='bms';";
+
+					$db->query($updatestatement);
+
+					$thereturn .= "Update of Business Management System Module to 0.98 Finished\n\n";
+
+					$ver["version"] = "0.98";
+
+					break;
 
 			}//end switch
 		}//end while
