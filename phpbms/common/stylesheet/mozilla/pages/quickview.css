@@ -90,6 +90,10 @@
 
 .disabledP{display:none;}
 
+#clientrecord{
+	position:relative;
+	z-index:-1;
+}
 #theDetails{margin-top:15px;}
 #rightSideDiv{float:right;width:300px;margin-top:0;}
 #leftSideDiv{margin-right:308px;padding-top:1px;}
