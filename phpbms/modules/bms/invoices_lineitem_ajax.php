@@ -116,6 +116,7 @@ class productLookup{
 		$output = "{ prereqMet: ";
 		if($record){
 			
+			$record["memo"] = str_replace("\r", "", str_replace("\n", " ", $record["memo"]));
 			$output .= "true, record: {";
 			
 			foreach($record as $key=>$value)
