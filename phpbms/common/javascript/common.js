@@ -676,7 +676,7 @@ function stringToTime(sTime,format){
 		switch(format){
 			case "24 Hour":
 				timeArray=sTime.split(":");
-				if(timeArray.length=3)
+				if(timeArray.length == 3)
 					thetime=new Date(0,0,0,parseInt(timeArray[0],10),parseInt(timeArray[1],10),parseInt(timeArray[2],10));
 			break;
 			
