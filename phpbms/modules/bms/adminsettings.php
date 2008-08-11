@@ -43,7 +43,7 @@
 			$fields[] = $theinput;
 
 			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","id","name",
-									"inactive=0 AND `type` != 'receivable'", "priority,name", true, "default payment method");
+									"inactive=0 AND (`type` != 'receivable' OR `type` IS NULL)", "priority,name", true, "default payment method");
 			$fields[] = $theinput;
 	
 			$theinput = new inputDataTableList($db, "default_shipping",$therecord["default_shipping"],"shippingmethods","id","name",
