@@ -363,7 +363,10 @@ class phpbmsTable{
 		$insertstatement = "INSERT INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
 		$insertresult = $this->db->query($insertstatement);
 		
-		return $this->db->insertId();
+		if($insertresult)
+			return $this->db->insertId();
+		else
+			return false;
 	}
 	
 	

@@ -7,7 +7,7 @@ CREATE TABLE `tablegroupings` (
   `name` VARCHAR(64),
   `roleid` INTEGER UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `log` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -17,14 +17,14 @@ CREATE TABLE `log` (
   `value` TEXT,
   `stamp` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE choices (
   id int(11) NOT NULL auto_increment,
   listname varchar(64) NOT NULL default '',
   thevalue varchar(64) default NULL,
   UNIQUE KEY theid (id)
-) TYPE=MyISAM PACK_KEYS=0;
+) ENGINE=INNODB  PACK_KEYS=0;
 
 CREATE TABLE menu (
   id int(11) NOT NULL auto_increment,
@@ -38,7 +38,7 @@ CREATE TABLE menu (
   modifieddate timestamp(14) NOT NULL,
   roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ENGINE=INNODB ;
 
 CREATE TABLE modules (
   id int(11) NOT NULL auto_increment,
@@ -47,7 +47,7 @@ CREATE TABLE modules (
   description text,
   version varchar(32) default '',
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ENGINE=INNODB ;
 
 CREATE TABLE `notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -89,7 +89,7 @@ CREATE TABLE `notes` (
   `timesrepeated` int(10) unsigned NOT NULL default '0',
   `repeatname` varchar(255) default NULL,
   PRIMARY KEY (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE relationships (
   id int(11) NOT NULL auto_increment,
@@ -105,7 +105,7 @@ CREATE TABLE relationships (
   inherint tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY fromtable (fromtableid)
-) TYPE=MyISAM PACK_KEYS=0;
+) ENGINE=INNODB  PACK_KEYS=0;
 
 CREATE TABLE `reports` (
   `id` int(11) NOT NULL auto_increment,
@@ -121,7 +121,7 @@ CREATE TABLE `reports` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ENGINE=INNODB ;
 
 CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
@@ -139,7 +139,7 @@ CREATE TABLE `tablecolumns` (
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
-) AUTO_INCREMENT=5000;
+) ENGINE=INNODB AUTO_INCREMENT=5000;
 
 CREATE TABLE `tabledefs` (
   `id` int(11) NOT NULL auto_increment,
@@ -152,6 +152,8 @@ CREATE TABLE `tabledefs` (
   `editroleid` int(11) NOT NULL default '0',
   `addfile` varchar(100) default '',
   `addroleid` int(11) NOT NULL default '0',
+  `importfile` VARCHAR(128) DEFAULT NULL,
+  `importroleid` int(11) NOT NULL DEFAULT '-100',
   `searchroleid` int(11) NOT NULL default '0',
   `advsearchroleid` int(11) NOT NULL default '-100',
   `viewsqlroleid` int(11) NOT NULL default '-100',
@@ -166,7 +168,7 @@ CREATE TABLE `tabledefs` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=1000; 
+) ENGINE=INNODB  AUTO_INCREMENT=1000; 
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
@@ -177,19 +179,20 @@ CREATE TABLE tablefindoptions (
   roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) TYPE=MyISAM AUTO_INCREMENT=2000; 
+) ENGINE=INNODB  AUTO_INCREMENT=2000; 
 
 CREATE TABLE tableoptions (
   id int(11) NOT NULL auto_increment,
   tabledefid int(11) NOT NULL default '0',
   name varchar(64) NOT NULL default '',
   `option` varchar(128) NOT NULL default '',
+  `needselect` BOOLEAN NOT NULL DEFAULT 1,
   othercommand tinyint(1) NOT NULL default '0',
   roleid int(11) NOT NULL default '0',
   `displayorder` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) TYPE=MyISAM AUTO_INCREMENT=2000; 
+) ENGINE=INNODB  AUTO_INCREMENT=2000; 
 
 CREATE TABLE tablesearchablefields (
   id int(11) NOT NULL auto_increment,
@@ -199,7 +202,7 @@ CREATE TABLE tablesearchablefields (
   displayorder int(11) NOT NULL default '0',
   type varchar(16) NOT NULL default 'field',
   PRIMARY KEY  (id)
-) TYPE=MyISAM AUTO_INCREMENT=2000;
+) ENGINE=INNODB  AUTO_INCREMENT=2000;
 
 CREATE TABLE users (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -220,7 +223,7 @@ CREATE TABLE users (
   admin tinyint(4) NOT NULL default '0',
   portalaccess tinyint(4) NOT NULL default '0',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=100;
+) ENGINE=INNODB  AUTO_INCREMENT=100;
 
 CREATE TABLE usersearches (
   id int(11) NOT NULL auto_increment,
@@ -234,14 +237,14 @@ CREATE TABLE usersearches (
   KEY tabledefid (tabledefid),
   KEY thetype (type),
   KEY user (userid)
-) TYPE=MyISAM;
+) ENGINE=INNODB ;
 
 CREATE TABLE `settings` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
   `value` varchar(255) default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=1000;
+) ENGINE=INNODB  AUTO_INCREMENT=1000;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL auto_increment,
@@ -255,7 +258,7 @@ CREATE TABLE `files` (
   `modifieddate` timestamp(14) NOT NULL,
   `roleid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=100; 
+) ENGINE=INNODB  AUTO_INCREMENT=100; 
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,
@@ -270,7 +273,7 @@ CREATE TABLE `attachments` (
   KEY `therecord` (`recordid`),
   KEY `thetable` (`tabledefid`),
   KEY `thefile` (`fileid`)
-) TYPE=MyISAM; 
+) ENGINE=INNODB ; 
 
 CREATE TABLE `roles` (
   `id` INTEGER UNSIGNED DEFAULT NULL AUTO_INCREMENT,
@@ -282,14 +285,14 @@ CREATE TABLE `roles` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `rolestousers` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `userid` INTEGER UNSIGNED NOT NULL,
   `roleid` INTEGER UNSIGNED NOT NULL,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `scheduler` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -309,7 +312,7 @@ CREATE TABLE `scheduler` (
   KEY `inactivated` (`inactive`),
   KEY `startdate` (`startdatetime`),
   KEY `enddate` (`enddatetime`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `tabs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -326,7 +329,7 @@ CREATE TABLE `tabs` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `smartsearches` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -346,5 +349,5 @@ CREATE TABLE `smartsearches` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 

@@ -109,7 +109,10 @@ if(class_exists("files")){
 		
 			$queryresult = $this->db->query($querystatement);
 			
-			return $this->db->insertId();
+			if($queryresult)
+				return $this->db->insertId();
+			else
+				return false;
 					
 		}//end method
 		

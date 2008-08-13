@@ -1,0 +1,2 @@
+ALTER TABLE `recurringinvoices` ENGINE=INNODB;
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('400', 'import', '0', '0', '0', '-100', '0');

@@ -219,7 +219,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 
 			case "SQL":
 				$temparray=explode("-",$datestring);
-				if(count($temparray)>1)
+				if(count($temparray)==3)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
 				else 
 					return false;
@@ -228,7 +228,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			case "English, US":
 				$datestring="/".ereg_replace(",.","/",$datestring);
 				$temparray=explode("/",$datestring);
-				if(count($temparray)>1)
+				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
 				else 
 					return false;
@@ -237,7 +237,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			case "English, UK":
 				$datestring="/".ereg_replace(",.","/",$datestring);
 				$temparray=explode("/",$datestring);
-				if(count($temparray)>1)
+				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
 				else 
 					return false;
@@ -246,7 +246,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			case "Dutch, NL":
 				$datestring="-".ereg_replace(",.","-",$datestring);
 				$temparray=explode("-",$datestring);
-				if(count($temparray)>1)
+				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
 				else 
 					return false;
@@ -264,8 +264,10 @@ function stringToTime($timestring,$format=TIME_FORMAT){
 
 			case "24 Hour":
 				$temparray=explode(":",$timestring);
-				if(count($temparray)>1)
+				if(count($temparray)==3)
 					$thetime=mktime($temparray[0],$temparray[1],$temparray[2]);
+				else
+					return false;
 			break;
 
 			case "12 Hour":
@@ -278,10 +280,13 @@ function stringToTime($timestring,$format=TIME_FORMAT){
 					$addtime=12;
 				}
 				$timearray=explode(":",$timestring);
-				if ($timearray[0]==12)
-					$timearray[0]=0;
-				$timearray[0]= ((integer) $timearray[0]) + $addtime;
-				$thetime=mktime($timearray[0],$timearray[1],0);
+				if(count($timearray) == 2){
+					if ($timearray[0]==12)
+						$timearray[0]=0;
+					$timearray[0]= ((integer) $timearray[0]) + $addtime;
+					$thetime=mktime($timearray[0],$timearray[1],0);
+				}else
+					return false;
 			break;
 		}
 	}

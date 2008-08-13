@@ -76,7 +76,8 @@
 			"new" => "new",
 			"edit" => "edit",
 			"select" => "select",
-			"reporting" => "printex",			
+			"reporting" => "printex",
+			"import" => "import"
 		);		
 		$theinput = new inputBasicList("ifName", $therecord["name"], $temparray, "name");
 		$theform->addField($theinput);
@@ -88,6 +89,9 @@
 		$theform->addField($theinput);
 
 		$theinput = new inputField("acOption", $therecord["option"], "display name", false, NULL, 64, 64);
+		$theform->addField($theinput);
+		
+		$theinput = new inputCheckBox("needselect", $therecord["needselect"], "must select record to use");
 		$theform->addField($theinput);
 
 		$theinput = new inputRolesList($db, "roleid", $therecord["roleid"], "access (role)");
@@ -160,10 +164,12 @@
 					in the [tablename].php located in the modules 
 					include folder.
 				</p>
-
+				
 				<p><?php $theform->showField("acOption") ?></p>
-
+				
 				<p><?php $theform->showField("acName") ?></p>
+				
+				<p><?php $theform->showField("needselect") ?></p>
 				
 				<p><?php $theform->showField("displayorder")?></p>
 				

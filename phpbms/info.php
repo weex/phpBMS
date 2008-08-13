@@ -104,6 +104,7 @@
 			<li><strong>fpdf</strong> - A PHP class which allows to generate PDF files with pure PHP (<a href="http://www.fpdf.org">www.fpdf.org</a>)</li>
 		    <li><strong>moo.fx</strong> - Super lightweight JavaScript effects library (<a href="http://moofx.mad4milk.net/">moofx.mad4milk.net</a>) </li>
 			<li><strong>mochikit</strong> - A lightweight JavaScript library (<a href="http://mochichit.com/">mochikit.com</a>) - phpBMS utilizes modified parts mochikit code and it's programming structure.</li>
+			<li><strong>parseCSV</strong> - An easy to use PHP class to read and write CSV data properly.(<a href="http://code.google.com/p/parsecsv-for-php/" >code.google.com/p/parsecsv-for-php/</a>)</li>
 		</ul>
 		<h2>Technologies</h2>
 		<ul>

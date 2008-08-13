@@ -61,10 +61,75 @@ if(class_exists("phpbmsTable")){
 			return $file;
 		}
 		
+		//This method is for when there is not categoryid specified
+		function _getCategoryID(){
+			
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`productcategories`
+				ORDER BY
+					`inactive` ASC
+				LIMIT 1;
+				";
+			
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+			
+			if(!isset($therecord["id"]))
+				$therecord["id"] = 0;
+			
+			if(!$therecord["id"]){
+				
+				$querystatement = "
+					INSERT INTO
+						`productcategories`
+						(
+							`name`,
+							`inactive`,
+							`description`,
+							`webenabled`,
+							`webdisplayname`,
+							`createdby`,
+							`creationdate`,
+							`modifiedby`,
+							`modifieddate`
+						)VALUES(
+							'import_category',
+							'0',
+							'This category was automatically created by an import routine.  Please replace with a more applicable record',
+							'0',
+							'',
+							'".((int) $_SESSION["userinfo"]["id"])."',
+							NOW(),
+							'".((int) $_SESSION["userinfo"]["id"])."',
+							NOW()
+						);
+					";
+				
+				$queryresult = $this->db->query($querystatement);
+				$therecord["id"] = $this->db->insertId();
+				
+			}//end if
+			
+			return $therecord["id"];
+			
+		}//end method --_getCategoryID--
+		
 		function formatVariables($variables){
-	
+			
+			if(!isset($variables["unitprice"]))
+				$variables["thumchange"] = 0;
+			
+			if(!isset($variables["unitcost"]))
+				$variables["thumchange"] = 0;
+			
 			$variables["unitprice"] = currencyToNumber($variables["unitprice"]);
 			$variables["unitcost"] = currencyToNumber($variables["unitcost"]);
+			
+			if(!isset($variables["thumbchange"]))
+				$variables["thumbchange"] = NULL;
 			
 			if($variables["thumbchange"]){
 	
@@ -79,6 +144,10 @@ if(class_exists("phpbmsTable")){
 			
 			} // end thumbnail picture change if
 			
+			
+			if(!isset($variables["picturechange"]))
+				$variables["picturechange"] = NULL;
+			
 			if($variables["picturechange"]){
 	
 				if($variables["picturechange"] == "upload"){
@@ -91,6 +160,12 @@ if(class_exists("phpbmsTable")){
 				}
 	
 			}//end main picture change if			
+			
+			if(!isset($variables["categoryid"]))
+				$variables["categoryid"] = 0;
+
+			if(!$variables["categoryid"])
+				$variables["categoryid"] = $this->_getCategoryID();
 			
 			return $variables;
 		
@@ -138,12 +213,14 @@ if(class_exists("phpbmsTable")){
 	
 	
 		function insertRecord($variables, $createdby = NULL){
+
 		
 			$variables = $this->formatVariables($variables);
-	
-			if($variables["packagesperitem"])
-				$variables["packagesperitem"]=1/$variables["packagesperitem"];
-	
+			
+			if(isset($variables["packagesperitem"]))
+				if($variables["packagesperitem"])
+					$variables["packagesperitem"]=1/$variables["packagesperitem"];
+
 			$newid = parent::insertRecord($variables, $createdby);
 			
 			return $newid;

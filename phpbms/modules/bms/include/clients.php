@@ -133,8 +133,9 @@ if(class_exists("phpbmsTable")){
 
 		function prepareVariables($variables){
 		
-			if ($variables["webaddress"]=="http://") 
-				$variables["webaddress"] = NULL;
+			if(isset($variables["webaddress"]))
+				if ($variables["webaddress"]=="http://") 
+					$variables["webaddress"] = NULL;
 
 			if(!isset($variables["type"]))
 				$variables["type"] = "client";
@@ -143,7 +144,11 @@ if(class_exists("phpbmsTable")){
 
 				$variables["hascredit"] = 0;
 				$variables["creditlimit"] = 0;
-			
+				$variables["becameclient"] = NULL;
+			}else{
+				$variables["type"] = "client";
+				if(!isset($variables["becameclient"]))
+					$variables["becameclient"] = dateToString(mktime());
 			}//end if
 
 			return $variables;
@@ -424,5 +429,88 @@ if(class_exists("searchFunctions")){
 
 	
 	}//end class
+}//end if
+if(class_exists("phpbmsImport")){
+	class clientsImport extends phpbmsImport{
+		
+		function clientsImport($table){
+			
+			parent::phpbmsImport($table);
+			
+		}//end method --clientsImport--
+		
+		function _getTransactionData(){
+			
+			$inStatement = "";
+			foreach($this->transactionIDs as $theid)
+				$inStatement .= $theid.",";
+
+			if($inStatement)
+				$inStatement = substr($inStatement, 0, -1);
+			
+			
+			$querystatement = "
+				SELECT
+					`clients`.*,
+					`addresses`.`address1`,
+					`addresses`.`address2`,
+					`addresses`.`city`,
+					`addresses`.`state`,
+					`addresses`.`postalcode`,
+					`addresses`.`country`,
+					`addresses`.`phone`,
+					`addresses`.`email`
+				FROM
+					((clients INNER JOIN addresstorecord on clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)
+				WHERE
+					`clients`.`id` IN (".$inStatement.");
+				";
+			
+			$queryresult = $this->table->db->query($querystatement);
+			
+			
+			while($therecord = $this->table->db->fetchArray($queryresult))
+				$this->transactionRecords[] = $therecord;
+			
+		}//end method --_gettransactionData--
+		
+		function displayTransaction($recordsArray, $fieldsArray){
+			
+			if(count($recordsArray) && count($fieldsArray)){
+				
+				//Need to include addresses in the fieldArray
+				
+				//list of values that should not be displayed
+				$removalArray = array("id", "modifiedby", "modifieddate", "createdby", "creationdate", "notes", "title", "shiptoname");
+				$addressArray = $this->table->address->fields;
+				
+				foreach($removalArray as $removalField){
+					
+					if(isset($addressArray[$removalField])){
+						
+						unset($addressArray[$removalField]);
+						
+					}//end if
+					
+				}//end foreach
+				
+				foreach($addressArray as $removalField => $junk){
+					
+					if(isset($fieldsArray[$removalField])){
+						
+						unset($fieldsArray[$removalField]);
+						
+					}//end if
+					
+				}//end foreach
+				
+				$fieldsArray = $fieldsArray + $addressArray;
+				
+				parent::displayTransaction($recordsArray, $fieldsArray);
+			}//end if
+			
+		}//end method --displayTransaction--
+		
+	}//end class --clientsImport--
 }//end if
 ?>

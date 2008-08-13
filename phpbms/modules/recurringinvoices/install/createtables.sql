@@ -18,4 +18,4 @@ CREATE TABLE recurringinvoices(
   `timesrepeated` INTEGER UNSIGNED NOT NULL DEFAULT 0,
   `notificationroleid` INTEGER UNSIGNED,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;

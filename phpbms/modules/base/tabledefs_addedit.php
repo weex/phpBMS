@@ -84,6 +84,12 @@
 
 		$theinput = new inputField("maintable",$therecord["maintable"],"primary table name",true,NULL,50,64);
 		$theform->addField($theinput);
+		
+		$theinput = new inputField("importfile",$therecord["importfile"],"import records file",false,NULL,100,128);
+		$theform->addField($theinput);
+		
+		$theinput = new inputRolesList($db,"importroleid",$therecord["importroleid"],"import access (role)");
+		$theform->addField($theinput);
 
 		$theinput = new inputField("addfile",$therecord["addfile"],"add new record file",true,NULL,100,128);
 		$theform->addField($theinput);
@@ -185,7 +191,18 @@
 			</p>
 
 			<p><?php $theform->showField("editroleid");?></p>
-
+		</fieldset>
+	
+		<fieldset>
+			<legend>import options</legend>
+			<p>
+				<?php $theform->showField("importfile") ?><br />
+				<span class="notes">file name, including path from application root, that is used for importing records.If none
+				is specfied, the general import for the table def will be used.  This may not always result in accurate imports for
+				the more complicated table definitions.</span>
+			</p>
+			
+			<p><?php $theform->showField("importroleid") ?></p>
 		</fieldset>
 		
 		<fieldset>

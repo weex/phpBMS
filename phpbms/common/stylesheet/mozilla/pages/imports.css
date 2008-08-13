@@ -1,0 +1,45 @@
+#transactionDiv{
+	margin:10px 0;
+	height:400px;
+	overflow:auto;
+	border:1px solid #BBBBBB;
+	padding-top:5px;
+}
+#transactionTable {
+	border-color:#BBBBBB;
+	border-style:solid;
+	border-width:1px 0pt 1px 1px;
+	clear:both;
+	margin-bottom:10px;
+}
+#transactionTable th {
+	background:#96ADBC none repeat scroll 0% 0%;
+	border-bottom:1px solid #BBBBBB;
+	color:white;
+	font-size:12px;
+}
+#transactionTable td, #transactionTable th {
+	border-right:1px solid #BBBBBB;
+	font-size:11px;
+	padding:6px;
+}
+#importError{
+	background:white;
+	margin-top:10px;
+	height:200px;
+	overflow:auto;
+	border:1px solid #BBBBBB;
+}
+#createmodifiedby{
+	height:23px;
+}
+.importCancels{
+	float:right;
+	text-align:right;
+}
+.importCancels input{
+	width:68px;
+}
+#uploadlabel{
+	width:400px;
+}

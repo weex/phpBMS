@@ -108,6 +108,7 @@ include("../include/session.php");
 										"modules",
 										"notes",
 										"reports",
+										"scheduler",
 										"tablecolumns",
 										"tabledefs",
 										"tablefindoptions",

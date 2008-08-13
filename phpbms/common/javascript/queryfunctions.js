@@ -92,21 +92,21 @@ function clickIt(theTR,theevent,disablectrl){
 
 	if(!ctrlkeydown && shiftkeydown){
 		//Need to program shift click in here!
-		var curID=null;
-		var theTable=theTR.parentNode;
-		var searchArray="+"+selIDs.join("+")+"+";
-		var point1=null;
-		var point2=null;
+		var curID = null;
+		var theTable = theTR.parentNode;
+		var searchArray = "+"+selIDs.join("+")+"+";
+		var point1 = null;
+		var point2 = null;
 		
 		for(i=0;i<theTable.childNodes.length;i++){
 			if (theTable.childNodes[i].className){				
 				if(theTable.childNodes[i].className != "queryGroup"){
-					theTable.childNodes[i].className="qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
-					curID=theTable.childNodes[i].id.substr(2);
-					if(curID==theID)
-						point1=i;
-					if(searchArray.indexOf("+"+curID+"+")!=-1 && point2==null) {
-						point2=i;
+					theTable.childNodes[i].className = "qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
+					curID = theTable.childNodes[i].id.substr(2);
+					if(curID == theID)
+						point1 = i;
+					if(searchArray.indexOf("+"+curID+"+") != -1 && point2==null) {
+						point2 = i;
 					}
 				}
 			}
@@ -156,20 +156,32 @@ function setSelIDs(theform){
 		theform["theids"].value=selIDs.join(",");
 }
 
-function chooseOtherCommand(thevalue,thetext){
-	var thediv = getObjectFromID("otherDropDown");
-	var otherField = getObjectFromID("othercommands");
+function chooseOtherCommand(thevalue, thetext, thesource){
 	
-	otherField.value = thevalue;
+	if(!thesource.className.match(/Disabled/)){
+		
+		switch(thevalue){
+			case "-1":
+				var thediv = getObjectFromID("otherDropDown");
+				var confirmcommand=thetext;
+				confirmDelete(confirmcommand);
+				thediv.style.display = "none";
+				break;
+			
+			case "-2":
+				importRecord();
+				break;
+			
+			default:
+				var otherField = getObjectFromID("othercommands");
+				setSelIDs(otherField.form);
+				otherField.value = thevalue;
+				otherField.form.submit();
+				break;
+		}//end switch
+		
+	}//end if
 	
-	if (thevalue != "-1") {
-		setSelIDs(otherField.form);
-		otherField.form.submit();
-	} else {
-		var confirmcommand=thetext
-		confirmDelete(confirmcommand);
-		thediv.style.display = "none";
-	}
 }
 
 function confirmDelete(deletename){
@@ -209,20 +221,28 @@ function setButtonStatus(disabledstatus){
 	var editButton=getObjectFromID("editRecord");
 	var printButton=getObjectFromID("print");
 	var deleteButton=getObjectFromID("deleteRecord");
-	var otherCommands=getObjectFromID("otherCommandButton");
+	//var otherCommands=getObjectFromID("otherCommandButton");
 	var relationship=getObjectFromID("relationship");
+	var select = getElementsByClassName("needselect");
+	if(!select.length)
+		var select = getElementsByClassName("needselectDisabled");
 		
 	if(editButton)
 		editButton.className="editRecord"+((disabledstatus)?"Disabled":"");
 		
 	if(deleteButton)
 		deleteButton.className = "deleteRecord"+((disabledstatus)?"Disabled":"");
-
-	if(otherCommands) {
-		otherCommands.className = "otherCommands"+((disabledstatus)?"Disabled":"");
-		var otherDropDown = getObjectFromID("otherDropDown");
-		otherDropDown.style.display = "none";		
-	}
+			
+	
+	for(i = 0;i < select.length; i++)
+		select[i].className = "needselect"+((disabledstatus)?"Disabled":"");
+	
+	
+	//if(otherCommands) {
+	//	otherCommands.className = "otherCommands"+((disabledstatus)?"Disabled":"");
+	//	var otherDropDown = getObjectFromID("otherDropDown");
+	//	otherDropDown.style.display = "none";
+	//}
 		
 	if(relationship) relationship.disabled=disabledstatus;
 }
@@ -270,6 +290,16 @@ function addRecord(){
 	document.location=addFile;
 }
 
+function importRecord(){
+	var connector;
+	if (importFile.indexOf("?")>=0)
+		connector="&";
+	else
+		connector="?";
+	if(typeof xtraParamaters != "undefined")
+		importFile+=connector+(xtraParamaters);
+	document.location=importFile;
+}
 
 // Select All/None Button
 function selectRecords(allornone){

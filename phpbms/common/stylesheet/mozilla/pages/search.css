@@ -39,7 +39,10 @@
 .otherCommands{background-image: url("../image/search-toolbar-cmd.png")}
 .otherCommandsDisabled{background-image: url("../image/search-toolbar-cmd-db.png")}
 .searchSelection{background-image: url("../image/search-toolbar-selection.png")}
-.searchSelectionDisabled{background-image: url("../image/search-toolbar-selection-db.png")}
+.needselectDisabled{background-image: url("../image/search-toolbar-selection-db.png")}
+.needselectDisabled{
+	color:grey;
+}
 .sqlUp{background-image: url("../image/search-toolbar-sql.png")}
 .sqlDn{background-image: url("../image/search-toolbar-sql-dn.png")}
 

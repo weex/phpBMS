@@ -59,11 +59,30 @@
 		
 		//given a table id, go grab the table definition information for that table
 		function getTableDef($id){
-			$querystatement="SELECT tabledefs.id,maintable,querytable,tabledefs.displayname,addfile,editfile,deletebutton,type,
-							  defaultwhereclause,defaultsortorder,defaultsearchtype,defaultcriteriafindoptions,defaultcriteriaselection,
-							  modules.name,searchroleid,advsearchroleid,viewsqlroleid
-							  FROM tabledefs inner join modules on tabledefs.moduleid=modules.id
-							  WHERE tabledefs.id=".$id;
+			$querystatement="
+				SELECT
+					tabledefs.id,
+					maintable,
+					querytable,
+					tabledefs.displayname,
+					addfile,
+					editfile,
+					importfile,
+					deletebutton,
+					type,
+					defaultwhereclause,
+					defaultsortorder,
+					defaultsearchtype,
+					defaultcriteriafindoptions,
+					defaultcriteriaselection,
+					modules.name,
+					searchroleid,
+					advsearchroleid,
+					viewsqlroleid
+				FROM
+					tabledefs inner join modules on tabledefs.moduleid=modules.id
+				WHERE
+					tabledefs.id=".$id;
 			
 			$queryresult=$this->db->query($querystatement);
 			
@@ -111,29 +130,29 @@
 
 		}
 						
-function showResultHeader(){
-	?>
-	<tr>
-	<?php
-	$columncount=count($this->thecolumns);
-	$i=1;
-
-	foreach ($this->thecolumns as $therow){ ?>
-<th nowrap="nowrap" align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
-	<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>" />
-	<a href="/" onclick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
-	<?php
-		// If sorting on this column give the option to reverse the sort order.
-		if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
-	{?>&nbsp;<a href="/" onclick="doDescSort();return false;"><img src="<?php echo APP_PATH?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
-<?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
-{?> &nbsp;<a href="/" onclick="doSort(<?php echo $i?>);return false;"><img src="<?php echo APP_PATH?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
-<?php }	?></th><?php
-		$i++;
-	}//end foreach
-	?></tr><?php
-	
-}//end function
+		function showResultHeader(){
+			?>
+			<tr>
+			<?php
+			$columncount=count($this->thecolumns);
+			$i=1;
+		
+			foreach ($this->thecolumns as $therow){ ?>
+		<th nowrap="nowrap" align="<?php echo $therow["align"]?>" <?php if($therow["size"]) echo "width=\"".$therow["size"]."\" ";?> >
+			<input name="sortit<?php echo $i?>" type="hidden" value="<?php echo $therow["name"]?>" />
+			<a href="/" onclick="doSort(<?php echo $i?>);return false;"><?php echo $therow["name"]?></a>
+			<?php
+				// If sorting on this column give the option to reverse the sort order.
+				if ($this->querysortorder==$therow["column"] || $this->querysortorder==$therow["sortorder"]) 
+			{?>&nbsp;<a href="/" onclick="doDescSort();return false;"><img src="<?php echo APP_PATH?>common/image/down_arrow.gif" alt="dn" title="dn" width="10" height="10" border="0" /></a><input name="desc" type="hidden" value="" />
+		<?php }	elseif ($this->querysortorder==$therow["column"]." DESC" || $this->querysortorder==$therow["sortorder"]." DESC") 
+		{?> &nbsp;<a href="/" onclick="doSort(<?php echo $i?>);return false;"><img src="<?php echo APP_PATH?>common/image/up_arrow.gif" alt="up" title="up" width="10" height="10" border="0" /></a>
+		<?php }	?></th><?php
+				$i++;
+			}//end foreach
+			?></tr><?php
+			
+		}//end function
 
 		//output a query
 		function showResultRecords() {
@@ -405,6 +424,7 @@ function showResultHeader(){
 					id,
 					name,
 					`option`,
+					needselect,
 					othercommand,
 					roleid,
 					displayorder
@@ -426,13 +446,15 @@ function showResultHeader(){
 						"id" => $therecord["id"],
 						"name" => $therecord["option"],
 						"roleid" => $therecord["roleid"],
-						"displayorder" => $therecord["displayorder"]
+						"displayorder" => $therecord["displayorder"],
+						"needselect" => $therecord["needselect"]
 					);
 									
 				}else{
 				
 					$options[$therecord["name"]]["allowed"]=$therecord["option"];
 					$options[$therecord["name"]]["roleid"]=$therecord["roleid"];
+					$options[$therecord["name"]]["needselect"]=$therecord["needselect"];
 					
 				}//endif
 				
@@ -575,261 +597,293 @@ function showResultHeader(){
 	}//end function		
 
 		
-function displayQueryButtons() {
-
-	global $phpbms;
-	
-	?><div id="resultInfoDiv"><?php
- 	
-	if(!isset($this->tableoptions["new"])){
-		 $this->tableoptions["new"]["allowed"]=0;
-		 $this->tableoptions["new"]["roleid"]=0;
-	} 
-	if(!isset($this->tableoptions["select"])) {
-		$this->tableoptions["select"]["allowed"]=0;
-		$this->tableoptions["select"]["roleid"]=0;
-	}
-	if(!isset($this->tableoptions["edit"])){
-		 $this->tableoptions["edit"]["allowed"]=0;
-		 $this->tableoptions["edit"]["roleid"]=0;
-	}
-	if(!isset($this->tableoptions["printex"])) {
-		$this->tableoptions["printex"]["allowed"]=0;
-		$this->tableoptions["printex"]["roleid"]=0;
-	}
-	if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
-
-	// If they have rights to see the SQL statement, spit it out here.
-	if(hasRights($this->thetabledef["viewsqlroleid"])) {
-	
-	?><div id="sqlstatement">
-		<fieldset>
-			<legend>SQL Statement</legend>
-			<div id="theSqlText" class="mono small"><?php echo stripslashes(htmlQuotes($this->querystatement))?></div>
-		</fieldset><?php 
-
-		if($this->sqlerror) {?>
-		<fieldset>
-			<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
-			<div><?php echo $this->sqlerror?></div>
-		</fieldset><?php 
-
-		}?>
-	</div>
-	
-	<?php }
-
-	?><div id="commandSet"><?php
-	
-	if($this->numrows){
-		?>
-		<div id="numCount" align="right" class="small"><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><?php
+		function displayQueryButtons() {
 		
-		if ($this->truecount<=RECORD_LIMIT) 
-			echo "<div>records:&nbsp;".$this->numrows."</div>";
-		else {
+			global $phpbms;
+			
+			?><div id="resultInfoDiv"><?php
+			
+			if(!isset($this->tableoptions["new"])){
+				 $this->tableoptions["new"]["allowed"]=0;
+				 $this->tableoptions["new"]["roleid"]=0;
+				 $this->tableoptions["new"]["needselect"]=0;
+			} 
+			if(!isset($this->tableoptions["select"])) {
+				$this->tableoptions["select"]["allowed"]=0;
+				$this->tableoptions["select"]["roleid"]=0;
+				$this->tableoptions["select"]["needselect"]=0;
+			}
+			if(!isset($this->tableoptions["edit"])){
+				 $this->tableoptions["edit"]["allowed"]=0;
+				 $this->tableoptions["edit"]["roleid"]=0;
+				 $this->tableoptions["edit"]["needselect"]=0;
+			}
+			if(!isset($this->tableoptions["printex"])) {
+				$this->tableoptions["printex"]["allowed"]=0;
+				$this->tableoptions["printex"]["roleid"]=0;
+				$this->tableoptions["printex"]["needselect"]=0;
+			}
+			if(!isset($this->tableoptions["import"])) {
+				$this->tableoptions["import"]["allowed"]=0;
+				$this->tableoptions["import"]["roleid"]=0;
+				$this->tableoptions["import"]["needselect"]=0;
+			}
+			if(!isset($this->tableoptions["othercommands"])) $this->tableoptions["othercommands"]=false;
 		
-		?>			
-			<input name="offset" type="hidden" value="" /><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
-			  	<?php
-				
-					$displayedoffset=0;
-					while($displayedoffset<$this->truecount){
-						?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected=\"selected\"";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+RECORD_LIMIT<$this->truecount) echo ($displayedoffset+RECORD_LIMIT); else echo $this->truecount;?></option><?php
-						$displayedoffset+=RECORD_LIMIT;
-					}
-					
+			// If they have rights to see the SQL statement, spit it out here.
+			if(hasRights($this->thetabledef["viewsqlroleid"])) {
+			
+			?><div id="sqlstatement">
+				<fieldset>
+					<legend>SQL Statement</legend>
+					<div id="theSqlText" class="mono small"><?php echo stripslashes(htmlQuotes($this->querystatement))?></div>
+				</fieldset><?php 
+		
+				if($this->sqlerror) {?>
+				<fieldset>
+					<legend><span style="text-transform:capitalize">SQL</span> Error</legend>
+					<div><?php echo $this->sqlerror?></div>
+				</fieldset><?php 
+		
+				}?>
+			</div>
+			
+			<?php }
+		
+			?><div id="commandSet"><?php
+			
+			if($this->numrows){
 				?>
-			  </select> of <?php echo $this->truecount;
-			if($this->recordoffset>0){
-				?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-RECORD_LIMIT ?>;document.search.submit();"><span>prev.</span></button><?php
-			}
-			if(($this->numrows+$this->recordoffset)<$this->truecount){
-				?><button type="button" class="graphicButtons buttonFF" onclick="document.search.offset.value=<?php echo $this->recordoffset+RECORD_LIMIT ?>;document.search.submit();"><span>next</span></button><?php
-			}
-						  
-		} ?></div><?php 
-	}?>	
-	
-		<ul id="recordCommands">
-		<?php 
-			$showFirst = ' id="firstToolbarItem" ';
+				<div id="numCount" align="right" class="small"><input type="hidden" id="deleteCommand" name="deleteCommand" value="" /><?php
+				
+				if ($this->truecount<=RECORD_LIMIT) 
+					echo "<div>records:&nbsp;".$this->numrows."</div>";
+				else {
+				
+				?>			
+					<input name="offset" type="hidden" value="" /><select name="offsetselector" onchange="this.form.offset.value=this.value;this.form.submit();">
+						<?php
+						
+							$displayedoffset=0;
+							while($displayedoffset<$this->truecount){
+								?><option value="<?php echo $displayedoffset?>" <?php if($displayedoffset==$this->recordoffset) echo "selected=\"selected\"";?>><?php echo ($displayedoffset+1)?>-<?php if($displayedoffset+RECORD_LIMIT<$this->truecount) echo ($displayedoffset+RECORD_LIMIT); else echo $this->truecount;?></option><?php
+								$displayedoffset+=RECORD_LIMIT;
+							}
+							
+						?>
+					  </select> of <?php echo $this->truecount;
+					if($this->recordoffset>0){
+						?><button type="button" class="graphicButtons buttonRew" onclick="document.search.offset.value=<?php echo $this->recordoffset-RECORD_LIMIT ?>;document.search.submit();"><span>prev.</span></button><?php
+					}
+					if(($this->numrows+$this->recordoffset)<$this->truecount){
+						?><button type="button" class="graphicButtons buttonFF" onclick="document.search.offset.value=<?php echo $this->recordoffset+RECORD_LIMIT ?>;document.search.submit();"><span>next</span></button><?php
+					}
+								  
+				}//end if ?></div><?php 
+			}//end if?>	
 			
-			if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) {
-			
-			?><li <?php echo $showFirst?>>
-				<a href="#" id="newRecord" class="newRecord" accesskey="n" title="new record (alt + n)" onclick="addRecord();return false;"><span>new</span></a>
-			  </li><?php 
-			$showFirst = NULL;			  
-		} 
-			
-		if($this->numrows) {
-			if ($this->tableoptions["edit"]["allowed"] && hasRights($this->tableoptions["edit"]["roleid"])) {
-				?><li <?php echo $showFirst?>>
-					<a href="#" id="editRecord" class="editRecordDisabled" accesskey="e" onclick="return editButton();" title="edit record (alt + e)"><span>edit</span></a>
-				</li>
-				<?php
-				$showFirst = NULL;			  
-			}
+				<ul id="recordCommands">
+				<?php 
+					$showFirst = ' id="firstToolbarItem" ';
+					
+					if ($this->tableoptions["new"]["allowed"] && hasRights($this->tableoptions["new"]["roleid"])) {
+					
+					?><li <?php echo $showFirst?>>
+						<a href="#" id="newRecord" class="newRecord" accesskey="n" title="new record (alt + n)" onclick="addRecord();return false;"><span>new</span></a>
+					  </li><?php 
+					$showFirst = NULL;			  
+				} 
+					
+				if($this->numrows) {
+					if ($this->tableoptions["edit"]["allowed"] && hasRights($this->tableoptions["edit"]["roleid"])) {
+						?><li <?php echo $showFirst?>>
+							<a href="#" id="editRecord" class="editRecordDisabled" accesskey="e" onclick="return editButton();" title="edit record (alt + e)"><span>edit</span></a>
+						</li>
+						<?php
+						$showFirst = NULL;			  
+					}//end if
+				
+					if($this->thetabledef["deletebutton"] == "delete") {				
+						?><li <?php echo $showFirst?>>
+							<a href="#" id="deleteRecord" class="deleteRecordDisabled" accesskey="d" onclick="confirmDelete('delete');return false" title="delete record (alt + d)"><span>delete</span></a>
+						</li>
+						<?php
+						$showFirst = NULL;			  
+					}//end if
 		
-			if($this->thetabledef["deletebutton"] == "delete") {				
-				?><li <?php echo $showFirst?>>
-					<a href="#" id="deleteRecord" class="deleteRecordDisabled" accesskey="d" onclick="confirmDelete('delete');return false" title="delete record (alt + d)"><span>delete</span></a>
-				</li>
-				<?php
-				$showFirst = NULL;			  
-			}
-
-			if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
-				?><li <?php echo $showFirst?>>
-					<a href="#" id="print" class="print" accesskey="p" onclick="doPrint();return false" title="print report (alt + p)"><span>print</span></a>
-					<input type="hidden" id="doprint" name="doprint" value="no" />
-				</li>
-				<?php
-				$showFirst = NULL;			  
-			}
-	
-			if($this->tableoptions["othercommands"] || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){
-			
-				?><li <?php echo $showFirst?>>
-					<a href="#" id="otherCommandButton" class="otherCommandsDisabled" onclick="showDropDown('otherDropDown');return false" title="other commands"><span>other commands</span></a>
-					<div id="otherDropDown" class="toolbarDropDowns" style="display:none">
-						<ul>
-							<?php 
-							if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {
-							
-								?>
-								<li><a href="#" title="(alt + d)" onclick="chooseOtherCommand('-1','<?php echo $this->thetabledef["deletebutton"]?>')"><strong><?php echo $this->thetabledef["deletebutton"]?></strong></a></li>
-								<?php 
-								
-								$displayOrder = -1;
-
-							}else 
-								$displayOrder = 0;
-							
-							if($this->tableoptions["othercommands"]){
-							
-								foreach($this->tableoptions["othercommands"] as $command){
-
-									if(hasRights($command["roleid"])){
-										
-										if($command["displayorder"] != $displayOrder){
-										
-											$class = ' class="menuSep"';
-											$displayOrder = $command["displayorder"];
-										
-										} else 
-											$class = "";
-										
+					if($this->tableoptions["printex"]["allowed"] && hasRights($this->tableoptions["printex"]["roleid"])){
+						?><li <?php echo $showFirst?>>
+							<a href="#" id="print" class="print" accesskey="p" onclick="doPrint();return false" title="print report (alt + p)"><span>print</span></a>
+							<input type="hidden" id="doprint" name="doprint" value="no" />
+						</li>
+						<?php
+						$showFirst = NULL;			  
+					}//end if
+				}//end if --numrows--
+					if($this->tableoptions["othercommands"] || ($this->tableoptions["import"]["allowed"] && hasRights($this->tableoptions["import"]["roleid"])) || ($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") ){
+					
+						?><li <?php echo $showFirst?>>
+							<a href="#" id="otherCommandButton" class="otherCommands" onclick="showDropDown('otherDropDown');return false" title="other commands"><span>other commands</span></a>
+							<div id="otherDropDown" class="toolbarDropDowns" style="display:none">
+								<ul>
+									<?php 
+									if($this->thetabledef["deletebutton"] != "delete" && $this->thetabledef["deletebutton"] != "NA") {
+									
 										?>
-										<li<?php echo $class?>><a href="#" onclick="chooseOtherCommand('<?php echo $command["id"] ?>','')"><?php echo $command["name"]?></a></li>
-										<?php
+										<li><a class="needselectDisabled" href="#" title="(alt + d)" onclick="chooseOtherCommand('-1','<?php echo $this->thetabledef["deletebutton"]?>',this); return false;"><strong><?php echo $this->thetabledef["deletebutton"]?></strong></a></li>
+										<?php 
+										
+										$displayOrder = -1;
+		
+									}else
+										$displayOrder = 0;
+										
+									if($this->tableoptions["import"]["allowed"] && hasRights($this->tableoptions["import"]["roleid"])){
+										
+										$class = '';
+										if($this->tableoptions["import"]["needselect"])
+											$class = 'class="needselectDisabled"';
+										?>
+										<li><a <?php echo $class; ?> href="#" title="" onclick="chooseOtherCommand('-2','', this); return false;"><strong>import</strong></a></li>
+										<?php 
+										
+										$displayOrder = -1;
+		
+									}else 
+										$displayOrder = ($displayOrder != -1)? 0 : (-1); 
+									
+									if($this->tableoptions["othercommands"]){
+									
+										foreach($this->tableoptions["othercommands"] as $command){
+		
+											if(hasRights($command["roleid"])){
+												
+												$aclass="";
+												$liclass="";
+												if($command["displayorder"] != $displayOrder){
+												
+													$liclass = ' class="menuSep"';
+													$displayOrder = $command["displayorder"];
+												
+												}
+												if($command["needselect"])
+														$aclass = ' class="needselectDisabled"';
+												
+												?>
+												<li<?php echo $liclass?>><a<?php echo $aclass ?> href="#" onclick="chooseOtherCommand('<?php echo $command["id"] ?>','',this); return false;"><?php echo $command["name"]?></a></li>
+												<?php
+												
+											}//end if
+											
+										}//endforeach
 										
 									}//end if
-									
-								}//endforeach
-								
-							}//end if
-							?>
-						</ul>
-					</div><input id="othercommands" name="othercommands" type="hidden"/>
-				</li>
-				<?php
-				$showFirst = NULL;			  
-			}
-			if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){
-				?><li <?php echo $showFirst?>>
-					<a href="#" id="searchSelection" class="searchSelection" onclick="showDropDown('searchSelectionDropDown');return false" title="selection"><span>selection</span></a>
-					<div id="searchSelectionDropDown" class="toolbarDropDowns" style="display:none">
-					<ul>
-						<li><a href="#" onclick="perfromToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
-						<li><a href="#" onclick="perfromToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
-						<li class="menuSep"><a href="#" onclick="perfromToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
-						<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected records from view</a></li>						
-					</ul>
-					</div>
-				</li>
-				<?php 
-				$showFirst = NULL;			  
-			} 
-			
-			}//end if numrows	
-			if(hasRights($this->thetabledef["viewsqlroleid"])){
+									?>
+								</ul>
+							</div><input id="othercommands" name="othercommands" type="hidden"/>
+						</li>
+						<?php
+						$showFirst = NULL;			  
+					}//end if
+					
+				if($this->numrows){
+					if($this->tableoptions["select"]["allowed"] && hasRights($this->tableoptions["select"]["roleid"])){
+						?><li <?php echo $showFirst?>>
+							<a href="#" id="searchSelection" class="searchSelection" onclick="showDropDown('searchSelectionDropDown');return false" title="selection"><span>selection</span></a>
+							<div id="searchSelectionDropDown" class="toolbarDropDowns" style="display:none">
+							<ul>
+								<li><a href="#" onclick="perfromToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
+								<li><a href="#" onclick="perfromToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
+								<li class="menuSep"><a href="#" onclick="perfromToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
+								<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected records from view</a></li>						
+							</ul>
+							</div>
+						</li>
+						<?php 
+						$showFirst = NULL;			  
+					}//end if
+					
+				}//end if numrows	
+					if(hasRights($this->thetabledef["viewsqlroleid"])){
+						?>
+						<li>
+							<a href="#" id="showSQLButton" class="sqlUp" onclick="return false;" title="Show SQL Statement"><span>show SQL</span></a>
+						</li>
+						<?php }//end rights
+		
 				?>
-				<li>
-					<a href="#" id="showSQLButton" class="sqlUp" onclick="return false;" title="Show SQL Statement"><span>show SQL</span></a>
-				</li>
-				<?php }//end rights
-
-		?>
-		</ul>
-		</div></div>
-	<?php	
-	$phpbms->bottomJS[] = ' var addFile = "'.APP_PATH.$this->thetabledef["addfile"].'"';
-	$phpbms->bottomJS[] = ' var editFile = "'.APP_PATH.$this->thetabledef["editfile"].'"';
-
-}//end method
+				</ul>
+				</div></div>
+			<?php	
+			$phpbms->bottomJS[] = ' var addFile = "'.APP_PATH.$this->thetabledef["addfile"].'"';
+			$phpbms->bottomJS[] = ' var editFile = "'.APP_PATH.$this->thetabledef["editfile"].'"';
 			
-
-
-function displayResultTable(){
-	?><script language="JavaScript" type="text/javascript">selIDs=new Array();</script><input name="newsort" type="hidden" value="" />
-	<div id="queryTableContainer"><table class="querytable" border="0" cellpadding="0" cellspacing="0">
-		<thead>
-			<?php $this->showResultHeader()?>
-		</thead>
-		<tfoot>
-			<?php $this->showResultFooter()?>
-		</tfoot>
-		<tbody id="resultTbody">
-			<?php 
-				if($this->numrows>0)
-					$this->showResultRecords();
-				else
-					$this->showNoResults();					
-			?>
-		</tbody>
-	</table></div><?php
-	
-}//end method
-
-
-
-function showResultFooter(){
-	?><tr class="queryfooter"><?php
-	foreach ($this->thecolumns as $therow){
-		?><td align="<?php echo $therow["align"]?>"><?php
-		if($therow["footerquery"]){
-			$querystatement="SELECT ".$therow["footerquery"]." as thet FROM ".$this->therecords;
-			$queryresult=$this->db->query($querystatement);
+			//for the import page, "" == the general page instead.
+			$import = ($this->thetabledef["importfile"])?$this->thetabledef["importfile"]:"modules/base/general_import.php?id=".$this->thetabledef["id"];
+			$phpbms->bottomJS[] = ' var importFile = "'.APP_PATH.$import.'"';
+		
+		}//end method
+					
+		
+		
+		function displayResultTable(){
+			?><script language="JavaScript" type="text/javascript">selIDs=new Array();</script><input name="newsort" type="hidden" value="" />
+			<div id="queryTableContainer"><table class="querytable" border="0" cellpadding="0" cellspacing="0">
+				<thead>
+					<?php $this->showResultHeader()?>
+				</thead>
+				<tfoot>
+					<?php $this->showResultFooter()?>
+				</tfoot>
+				<tbody id="resultTbody">
+					<?php 
+						if($this->numrows>0)
+							$this->showResultRecords();
+						else
+							$this->showNoResults();					
+					?>
+				</tbody>
+			</table></div><?php
 			
-			$therecord=$this->db->fetchArray($queryresult);
-			echo formatVariable($therecord["thet"],$therow["format"]);
-		} else {echo "&nbsp;";}?></td><?php 
-	}//end foreach
-	//keep this in here to close the total table
-	?></tr><?php
-}//end function
-
-
-function displayRelationships(){
-	// Get relationships
-	$querystatement="SELECT
-		 id, name 
-		 FROM relationships
-		 WHERE fromtableid=\"".$this->thetabledef["id"]."\" ORDER BY name";
-	$queryresult = $this->db->query($querystatement);	
-	if (!$queryresult) $error = new appError(1,"Error Retrieving Relationships");
-	if ($this->db->numRows($queryresult)) {
-		?><div class="small">
-		show related records in <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
-			<option value="" selected="selected" class="choiceListBlank">area...</option><?php 
-			while($therecord = $this->db->fetchArray($queryresult)){
-			?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
-		?></select></div>
-		<?php
-	}  ?></form><?php
-}//end function
+		}//end method
+		
+		
+		
+		function showResultFooter(){
+			?><tr class="queryfooter"><?php
+			foreach ($this->thecolumns as $therow){
+				?><td align="<?php echo $therow["align"]?>"><?php
+				if($therow["footerquery"]){
+					$querystatement="SELECT ".$therow["footerquery"]." as thet FROM ".$this->therecords;
+					$queryresult=$this->db->query($querystatement);
+					
+					$therecord=$this->db->fetchArray($queryresult);
+					echo formatVariable($therecord["thet"],$therow["format"]);
+				} else {echo "&nbsp;";}?></td><?php 
+			}//end foreach
+			//keep this in here to close the total table
+			?></tr><?php
+		}//end function
+		
+		
+		function displayRelationships(){
+			// Get relationships
+			$querystatement="SELECT
+				 id, name 
+				 FROM relationships
+				 WHERE fromtableid=\"".$this->thetabledef["id"]."\" ORDER BY name";
+			$queryresult = $this->db->query($querystatement);	
+			if (!$queryresult) $error = new appError(1,"Error Retrieving Relationships");
+			if ($this->db->numRows($queryresult)) {
+				?><div class="small">
+				show related records in <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
+					<option value="" selected="selected" class="choiceListBlank">area...</option><?php 
+					while($therecord = $this->db->fetchArray($queryresult)){
+					?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
+				?></select></div>
+				<?php
+			}  ?></form><?php
+		}//end function
 
 		function initialize($id){
 			parent::initialize($id);

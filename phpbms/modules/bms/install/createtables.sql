@@ -8,7 +8,7 @@ CREATE TABLE clientemailprojects (
   body text,
   lastrun timestamp(14) NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ENGINE=INNODB;
 
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL auto_increment,
@@ -55,7 +55,7 @@ CREATE TABLE `clients` (
   KEY `thelastname` (`lastname`),
   KEY `thecompany` (`company`),
   KEY `thetype` (`type`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE discounts (
   id int(11) NOT NULL auto_increment,
@@ -69,7 +69,7 @@ CREATE TABLE discounts (
   modifieddate timestamp(14) NOT NULL,
   creationdate datetime default NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ENGINE=INNODB;
 
 CREATE TABLE `invoices` (
   `id` int(11) NOT NULL auto_increment,
@@ -133,7 +133,7 @@ CREATE TABLE `invoices` (
   `shiptosameasbilling` tinyint(3) unsigned NOT NULL default '0',
   UNIQUE KEY `theid` (`id`),
   KEY `client` (`clientid`)
-) TYPE=MyISAM AUTO_INCREMENT=1000 PACK_KEYS=0;
+)  ENGINE=INNODB AUTO_INCREMENT=1000 PACK_KEYS=0;
 
 CREATE TABLE lineitems (
   id int(11) NOT NULL auto_increment,
@@ -153,7 +153,7 @@ CREATE TABLE lineitems (
   UNIQUE KEY theid (id),
   KEY invoice (invoiceid),
   KEY product (productid)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE prerequisites (
   childid int(11) NOT NULL default '0',
@@ -162,7 +162,7 @@ CREATE TABLE prerequisites (
   UNIQUE KEY theid (id),
   KEY child (childid),
   KEY parent (parentid)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
@@ -176,7 +176,7 @@ CREATE TABLE productcategories (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp(14) NOT NULL,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE products (
   categoryid int(11) NOT NULL default '0',
@@ -211,7 +211,7 @@ CREATE TABLE products (
   UNIQUE KEY theid (id),
   UNIQUE KEY thpartnum (partnumber),
   KEY status (status)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE tax (
   id int(11) NOT NULL auto_increment,
@@ -223,7 +223,7 @@ CREATE TABLE tax (
   modifiedby int(11) default NULL,
   modifieddate timestamp(14) NOT NULL,
   UNIQUE KEY theid (id)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `shippingmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -237,7 +237,7 @@ CREATE TABLE `shippingmethods` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `paymentmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -252,7 +252,7 @@ CREATE TABLE `paymentmethods` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `invoicestatuses` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -267,7 +267,7 @@ CREATE TABLE `invoicestatuses` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `invoicestatushistory` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -277,7 +277,7 @@ CREATE TABLE `invoicestatushistory` (
   `statusdate` DATE,
   `assignedtoid` INTEGER UNSIGNED,
   PRIMARY KEY(`id`)
-) TYPE = MYISAM;
+) ENGINE=INNODB;
 
 CREATE TABLE `aritems` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -298,7 +298,7 @@ CREATE TABLE `aritems` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `receipts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -324,7 +324,7 @@ CREATE TABLE `receipts` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `receiptitems` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -334,7 +334,7 @@ CREATE TABLE `receiptitems` (
   `discount` double NOT NULL default '0',
   `taxadjustment` double NOT NULL default '0',
   PRIMARY KEY  (`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `addresses` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -354,7 +354,7 @@ CREATE TABLE `addresses` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE `addresstorecord` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -368,4 +368,4 @@ CREATE TABLE `addresstorecord` (
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY(`id`)
-);
+) ENGINE=INNODB;

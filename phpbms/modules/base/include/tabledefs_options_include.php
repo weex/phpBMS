@@ -72,6 +72,7 @@
 				"id" => NULL,
 				"name" => "",
 				"option" => "",
+				"needselect" => 0,
 				"othercommand" => 0,
 				"roleid" => 0,
 				"displayorder" => 0
@@ -90,6 +91,7 @@
 					tableoptions.othercommand,
 					tableoptions.displayorder,
 					tableoptions.roleid,
+					tableoptions.needselect,
 					roles.name AS rolename
 				FROM
 					tableoptions LEFT JOIN roles ON tableoptions.roleid = roles.id
@@ -121,6 +123,7 @@
 				<tr>
 					<th nowrap="nowrap"align="left" width="100%">name</th>
 					<th nowrap="nowrap"align="center">allowed</th>
+					<th nowrap="nowrap"align="center">need select</th>
 					<th nowrap="nowrap"align="left">function name</th>
 					<th nowrap="nowrap"align="left">access</th>
 					<th nowrap="nowrap"align="right">display order</th>
@@ -130,7 +133,7 @@
 			
 			<tfoot>
 				<tr class="queryfooter">
-					<td colspan="6">&nbsp;</td>
+					<td colspan="7">&nbsp;</td>
 				</tr>
 			</tfoot>
 
@@ -149,7 +152,7 @@
 							
 							if($therecord["othercommand"] !== $other){
 																
-								?><tr class="queryGroup"><td colspan="6"><?php echo ($therecord["othercommand"] == 1)? "Additional Commands" : "Integrated Features";?></td></tr><?php 
+								?><tr class="queryGroup"><td colspan="7"><?php echo ($therecord["othercommand"] == 1)? "Additional Commands" : "Integrated Features";?></td></tr><?php 
 
 								$other = $therecord["othercommand"];
 							}//end if
@@ -176,6 +179,17 @@
 								echo "&nbsp;"; 
 							else
 								echo formatVariable($therecord["option"], "boolean");
+								
+							?>
+						</td>
+					
+						<td nowrap="nowrap" align="center">
+							<?php 
+
+							if(!$therecord["othercommand"]) 
+								echo "&nbsp;"; 
+							else
+								echo formatVariable($therecord["needselect"], "boolean");
 								
 							?>
 						</td>
@@ -230,6 +244,9 @@
 		
 			if(!isset($variables["ifOption"]))
 				$variables["ifOption"] = 0;
+			
+			if(!isset($variables["needselect"]))
+				$variables["needselect"] = 0;
 
 			if($variables["type"]){
 				
@@ -247,19 +264,23 @@
 				INSERT INTO
 					tableoptions
 
-					(tabledefid,
-					name,
-					`option`,
-					roleid,
-					displayorder,
-					othercommand)
+					(
+						tabledefid,
+						name,
+						`option`,
+						roleid,
+						displayorder,
+						othercommand,
+						needselect
+					)
 				VALUES (
 					".$this->tabledefid.",
 					'".$name."',
 					'".$option."',
 					".((int) $variables["roleid"]).",
 					".((int) $variables["displayorder"]).",
-					".((int) $variables["type"])."
+					".((int) $variables["type"]).",
+					".((int) $variables["needselect"])."
 				)";
 			
 			$this->db->query($insertstatement);
@@ -271,6 +292,9 @@
 		
 			if(!isset($variables["ifOption"]))
 				$variables["ifOption"] = 0;
+			
+			if(!isset($variables["needselect"]))
+				$variables["needselect"] = 0;
 
 			$updatestatement = "
 				UPDATE
@@ -278,7 +302,8 @@
 				SET
 					roleid = ".((int) $variables["roleid"]).", 
 					displayorder = ".((int) $variables["displayorder"]).",
-					othercommand = ".((int) $variables["type"]).", ";
+					othercommand = ".((int) $variables["type"]).",
+					needselect = ".((int) $variables["needselect"]).",";
 			
 			if(!$variables["type"])
 				$updatestatement .= "

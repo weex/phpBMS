@@ -46,6 +46,7 @@ if(class_exists("phpbmsTable")){
 			$therecord["deletebutton"]="delete";
 			$therecord["type"]="table";
 			$therecord["searchroleid"]=0;
+			$therecord["importroleid"]=-100;
 			$therecord["advsearchroleid"]=-100;
 			$therecord["viewsqlroleid"]=-100;
 			
@@ -77,20 +78,24 @@ if(class_exists("phpbmsTable")){
 			$this->db->query($querystatement);
 			
 			//next default button options
-			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) 
-			VALUES (".$newid.",'new','1',0,0);";
+			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`) 
+			VALUES (".$newid.",'new','1',0,0,0);";
 			$this->db->query($querystatement);
 
-			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) 
-			VALUES (".$newid.",'edit','1',0,0);";
+			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`) 
+			VALUES (".$newid.",'edit','1','1',0,0);";
 			$this->db->query($querystatement);
 
-			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) 
-			VALUES (".$newid.",'printex','1',0,0);";
+			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`) 
+			VALUES (".$newid.",'printex','1',0,0,0);";
 			$this->db->query($querystatement);
 
-			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`) 
-			VALUES (".$newid.",'select','1',0,0);";
+			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`) 
+			VALUES (".$newid.",'select','1',0,0,0);";
+			$this->db->query($querystatement);
+			
+			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`) 
+			VALUES (".$newid.",'import','1',0,0,'-100');";
 			$this->db->query($querystatement);
 
 			//next quicksearch

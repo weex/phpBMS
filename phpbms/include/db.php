@@ -111,7 +111,7 @@ class db{
 			else
 				$this->db_link = @ mysql_connect($this->hostname,$this->dbuser,$this->dbpass);
 			if(!$this->db_link){
-				$error = new appError(-400,"Could not connect to database server.\n\n".mysql_error(),"",$this->showError,$this->stopOnError,false,$this->errorFormat);
+				$error = new appError(-400,"Could not connect to database server.\n\n".$this->getError(),"",$this->showError,$this->stopOnError,false,$this->errorFormat);
 				return false;
 			} else			
 				return $this->db_link;
@@ -135,10 +135,10 @@ class db{
 				case "mysql":
 					if(!isset($this->db_link)) 
 						if(!$this->dataB()) die($this->error);
-					$queryresult=  @ mysql_query($sqlstatement,$this->db_link);
+					$queryresult = @ mysql_query($sqlstatement,$this->db_link);
 					if(!$queryresult){
-						$this->error = mysql_error($this->db_link);
-						$error = new appError(-420,mysql_error($this->db_link)."\n\nStatement: ".$sqlstatement,"",$this->showError,$this->stopOnError,$this->logError,$this->errorFormat);
+						$this->error = $this->getError($this->db_link);
+						$error = new appError(-420,$this->getError($this->db_link)."\n\nStatement: ".$sqlstatement,"",$this->showError,$this->stopOnError,$this->logError,$this->errorFormat);
 						return false;
 					}					
 				break;
@@ -160,6 +160,19 @@ class db{
 
 		}//end method
 
+
+		function getError($link = NULL){
+			
+			switch($this->type){
+				case "mysql":
+					$thereturn = mysql_error($link);
+				break;
+			}//end switch --type--
+			
+			return $thereturn;
+			
+		}//end method --getError--
+		
 
 		function numRows($queryresult){
 			switch($this->type){
@@ -186,6 +199,45 @@ class db{
 			return $row;
 		}//end function
 
+		
+		function startTransaction(){
+			
+			switch($this->type){
+				
+				case "mysql":
+					$this->query("START TRANSACTION;");
+				break;
+			
+			}//end switch
+			
+		}//end method --startTransaction--
+		
+		
+		function commitTransaction(){
+			
+			switch($this->type){
+				
+				case "mysql":
+					$this->query("COMMIT;");
+				break;
+			
+			}//end switch
+			
+		}//end method --startTransaction--
+		
+		
+		function rollbackTransaction(){
+			
+			switch($this->type){
+				
+				case "mysql":
+					$this->query("ROLLBACK;");
+				break;
+			
+			}//end switch
+			
+		}//end method --startTransaction--
+		
 
 		function seek($queryresult,$rownum){
 			switch($this->type){

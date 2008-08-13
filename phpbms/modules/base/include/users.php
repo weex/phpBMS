@@ -64,8 +64,6 @@ if(class_exists("phpbmsTable")){
 			unset($this->fields["lastlogin"]);
 						
 			$theid = parent::insertRecord($variables, $createdby);
-			
-			$this->fields = $this->db->tableInfo($this->maintable);
 	
 			//reset field information
 			$this->fields = $this->db->tableInfo($this->maintable);

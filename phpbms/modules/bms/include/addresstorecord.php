@@ -72,9 +72,12 @@ if(class_exists("addresses")){
 					NOW()					
 				)";
 			
-			$this->db->query($insertstatement);
+			$insertresult = $this->db->query($insertstatement);
 			
-			return $this->db->insertID();
+			if($insertresult)
+				return $this->db->insertId();
+			else
+				return false;
 			
 		}//end method - createAddressToRecord
 		

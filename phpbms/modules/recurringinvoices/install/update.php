@@ -124,6 +124,33 @@ include("../../../include/session.php");
 						$ver["version"] = $nextVersion;
 		
 						break;
+					// ================================================================================================
+					case "1.02":
+						$nextVersion = "1.03";
+						
+						$thereturn.="Updating ".$module["title"]." Module to ".$nextVersion."\n";
+			
+						$thereturn.= processSQLfile($db,"updatev1.03.sql");
+	
+						//Updating Module Table
+						$querystatement="
+							UPDATE 
+								modules 
+							SET 
+								version='".$nextVersion."'
+							WHERE 
+								name = '".$module["name"]."'";
+								
+						$queryresult = $db->query($querystatement);
+						
+						$thereturn.=" - Updated module record with new version \n";
+						
+						$thereturn.="Update of ".$module["name"]." to ".$nextVersion." Finished\n\n";
+				
+						$ver["version"] = $nextVersion;
+		
+						break;
+					
 				}//end switch
 				
 			}//end while
