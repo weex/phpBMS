@@ -66,7 +66,7 @@
 			
 			}//end swtich
 		
-		}//end method --_parseFromFile-- 
+		}//end method --_parseFromFile--
 		
 		
 		function _getTransactionData(){
@@ -296,7 +296,7 @@
 							?><tr class="qr<?php echo $i ?>" ><?php
 							foreach($fieldsArray as $field => $junk){
 								?><td nowrap="nowrap"><?php
-								echo $record[$field];
+								echo formatVariable($record[$field]);
 								?></td><?php
 							}//end foreach
 							?></tr><?php

@@ -75,9 +75,26 @@
 	
 	//if you are going to overide the class you would instantiate
 	// like this
+			
+			$importType = "csv";
+			if(isset($_POST["importType"])){
+				
+				switch($_POST["importType"]){
+					
+					case 0:
+						$importType = "csv";
+					break;
+					
+					case 1:
+						$importType = "sugarcrm";
+					break;
+					
+				}//end switch
+				
+			}//end if
 	
 	 		$thetable = new clients($db,2,$backurl);
-			$import = new clientsImport($thetable);
+			$import = new clientsImport($thetable, $importType);
 	
 	//and if you are setting the backurl, make sure you pass that as well
 	// like this:
@@ -103,7 +120,7 @@
 	// as they are automatically icluded when you define the special fields you
 	// will be using below.
 	$phpbms->cssIncludes[] = "pages/imports.css";
-	//$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
+	$phpbms->jsIncludes[] = "modules/bms/javascript/clients_import.js";
 
 	// if you need to define a body onlload function, do so with the phpbms property
 	
@@ -128,15 +145,13 @@
 		
 		// for each field we will use, create the field object and add it to 
 		// the forms list.
-		//$theinput = new inputDatePicker("orderdate", $therecord["orderdate"], "order date");
-		//$theform->addField($theinput);
-		//
-		//$theinput = new inputCheckBox("weborder",$therecord["weborder"],NULL, false, false);
-		//$theform->addField($theinput);
-		//
-		//$theinput = new inputField("accountnumber",$therecord["accountnumber"],  "account number" ,false, "integer", 20, 64);
-		//$theform->addField($theinput);
-
+		
+		$list = array("phpBMS csv file" => 0, "Sugar CRM (v5.0)" => 1);
+		$default = 0;
+		if(isset($_POST["importType"]))
+			$default = ((int) $_POST["importType"]);
+		$theinput = new inputBasicList("importType", $default, $list, "File Type");
+		$theform->addField($theinput);
 
 		// if you neeed to add additional attributes toa field, it's easy.
 		//$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order","Invoice"=>"Invoice","VOID"=>"VOID"), $displayName = NULL, $displayLabel = true);
@@ -167,26 +182,64 @@
 		
 		<?php
 		if($import->pageType == "main"){ ?>
-		<fieldset >
+		<fieldset>
 			<legend>import</legend>
-
-			<p id="uploadlabel">
-				<label for="import">file</label><br />
-				<input id="import" name="import" type="file" size="64"/><br/>
-				The file that you upload should be a comma seperated value (csv) file.
-				Delimeters are commas (,) and enclosures are double-quotes (").  If you
-				wish to escape a double-quote character inside of an enclosure, add another
-				double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...).<br/>
-				<br/>
-				The first row of your csv file should be the field-names of the table(s)
-				that you wish to import to.  Additional lines will be the actual data
-				that will be imported.<br/>
-				<br/>
-				When entering in currency, dates, or times use the format in the bms's configuration
-				(e.g. use English, US style dates if that is what the bms is configured to).
-			</p>
+			
+			<p><?php $theform->showField("importType"); ?></p>
+			
+			<div id="uploadlabel">
+				<p>
+					<label for="import">file</label><br />
+					<input id="import" name="import" type="file" size="64"/><br/>
+				</p>
+				
+				<div id="info0" class="info">
+					<p>
+						For any file that is a comma seperated value (csv) file:
+					</p>
+					<p>
+						Delimeters are commas (,) and enclosures are double-quotes (").  If you
+						wish to escape a double-quote character inside of an enclosure, add another
+						double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...).
+					</p>
+					<p>
+						The first row of your csv file should be the field-names of the table(s)
+						that you wish to import to.  Additional lines will be the actual data
+						that will be imported.
+					</p>
+					<p>
+						When entering in currency, dates, or times use the format in the bms's configuration
+						(e.g. use English, US style dates if that is what the bms is configured to).
+					</p>
+				</div>
+				<div id="info1" class="info" style="display:none;">
+					<p>
+						For any file that is a comma seperated value (csv) file:
+					</p>
+					<p>
+						Delimeters are commas (,) and enclosures are double-quotes ("). <span class="notes" >(This
+						is done by default by Sugar CRM)</span> If you wish to escape a double-quote character
+						inside of an enclosure, add another double-quote character (e.g ...,"Benny
+						""The Jet"" Rodriguez",...).
+					</p>
+					<p>
+						The first row of your csv file should be the field-names of the table(s)
+						that you wish to import to.  Additional lines will be the actual data
+						that will be imported. <span class="notes" >(Again, this is done by default by Sugar CRM)</span>
+					</p>
+					<p>
+						When entering in currency, dates, or times use the format in the bms's configuration
+						(e.g. use English, US style dates if that is what the bms is configured to).
+					</p>
+				</div>
+			</div>
 
 		</fieldset>
+		<?php
+		}else{
+		?>
+			<!-- This input is to be able to keep the importType the same for both the initial upload and the final upload -->
+			<input id="importType" name="importType" type="hidden" value="<?php echo (isset($_POST["importType"]))?($_POST["importType"]):('0'); ?>" />
 		<?php
 		}//end if
 		

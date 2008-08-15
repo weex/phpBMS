@@ -433,11 +433,355 @@ if(class_exists("searchFunctions")){
 if(class_exists("phpbmsImport")){
 	class clientsImport extends phpbmsImport{
 		
-		function clientsImport($table){
+		
+		function clientsImport($table, $importType = "csv"){
 			
-			parent::phpbmsImport($table);
+			if($importType == "sugarcrm"){
+				
+				$importType = "csv";
+				$switchedFrom = "sugarcrm";
+				
+			}//end if
+			
+			parent::phpbmsImport($table, $importType);
+			
+			if(isset($switchedFrom))
+				$this->importType = $switchedFrom;
 			
 		}//end method --clientsImport--
+		
+		
+		function _parseFromData($data){
+			
+			if($this->importType == "sugarcrm"){
+				
+				$this->importType = "csv";
+				$switchedFrom = "sugarcrm";
+				
+			}//end if
+			
+			$thereturn = parent::_parseFromData($data);
+			
+			if(isset($switchedFrom))
+				$this->importType = $switchedFrom;
+			
+			return $thereturn;
+		
+		}//end method --_parseFromFile--
+		
+		
+		function _formatSugarVariables($rows, $titles){
+			
+			//Replace the titles with valid ones
+			//(At the moment we only really need
+			//the correct count, but, it seems
+			//logical to correct the titles in case
+			//they are needed in the future)
+			$newTitles = array();
+			foreach($titles as $index => $name){
+				
+				switch($name){
+					
+					case "name":
+						$newTitles[] = "company";
+					break;
+					
+					case "date_entered":
+						$newTitles[] = "becameclient";
+					break;
+					
+					case "description":
+						$newTitles[] = "comments";
+					break;
+					
+					case "deleted":
+						$newTitles[] = "inactive";
+					break;
+					
+					case "account_type":
+						$newTitles[] = "type";
+					break;
+					
+					case "industry":
+						$newTitles[] = "category";
+					break;
+					
+					case "phone_fax":
+						$newTitles[] = "fax";
+					break;
+					
+					case "billing_address_street":
+						$newTitles[] = "address1";
+					break;
+					
+					case "billing_address_city":
+						$newTitles[] = "city";
+					break;
+					
+					case "billing_address_state":
+						$newTitles[] = "state";
+					break;
+					
+					case "billing_address_postalcode":
+						$newTitles[] = "postalcode";
+					break;
+					
+					case "billing_address_country":
+						$newTitles[] = "country";
+					break;
+					
+					case "phone_office":
+						$newTitles[] = "workphone";
+					break;
+					
+					case "phone_alternate":
+						$newTitles[] = "otherphone";
+					break;
+					
+					case "website":
+						$newTitles[] = "webaddress";
+					break;
+					
+					case "shipping_address_street":
+						$newTitles[] = "shipaddress1";
+					break;
+					
+					case "shipping_address_city":
+						$newTitles[] = "shipcity";
+					break;
+					
+					case "shipping_address_state":
+						$newTitles[] = "shipstate";
+					break;
+					
+					case "shipping_address_postalcode":
+						$newTitles[] = "shippostalcode";
+					break;
+					
+					case "shipping_address_country":
+						$newTitles[] = "shipcountry";
+					break;
+					
+				}//end switch
+				
+			}//end foreach
+			
+			
+			$newRows = array();
+			foreach($rows as $rowData){
+				
+				$newRowData = array();
+				$addComments = "";
+				foreach($rowData as $name => $data){
+					
+					switch($name){
+					
+						case "name":
+							$newRowData["company"] = trim($data);
+						break;
+						
+						case "date_entered":
+							$newRowData["becameclient"] = trim($data);
+						break;
+						
+						case "description":
+							$newRowData["comments"] = trim($data);
+						break;
+						
+						case "deleted":
+							$newRowData["inactive"] = trim($data);
+						break;
+						
+						case "industry":
+							$newRowData["category"] = trim($data);
+						break;
+						
+						case "account_type":
+							$newRowData["type"] = trim($data);
+						break;
+						
+						case "phone_fax":
+							$newRowData["fax"] = trim($data);
+						break;
+						
+						case "billing_address_street":
+							$newRowData["address1"] = trim($data);
+						break;
+						
+						case "billing_address_city":
+							$newRowData["city"] = trim($data);
+						break;
+						
+						case "billing_address_state":
+							$newRowData["state"] = trim($data);
+						break;
+						
+						case "billing_address_postalcode":
+							$newRowData["postalcode"] = trim($data);
+						break;
+						
+						case "billing_address_country":
+							$newRowData["country"] = trim($data);
+						break;
+						
+						case "phone_office":
+							$newRowData["workphone"] = trim($data);
+						break;
+						
+						case "phone_alternate":
+							$newRowData["otherphone"] = trim($data);
+						break;
+						
+						case "website":
+							$newRowData["webaddress"] = trim($data);
+						break;
+						
+						case "shipping_address_street":
+							$newRowData["shipaddress1"] = trim($data);
+						break;
+						
+						case "shipping_address_city":
+							$newRowData["shipcity"] = trim($data);
+						break;
+						
+						case "shipping_address_state":
+							$newRowData["shipstate"] = trim($data);
+						break;
+						
+						case "shipping_address_postalcode":
+							$newRowData["shippostalcode"] = trim($data);
+						break;
+						
+						case "shipping_address_country":
+							$newRowData["shipcountry"] = trim($data);
+						break;
+						
+						case "annual_revenue":
+						case "rating":
+						case "ownership":
+						case "employees":
+						case "ticker_symbol":
+							if($data)
+								$addComments .= "\n".str_replace("_"," ",$name).": ".trim($data);
+						break;
+						
+					}//end switch
+					
+				}//end foreach
+				
+				if($newRowData["type"] == "prospect")
+					$newRowData["becameclient"] = NULL;
+				
+				$newRowData["comments"] .= $addComments;
+				$newRows[] = $newRowData;
+				
+			}//end foreach
+			
+			$thereturn["rows"] = $newRows;
+			$thereturn["titles"] = $newTitles;
+			return $thereturn;
+			
+		}//end method --_formatSugarvariables--
+		
+		
+		function importRecords($rows, $titles){
+			
+			switch($this->importType){
+				
+				case "sugarcrm":
+					$thereturn = $this->_formatSugarVariables($rows, $titles);
+					$rows = $thereturn["rows"];
+					$titles = $thereturn["titles"];
+				
+				case "csv":			
+					//count total fieldnames (top row of csv document)
+					$fieldNum = count($titles);
+					
+					//the file starts at line number 1, but since line 1 is
+					//supposed to be the fieldnames in the table(s), the lines
+					//being insereted start @ 2.
+					$rowNum = 2;
+					
+					//get the data one row at a time
+					foreach($rows as $rowData){
+						
+						$theid = 0;
+						
+						//trim off leading/trailing spaces
+						$trimmedRowData = array();
+						foreach($rowData as $name => $data)
+							$trimmedRowData[$name] = trim($data);
+						
+						//check to see if number of fieldnames is consistent for each row
+						$rowFieldNum = count($trimmedRowData);
+						
+						//if valid, insert, if not, log error and don't insert.
+						if($rowFieldNum == $fieldNum)
+							$theid = $this->table->insertRecord($trimmedRowData);
+						else
+							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
+						
+						if($theid){
+							//keep track of the ids in the transaction to be able to select them
+							//for preview purposes
+							$this->transactionIDs[] = $theid;
+							
+							//get first id to correct auto increment
+							if(!$this->revertID)
+								$this->revertID = $theid;
+							
+							//If it is a sugarcrm import, insert the shipping address as well
+							if($this->importType == "sugarcrm"){
+								
+								
+								$variables = array();
+								if($trimmedRowData["shipaddress1"]) $variables["address1"] = $trimmedRowData["shipaddress1"];
+								if($trimmedRowData["shipcity"]) $variables["city"] = $trimmedRowData["shipcity"];
+								if($trimmedRowData["shipstate"]) $variables["state"] = $trimmedRowData["shipstate"];
+								if($trimmedRowData["shipcountry"]) $variables["country"] = $trimmedRowData["shipcountry"];
+								
+								//check to see if there is a shipping address
+								if(count($variables)){
+									
+									//If there is a shipping address, we need to make any others'
+									//`defaultshipto` to 0
+									
+									$querystatement = "
+										UPDATE
+											`addresstorecord`
+										SET
+											`addresstorecord`.`defaultshipto` = '0'
+										WHERE
+											`addresstorecord`.`recordid` = '".((int) $theid)."'
+											AND
+											`addresstorecord`.`tabledefid` = '2';
+										";
+										
+									$this->table->db->query($querystatement);
+									
+									$variables["title"] = "Main Shipping Addresss";
+									$variables["tabledefid"] = 2;
+									$variables["recordid"] = $theid;
+									$variables["defaultshipto"] = 1;
+									$variables["primary"] = 0;
+									
+									$this->table->address->insertRecord($variables);
+									
+								}//end if
+								
+							}//end if
+						}else
+							$this->error .= '<li> failed insert for line number '.$rowNum.'.</li>';
+						
+						$rowNum++;
+						
+					}//end foreach
+				break;
+				
+			}//end switch
+			
+		}//end method --importRecords--
+		
 		
 		function _getTransactionData(){
 			
@@ -448,31 +792,129 @@ if(class_exists("phpbmsImport")){
 			if($inStatement)
 				$inStatement = substr($inStatement, 0, -1);
 			
+			//There are two cases to minimize joins for csv files
+			switch($this->importType){
+				
+				case "sugarcrm":
+					$querystatement = "
+						SELECT
+							`clients`.`id`,
+							`clients`.`firstname`,
+							`clients`.`lastname`,
+							`clients`.`company`,
+							`clients`.`type`,
+							`clients`.`becameclient`,
+							`clients`.`inactive`,
+							`clients`.`category`,
+							`clients`.`homephone`,
+							`clients`.`workphone`,
+							`clients`.`mobilephone`,
+							`clients`.`fax`,
+							`clients`.`otherphone`,
+							`clients`.`email`,
+							`clients`.`webaddress`,
+							`clients`.`taxid`,
+							`clients`.`salesmanagerid`,
+							`clients`.`leadsource`,
+							`clients`.`comments`,
+							`clients`.`paymentmethodid`,
+							`clients`.`shippingmethodid`,
+							`clients`.`discountid`,
+							`clients`.`taxareaid`,
+							`clients`.`username`,
+							`clients`.`password`,
+							`clients`.`hascredit`,
+							`clients`.`creditlimit`,
+							`clients`.`createdby`,
+							`clients`.`creationdate`,
+							`clients`.`modifiedby`,
+							`clients`.`modifieddate`,
+							`addresses1`.`address1` AS `mainaddress1`,
+							`addresses1`.`address2` AS `mainaddress2`,
+							`addresses1`.`city` AS `maincity`,
+							`addresses1`.`state` AS `mainstate`,
+							`addresses1`.`postalcode` AS `mainpostalcode`,
+							`addresses1`.`country` AS `maincountry`,
+							`addresses1`.`phone` AS `mainphone`,
+							`addresses1`.`email` AS `mainemail`,
+							`addresses2`.`address1` AS `shipaddress1`,
+							`addresses2`.`address2` AS `shipaddress2`,
+							`addresses2`.`city` AS `shipcity`,
+							`addresses2`.`state` AS `shipstate`,
+							`addresses2`.`postalcode` AS `shippostalcode`,
+							`addresses2`.`country` AS `shipcountry`,
+							`addresses2`.`phone` AS `shipphone`,
+							`addresses2`.`email` AS `shipemail`
+						FROM
+							((((clients INNER JOIN addresstorecord AS `addresstorecord1` ON clients.id = addresstorecord1.recordid AND addresstorecord1.tabledefid=2 AND addresstorecord1.primary=1) INNER JOIN addresses AS addresses1 ON  addresstorecord1.addressid = addresses1.id)LEFT JOIN addresstorecord AS `addresstorecord2` on clients.id = addresstorecord2.recordid AND addresstorecord2.tabledefid=2 AND addresstorecord2.primary=0 AND addresstorecord2.defaultshipto=1) LEFT JOIN addresses AS addresses2 ON  addresstorecord2.addressid = addresses2.id)
+						WHERE
+							`clients`.`id` IN (".$inStatement.")
+						ORDER BY
+							`clients`.`id` ASC;
+						";
+				break;
+				
+				case "csv":
+					$querystatement = "
+						SELECT
+							`clients`.`id`,
+							`clients`.`firstname`,
+							`clients`.`lastname`,
+							`clients`.`company`,
+							`clients`.`type`,
+							`clients`.`becameclient`,
+							`clients`.`inactive`,
+							`clients`.`category`,
+							`clients`.`homephone`,
+							`clients`.`workphone`,
+							`clients`.`mobilephone`,
+							`clients`.`fax`,
+							`clients`.`otherphone`,
+							`clients`.`email`,
+							`clients`.`webaddress`,
+							`clients`.`taxid`,
+							`clients`.`salesmanagerid`,
+							`clients`.`leadsource`,
+							`clients`.`comments`,
+							`clients`.`paymentmethodid`,
+							`clients`.`shippingmethodid`,
+							`clients`.`discountid`,
+							`clients`.`taxareaid`,
+							`clients`.`username`,
+							`clients`.`password`,
+							`clients`.`hascredit`,
+							`clients`.`creditlimit`,
+							`clients`.`createdby`,
+							`clients`.`creationdate`,
+							`clients`.`modifiedby`,
+							`clients`.`modifieddate`,
+							`addresses`.`address1`,
+							`addresses`.`address2`,
+							`addresses`.`city`,
+							`addresses`.`state`,
+							`addresses`.`postalcode`,
+							`addresses`.`country`,
+							`addresses`.`phone`,
+							`addresses`.`email`
+						FROM
+							((clients INNER JOIN addresstorecord ON clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)
+						WHERE
+							`clients`.`id` IN (".$inStatement.")
+						ORDER BY
+							`clients`.`id` ASC;
+						";
+				break;
 			
-			$querystatement = "
-				SELECT
-					`clients`.*,
-					`addresses`.`address1`,
-					`addresses`.`address2`,
-					`addresses`.`city`,
-					`addresses`.`state`,
-					`addresses`.`postalcode`,
-					`addresses`.`country`,
-					`addresses`.`phone`,
-					`addresses`.`email`
-				FROM
-					((clients INNER JOIN addresstorecord on clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)
-				WHERE
-					`clients`.`id` IN (".$inStatement.");
-				";
+			}//end switch
 			
 			$queryresult = $this->table->db->query($querystatement);
-			
 			
 			while($therecord = $this->table->db->fetchArray($queryresult))
 				$this->transactionRecords[] = $therecord;
 			
+			
 		}//end method --_gettransactionData--
+		
 		
 		function displayTransaction($recordsArray, $fieldsArray){
 			
@@ -482,8 +924,10 @@ if(class_exists("phpbmsImport")){
 				
 				//list of values that should not be displayed
 				$removalArray = array("id", "modifiedby", "modifieddate", "createdby", "creationdate", "notes", "title", "shiptoname");
+				//gets the address table's columnnames/information (fields)
 				$addressArray = $this->table->address->fields;
 				
+				//gets rid of the values that should not be displayed
 				foreach($removalArray as $removalField){
 					
 					if(isset($addressArray[$removalField])){
@@ -494,6 +938,7 @@ if(class_exists("phpbmsImport")){
 					
 				}//end foreach
 				
+				//get rid of stuff that should only be in addresses but is present in clients
 				foreach($addressArray as $removalField => $junk){
 					
 					if(isset($fieldsArray[$removalField])){
@@ -504,9 +949,24 @@ if(class_exists("phpbmsImport")){
 					
 				}//end foreach
 				
+				//need to get two sets of address fields, one named main* and the other ship*.
+				if($this->importType == "sugarcrm"){
+					
+					foreach($addressArray as $field => $junk){
+						
+						$mainAddressArray["main".$field] = $junk;
+						$shipAddressArray["ship".$field] = $junk;
+						
+					}//end foreach
+					
+					$addressArray = $mainAddressArray + $shipAddressArray;
+					
+				}//end if
+				
 				$fieldsArray = $fieldsArray + $addressArray;
 				
 				parent::displayTransaction($recordsArray, $fieldsArray);
+				
 			}//end if
 			
 		}//end method --displayTransaction--

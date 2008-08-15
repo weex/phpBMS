@@ -168,25 +168,35 @@
 		<fieldset>
 			<legend>import</legend>
 
-			<p id="uploadlabel">
-				<label for="import">file</label><br />
-				<input id="import" name="import" type="file" size="64"/><br/>
-				The file that you upload should be a comma seperated value (csv) file.
-				Delimeters are commas (,) and enclosures are double-quotes (").  If you
-				wish to escape a double-quote character inside of an enclosure, add another
-				double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...).<br/>
-				<br/>
-				The first row of your csv file should be the field-names of the table(s)
-				that you wish to import to.  Additional lines will be the actual data
-				that will be imported.<br/>
-				<br/>
-				When entering in currency, dates, or times use the format in the bms's configuration
-				(e.g. use English, US style dates if that is what the bms is configured to).<br/>
-				<br/>
-				<span class="notes">
-				      Users' roles should be set manually, and cannot be imported on this page.
-				</span>
-			</p>
+			<div id="uploadlabel">
+				<p>
+					<label for="import">file</label><br />
+					<input id="import" name="import" type="file" size="64"/><br/>
+				</p>
+				
+				<div id="info0" class="info">
+					<p>
+						For any file that is a comma seperated value (csv) file:
+					</p>
+					<p>
+						Delimeters are commas (,) and enclosures are double-quotes (").  If you
+						wish to escape a double-quote character inside of an enclosure, add another
+						double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...).
+					</p>
+					<p>
+						The first row of your csv file should be the field-names of the table(s)
+						that you wish to import to.  Additional lines will be the actual data
+						that will be imported.
+					</p>
+					<p>
+						When entering in currency, dates, or times use the format in the bms's configuration
+						(e.g. use English, US style dates if that is what the bms is configured to).
+					</p>
+					<p class="notes">
+					      Users' roles should be set manually, and cannot be imported on this page.
+					</p>
+				</div>
+			</div>
 
 		</fieldset>
 		<?php
