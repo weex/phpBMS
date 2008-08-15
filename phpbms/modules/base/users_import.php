@@ -181,7 +181,8 @@
 					<p>
 						Delimeters are commas (,) and enclosures are double-quotes (").  If you
 						wish to escape a double-quote character inside of an enclosure, add another
-						double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...).
+						double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...), or with
+						a backslash character (\) (e.g ...,"Benny \"The Jet\" Rodriguez",...).
 					</p>
 					<p>
 						The first row of your csv file should be the field-names of the table(s)

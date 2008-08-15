@@ -359,6 +359,9 @@ class parseCSV {
 		$was_enclosed = false;
 		$strlen = strlen($data);
 		
+		// --nrieb-- Adding support for escaping quotes with a backslash (\) character
+		$data = str_replace('\"', '""', $data);
+		
 		// walk through each character
 		for ( $i=0; $i < $strlen; $i++ ) {
 			$ch = $data{$i};
