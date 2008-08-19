@@ -194,6 +194,14 @@
 				
 			$queryresult = $this->table->db->query($querystatement);
 			
+			$querystatement = "
+				ALTER TABLE
+					`files`
+				AUTO_INCREMENT = ".((int) $tempFileID).";
+				";
+			
+			$queryresult = $this->table->db->query($querystatement);
+			
 		}//end method --_removeTempCSV--
 		
 		//DO NOT USE THIS METHOD INSIDE AN OPEN TRANSACTION.
