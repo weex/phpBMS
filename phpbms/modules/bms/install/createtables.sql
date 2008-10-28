@@ -308,7 +308,7 @@ CREATE TABLE `receipts` (
   `status` enum('open','collected') NOT NULL default 'open',
   `readytopost` tinyint(3) unsigned NOT NULL default '0',
   `posted` tinyint(3) unsigned NOT NULL default '0',
-  `paymentmethodid` int(10) unsigned NOT NULL default '0',
+  `paymentmethodid` int(10) NOT NULL default '0',
   `ccnumber` varchar(64) default NULL,
   `ccexpiration` varchar(10) default NULL,
   `ccverification` varchar(4) default NULL,

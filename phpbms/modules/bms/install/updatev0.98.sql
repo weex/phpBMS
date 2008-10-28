@@ -46,3 +46,5 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 UPDATE `tablefindoptions` SET `displayorder` = 0 WHERE `tabledefid` = 25 AND `name` = 'all records';
 UPDATE `tablefindoptions` SET `search`= 'clients.firstname=dclients.firstname AND clients.lastname=dclients.lastname AND addresses.postalcode = daddresses.postalcode AND clients.lastname != \'\' AND clients.firstname != \'\' AND addresses.postalcode != \'\' AND clients.id<>dclients.ID' WHERE `name` = 'match names and postal code' AND `tabledefid` = '18';
 UPDATE `tablefindoptions` SET `search`= 'addresses.address1=daddresses.address1 AND clients.id<>dclients.id' WHERE `name` = 'match addresses' AND `tabledefid` = '18';
+ALTER TABLE `receipts` MODIFY COLUMN `paymentmethodid` INTEGER NOT NULL DEFAULT 0;
+UPDATE `tablecolumns` SET `column`='IF(receipts.paymentmethodid = '-1',concat( concat("Other... (", receipts.paymentother), ")"), paymentmethods.name)' WHERE `tabledefid` = '304' AND `name` = 'payment';
