@@ -39,8 +39,10 @@
 	?>THOUSANDS_SEPARATOR="<?php echo htmlQuotes(THOUSANDS_SEPARATOR)?>";<?php
 
 	?>LOGIN_REFRESH=<?php echo LOGIN_REFRESH?>;<?php
-
+	
+	if(defined("TERM1_DAYS")){
 	?>TERM1_DAYS=<?php echo TERM1_DAYS?>;<?php
+	}//end if
 	
 	?>MONTH_NAMES_LONG= [ <?php 
 		
