@@ -57,8 +57,14 @@
 			if(isset($_SESSION["printing"]["sortorder"]))
 				$this->sortorder = $_SESSION["printing"]["sortorder"];
 				
-			if(isset($_SESSION["printing"]["whereclause"]))
+			if(isset($_SESSION["printing"]["whereclause"])){
+				
+				if(strpos($_SESSION["printing"]["whereclause"],"WHERE") === 0)
+					$this->whereclause = substr($this->whereclause, 5);
+					
 				$this->whereclause = $_SESSION["printing"]["whereclause"];
+				
+			}//endif
 			
 			//backwards compatibility
 			if(strpos($this->whereclause, "where ") === 0)
