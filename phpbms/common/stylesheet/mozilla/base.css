@@ -68,7 +68,7 @@
 	#MLAddTextP{clear:both;float:left;padding-right:0}
 	#MLAddP{float:right;padding-left:0}
 	#MLStatus{clear:both;text-align:center}
-	
+
 
 /* ============================================================================== */
 /* Quick View                                                                     */
@@ -85,7 +85,7 @@
 	.saveCancels{text-align:right;}
 	#saveButton1,#saveButton2{width:68px;margin-right:3px;}
 	#cancelButton1,#cancelButton2{width:68px;}
-	
+
 /* ============================================================================== */
 /* Smart Searches                                                                 */
 /* ============================================================================== */
@@ -100,6 +100,7 @@
 	border:1px solid #999999;
 	background:white;
 	position:absolute;
+	z-index: 90;
 }
 
 .SBResults{
@@ -148,7 +149,7 @@
 
 .SBHeader{
 	background:#EEEEEE;
-	text-align:right;	
+	text-align:right;
 	padding:5px;
 	height:16px;
 }

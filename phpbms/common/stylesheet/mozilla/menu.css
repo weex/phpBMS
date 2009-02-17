@@ -44,7 +44,7 @@
 	clear:both;
 	border-bottom:1px solid #ACB7C4;
 	margin:0;
-	padding:0 0 0 5px;	
+	padding:0 0 0 5px;
 	height:26px;
 }
 #menuBar li{
@@ -67,8 +67,8 @@
 	outline:none;
 }
 
-#menuBar .firstLevel a:hover, #menuBar a.hovered{ 
-	text-decoration:none; 
+#menuBar .firstLevel a:hover, #menuBar a.hovered{
+	text-decoration:none;
 	background-color:#663366;
 	color:white;
 }
@@ -81,6 +81,7 @@
 	padding:2px 2px 4px 2px;
 	margin-top:-1px;
 	position:absolute;
+	z-index: 100;
 	background-color:white;
 	border:1px solid #999999;
 }
@@ -90,7 +91,7 @@
 	border:0;
 	background-image:none;
 	margin:0px;
-	display:block; 
+	display:block;
 	padding:3px 25px 3px 15px;
 	font-size:11px;
 	color:black;
@@ -100,7 +101,7 @@
 #menuBar .submenuitems .menuSep {border-top:1px solid #AAAAAA; padding-top:3px;margin-top:3px;}
 
 #menuBar .submenuitems a:hover{
-	text-decoration:none; 
+	text-decoration:none;
 	background-color:#663366;
 	color:white;
 }
@@ -115,8 +116,8 @@
 #SMLeft{background:url(image/statusm-left.png) bottom left no-repeat;padding-bottom:5px;}
 #SMText{
 	background:url("image/statusmessage.png") 7px 5px no-repeat;
-	color:white; 
-	font-weight:bold; 
+	color:white;
+	font-weight:bold;
 	font-size:15px;
 	padding: 5px 5px 0px 30px;
 }
