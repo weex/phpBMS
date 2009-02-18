@@ -36,32 +36,34 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require_once("../../include/session.php");	
+	require_once("../../include/session.php");
 	require_once("include/snapshot_include.php");
-	
+
 	//Page details;
 	$pageTitle = APPLICATION_NAME;
-	
+
 	$phpbms->cssIncludes[] = "pages/snapshot.css";
-	
+
 	$phpbms->jsIncludes[] = "modules/base/javascript/snapshot.js";
-	
+
 	foreach($phpbms->modules as $modulename => $modinfo){
 		if(file_exists("../".$modulename."/javascript/snapshot.js") && $modulename != "base")
 			$phpbms->jsIncludes[] = "modules/".$modulename."/javascript/snapshot.js";
-			
+
 		if(file_exists("../../common/stylesheet/".STYLESHEET."/pages/".$modulename."/snapshot.css"))
 			$phpbms->cssIncludes[] = "pages/".$modulename."/snapshot.css";
-		
+
 	}//end if
-	
+
 	require("header.php");
-	
+
+	$myBase = new baseSnapshot($db, $phpbms, $_SESSION["userinfo"]["id"]);
+
 ?>
 <div class="bodyline">
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
-	<?php showSystemMessages($db) ?>
-	
+	<?php $myBase->showSystemMessages() ?>
+
 	<div id="notesStuff">
 	<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
@@ -69,20 +71,20 @@
 			<td id="spacertd">&nbsp;</td>
 			<td class="box" id="tasksBox">
 				<h2>Workload</h2>
-				<?php 
-					showTasks($db,$_SESSION["userinfo"]["id"],"GivenAssignments");
-					showTasks($db,$_SESSION["userinfo"]["id"],"ReceivedAssignments"); 
-					showTasks($db,$_SESSION["userinfo"]["id"],"Tasks");
+				<?php
+					$myBase->showTasks("GivenAssignments");
+					$myBase->showTasks("ReceivedAssignments");
+					//showTasks($db,$_SESSION["userinfo"]["id"],"Tasks");
 				?>
 			</td>
 		</tr>
 	</table>
 	</div>
-	
+
 	<div style="clear:both;"></div>
 
-	<?php 	
-	foreach($phpbms->modules as $modulename => $modinfo)				
+	<?php
+	foreach($phpbms->modules as $modulename => $modinfo)
 		if(file_exists("../".$modulename."/snapshot.php") && $modulename != "base")
 			include("../".$modulename."/snapshot.php");
 	?>

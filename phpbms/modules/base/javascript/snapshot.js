@@ -37,83 +37,83 @@
 */
 
 theEvent = {
-	
+
 	idents: Array(),
-	
+
 	getWeek: function(e){
-		
+
 		var eventDate;
 
 		if(e){
 			var srcObj = e.src();
-			
+
 			for(var i=0; i<theEvent.idents.length; i++)
 				disconnect(theEvent.idents[i]);
-					
+
 			switch(srcObj.id) {
-	
+
 				case "eventLastWeek":
 					eventDate = getObjectFromID("eventDateLast").value;
 					break;
-					
+
 				case "eventToday":
 					eventDate = getObjectFromID("eventDateToday").value;
 					break;
-					
+
 				case "eventNextWeek":
 					eventDate = getObjectFromID("eventDateNext").value;
 					break;
 
 			}//endswitch
 		}//endif
-		
+
 		var theURL = "snapshot_ajax.php?cm=getWeek";
 		if(eventDate)
 			theURL += "&d="+eventDate;
-			
+
 		var weekContainer = getObjectFromID("eventsBox");
 		loadXMLDoc(theURL,null,false);
 		weekContainer.innerHTML = req.responseText;
 
 		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventLastWeek"),"onclick",theEvent.getWeek);
 		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventToday"),"onclick",theEvent.getWeek);
-		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventNextWeek"),"onclick",theEvent.getWeek);		
-		
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventNextWeek"),"onclick",theEvent.getWeek);
+
 	}//end method
-	
+
 }//end class
 
 
 task = {
-	
+
 	check: function(e){
 		var srcObj = e.src();
-		
+
 		var id = srcObj.id.substr(5);
 		var type =  srcObj.id.substr(2,2);
 		var section = srcObj.id.substr(0,2);
-		
+
 		var checkBox = srcObj;
 		var containerP = srcObj.parentNode;
-				
+
 		var theURL = "snapshot_ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
 
 		if(checkBox.checked){
-			
+
 			theURL += 1;
-			
+
 			containerP.className += " complete";
-						
+
 		} else {
-			
+
 			theURL += 0;
-			
+
 			containerP.className = containerP.className.replace(/complete/g, "");
-			
+
 		}//end if
-		
+
 		loadXMLDoc(theURL,null,false);
-		
+
 	}//end method
 }//end class
 
@@ -126,7 +126,7 @@ connect(window,"onload",function() {
 	var taskChecks = getElementsByClassName('taskChecks');
 	for(var i=0; i<taskChecks.length; i++)
 		connect(taskChecks[i],"onclick",task.check);
-	
+
 	var systemMessageDivs = getElementsByClassName('systemMessages');
 	var systemMessageLinks = getElementsByClassName('systemMessageLinks');
 
@@ -135,7 +135,7 @@ connect(window,"onload",function() {
 
 	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: true, duration:150});
 	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: true, duration:300});
-	taskAccordion.showThisHideOpen(taskDivs[2]);
-	
+	taskAccordion.showThisHideOpen(taskDivs[1]);
+
 	theEvent.getWeek();
 });

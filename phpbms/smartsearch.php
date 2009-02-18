@@ -46,16 +46,16 @@ class smartSearch{
 	var $totalcount = 0;
 
 	function smartSearch($db, $sdbid){
-		
+
 		$this->db = $db;
-		
+
 		$this->getSearchParams($sdbid);
-		
+
 	}//end method init
-	
+
 
 	function getSearchParams($sdbid){
-	
+
 		$querystatement = "
 			SELECT
 				*
@@ -63,69 +63,69 @@ class smartSearch{
 				smartsearches
 			WHERE
 				id = ".((int) $sdbid);
-		
+
 		$this->searchParams = $this->db->fetchArray($this->db->query($querystatement));
-	
+
 	}//end method - getSearchParams
 
 
 	function find($term, $offset=0){
 
 		$term = trim(mysql_real_escape_string($term));
-		
+
 		// first we take the entered text and explode int by words
 		$terms = explode(" ",$term);
-		
+
 		//next we take the list of fields to search and create an array
 		$searchFields = explode(",", $this->searchParams["searchfields"]);
-			
+
 		$wheres="";
 		foreach($terms as $value){
-			
+
 			// this series of foreachs builds a SQL OR clause to search
 			// the search fields to match things that start with the term
 			// or has words inside that start with the term.
-						
+
 			$wheres .="AND (";
-			
+
 			foreach($searchFields as $field)
 				$wheres .= trim($field)." LIKE '".$value."%' OR ".trim($field)." LIKE '% ".$value."%'\nOR ";
-			
+
 			$wheres = substr($wheres,0,strlen($wheres)-3);
 			$wheres .= ")";
-			
+
 		}//endforeach
 
 		if($wheres){
-		
+
 			$finalsearch = "";
 			foreach($searchFields as $field)
 				$finalsearch .= trim($field)." LIKE '".$term."%'\nOR ";
-			
+
 			$finalsearch = substr($finalsearch,0,strlen($finalsearch)-3);
-			
+
 			$wheres = "AND ( (".$finalsearch.") OR (".substr($wheres,4)."))";
 
 		}//endif - where
-		
+
 		$securityWhere = "";
-		
+
 		if($this->searchParams["rolefield"]){
-		
+
 			// If the rolefield is present, we need to make sure the rolefield
 			// of each record matches the logged in users array of roles
-			
+
 			if ($_SESSION["userinfo"]["admin"]!=1){
-			
+
 				if(count($_SESSION["userinfo"]["roles"])>0)
 					$securityWhere = " AND ".$this->searchParams["rolefield"]." IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 				else
 					$securityWhere = " AND ".$this->searchParams["rolefield"]." = 0";
-					
+
 			}//endif admin
-		
+
 		}//endif rolefield
-	
+
 		$querystatement = "
 			SELECT DISTINCT
 				".$this->searchParams["displayfield"]." AS display,
@@ -135,7 +135,7 @@ class smartSearch{
 			FROM
 				".$this->searchParams["fromclause"]."
 			WHERE
-				(".$this->searchParams["filterclause"].")
+				(".$this->subout($this->searchParams["filterclause"]).")
 				".$securityWhere."
 				".$wheres."
 			ORDER BY
@@ -144,7 +144,7 @@ class smartSearch{
 
 
 		//need to retireve count of all records so
-		// the JS can know wheher to put the show more results on.		
+		// the JS can know wheher to put the show more results on.
 		$totalCountStatement = "
 			SELECT
 				COUNT(".$this->searchParams["displayfield"].") AS thecount
@@ -154,38 +154,58 @@ class smartSearch{
 				(".$this->searchParams["filterclause"].")
 				".$securityWhere."
 				".$wheres;
-				
+
 		$countrecord = $this->db->fetchArray($this->db->query($totalCountStatement));
 		$this->totalcount = $countrecord["thecount"];
 
 		return $this->db->query($querystatement);
-	
+
 	}//end method
 
-	
+
 	function display($result){
 		// This function will spit out a JSON array of records
-		
+
 		$output = "{totalRecords: ".$this->totalcount.", resultRecords: [";
-		
+
 		while($therecord = $this->db->fetchArray($result)){
-		
+
 			$output .= "{display: '".str_replace("'", "\'", formatVariable($therecord["display"],"bbcode"))."',";
 			$output .= "value: '".str_replace("'", "\'", formatVariable($therecord["value"]))."',";
 			$output .= "secondary: '".str_replace("'", "\'", formatVariable($therecord["secondary"],"bbcode"))."',";
 			$output .= "classname: '".str_replace("'", "\'", formatVariable($therecord["classname"]))."'},";
-		
+
 		}//endwhile
-		
+
 		if($output != "{totalRecords: ".$this->totalcount.", resultRecords: [")
 			$output = substr($output, 0, strlen($output)-1);
-		
+
 		$output .= "] }";
 
 		header("Content-type: text/plain");
 		echo $output;
-		
+
 	}//end method - display
+
+
+	// replace variables
+	// strings with entrys like " {{$ENTRY}} "
+	// get everything in the {{ }} evaluated
+	function subout($string){
+
+		while(strpos($string,"{{")){
+			$start=strpos($string,"{{");
+			$startsubout=$start+2;
+			$endsubout=strpos($string,"}}");
+			$end=$endsubout+2;
+			$temp="";
+			eval(stripslashes("\$temp=".substr($string,$startsubout,$endsubout-$startsubout).";"));
+			$string=substr($string,0,$start).$temp.substr($string,$end);
+		}
+
+		return $string;
+
+	}//end function
 	
 }//end class
 
@@ -195,14 +215,14 @@ class smartSearch{
 if(isset($_GET["sdbid"]) && isset($_GET["t"])){
 
 	$smartSearch = new smartSearch($db, $_GET["sdbid"]);
-	
+
 	if(!isset($_GET["o"]))
 		$_GET["o"] = 0;
 
 	$theresult = $smartSearch->find($_GET["t"],((int) $_GET["o"]));
 
-	if(isset($theresult))	
+	if(isset($theresult))
 		$smartSearch->display($theresult);
-	
+
 }//end if
 ?>
