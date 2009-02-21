@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 285 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-27 14:05:27 -0600 (Mon, 27 Aug 2007) $
@@ -47,11 +47,11 @@
 
 	if(isset($_POST["hascredit"])){
 		if($clientCredit->update(addSlashesToArray($_POST) ))
-			$statusMessage = "Credit Updated";
+			$statusmessage = "Credit Updated";
 	}
-	
+
 	$therecord = $clientCredit->get();
-	
+
 	//setting page title
 	$pageTitle="Credit: ";
 	if($therecord["company"]=="")
@@ -75,7 +75,7 @@
 		if($therecord["type"] == "prospect")
 			$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCurrency("creditleft", ($therecord["creditlimit"]-$therecord["outstanding"]), "credit left");
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
@@ -85,26 +85,26 @@
 		//End Form Elements
 
 
-	include("header.php");	
+	include("header.php");
 
 	$phpbms->showTabs("clients entry",300,$_GET["id"]);?><div class="bodyline">
-	<form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>" 
+	<form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>"
 	method="post" name="record" id="record">
 		<div id="topButtons">
 			<input type="button" class="Buttons" id="update1" name="update" value="save"/>
 		</div>
-	
+
 		<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 		<input type="hidden" id="type" name="type" value="<?php echo $therecord["type"]?>" />
-		
+
 		<fieldset>
 			<legend>Credit</legend>
 			<?php if($therecord["type"] == "prospect") {?>
 			<p class="notes">Credit can only be set for clients.</p>
 			<?php }?>
-			
+
 			<p><?php $theform->showField("hascredit")?></p>
-			
+
 			<p><?php $theform->showField("creditlimit")?></p>
 
 
@@ -113,16 +113,16 @@
 		</fieldset>
 
 		<?php  if($therecord["hascredit"]) {?>
-		
+
 		<fieldset>
 			<legend>open items</legend>
 			<div class="fauxP">
-			
+
 				<?php $clientCredit->showHistory($_GET["id"])?>
-				
+
 			</div>
 		</fieldset>
-		
+
 		<?php  } //end if?>
 
 		<div align="right">
