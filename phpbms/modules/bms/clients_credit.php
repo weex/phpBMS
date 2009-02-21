@@ -45,7 +45,7 @@
 
 	$clientCredit = new clientCredit($db, $_GET["id"]);
 
-	if(isset($_POST["hascredit"])){
+	if(isset($_POST["creditlimit"])){
 		if($clientCredit->update(addSlashesToArray($_POST) ))
 			$statusmessage = "Credit Updated";
 	}
