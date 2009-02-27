@@ -14,7 +14,7 @@
  | - Redistributions of source code must retain the above copyright        |
  |   notice, this list of conditions and the following disclaimer.         |
  |                                                                         |
- | - Redistributions in binary form must reproduce the above copyright     |		
+ | - Redistributions in binary form must reproduce the above copyright     |
  |   notice, this list of conditions and the following disclaimer in the   |
  |   documentation and/or other materials provided with the distribution.  |
  |                                                                         |
@@ -38,7 +38,7 @@
 */
 
 class phpbmsForm{
-	
+
 	var $jsIncludes = array("common/javascript/fields.js");
 	var $topJS = array(
 					"requiredArray= new Array();",
@@ -51,39 +51,39 @@ class phpbmsForm{
 					"timeArray= new Array();",
 				 );
 	var $bottomJS = array();
-	
+
 	var $fields = array();
-	
+
 	var $onload = array();
-	
+
 	function phpbmsForm($action = NULL, $method="post", $name="record", $onsubmit="return validateForm(this);", $dontSubmit = true){
 		if ($action == NULL)
 			$action = $_SERVER["REQUEST_URI"];
-			
+
 		$this->action= $action;
 		$this->method = $method;
 		$this->name = $name;
 		$this->onsubmit = $onsubmit;
-		
+
 		$this->dontSubmit = $dontSubmit;
-		
+
 	}
 
 	function startForm($pageTitle){
 
-		?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php 
+		?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php
 			if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
 			if(isset($this->id)) echo ' id="'.$this->id.'" ';
-		?>><?php 
+		?>><?php
 		if($this->dontSubmit){
 			?><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div><?php
 		} ?>
 		<div id="topButtons"><?php showSaveCancel(1); ?></div>
-		<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1><?php	
-		
+		<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1><?php
+
 	}//end method
-	
-	
+
+
 	function showCreateModify($phpbms, $therecord){
 	?>
 <div id="createmodifiedby" >
@@ -93,7 +93,7 @@ class phpbmsForm{
 			<td class="cmTitles">
 				<input name="createdby" type="hidden" value="<?php $therecord["createdby"] ?>" />
 				<input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
-				created			
+				created
 			</td>
 			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
 			<td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
@@ -113,18 +113,18 @@ class phpbmsForm{
 	<?php
 	}//end method
 
-	
+
 	function endForm(){
 		?></form><?php
 	}
-	
-	
+
+
 	function addField($inputObject){
 		if(is_object($inputObject))
 			$this->fields[$inputObject->id] = $inputObject;
 	}
-	
-	
+
+
 	function showField($fieldname){
 		if(isset($this->fields[$fieldname])){
 			if(is_object($this->fields[$fieldname])){
@@ -137,31 +137,31 @@ class phpbmsForm{
 		}else
 			echo "Field Not Defined: ".$fieldname;
 	}
-	
-	
-	function jsMerge(){		
+
+
+	function jsMerge(){
 		global $phpbms;
-		
+
 		$phpbms->jsIncludes = array_merge($phpbms->jsIncludes,$this->jsIncludes);
 		$phpbms->topJS = array_merge($this->topJS,$phpbms->topJS);
 		$phpbms->bottomJS = array_merge($this->bottomJS,$phpbms->bottomJS);
 		$phpbms->onload = array_merge($this->onload,$phpbms->onload);
-		
+
 		//next we go through the list of fields
 		foreach($this->fields as $field){
 
 			$toAdd = $field->getJSMods();
-			
+
 			foreach($toAdd["jsIncludes"] as $jsinclude)
 				if(!in_array($jsinclude,$phpbms->jsIncludes))
 					$phpbms->jsIncludes[] = $jsinclude;
 
 			$phpbms->topJS = array_merge($phpbms->topJS,$toAdd["topJS"]);
-			$phpbms->bottomJS = array_merge($phpbms->bottomJS,$toAdd["bottomJS"]);			
-			$phpbms->onload = array_merge($phpbms->onload,$toAdd["onload"]);			
+			$phpbms->bottomJS = array_merge($phpbms->bottomJS,$toAdd["bottomJS"]);
+			$phpbms->onload = array_merge($phpbms->onload,$toAdd["onload"]);
 
 		}//endforeach
-		
+
 	}//end method - jsMerge
 }//end class
 
@@ -173,54 +173,54 @@ class inputField{
 		id =				id/name of input
 
 		value =			Value of input
-		displayName =	Name to displayed in label, and on default messages when not overriden 
+		displayName =	Name to displayed in label, and on default messages when not overriden
 		required =		true/false wether the field is validated by javascript before submitting for blank values
 		type =			Type of field (integer, phone, email, wwww, real, date) to validate against
-	   
+
 		size =			size of the input
 		maxlength		max length of the input
-	   
-		displayLabel		(boolean default = true) use this if you want the object to display a label tag above the input 
+
+		displayLabel		(boolean default = true) use this if you want the object to display a label tag above the input
 	   					when displaying
-						
+
 						==overridable variables==
-						
+
 		message =		message displayed if not validated
 		name =			if your input needs a name different from the id
-	   
+
 	   					== variable setting methods ==
-						
+
 		setAttribute($name,$values)
-						
+
 						Use this method to set an additional HTML property for the input
 						e.g. setAttribute("onclick","someJavascriptFunction()")
-						
+
 						== methods ==
 		getJSMods()
-		
+
 						Typically this get called from the form container object, but
 						you can use it to get an array of all the Javascript this input affects (include, top JS, and bottom JS)
-						
+
 		display()
-						
-						Use this method to display the input in your page.				
+
+						Use this method to display the input in your page.
 	*/
 
 	var $id;
 	var $name;
 	var $value;
-	
+
 	var $displayName ="";
 	var $message = "";
 	var $displayLabel = true;
-	
+
 	var $_attributes = array();
-	
+
 	var $required = false;
 	var $type = NULL;
-	
+
 	var $jsIncludes = array();
-	
+
 	function inputField($id, $value, $displayName = NULL ,$required = false, $type = NULL, $size = 32, $maxlength = 128, $displayLabel = true){
 		$this->id = $id;
 		$this->name = $id;
@@ -228,29 +228,29 @@ class inputField{
 			$this->displayName = $id;
 		else
 			$this->displayName = $displayName;
-			
+
 		if($size)
 			$this->_attributes["size"] = $size;
 		if($maxlength)
 			$this->_attributes["maxlength"] = $maxlength;
-		
+
 		$this->displayLabel = $displayLabel;
-		
+
 		$this->value = $value;
 
 		$this->required = $required;
 		$this->type = $type;
 	}
-	
-	
+
+
 	function setAttribute($name,$value){
 		$this->_attributes[strtolower($name)] = $value;
 	}
 
-	
+
 	function getJSMods(){
 		$thereturn = array("jsIncludes" => array(), "topJS" => array(), "bottomJS" => array(), "onload" => array());
-		
+
 		foreach($this->jsIncludes as $theinclude)
 			$thereturn["jsIncludes"][] = $theinclude;
 
@@ -260,9 +260,9 @@ class inputField{
 				$message = $this->displayName." cannot be blank.";
 			$thereturn["topJS"][] = "requiredArray[requiredArray.length]=new Array(\"".$this->name."\",\"".$message."\");";
 		}
-		
+
 		if($this->type){
-			$message = $this->message;			
+			$message = $this->message;
 			if($message == ""){
 				switch($this->type){
 					case "integer":
@@ -285,52 +285,52 @@ class inputField{
 					break;
 					case "time":
 						$message = $this->displayName." must be a valid time.";
-					break;					
+					break;
 				}
 			}//end if
 			$thereturn["topJS"][] = $this->type."Array[".$this->type."Array.length]=new Array(\"".$this->name."\",\"".$message."\");";
 		}
-		
+
 		return $thereturn;
 	}//end if
-	
-	
+
+
 	function displayAttributes(){
 		foreach($this->_attributes as $key => $value)
-			echo " ".$key."=\"".$value."\"";		
+			echo " ".$key."=\"".$value."\"";
 	}
-	
-	
+
+
 	function showLabel(){
-		?><label for="<?php echo $this->id?>" <?php 
+		?><label for="<?php echo $this->id?>" <?php
 			if(isset($this->_attributes["class"]))
 				if(strpos($this->_attributes["class"],"important") !== false)
 					echo 'class="important"';
 		?>><?php echo $this->displayName?></label><br /><?php
 	}
-	
-	
+
+
 	function display(){
-		
+
 		if($this->displayLabel)
 			$this->showLabel();
-		
-		?><input type="text" id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php 
-			if($this->value !== "") 
+
+		?><input type="text" id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php
+			if($this->value !== "")
 				echo " value=\"".htmlQuotes($this->value)."\"";
 			$this->displayAttributes();
 		?> /><?php
-		
+
 		switch($this->type){
 			case "email":
 				?><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonEmail" onclick="openEmail('<?php echo $this->id?>')" title="Send E-Mail"><span>send e-mail</span></button><?php
 			break;
-			
+
 			case "www":
 				?><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonWWW" onclick="openWebpage('<?php echo $this->id?>')" title="Visit site in new window"><span>visit site</span></button><?php
 			break;
 		}
-		
+
 	}//end method
 }//end class
 
@@ -343,13 +343,13 @@ class inputCheckbox extends inputField{
 	   disabled =		Whether the check box is checkable
 	*/
 	function inputCheckbox($id,$value = false, $displayName = NULL, $disabled = false, $displayLabel = true){
-		
+
 		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
-		
+
 		if($disabled)
-			$this->_attributes["disabled"] = "disabled";		
+			$this->_attributes["disabled"] = "disabled";
 	}//end method
-	
+
 	function showLabel(){
 		$classText="";
 		if(isset($this->_attributes["class"]))
@@ -362,17 +362,17 @@ class inputCheckbox extends inputField{
 		}
 		if($classText!="")
 			$classText = ' class="'.$classText.'"';
-			
+
 		?><label id="<?php echo $this->id?>Label" for="<?php echo $this->id?>" <?php echo $classText?>><?php echo $this->displayName?></label><?php
 	}
 
 
 	function display(){
-		?><input type="checkbox" id="<?php echo $this->id?>" name="<?php echo $this->name?>" value="1" class="radiochecks" <?php 
+		?><input type="checkbox" id="<?php echo $this->id?>" name="<?php echo $this->name?>" value="1" class="radiochecks" <?php
 			if($this->value) echo "checked=\"checked\" ";
 			$this->displayAttributes();
-		?> /> <?php 
-		
+		?> /> <?php
+
 		if($this->displayLabel)
 			$this->showLabel();
 	}
@@ -386,20 +386,20 @@ class inputBasicList extends inputField{
 	*/
 	function inputBasicList ($id,$value = "",$list = array(), $displayName = NULL, $displayLabel = true){
 		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
-		
+
 		$this->thelist = $list;
 	}
-	
+
 	function display(){
-	
+
 		if($this->displayLabel)
 			$this->showLabel();
-	
-		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
-			$this->displayAttributes();		
+
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php
+			$this->displayAttributes();
 		?> > <?php
 			foreach($this->thelist as $key => $value){
-											
+
 				?><option value="<?php echo htmlQuotes($value)?>" <?php if ($value == $this->value) echo " selected=\"selected\" "?> ><?php echo $key?></option><?php echo "\n";
 
 			}//end for
@@ -420,12 +420,12 @@ class inputDataTableList extends inputField{
 	   orderclasue = 	SQL ORDER BY clause (minus the ORDER BY)
 	   hasblank =		boolean, wehterh <none> (0) can be an option
 	*/
-	
-	function inputDataTableList($db, $id, $value, $table, $valuefield, $displayfield, 
+
+	function inputDataTableList($db, $id, $value, $table, $valuefield, $displayfield,
 								$whereclause = "", $orderclause = "", $hasblank = true, $displayName=NULL, $displayLabel = true){
-								
+
 		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
-		
+
 		$this->hasblank = $hasblank;
 		$this->db = $db;
 
@@ -434,17 +434,17 @@ class inputDataTableList extends inputField{
 			$querystatement.=" WHERE ".$whereclause;
 		if($orderclause)
 			$querystatement.=" ORDER BY ".$orderclause;
-		
+
 		$this->queryresult=$this->db->query($querystatement);
 
 	}//end method
-	
+
 	function display(){
-		
+
 		if($this->displayLabel)
 			$this->showLabel();
 
-		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php
 			$this->displayAttributes();
 		?> ><?php
 			if($this->hasblank){
@@ -459,8 +459,8 @@ class inputDataTableList extends inputField{
 				<?php
 			}
 		?></select>
-		<?php 		
-		
+		<?php
+
 	}
 }//end class
 
@@ -473,14 +473,14 @@ class inputChoiceList extends inputField{
 	*/
 	function inputChoiceList($db, $id, $value, $listname, $displayName="", $blankvalue="none", $displayLabel = true){
 		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
-		
+
 		$this->db = $db;
 		$this->listname = $listname;
 		$this->blankvalue = $blankvalue;
-		
+
 		$querystatement="SELECT thevalue FROM choices WHERE listname=\"".$this->listname."\" ORDER BY thevalue;";
 		$this->queryresult = $this->db->query($querystatement);
-		
+
 		$this->jsIncludes[] = "common/javascript/choicelist.js";
 
 	}//end method
@@ -489,10 +489,10 @@ class inputChoiceList extends inputField{
 
 		if($this->displayLabel)
 			$this->showLabel();
-		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php 
+		?><select name="<?php echo $this->name?>" id="<?php echo $this->id?>" <?php
 			$this->displayAttributes();
 			?> onchange="changeChoiceList(this,'<?php echo APP_PATH?>','<?php echo $this->listname?>','<?php echo $this->blankvalue?>');"  onfocus="setInitialML(this)">
-		<?php 
+		<?php
 			$inlist=false;
 			while($therecord = $this->db->fetchArray($this->queryresult)){
 
@@ -519,10 +519,10 @@ class inputChoiceList extends inputField{
 					$display=$this->value;
 					$theclass="";
 				}
-				?><option value="<?php echo $this->value?>" <?php echo $theclass?> selected="selected"><?php echo $display?></option><?php					
+				?><option value="<?php echo $this->value?>" <?php echo $theclass?> selected="selected"><?php echo $display?></option><?php
 			}//end if
 		?>
-	<option value="*mL*" class="choiceListModify">modify list...</option></select><?php 
+	<option value="*mL*" class="choiceListModify">modify list...</option></select><?php
 
 	}
 
@@ -533,7 +533,7 @@ class inputChoiceList extends inputField{
 class inputCurrency extends inputField{
 
 	function inputCurrency($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 12, $displayLabel = true){
-	
+
 		$type = NULL;
 		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
 	}
@@ -546,18 +546,18 @@ class inputCurrency extends inputField{
 
 		if(!is_numeric($this->value)) $this->value = 0;
 		$this->value = htmlQuotes(numberToCurrency($this->value));
-		
+
 		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
 		$this->_attributes["onchange"] = "validateCurrency(this);".$this->_attributes["onchange"];
 
-		if(!isset($this->_attributes["class"])) 
+		if(!isset($this->_attributes["class"]))
 			$this->_attributes["class"] = "";
 		else
 			$this->_attributes["class"] = " ".$this->_attributes["class"];
-		
+
 		$this->_attributes["class"] = "currency".$this->_attributes["class"];
 
-		
+
 		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $this->value?>" <?php
 			$this->displayAttributes();
 		?>/><?php
@@ -569,7 +569,7 @@ class inputCurrency extends inputField{
 
 //============================================================================================
 class inputTextarea extends inputField{
-	
+
 	function inputTextarea($id, $value, $displayName = NULL ,$required = false, $rows = 5, $cols= 48, $displayLabel = true){
 		parent::inputField($id, $value, $displayName, $required, NULL, NULL, NULL, $displayLabel);
 
@@ -577,20 +577,20 @@ class inputTextarea extends inputField{
 		unset($this->_attributes["maxlength"]);
 
 		$this->_attributes["rows"] = $rows;
-		$this->_attributes["cols"] = $cols;		
-			
+		$this->_attributes["cols"] = $cols;
+
 	}
-	
+
 
 	function display(){
 
 		if($this->displayLabel)
 			$this->showLabel();
-		
-		?><textarea id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php 
+
+		?><textarea id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php
 			$this->displayAttributes();
 		?>><?php echo htmlQuotes($this->value)?></textarea><?php
-	
+
 	}//end method
 
 }//end class
@@ -602,9 +602,9 @@ class inputPercentage extends inputField{
 	precision = 	decimal points of accuracy to display
 	*/
 	function inputPercentage($id, $value, $displayName = NULL , $precision = 1, $required = false, $size = 9, $maxlength = 10, $displayLabel = true){
-		
+
 		$this->precision = (int) $precision;
-		
+
 		$type = NULL;
 		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
 	}
@@ -612,12 +612,12 @@ class inputPercentage extends inputField{
 
 
 	function display() {
-	
+
 		if($this->displayLabel)
 			$this->showLabel();
 
-		if(is_numeric($this->value)) $this->value = $this->value."%";	
-		
+		if(is_numeric($this->value)) $this->value = $this->value."%";
+
 		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
 		$this->_attributes["onchange"] = "validatePercentage(this,".$this->precision.");".$this->_attributes["onchange"];
 
@@ -635,28 +635,28 @@ class inputDatePicker extends inputField{
 
 	function inputDatePicker($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 15, $displayLabel = true){
 		$type = "date";
-		
+
 		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
-		
+
 		$this->jsIncludes[] = "common/javascript/datepicker.js";
 	}
-	
+
 	function display(){
 
 		if($this->displayLabel)
 			$this->showLabel();
 
 		$value = formatFromSQLDate($this->value);
-		
+
 		if(!isset($this->_attributes["onchange"])) $this->_attributes["onchange"] = "";
 		$this->_attributes["onchange"] = "formatDateField(this);".$this->_attributes["onchange"];
-		
+
 		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $value?>" <?php
 			$this->displayAttributes();
 		?>/><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonDate" onclick="showDP('<?php echo APP_PATH?>','<?php echo $this->id?>');"><span>pick date</span></button><?php
-		
+
 	}//end method
-	
+
 }//end class
 
 
@@ -665,9 +665,9 @@ class inputTimePicker extends inputField{
 
 	function inputTimePicker($id, $value, $displayName = NULL ,$required = false, $size = 10, $maxlength = 15, $displayLabel = true){
 		$type = "time";
-		
+
 		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
-				
+
 		$this->jsIncludes[] = "common/javascript/timepicker.js";
 	}
 
@@ -677,45 +677,45 @@ class inputTimePicker extends inputField{
 			$this->showLabel();
 
 		$value = formatFromSQLTime($this->value);
-				
+
 		?><input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $value?>" <?php
 			$this->displayAttributes();
 		?>/><button id="<?php echo $this->id?>Button" type="button" class="graphicButtons buttonTime" onclick="showTP('<?php echo APP_PATH?>','<?php echo $this->id?>');"><span>pick time</span></button><?php
-		
+
 	}//end method
 
 }//end class
 
- 
+
 //============================================================================================
 class inputRolesList extends inputField{
 
 	function inputRolesList($db,$id,$selected,$displayName = NULL, $required = false, $displayLabel = true){
-				
+
 		parent::inputField($id, $selected, $displayName, $required, NULL, NULL, NULL, $displayLabel);
 
 		$this->db = $db;
-		
+
 		$querystatement = "SELECT name, id FROM roles WHERE inactive = 0";
 		$this->queryresult = $this->db->query($querystatement);
-			
+
 	}
-	
-	
+
+
 	function display(){
 		if($this->displayLabel)
 			$this->showLabel();
-		
+
 			?><select id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php $this->displayAttributes();?>>
 			<option value="0" <?php if($this->value==0) echo "selected=\"selected\""?>>EVERYONE</option>
 			<?php while($therecord = $this->db->fetchArray($this->queryresult)){ ?>
-			<option value="<?php echo $therecord["id"]?>" <?php if($this->value==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>	
+			<option value="<?php echo $therecord["id"]?>" <?php if($this->value==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>
 			<?php }?>
 			<option value="-100" <?php if($this->value == -100) echo "selected=\"selected\""?>>Administrators</option>
 			</select><?php
 
 	}
-	
+
 }//end class
 
 
@@ -731,30 +731,32 @@ class inputSmartSearch extends inputField{
 		size =			(int)		size attribute for displayed input tag (32)
 		maxlength =		(int)		max length attribute for displayed input tag (255)
 		displayLabel	(boolean)	Show label tag with displayName (true)
-		
-		The JS used by this field type requires that the field NOT be implemented inside a p tag,  
-		inline element, or any tag that should not contain a div tag.  In IE, if the field placed 
-		inside an element that should not be able to handle a DIV tag inside it (standards-wise), 
+
+		The JS used by this field type requires that the field NOT be implemented inside a p tag,
+		inline element, or any tag that should not contain a div tag.  In IE, if the field placed
+		inside an element that should not be able to handle a DIV tag inside it (standards-wise),
 		IE will report a Javascript error.
 */
-	function inputSmartSearch($db, $id, $searchName, $initialvalue = "", $displayName = NULL, $required=false, 
-										$size = 32, $maxlength = 255, $displayLabel = true)  {
+	function inputSmartSearch($db, $id, $searchName, $initialvalue = "", $displayName = NULL, $required=false,
+					$size = 32, $maxlength = 255, $displayLabel = true, $allowFreeForm = false)  {
 		$this->db = $db;
-		
+
 		parent::inputField($id, $initialvalue, $displayName,$required, NULL, $size, $maxlength, $displayLabel);
 
 		$this->searchName = $searchName;
+		$this->allowFreeForm = $allowFreeForm;
+
 
 		//next I need to initialize and do the correct search
 		$this->searchInfo = $this->getSearchInfo($searchName);
-		
+
 		$this->displayValue = $this->getInitialDisplay();
 
 	}//end method - init
 
 
 	function getSearchInfo($searchInfo){
-	
+
 		$querystatement = "
 			SELECT
 				*
@@ -763,13 +765,13 @@ class inputSmartSearch extends inputField{
 			WHERE
 				name = '".mysql_real_escape_string($searchInfo)."'
 		";
-		
+
 		return  $this->db->fetchArray($this->db->query($querystatement));
 
 	}//end method getInfo
-	
+
 	function getInitialDisplay(){
-	
+
 		$querystatement = "
 			SELECT
 				".$this->searchInfo["displayfield"]." AS display
@@ -778,68 +780,69 @@ class inputSmartSearch extends inputField{
 			WHERE
 				".$this->searchInfo["valuefield"]." = '".mysql_real_escape_string($this->value)."'
 		";
-		
+
 		$queryresult = $this->db->query($querystatement);
 
 		if($this->db->numRows($queryresult)){
 
 			$therecord = $this->db->fetchArray($queryresult);
 			return $therecord["display"];
-			
+
 		} else
 			return '';
-	
+
 	}//end method getInitialDisplay
 
 
 	// CLASS OVERIDES ================================================
 	function getJSMods(){
-	
+
 		$thereturn = array("jsIncludes" => array(), "topJS" => array(), "bottomJS" => array(), "onload" => array());
-		
+
 		$thereturn["jsIncludes"][] = "common/javascript/smartsearch.js";
 
 		if($this->required){
-		
+
 			$message = $this->message;
-			
+
 			if($message == "")
 				$message = $this->displayName." cannot be blank.";
 			$thereturn["topJS"][] = "requiredArray[requiredArray.length]= [ '".$this->name."','".$message."' ];";
-			
+
 		}//endif - required
-		
+
 		return $thereturn;
-				
+
 	}//end method - getJSMods
-	
+
 
 	function showLabel(){
 		?><label for="ds-<?php echo $this->id?>"><?php echo $this->displayName?></label><br /><?php
 	}//end method
 
-	
+
 	function display(){
-	
+
 		if($this->displayLabel)
 			$this->showLabel();
 
-		if(!isset($this->_attributes["class"])) 
+		if(!isset($this->_attributes["class"]))
 			$this->_attributes["class"] = "";
 		else
 			$this->_attributes["class"] = " ".$this->_attributes["class"];
-		
+
 		$this->_attributes["class"] = "inputSmartSearch".$this->_attributes["class"];
 
 		?><input type="hidden" name="<?php echo $this->id?>" id="<?php echo $this->id?>" value="<?php echo $this->value?>" />
+		<input type="hidden" id="sff-<?php echo $this->id?>" value="<?php echo ((int) $this->allowFreeForm); ?>"/>
 		<input type="hidden" id="sdbid-<?php echo $this->id?>" value="<?php echo $this->searchInfo["id"]?>"/>
-		<input type="text" name="ds-<?php echo $this->id?>" id="ds-<?php echo $this->id?>"  title="Use % for wildcard searches." <?php 
-			
+		<input type="text" name="ds-<?php echo $this->id?>" id="ds-<?php echo $this->id?>"  title="Use % for wildcard searches." <?php
+
 		$this->displayAttributes();
-		
-		?> value="<?php echo htmlQuotes($this->displayValue) ?>"/><?php 
+
+		?> value="<?php echo htmlQuotes($this->displayValue) ?>"/><?php
 
 	}//end method -display
-		
+
 }//end class - inputSmartSearch
 ?>
