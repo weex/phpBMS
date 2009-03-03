@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -51,7 +51,7 @@ $settings = new settings($db);
 if(!hasRights(-100))
 	goURL(APP_PATH."noaccess.php");
 
-if (isset($_POST["command"])) 
+if (isset($_POST["command"]))
 	$statusmessage = $settings->processForm($_POST);
 
 $therecord = $settings->getSettings();
@@ -70,19 +70,19 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	//==============================================================
 	$theform = new phpbmsForm();
 	$theform->enctype="multiform/form-data";
-	
+
 	$theinput = new inputField("application_name",$therecord["application_name"],"application name",true);
 	$theform->addField($theinput);
 
 	$theinput = new inputField("record_limit",$therecord["record_limit"],"record display limit",true,"integer",5,3);
 	$theform->addField($theinput);
-		
+
 	$theinput = new inputField("default_load_page",$therecord["default_load_page"],"default page",true);
 	$theform->addField($theinput);
-	
+
 	$theinput = new inputField("encryption_seed",$therecord["encryption_seed"],"encryption_seed",true);
 	$theinput->setAttribute("readonly","readonly");
-	$theinput->setAttribute("class","uneditable");	
+	$theinput->setAttribute("class","uneditable");
 	$theform->addField($theinput);
 
 	$theinput = new inputField("currency_sym",$therecord["currency_sym"],"currency symbol",true,NULL,4,1);
@@ -107,7 +107,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	$theform->extraModules = array();
 	foreach($phpbms->modules as $module => $moduleinfo)
 		if($module != "base" && class_exists($module."Display")){
-		
+
 			$class = $module."Display";
 			$theform->extraModules[$module] = new $class();
 			if(method_exists($theform->extraModules[$module],"getFields"))
@@ -115,20 +115,20 @@ foreach($phpbms->modules as $module => $moduleinfo)
 
 			foreach($additionalFields as $field)
 				$theform->addField($field);
-		}			
-	
+		}
+
 
 	$theform->jsMerge();
 	//==============================================================
 	//End Form Elements
-		
+
 	include("header.php");
 ?>
 <div class="bodyline">
 	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return processForm(this);">
-		
+
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
-	
+
 	<div id="phpbmsSplash" class="box">
 		<div id="phpbmslogo">
 			<a href="../../info.php"><span>phpBMS logo</span></a>
@@ -138,11 +138,11 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			Business Management Web Application
 		</div>
 	</div>
-	
+
 	<fieldset>
 		<legend>general</legend>
-		
-		<p>		
+
+		<p>
 			<?php $theform->fields["application_name"]->display();?><br />
 			<span class="notes">
 				<strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS").  Replacing
@@ -153,7 +153,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		<p>
 			<?php $theform->fields["record_limit"]->display();?>
 		</p>
-		
+
 		<p>
 			<?php $theform->fields["default_load_page"]->display();?>
 		</p>
@@ -162,14 +162,14 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			<label for="stylesheet">web style set (stylesheets)</label><br />
 			<select id="stylesheet" name="stylesheet">
 				<?php $settings->displayStylesheets($therecord["stylesheet"]);?>
-			</select>		
-		</p>		
+			</select>
+		</p>
 	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-			
+
 	<fieldset>
 		<legend>company</legend>
-		<p>		
+		<p>
 			<label for="company_name">company name</label><br />
 			<input id="company_name" name="company_name" type="text" size="40" maxlength="128" value="<?php echo htmlQuotes($therecord["company_name"]) ?>" />
 		</p>
@@ -178,32 +178,34 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			<label for="company_address">address</label><br />
 			<input id="company_address" name="company_address" type="text" value="<?php echo htmlQuotes($therecord["company_address"]) ?>" size="40" maxlength="128" />
 		</p>
-		
+
 		<p>
 			<label for="company_csz">city, state/province and zip/postal code</label><br />
 			<input id="company_csz" name="company_csz" type="text" size="40" maxlength="128"  value="<?php echo htmlQuotes($therecord["company_csz"]) ?>" />
 		</p>
-		
+
 		<p>
 			<label for="company_phone">phone number</label><br />
 			<input id="company_phone" name="company_phone" type="text" value="<?php echo htmlQuotes($therecord["company_phone"]) ?>" size="40" maxlength="128" />
 		</p>
-	
-		<p>
+
+		<?php if(isset($therecord["company_taxid"])){?>
+                <p>
 			<label for="company_taxid">company tax id</label><br />
 			<input id="company_taxid" name="company_taxid" type="text" value="<?php echo htmlQuotes($therecord["company_taxid"]) ?>" size="40" maxlength="128" />
 		</p>
+                <?php }//endif - tax id?>
 
 		<div class="fauxP">
 			print logo
 			<div id="graphicHolder"><img alt="logo" src="<?php echo APP_PATH?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
 		</div>
-		
+
 		<p>
 			<label for="printedlogo">upload new logo file</label> <span class="notes">(PNG or JPEG format)</span><br />
 			<input id="printedlogo" name="printedlogo" type="file" size="64" /><br />
 		</p>
-		
+
 		<p class="notes">
 			<strong>Note:</strong> This graphic is used on some reports. <br />
 			On PDF reports, phpBMS prints the logo at maximum dimensions of 1.75" x 1.75".<br />
@@ -212,7 +214,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 
 	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-		
+
 	<fieldset>
 		<legend>Localization</legend>
 		<p>
@@ -255,7 +257,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		</p>
 	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-	
+
 	<fieldset>
 		<legend>encryption seed</legend>
 		<p class="notes"><br />
@@ -270,7 +272,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 			<input type="checkbox" value="1" name="changeseed" id="changeseed" onchange="toggleEncryptionEdit(this)" class="radiochecks"/><label for="changeseed">change seed</label>
 		</p>
 
-		<p>	
+		<p>
 			<?php $theform->fields["encryption_seed"]->display();?>
 		</p>
 
@@ -294,10 +296,10 @@ foreach($phpbms->modules as $module => $moduleinfo)
 		</p>
 		<p class="notes"><strong>Note:</strong> Does not work with Microsoft Internet Explorer versions less than 7.
 		</p>
-	</fieldset>	
+	</fieldset>
 	<p class="updateButtonP"><input name="command" type="submit" class="Buttons" value="update settings" /></p>
-	
-	<?php 	
+
+	<?php
 	foreach($theform->extraModules as $module)
 		if(method_exists($module,"display")){
 			$module->display($theform,$therecord);
