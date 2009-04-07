@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 205 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-03-26 15:50:25 -0700 (Mon, 26 Mar 2007) $
@@ -45,57 +45,57 @@
 	$therecord = $thetable->processAddEditPage();
 	
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
+		$statusmessage = $therecord["phpbmsStatus"];
 
-	$pageTitle="Tab";	
+	$pageTitle="Tab";
 	$phpbms->cssIncludes[] = "pages/tabs.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
-		$theform->addField($theinput);			
+		$theform->addField($theinput);
 
 		$theinput = new inputChoiceList($db,"tabgroup",$therecord["tabgroup"],"tabgroups", "tab group");
-		$theform->addField($theinput);			
+		$theform->addField($theinput);
 
 		$theinput = new inputCheckbox("enableonnew",$therecord["enableonnew"],"enable on new");
-		$theform->addField($theinput);			
-		
+		$theform->addField($theinput);
+
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>	
+	<?php $theform->startForm($pageTitle)?>
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
-		
+
 		<p>
 			<?php $theform->showField("displayorder"); ?><br />
 			<span class="notes">Lower numbers are displayed first.</span>
 		</p>
-		
+
 		<p><?php $theform->showField("roleid")?></p>
 
 		<p><?php $theform->showField("enableonnew")?></p>
 
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>details</legend>
@@ -103,7 +103,7 @@
 			<p><?php $theform->showField("name"); ?></p>
 
 			<p><?php $theform->showField("tabgroup"); ?></p>
-				
+
 			<p>
 				<label for="location">location</label><br />
 				<input id="location" name="location" value="<?php echo htmlQuotes($therecord["location"])?>" size="64" maxlength="128" /><br />
@@ -122,7 +122,7 @@
 		</fieldset>
 	</div>
 
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

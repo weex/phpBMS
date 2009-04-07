@@ -42,7 +42,7 @@
 	//Page details;
 	$pageTitle = APPLICATION_NAME;
 
-	$phpbms->cssIncludes[] = "pages/snapshot.css";
+	$phpbms->cssIncludes[] = "pages/base/snapshot.css";
 
 	$phpbms->jsIncludes[] = "modules/base/javascript/snapshot.js";
 
@@ -62,6 +62,7 @@
 ?>
 <div class="bodyline">
 	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
+
 	<?php $myBase->showSystemMessages() ?>
 
 	<div id="notesStuff">

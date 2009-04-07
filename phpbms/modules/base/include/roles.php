@@ -38,7 +38,7 @@
 */
 if(class_exists("phpbmsTable")){
 	class roles extends phpbmsTable{
-	
+		
 		function updateRecord($variables, $modifiedby = NULL){	
 			parent::updateRecord($variables, $modifiedby);
 

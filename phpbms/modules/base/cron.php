@@ -1,48 +1,74 @@
-<?php 
+<?php
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
-	
+
  	include("../../include/session.php");
-		
+
 	$now = gmdate('Y-m-d H:i', strtotime('now'));
-	
-	$querystatment="SELECT id,name,crontab,job,startdatetime,enddatetime FROM scheduler WHERE inactive=0 AND startdatetime<NOW() AND (enddatetime>NOW() OR enddatetime IS NULL);";
+
+	$querystatment = "
+		SELECT
+			id,
+			name,
+			crontab,
+			job,
+			startdatetime,
+			enddatetime
+		FROM
+			scheduler
+		WHERE
+			inactive = 0
+			AND startdatetime < NOW()
+			AND (enddatetime > NOW() OR enddatetime IS NULL)";
+
 	$queryresult=$db->query($querystatment);
-	
+
 	while($schedule_record=$db->fetchArray($queryresult)){
+
 		$datetimearray=explode(" ",$schedule_record["startdatetime"]);
 		$schedule_record["startdate"]=stringToDate($datetimearray[0],"SQL");
 		$schedule_record["starttime"]=stringToTime($datetimearray[1],"24 Hour");
 
 		if($schedule_record["enddatetime"]){
+
 			$datetimearray=explode(" ",$schedule_record["enddatetime"]);
 			$schedule_record["enddate"]=stringToDate($datetimearray[0],"SQL");
 			$schedule_record["endtime"]=stringToTime($datetimearray[1],"24 Hour");
-		}
 
-		$validTimes=getTimes($schedule_record);
+		}//endif enddateiem
+
+		$validTimes = getTimes($schedule_record);
+
 		if(is_array($validTimes) && in_array($now, $validTimes)){
+
 			$success = @ include($schedule_record["job"]);
+
 			if($success){
+
 				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
 				$db->query($updatestatement);
-				$log = new phpbmsLog("Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER",-2);
+				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER",-2);
+
 			} else {
-				$log = new phpbmsLog("Secheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors","SCHEDULER",-2);
-			}
-				
-		}		
-	}
-	
+
+				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors","SCHEDULER",-2);
+
+			}//endif success
+
+		}//endif is_array();
+
+	}//endwhile
+
+
 	function getTimes($recordarray){
-	
+
 		$dayInt = array('*',1,2,3,4,5,6,7);
 		$dayLabel = array('*',"Monday","Tuesday","Wedensday","Thursday","Friday","Saturday","Sunday");
 		$monthsInt = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
 		$monthsLabel = array(0,"Janurary","Februrary","March","April","May","June","July","August","September","October","November","December");
 		$metricsVar = array("*", "/", "-", ",");
 		$metricsVal = array(' every ','',' thru ',' and ');
-			
+
 		$dateTimes = array();
 		$ints	= explode('::', str_replace(' ','',$recordarray["crontab"]));
 		$days	= $ints[4];
@@ -58,12 +84,12 @@
 		} elseif(strstr($days, '*/')) {
 			$theDay = str_replace('*/','',$days);
 			$dayName[] = str_replace($dayInt, $dayLabel, $theDay);
-		} elseif($days != '*') { 
+		} elseif($days != '*') {
 			if(strstr($days, ',')) {
 				$exDays = explode(',',$days);
 				foreach($exDays as $k1 => $dayGroup) {
 					if(strstr($dayGroup,'-')) {
-						$exDayGroup = explode('-', $dayGroup); 
+						$exDayGroup = explode('-', $dayGroup);
 						for($i=$exDayGroup[0];$i<=$exDayGroup[1];$i++) {
 							$dayName[] = str_replace($dayInt, $dayLabel, $i);
 						}
@@ -72,14 +98,14 @@
 					}
 				}
 			} elseif(strstr($days, '-')) {
-				$exDayGroup = explode('-', $days); 
+				$exDayGroup = explode('-', $days);
 				for($i=$exDayGroup[0];$i<=$exDayGroup[1];$i++) {
 					$dayName[] = str_replace($dayInt, $dayLabel, $i);
 				}
 			} else {
 				$dayName[] = str_replace($dayInt, $dayLabel, $days);
 			}
-			
+
 			// check the day to be in scope:
 			if(!in_array($today['weekday'], $dayName)) {
 				return false;
@@ -87,8 +113,8 @@
 		} else {
 			return false;
 		}
-		
-		
+
+
 		// derive months part
 		if($mons == '*') {
 			// do nothing
@@ -103,7 +129,7 @@
 			}
 			// this month is not in one of the multiplier months
 			if(!in_array($today['mon'],$compMons)) {
-				return false;	
+				return false;
 			}
 		} elseif($mons != '*') {
 			if(strstr($mons,',')) { // we have particular (groups) of months
@@ -126,13 +152,13 @@
 			} else { // one particular month
 				$monName[] = $mons;
 			}
-			
+
 			// check that particular months are in scope
 			if(!in_array($today['mon'], $monName)) {
 				return false;
 			}
 		}
-		
+
 
 		// derive dates part
 		if($dates == '*') {
@@ -146,9 +172,9 @@
 				$dateName[] = str_pad(($i+$mult),2,'0',STR_PAD_LEFT);
 				$i += $mult;
 			}
-			
+
 			if(!in_array($today['mday'], $dateName)) {
-				return false;	
+				return false;
 			}
 		} elseif($dates != '*') {
 			if(strstr($dates, ',')) {
@@ -157,7 +183,7 @@
 					if(strstr($dateGroup, '-')) {
 						$exDateGroup = explode('-', $dateGroup);
 						for($i=$exDateGroup[0];$i<=$exDateGroup[1];$i++) {
-							$dateName[] = $i; 
+							$dateName[] = $i;
 						}
 					} else {
 						$dateName[] = $dateGroup;
@@ -166,18 +192,18 @@
 			} elseif(strstr($dates, '-')) {
 				$exDateGroup = explode('-', $dates);
 				for($i=$exDateGroup[0];$i<=$exDateGroup[1];$i++) {
-					$dateName[] = $i; 
+					$dateName[] = $i;
 				}
 			} else {
 				$dateName[] = $dates;
 			}
-			
+
 			// check that dates are in scope
 			if(!in_array($today['mday'], $dateName)) {
 				return false;
 			}
 		}
-		
+
 		// derive hours part
 		$currentHour = date('G', strtotime('00:00'));
 		if($hrs == '*') {
@@ -212,7 +238,7 @@
 				$hrName[] = $hrs;
 			}
 		}
-		
+
 		// derive minutes
 		$currentMin = date('i', strtotime($recordarray["starttime"]));
 		if(substr($currentMin, 0, 1) == '0') {
@@ -238,7 +264,7 @@
 				}
 				$i += $mult;
 			}
-			
+
 		} elseif($mins != '*') {
 			if(strstr($mins, ',')) {
 				$exMins = explode(',',$mins);
@@ -260,7 +286,7 @@
 			} else {
 				$minName[] = $mins;
 			}
-		} 
+		}
 
 		// prep some boundaries - these are not in GMT b/c gmt is a 24hour period, possibly bridging 2 local days
 		$timeFromTs = 0;
@@ -280,17 +306,17 @@
 		foreach($hrName as $kHr=>$hr) {
 			$hourSeen++;
 			foreach($minName as $kMin=>$min) {
-				if($hr < $currentHour || $hourSeen == 25) 
+				if($hr < $currentHour || $hourSeen == 25)
 					$theDate = date('Y-m-d', strtotime('+1 day'));
 				else
 					$theDate = date('Y-m-d');
 
 				$tsGmt = strtotime($theDate.' '.str_pad($hr,2,'0',STR_PAD_LEFT).":".str_pad($min,2,'0',STR_PAD_LEFT).":00"); // this is LOCAL
-				$validJobTime[] = gmdate('Y-m-d H:i', $tsGmt);				
+				$validJobTime[] = gmdate('Y-m-d H:i', $tsGmt);
 			}
 		}
 		sort($validJobTime);
 
-		return $validJobTime;		
+		return $validJobTime;
 	}//end function
 ?>

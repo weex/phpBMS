@@ -1,11 +1,15 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
-#container{width:740px; margin:10px auto;}
-#cba{margin-top:45px;}
-#logo{
-	float:right;background:white url(../../../image/logo-large.png) 8px 12px no-repeat;
-	width:260px;height:67px;
+#container{
+	width:740px;
+	margin:10px auto;
 }
-#logo span{display:none;}
-#browserTable{margin:20px;}
-#loginButton{width:100px;}
+
+#browserTable{
+	width: 100%
+}
+
+#loginButton{
+	padding-left: 10px;
+	padding-right: 10px;
+}

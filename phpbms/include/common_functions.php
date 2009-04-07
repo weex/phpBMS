@@ -39,7 +39,7 @@
 // uber phpbms class for common functions that reference the DB
 // it should be instanced in session.php
 class phpbms{
-	
+
 	var $db;
 	var $modules = array();//array of installed modules
 	var $cssIncludes = array();
@@ -47,13 +47,13 @@ class phpbms{
 	var $topJS = array();
 	var $bottomJS = array();
 	var $onload = array();
-		
+
 	var $showFooter = true;
 	var $showMenu = true;
-	
+
 	function phpbms($db){
 		$this->db = $db;
-		
+
 		$this->modules = $this->getModules();
 	}
 
@@ -64,7 +64,7 @@ class phpbms{
 			<?php
 		}
 	}
-	
+
 	function showJsIncludes(){
 		foreach($this->jsIncludes as $theinclude){
 			?><script language="JavaScript" src="<?php echo APP_PATH.$theinclude ?>" type="text/javascript" ></script>
@@ -83,54 +83,54 @@ class phpbms{
 		}//endid
 	}//end method
 
-	
+
 	function getModules(){
 		$modules = array();
-		
+
 		$querystatement = "SELECT * FROM `modules`";
 		$queryresult = $this->db->query($querystatement);
 		while($therecord = $this->db->fetchArray($queryresult))
 			$modules[$therecord["name"]] = $therecord;
-			
+
 		return $modules;
 	}
-	
+
 
 	function displayRights($roleid,$rolename = NULL){
 			switch($roleid){
-				
+
 				case 0:
 					echo "EVERYONE";
 				break;
-				
+
 				case -100:
 					echo "Administrators";
 				break;
-				
+
 				default:
 					if(!$rolename){
 						$querystatement = "SELECT name FROM roles WHERE id=".((int) $roleid);
 						$queryresult = $this->db->query($querystatement);
-	
+
 						$therecord = $this->db->fetchArray($queryresult);
 						$rolename = $therecord["name"];
 					}//end if
-					
+
 					echo $rolename;
 			}//end case
 	}//end method
 
 
 	function showTabs($tabgroup,$currenttabid,$recordid=0){
-			
+
 		$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip,roleid FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
 		$queryresult=$this->db->query($querystatement);
-	
-		?><ul class="tabs"><?php 
+
+		?><ul class="tabs"><?php
 			while($therecord=$this->db->fetchArray($queryresult)){
 
 				if(hasRights($therecord["roleid"])){
-			
+
 					?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
 						if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
 							$opener="<div>";
@@ -142,7 +142,7 @@ class phpbms{
 						if($therecord["notificationsql"]!=""){
 							$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
 							$notificationresult=$this->db->query($therecord["notificationsql"]);
-		
+
 							if($this->db->numRows($notificationresult)!=0){
 								$notificationrecord=$this->db->fetchArray($notificationresult);
 								if(isset($notificationrecord["theresult"]))
@@ -152,25 +152,25 @@ class phpbms{
 									}
 							}
 						}
-						
+
 						echo $opener.$therecord["name"].$closer;
-		
-					?></li><?php 
+
+					?></li><?php
 				}//endif hasRights
-			}//end whilt	
+			}//end whilt
 		?>
 		</ul><?php
 	}//end method
 
 
 	function getUserName($id=0){
-		
+
 		$querystatement="select concat(firstname,\" \",lastname) as name from users where id=".((int) $id);
 		$queryresult = $this->db->query($querystatement);
-	
+
 		$tempinfo = $this->db->fetchArray($queryresult);
 		return trim($tempinfo["name"]);
-		
+
 	}// end method
 
 }// end class
@@ -221,7 +221,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("-",$datestring);
 				if(count($temparray)==3)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[0]);
-				else 
+				else
 					return false;
 			break;
 
@@ -230,25 +230,25 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
-				else 
+				else
 					return false;
 			break;
-			
+
 			case "English, UK":
 				$datestring="/".ereg_replace(",.","/",$datestring);
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
-				else 
+				else
 					return false;
 			break;
-			
+
 			case "Dutch, NL":
 				$datestring="-".ereg_replace(",.","-",$datestring);
 				$temparray=explode("-",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
-				else 
+				else
 					return false;
 			break;
 
@@ -301,11 +301,11 @@ function dateToString($thedate,$format=DATE_FORMAT){
 			case "SQL":
 				$datestring=strftime("%Y-%m-%d",$thedate);
 			break;
-			
+
 			case "English, US":
 				$datestring=strftime("%m/%d/%Y",$thedate);
 			break;
-			
+
 			case "English, UK":
 				$datestring=strftime("%d/%m/%Y",$thedate);
 			break;
@@ -348,7 +348,7 @@ function formatFromSQLTime($sqltime,$format=TIME_FORMAT){
 	if($sqltime!="")
 		if($format=="24 Hour")
 			$timestring=$sqltime;
-		else 
+		else
 			$timestring=timeToString(stringToTime($sqltime,"24 Hour"),$format);
 	return $timestring;
 }
@@ -361,7 +361,7 @@ function dateFromSQLDatetime($sqldatetime){
 			$temptimearray=explode(":",$datetimearray[1]);
 			if(count($tempdatearray)>1 && count($temptimearray)>1)
 				$thedatetime=mktime((int) $temptimearray[0],(int) $temptimearray[1],(int) $temptimearray[2],(int) $tempdatearray[1],(int) $tempdatearray[2],(int) $tempdatearray[0]);
-		}		
+		}
 		return $thedatetime;
 }
 
@@ -370,17 +370,17 @@ function formatFromSQLDatetime($sqldatetime,$dateformat=DATE_FORMAT,$timeformat=
 	$timestring="";
 	if($sqldatetime!=""){
 		$datetimearray=explode(" ",$sqldatetime);
-		
+
 		$datestring=trim($datetimearray[0]);
 		if($dateformat=="SQL")
 			$datestring=$datestring;
-		else 
+		else
 			$datestring=dateToString(stringToDate($datestring,"SQL"),$dateformat);
 		if(isset($datetimearray[1])){
 			$timestring=$datetimearray[1];
 			if($timeformat=="24 Hour")
 				$timestring=$timestring;
-			else 
+			else
 				$timestring=timeToString(stringToTime($timestring,"24 Hour"),$timeformat);
 		}
 		$datetimestring=trim($datestring." ".$timestring);
@@ -399,14 +399,14 @@ function formatFromSQLTimestamp ($datetime,$dateformat=DATE_FORMAT,$timeformat=T
 	$year=1974;
 	settype($datetime, 'string');
 	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
-	array_shift ($matches);	
+	array_shift ($matches);
 	foreach (array('year','month','day','hour','minute','second') as $var) {
 		$$var = (int) array_shift($matches);
 	}
-	
-	
+
+
 	$thedatetime=mktime($hour,$minute,$second,$month,$day,$year);
-	
+
 	return trim(dateToString($thedatetime,$dateformat)." ".timeToString($thedatetime,$timeformat));
 }
 
@@ -447,11 +447,63 @@ function currencyToNumber($currency){
 	$number=str_replace(THOUSANDS_SEPARATOR,"",$number);
 	$number=str_replace(DECIMAL_SYMBOL,".",$number);
 	$number=((real) $number);
-	
+
 	return $number;
 }
 
+// Phone/Email functions
+//=====================================================================
+function validateEmail($value){
 
+	$thereturn = false;
+	$atPos = strpos($value, "@");
+
+	//@ symobol must be after first char
+	if($atPos > 0){
+
+		$dotPos = strpos($value, ".", $atPos);
+		$length = strlen($value);
+
+		//the dot must be at least 2 chars away from at
+		//it also must not be the last char in the string
+		if( ($dotPos > ($atPos + 1)) && ($length > ($dotPos + 1)) )
+			$thereturn = true;
+
+	}//end if
+
+	return $thereturn;
+
+}//end function --validateEmail--
+
+
+function validatePhone($number){
+
+	//need to decide on the phone reg ex based upon settings information
+	switch(PHONE_FORMAT){
+
+		case "US - Loose":
+			$phoneRegEx = "/^(?:[\+]?(?:[\d]{1,3})?(?:\s*[\(\.-]?(\d{3})[\)\.-])?\s*(\d{3})[\.-](\d{4}))(?:(?:[ ]+(?:[xX]|(?:[eE][xX][tT][\.]?)))[ ]?[\d]{1,5})?$/";
+		break;
+
+		case "US - Strict":
+			$phoneRegEx = "/^[2-9]\d{2}-\d{3}-\d{4}$/";
+		break;
+
+		case "UK - Loose":
+			$phoneRegEx = "/^((\(?0\d{4}\)?\s?\d{3}\s?\d{3})|(\(?0\d{3}\)?\s?\d{3}\s?\d{4})|(\(?0\d{2}\)?\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$/";
+		break;
+
+		case "International":
+			$phoneRegEx = "/^(\(?\+?[0-9]*\)?)?[0-9_\- \(\)]*$/";
+		break;
+		case "No Verification":
+			$phoneRegEx = "/.*/";
+		break;
+	}//end switch
+
+	return preg_match($phoneRegEx,$number);
+
+}//end function --validatePhone--
 
 //============================================================================
 function ordinal($number) {
@@ -495,24 +547,24 @@ function ordinal($number) {
 function addSlashesToArray($thearray){
 
 	//This function prepares an array for SQL manipulation.
-	
+
 	if(get_magic_quotes_runtime() || get_magic_quotes_gpc()){
-	
-		foreach ($thearray as $key=>$value) 
+
+		foreach ($thearray as $key=>$value)
 			if(is_array($value))
 				$thearray[$key]= addSlashesToArray($value);
 			else
 				$thearray[$key] = mysql_real_escape_string(stripslashes($value));
-				
-	} else 	
+
+	} else
 		foreach ($thearray as $key=>$value)
 			if(is_array($value))
-				$thearray[$key]= addSlashesToArray($value);				
+				$thearray[$key]= addSlashesToArray($value);
 			else
 				$thearray[$key] = mysql_real_escape_string($value);
-	
+
 	return $thearray;
-	
+
 }//end function
 
 
@@ -521,20 +573,20 @@ function htmlQuotes($string){
 	global $sqlEncoding;
 	if(!isset($sqlEncoding))
 		$sqlEncoding = "";
-		
+
 	switch ($sqlEncoding){
-	
+
 		case "latin1":
 			$encoding = "ISO-8859-15";
 			break;
-		
+
 		case "utf8":
 		default:
 			$encoding = "UTF-8";
 			break;
-	
+
 	}//endswitch
-	
+
 	return htmlspecialchars($string, ENT_COMPAT, $encoding);
 
 }
@@ -604,22 +656,22 @@ function formatVariable($value, $format=NULL){
 		case "noencoding":
 			$value=$value;
 			break;
-		
-		
+
+
 		case "bbcode":
 			$value=htmlQuotes($value);
-						
+
 			// This list needs to be expanded
 			$bbcodelist["[b]"] = "<strong>";
 			$bbcodelist["[/b]"] = "</strong>";
 			$bbcodelist["[br]"] = "<br />";
 			$bbcodelist["[space]"] = "&nbsp;";
-			
+
 			foreach($bbcodelist as $bbcode => $translation)
 				$value = str_replace($bbcode, $translation, $value);
-							
+
 			break;
-			
+
 		default:
 			$value=htmlQuotes($value);
 	}
@@ -638,36 +690,36 @@ if($nl_exists)
 if(!$nl_exists){
 
 	function nl_langinfo($constant){
-	
-		return $constant;	
-		
+
+		return $constant;
+
 	}//end function
 
 	function nl_setup(){
-	
+
 		$date = mktime(0,0,0,10,7,2007);
-		
+
 		for($i = 1; $i<=7; $i++){
-		
+
 			define("ABDAY_".$i, date("D", $date));
 			define("DAY_".$i, date("l"), $date);
-			
+
 			$date = strtotime("tomorrow", $date);
 		}//end for
-		
-		
+
+
 		for($i = 1; $i<=12; $i++){
-			
+
 			$date = mktime(0, 0, 0, $i, 1, 2007);
-			
+
 			define("ABMON_".$i, date("M", $date));
 			define("MON_".$i, date("F"), $date);
-		
+
 		}//end for
-				
+
 	}//end function
 
 	nl_setup();
-	
+
 }//end if
 ?>

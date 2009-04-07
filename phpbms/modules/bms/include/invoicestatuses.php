@@ -39,14 +39,65 @@
 
 if(class_exists("phpbmsTable")){
 	class invoiceStatus extends phpbmsTable {
-	
+
+		var $availableUserIDs = array();
+
+		function populateUserArray(){
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`users`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableUserIDs[] = 0;//for everyone
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableUserIDs[] = $therecord["id"];
+
+		}//end method --populateUserArray--
+
+
+		function verifyVariables($variables){
+
+			if(isset($variables["setreadytopost"]))
+				if($variables["setreadytopost"] && $variables["setreadytopost"] != 1)
+					$this->verifyErrors[] = "The `setreadytopost` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["invoicedefault"]))
+				if($variables["invoicedefault"] && $variables["invoicedefault"] != 1)
+					$this->verifyErrors[] = "The `invoicedefault` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["defaultassignedtoid"])){
+
+				if( !$variables["defaultassignedtoid"] || ((int)$variables["defaultassignedtoid"]) > 0 ){
+
+					if(!count($this->availableUserIDs))
+						$this->populateUserArray();
+
+					if(!in_array(((int)$variables["defaultassignedtoid"]), $this->availableUserIDs))
+						$this->verifyErrors[] = "The `defaultassignedtoid` field does not give an existing/acceptable user id number.";
+
+				}else
+					$this->verifyErrors[] = "The `defaultassignedtoid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
 		function updateRecord($variables, $modifiedby = NULL){
 			if(isset($variables["invoicedefault"]))
 				$this->updateInvoiceDefault();
-		
+
 			parent::updateRecord($variables, $modifiedby = NULL);
-		} 
-		
+		}
+
 		function updateInvoiceDefault(){
 			$querystatement="UPDATE `".$this->maintable."` SET `invoicedefault` = 0";
 			$queryresult = $this->db->query($querystatement);
@@ -58,12 +109,12 @@ if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{
 
 		function delete_record(){
-		
+
 			$whereclause = $this->buildWhereClause($theids,"invoicestatuses.id");
-			
+
 			$querystatement = "UPDATE invoicestatuses SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE (".$whereclause.") AND invoicedefault=0;";
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$message = $this->buildStatusMessage();
 			$message.=" marked inactive.";
 			return $message;

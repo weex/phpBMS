@@ -38,22 +38,123 @@
 */
 if(class_exists("phpbmsTable")){
 	class relationships extends phpbmsTable{
-		
+
+		var $availableTabledefIDs = array();
+		var $availableTabledefNames = array();
+
+		//function populateds the tabledef ids
+		//and the tabledef names corresponding to those ids
+		function populateTabledefArrays(){
+
+			$this->availableTabledefIDs = array();
+			$this->availableTabledefNames = array();
+
+			$querystatement = "
+				SELECT
+					`id`,
+					`displayname`
+				FROM
+					`tabledefs`
+				WHERE
+					`type` != 'view'
+				ORDER BY
+					`displayname`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult)){
+
+					$this->availableTabledefIDs[] = $therecord["id"];
+					$this->availableTabledefNames[] = $therecord["displayname"];
+
+				}//end while
+			}else{
+				//if no valid id/names, I put in a value that will
+				//give the arrays a count but not actually match any integers
+				$this->availableTabledefIDs[] = "none";
+				$this->availableTabledefNames[] = "none";
+			}//end if
+
+		}//end method --populateArrays--
+
+
+		function verifyVariables($variables){
+
+			//cannot be table default ("")
+			if(isset($variables["tofield"])){
+				if($variables["tofield"] === "" || $variables["tofield"] === NULL)
+					$this->verifyErrors[] = "The `tofield` field cannot be blank.";
+			}else
+				$this->verifyErrors[] = "The `tofield` field must be set.";
+
+			//cannot be table default ("")
+			if(isset($variables["fromfield"])){
+				if($variables["fromfield"] === "" || $variables["fromfield"] === NULL)
+					$this->verifyErrors[] = "The `from` field cannot be blank.";
+			}else
+				$this->verifyErrors[] = "The `fromfield` field must be set.";
+
+			//cannot be table default (0)
+			if(isset($variables["fromtableid"])){
+
+				//must be a positive number
+				if(((int) $variables["fromtableid"]) > 0 ){
+
+					if(!count($this->availableTabledefIDs))
+						$this->populateTableDefArrays();
+
+					if(!in_array(((int)$variables["fromtableid"]), $this->availableTabledefIDs))
+						$this->verifyErrors[] = "The `fromtableid` field does not give an existing/acceptable parent id number.";
+				}else
+					$this->verifyErrors[] = "The `fromtableid` field must be a positive number.";
+
+			}else
+				$this->verifyErrors[] = "The `fromtableid` field must be set.";
+
+			//cannot be table default (0)
+			if(isset($variables["totableid"])){
+
+				//must be a positive number
+				if(((int) $variables["totableid"]) > 0 ){
+
+					if(!count($this->availableTabledefIDs))
+						$this->populateTableDefArrays();
+
+					if(!in_array(((int)$variables["totableid"]), $this->availableTabledefIDs))
+						$this->verifyErrors[] = "The `totableid` field does not give an existing/acceptable to table id number.";
+				}else
+					$this->verifyErrors[] = "The `totableid` field must be a positive number.";
+			}else
+				$this->verifyErrors[] = "The `totableid` field must be set.";
+
+			//check boolean
+			if(isset($variables["inherit"]))
+				if($variables["inherit"] && $variables["inherit"] != 1)
+					$this->verifyErrors[] = "The `inherit` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
 		function displayTables($fieldname,$selectedid){
-			
-			$querystatement="SELECT id, displayname FROM tabledefs WHERE type!=\"view\" ORDER BY displayname";
-			$thequery=$this->db->query($querystatement);
-			
+
+			if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
+				$this->populateTabledefArrays();
+
 			echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
-			while($therecord=$this->db->fetchArray($thequery)){
-				echo "	<option value=\"".$therecord["id"]."\"";
-					if($selectedid==$therecord["id"]) echo " selected=\"selected\"";
-				echo ">".$therecord["displayname"]."</option>\n";
+
+			for($i = 0; $i < count($this->availableTabledefIDs); $i++){
+				echo "	<option value=\"".$this->availableTabledefIDs[$i]."\"";
+					if($selectedid==$this->availableTabledefIDs[$i]) echo " selected=\"selected\"";
+				echo ">".$this->availableTabledefNames[$i]."</option>\n";
 			}
-		
+
 			echo "</select>\n";
 		}
-	
+
 	}//end class
 }//end if
 

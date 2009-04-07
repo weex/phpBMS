@@ -1,100 +1,239 @@
-window.onload = function(){
-	var sections = getElementsByClassName("bodyline");
-	
-	var i;
-	for(i=0; i< sections.length; i++){
-		if(sections[i].id != "step1"){
-			sections[i].style.display = "none";
+installer = {
+
+	testConnection: function(){
+
+		var response = installer.runCommand("testconnection");
+		var testConnectionNoDebug = getObjectFromID("testConnectionNoDebug");
+
+		if(response.success === true){
+			testConnectionNoDebug.className = "success"
+			testConnectionNoDebug.innerHTML = "Connection Successful";
+		} else {
+			testConnectionNoDebug.className = "fail"
+			testConnectionNoDebug.innerHTML = "Connection Failed";
 		}
+
+	},//endfunction testConnection
+
+
+	createDatabase: function(){
+
+		var response = installer.runCommand("createdatabase");
+		var noDebug = getObjectFromID("createDatabaseNoDebug");
+
+		if(response.success === true){
+
+			noDebug.className = "success"
+			noDebug.innerHTML = "Database Schema Created";
+
+		} else {
+
+			noDebug.className = "fail"
+			noDebug.innerHTML = "Database Schema Creation Failed";
+
+		}//endif
+
+	}, // endfunction createdatabase
+
+
+	coreDataInstall: function(){
+
+		var noDebug = getObjectFromID("coreDataNoDebug");
+
+		noDebug.className = "running";
+		noDebug.innerHTML = "Running...";
+
+
+		//we pass the entered application name and e-mail address as a "::" separated pair
+		var appname = getObjectFromID("appname");
+		var email = getObjectFromID("email");
+
+		var extras = encodeURIComponent(appname.value + "::" + email.value)
+
+		var response = installer.runCommand("coredatainstall", extras);
+
+		if(response.success === true){
+
+			noDebug.className = "success";
+			noDebug.innerHTML = "Core Data Installed Succefully";
+
+			var pass2 = getObjectFromID("pass2")
+
+			pass2.innerHTML = response.extras;
+
+		} else {
+
+			noDebug.className = "fail";
+			noDebug.innerHTML = "Core Data Installation Failed";
+
+		}//endif
+
+	}, // endfunction coreDataInstall
+
+
+	moduleInstall: function(e){
+
+		var theButton = e.src();
+
+		var foo = "";
+
+		var module = theButton.id.substring(12);
+
+		var noDebug = getObjectFromID("Results"+module);
+
+		noDebug.className = "running";
+		noDebug.innerHTML = "Running...";
+
+		var response = installer.runCommand("moduleinstall", module);
+
+		if(response.success === true){
+
+			noDebug.className = "success";
+			noDebug.innerHTML = "Module Installed";
+
+		} else {
+
+			noDebug.className = "fail";
+			noDebug.innerHTML = "Installation Failed";
+
+		}//endif
+
+	},//end function moduleInstall
+
+
+	runCommand: function(command, extras){
+
+		if(typeof(extras) == "undefined")
+			extras = "";
+		else
+			extras = "&extras=" + extras
+
+		var theURL = "installajax.php?command=" + command + extras;
+
+		loadXMLDoc(theURL,null,false);
+
+		var JSONresponse;
+		eval("JSONresponse = (" + req.responseText +")");
+
+		var responseText = getObjectFromID(command + "results");
+		if(typeof(responseText) != "undefined"){
+
+			if(responseText.value)
+				responseText.value += "\n";
+
+			responseText.value += JSONresponse.details;
+
+		}//endif
+
+		return JSONresponse
+
+	},//endfunction runCommand
+
+
+	toggleDebug: function(){
+
+		var debug = getObjectFromID("debug");
+		var display = "none";
+		if(debug.checked)
+			display = "block";
+
+		var debugDisplays = getElementsByClassName("debugResults");
+
+		for(var i = 0; i < debugDisplays.length; i ++)
+			debugDisplays[i].style.display = display;
+
+	}//end function toggleDebug
+
+}//end class installer
+
+
+
+stepsNav = {
+
+	currentSection: 1,
+	sections: null,
+
+	navNext: function(){
+
+		if(stepsNav.currentSection + 1 <= stepsNav.sections.length){
+			stepsNav.navTo(stepsNav.currentSection + 1);
+		}
+	},
+
+
+	navPrev: function(){
+		if(stepsNav.currentSection - 1 > 0)
+			stepsNav.navTo(stepsNav.currentSection - 1);
+	},
+
+
+	navTo: function(section){
+
+		for(var i=0; i< stepsNav.sections.length; i++){
+
+			if(stepsNav.sections[i].id != "step" + section){
+				stepsNav.sections[i].style.display = "none";
+			} else {
+				stepsNav.sections[i].style.display = "block";
+			}//endif
+
+		}//endfor
+
+		navBar = getObjectFromID("navSelect");
+		for(i=0; i < navBar.options.length; i++){
+			if(navBar.options[i].value == section){
+				navBar.options[i].selected = true;
+			}
+		}//endfor
+		//navBar.selectedIndex = section
+
+		stepsNav.currentSection = section;
+
+	},//end function navTo
+
+
+	navLeft: function(){
+
+		var navSelect = getObjectFromID("navSelect");
+		stepsNav.navTo(parseInt(navSelect.value));
+
+
 	}
+
 }
 
-function goSection(direction){
-	var sections = getElementsByClassName("bodyline");
-	var currSection = 1;
-	
-	for(i=0; i< sections.length; i++){
-		if(sections[i].style.display == "block")			
-			currSection = parseInt(sections[i].id.substr(4),10);
-	}
-	
-	if(direction == "next")
-		direction = 1;
-	else
-		direction = -1;
-	
-	if(currSection + direction == 0)
-		return false;
-	else{
-		var currDiv = getObjectFromID("step"+currSection);
-		var newDiv = getObjectFromID("step"+(currSection + direction))
+// ====== Init Listeners =======================================================
 
-		currDiv.style.display = "none";
-		newDiv.style.display = "block";
-	}
-}//end function
+connect(window,"onload",function() {
 
+	stepsNav.sections = getElementsByClassName("steps");
+	stepsNav.navTo(1);
 
-	function runCommand(command){
-		var theURL="installxml.php?command="+command;
-		if(command=="updatesettings"){
-			var mServer=getObjectFromID("mysqlserver");
-			var mDatabase=getObjectFromID("mysqldb");
-			var mUser=getObjectFromID("mysqluser");
-			var mPassword=getObjectFromID("mysqluserpass");
-			theURL+="&ms="+encodeURIComponent(mServer.value);
-			theURL+="&mdb="+encodeURIComponent(mDatabase.value);
-			theURL+="&mu="+encodeURIComponent(mUser.value);
-			theURL+="&mup="+encodeURIComponent(mPassword.value);
-		}
-		var responseText= getObjectFromID(command+"results");
-		loadXMLDoc(theURL,null,false);
-		if(req.responseXML)
-			response = req.responseXML.documentElement.firstChild.data+"\n";
-		else 
-			response = req.responseText+"\n";
-		responseText.value += response;
-	}
-	
+	var nextButtons = getElementsByClassName("nextButtons");
+	for(var i=0; i< nextButtons.length; i++)
+		connect(nextButtons[i], "onclick", stepsNav.navNext);
 
-	function changeModule(){
-		var moduleSel=getObjectFromID("modules");
-		var installButton=getObjectFromID("installmodule");
-		var modinfo = getObjectFromID("moduleInformation");
-		
-		var modName = getObjectFromID("modulename");
-		var modVer = getObjectFromID("moduleversion");
-		var modDesc = getObjectFromID("moduledescription");
-		var modReq = getObjectFromID("modulerequirements");
-		
-		if(moduleSel.value!=0){
-			installButton.disabled=false;
-			
-			modName.innerHTML = modules[moduleSel.value]["name"];
-			modVer.innerHTML = modules[moduleSel.value]["version"];
-			modDesc.innerHTML = modules[moduleSel.value]["description"];
-			modReq.innerHTML = modules[moduleSel.value]["requirements"];
-			
-			modinfo.style.display = "block";						
-		}
-		else{
-			installButton.disabled=true;
-			modinfo.style.display = "none";			
-		}
-	}
-	
-	function runModuleInstall(){
-		var themodule=getObjectFromID("modules");
-		var responseText= getObjectFromID("moduleresults");
-		if(themodule.value=="")
-			alert("You must select a module to install first.");
-		else {
-			var theURL="../modules/"+themodule.value+"/install/install.php";
-			loadXMLDoc(theURL,null,false);
-			if(req.responseXML)
-				response = req.responseXML.documentElement.firstChild.data+"\n";
-			else 
-				response = req.responseText;
-			responseText.value+=response;
-		}
-	}
+	var prevButtons = getElementsByClassName("prevButtons");
+	for(var i=0; i< prevButtons.length; i++)
+		connect(prevButtons[i], "onclick", stepsNav.navPrev);
+
+	var navSelect = getObjectFromID("navSelect");
+	connect(navSelect, "onchange", stepsNav.navLeft);
+
+	var debug = getObjectFromID("debug");
+	connect(debug, "onchange", installer.toggleDebug);
+
+	var testConnectionButton = getObjectFromID("testConnectionButton");
+	connect(testConnectionButton, "onclick", installer.testConnection);
+
+	var createDatabaseButton = getObjectFromID("createDatabaseButton");
+	connect(createDatabaseButton, "onclick", installer.createDatabase)
+
+	var coreDataButton = getObjectFromID("coreDataButton");
+	connect(coreDataButton, "onclick", installer.coreDataInstall);
+
+	moduleButtons = getElementsByClassName("moduleButtons");
+	for(i = 0; i < moduleButtons.length; i++)
+		connect(moduleButtons[i], "onclick", installer.moduleInstall);
+
+})

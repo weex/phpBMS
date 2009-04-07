@@ -450,8 +450,9 @@ class inputDataTableList extends inputField{
 			if($this->hasblank){
 				?><option value="0" <?php
 				if ($this->value==0 || $this->value==""){
-					echo " selected=\"selected\" "?>>&lt;none&gt;</option><?php
+					echo " selected=\"selected\" ";
 				}//end if --value--
+				?>>&lt;none&gt;</option><?php
 			}//end if --hasblank--
 
 			while($therecord=$this->db->fetchArray($this->queryresult)){

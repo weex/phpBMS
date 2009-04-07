@@ -75,7 +75,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('302', 'new', '1', '0', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'import', '0', '0', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'printex', '1', '0', '0', '0', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'run_aging', 'run aging', '1', '1', '80', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'run_aging', 'run aging', '0', '1', '80', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'new', '0', '0', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'edit', '1', '1', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('303', 'select', '1', '0', '0', '0', '0');

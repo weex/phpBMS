@@ -1,10 +1,55 @@
-/* $Rev$ | $LastChangedBy$ */
-/* $LastChangedDate$ */
-#systemMessageContainer{padding:10px;}
-.systemMessageLinks{font-size:12px; border-bottom:1px solid #DDDDDD; cursor:pointer; margin:5px 5px 0px; padding:3px;}
-.systemMessageLinks:hover{background-color:#DDDDDD}
-.systemMessageLinks span{color:#666666; font-size:11px; padding:0 0 0 4px;}
-.systemMessages p{padding:8px;margin:0 5px 5px;background:white;}
+/* $Rev: 450 $ | $LastChangedBy: nate $ */
+/* $LastChangedDate: 2009-03-05 17:32:04 -0700 (Thu, 05 Mar 2009) $ */
+
+#systemMessageContainer{
+	background: #0B63A2 url("../../image/statusmessage.png") no-repeat 7px 6px;
+	color: white;
+	padding: 4px 10px 10px;
+	margin:0 5px 8px;
+}
+
+	#systemMessageContainer h2{
+		color: white;
+		margin: 0 0 5px 20px;
+		font-size: 15px;
+	}
+
+
+.systemMessageLinks{
+	margin:0;
+	cursor:pointer;
+	background:#EEEEEE url("../../image/section-down.png") 99.5% 80% no-repeat;
+	padding:4px;
+	border-bottom:1px solid #BBBBBB;
+	color: black;
+}
+
+	.systemMessageLinks:hover{
+		background-color:#DDDDDD
+	}
+
+	.systemMessageLinks h3{
+		font-size:13px;
+		margin:0;
+	}
+
+	.systemMessageLinks div{
+		margin-top:2px;
+		font-size: 10px;
+		color: #666666;
+	}
+
+.systemMessageLinks span{
+	color:#666666;
+	font-size:11px;
+	padding:0 0 0 4px;
+}
+
+.systemMessages p{
+	padding:8px;
+	margin:0 5px 10px;
+	background:white;
+}
 
 #notesStuff{
  margin:0 4px 6px;
@@ -37,7 +82,7 @@ h2{
 
 #tasksBox h3, #invoiceBox h3, #clientBox h3, #arBox h3{
 	margin:0;
-	cursor:pointer;font-size:13px;background:#EEEEEE url("../image/section-down.png") 99% 3px no-repeat;
+	cursor:pointer;font-size:13px;background:#EEEEEE url("../../image/section-down.png") 99% 3px no-repeat;
 	padding:4px;
 	border-bottom:1px solid #BBBBBB;
 }
@@ -151,7 +196,7 @@ h2{
 	height:16px;
 	display:block;
 	width:27px;
-	background:url("../image/button-ical.png") no-repeat;
+	background:url("../../image/button-ical.png") no-repeat;
 	margin-top:3px;
 }
 #icalA span{display:none;}

@@ -1,4 +1,4 @@
-INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('1', 'Organizer', '', '0', '3', '1', '1', NOW(), NOW(), '0');
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('1', 'Tools', '', '0', '3', '1', '1', NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('2', 'Notes', 'search.php?id=12', '1', '1', '1', '1', NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('3', 'Tasks', 'search.php?id=23', '1', '2', '1', '1', NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('4', 'Events', 'search.php?id=24', '1', '3', '1', '1', NOW(), NOW(), '0');

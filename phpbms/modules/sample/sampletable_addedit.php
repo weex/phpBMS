@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 258 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-08 21:59:28 -0600 (Wed, 08 Aug 2007) $
@@ -40,19 +40,19 @@
 	include("../../include/session.php");
 	include("include/tables.php");
 	include("include/fields.php");
-	
+
 	//if you need to ovveride the phpbmsTable class make sure to include the modules file
 	include("modules/[modulename]/include/[tablename].php");
 
 
-	//If the addedit page will be accessd directly from a page other than the 
+	//If the addedit page will be accessd directly from a page other than the
 	// basic search results page, you may want to grab and pass the previous URL
 	//with the following code
 
 	//===================================================
-	if(!isset($_GET["backurl"])) 
-		$backurl = NULL; 
-	else{ 
+	if(!isset($_GET["backurl"]))
+		$backurl = NULL;
+	else{
 		$backurl = $_GET["backurl"];
 		if(isset($_GET["refid"]))
 			$backurl .= "?refid=".$_GET["refid"];
@@ -62,20 +62,20 @@
 
 	//Here you invoke the table class.  If you are going to use the standard phpbmsTable class
 	// for updates and the such you would access it like this
-	
+
 	//		$thetable = new phpbmsTable($db,[table definition id]);
-	
-	//if you are going to overide the class you would instantiate
-	// like this
-	
-	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-	
+
+	// if you are going to overide the class you would instantiate
+	// your overriden class like this
+
+	// 		$thetable = new [tablename]($db,[table definition id]);
+
 	//and if you are setting the backurl, make sure you pass that as well
 	// like this:
 	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-	
-	
-	//Next we process the form (if submitted) and 
+
+
+	// Next we process the form (if submitted) and
 	// return the current record as an array ($therecord)
 	// or if this is a new record, it returns the defaults
 	$therecord = $thetable->processAddEditPage();
@@ -86,39 +86,40 @@
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle = "[tablename]";
-	
+
 	// Next, we set up to include any
 	// additional css or javascript files we will be using
 	//  This does nto include any field-type specific js (like datepicker)
 	// as they are automatically icluded when you define the special fields you
 	// will be using below.
-	$phpbms->cssIncludes[] = "pages/[tablename].css";
+	$phpbms->cssIncludes[] = "pages/[modulename]/[tablename].css";
 	$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
+	// DEPRECIATED: 
 	// if you need to define a body onlload function, do so with the phpbms property
 	$phpbms->onload[] = "initializePage()";
 
 
 	// Next we need to define any special fields that will be used in the form
 	// A list of field objects (with documentation)is available in the /include/fields.php
-	// file.  
-	
+	// file.
+
 	// We need to define them here in the head
 	// so that any necessay javascript is loaded appropriately.
-	
+
 		//Form Elements
 		//==============================================================
-		
+
 		// Create the form
 		$theform = new phpbmsForm();
 		//if you need to set specific form vaiables (like enctype, or extra onsubmit
 		// you can set those form properties here.
-		
-		// for each field we will use, create the field object and add it to 
+
+		// for each field we will use, create the field object and add it to
 		// the forms list.
 		$theinput = new inputDatePicker("orderdate", $therecord["orderdate"], "order date");
 		$theform->addField($theinput);
-	
+
 		$theinput = new inputCheckBox("weborder",$therecord["weborder"],NULL, false, false);
 		$theform->addField($theinput);
 
@@ -135,12 +136,12 @@
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
+		//End Form Elements
 
-	include("header.php");	
-	
+	include("header.php");
+
 ?><div class="bodyline">
-	<!-- 
+	<!--
 		Next we start the form.  This also prints the H1 with title, and top save,cancel buttons
 		If you need to have other buttons, or need a specific top, you will need to create your form manually.
 	-->
@@ -150,9 +151,9 @@
 		<legend>attribues</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
-		<p><?php $theform->showField("inactive");?></p>		
+		<p><?php $theform->showField("inactive");?></p>
 	</fieldset>
 
 	<div id="nameDiv">
@@ -165,7 +166,7 @@
 
 		</fieldset>
 	</div>
-	<?php 
+	<?php
 		//Last, we show the create/modifiy with the bottom save and cancel buttons
 		// and then close the form.
 		$theform->showCreateModify($phpbms,$therecord);

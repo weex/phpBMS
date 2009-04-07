@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,9 +37,51 @@
  +-------------------------------------------------------------------------+
 */
 
-	include("install_include.php");
-	include("version.php");
-	
+	include("update_include.php");
+
+	$updater = new updater();
+	$updater->buildList();
+
+
+	//check for php version
+	$neededVer = "5.2.0";
+	$phpVer = phpversion();
+	if(floatval($neededVer) <= floatval($phpVer))
+		$phpVerClass = "success";
+	else
+		$phpVerClass = "fail";
+
+	//check to see if mysql plugin present
+	if(phpversion("mysql"))
+		$mysqlPresent = "success";
+	else
+		$mysqlPresent = "fail";
+
+	//check the web server
+	$webServer = explode(" ",$_SERVER['SERVER_SOFTWARE']);
+	$webServer = explode("/", $webServer[0]);
+
+	if(strtolower($webServer[0]) == "apache"){
+
+		if(floatval($webServer[1]) > 2)
+			$webServerReport["class"] = "success";
+		else
+			$webServerReport["class"] = "warning";
+
+		$webServerReport["message"] = $webServer[0]."/".$webServer[1];
+
+	} else {
+		$webServerReport["class"] = "warning";
+		$webServerReport["message"] = "Non-Apache servers are untested and may have problems.";
+	}
+
+	$mysqlVer = $updater->getMySQLVersion();
+
+	if(floatval($mysqlVer) >= 5)
+		$mysqlPassFailClass = "success";
+	else
+		$mysqlPassFailClass = "fail";
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -52,181 +94,190 @@
 <script language="JavaScript" src="../common/javascript/moo/moo.fx.js" type="text/javascript" ></script>
 <script language="JavaScript" src="../common/javascript/moo/moo.fx.pack.js" type="text/javascript" ></script>
 <script language="JavaScript" src="update.js" type="text/javascript" ></script>
-<script language="JavaScript" type="text/javascript">
-	<?php $modules = array_merge($modules,loadModules("update")) ?>
-</script>
 </head>
 
 <body>
-	<h1 id="topTitle">phpBMS v<?php echo $modules["base"]["version"]?> Update</h1>
-	
-	<div class="bodyline" id="step1">
-		<h1>Before Updating</h1>
-		
-		<p class="important">Backup all of your data and program files before running any update.</p>
-		<p>
-			By downloading and decompressing this update, you may have already replaced script files 
-			from the previous version of phpBMS. If you have decompressed these files to a separate 
-			directory and have made custom changes directly to the system we recommend backing up 
-			those files before continuing. 
-		</p>
-		<p>For the latest information about phpBMS check the <a href="http://www.phpbms.org">phpBMS Project web site</a>.</p>
+	<noscript>
+		<div class="bodyline">
+			<h1>Javascript Support Disabled</h1>
+			<p>Both the installer and the main phpBMS program require JavaScript support in order to run.</p>
+		</div>
+	</noscript>
 
-		<p class="nextprevP">
-			<button type="button" class="disabledButtons nextprevButtons" onclick="goSection('back')" disabled="disabled">back</button>
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('next')">next</button>
-		</p>
-	</div>
+	<h1 id="topTitle">phpBMS v<?php echo $updater->list["base"]["version"]?> Update</h1>
 
-	
-	<div class="bodyline" id="step2">
-		<h1>Enter Administrative Log In Information</h1>
-		<p>
-			Running the update requires administrative access privleges.  Please enter the login credentials
-			that have administrative priveleges.
-		</p>
+	<div class="bodyline">
 
-		<fieldset>
-			<legend>administrative login</legend>
-			<p>
-				<label for="username">name</label><br />
-				<input name="name" type="text" id="username" size="32" maxlength="64" />
-				<input name="name" type="hidden" id="version"  value="<?php echo $modules["base"]["version"] ?>" />
-			</p>
-			<p>
-				<label for="password">password</label><br />
-				<input name="password" type="password" id="password" size="32" maxlength="24"  />
-			</p>
-			<p>
-				<input type="button" value="Verify" class="Buttons" onclick="runCommand('verifyLogin')" />
-			</p>
-		</fieldset>
-		<h3>Administrative Verification Results</h3>
-		<p>
-			<textarea name="results" id="verifyLoginresults" class="results" cols="80" rows="2"></textarea>
-		</p>
-		
-		<p class="nextprevP">
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('back')">back</button>
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('next')">next</button>
-		</p>		
-	</div>
-	
-	
-	<div class="bodyline" id="step3">
-		<h1>Check for phpBMS Core Update Availability</h1>
+		<div id="navPanel">
+			<select id="navSelect" size="10">
+				<option value="1" selected="selected">* Preparing For Update</option>
+				<option value="2">* Update Core Program</option>
+				<option value="3">* Update Modules</option>
+				<option value="4">* Finish Update</option>
+			</select>
+			<p><input type="checkbox" id="debug" /><label for="debug">updating debug</label></p>
+		</div>
+		<div id="stepsPanel">
 
-		<p>Check to see if the phpBMS core needs to be updated</p>
-		<p class="testButtonsP">
-			<input type="button" value="Check Core Availability" class="Buttons" onclick="runCommand('checkBaseUpdate')" />
-		</p>
-		<h3>Availability Results</h3>
-		<p>
-			<textarea name="results" id="checkBaseUpdateresults" class="results" cols="80" rows="2"></textarea>
-		</p>
+			<div class="steps" id="step1">
+
+				<p class="nextprevP">
+					<button type="button" class="disabledButtons prevButtons" disabled="disabled">back</button>
+					<button type="button" class="Buttons nextButtons">next</button>
+				</p>
+
+				<h1>Preparing For Update</h1>
+				<p>
+					Before updating, There are several steps to take and insure that backup runs smoothly.
+				</p>
+				<ul>
+					<li>
+						<strong>Backup</strong> your data file. If you have access to a shell, using
+						the mysqldump command is a fast way of creating a reliable backup of your data.
+					</li>
+
+					<li>
+						By downloading and decompressing this update, you may have already replaced script files
+			                        from the previous version of phpBMS. If you have decompressed these files to a separate
+			                        directory and have made custom changes directly to the system we recommend backing up
+			                        those files before continuing.
+					</li>
+
+					<li>
+						For the latest information about phpBMS check the <a href="http://www.phpbms.org">phpBMS Project web site</a>.
+					</li>
+				</ul>
+
+				<h2>Server Requirements</h2>
+				<table id="sysRequirements" cellpadding="0" cellspacing="0" border="0">
+					<thead>
+						<tr>
+							<td>requirement</td>
+							<td>server</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>PHP 5.2.0 or higher</td>
+							<td><span class="<?php echo $phpVerClass?>"><?php echo $phpVer?></span></td>
+						</tr>
+						<tr>
+							<td>PHP MySQL Support</td>
+							<td><span class="<?php echo $mysqlPresent?>"><?php echo $mysqlPresent?></span></td>
+						</tr>
+						<tr>
+							<td>Apache 2.0 or higher</td>
+							<td><span class="<?php echo $webServerReport["class"]?>"><?php echo $webServerReport["message"]?></span></td>
+						</tr>
+						<tr>
+							<td>MySQL Server 5.0 or higher</td>
+							<td><span class="<?php echo $mysqlPassFailClass ?>"><?php echo $mysqlVer ?></span></td>
+						</tr>
+
+					</tbody>
+				</table>
+
+			</div>
+
+			<div class="steps" id="step2">
+
+				<p class="nextprevP">
+					<button type="button" class="Buttons prevButtons">back</button>
+					<button type="button" class="Buttons nextButtons">next</button>
+				</p>
+
+				<h1>Update Core Program</h1>
+
+				<p>
+					The database reports the current version is <strong><?php echo $updater->list["base"]["currentversion"] ?></strong>.
+					The application files show the application version to upgrade to is <strong><?php echo $updater->list["base"]["version"] ?></strong>.
+				</p>
+
+				<?php if($updater->checkBaseUpdate()) { ?>
+
+					<p class="notes"><strong>Versions match.  No update is necessary.</strong></p>
+
+				<?php } else { ?>
+
+					<p class="notes"><strong>You must update the phpBMS Core Program before updating any modules.</strong></p>
 
 
-		<p class="nextprevP">
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('back')">back</button>
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('next')">next</button>
-		</p>		
-	</div>
+					<p><button class="Buttons" id="updatecoreButton">Update Core Program</button> <span id="coreDataNoDebug"></span></p>
 
+					<div class="debugResults">
+						<h3>Update Core Results</h3>
+						<p><textarea name="results" id="coredataupdateresults" cols="40" rows="4" class="results"></textarea></p>
+					</div>
 
-	<div class="bodyline" id="step4">
-		<h1>Update phpBMS Core</h1>
-		
-		<p>If an update was reported as available in the previous section, you should  run the update to the phpBMS core.</p>
-		
-		<p class="notes">
-			If no update is available, running the update on an already updated version of phpBMS
-			can cause data corruption and break the application.
-		</p>
-		
-		<p class="testButtonsP">
-			<input type="button" value="Update Core" class="Buttons" onclick="runCommand('updateBaseVersion')" />
-		</p>
-		<h3>Core Update Results</h3>
-		<p>
-			<textarea name="results" id="updateBaseVersionresults" class="results" cols="80" rows="8"></textarea>
-		</p>
+				<?php } //endif  ?>
+			</div>
 
-		<p class="nextprevP">
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('back')">back</button>
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('next')">next</button>
-		</p>		
-	</div>
-	
-	
-	<div class="bodyline" id="step5">
-		<h1>Update Installed Modules</h1>
-		<p>Before updating an installed module, make sure that you meet any module requirements listed.</p>
-		
-		<p>
-			<label for="modules">available modules</label><br />
-			<select id="modules" name="modules" onchange="changeModule()">
-				<option value="0">Select a module to update...</option>
-				<?php showModules($modules);?>
-			</select>			
-        </p>
+			<div class="steps" id="step3">
 
-		<div id="moduleInformation" class="box" style="display:none">
-			<h2>Module Information</h2>
-			<p>
-				module Name<br />
-				<strong id="modulename"></strong>
-			</p>
-			<p>
-				version: <strong id="moduleversion"></strong>
-			</p>
-			<p class="notes">
-				The version above is not necessarily the current data version.  Use the
-				"Check For Updates" button to see if an update is necessary.
-			</p>
-			<p>
-				description<br />
-				<strong id="moduledescription"></strong>				
-			</p>
-			<p>
-				requirements<br />
-				<strong id="modulerequirements"></strong>
-			</p>
-			<p class="notes">make sure your system meets all of the module's requirements.</p>
-			<p class="testButtonsP">
-				<input type="button" id="checkModule" value="Check For Updates" class="Buttons" onclick="runCommand('checkModuleUpdate')" />
-				<input type="button" id="updatemodule" name="updatemodule" value="Update Module" class="Buttons" onclick="runModuleUpdate()" disabled="disabled"/>
-			</p>
+				<p class="nextprevP">
+					<button type="button" class="Buttons prevButtons">back</button>
+					<button type="button" class="Buttons nextButtons">next</button>
+				</p>
+
+				<h1>Udate Modules</h1>
+
+				<?php $updater->showModulesUpdate(); ?>
+
+				<div class="debugResults">
+					<h3>Module Installation Results</h3>
+					<p><textarea name="results" id="moduleupdateresults" class="results" cols="80" rows="10"></textarea></p>
+				</div>
+
+			</div>
+
+			<div class="steps" id="step4">
+
+				<p class="nextprevP">
+					<button type="button" class="Buttons prevButtons">back</button>
+					<button type="button" class="disabledButtons nextButtons" disabled="disabled">next</button>
+				</p>
+
+				<h1>Finish Update</h1>
+				<p>
+					To finish the update process you will need to:
+				</p>
+				<ul>
+					<li>
+						<h3>Delete Install Folders</h3>
+						<p>
+							You must delete both the core installation folder, as well as all modules' installation
+							folders before you can use the system
+						</p>
+					</li>
+					<li>
+						<h3>Clear your Browser Cache</h3>
+						<p>
+							Part of the update process may have replaced javascript and stylesheet (css) files.
+							Most browsers cache these files to speed loading times. In order to insure that
+							your web application is using all of the latest updates, you will need to
+							clear the browser cache of all client browsers that access the application.
+						</p>
+						<p>
+							Most browsers will clear this cache automatically if you simply restart the browser
+						</p>
+					</li>
+
+				</ul>
+				<h2>Troubleshooting</h2>
+				<h3>General Help </h3>
+				<p>
+				If you have problems during updating, have questions about how the program works, or would like additional
+				information about phpBMS, please visit the <a href="http://www.phpbms.org">phpBMS Project web site</a>.  The phpBMS project web site
+				has many resources to help you including a user wiki, users forum, and mailing list that can help you.</p>
+				<h3>Paid Customization, Update, Support Options</h3>
+				<p>Paid technical support and phpBMS customization is available from <a href="http://www.kreotek.com">Kreotek</a>,</p>
+
+			</div>
+
 		</div>
 
-		
-		<h3>Module Update Results</h3>
-		<p>
-			<textarea name="results" id="checkModuleUpdateresults" class="results" cols="80" rows="8"></textarea>
-		</p>
-
-		
-		<p class="nextprevP">
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('back')">back</button>
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('next')">next</button>
-		</p>		
 	</div>
 
-	<div class="bodyline" id="step6">
-		<h1>Complete the Update Process</h1>
-		
-		<p>
-			To complete the update process, you may need to <strong>restart your browser</strong>, or <strong>clear site cookies and browser
-			cache</strong> in order for all the changes to take affect.
-		</p>
-		
-		<p class="testButtonsP"><input type="button" id="login" name="login" value="phpBMS Log In" class="Buttons" onclick="document.location='../'" /></p>
-		
-		<p class="nextprevP">
-			<button type="button" class="Buttons nextprevButtons" onclick="goSection('back')">back</button>
-			<button type="button" class="disabledButtons nextprevButtons" onclick="goSection('next')" disabled="disabled">next</button>
-		</p>	
-	</div>
-	
 	<p class="tiny" align="center"> $Rev$ |  $LastChangedDate$</p>
 </body>
 </html>

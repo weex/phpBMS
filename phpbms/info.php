@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -36,84 +36,140 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	$loginNoKick=true;
-	$loginNoDisplayError=true;
+	$loginNoKick = true;
+	$loginNoDisplayError = true;
 
 	require_once("include/session.php");
-	
-	
-	function displayVersions($db){
-		$querystatement="SELECT displayname,version from modules ORDER BY id";
-		$queryresult=$db->query($querystatement);
 
-		if($queryresult){
-			while($therecord=$db->fetchArray($queryresult)){
-				if($therecord["displayname"]!="Base"){
-					echo $therecord["displayname"].": ";
-					echo "v".$therecord["version"]."<br />";
-				} else
-					echo "<span class=\"important\">v".$therecord["version"]."</span><br /><br />";
-			}
-		}
-	}
-	
+	class versions{
+
+		var $db;
+		var $queryresult;
+
+		function versions($db){
+
+			$this->db = $db;
+
+		}//end function init
+
+		function get(){
+
+			$querystatement = "
+				SELECT
+					`name`,
+					`displayname`,
+					`version`
+				FROM
+					`modules`
+				ORDER BY
+					`id`";
+
+			$this->queryresult = $this->db->query($querystatement);
+
+		}//end function get
+
+
+		function show(){
+
+			if(!$this->queryresult)
+				return false;
+
+			while($therecord = $this->db->fetchArray($this->queryresult)){
+
+				if($therecord["name"] != "base")
+					echo formatVariable($therecord["displayname"]).": v".$therecord["version"]."<br />";
+				else
+					echo '<p class="important">v'.$therecord["version"].'</p>';
+
+			}//endwhile
+
+			return true;
+
+		}//end function show
+
+	}//end class
+
+	$versions = new versions($db);
+	$versions->get();
+
 	$pageTitle="phpBMS Information";
 	$phpbms->cssIncludes[] = "pages/info.css";
-	
+
 	$phpbms->showMenu = false;
 	$phpbms->showFooter = false;
-	
+
 	include("header.php");
-	
+
 ?><div class="bodyline" id="container">
-	<h1>About phpBMS</h1>
-	<p>phpBMS is commercial open source, web-based, business management software.</p>
-	
+
 	<div id="phpBMSLogo" class="box small">
-		<?php if(isset($db)) displayVersions($db)?>
+		<?php $versions->show() ?>
 	</div>
-	
+
+	<h1>About phpBMS</h1>
+	<p>phpBMS is commercial, open source, web-based, business management software.</p>
+
 	<div id="companyInfo">
-		<p class="small">
-			Copyright &copy; 2004 -2007 Kreotek, llc. All Rights Reserved.
-			phpBMS, and the phpBMS logo are trademarks of Kreotek, llc. 
+		<p >
+			Copyright &copy; <?php echo date("Y")?> Kreotek, LLC. All Rights Reserved.
+			phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.
 			Software is licensed under a <a href="license.txt">modified BSD license</a>.
 		</p>
-		
+
 		<h3>Kreotek, LLC</h3>
-		<p class="small">
+		<p>
 			610 Quantum<br />
-			Rio Rancho, NM 87124
+			Rio Rancho, NM 87124 USA
+		</p>
+		<p><a href="http://www.kreotek.com">http://www.kreotek.com</a></p>
+		<p>
+			sales: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
+			support: <a href="mailtosupport@kreotek.com">support@kreotek.com</a>
 		</p>
 		<p>
-			web: <a href="http://www.kreotek.com">http://www.kreotek.com</a><br />
-			sales: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
-			support: <a href="mailtosupport@kreotek.com">support@kreotek.com</a><br />
-			phone: <strong>1-800-731-8026</strong>
+			U.S. and Canada Toll Free<br />
+			1-800-731-8026
+
+		<p>
+			Outside US and Canada<br />
+			+1-505-994-6388
 		</p>
+
 		<h3>phpBMS Open Source Project</h3>
 		<p>
-			project web site: <a href="http://www.kreotek.com">http://www.phpbms.org</a><br />
-			project forums: <a href="mailto:sales@kreotek.com">sales@kreotek.com</a><br />
+			community web site: <a href="http://www.kreotek.com">http://www.phpbms.org</a><br />
+			community forums: <a href="http://www.phpbms.org/forum">http://www.phpbms.org/forum</a><br />
 		</p>
 	</div>
-	
-		<h2>Source Code</h2>
-		<ul>
-			<li><strong>phpBMS</strong> - Commercial Open Source Business Management Web Appllication (<a href="http://www.kreotek.com">www.phpbms.org</a>)</li>
-			<li><strong>fpdf</strong> - A PHP class which allows to generate PDF files with pure PHP (<a href="http://www.fpdf.org">www.fpdf.org</a>)</li>
-		    <li><strong>moo.fx</strong> - Super lightweight JavaScript effects library (<a href="http://moofx.mad4milk.net/">moofx.mad4milk.net</a>) </li>
-			<li><strong>mochikit</strong> - A lightweight JavaScript library (<a href="http://mochichit.com/">mochikit.com</a>) - phpBMS utilizes modified parts mochikit code and it's programming structure.</li>
-			<li><strong>parseCSV</strong> - An easy to use PHP class to read and write CSV data properly.(<a href="http://code.google.com/p/parsecsv-for-php/" >code.google.com/p/parsecsv-for-php/</a>)</li>
-		</ul>
-		<h2>Technologies</h2>
-		<ul>
-			<li><strong>php</strong> -  A widely-used general-purpose scripting language that is especially suited for Web development and can be embedded into HTML.  (<a href="http://www.php.net">www.php.net</a>)</li>
-			<li><strong>MySQL</strong> - An open source relational database management system (RDBMS) that uses Structured Query Language (SQL) (<a href="http://www.mysql.org">www.mysql.org</a>)</li>
-			<li><strong>AJAX</strong> - Asynchronous Javascript And XML is a group of technologies that help browser based applications behave more like applications you run from your desktop.</li>
-		</ul>
 
-	<p align="right">
-		<input type="button" value="Back" class="Buttons" onclick="document.location='<?php echo APP_PATH; if(isset($_SESSION["userinfo"])) echo DEFAULT_LOAD_PAGE?>'" id="loginButton"/>
-	</p>
+	<h2>Source Code</h2>
+	<ul>
+		<li>
+			<h3>phpBMS (<a href="http://www.phpbms.org">www.phpbms.org</a>)</h3>
+			<p>Commercial Open Source Business Management Web Appllication</p>
+		</li>
+
+		<li>
+			<h3>fpdf (<a href="http://www.fpdf.org">www.fpdf.org</a>)</h3>
+			<p>A PHP class which allows to generate PDF files with pure PHP</p>
+		</li>
+
+		<li>
+			<h3>moo.fx (<a href="http://moofx.mad4milk.net/">moofx.mad4milk.net</a>)</h3>
+			<p>Super lightweight JavaScript effects library</p>
+		</li>
+
+		<li>
+			<h3>mochikit (<a href="http://mochichit.com/">mochikit.com</a>)</h3>
+			<p>A lightweight JavaScript library - phpBMS utilizes modified parts of mochikit code and it's programming structure for JavaScript as inspiration.</p>
+		</li>
+
+		<li>
+			<h3>parseCSV (<a href="http://code.google.com/p/parsecsv-for-php/" >code.google.com/p/parsecsv-for-php/</a>)</h3>
+			<p>An easy to use PHP class to read and write CSV data properly.</p>
+		</li>
+	</ul>
+
+	<p align="right"><input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton" /></p>
+
 </div><?php include("footer.php") ?>

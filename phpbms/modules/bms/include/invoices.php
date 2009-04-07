@@ -39,6 +39,10 @@
 if(class_exists("phpbmsTable")){
 	class invoices extends phpbmsTable{
 
+		var $availableClientIDs = array();
+		var $availableUserIDs = array();
+		var $availableStatusIDs = array();
+
 		function showClientType($id){
 
 			if(((int) $id) != 0){
@@ -436,6 +440,169 @@ if(class_exists("phpbmsTable")){
 			return $therecord;
 		}
 
+		/*------[verification related functions]---------------------------*/
+
+		function populateClientArray(){
+
+			$this->availableClientIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`clients`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult))
+					$this->availableClientIDs[] = $therecord["id"];
+			}else{
+				$this->availableClientIDs[] = "none";
+			}//end if
+
+		}//end method --populateClientArray--
+
+
+		function populateUserArray(){
+
+			$this->availableUserIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`users`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableUserIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableUserIDs[] = $therecord["id"];
+
+		}//end method  --populateUserArray--
+
+
+		function populateInvoiceStatusArray(){
+
+			$this->availableStatusIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`invoicestatuses`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult))
+					$this->availableStatusIDs[] = $therecord["id"];
+			}else{
+				$this->availableStatusIDs[] = "none";
+			}//end if
+
+		}//end method --populateInvoiceStatusArray--
+
+
+		function verifyVariables($variables){
+
+			//must have a client
+			if(isset($variables["clientid"])){
+
+				//must be numeric and positive
+				if(!$variables["clientid"] || (int)$variables["clientid"] > 0){
+
+					if(!count($this->availableClientIDs))
+						$this->populateClientArray();
+
+					if(!in_array(((int)$variables["clientid"]),$this->availableClientIDs))
+						$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
+				}else
+					$this->verifyErrors[] = "The `clientid` field must be a non-negative number or equivalent to 0.";
+
+			}else
+				$this->verifyErrors[] = "The `clientid` field must be set.";
+
+			//table default (NULL) is not enough
+			if(isset($variables["type"])){
+
+				switch($variables["type"]){
+
+					case "Quote":
+					case "Order":
+					case "Invoice":
+					case "VOID":
+						break;
+
+					default:
+						$this->verifyErrors[] = "The value of the `type` field is invalid.  It must be 'Quote',
+							'Order', 'Invoice', or 'VOID'.";
+						break;
+
+				}//end switch
+
+			}else
+				$this->verifyErrors[] = "The `type` field must be set.";
+
+			//check assigned to id
+			if(isset($variables["assignedtoid"])){
+
+				//assignedtoid needs to be a non-negative number or equivalent to 0
+				if( !$variables["assignedtoid"] || ((int)$variables["assignedtoid"]) > 0 ){
+
+					if(!count($this->availableUserIDs))
+						$this->populateUserArray();
+
+					if(!in_array(((int)$variables["assignedtoid"]),$this->availableUserIDs))
+						$this->verifyErrors[] = "The `assignedtoid` field does not give an existing/acceptable user id number.";
+				}else
+					$this->verifyErrors[] = "The `assignedtoid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			//check status id
+			if(isset($variables["statusid"])){
+
+				//assignedtoid needs to be a non-negative number or equivalent to 0
+				if( !$variables["statusid"] || ((int)$variables["statusid"]) > 0 ){
+
+					if(!count($this->availableStatusIDs))
+						$this->populateInvoiceStatusArray();
+
+					if(!in_array(((int)$variables["statusid"]),$this->availableStatusIDs))
+						$this->verifyErrors[] = "The `statusid` field does not give an existing/acceptable status id number.";
+				}else
+					$this->verifyErrors[] = "The `statusid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			//check booleans
+				//readytopost
+				if(isset($variables["readytopost"]))
+					if($variables["readytopost"] && $variables["readytopost"] != 1)
+						$this->verifyErrors[] = "The `readytopost` field must be a boolean (equivalent to 0 or exactly 1).";
+
+				//weborder
+				if(isset($variables["weborder"]))
+					if($variables["weborder"] && $variables["weborder"] != 1)
+						$this->verifyErrors[] = "The `weborder` field must be a boolean (equivalent to 0 or exactly 1).";
+
+				//shiptosameasbilling
+				if(isset($variables["shiptosameasbilling"]))
+					if($variables["shiptosameasbilling"] && $variables["shiptosameasbilling"] != 1)
+						$this->verifyErrors[] = "The `shiptosameasbilling` field must be a boolean (equivalent to 0 or exactly 1).";
+			//check addresss ids
+			//check secondary line item ids
+
+			return parent::verifyVariables($variables);
+
+		}//end method
+
 
 		function prepareVariables($variables){
 
@@ -543,14 +710,14 @@ if(class_exists("phpbmsTable")){
 
 		function updateRecord($variables, $modifiedby = NULL){
 
-			if($modifiedby === NULL)
-				$modifiedby = $_SESSION["userinfo"]["id"];
+			//if($modifiedby === NULL)
+			//	$modifiedby = $_SESSION["userinfo"]["id"];
 
 
 			if($variables["oldType"]=="Invoice")
 				return false;
 
-			$variables = $this->prepareVariables($variables);
+			//$variables = $this->prepareVariables($variables);
 
 			if(!hasRights(20)){
 
@@ -605,7 +772,7 @@ if(class_exists("phpbmsTable")){
 			if($createdby === NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
 
-			$variables = $this->prepareVariables($variables);
+			//$variables = $this->prepareVariables($variables);
 
 			$newid = parent::insertRecord($variables, $createdby);
 

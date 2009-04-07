@@ -85,7 +85,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	$theinput->setAttribute("class","uneditable");
 	$theform->addField($theinput);
 
-	$theinput = new inputField("currency_sym",$therecord["currency_sym"],"currency symbol",true,NULL,4,1);
+	$theinput = new inputField("currency_sym",$therecord["currency_sym"],"currency symbol",true,NULL,5,5);
 	$theform->addField($theinput);
 
 	$theinput = new inputField("currency_accuracy",$therecord["currency_accuracy"],"currency decimal points of accuracy",true,"integer",4,1);
@@ -224,6 +224,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 				<option value="US - Loose" <?php if($therecord["phone_format"] == "US - Loose")  echo "selected=\"selected\"";?>>US - Loose</option>
 				<option value="UK - Loose" <?php if($therecord["phone_format"] == "UK - Loose")  echo "selected=\"selected\"";?>>UK - Loose</option>
 				<option value="International" <?php if($therecord["phone_format"] == "International")  echo "selected=\"selected\"";?>>International</option>
+				<option value="No Verification" <?php if($therecord["phone_format"] == "No Verification")  echo "selected=\"selected\"";?>>No Verification</option>
 			</select>
 		</p>
 		<p>

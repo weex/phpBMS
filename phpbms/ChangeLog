@@ -1,7 +1,15 @@
+phpBMS v0.98
+http://phpbms.org/browser/tags/phpbms-0.98
+ * Support for importing records directly from within phpBMS
+ * New install and update procedures
+
+The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.98
+
 phpBMS v0.96
+http://phpbms.org/browser/tags/phpbms-0.96
  * Support For Multiple Client Addresses
  * Separate Bill To and Ship To Addresses on Sales Orders
- * Automatic removal of old CC/Bank routing information on Invoices 
+ * Automatic removal of old CC/Bank routing information on Invoices
 
 The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.96
 
@@ -50,12 +58,12 @@ The complete list of closed tickets can be found here: http://phpbms.org/query?s
 
 phpBMS v0.7
 http://phpbms.org/browser/tags/phpbms-0.7
- 
+
  * Support for multiple phone formats
  * Support for multiple currency formats
  * Support for multiple date/time formats
  * New client order defaults
- * New scheduler system 
+ * New scheduler system
  * New logging system
  * Support for type JPG on logo
  * Redesigned help system
@@ -64,7 +72,7 @@ http://phpbms.org/browser/tags/phpbms-0.7
  * Redesigned order screen
  * Longer state fields
  * Order status now modifiable
- * Track order status history 
+ * Track order status history
  * Users can edit their information
  * New user access level system
  * XHTML compliance
@@ -222,7 +230,7 @@ http://phpbms.org/browser/tags/phpbms-0.51
 
  * Fixed issue with invoice line items not able to enter/fill correctly
  * addressed global variable problem in multiple areas
- * Removed parameter "response" from passed variables to UPS shipping lookup.  
+ * Removed parameter "response" from passed variables to UPS shipping lookup.
  * Including parameter breaks the CGI lookup (returned blank response) for UPS shipping lookup
  * Included amount due on invoice report
  * Added Update Functionality

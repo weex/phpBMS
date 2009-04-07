@@ -1,0 +1,18 @@
+#dialog, #footer{
+	width:500px;
+	margin: 5px auto 0;
+}
+
+#dialog{
+	margin-top:10px
+}
+
+#fromdateP{
+	float: left;
+	padding-right: 20px;
+}
+
+#printButton, #cancelButton{
+	padding-left: 15px;
+	padding-right: 15px;
+}

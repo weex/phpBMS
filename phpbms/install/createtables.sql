@@ -57,7 +57,7 @@ CREATE TABLE `notes` (
   `content` text,
   `assignedtodate` date default NULL,
   `subject` varchar(128) default NULL,
-  `type` char(2) default NULL,
+  `type` char(2) NOT NULL default 'NT',
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
@@ -114,7 +114,7 @@ CREATE TABLE `reports` (
   `tabledefid` int(11) NOT NULL default '0',
   `displayorder` int(11) NOT NULL default '0',
   `roleid` int(11) NOT NULL default '0',
-  `reportfile` varchar(128) default NULL,
+  `reportfile` varchar(128) NOT NULL,
   `description` text,
   `createdby` int(11) NOT NULL default '0',
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -168,7 +168,7 @@ CREATE TABLE `tabledefs` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=INNODB  AUTO_INCREMENT=1000; 
+) ENGINE=INNODB  AUTO_INCREMENT=1000;
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
@@ -179,7 +179,7 @@ CREATE TABLE tablefindoptions (
   roleid int(11) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) ENGINE=INNODB  AUTO_INCREMENT=2000; 
+) ENGINE=INNODB  AUTO_INCREMENT=2000;
 
 CREATE TABLE tableoptions (
   id int(11) NOT NULL auto_increment,
@@ -192,7 +192,7 @@ CREATE TABLE tableoptions (
   `displayorder` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) ENGINE=INNODB  AUTO_INCREMENT=2000; 
+) ENGINE=INNODB  AUTO_INCREMENT=2000;
 
 CREATE TABLE tablesearchablefields (
   id int(11) NOT NULL auto_increment,
@@ -210,6 +210,7 @@ CREATE TABLE users (
   password blob,
   firstname varchar(64) NOT NULL default '',
   lastname varchar(64) NOT NULL default '',
+  `lastip` VARCHAR(45) NOT NULL DEFAULT '',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   revoked tinyint(1) NOT NULL default '0',
   createdby int(11) NOT NULL default '0',
@@ -258,7 +259,7 @@ CREATE TABLE `files` (
   `modifieddate` timestamp(14) NOT NULL,
   `roleid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=INNODB  AUTO_INCREMENT=100; 
+) ENGINE=INNODB  AUTO_INCREMENT=100;
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,
@@ -273,13 +274,13 @@ CREATE TABLE `attachments` (
   KEY `therecord` (`recordid`),
   KEY `thetable` (`tabledefid`),
   KEY `thefile` (`fileid`)
-) ENGINE=INNODB ; 
+) ENGINE=INNODB ;
 
 CREATE TABLE `roles` (
   `id` INTEGER UNSIGNED DEFAULT NULL AUTO_INCREMENT,
   `name` VARCHAR(64) NOT NULL,
   `description` TEXT,
-  `inactive` tinyint(4) NOT NULL,
+  `inactive` tinyint(4) NOT NULL DEFAULT 0,
   `createdby` INTEGER UNSIGNED,
   `creationdate` DATETIME,
   `modifiedby` INTEGER UNSIGNED,
@@ -350,4 +351,3 @@ CREATE TABLE `smartsearches` (
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
 ) ENGINE=INNODB;
-

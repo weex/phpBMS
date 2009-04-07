@@ -40,57 +40,56 @@
 if(class_exists("phpbmsTable")){
 	class addresses extends phpbmsTable{
 
-
 		function getName($tabledefid, $recordid){
-		
+
 			switch($tabledefid){
-			
+
 				case 2:
 				default:
 					$querystatement = "
-						SELECT 
+						SELECT
 							if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company) AS thename
 						FROM
 							clients
 						WHERE
 							id = ".$recordid;
 					break;
-							
+
 			}//endswitch tabledefid
-		
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			if($this->db->numRows($queryresult)){
-			
+
 				$therecord = $this->db->fetchArray($queryresult);
 				return htmlQuotes($therecord["thename"]);
-				
+
 			} else
 				return "orphaned record: tableDefinitionID=".$tabledefid.", RecordID:".$recordid;
-		
+
 		}//end method - getName
-		
+
 
 		function showAssociations($addressid){
-			// This function generates a table listing all the records 
+			// This function generates a table listing all the records
 			// associated with the address record.
-			
+
 			$querystatement = "
 				SELECT
 					addresstorecord.tabledefid,
 					addresstorecord.recordid,
 					addresstorecord.primary,
-					addresstorecord.defaultshipto					
-				FROM 
+					addresstorecord.defaultshipto
+				FROM
 					addresstorecord
 				WHERE
 					addresstorecord.addressid =".((int) $addressid)."
 				ORDER BY
 					addresstorecord.tabledefid
 			";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			?>
 			<table class="querytable" cellspacing="0" cellpadding="0" border="0">
 				<thead>
@@ -107,12 +106,12 @@ if(class_exists("phpbmsTable")){
 					</tr>
 				</tfoot>
 				<tbody>
-				<?php 
+				<?php
 					$row =1;
 					while($therecord = $this->db->fetchArray($queryresult)) {
-					
+
 						$row = ($row==1)? 2:1;
-						
+
 						?><tr class="qr<?php echo $row?>">
 							<td><?php echo $therecord["recordid"]?></td>
 							<td><?php echo $this->getName($therecord["tabledefid"], $therecord["recordid"])?></td>
@@ -120,69 +119,38 @@ if(class_exists("phpbmsTable")){
 							<td align="center"><?php echo formatVariable($therecord["defaultshipto"], "boolean")?></td>
 						</tr>
 						<?php
-						
-					}//endwhile - therecord					
+
+					}//endwhile - therecord
 				?>
 				</tbody>
 			</table>
 			<?php
-		
+
 		}//end method - showAssociation
 
-
-		// CLASS OVERRIDES =================================================
-			
-		function formatVariables($variables){
-						
-			return $variables;			
-		
-		}//end function
-	
-	
-		function updateRecord($variables, $modifiedby = NULL){
-	
-			$variables = $this->formatVariables($variables);
-
-			$thereturn = parent::updateRecord($variables, $modifiedby);
-						
-			return $thereturn;
-			
-		}//end method
-		
-		
-		function insertRecord($variables, $createdby = NULL){
-		
-			$variables = $this->formatVariables($variables);
-	
-			$newid = parent::insertRecord($variables, $createdby);
-									
-			return $newid;
-			
-		}//end method
-			
 	}//end class
-	
+
 }//end if
 
 if(class_exists("searchFunctions")){
 	class filesSearchFunctions extends searchFunctions{
-	
+
 		function delete_record(){
-		
+
 			$whereclause = $this->buildWhereClause();
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
-		
+
 			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!=1;";
 			$queryresult = $this->db->query($querystatement);
-		
+
 			$querystatement = "DELETE FROM files WHERE ".$whereclause." AND files.id!=1;";
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$message = $this->buildStatusMessage();
 			$message.=" deleted";
 			return $message;
 		}
-	
+
 	}//end class
 }//end if
 ?>

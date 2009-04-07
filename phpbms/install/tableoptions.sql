@@ -13,7 +13,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('11', 'select', '1', '0', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('11', 'edit', '1', '1', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('11', 'printex', '1', '0', '0', '0', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('12', 'import', '0', '0', '0', '-100', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('12', 'import', '1', '0', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('12', 'select', '1', '0', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('12', 'edit', '1', '1', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('12', 'printex', '1', '0', '0', '0', '0');

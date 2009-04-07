@@ -38,12 +38,156 @@
 */
 if(class_exists("phpbmsTable")){
 	class userSearches extends phpbmsTable{
-	
+
+		var $availableUserIDs = array();
+		var $availableTabledefIDs = array();
+		var $availableRoleIDs = array();
+
+
+		function populateUserArray(){
+
+			$this->availableUserIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`users`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableUserIDs[] = 0;//for global
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableUserIDs[] = $therecord["id"];
+
+		}//end method --populateUserArray--
+
+
+		function populateRoleArray(){
+
+			$this->availableRoleIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`roles`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableRoleIDs[] = 0;//for global
+			$this->availableRoleIDs[] = -100;//for admin
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableRoleIDs[] = $therecord["id"];
+
+
+		}//end method --populateRoleArray--
+
+
+		function populateTabledefArray(){
+
+			$this->availableTabledefIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`tabledefs`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult))
+					$this->availableTabledefIDs[] = $therecord["id"];
+			}else
+				$this->availableTabledefIDs[] = "none";// so the function doesn't keep
+				//getting called
+
+
+		}//end method --populateRoleArray--
+
+
+		function verifyVariables($variables){
+
+			//table default (SCH) is sufficient
+			if(isset($variables["type"])){
+
+				switch($variables["type"]){
+
+					case "SRT":
+					case "SCH":
+					break;
+
+					default:
+						$this->verifyErrors[] = "The value of `type` field is invalid. Its value must be
+							'SRT' or 'SCH'.";
+					break;
+
+				}//end switch
+
+			}//end if
+
+			//table default (0) is sufficient
+			if(isset($variables["userid"])){
+
+				if( !$variables["userid"] || ((int) $variables["userid"] > 0) ){
+
+					if(!count($this->availableUserIDs))
+						$this->populateUserArray();
+
+					if(!in_array(((int)$variables["userid"]), $this->availableUserIDs))
+						$this->verifyErrors[] = "The `userid` field does not give an existing/acceptable user id number.";
+
+				}else
+					$this->verifyErrors[] = "The `userid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			//The table default is not enough, so it must be set
+			if(isset($variables["tabledefid"])){
+
+				if(is_numeric($variables["tabledefid"]) || !$variables["tabledefid"]){
+
+					if(!count($this->availableTabledefIDs))
+						$this->populateTabledefArray();
+
+					if(!in_array(((int)$variables["tabledefid"]), $this->availableTabledefIDs))
+						$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
+				}else
+					$this->verifyErrors[] = "The `tabledefid` field must be numeric or equivalent to 0.";
+			}else
+				$this->verifyErrors[] = "The `tabledefid` field must be set.";
+
+			//table default (0) is sufficient
+			if(isset($variables["roleid"])){
+
+				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+
+					if(!count($this->availableRoleIDs))
+						$this->populateRoleArray();
+
+					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
+						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
+				}else
+					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+
+			}//end if
+
+			return parent::verifyVariables($variables);
+
+		}//end method
+
+
 		function displayTables($fieldname,$selectedid){
-		
+
 			$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
 			$thequery=$this->db->query($querystatement);
-			
+
 			echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 			while($therecord=$this->db->fetchArray($thequery)){
 				echo "	<option value=\"".$therecord["id"]."\"";
@@ -52,15 +196,16 @@ if(class_exists("phpbmsTable")){
 			}
 			echo "</select>\n";
 		}
-		
+
+
 		function updateRecord($variables, $modifiedby = NULL){
-		
+
 			if(isset($variables["makeglobal"]))
 				$variables["userid"] = 0;
-					
+
 			parent::updateRecord($variables, $modifiedby);
 		}
-	
+
 	}//end class
 }//end if
 ?>

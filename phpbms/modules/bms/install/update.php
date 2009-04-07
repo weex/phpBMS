@@ -36,445 +36,148 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-error_reporting(E_ALL);
-define("APP_DEBUG",false);
-define("noStartup",true);
 
-include("../../../install/install_include.php");
-include("../../../include/session.php");
+// Need custom class for upgrade because
+// some BMS upgrades require more than just
+// version SQL file processing
+class updateBMS extends updateModuleAjax{
 
-	function doUpdate($db) {
-		$thereturn="Updating Business Management System Module\n";
-		
-		if(!verifyAdminLogin($db,$_GET["u"],$_GET["p"])){
-			$thereturn="Update Requires Administrative Access.\n\n";
-			return $thereturn;
-		}
-				
-		$newVersion = $_GET["v"];
-		
-		$querystatement="SELECT version FROM modules WHERE name=\"bms\"";
-		$queryresult=$db->query($querystatement);
-		if(!$queryresult) {
-			$thereturn="Error Accessing module table in database.\n\n";
-			return $thereturn;
-		}
-		
-		$ver=$db->fetchArray($queryresult);
+	function updateBMS($db, $phpbmsSession, $moduleName, $pathToModule){
 
-		while($ver["version"] != $newVersion){
-			switch($ver["version"]){
-				// ================================================================================================
-				case "0.5":
-					$thereturn.="Updating BMS Module to 0.51\n";
-		
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.51\" WHERE name=\"bms\";";
-					$queryresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
-					
-					$thereturn.="Update to 0.51 Finished\n\n";
-			
-					$ver["version"]="0.51";
-				break;
-				// ================================================================================================
-				case "0.51":
-					$thereturn.="Updating BMS Module to 0.6\n";
-							
-					$thereturn.=processSQLfile($db,"updatev0.6.sql");
-					
-					$thereturn.=importData($db,"choices");
-					$thereturn.=importData($db,"menu");
-					$thereturn.=importData($db,"reports");
-					$thereturn.=importData($db,"tablecolumns");
-					$thereturn.=importData($db,"tabledefs");
-					$thereturn.=importData($db,"tablefindoptions");
-					$thereturn.=importData($db,"tableoptions");
-					$thereturn.=importData($db,"tablesearchablefields");
+		$this->updateModuleAjax($db, $phpbmsSession, $moduleName, $pathToModule);
 
-					$querystatement="SELECT clients.id,DATE_FORMAT(clients.creationdate,\"%Y-%m-%d\") as creationdate,max(invoices.orderdate) as orderdate
-									FROM `clients` LEFT JOIN invoices on clients.id=invoices.clientid 
-									WHERE clients.type=\"client\" GROUP BY clients.id;";
-					$queryresult=$db->query($querystatement);
+	}//end function init
 
-					while($therecord=$db->fetchArray($queryresult,$dblink)){
-						$querystatement="UPDATE clients set becameclient=\"";
-						if($therecord["orderdate"])
-							$querystatement.=$therecord["orderdate"];
-						else
-							$querystatement.=$therecord["creationdate"];
-						$querystatement.="\" WHERE id=".$therecord["id"];
-						$updateresult=$db->query($querystatement);
-					}
-					$thereturn.=" - set intitial client becamclient field\n";
-					
+	//override function for custom upgrading
+	function update(){
 
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.6\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
+		if(!$this->db->connect())
+			return $this->returnJSON(false, "Could not connect to database ".$this->db->getError());
 
-					$thereturn.="Update to 0.6 Finished\n\n";
-			
-					$ver["version"]="0.6";
-				break;
-				// ================================================================================================
-				case "0.6";
-					$thereturn.="Updating BMS Module to 0.601\n";
+		if(!$this->db->selectSchema())
+			return $this->returnJSON(false, "Could not open database schema '".MYSQL_DATABASE."'");
 
-					$querystatement="SELECT invoices.id,tax.percentage FROM invoices INNER JOIN tax on invoices.taxareaid=tax.id";
-					$queryresult=$db->query($querystatement);
-					
-					
-					while($therecord=$db->fetchArray($queryresult)){
-						$querystatement="UPDATE invoices SET taxpercentage=".$therecord["percentage"]."WHERE id=".$therecord["id"];
-						$updateresult=$db->query($querystatement);
-					}
-					$thereturn.=" - set taxpercentage on invoices\n";
+		$updater = new installer($this->db);
 
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.601\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
+		include("../modules/bms/version.php");
+		$newVersion = $modules["bms"]["version"];
+		$currentVersion = $this->currentVersion;
 
+		//next we loop through each upgrade process
+		while($currentVersion != $newVersion){
 
-					$thereturn.="Update to 0.601 Finished\n\n";
-			
-					$ver["version"]="0.601";
-
-				break;
-				// ================================================================================================
-				case "0.601";
-					$thereturn.="Updating BMS Module to 0.602\n";
-
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.602\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
-
-					$thereturn.="Update to 0.602 Finished\n\n";
-			
-					$ver["version"]="0.602";
-				// ================================================================================================
-				case "0.602";
-					$thereturn.="Updating BMS Module to 0.61\n";
-
-					$thereturn.=processSQLfile($db,"updatev0.61.sql");
-
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.61\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
-
-					$thereturn.="Update to 0.61 Finished\n\n";
-			
-					$ver["version"]="0.61";
-				break;
-				// ================================================================================================
-				case "0.61";
-					$thereturn.="Updating BMS Module to 0.62\n";
-
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.62\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - modified bms record in modules table\n";
-
-					$thereturn.="Update to 0.62 Finished\n\n";
-			
-					$ver["version"]="0.62";
-				break;
-				// ================================================================================================
-				case "0.62";
-					$thereturn.="Updating BMS Module to 0.7\n";
-					
-					$thereturn.=processSQLfile($db,"updatev0.70.sql");
-					
-					//update to new status system
-					$result=updateInvoiceStatus($db);
-					if($result===true)
-						$thereturn.=" - Updated to new invoice status system\n";
-					else
-						$thereturn.=" - Failed to updated to new invoice status system\n".$result."\n\n";					
-					
-					//Update shipping from invoices
-					$result=moveShipping($db);
-					if($result===true)
-						$thereturn.=" - Created default Shipping Methods\n";
-					else
-						$thereturn.=" - Failed to create default shipping methods\n".$result."\n\n";
-					
-					//update payment From invoices
-					$result=movePayments($db);
-					if($result===true)
-						$thereturn.=" - Created default payment methods\n";
-					else
-						$thereturn.=" - Failed to create default payment Methods\n".$result."\n\n";
-					
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.7\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-					$thereturn.=" - Updated bms module record with new version\n";
-
-					$thereturn.="Update to 0.7 Finished\n\n";
-			
-					$ver["version"]="0.7";
-				break;
+			switch($currentVersion){
 
 				// ================================================================================================
-				case "0.7";
+				case 0.8:
 
-					$thereturn.= processSQLfile($db,"updatev0.80.sql");
-
-					//Updating Module Table
-					$querystatement="UPDATE modules SET version=\"0.8\" WHERE name=\"bms\";";
-					$updateresult=$db->query($querystatement);
-
-					$thereturn.="Update of Business Management System Module to 0.8 Finished\n\n";
-					$ver["version"]="0.8";
-				break;
-
-				// ================================================================================================
-				case "0.8";
-
-					$thereturn.= processSQLfile($db,"updatev0.90.sql");
+					$version = 0.9;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
 					//Updating Module Table
-					$querystatement = "
-						UPDATE 
-							modules 
-						SET 
-							version='0.9' 
-						WHERE 
-							name='bms';";
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
-					$updateresult = $db->query($querystatement);
-
-					$thereturn .= "Update of Business Management System Module to 0.9 Finished\n\n";
-
-					$ver["version"] = "0.9";
-
-					break;
-					
-				// ================================================================================================
-				case "0.9";
-
-					$thereturn.= processSQLfile($db,"updatev0.92.sql");
-
-					//Updating Module Table
-					$updatestatement = "
-						UPDATE 
-							modules 
-						SET 
-							version='0.92' 
-						WHERE 
-							name='bms';";
-
-					$db->query($updatestatement);
-
-					$thereturn .= "Update of Business Management System Module to 0.92 Finished\n\n";
-
-					$ver["version"] = "0.92";
+					$currentVersion = $version;
 
 					break;
 
 				// ================================================================================================
-				case "0.92";
+				case 0.9:
 
-					$thereturn.= processSQLfile($db,"updatev0.94.sql");
+					$version = 0.92;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
 					//Updating Module Table
-					$updatestatement = "
-						UPDATE 
-							modules 
-						SET 
-							version='0.94' 
-						WHERE 
-							name='bms';";
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
-					$db->query($updatestatement);
-
-					$thereturn .= "Update of Business Management System Module to 0.94 Finished\n\n";
-
-					$ver["version"] = "0.94";
+					$currentVersion = $version;
 
 					break;
 
 				// ================================================================================================
-				case "0.94";
+				case 0.92:
 
-					$thereturn.= processSQLfile($db,"updatev0.96.sql");
-					
-					if(v096updateInvoiceAddresses($db))
-						$thereturn .= "Updating invoice addresses.\n\n";					
-
-					if(v096transferClientAddresses($db))
-						$thereturn .= "Transfer client addresses.\n\n";					
+					$version = 0.94;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
 					//Updating Module Table
-					$updatestatement = "
-						UPDATE 
-							modules 
-						SET 
-							version='0.96' 
-						WHERE 
-							name='bms';";
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
-					$db->query($updatestatement);
-
-					$thereturn .= "Update of Business Management System Module to 0.96 Finished\n\n";
-
-					$ver["version"] = "0.96";
+					$currentVersion = $version;
 
 					break;
-				
+
 				// ================================================================================================
-				case "0.96";
+				case 0.94:
 
-					$thereturn.= processSQLfile($db,"updatev0.98.sql");
-					
+					$version = 0.96;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
+
+					if(!$this->v096updateInvoiceAddresses())
+						return $this->returnJSON(false, "v0.96 Invoice Addresses Movement Failed");
+
+					if(!$this->v096transferClientAddresses())
+						return $this->returnJSON(false, "v0.96 Client Addresses Movement Failed");
+
 					//Updating Module Table
-					$updatestatement = "
-						UPDATE 
-							modules 
-						SET 
-							version='0.98' 
-						WHERE 
-							name='bms';";
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
-					$db->query($updatestatement);
-
-					$thereturn .= "Update of Business Management System Module to 0.98 Finished\n\n";
-
-					$ver["version"] = "0.98";
+					$currentVersion = $version;
 
 					break;
 
-			}//end switch
-		}//end while
-		return $thereturn;
+				// ================================================================================================
+				case 0.96:
 
-	}//end update
+					$version = 0.98;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
+					//Updating Module Table
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
 
-	function moveShipping($db){
-		$querystatement="SELECT DISTINCT shippingmethod FROM invoices WHERE shippingmethod!=\"\" ORDER BY shippingmethod";
-		$queryresult=$db->query($querystatement);
-		
-		while($therecord=$db->fetchArray($queryresult)){
-			$querystatement="INSERT INTO `shippingmethods` (name,createdby,creationdate) VALUES (\"".$therecord["shippingmethod"]."\",1,NOW())";
-			$updatequery=$db->query($querystatement);
-		}
+					$currentVersion = $version;
 
-		$querystatement="SELECT id,name FROM shippingmethods";
-		$queryresult=$db->query($querystatement);
+					break;
 
-		while($therecord=$db->fetchArray($queryresult)){
-			$querystatement="UPDATE invoices SET shippingmethodid=".$therecord["id"]."
-							WHERE shippingmethod=\"".$therecord["name"]."\"";
-			$updatequery=$db->query($querystatement);
-		}
-		$querystatement="ALTER TABLE invoices DROP shippingmethod";
-		$updatequery=$db->query($querystatement);
-		
-		return true; 		 
-	}
+			}//endswitch currentVersion
+
+		}//endwhile currentversion/newversion
 
 
-	function movePayments($db){
-		$querystatement="SELECT DISTINCT paymentmethod FROM invoices WHERE paymentmethod!=\"\" ORDER BY paymentmethod";
-		$queryresult=$db->query($querystatement);
+		return $this->returnJSON(true, "Module '".$this->moduleName."' Updated");
 
-		while($therecord=$db->fetchArray($queryresult)){
-			switch($therecord["paymentmethod"]){
-				case "VISA":
-				case "VISA - Debit": 
-				case "American Express":
-				case "Master Card":
-				case "MasterCard":
-				case "Discover Card":
-					$type="\"charge\"";
-				break;
-				
-				case "Personal Check":
-				case "Check":
-				case "Cashiers Check":
-				case "check":
-					$type="\"draft\"";
-				break;				
-				
-				default:
-					$type="NULL";
-				break;
-			}
-			
-			$querystatement="INSERT INTO `paymentmethods` (name,`type`,createdby,creationdate) VALUES (\"".$therecord["paymentmethod"]."\",".$type.",1,NOW())";
-			$updatequery=$db->query($querystatement);
-		}
-
-		$querystatement="SELECT id,name FROM paymentmethods";
-		$queryresult=$db->query($querystatement);
-		while($therecord=$db->fetchArray($queryresult)){
-			$querystatement="UPDATE invoices SET paymentmethodid=".$therecord["id"]."
-							WHERE paymentmethod=\"".$therecord["name"]."\"";
-			$updatequery=$db->query($querystatement);
-		}
-		$querystatement="ALTER TABLE invoices DROP paymentmethod";
-		$updatequery=$db->query($querystatement);
-		
-		return true;
-	}
-
-	function updateInvoiceStatus($db){
-		$querystatement="SELECT id,status,statusdate,orderdate,invoicedate,type FROM invoices";
-		$queryresult=$db->query($querystatement);
-		
-		while($therecord=$db->fetchArray($queryresult)){
-				
-			$newstatus=1;			
-			switch($therecord["status"]){
-				case "Open":
-					$newstatus=1;
-					$statusdate=$therecord["orderdate"];
-				break;
-				case "Committed":
-					$newstatus=2;
-					$statusdate=$therecord["orderdate"];					
-				break;
-				case "Packed":
-					$newstatus=3;
-					$statusdate=$therecord["orderdate"];					
-				break;
-				case "Shipped":
-					$newstatus=4;
-					if($therecord["statusdate"])
-						$statusdate=$therecord["statusdate"];
-					elseif($therecord["invoicedate"])
-						$statusdate=$therecord["invoicedate"];
-					else
-						$statusdate=$therecord["orderdate"];
-				break;
-			}//end switch			
-
-			if($therecord["type"]=="Invoice")
-				$statusdate=$therecord["invoicedate"];
-			
-			$querystatement="UPDATE invoices SET statusid=".$newstatus.", statusdate=\"".$statusdate."\" WHERE id=".$therecord["id"];
-			$updatequery=$db->query($querystatement);
-
-			//now create the history
-			$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate)VALUES(".$therecord["id"].",".$newstatus.",\"".$statusdate."\")";
-			$insertquery=$db->query($querystatement);
-			
-		}
-		$querystatement="ALTER TABLE `invoices` DROP COLUMN `status`";
-		$dropcolumnquery=$db->query($querystatement);
-		
-		return true;
-	}//end funtion
+	}//end function update
 
 
-	function v096updateInvoiceAddresses($db){
-	
+//==== v0.96 Specific Function =================================================
+
+	function v096updateInvoiceAddresses(){
+
 		$querystatement = "
 			SELECT
 				invoices.id,
@@ -486,11 +189,11 @@ include("../../../include/session.php");
 				clients.country
 			FROM
 				invoices INNER JOIN clients ON invoices.clientid = clients.id";
-				
-		$queryresult = $db->query($querystatement);
-		
-		while($therecord = $db->fetchArray($queryresult)){
-		
+
+		$queryresult = $this->db->query($querystatement);
+
+		while($therecord = $this->db->fetchArray($queryresult)){
+
 			$updatestatement = "
 				UPDATE
 					invoices
@@ -510,17 +213,17 @@ include("../../../include/session.php");
 				WHERE
 					id = ".$therecord["id"];
 
-				$db->query($updatestatement);
-		
+				$this->db->query($updatestatement);
+
 		}//endwhile - record
-	
+
 		return true;
-	
+
 	}//end function - v096updateInvoiceAddresses
 
 
-	function v096transferClientAddresses($db){
-	
+	function v096transferClientAddresses(){
+
 		//retrieve all client records with ship to addresses
 		$querystatement = "
 			SELECT
@@ -539,14 +242,14 @@ include("../../../include/session.php");
 				shiptocountry
 			FROM
 				clients";
-		
-		$queryresult = $db->query($querystatement);
-		
-		while($therecord = $db->fetchArray($queryresult)){
-		
+
+		$queryresult = $this->db->query($querystatement);
+
+		while($therecord = $this->db->fetchArray($queryresult)){
+
 			// for each client with a ship to, we need to create
 			// an address record (and addresstorecord record)
-			
+
 			// Create the address record
 			$address["title"] = "Primary";
 			$address["address1"] = $therecord["address1"];
@@ -555,18 +258,18 @@ include("../../../include/session.php");
 			$address["state"] = $therecord["state"];
 			$address["postalcode"] = $therecord["postalcode"];
 			$address["country"] = $therecord["country"];
-			
-			$newid = insertAddress($db, $address);			
-			
+
+			$newid = $this->v096insertAddress($address);
+
 			$a2r["clientid"] = $therecord["id"];
 			$a2r["addressid"] = $newid;
 			$a2r["primary"] = 1;
-			
+
 			if($therecord["shiptoaddress1"]){
-			
+
 				$a2r["defaultshipto"] = 0;
-				insertA2R($db, $a2r);
-			
+				$this->v096insertA2R($a2r);
+
 				$address["title"] = "Shipping";
 				$address["address1"] = $therecord["shiptoaddress1"];
 				$address["address2"] = $therecord["shiptoaddress2"];
@@ -574,26 +277,26 @@ include("../../../include/session.php");
 				$address["state"] = $therecord["shiptostate"];
 				$address["postalcode"] = $therecord["shiptopostalcode"];
 				$address["country"] = $therecord["shiptocountry"];
-				
-				$newid = insertAddress($db, $address);			
-				
+
+				$newid = insertAddress($db, $address);
+
 				$a2r["addressid"] = $newid;
 				$a2r["primary"] = 0;
 				$a2r["defaultshipto"] = 1;
-			
+
 			} else {
-			
+
 				$a2r["defaultshipto"] = 1;
-				
+
 			}//endif - shiptoaddress1
 
-			insertA2R($db, $a2r);		
-			
+			$this->v096insertA2R($db, $a2r);
+
 		}//endwhile
-		
+
 		//Lastly, we need to remove the shipto fields
 		$alterstatement = "
-			ALTER TABLE `clients` 
+			ALTER TABLE `clients`
 				DROP COLUMN `address1`,
 				DROP COLUMN `address2`,
 				DROP COLUMN `city`,
@@ -605,15 +308,15 @@ include("../../../include/session.php");
 				DROP COLUMN `shiptocity`,
 				DROP COLUMN `shiptostate`,
 				DROP COLUMN `shiptopostalcode`,
-				DROP COLUMN `shiptocountry`";	
+				DROP COLUMN `shiptocountry`";
 
-		$db->query($alterstatement);
-	
+		$this->db->query($alterstatement);
+
 	}//end function
-	
-	
-	function insertA2R($db, $variables){
-	
+
+
+	function v096insertA2R($variables){
+
 		// Create the relation record
 		$insertstatement = "
 			INSERT INTO
@@ -639,17 +342,17 @@ include("../../../include/session.php");
 				1,
 				NOW()
 			)";
-		
-		$db->query($insertstatement);	
-			
+
+		$this->db->query($insertstatement);
+
 	}//end function - insertA2R
-	
-	
-	function insertAddress($db, $variables){
-	
+
+
+	function v096insertAddress($variables){
+
 			$insertaddress = "
 				INSERT INTO
-					addresses 
+					addresses
 				(
 					title,
 					address1,
@@ -676,50 +379,16 @@ include("../../../include/session.php");
 					NOW()
 				)
 			";
-			
-			$db->query($insertaddress);
-			
+
+			$this->db->query($insertaddress);
+
 			//make sure to get the new address id
-			return $db->insertId();		
-	
+			return $this->db->insertId();
+
 	}//end function - insertAddress
-		
-	
 
+}//end class updateBMS
 
-	//=========================================================
-	// Processor
-	//=========================================================
-	$phpbmsSession = new phpbmsSession;
-	$success = $phpbmsSession->loadDBSettings(false);
-
-	include_once("include/db.php");
-	$db = new db(false);
-	$db->stopOnError = false;
-	$db->showError = false;
-	$db->logError = false;
-
-	if($success !== false){
-		
-		if(!$db->connect())
-			$thereturn = "Could Not Establish Connection To MySQL Server: Check server, user name, and password."; 			
-		else {
-			if(!$db->selectSchema())
-				$thereturn = "Database (schema) ".MYSQL_DATABASE." could not be selected";			
-			else {
-
-				$phpbmsSession->db = $db;
-				$phpbmsSession->loadSettings();
-				
-				$thereturn=doUpdate($db);	
-
-			}		
-		}
-	} else
-		$thereturn = "Could not access settings.php";	
-				
-
-
-		header('Content-Type: text/xml');
-		?><?php echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'; ?>
-<response><?php echo $thereturn?></response>
+// Processor
+//=========================================================
+$theModule = new updateBMS($this->db, $this->phpbmsSession, "bms", "../modules/bms/install/");

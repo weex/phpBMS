@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 258 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-08 21:59:28 -0600 (Wed, 08 Aug 2007) $
@@ -42,21 +42,21 @@
 	include("include/fields.php");
 	include("include/imports.php");
 	include("include/parsecsv.lib.php");
-	
+
 	//if you need to overide the phpbmsTable class make sure to include the modules file
-	
+
 	include("modules/bms/include/clients.php");
 	include("modules/bms/include/addresses.php");
-	include("modules/bms/include/addresstorecord.php");	
+	include("modules/bms/include/addresstorecord.php");
 
-	//If the addedit page will be accessd directly from a page other than the 
+	//If the addedit page will be accessd directly from a page other than the
 	// basic search results page, you may want to grab and pass the previous URL
 	//with the following code
 
 	//===================================================
-	if(!isset($_GET["backurl"])) 
-		$backurl = NULL; 
-	else{ 
+	if(!isset($_GET["backurl"]))
+		$backurl = NULL;
+	else{
 		$backurl = $_GET["backurl"];
 		if(isset($_GET["refid"]))
 			$backurl .= "?refid=".$_GET["refid"];
@@ -65,44 +65,44 @@
 
 	if(isset($_GET["id"]))
 		$tabledefid = ((int)$_GET["id"]);
-	
+
 
 	//Here you invoke the table and import classes.  If you are going to use the standard phpbmsTable class
 	// for updates and the such you would access it like this
-	
+
 			//$thetable = new phpbmsTable($db,$tabledefid);
 			//$import = new phpbmsImport($thetable);
-	
+
 	//if you are going to overide the class you would instantiate
 	// like this
-			
+
 			$importType = "csv";
 			if(isset($_POST["importType"])){
-				
+
 				switch($_POST["importType"]){
-					
+
 					case 0:
 						$importType = "csv";
 					break;
-					
+
 					case 1:
 						$importType = "sugarcrm";
 					break;
-					
+
 				}//end switch
-				
+
 			}//end if
-	
+
 	 		$thetable = new clients($db,2,$backurl);
 			$import = new clientsImport($thetable, $importType);
-	
+
 	//and if you are setting the backurl, make sure you pass that as well
 	// like this:
-	
+
 	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-	
-	
-	//Next we process the form (if submitted) and 
+
+
+	//Next we process the form (if submitted) and
 	// return the current record as an array ($therecord)
 	// or if this is a new record, it returns the defaults
 	$therecord = $import->processImportPage();
@@ -113,7 +113,7 @@
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle = ($therecord["title"])?$therecord["title"]:"General Table Import";
-	
+
 	// Next, we set up to include any
 	// additional css or javascript files we will be using
 	//  This does nto include any field-type specific js (like datepicker)
@@ -123,29 +123,29 @@
 	$phpbms->jsIncludes[] = "modules/bms/javascript/clients_import.js";
 
 	// if you need to define a body onlload function, do so with the phpbms property
-	
+
 	//		$phpbms->onload[] = "initializePage()";
 
 
 	// Next we need to define any special fields that will be used in the form
 	// A list of field objects (with documentation)is available in the /include/fields.php
-	// file.  
-	
+	// file.
+
 	// We need to define them here in the head
 	// so that any necessay javascript is loaded appropriately.
-	
+
 		//Form Elements
 		//==============================================================
-		
+
 		// Create the form
 		$theform = new importForm();
 		$theform->enctype = "multipart/form-data";
 		//if you need to set specific form vaiables (like enctype, or extra onsubmit
 		// you can set those form properties here.
-		
-		// for each field we will use, create the field object and add it to 
+
+		// for each field we will use, create the field object and add it to
 		// the forms list.
-		
+
 		$list = array("phpBMS csv file" => 0, "Sugar CRM (v5.0)" => 1);
 		$default = 0;
 		if(isset($_POST["importType"]))
@@ -162,16 +162,16 @@
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
+		//End Form Elements
 
-	include("header.php");	
-	
+	include("header.php");
+
 ?><div class="bodyline">
-	<!-- 
+	<!--
 		Next we start the form.  This also prints the H1 with title, and top save,cancel buttons
 		If you need to have other buttons, or need a specific top, you will need to create your form manually.
 	-->
-	<?php $theform->startForm($pageTitle, $import->pageType)?>
+	<?php $theform->startForm($pageTitle, $import->pageType, count($import->transactionRecords))?>
 
 	<div id="leftSideDiv">
 		<!-- /* This next input is to store the temporary mysql table used for the confirmation insert */ -->
@@ -179,20 +179,20 @@
 		<!-- /* This next input is to determine the action of the cancel button (i.e. whether to redirect to backurl or not)*/ -->
 		<!-- /* This next input also determines whether the file/import fieldset will be displayed or if the preview sections will be displayed*/ -->
 		<input id="pageType" name="pageType" type="hidden" value="<?php echo $import->pageType?>" />
-		
+
 		<?php
 		if($import->pageType == "main"){ ?>
 		<fieldset>
 			<legend>import</legend>
-			
+
 			<p><?php $theform->showField("importType"); ?></p>
-			
+
 			<div id="uploadlabel">
 				<p>
 					<label for="import">file</label><br />
 					<input id="import" name="import" type="file" size="64"/><br/>
 				</p>
-				
+
 				<div id="info0" class="info">
 					<p>
 						For any file that is a comma seperated value (csv) file:
@@ -243,7 +243,7 @@
 			<input id="importType" name="importType" type="hidden" value="<?php echo (isset($_POST["importType"]))?($_POST["importType"]):('0'); ?>" />
 		<?php
 		}//end if
-		
+
 		if($import->error && $import->pageType != "main"){
 			?>
 			<h2>Import Errors</h2>
@@ -258,10 +258,10 @@
 	?>
 	</div>
 	<div id="createmodifiedby" >
-	<?php	
+	<?php
 		//Last, we show the create/modifiy with the bottom save and cancel buttons
 		// and then close the form.
-		$theform->showButtons(2, $import->pageType);
+		$theform->showButtons(2, $import->pageType, count($import->transactionRecords));
 		?></div><?php
 		$theform->endForm();
 	?>

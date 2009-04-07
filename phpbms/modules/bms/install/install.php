@@ -36,82 +36,25 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-error_reporting(E_ALL);
-define("APP_DEBUG",false);
-define("noStartup",true);
-include("../../../install/install_include.php");
-include("../../../include/session.php");
-
-	$phpbmsSession = new phpbmsSession;
-	$success = $phpbmsSession->loadDBSettings(false);
-	include_once("include/db.php");
-	$db = new db(false);
-	$db->stopOnError = false;
-	$db->showError = false;
-	$db->logError = false;
-
-	if($success !== false){
-		
-		if(!$db->connect())
-			$thereturn = "Could Not Establish Connection To MySQL Server: Check server, user name, and password."; 			
-		else {
-			if(!$db->selectSchema())
-				$thereturn = "Database (schema) ".MYSQL_DATABASE." could not be selected";			
-			else {
-
-				$thereturn = "Business Management System Installation\n";
-				$thereturn .= "_______________________________________\n";
-				
-				$tempreturn = createTables($db,"createtables.sql");
-				
-				if($tempreturn === true){
-					
-					$thereturn.= "Done Creating Tables \n";
-					
-					$tables = array(
-						"choices",
-						"menu",
-						"tabs",
-						"roles",
-						"modules",
-						"smartsearches",
-						"relationships",
-						"reports",
-						"tablecolumns",
-						"tabledefs",
-						"tablegroupings",
-						"tablefindoptions",
-						"tableoptions",
-						"tablesearchablefields",
-						"usersearches",
-						"settings",
-						"shippingmethods",
-						"paymentmethods",		
-						"invoicestatuses",		
-					);
-					foreach($tables as $table){
-						
-						$failure = false;
-						$tempreturn = importData($db,$table);
-						$thereturn .= $tempreturn;
-						if(!strpos($tempreturn,"complete.") === false){
-							$failed = true;
-						}
-						
-					}//end foreach
-					
-					if(!$failure){
-						$thereturn .= "________________________\n";			
-						$thereturn .= "Done Installing BMS Data\n";
-					}
-				} else
-					$thereturn = $tempreturn;				
-			}		
-		}
-	} else
-		$thereturn = "Could not access settings.php";
-		
-		
-		header('Content-Type: text/xml');
-		?><?php echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'; ?>
-<response><?php echo $thereturn?></response>
+$theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/bms/install/");
+$theModule->tables = array(
+			"choices",
+			"menu",
+			"tabs",
+			"roles",
+			"modules",
+			"smartsearches",
+			"relationships",
+			"reports",
+			"tablecolumns",
+			"tabledefs",
+			"tablegroupings",
+			"tablefindoptions",
+			"tableoptions",
+			"tablesearchablefields",
+			"usersearches",
+			"settings",
+			"shippingmethods",
+			"paymentmethods",
+			"invoicestatuses",
+			);

@@ -39,33 +39,40 @@
 
 if(class_exists("phpbmsTable")){
 	class clients extends phpbmsTable{
-	
+
+		var $availablePaymentMethodIDs = array();
+		var $availableShippingMethodIDs = array();
+		var $availableDiscountIDs = array();
+		var $availableTaxIDs = array();
+		var $availableUserIDs = array();
+		var $verifyErrors = array();
+
 		function checkForInvoices($id){
 			$querystatement="SELECT id FROM invoices WHERE clientid=".((int) $id);
 			$queryresult = $this->db->query($querystatement);
-	
+
 			return !($this->db->numRows($queryresult)===0);
 		}//end method
-	
-	
+
+
 		// CLASS OVERRIDES ===================================================================
 		// ===================================================================================
 
 		function clients($db,$tabledefid = 0,$backurl = NULL){
-			
+
 			$this->phpbmsTable($db,$tabledefid,$backurl);
-			
+
 			$this->address = new addresstorecord($db, 306);
-			
+
 		}//end function - init
-		
+
 
 		function getDefaults(){
 
 			$therecord = parent::getDefaults();
 
 			$therecord["type"] = DEFAULT_CLIENTTYPE;
-			
+
 			if($therecord["type"] == "client") {
 
 				$therecord["becameclient"] = dateToString(mktime(), "SQL");
@@ -73,28 +80,28 @@ if(class_exists("phpbmsTable")){
 				$therecord["creditlimit"] = DEFAULT_CREDITLIMIT;
 
 			}//end if
-			
+
 			$therecord["webaddress"] = "http://";
-			
+
 			//now for the address information.
 			$addressinfo = $this->address->getDefaults();
 			unset($addressinfo["id"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
 			$addressinfo["addressid"] = NULL;
-			
+
 			return array_merge($therecord, $addressinfo);
-						
+
 		}//end function - getDefaults
-		
-	
+
+
 		function getRecord($id){
 
 			$id = (int) $id;
-			
+
 			$therecord = parent::getRecord($id);
-			
+
 			if($therecord["id"]){
 				//need to grab the address as well
-				
+
 				$querystatement = "
 					SELECT
 						id
@@ -106,40 +113,321 @@ if(class_exists("phpbmsTable")){
 						AND recordid = ".$id;
 
 				$queryresult = $this->db->query($querystatement);
-				
+
 				$addressinfo = $this->db->fetchArray($queryresult);
 
 				if($addressinfo) {
-					
+
 					$addressinfo = $this->address->getRecord($addressinfo["id"]);
-				
+
 				} else {
 
 					$addressinfo = $this->address->getDefaults();
 					$addressinfo["addressid"] = NULL;
-					
-				}//endif			
+
+				}//endif
 
 				unset($addressinfo["id"], $addressinfo["notes"], $addressinfo["email"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
 
 				$therecord = array_merge($therecord, $addressinfo);
-			
+
 			}//endif
-			
+
 			return $therecord;
-		
+
 		}//end function - getRecord
-		
+
+
+		function populatePaymentMethodArray(){
+
+			$this->availablePaymentMethodIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`paymentmethods`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availablePaymentMethodIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availablePaymentMethodIDs[] = $therecord["id"];
+
+		}//end method --populatePaymentMethodArray--
+
+
+		function populateShippingMethodArray(){
+
+			$this->availableShippingMethodIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`shippingmethods`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableShippingMethodIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableShippingMethodIDs[] = $therecord["id"];
+
+		}//end method --populateShippingMethodArray--
+
+
+		function populateDiscountArray(){
+
+			$this->availableDiscountIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`discounts`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableDiscountIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableDiscountIDs[] = $therecord["id"];
+
+		}//end method  --populateDiscountArray--
+
+
+		function populateTaxArray(){
+
+			$this->availableTaxIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`tax`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableTaxIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableTaxIDs[] = $therecord["id"];
+
+		}//end method  --populateTaxArray--
+
+
+		function populateUserArray(){
+
+			$this->availableUserIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`users`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableUserIDs[] = 0;//for none
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableUserIDs[] = $therecord["id"];
+
+		}//end method  --populateUserArray--
+
+
+		function verifyVariables($variables){
+
+			if(isset($variables["type"])){
+				switch($variables["type"]){
+
+					case "prospect":
+
+						if(isset($variables["becameclient"])){
+							if($variables["becameclient"] !== "" || $variables["becameclient"] !== NULL)
+								$this->verifyErrors[] = "Records with `type` of 'prospect'
+									must have the `becameclient` field kept blank.";
+						}//end if
+
+						if(isset($variables["hascredit"])){
+							if($variables["hascredit"])
+								$this->verifyErrors[] = "Records with `type` of 'prospect'
+									must have the `hascredit` field kept blank or 0.";
+						}//end if
+
+						if(isset($variables["creditlimit"])){
+							if($variables["creditlimit"])
+								$this->verifyErrors[] = "Records with `type` of 'prospect'
+									must have the `creditlimit` field kept blank or 0.";
+						}//end if
+
+					break;
+
+					case "client":
+						if(isset($variables["becameclient"])){
+							//Possibly run through string to date functions
+							if(!$variables["becameclient"])
+								$this->verifyErrors[] = "Records with `type` of 'client'
+									must have not have the `becameclient` field blank.";
+						}else
+							$this->verifyErrors[] = "Records with `type` of 'client'
+								must set the `becameclient` field.";
+					break;
+
+					default:
+						$this->verifyErrors[] = "The value of the `type` field is invalid.
+							It must either be 'prospect' or 'client'.";
+					break;
+
+				}//end switch
+			}else
+				$this->verifyErrors[] = "The `type` field must be set.";
+
+			//check for currency on credit limit (((real value) >= 0 ... non-negative)
+			if(isset($variables["creditlimit"]))
+				if(!is_numeric($variables["creditlimit"]) && $variables["creditlimit"])
+					$this->verifyErrors[] = "The `creditlimit` field must be a real number or equivalent to zero.";
+
+			//----------------[ phone & email ]------------------------------------------------------
+			//check valid email
+			if(isset($variables["email"]))
+				if( $variables["email"] !== NULL && $variables["email"] !== "" && !validateEmail($variables["email"]))
+					$this->verifyErrors[] = "The `email` field must have a valid email or must be left blank.";
+
+			//check valid homephone
+			if(isset($variables["homephone"]))
+				if( $variables["homephone"] !== NULL && $variables["homephone"] !== "" && !validatePhone($variables["homephone"]))
+					$this->verifyErrors[] = "The `homephone` field must have a valid phone number (as set in configuration) or must be left blank.";
+
+			//check valid workphone
+			if(isset($variables["workphone"]))
+				if( $variables["workphone"] !== NULL && $variables["workphone"] !== "" && !validatePhone($variables["workphone"]))
+					$this->verifyErrors[] = "The `workphone` field must have a valid phone number (as set in configuration) or must be left blank.";
+
+			//check valid mobilephone
+			if(isset($variables["mobilephone"]))
+				if( $variables["mobilephone"] !== NULL && $variables["mobilephone"] !== "" && !validatePhone($variables["mobilephone"]))
+					$this->verifyErrors[] = "The `mobilephone` field must have a valid phone number (as set in configuration) or must be left blank.";
+
+			//check valid fax
+			if(isset($variables["fax"]))
+				if( $variables["fax"] !== NULL && $variables["fax"] !== "" && !validatePhone($variables["fax"]))
+					$this->verifyErrors[] = "The `fax` field must have a valid phone number (as set in configuration) or must be left blank.";
+
+			//check valid otherphone
+			if(isset($variables["otherphone"]))
+				if( $variables["otherphone"] !== NULL && $variables["otherphone"] !== "" && !validatePhone($variables["otherphone"]))
+					$this->verifyErrors[] = "The `otherphone` field must have a valid phone number (as set in configuration) or must be left blank.";
+
+			//check bool on has credit
+			if(isset($variables["hascredit"]))
+				if($variables["hascredit"] && $variables["hascredit"] != 1)
+					$this->verifyErrors[] = "The `hascredit` field must be a boolean (equivalent to 0 or exactly 1).";
+
+
+			//----------------[ Order Defaults]------------------------------------------------------
+
+			//Payement Method
+			if(isset($variables["paymentmethodid"])){
+
+				if( !$variables["paymentmethodid"] || ((int)$variables["paymentmethodid"]) > 0 ){
+
+					if(!count($this->availablePaymentMethodIDs))
+						$this->populatePaymentMethodArray();
+
+					if(!in_array($variables["paymentmethodid"], $this->availablePaymentMethodIDs))
+						$this->verifyErrors[] = "The `paymentmethodid` field does not give an existing/acceptable payment method id number.";
+
+				}else
+					$this->verifyErrors[] = "The `addroleid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			if(isset($variables["shippingmethodid"])){
+
+				if( !$variables["shippingmethodid"] || ((int)$variables["shippingmethodid"]) > 0){
+
+					if(!count($this->availableShippingMethodIDs))
+						$this->populateShippingMethodArray();
+
+					if(!in_array($variables["shippingmethodid"], $this->availableShippingMethodIDs))
+						$this->verifyErrors[] = "The `shippingmethodid` field does not give an existing/acceptable shipping method id number.";
+
+				}else
+					$this->verifyErrors[] = "The `shippingmethodid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			if(isset($variables["discountid"])){
+
+				if( !$variables["discountid"] || ((int)$variables["discountid"]) > 0){
+
+					if(!count($this->availableDiscountIDs))
+						$this->populateDiscountArray();
+
+					if(!in_array($variables["discountid"], $this->availableDiscountIDs))
+						$this->verifyErrors[] = "The `discount` field does not give an existing/acceptable discount id number.";
+
+				}else
+					$this->verifyErrors[] = "The `discountid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			if(isset($variables["taxareaid"])){
+
+				if( !$variables["taxareaid"] || ((int)$variables["taxareaid"]) > 0){
+
+					if(!count($this->availableTaxIDs))
+						$this->populateTaxArray();
+
+					if(!in_array($variables["taxareaid"], $this->availableTaxIDs))
+						$this->verifyErrors[] = "The `taxareaid` field does not give an existing/acceptable tax id number.";
+
+				}else
+					$this->verifyErrors[] = "The `taxareaid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			//---------------------[ end order defaults ]----------------------------------------
+
+			//check sales manager id
+			if(isset($variables["salesmanagerid"])){
+
+				if( !$variables["salesmanagerid"] || ((int)$variables["salesmanagerid"]) > 0 ){
+
+					if(!count($this->availableUserIDs))
+						$this->populateUserArray();
+
+					if(!in_array($variables["salesmanagerid"], $this->availableUserIDs))
+						$this->verifyErrors[] = "The `salesmanagerid` field does not give an existing/acceptable user id number.";
+
+				}else
+					$this->verifyErrors[] = "The `salesmanagerid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+
+			return parent::verifyVariables($variables);
+
+		}//end method
+
 
 		function prepareVariables($variables){
-		
+
 			if(isset($variables["webaddress"]))
-				if ($variables["webaddress"]=="http://") 
+				if ($variables["webaddress"]=="http://")
 					$variables["webaddress"] = NULL;
 
 			if(!isset($variables["type"]))
 				$variables["type"] = "client";
-				
+
 			if($variables["type"] == "prospect"){
 
 				$variables["hascredit"] = 0;
@@ -148,20 +436,24 @@ if(class_exists("phpbmsTable")){
 			}else{
 				$variables["type"] = "client";
 				if(!isset($variables["becameclient"]))
+					$variables["becameclient"] = NULL;
+				if(!$variables["becameclient"])
 					$variables["becameclient"] = dateToString(mktime());
 			}//end if
 
 			return $variables;
-			
+
 		}//end method
-		
-	
+
+
 		function updateRecord($variables, $modifiedby = NULL){
-			
-			$variables = $this->prepareVariables($variables);
-			
+
+			//$variables = $this->prepareVariables($variables);
+
 			$thereturn = parent::updateRecord($variables, $modifiedby);
-			
+
+			$variables["recordid"] = $variables["id"];//here to pass addresstorecord validation
+			$variables["tabledefid"] = 2;//here to pass addresstorecord validation
 			//need to update the address
 			$variables["id"] = $variables["addressid"];
 			// don't want to blank out extra address information
@@ -173,22 +465,29 @@ if(class_exists("phpbmsTable")){
 			unset($this->address->fields["createdby"]);
 			unset($this->address->fields["creationdate"]);
 
-			$this->address->updateRecord($variables, $modifiedby);
+			$variables = $this->address->prepareVariables($variables);
+			$errorArray = $this->address->verifyVariables($variables);
+			if(!count($errorArray)){
+				$this->address->updateRecord($variables, $modifiedby);
+			}else{
+				foreach($errorArray as $error)
+					$logError = new appError(-910, $error, "Address Verification Error");
+			}//end if
 
 			//restore the fields
 			$this->address->getTableInfo();
-			
+
 			return $thereturn;
-			
+
 		}//end method - updateRecord
-		
-		
+
+
 		function insertRecord($variables, $createdby = NULL){
-			
-			$variables = $this->prepareVariables($variables);
-			
+
+			//$variables = $this->prepareVariables($variables);
+
 			$newid = parent::insertRecord($variables, $createdby);
-			
+
 			//need to create the address and addresstorecord id
 			// make sure we are not setting extra info
 			unset($this->address->fields["email"]);
@@ -199,18 +498,25 @@ if(class_exists("phpbmsTable")){
 			$variables["recordid"] = $newid;
 			$variables["defaultshipto"] = 1;
 			$variables["primary"] = 1;
-			
-			$this->address->insertRecord($variables, $createdby);
+
+			$variables = $this->address->prepareVariables($variables);
+			$errorArray = $this->address->verifyVariables($variables);
+			if(!count($errorArray)){
+				$this->address->insertRecord($variables, $createdby);
+			}else{
+				foreach($errorArray as $error)
+					$logError = new appError(-910, $error, "Address Verification Error");
+			}//end if
 
 			//restore the fields
 			$this->address->getTableInfo();
-			
+
 			return $newid;
-			
+
 		}//end method - insertRecord
-		
+
 	}//end class
-	
+
 }//end if
 
 
@@ -218,58 +524,58 @@ if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{
 
 		function mark_asclient(){
-		
+
 			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();	
-		
+			$whereclause = $this->buildWhereClause();
+
 			$querystatement = "UPDATE clients SET clients.type=\"client\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.");";
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$message = $this->buildStatusMessage();
 			$message.=" converted to client.";
 			return $message;
 		}
-		
-		
+
+
 		//Stamp Comments Field with info packet sent
 		function stamp_infosent(){
-		
+
 			//passed variable is array of user ids to be revoked
 			$whereclause = $this->buildWhereClause();
-		
+
 			$querystatement = "
 				UPDATE
-					clients 
+					clients
 				SET
-					clients.comments = concat('Information Packet Sent', char(10), clients.comments), 
+					clients.comments = concat('Information Packet Sent', char(10), clients.comments),
 					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
 					clients.modifieddate = NOW()
 				WHERE (".$whereclause.") AND clients.comments IS NOT NULL";
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$affected = $this->db->affectedRows();
 
 			$querystatement = "
 				UPDATE
-					clients 
+					clients
 				SET
-					clients.comments = 'Information Packet Sent', 
+					clients.comments = 'Information Packet Sent',
 					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
 					clients.modifieddate = NOW()
 				WHERE (".$whereclause.") AND clients.comments IS NULL";
 			$queryresult = $this->db->query($querystatement);
 
 			$affected += $this->db->affectedRows();
-			
+
 			$message = $this->buildStatusMessage($affected);
 			$message.=" marked as info packet sent.";
 			return $message;
 		}
-		
-		
+
+
 		//remove prospects
 		function delete_prospects(){
-		
+
 			//passed variable is array of user ids to be revoked
 			$clientWhereClause = $this->buildWhereClause();
 
@@ -281,16 +587,16 @@ if(class_exists("searchFunctions")){
 				WHERE
 					(".$clientWhereClause.")
 					AND clients.type = 'prospect'";
-					
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			//build array of ids to be removed
 			$deleteIDs = array();
 			while($therecord = $this->db->fetchArray($queryresult))
 				array_push($deleteIDs, $therecord["id"]);
 
 			if(count($deleteIDs)){
-			
+
 				$a2rWhere = $this->buildWhereClause("recordid", $deleteIDs);
 
 				//First we get a list of all the addresses for the prospect
@@ -302,51 +608,51 @@ if(class_exists("searchFunctions")){
 					WHERE
 						tabledefid = 2
 						AND (".$a2rWhere.")";
-						
+
 				$a2rResult = $this->db->query($querystatement);
-				
+
 				$addressIDs = array();
 				while($a2r = $this->db->fetchArray($a2rResult))
 					array_push($addressIDs, $a2r["addressid"]);
-					
-				// delete all a2r records for prospect	
+
+				// delete all a2r records for prospect
 				$deletestatement = "
 					DELETE FROM
 						addresstorecord
 					WHERE
 						tabledefid = 2
 						AND (".$a2rWhere.")";
-						
+
 				$this->db->query($deletestatement);
-				
+
 				//now go get a list of orphaned addresses
 				$querystatement = "
-					SELECT 
-						addresses.id, 
-						addresstorecord.id as a2rid 
-					FROM 
+					SELECT
+						addresses.id,
+						addresstorecord.id as a2rid
+					FROM
 						addresses LEFT JOIN addresstorecord ON addresstorecord.addressid = addresses.id
 					WHERE
 						".$this->buildWhereClause("addresses.id", $addressIDs);
-						
+
 				$addressResult = $this->db->query($querystatement);
-				
+
 				$addressIDs = array();
 				while($address = $this->db->fetchArray($addressResult))
 					if(!$address["a2rid"])
 						array_push($addressIDs, $address["id"]);
-						
+
 				if(count($addressIDs)){
-				
-					//delete orphaned addresses		
+
+					//delete orphaned addresses
 					$deletestatement = "
-						DELETE FROM 
+						DELETE FROM
 							addresses
 						WHERE
 							".$this->buildWhereClause("addresses.id", $addressIDs);
-							
+
 					$this->db->query($deletestatement);
-					
+
 				}//endif - addressids
 
 				//next get any quotes that we may have to delete
@@ -358,66 +664,66 @@ if(class_exists("searchFunctions")){
 						invoices
 					WHERE
 						".$invoiceWhereClause;
-						
+
 				$invoiceresult = $this->db->query($invoicestatement);
-				
+
 				//build invoice id array
 				$invoiceids = array();
 				while($therecord = $this->db->fetchArray($invoiceresult))
 					array_push($invoiceids, $therecord["id"]);
-				
+
 				if(count($invoiceids)) {
 					$invoiceWhereClause = $this->buildWhereClause("invoices.id", $invoiceids);
-					
+
 					$lineitemWhereClause = $this->buildWhereClause("invoiceid", $invoiceids);
-		
+
 					$lineItemDeleteStatement = "
 						DELETE FROM
 							lineitems
 						WHERE
 							".$lineitemWhereClause;
-		
+
 					$queryresult = $this->db->query($lineItemDeleteStatement);
-		
+
 					$statushistoryDeleteStatement = "
 						DELETE FROM
 							invoicestatushistory
 						WHERE
 							".$lineitemWhereClause;
-		
+
 					$queryresult = $this->db->query($statushistoryDeleteStatement);
-					
+
 					$invoiceDeleteStatement = "
 						DELETE FROM
 							invoices
-						WHERE					
+						WHERE
 							".$invoiceWhereClause;
-	
+
 					$queryresult = $this->db->query($invoiceDeleteStatement);
-	
+
 				}//end if
 
 				//lastly we remove the prospect record
 				$delWhere = $this->buildWhereClause("clients.id", $deleteIDs);
 
 				$deletestatement = "
-					DELETE FROM 
+					DELETE FROM
 						clients
-					WHERE 
+					WHERE
 						".$delWhere;
-						
-				$this->db->query($deletestatement);
-							
-			}//endif - count deleteIDS												
 
-		
+				$this->db->query($deletestatement);
+
+			}//endif - count deleteIDS
+
+
 			$message = $this->buildStatusMessage(count($deleteIDs));
 			$message.=" deleted.";
-			return $message;	
-			
+			return $message;
+
 		}// end method - delete_prospects
-		
-		
+
+
 		function massEmail(){
 			if(DEMO_ENABLED != "true"){
 				$_SESSION["emailids"]= $this->idsArray;
@@ -427,51 +733,51 @@ if(class_exists("searchFunctions")){
 			}
 		}
 
-	
+
 	}//end class
 }//end if
 if(class_exists("phpbmsImport")){
 	class clientsImport extends phpbmsImport{
-		
-		
+
+
 		function clientsImport($table, $importType = "csv"){
-			
+
 			if($importType == "sugarcrm"){
-				
+
 				$importType = "csv";
 				$switchedFrom = "sugarcrm";
-				
+
 			}//end if
-			
+
 			parent::phpbmsImport($table, $importType);
-			
+
 			if(isset($switchedFrom))
 				$this->importType = $switchedFrom;
-			
+
 		}//end method --clientsImport--
-		
-		
+
+
 		function _parseFromData($data){
-			
+
 			if($this->importType == "sugarcrm"){
-				
+
 				$this->importType = "csv";
 				$switchedFrom = "sugarcrm";
-				
+
 			}//end if
-			
+
 			$thereturn = parent::_parseFromData($data);
-			
+
 			if(isset($switchedFrom))
 				$this->importType = $switchedFrom;
-			
+
 			return $thereturn;
-		
+
 		}//end method --_parseFromFile--
-		
-		
+
+
 		function _formatSugarVariables($rows, $titles){
-			
+
 			//Replace the titles with valid ones
 			//(At the moment we only really need
 			//the correct count, but, it seems
@@ -479,183 +785,183 @@ if(class_exists("phpbmsImport")){
 			//they are needed in the future)
 			$newTitles = array();
 			foreach($titles as $index => $name){
-				
+
 				switch($name){
-					
+
 					case "name":
 						$newTitles[] = "company";
 					break;
-					
+
 					case "date_entered":
 						$newTitles[] = "becameclient";
 					break;
-					
+
 					case "description":
 						$newTitles[] = "comments";
 					break;
-					
+
 					case "deleted":
 						$newTitles[] = "inactive";
 					break;
-					
+
 					case "account_type":
 						$newTitles[] = "type";
 					break;
-					
+
 					case "industry":
 						$newTitles[] = "category";
 					break;
-					
+
 					case "phone_fax":
 						$newTitles[] = "fax";
 					break;
-					
+
 					case "billing_address_street":
 						$newTitles[] = "address1";
 					break;
-					
+
 					case "billing_address_city":
 						$newTitles[] = "city";
 					break;
-					
+
 					case "billing_address_state":
 						$newTitles[] = "state";
 					break;
-					
+
 					case "billing_address_postalcode":
 						$newTitles[] = "postalcode";
 					break;
-					
+
 					case "billing_address_country":
 						$newTitles[] = "country";
 					break;
-					
+
 					case "phone_office":
 						$newTitles[] = "workphone";
 					break;
-					
+
 					case "phone_alternate":
 						$newTitles[] = "otherphone";
 					break;
-					
+
 					case "website":
 						$newTitles[] = "webaddress";
 					break;
-					
+
 					case "shipping_address_street":
 						$newTitles[] = "shipaddress1";
 					break;
-					
+
 					case "shipping_address_city":
 						$newTitles[] = "shipcity";
 					break;
-					
+
 					case "shipping_address_state":
 						$newTitles[] = "shipstate";
 					break;
-					
+
 					case "shipping_address_postalcode":
 						$newTitles[] = "shippostalcode";
 					break;
-					
+
 					case "shipping_address_country":
 						$newTitles[] = "shipcountry";
 					break;
-					
+
 				}//end switch
-				
+
 			}//end foreach
-			
-			
+
+
 			$newRows = array();
 			foreach($rows as $rowData){
-				
+
 				$newRowData = array();
 				$addComments = "";
 				foreach($rowData as $name => $data){
-					
+
 					switch($name){
-					
+
 						case "name":
 							$newRowData["company"] = trim($data);
 						break;
-						
+
 						case "date_entered":
 							$newRowData["becameclient"] = trim($data);
 						break;
-						
+
 						case "description":
 							$newRowData["comments"] = trim($data);
 						break;
-						
+
 						case "deleted":
 							$newRowData["inactive"] = trim($data);
 						break;
-						
+
 						case "industry":
 							$newRowData["category"] = trim($data);
 						break;
-						
+
 						case "account_type":
 							$newRowData["type"] = trim($data);
 						break;
-						
+
 						case "phone_fax":
 							$newRowData["fax"] = trim($data);
 						break;
-						
+
 						case "billing_address_street":
 							$newRowData["address1"] = trim($data);
 						break;
-						
+
 						case "billing_address_city":
 							$newRowData["city"] = trim($data);
 						break;
-						
+
 						case "billing_address_state":
 							$newRowData["state"] = trim($data);
 						break;
-						
+
 						case "billing_address_postalcode":
 							$newRowData["postalcode"] = trim($data);
 						break;
-						
+
 						case "billing_address_country":
 							$newRowData["country"] = trim($data);
 						break;
-						
+
 						case "phone_office":
 							$newRowData["workphone"] = trim($data);
 						break;
-						
+
 						case "phone_alternate":
 							$newRowData["otherphone"] = trim($data);
 						break;
-						
+
 						case "website":
 							$newRowData["webaddress"] = trim($data);
 						break;
-						
+
 						case "shipping_address_street":
 							$newRowData["shipaddress1"] = trim($data);
 						break;
-						
+
 						case "shipping_address_city":
 							$newRowData["shipcity"] = trim($data);
 						break;
-						
+
 						case "shipping_address_state":
 							$newRowData["shipstate"] = trim($data);
 						break;
-						
+
 						case "shipping_address_postalcode":
 							$newRowData["shippostalcode"] = trim($data);
 						break;
-						
+
 						case "shipping_address_country":
 							$newRowData["shipcountry"] = trim($data);
 						break;
-						
+
 						case "annual_revenue":
 						case "rating":
 						case "ownership":
@@ -664,88 +970,95 @@ if(class_exists("phpbmsImport")){
 							if($data)
 								$addComments .= "\n".str_replace("_"," ",$name).": ".trim($data);
 						break;
-						
+
 					}//end switch
-					
+
 				}//end foreach
-				
+
 				if($newRowData["type"] == "prospect")
 					$newRowData["becameclient"] = NULL;
-				
+				else
+					$newRowData["type"] = "client";
+
 				$newRowData["comments"] .= $addComments;
 				$newRows[] = $newRowData;
-				
+
 			}//end foreach
-			
+
 			$thereturn["rows"] = $newRows;
 			$thereturn["titles"] = $newTitles;
 			return $thereturn;
-			
+
 		}//end method --_formatSugarvariables--
-		
-		
+
+
 		function importRecords($rows, $titles){
-			
+
 			switch($this->importType){
-				
+
 				case "sugarcrm":
 					$thereturn = $this->_formatSugarVariables($rows, $titles);
 					$rows = $thereturn["rows"];
 					$titles = $thereturn["titles"];
-				
-				case "csv":			
+
+				case "csv":
 					//count total fieldnames (top row of csv document)
 					$fieldNum = count($titles);
-					
+
 					//the file starts at line number 1, but since line 1 is
 					//supposed to be the fieldnames in the table(s), the lines
 					//being insereted start @ 2.
 					$rowNum = 2;
-					
+
 					//get the data one row at a time
 					foreach($rows as $rowData){
-						
-						$theid = 0;
-						
+
+						$theid = 0; // set for when verifification does not pass
+						$verify = array(); //set for when number of field rows does not match number of titles
+
 						//trim off leading/trailing spaces
 						$trimmedRowData = array();
 						foreach($rowData as $name => $data)
 							$trimmedRowData[$name] = trim($data);
-						
+
 						//check to see if number of fieldnames is consistent for each row
 						$rowFieldNum = count($trimmedRowData);
-						
+
 						//if valid, insert, if not, log error and don't insert.
-						if($rowFieldNum == $fieldNum)
-							$theid = $this->table->insertRecord($trimmedRowData);
-						else
+						if($rowFieldNum == $fieldNum){
+							//$trimmedRowData = $this->table->prepareVariables($trimmedRowData);
+							$verify = $this->table->verifyVariables($trimmedRowData);
+							if(!count($verify))
+								$theid = $this->table->insertRecord($trimmedRowData);
+						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
-						
+
 						if($theid){
 							//keep track of the ids in the transaction to be able to select them
 							//for preview purposes
 							$this->transactionIDs[] = $theid;
-							
+
 							//get first id to correct auto increment
 							if(!$this->revertID)
 								$this->revertID = $theid;
-							
+
 							//If it is a sugarcrm import, insert the shipping address as well
+							$addressVerify = array();
 							if($this->importType == "sugarcrm"){
-								
-								
+
+
 								$variables = array();
 								if($trimmedRowData["shipaddress1"]) $variables["address1"] = $trimmedRowData["shipaddress1"];
 								if($trimmedRowData["shipcity"]) $variables["city"] = $trimmedRowData["shipcity"];
 								if($trimmedRowData["shipstate"]) $variables["state"] = $trimmedRowData["shipstate"];
 								if($trimmedRowData["shipcountry"]) $variables["country"] = $trimmedRowData["shipcountry"];
-								
+
 								//check to see if there is a shipping address
 								if(count($variables)){
-									
+
 									//If there is a shipping address, we need to make any others'
 									//`defaultshipto` to 0
-									
+
 									$querystatement = "
 										UPDATE
 											`addresstorecord`
@@ -756,45 +1069,57 @@ if(class_exists("phpbmsImport")){
 											AND
 											`addresstorecord`.`tabledefid` = '2';
 										";
-										
+
 									$this->table->db->query($querystatement);
-									
+
 									$variables["title"] = "Main Shipping Addresss";
 									$variables["tabledefid"] = 2;
 									$variables["recordid"] = $theid;
 									$variables["defaultshipto"] = 1;
 									$variables["primary"] = 0;
-									
-									$this->table->address->insertRecord($variables);
-									
+									$variables["existingaddressid"] = false;
+
+									$addressVerify = $this->table->address->verifyVariables($variables);//verify address
+									if(!count($addressVerify))//check for errors
+										$this->table->address->insertRecord($variables);//insert if no errors
+
 								}//end if
-								
+
 							}//end if
 						}else
 							$this->error .= '<li> failed insert for line number '.$rowNum.'.</li>';
-						
+
+							foreach($verify as $error)//log verify errors for display
+								$this->error .= '<li class="subError">'.$error.'</li>';
+
+							if(isset($addressVerify))
+									foreach($addressVerify as $error)//log address verify errors for display
+										$this->error .= '<li class="subError">'.$error.'</li>';
+
 						$rowNum++;
-						
+
 					}//end foreach
 				break;
-				
+
 			}//end switch
-			
+
 		}//end method --importRecords--
-		
-		
+
+
 		function _getTransactionData(){
-			
+
 			$inStatement = "";
 			foreach($this->transactionIDs as $theid)
 				$inStatement .= $theid.",";
 
 			if($inStatement)
 				$inStatement = substr($inStatement, 0, -1);
-			
+			else
+				$inStatement = "0";
+
 			//There are two cases to minimize joins for csv files
 			switch($this->importType){
-				
+
 				case "sugarcrm":
 					$querystatement = "
 						SELECT
@@ -853,7 +1178,7 @@ if(class_exists("phpbmsImport")){
 							`clients`.`id` ASC;
 						";
 				break;
-				
+
 				case "csv":
 					$querystatement = "
 						SELECT
@@ -894,8 +1219,7 @@ if(class_exists("phpbmsImport")){
 							`addresses`.`state`,
 							`addresses`.`postalcode`,
 							`addresses`.`country`,
-							`addresses`.`phone`,
-							`addresses`.`email`
+							`addresses`.`phone`
 						FROM
 							((clients INNER JOIN addresstorecord ON clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)
 						WHERE
@@ -904,73 +1228,73 @@ if(class_exists("phpbmsImport")){
 							`clients`.`id` ASC;
 						";
 				break;
-			
+
 			}//end switch
-			
+
 			$queryresult = $this->table->db->query($querystatement);
-			
+
 			while($therecord = $this->table->db->fetchArray($queryresult))
 				$this->transactionRecords[] = $therecord;
-			
-			
+
+
 		}//end method --_gettransactionData--
-		
-		
+
+
 		function displayTransaction($recordsArray, $fieldsArray){
-			
+
 			if(count($recordsArray) && count($fieldsArray)){
-				
+
 				//Need to include addresses in the fieldArray
-				
+
 				//list of values that should not be displayed
 				$removalArray = array("id", "modifiedby", "modifieddate", "createdby", "creationdate", "notes", "title", "shiptoname");
 				//gets the address table's columnnames/information (fields)
 				$addressArray = $this->table->address->fields;
-				
+
 				//gets rid of the values that should not be displayed
 				foreach($removalArray as $removalField){
-					
+
 					if(isset($addressArray[$removalField])){
-						
+
 						unset($addressArray[$removalField]);
-						
+
 					}//end if
-					
+
 				}//end foreach
-				
+
 				//get rid of stuff that should only be in addresses but is present in clients
 				foreach($addressArray as $removalField => $junk){
-					
+
 					if(isset($fieldsArray[$removalField])){
-						
+
 						unset($fieldsArray[$removalField]);
-						
+
 					}//end if
-					
+
 				}//end foreach
-				
+
 				//need to get two sets of address fields, one named main* and the other ship*.
 				if($this->importType == "sugarcrm"){
-					
+
 					foreach($addressArray as $field => $junk){
-						
+
 						$mainAddressArray["main".$field] = $junk;
 						$shipAddressArray["ship".$field] = $junk;
-						
+
 					}//end foreach
-					
+
 					$addressArray = $mainAddressArray + $shipAddressArray;
-					
+
 				}//end if
-				
+
 				$fieldsArray = $fieldsArray + $addressArray;
-				
+
 				parent::displayTransaction($recordsArray, $fieldsArray);
-				
+
 			}//end if
-			
+
 		}//end method --displayTransaction--
-		
+
 	}//end class --clientsImport--
 }//end if
 ?>

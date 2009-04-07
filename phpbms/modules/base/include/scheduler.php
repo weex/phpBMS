@@ -38,99 +38,106 @@
 */
 if(class_exists("phpbmsTable")){
 	class schedulers extends phpbmsTable{
-	
+
+		var $availableRoleIDs = array();
+
 		function getDefaults(){
 			$therecord = parent::getDefaults();
-			
+
 			$therecord["crontab"]="*::*::*::*::*";
-	
+
 			$therecord["min"]="*";
 			$therecord["hrs"]="*";
 			$therecord["date"]="*";
 			$therecord["mo"]="*";
 			$therecord["day"]="*";
-			
-			$therecord["startdate"]=dateToString(mktime(),"SQL");
-			$therecord["starttime"]="";
-		
+
+			$therecord["startdate"] = dateToString(mktime(),"SQL");
+			$therecord["starttime"] = sqlTimeFromString(timeToString(time()));
+
 			$therecord["enddate"]="";
 			$therecord["endtime"]="";
-			
+
 			return $therecord;
-			
+
 		}//end method
-	
-		
+
+
 		function getRecord($id = 0){
 			$therecord = parent::getRecord($id);
-			
+
 			$datearray=explode(" ",$therecord["startdatetime"]);
 			$therecord["startdate"]=$datearray[0];
 			if(isset($datearray[1])) $therecord["starttime"]=$datearray[1]; else $therecord["starttime"]="";
-			
+
 			$datearray=explode(" ",$therecord["enddatetime"]);
 			$therecord["enddate"]=$datearray[0];
 			if(isset($datearray[1])) $therecord["endtime"]=$datearray[1]; else $therecord["endtime"]="";
-		
+
 			$cronarray=explode("::",$therecord["crontab"]);
 			if(isset($cronarray[0])) $therecord["min"]=$cronarray[0]; else $therecord["min"]="*";
 			if(isset($cronarray[1])) $therecord["hrs"]=$cronarray[1]; else $therecord["hrs"]="*";
 			if(isset($cronarray[2])) $therecord["date"]=$cronarray[2]; else $therecord["date"]="*";
 			if(isset($cronarray[3])) $therecord["mo"]=$cronarray[3]; else $therecord["mo"]="*";
 			if(isset($cronarray[4])) $therecord["day"]=$cronarray[4]; else $therecord["day"]="*";
-			
+
 			$therecord["lastrun"]=formatFromSQLDatetime($therecord["lastrun"]);
-			
+
 			return $therecord;
-	
+
 		}//end method
-		
-	
+
+
+		function verifyVariables($variables){
+
+			//must have the file that has the job that will
+			//be run.
+			if(isset($variables["job"])){
+				if(!$variables["job"] === "" || $variables["job"] === NULL)
+					$this->verifyErrors[] = "The `job` field must not be blank.";
+			}else
+				$this->verifyErrors[] = "The `job` field must be set.";
+
+			//checks to see if crontab is in the (somewhat) right format
+			if(isset($variables["crontab"])){
+				$explode = explode("::", $variables["crontab"]);
+				if(count($explode) != 5)
+					$this->verifyErrors[] = "The `crontab` field is not of the proper form.  There must be four pairs of '::' in the field's value.";
+			}//end if
+
+			return parent::verifyVariables($variables);
+
+		}//end method
+
+
 		function prepareVariables($variables){
-	
+
 			$temparray[0]=$variables["min"];
 			$temparray[1]=$variables["hrs"];
 			$temparray[2]=$variables["date"];
 			$temparray[3]=$variables["mo"];
 			$temparray[4]=$variables["day"];
 			$variables["crontab"]=implode("::",$temparray);
-	
+
 			if($variables["startdate"]){
 				$variables["startdatetime"] = $variables["startdate"];
 				if($variables["starttime"])
 					$variables["startdatetime"] .= " ".$variables["starttime"];
-			}
-			else
+			}else
 				$variables["startdatetime"] = NULL;
-		
+
+
 			if($variables["enddate"]){
 				$variables["enddatetime"] = $variables["enddate"];
 				if($variables["endtime"])
 					$variables["enddatetime"].=" ".$variables["endtime"];
-			}
-			else
-				$variables["enddatetime"] = NULL; 
-	
-		
+			}else
+				$variables["enddatetime"] = NULL;
+
+
 			return $variables;
 		}
-		
-		
-		function updateRecord($variables, $modifiedby = NULL){
-	
-			$variables = $this->prepareVariables($variables);
-		
-			return parent::updateRecord($variables, $modifiedby);
-		}
-	
-	
-		function insertRecord($variables, $createdby = NULL){
-	
-			$variables = $this->prepareVariables($variables);
-		
-			return parent::insertRecord($variables, $createdby);
-		}
-		
+
 	}//end class
 }//end if
 ?>

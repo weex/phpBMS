@@ -1,41 +1,119 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-.bodyline{display:block;padding:5px;width:300px; margin: 0 auto;}
+.bodyline{
+	display: block;
+	padding: 5px;
+	width: 22em;
+	margin: 0 auto;
+}
+
+label{
+	line-height: 1.5em;
+}
+
 #loginbox{
 	margin:100px auto 50px;
 }
 
-#loginbox h1{font-size:21px;font-weight:bold;background-position:6px 6px;padding-left:28px;color:#455372;}
+	#loginbox h1{
+		font-size: 21px;
+		font-weight: bold;
+		background-position: 6px 6px;
+		padding-left: 28px;
+		color:#455372;
+	}
 
-#moreinfoButtonP{text-align:left;padding-bottom:5px;}
+	#loginbox .box{
+		margin:10px 8px 10px;
+		border-style: none;
+		background-color: white;
+		text-align: center;
+	}
 
-#moreinfo{padding:0;}
-#moreingo p{padding:2px;}
-#moreinfo h2{margin:0;padding:5px;background:none;height:22px;}
-#moreinfo h2 a{display:block;width:85px;height:22px;background:url(../../../image/logo.png);}
-#moreinfo h3{text-align:left;padding:2px 5px 10px;margin:0;border:0;font-weight:normal;font-size:9px; border:0;}
+	#loginbox form{
+		padding:10px 5px 0;
+		margin:0;
+	}
 
-#buttonP{padding-right:18px;text-align:right;}
-#buttonP button{padding-left:15px;padding-right:15px;}
-
-#loginbox .box{
-	margin:10px 8px 10px;
-	border-style:none;
-	background-color:white;
-	text-align:center;
+#moreinfoButtonP{
+	float: left;
+	text-align:left;
+	padding-top: 6px;
 }
 
-#loginbox form{padding:10px 5px 0;margin:0;}
+#moreinfo{
+	padding:0;
+}
 
-#username,#password{width:98%;}
-#command{width:75px;}
+	#moreinfo p{
+		padding:2px;
+	}
 
-#failed{text-align:center;margin-top:5px;}
+	#moreinfo h2{
+		margin: 0;
+		padding: 5px;
+		background: none;
+		height: 22px;
+	}
+
+		#moreinfo h2 a{
+			display: block;
+			width: 85px;
+			height: 22px;
+			background: url("../../../image/logo.png");
+		}
+
+	#moreinfo h3{
+		text-align: left;
+		padding: 2px 5px 10px;
+		margin: 0;
+		border: 0;
+		font-weight: normal;
+		font-size: 9px;
+		border: 0;
+	}
+
+#buttonP{
+	text-align:right;
+}
+
+	#buttonP button{
+		padding-left: 15px;
+		padding-right: 15px;
+		font-size: 13px;
+	}
 
 
 
-#demobox{ margin:0 auto;}
-#demobox h2{margin-top:0;}
-#demobox dt{font-weight:bold; padding:2px 10px;}
-#demobox dd{padding-bottom:10px;}
+#username, #password{
+	width:99%;
+	font-size: 15px;
+}
+
+#command{
+	width:75px;
+}
+
+#failed{
+	text-align: center;
+	margin-top: 5px;
+}
+
+
+#demobox{
+	margin: 0 auto;
+}
+
+	#demobox h2{
+		margin-top:0;
+	}
+
+	#demobox dt{
+		font-weight:bold;
+		padding:2px 10px;
+	}
+
+	#demobox dd{
+		padding-bottom: 10px;
+	}

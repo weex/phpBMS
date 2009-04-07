@@ -38,15 +38,17 @@
 */
 if(class_exists("addresses")){
 	class addresstorecord extends addresses{
-	
+
+		var $availableTabledefIDs = array();
+		var $availableTabledefNames = array();
 
 		function createAddressToRecord($variables, $addressid, $createdby = NULL){
 			// This functions adds the addresstorecord record tying the client and address
 			// records.
-		
+
 			if(!$createdby && isset($_SESSION["userinfo"]["id"]))
 				$createdby = $_SESSION["userinfo"]["id"];
-				
+
 			$insertstatement = "
 				INSERT INTO
 					addresstorecord
@@ -69,118 +71,202 @@ if(class_exists("addresses")){
 					".((int) $createdby).",
 					NOW(),
 					".((int) $createdby).",
-					NOW()					
+					NOW()
 				)";
-			
+
 			$insertresult = $this->db->query($insertstatement);
-			
+
 			if($insertresult)
 				return $this->db->insertId();
 			else
 				return false;
-			
+
 		}//end method - createAddressToRecord
-		
+
 		// CLASS OVERRIDES ===============================================
 		// ===============================================================
 		function getRecord($id){
 			$id = (int) $id;
-			
+
 			$querystatement = "
 				SELECT
-					*	
-				FROM 
+					*
+				FROM
 					addresstorecord
-				WHERE 
-					id = ".$id;			
-					
+				WHERE
+					id = ".$id;
+
 			$queryresult = $this->db->query($querystatement);
-			if($this->db->numRows($queryresult)) { 
-			
+			if($this->db->numRows($queryresult)) {
+
 				$therecord = $this->db->fetchArray($queryresult);
 				$addressrecord = parent::getRecord($therecord["addressid"]);
 
 				unset($addressrecord["id"], $addressrecord["createdby"], $addressrecord["creationdate"], $addressrecord["modifiedby"], $addressrecord["modifieddate"]);
-				
+
 				$therecord = array_merge($addressrecord, $therecord);
-				
-			} else 
+
+			} else
 				$therecord = $this->getDefaults();
 
 			return $therecord;
-	
+
 		}//end method - getRecord
-		
-		
+
+
 		function getDefaults(){
-		
+
 			$therecord = parent::getDefaults();
-			
+
 			$therecord["addressid"] = 0;
 			$therecord["tabledefid"] = 0;
 			$therecord["recordid"] = NULL;
 			$therecord["defaultshipto"] = 0;
-			$therecord["primary"] = 0;			
-			
-			return $therecord;	
-	
-		}//end method - getDefauls
-		
-		
+			$therecord["primary"] = 0;
 
-		function formatVariables($variables){
-			
+			return $therecord;
+
+		}//end method - getDefauls
+
+
+		function populateTabledefArrays(){
+
+			$this->availableTabledefIDs = array();
+			$this->availableTabledefNames = array();
+
+			$querystatement = "
+				SELECT
+					`id`,
+					`maintable`
+				FROM
+					`tabledefs`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult)){
+					$this->availableTabledefIDs[] = $therecord["id"];
+					$this->availableTabledefNames[$therecord["id"]] = $therecord["maintable"];
+				}//end while
+			}else{
+				$this->availableTabledefIDs[] = "none";
+				$this->availableTabledefNames[] = "none";
+			}//end if
+
+		}//end method --populateTabledefArray--
+
+
+		function checkRecordID($recordid, $tablename){
+
+			$recordid = ((int) $recordid);
+			$tablename = addslashes($tablename);
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`".$tablename."`
+				WHERE
+					`id` = '".$recordid."';
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			return $this->db->numRows($queryresult);
+
+		}//end method --checkRecordID--
+
+
+		function verifyVariables($variables){
+			//POSSIBLY CHANGE>>>> NOT FINISHIED >>>>
+			//Check tabledefs
+			if(isset($variables["tabledefid"])){
+
+				if(is_numeric($variables["tabledefid"])){
+
+					if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
+						$this->populateTabledefArrays();
+
+					if(in_array($variables["tabledefid"], $this->availableTabledefIDs)){
+
+						//check recordid
+						if(isset($variables["recordid"])){
+
+							if((int) $variables["recordid"] > 0){
+
+								if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
+									$this->populateTabledefArrays();
+
+								if(!$this->checkRecordID($variables["recordid"], $this->availableTabledefNames[$variables["tabledefid"]]))
+									$this->verifyErrors[] = "The `recordid` field does match an id number in ".$this->availableTabledefNames[$variables["tabledefid"]].".";
+
+							}else
+								$this->verifyErrors[] = "The `recordid` field must be a positive number.";
+
+						}else
+							$this->verifyErrors[] = "The `recordid` field must be set.";
+
+					}else
+						$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
+
+				}else
+					$this->verifyErrors[] = "The `tabledefid` field must be numeric.";
+
+			}else
+				$this->verifyErrors[] = "The `tabledefid` field must be set.";
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
+		function prepareVariables($variables){
+
 			if(!isset($variables['primary']))
 				$variables['primary'] = 0;
 
 			if(!isset($variables['defaultshipto']))
 				$variables['defaultshipto'] = 0;
-			
+
 			if(!isset($variables["existingaddressid"]))
 				$variables["existingaddressid"] = false;
-						
-			return $variables;			
-		
+
+			if(isset($variables["id"]))
+				if($variables["id"]){// if update
+
+					$variables["id"] = $variables["addressid"];
+
+				}//end if
+
+			return $variables;
+
 		}//end function
 
 
-
-		function updateRecord($variables, $modifiedby = NULL){
-	
-			$variables = $this->formatVariables($variables);
-
-			$variables["id"] = $variables["addressid"];
-	
-			$thereturn = parent::updateRecord($variables, $modifiedby);
-						
-			return $thereturn;
-			
-		}//end method
-		
-	
 		function insertRecord($variables, $createdby = NULL){
 
-			$variables = $this->formatVariables($variables);
+			//$variables = $this->prepareVariables($variables);
 
 			if($variables["existingaddressid"]){
-			
+
 				$this->createAddressToRecord($variables, $variables["existingaddressid"], $createdby);
-				
+
 				$newAtrID = $variables["existingaddressid"];
-			
+
 			} else {
 
 				$newid = parent::insertRecord($variables, $createdby);
-				
+
 				//create the addresstorecord
 				$newAtrID = $this->createAddressToRecord($variables, $newid, $createdby);
-				
+
 			}//endif - existingaddressid
-			
+
 			return $newAtrID;
-					
+
 		}//end method
-		
+
 	}//end class
 }//end if
 
@@ -191,28 +277,28 @@ if(class_exists("searchFunctions")){
 		function delete_record(){
 
 			$whereclause = $this->buildWhereClause();
-			
+
 			//We need to itterate trhough each record
-			// to check for cross-record addresses			
+			// to check for cross-record addresses
 			$querystatement = "
 				SELECT
 					*
 				FROM
 					addresstorecord
 				WHERE ".$whereclause;
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$removedCount = 0;
 			$deletedCount = 0;
 			$beenMarked = false;
-			
+
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				//we can disreguard primary and default shipt to addresses as they
 				// cannot be removed
 				if(!$therecord["primary"] && !$therecord["defaultshipto"]){
-				
+
 					//look up address to see if it is associated with other records
 					$querystatement = "
 						SELECT
@@ -223,11 +309,11 @@ if(class_exists("searchFunctions")){
 							addressid = ".$therecord["addressid"]."
 							AND tabledefid = ".$therecord["tabledefid"]."
 							AND recordid != ".$therecord["recordid"];
-							
+
 					$lookupResult = $this->db->query($querystatement);
 
 					if(!$this->db->numRows($lookupResult)){
-					
+
 						//we can safely delete the address (no other associations)
 						$deletestatement = "
 							DELETE FROM
@@ -236,55 +322,55 @@ if(class_exists("searchFunctions")){
 								id =".$therecord["addressid"];
 
 						$this->db->query($deletestatement);
-						
+
 						$deletedCount++;
 						$removedCount--;
-						
+
 					}//end if - numRows
-				
+
 					//remove the connecting record
 					$deletestatement = "
 						DELETE FROM
 							addresstorecord
 						WHERE
 							id =".$therecord["id"];
-					
+
 					$this->db->query($deletestatement);
-					
+
 					$removedCount++;
-				
+
 				} else {
-				
-					$beenMarked = true;			
-					
+
+					$beenMarked = true;
+
 				}//endif - primary or defaultshipto
-				
+
 			}//endwhile - fetchArray
 
 			//next, craft the response
-			
+
 			$message = "";
-			
-			if($removedCount){	
-				
+
+			if($removedCount){
+
 				$message .= $removedCount." address";
-				
+
 				if($removedCount > 1)
 					$message .= "es";
-				
+
 				$message .= " dissociated from record. ";
-				
+
 			}//endif removedCount
-			
-			if($deletedCount){	
-				
+
+			if($deletedCount){
+
 				$message .= $deletedCount." address";
-				
+
 				if($deletedCount > 1)
 					$message .= "es";
-				
+
 				$message .= " deleted. ";
-				
+
 			}//endif removedCount
 
 			if($message == "")
@@ -293,17 +379,17 @@ if(class_exists("searchFunctions")){
 			if($beenMarked)
 				$message .= "(Addresses marked primary or default ship to cannot be removed.)";
 			return $message;
-			
+
 		}//end method - delete
 
-		
+
 		function markPrimary(){
-		
+
 			return $this->_markAs("primary")." primary address.";
-		
+
 		}//end method - markPrimary
-		
-		
+
+
 		function markDefaultShipTo(){
 
 			return $this->_markAs("defaultshipto")." default ship to address.";
@@ -322,9 +408,9 @@ if(class_exists("searchFunctions")){
 					addresstorecord
 				WHERE
 					id =".((int) $this->idsArray[0]);
-			
+
 			$relatedInfo = $this->db->fetchArray($this->db->query($querystatement));
-			
+
 			//Next, mark all addresses associated with record as false
 			$updatestatement = "
 				UPDATE
@@ -334,9 +420,9 @@ if(class_exists("searchFunctions")){
 				WHERE
 					tabledefid = ".$relatedInfo["tabledefid"]."
 					AND recordid = ".$relatedInfo["recordid"];
-					
+
 			$this->db->query($updatestatement);
-			
+
 			//Finally, mark the first record.
 			$updatestatement = "
 				UPDATE
@@ -345,7 +431,7 @@ if(class_exists("searchFunctions")){
 					`".$what."` = 1
 				WHERE
 					id = ".((int) $this->idsArray[0]);
-			
+
 			$this->db->query($updatestatement);
 
 			// If more than one record was selected, make sure
@@ -356,7 +442,7 @@ if(class_exists("searchFunctions")){
 			$message .= "Record marked as ";
 
 			return $message;
-			
+
 		}//end method _markAs
 
 	}//end class

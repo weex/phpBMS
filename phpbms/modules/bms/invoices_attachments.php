@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,18 +38,18 @@
 */
 
 	include("../../include/session.php");
-	
+
 
 	require_once("../../include/search_class.php");
-		
+
 
 	//set the table passing stuff
 	$tabledefid=3;
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
 	$securitywhere="";
-	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
-		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";	
+	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
 	$backurl="../bms/invoices_attachments.php";
 	$base="../../";
@@ -59,17 +59,19 @@
 	$refrecord=$db->fetchArray($refquery);
 
 	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name 
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
+			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 			   WHERE invoices.id=".$refid;
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
-	
-	$pageTitle="Attachments: ".$refrecord["id"].", ".$refrecord["name"];
+	$refrecord=$db->fetchArray($refquery);
+
+	$pageTitle="Attachments: ".$refrecord["id"];
+	if($refrecord["name"] !== "")
+		$pageTitle .= ", ".$refrecord["name"];
 
 	$tabgroup="invoices entry";
 	$selectedtabid=17;
-	
+
 	include("../base/attachments_records.php");
-	
+
 ?>

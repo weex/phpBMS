@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -39,66 +39,73 @@
 	$loginNoKick=true;
 	$loginNoDisplayError=true;;
 	require("include/session.php");
-	
+
 	$pageTitle = "phpBMS Browser Requirements";
-	
+
 	$phpbms->cssIncludes[] = "pages/requirements.css";
-	
+
 	$phpbms->showMenu = false;
 	$phpbms->showFooter = false;
-	
+
 	include("header.php")
-?><div class="bodyline" id="container">	
-	<div class="box" id="logo" style=""><span>phpBMS</span></div>
+?><div class="bodyline" id="container">
+
 	<h1>phpBMS Browser Requirements</h1>
-	<h2 id="cba">Client Browser Aplication</h2>
 
-	<h3>JavaScript v2.0</h3>
-	<p>This application makes heavy use of newer JavaScript functions, including the paradigm known as AJAX. Without Javascript, enabled, phpBMS will not run correctly.</p>
+	<ul>
 
-	<h3>Window pop-ups:</h3>
-	<p>This application utilizes JavaScript to open new windows. If you disable Javascript window opening (like in Firefox or Opera) or are utilizing a 3rd-party application to stop Internet Explorer  from opening unwanted windows, this application might not work correctly.</p>
+		<li>
+			<h3>Enabled JavaScript v2.0 or higher processing</h3>
+			<p>
+				phpBMS heavily uses JavaScript, including newer functions only found in version 2.0 or higher.
+				Most newer browsers support this, but make sure that JavaScript is enabled for this web application
+			</p>
+		</li>
 
-	<h3>Cookies</h3>
-	<p>A single cookie is set to identify the user during a session.</p>
+		<li>
+			<h3>Allow window pop-ups</h3>
+			<p>
+				This application sparingly uses JavaScript to open multiple windows when printing.  If your browser
+				or third-party browser plug in prohibits pop-ups from this application, printing reports will not
+				be displayed.
+			</p>
+		</li>
 
-	<h3>Style Sheets (CSS) v1.1</h3>
-	<p>Your browser must support the rendering of Cascading Style Sheets. Without this support, the application will not work correctly.</p>
+		<li>
+			<h3>Cookie support</h3>
+			<p>
+				phpBMS sets a single cookie to track your login.  Cookie suport for this site
+				must be enabled in order for the application to allow you to log in
+			</p>
+		</li>
+
+		<li>
+			<h3>Full Casscading Style Sheet (CSS) v1.2 support</h3>
+			<p>
+				phpBMS takes advantage of CSS v1.2 to render pages.  Without this
+				support, the application may not look correct, and can even break some
+				functionality.
+			</p>
+		</li>
+	</ul>
 
 	<h2>Tested Browsers</h2>
-	<table border="0" cellpadding="0" cellspacing="0" class="querytable" id="browserTable">
-    	<tr>
-    		<th class="queryheader" nowrap="nowrap">Browser Application</th>
-    		<th class="queryheader">Version</th>
-    		<th class="queryheader">Platform(s)</th>
-    		<th align="center" class="queryheader">Compatibility</th>
-   		</tr>
-    	<tr class="row2">
-        	<td>Firefox</td>
-        	<td>1.5.0.7</td>
-        	<td>Windows/Macintosh</td>
-        	<td align="center" class="important">X</td>
-   		</tr>		
-    	<tr class="row1">
-    		<td>Internet Explorer</td>
-    		<td>6.0.2900.2190</td>
-    		<td>Windows</td>
-    		<td align="center" class="important">X</td>
-   		</tr>
-    	<tr class="row2">
-    		<td>Opera</td>
-    		<td>9.02</td>
-    		<td>Windows</td>
-    		<td align="center" class="important">X</td>
-   		</tr>
-    	<tr class="row1">
-    		<td>Internet Explorer</td>
-    		<td>6.0.2900.2190</td>
-    		<td>Windows</td>
-    		<td align="center" class="important">X</td>
-   		</tr>
-		<tr class="queryfooter"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-   	</table>
+
+	<p>
+		This is a list of tested browsers known to work with the current version of phpBMS.  If you successfully
+		test another browser with this version, please report it on our forums at <a href="http://phpbms.org">http://phpbms.org</a>
+		so we can add it to the list.  Be sure to report the phpBMS version, browser name, browser version, and
+		operating system.
+	</p>
+
+	<ul>
+		<li>Firefox v3.07 for Macintosh</li>
+		<li>Firefox v3.07 for Windows</li>
+		<li>Safari v3.2.1 for Macintosh</li>
+		<li>Internet Explorer v7.0.5730.13 for Windows</li>
+		<li>Opera v9.64 for Windows</li>
+	</ul>
+
 	<p align="right">
 		<input type="button" value="Log In" class="Buttons" onclick="document.location='./'" id="loginButton"/>
 	</p>

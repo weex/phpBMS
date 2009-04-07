@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,12 +44,12 @@
 
 	$thetable = new users($db,9);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
-	
+		$statusmessage = $therecord["phpbmsStatus"];
+
 	$pageTitle="User";
-	
+
 	$phpbms->cssIncludes[] = "pages/users.css";
 	$phpbms->jsIncludes[] = "modules/base/javascript/users.js";
 
@@ -57,10 +57,10 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 		$theform->onsubmit="return submitForm(this);";
-		
+
 		$theinput = new inputCheckbox("admin",$therecord["admin"],"administrator");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckbox("revoked",$therecord["revoked"],"access revoked");
 		$theform->addField($theinput);
 
@@ -85,24 +85,29 @@
 
 		$theinput = new inputField("phone",$therecord["phone"],"phone/extension",false,"phone",32,64);
 		$theform->addField($theinput);
-		
+
+		$theinput = new inputField("lastip", $therecord["lastip"], "last log in IP");
+		$theinput->setAttribute("readonly", "readonly");
+		$theinput->setAttribute("class", "uneditable");
+		$theform->addField($theinput);
+
 		$theinput = new inputChoiceList($db,"department",$therecord["department"],"department");
 		$theform->addField($theinput);
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-			
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>		
+	<?php $theform->startForm($pageTitle)?>
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		
+
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>		
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
 
 		<p><?php $theform->showField("admin");?></p>
@@ -116,7 +121,7 @@
 			when creating/modifiying information from outside the application for recording purposes.
 		</p>
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 		<fieldset id="fsName">
 			<legend>name</legend>
@@ -134,14 +139,16 @@
 
 			<p>
 				<label for="lastlogin" >last log in</label><br />
-				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo formatFromSQLDateTime($therecord["lastlogin"]); ?>" size="32" maxlength="64" readonly="readonly" class="uneditable"  />			
+				<input id="lastlogin" name="lastlogin" type="text" value="<?php echo formatFromSQLDateTime($therecord["lastlogin"]); ?>" size="32" maxlength="64" readonly="readonly" class="uneditable"  />
 			</p>
+
+			<p><?php $theform->showField("lastip"); ?></p>
 
 			<p>
 				<label for="password">set new password</label><br />
-				<input id="password" name="password" type="password" size="32" maxlength="32" />			
+				<input id="password" name="password" type="password" size="32" maxlength="32" />
 			</p>
-			
+
 			<p>
 				<label for="password2">confirm new password</label><br />
 				<input id="password2" name="password2" type="password" size="32" maxlength="32" />
@@ -154,12 +161,12 @@
 			<p><?php $theform->showField("email");?></p>
 
 			<p><?php $theform->showField("phone");?></p>
-			
+
 			<p><?php $theform->showField("department");?></p>
 
 			<p>
 				<label for="employeenumber">employee number</label><br />
-				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />			
+				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />
 			</p>
 		</fieldset>
 		<?php if($therecord["id"]){?>
@@ -189,11 +196,11 @@
 				</select>
 			</div>
 			</div>
-		</fieldset>		
+		</fieldset>
 		<?php }?>
-	</div>	
+	</div>
 
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

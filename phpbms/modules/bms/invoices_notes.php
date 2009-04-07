@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,10 +38,10 @@
 */
 
 	include("../../include/session.php");
-	
+
 
 	require_once("../../include/search_class.php");
-		
+
 
 	//set the table passing stuff
 	$reftableid=3;
@@ -52,20 +52,22 @@
 	$base="../../";
 
 	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name 
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
+			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 			   WHERE invoices.id=".$refid;
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
-	
-	$pageTitle="Notes/Tasks/Events: ".$refrecord["id"].", ".$refrecord["name"];
+	$refrecord=$db->fetchArray($refquery);
+
+	$pageTitle="Notes/Tasks/Events: ".$refrecord["id"];
+	if($refrecord["name"] !== "")
+		$pageTitle .= ", ".$refrecord["name"];
 
 	$tabgroup="invoices entry";
 	$selectedtabid=18;
-	
+
 	include("../base/notes_records.php");
 	//===================================================================================
 	//==  THAT's IT                                                                    ==
 	//===================================================================================
-	
+
 ?>

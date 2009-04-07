@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 197 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-03-02 10:48:56 -0700 (Fri, 02 Mar 2007) $
@@ -44,20 +44,20 @@
 
 	$thetable = new schedulers($db,201);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
-	
+		$statusmessage = $therecord["phpbmsStatus"];
+
 	$pageTitle="Scheduler";
-	
+
 	$currentpath=getcwd();
-	
+
 	$phpbms->cssIncludes[] = "pages/scheduler.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
 
@@ -71,32 +71,32 @@
 		$theinput = new inputDatePicker("startdate",$therecord["startdate"], "start date" ,true, 11, 15, false);
 		$theform->addField($theinput);
 
-		$theinput = new inputTimePicker("starttime",$therecord["starttime"], "start time" ,false,11, 15, false);
-		$theinput->setAttribute("onchange","checkEndDate();");				
-		$theform->addField($theinput);		
-		
+		$theinput = new inputTimePicker("starttime",$therecord["starttime"], "start time" ,true,11, 15, false);
+		//$theinput->setAttribute("onchange","checkEndDate();");
+		$theform->addField($theinput);
+
 		$theinput = new inputDatePicker("enddate",$therecord["enddate"], "end date" ,false, 11, 15, false);
 		$theform->addField($theinput);
 
 		$theinput = new inputTimePicker("endtime",$therecord["endtime"], "end time" ,false,11, 15, false);
-		$theform->addField($theinput);		
+		$theform->addField($theinput);
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-			
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>	
-	
+	<?php $theform->startForm($pageTitle)?>
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
-		
+
 		<p><?php $theform->showField("inactive");?></p>
 
 		<p>
@@ -104,7 +104,7 @@
 			<strong><?php if($therecord["lastrun"]) echo $therecord["lastrun"]; else echo "never"?></strong>
 		</p>
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>Enabling the Scheduler</legend>
@@ -115,7 +115,7 @@
 		<fieldset>
 			<legend>Scheduled Job</legend>
 
-			<p><?php $theform->showField("name");?></p>		
+			<p><?php $theform->showField("name");?></p>
 
 			<p>
 				<label for="job">script</label> <span class="notes">(path relative to <?php echo $currentpath?>)</span><br />
@@ -126,7 +126,7 @@
 				<textarea id="description" name="description" rows="4" cols="48"><?php echo htmlQuotes($therecord["description"]) ?></textarea>
 			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>Interval</legend>
 				<p class="crontabnotation">
@@ -150,22 +150,22 @@
 					<input name="day" id="day" maxlength="25" size="3" value="<?php echo $therecord["day"]?>" type="text" />
 				</p>
 			<p class="notes" id="standarNotationP">(Uses standard crontab notation.)</p>
-			
+
 		</fieldset>
 		<fieldset>
 			<legend>Dates</legend>
 			<p>
 				<label for="startdate">start</label><br />
-				<?php $theform->showField("startdate");?> &nbsp; <?php $theform->showField("starttime");?>	
+				<?php $theform->showField("startdate");?> &nbsp; <?php $theform->showField("starttime");?>
 			</p>
 			<p>
 				<label for="enddate">end</label><br />
-				<?php $theform->showField("enddate");?> &nbsp; <?php $theform->showField("endtime");?>	
+				<?php $theform->showField("enddate");?> &nbsp; <?php $theform->showField("endtime");?>
 			</p>
 		</fieldset>
 	</div>
 
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

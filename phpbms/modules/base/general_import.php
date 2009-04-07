@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 258 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-08 21:59:28 -0600 (Wed, 08 Aug 2007) $
@@ -42,49 +42,43 @@
 	include("include/fields.php");
 	include("include/imports.php");
 	include("include/parsecsv.lib.php");
-	
-	//if you need to overide the phpbmsTable class make sure to include the modules file
-	
-	//		include("modules/[modulename]/include/[tablename].php");
 
 
-	//If the addedit page will be accessd directly from a page other than the 
-	// basic search results page, you may want to grab and pass the previous URL
-	//with the following code
+	$tabledefid = (int) $_GET["id"];
 
-	//===================================================
-	if(!isset($_GET["backurl"])) 
-		$backurl = NULL; 
-	else{ 
-		$backurl = $_GET["backurl"];
-		if(isset($_GET["refid"]))
-			$backurl .= "?refid=".$_GET["refid"];
-	}
-	//===================================================
+	$querystatement = "
+			SELECT
+				`modules`.`name` AS `modulename`,
+				`tabledefs`.`maintable` AS `maintable`
+			FROM
+				`tabledefs` INNER JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`id`
+			WHERE
+				`tabledefs`.`id` = '".$tabledefid."';
+			";
 
-	if(isset($_GET["id"]))
-		$tabledefid = ((int)$_GET["id"]);
-	
+	$queryresult = $db->query($querystatement);
 
-	//Here you invoke the table and import classes.  If you are going to use the standard phpbmsTable class
-	// for updates and the such you would access it like this
-	
-			$thetable = new phpbmsTable($db,$tabledefid);
-			$import = new phpbmsImport($thetable);
-	
-	//if you are going to overide the class you would instantiate
-	// like this
-	
-	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-	//		$import = new [importname]($thetable);
-	
-	//and if you are setting the backurl, make sure you pass that as well
-	// like this:
-	
-	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-	
-	
-	//Next we process the form (if submitted) and 
+	$thereturn = $db->fetchArray($queryresult);
+
+	//try to include table specific functions
+	if(file_exists("../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php"))
+		include("../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php");
+
+	//next, see if the table class exists
+	if(class_exists($thereturn["maintable"])){
+		$classname = $thereturn["maintable"];
+		$thetable = new $classname($db,$tabledefid);
+	} else
+		$thetable = new phpbmsTable($db,$tabledefid);
+
+	//finally, check to see if import class exists
+	if(class_exists($thereturn["maintable"]."Import")){
+		$classname = $thereturn["maintable"]."Import";
+		$import = new $classname($thetable);
+	} else
+		$import = new phpbmsImport($thetable);
+
+	//Next we process the form (if submitted) and
 	// return the current record as an array ($therecord)
 	// or if this is a new record, it returns the defaults
 	$therecord = $import->processImportPage();
@@ -95,7 +89,7 @@
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle = ($therecord["title"])?$therecord["title"]:"General Table Import";
-	
+
 	// Next, we set up to include any
 	// additional css or javascript files we will be using
 	//  This does nto include any field-type specific js (like datepicker)
@@ -105,57 +99,40 @@
 	//$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
 	// if you need to define a body onlload function, do so with the phpbms property
-	
+
 	//		$phpbms->onload[] = "initializePage()";
 
 
 	// Next we need to define any special fields that will be used in the form
 	// A list of field objects (with documentation)is available in the /include/fields.php
-	// file.  
-	
+	// file.
+
 	// We need to define them here in the head
 	// so that any necessay javascript is loaded appropriately.
-	
+
 		//Form Elements
 		//==============================================================
-		
+
 		// Create the form
 		$theform = new importForm();
 		$theform->enctype = "multipart/form-data";
 		//if you need to set specific form vaiables (like enctype, or extra onsubmit
 		// you can set those form properties here.
-		
-		// for each field we will use, create the field object and add it to 
-		// the forms list.
-		//$theinput = new inputDatePicker("orderdate", $therecord["orderdate"], "order date");
-		//$theform->addField($theinput);
-		//
-		//$theinput = new inputCheckBox("weborder",$therecord["weborder"],NULL, false, false);
-		//$theform->addField($theinput);
-		//
-		//$theinput = new inputField("accountnumber",$therecord["accountnumber"],  "account number" ,false, "integer", 20, 64);
-		//$theform->addField($theinput);
 
-
-		// if you neeed to add additional attributes toa field, it's easy.
-		//$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order","Invoice"=>"Invoice","VOID"=>"VOID"), $displayName = NULL, $displayLabel = true);
-		//$theinput->setAttribute("onchange","checkType(this)");
-		//$theinput->setAttribute("class","important");
-		//$theform->addField($theinput);
 
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
+		//End Form Elements
 
-	include("header.php");	
-	
+	include("header.php");
+
 ?><div class="bodyline">
-	<!-- 
+	<!--
 		Next we start the form.  This also prints the H1 with title, and top save,cancel buttons
 		If you need to have other buttons, or need a specific top, you will need to create your form manually.
 	-->
-	<?php $theform->startForm($pageTitle, $import->pageType)?>
+	<?php $theform->startForm($pageTitle, $import->pageType, count($import->transactionRecords))?>
 
 	<div id="leftSideDiv">
 		<!-- /* This next input is to store the temporary mysql table used for the confirmation insert */ -->
@@ -163,7 +140,7 @@
 		<!-- /* This next input is to determine the action of the cancel button (i.e. whether to redirect to backurl or not)*/ -->
 		<!-- /* This next input also determines whether the file/import fieldset will be displayed or if the preview sections will be displayed*/ -->
 		<input id="pageType" name="pageType" type="hidden" value="<?php echo $import->pageType?>" />
-		
+
 		<?php
 		if($import->pageType == "main"){ ?>
 		<fieldset >
@@ -174,7 +151,7 @@
 					<label for="import">file</label><br />
 					<input id="import" name="import" type="file" size="64"/><br/>
 				</p>
-				
+
 				<div id="info0" class="info">
 					<p>
 						For any file that is a comma seperated value (csv) file:
@@ -200,7 +177,7 @@
 		</fieldset>
 		<?php
 		}//end if
-		
+
 		if($import->error && $import->pageType != "main"){
 			?>
 			<h2>Import Errors</h2>
@@ -215,10 +192,10 @@
 	?>
 	</div>
 	<div id="createmodifiedby" >
-	<?php	
+	<?php
 		//Last, we show the create/modifiy with the bottom save and cancel buttons
 		// and then close the form.
-		$theform->showButtons(2, $import->pageType);
+		$theform->showButtons(2, $import->pageType, count($import->transactionRecords));
 		?></div><?php
 		$theform->endForm();
 	?>

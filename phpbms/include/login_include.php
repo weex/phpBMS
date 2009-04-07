@@ -36,50 +36,88 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	function verifyLogin($username,$password,$db){
-		$thereturn = "Login Failed";
-		
-		$querystatement = "SELECT id, firstname, lastname, email, phone, department, employeenumber, admin
-						FROM users 
-						WHERE login=\"".mysql_real_escape_string($username)."\" 
-						AND password=ENCODE(\"".mysql_real_escape_string($password)."\",\"".mysql_real_escape_string(ENCRYPTION_SEED)."\") 
-						AND revoked=0 AND portalaccess=0";
-						
-		$queryresult = $db->query($querystatement);
-				
-		if($db->numRows($queryresult)){
-			
+class login{
+
+	var $db;
+
+	function login($db){
+
+		$this->db = $db;
+
+	}//end function init
+
+
+	function verify($username, $password){
+
+		$querystatement = "
+			SELECT
+				id,
+				firstname,
+				lastname,
+				email,
+				phone,
+				department,
+				employeenumber,
+				admin
+			FROM
+				users
+			WHERE
+				login = '".mysql_real_escape_string($username)."'
+				AND password = ENCODE('".mysql_real_escape_string($password)."','".mysql_real_escape_string(ENCRYPTION_SEED)."')
+				AND revoked = 0
+				AND portalaccess = 0";
+
+		$queryresult = $this->db->query($querystatement);
+
+		if($this->db->numRows($queryresult)){
+
 			//We found a record that matches in the database
 			// populate the session and go in
-			$_SESSION["userinfo"]=$db->fetchArray($queryresult);
-			
-			// Next get the users roles, and populate the session with them
-			$_SESSION["userinfo"]["roles"][]=0;
-			$querystatement = "SELECT roleid FROM rolestousers WHERE userid=".$_SESSION["userinfo"]["id"];
-			$rolesqueryresult = $db->query($querystatement);
-			
-			while($rolerecord=$db->fetchArray($rolesqueryresult))
-				$_SESSION["userinfo"]["roles"][]=$rolerecord["roleid"];
-			
-		
-			$querystatement = "UPDATE users SET modifieddate=modifieddate, lastlogin=Now() WHERE id = ".$_SESSION["userinfo"]["id"];
-			$updateresult = $db->query($querystatement);
+			$_SESSION["userinfo"] = $this->db->fetchArray($queryresult);
 
-			$_SESSION["tableparams"]=array();
+			// Next get the users roles, and populate the session with them
+			$_SESSION["userinfo"]["roles"][] = 0;
+			$querystatement = "
+				SELECT
+					roleid
+				FROM
+					rolestousers
+				WHERE userid=".$_SESSION["userinfo"]["id"];
+
+			$rolesqueryresult = $this->db->query($querystatement);
+
+			while($rolerecord = $this->db->fetchArray($rolesqueryresult))
+				$_SESSION["userinfo"]["roles"][]=$rolerecord["roleid"];
+
+			//update lastlogin
+			$ip = $_SERVER["REMOTE_ADDR"];
+
+			$updatestatement = "
+				UPDATE
+					users
+				SET
+					modifieddate = modifieddate,
+					lastlogin = Now(),
+					`lastip` = '".$ip."'
+				WHERE
+					id = ".$_SESSION["userinfo"]["id"];
+
+			$this->db->query($updatestatement);
+
+			$_SESSION["tableparams"] = array();
 
 			goURL(DEFAULT_LOAD_PAGE);
-		} else 		
-		return "Login Failed";
-	}
+
+		} else 	{
+
+			//log login attempt
+			$log = new phpbmsLog("Login attempt failed for user '".$username."'", "SECURITY");
+
+			return "Login Failed";
+
+		}//endif numrows
 
 
-// Start Code
-//=================================================================================================================
-	
-	$failed="";
-	if (isset($_POST["name"])) {
-		$variables=addSlashesToArray($_POST);
-		$failed=verifyLogin($variables["name"],$variables["password"],$db);
-	} else 
-		$_POST["name"]="";
-?>
+	}//end function verify
+
+}//end class

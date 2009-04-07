@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,76 +38,108 @@
 */
 	require_once("include/session.php");
 	require_once("include/login_include.php");
-	
-	$pageTitle = APPLICATION_NAME." Log in";
-	
+
+
+	if(isset($_POST["name"]) && isset($_POST["password"])){
+
+		$login = new login($db);
+		$failed = $login->verify($_POST["name"], $_POST["password"]);
+
+	} else {
+
+		$failed = "";
+		$_POST["name"] = "";
+
+	}//endif
+
+	$pageTitle = formatVariable(APPLICATION_NAME)." Log in";
+
 	$phpbms->cssIncludes[] = "pages/login.css";
 	$phpbms->jsIncludes[] = "common/javascript/login.js";
-	
+
 	$phpbms->showMenu = false;
-	$phpbms->showFooter = false;	
-	
+	$phpbms->showFooter = false;
+
 	include("header.php");
 ?>
-	
+
 	<div id="loginbox" class="bodyline" >
+
 		<h1><span><?php echo APPLICATION_NAME;?></span></h1>
 		<?php if ($failed) {?><div class="standout" id="failed"><?php echo $failed?></div><?php } ?>
+
 		<noscript>
 			<p class="standout" align="center">JavaScript is disabled.</p>
 			<p> Please check browser requirements.</p>
 		</noscript>
-		
+
 		<form name="form1" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>">
-			<fieldset>
-				<legend>Log In</legend>
-				<p>
-					<label for="username">name</label><br />
-					<input name="name" type="text" id="username" size="25" maxlength="64" value="<?php echo htmlQuotes($_POST["name"])?>" disabled="disabled"/>
-				</p>
-				
-				<p>
-					<label for="password">password</label><br />
-					<input name="password" type="password" id="password" size="25" maxlength="24" disabled="disabled"/>
-				</p>
-				
-			</fieldset>
-			<p id="buttonP"><button class="Buttons" type="submit" id="loginButton" disabled="disabled">Log In</button></p>
-		</form>		
-		<p id="moreinfoButtonP"><button id="moreinfoButton" type="button" class="graphicButtons buttonInfo"><span>more info</span></button></p>
-		<div id="moreinfo" >
-			<div class="box">
-			<h2><a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a></h2>
-			<h3>Business Management Web Application</h3>
-			<p class="tiny">
-				<a href="requirements.php">browser requirements</a> |
-				<a href="info.php">program info</a>
+
+			<p>
+				<label for="username">name</label><br />
+				<input name="name" type="text" id="username" size="25" maxlength="64" value="<?php echo htmlQuotes($_POST["name"])?>" disabled="disabled"/>
 			</p>
+
+			<p>
+				<label for="password">password</label><br />
+				<input name="password" type="password" id="password" size="25" maxlength="24" disabled="disabled"/>
+			</p>
+
+
+			<p id="moreinfoButtonP"><button id="moreinfoButton" type="button" class="graphicButtons buttonInfo"><span>more info</span></button></p>
+			<p id="buttonP"><button class="Buttons" type="submit" id="loginButton" disabled="disabled">Log In</button></p>
+
+		</form>
+
+
+		<div id="moreinfo" >
+
+			<div class="box">
+
+				<h2><a href="http://www.phpbms.org" title="phpBMS"><span class="alt">phpBMS</span></a></h2>
+
+				<h3>Business Management Web Application</h3>
+
+				<p class="tiny">
+					<a href="requirements.php">browser requirements</a> |
+					<a href="info.php">about phpBMS</a>
+				</p>
+
 			</div>
 		</div>
 	</div>
 
-		
+
 	<?php if(DEMO_ENABLED=="true"){?>
+
 	<div id="demobox" class="bodyline">
+
 		<h2>Demonstration Mode</h2>
+
 		<p>
-			Use the following user credentials to log into phpBMS. Each user 
+			Use the following user credentials to log into phpBMS. Each user
 			highlights a different security access level.
 		</p>
+
 		<dl>
 			<dt>Shipping Personnel</dt>
 			<dd>
 				username: shipping<br />
 				password: shipping
-</dd>
+			</dd>
+
 			<dt>Sales Personnel</dt>
-			<dd>username: sales<br />
-			password: sales</dd>
+			<dd>
+				username: sales<br />
+				password: sales
+			</dd>
+
 			<dt>Sales Manager</dt>
-			<dd>username: salesmanager<br />
+			<dd>
+				username: salesmanager<br />
 				password: salesmanager
-		     </dd>
+			</dd>
 		</dl>
 	</div>
+
 	<?php } include("footer.php")?>

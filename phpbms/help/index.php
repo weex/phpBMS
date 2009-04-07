@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -36,167 +36,106 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require("../include/session.php");	
-	
-	$querystatement="SELECT displayname,version from modules ORDER BY id";
-	$queryresult=$db->query($querystatement);
+	require("../include/session.php");
 
-	function displayVersions($db,$queryresult){
-		if($queryresult){
-			while($therecord=$db->fetchArray($queryresult)){
-				if($therecord["displayname"]!="Base"){
-					echo $therecord["displayname"].": ";
-					echo "v".$therecord["version"]."<br />";
-				} else
-					echo "<span class=\"important\">phpBMS version: ".$therecord["version"]."</span><br />";
-			}
-		}
-	}
-		
+	class versions{
+
+		var $db;
+		var $queryresult;
+
+		function versions($db){
+
+			$this->db = $db;
+
+		}//end function init
+
+		function get(){
+
+			$querystatement = "
+				SELECT
+					`name`,
+					`displayname`,
+					`version`
+				FROM
+					`modules`
+				ORDER BY
+					`id`";
+
+			$this->queryresult = $this->db->query($querystatement);
+
+		}//end function get
+
+
+		function show(){
+
+			if(!$this->queryresult)
+				return false;
+
+			while($therecord = $this->db->fetchArray($this->queryresult)){
+
+				if($therecord["name"] != "base")
+					echo formatVariable($therecord["displayname"]).": v".$therecord["version"]."<br />";
+				else
+					echo '<strong>v'.$therecord["version"].'</strong><br /><br />';
+
+			}//endwhile
+
+			return true;
+
+		}//end function show
+
+	}//end class
+
+	$versions = new versions($db);
+	$versions->get();
+
 ?>
 <div class="box" id="helpBox">
 
-	<h1>About This Program</h3>
-	<blockquote>
-		<p align="right" style="float:right;"><img src="<?php echo APP_PATH?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/></p>
-		
-		<h3>phpBMS - Commercial Open Source Business Management Web Application</h3>
-		
-		<p class="small"><?php displayVersions($db,$queryresult)?></p>
-		
-		<p>Copyright &reg; 2004-2007 Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
-	
-		<p>
-			<strong>Kreotek, LLC</strong><br />
-			610 Quantum<br />
-			Rio Rancho, NM 87124<br />
-			<a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a><br />
-			1-800-731-8026<br />
-		</p>
-	</blockquote>
+	<p align="right" style="float:right; text-align:right; padding-left: 10px;" class="small">
+		<img src="<?php echo APP_PATH?>common/image/logo.png" alt="phpBMS Logo" width="85" height="22"/><br />
+		<?php $versions->show()?>
+	</p>
 
-	<h1>Keyboard Shortcuts</h1>
-	<blockquote>
-		<p>
-			phpBMS takes advanage of HTML's accesskey property to allow
-			you to use your keyboard to navigate pages.  Some browsers and OS's
-			might have different modifier keys, so check your
-			browser documentation.  In windows, when using Internet Explorer and Firefox &lt 2.0, hold
-			down the Alt key followed by the shortcut.  When using Firefox &gt 2.0 in windows hold down Alt-Shift buttons 
-			followed by the shortcut. In opera hold down Shift-Esc then
-			the shortut.  On a Mac, use the ctrl key in both Firefox &lt; 2.0 and Safari. 
-		</p>
-	
-		<h2>Search/List Screens</h2>
-		<div class="fauxP">
-			<table border="0" cellpadding="0" cellspacing="0" class="querytable" width="300">
-				<tr>
-					<th valign="bottom" class="queryheader" align="right" width="100%">Command</th>
-					<th valign="bottom" class="queryheader" align="center">Key</th>
-				</tr>
-				<tr class="qr1" >
-					<td align="right">New Record</td>
-					<td align="center">N</td>
-				</tr>
-				<tr class="qr2" >
-					<td align="right">Edit Record</td>
-					<td align="center">E</td>
-				</tr>
-				<tr class="qr1" >
-					<td align="right">Print</td>
-					<td align="center">P</td>
-				</tr>
-				<tr class="qr2" >
-					<td align="right">Delete (where applicable)</td>
-					<td align="center">D</td>
-				</tr>
-				<tr class="qr1" >
-					<td align="right">Select All</td>
-					<td align="center">A</td>
-				</tr>
-				<tr class="qr2" >
-					<td align="right">Select None</td>
-					<td align="center">X</td>
-				</tr>
-				<tr class="qr1" >
-					<td align="right">Keep Highlighted</td>
-					<td align="center">K</td>
-				</tr>
-				<tr class="qr2">
-					<td align="right">Omit Highlighted</td>
-					<td align="center">O</td>
-				</tr>
-				<tr class="queryfooter">
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
-			</table>
-		</div>
-	
-		<h2>Add/Edit Screens</h2>
-		<div class="fauxP">
-			<table border="0" cellpadding="0" cellspacing="0" class="querytable" width="300">
-				<tr>
-					<th valign="bottom" class="queryheader" align="right" width="100%">Command</th>
-					<th valign="bottom" class="queryheader" align="center">Key</th>
-				</tr>
-				<tr class="qr1">
-					<td align="right">Save Record</td>
-					<td align="center">S</td>
-				</tr>
-				<tr class="qr2">
-					<td align="right">Cancel</td>
-					<td align="center">X</td>
-				</tr>
-				<tr class="queryfooter">
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
-			</table>
-		</div>
-	</blockquote>
+	<h3 style="margin-top:0">phpBMS</h3>
+	<p><strong>Commercial Open Source Business Management Web Application</strong>
+
+	<p class="tiny">Copyright &reg; <?php echo date("Y") ?> Kreotek, LLC. All Rights Reserved. phpBMS, and the phpBMS logo are trademarks of Kreotek, LLC.</p>
 
 
-	<h1>Community Support at www.phpbms.org</h1>
-	
-	<blockquote>
-		<ul>
-			<li><p><a href="http://www.phpbms.org" target="_blank">phpBMS project Web Site</a> - Main site for phpBMS development, documentation, and user support.</p></li>
-			<li><p><a href="http://phpbms.org/wiki/PhpbmsFaq" target="_blank">phpBMS FAQ</a> - Frequently asked questions </p></li>
-			<li><p><a href="http://www.phpbms.org/forum" target="_blank">phpBMS User Support forum</a> - A place for user and developer discussions.</p></li>
-			<li><p><a href="http://phpbms.org/wiki/PhpbmsGuide" target="_blank">phpBMS Wiki Documentation </a> - Wiki driven user documentation starting point.</p></li>
-		</ul>
-	</blockquote>
+	<p class="tiny" style="clear: right;float: right;"><a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a></p>
 
-	<h1>Customization and Paid Support Options</h1>
 
-	<blockquote>
-		<h2>Paid Technical, Development and Installation Support</h2>
-	
-		<p>
-			Know that your mission critical business software is backed by
-			toll-free phone and e-mail support provided by the very people
-			who created the software.  Choose a paid support contract
-			provided by Kreotek that suits your need and budget.
-		</p>
-		<p>
-			Visit <a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a> or call
-			<strong>1-800-731-8026</strong> for more information.
-		</p>
-		<h2>Customizing phpBMS</h2>
-		<p>
-			No two businesses are run the exact same way. Every individual buiness has uniques needs. Don't conform
-			your business processes to your software, make your software work the way your business does.
-		</p>
-		<p>
-			Kreotek can provide for all of  your company's customization needs.  From custom reports, importing, adding fields,
-			or integrating with legacy systems, let the people who created the software tailor phpBMS to work within your
-			specific business processes.
-		</p>
-		<p>
-			Visit <a href="http://www.kreotek.com" target="_blank">http://www.kreotek.com</a> or call
-			<strong>1-800-731-8026</strong> for more information.
-		</p>
-	</blockquote>
+	<p class="small">
+		<strong>Kreotek, LLC</strong><br />
+		610 Quantum<br />
+		Rio Rancho, NM 87124 USA
+	</p>
+
+
+	<p class="tiny">
+		U.S. and Canada Toll Free<br />
+		1-800-731-8026
+	</p>
+
+	<p class="tiny">
+		Outside US and Canada<br />
+		+1-505-994-6388
+	</p>
+
+	<h3>Community Support</h3>
+	<ul>
+		<li class="small"><a href="http://www.phpbms.org" target="_blank">phpBMS project Web Site</a></li>
+		<li class="small"><a href="http://www.phpbms.org/forum" target="_blank">phpBMS Community Support forum</a></li>
+		<li class="small"> <a href="http://phpbms.org/wiki/PhpbmsGuide" target="_blank">phpBMS Wiki Documentation </a></li>
+	</ul>
+
+	<h3>Paid Support and Customization</h3>
+	<p class="small">
+		Receive paid support directly from the creators of phpBMS, Kreotek.
+		We have multiple tiers of support contracts available and can customize
+		phpBMS to suit your specific needs.
+	</p>
+
 </div>
 <p align="right"><button id="helpClose" type="button" class="Buttons" onclick="closeModal()"><span>close</span></button></p>

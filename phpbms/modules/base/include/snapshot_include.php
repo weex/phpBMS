@@ -68,17 +68,18 @@ class baseSnapshot{
 
 		if($this->db->numRows($queryresult)){ ?>
 
-		<div class="box" id="systemMessageContainer">
+		<div id="systemMessageContainer">
 			<h2>System Messages</h2>
 			<?php while($therecord = $this->db->fetchArray($queryresult)) {
 
 					$therecord["content"] = str_replace("\n","<br />",htmlQuotes($therecord["content"]));
 
 			?>
-			<h3 class="systemMessageLinks"><?php echo htmlQuotes($therecord["subject"])?> <span>[ <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?> <?php echo htmlQuotes($therecord["createdby"])?>]</span></h3>
-			<div class="systemMessages">
-				<p><?php echo $therecord["content"]?></p>
-			</div>
+				<div class="systemMessageLinks">
+					<h3><?php echo htmlQuotes($therecord["subject"])?></h3>
+					<div>by <?php echo htmlQuotes($therecord["createdby"])?> on <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?></div>
+				</div>
+				<div class="systemMessages"><p><?php echo $therecord["content"]?></p></div>
 			<?php }//end while ?>
 		</div>
 		<?php }//endif
@@ -112,13 +113,21 @@ class baseSnapshot{
 			case "ReceivedAssignments":
 
 				$querystatement.="
-					assignedtoid = ".$this->userid."
-					 OR (
-						type = 'TS'
-						AND (assignedtoid = 0 OR assignedtoid IS NULL)
-						AND createdby = ".$this->userid."
-					) AND (completed = 0
-						OR (completed = 1 AND completeddate >= CURDATE())
+					((
+						assignedtoid = ".$this->userid."
+						OR 	(
+							type = 'TS'
+							AND (assignedtoid = 0 OR assignedtoid IS NULL)
+							AND createdby = ".$this->userid."
+							)
+					)
+						AND 	(
+							completed = 0
+							OR 	(
+								completed = 1
+								AND completeddate >= CURDATE()
+								)
+							)
 					)";
 
 				$title = "Assignments";
@@ -128,10 +137,10 @@ class baseSnapshot{
 			case "GivenAssignments":
 
 				$querystatement.="
-					assignedbyid = ".$this->userid."
+					(assignedbyid = ".$this->userid."
 					AND (completed = 0
 						OR (completed = 1 AND completeddate >= CURDATE())
-					)";
+					))";
 
 				$title = "Delegations";
 				$id = "DG";
@@ -141,10 +150,15 @@ class baseSnapshot{
 
 
 		$querystatement.="AND (
-					(startdate IS NULL AND enddate IS NULL AND assignedtodate IS NULL) OR
-					(startdate IS NOT NULL AND startdate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY)) OR
-					(enddate IS NOT NULL AND enddate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY)) OR
-					(assignedtodate IS NOT NULL AND assignedtodate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
+					(startdate IS NULL AND enddate IS NULL AND assignedtodate IS NULL)
+
+					OR (
+						(startdate IS NOT NULL AND startdate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
+						AND (
+							(enddate IS NOT NULL AND enddate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
+							OR (assignedtodate IS NOT NULL AND assignedtodate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
+						)
+					)
 				   )";
 
 		$querystatement.=" ORDER BY
@@ -233,12 +247,13 @@ class baseSnapshot{
 
 								case "Now":
 									$section["title"] = "Soon";
-									$section["date"] = mktime(0,0,0,date("m"),date("d")+7,date("Y"));;
+									$section["date"] = mktime(0,0,0,date("m"),date("d")+7,date("Y"));
 									break;
 
 								case "Soon":
 									$section["title"] = "Later";
-									$section["date"] = mktime(0,0,0,date("m"),date("d")+31,date("Y"));;
+//									$section["date"] = mktime(0,0,0,date("m"),date("d")+31,date("Y"));
+									$section["date"] = mktime(0,0,0,date("m"),date("d"),2038);
 									break;
 
 							}//end switch

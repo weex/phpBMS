@@ -123,6 +123,8 @@
 }
 
 /* ------ Help Page  ---- */
-#helpBox{height:420px; overflow:auto; background:white}
-#helpBox h1{margin-top:20px;}
-#helpClose{width:70px}
+#helpBox{background:white}
+#helpClose{
+	padding-left: 15px;
+	padding-right: 15px;
+}

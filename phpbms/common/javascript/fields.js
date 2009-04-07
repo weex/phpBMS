@@ -40,7 +40,7 @@ function validateForm(theform){
 	var i;
 	var thereturn=true;
 	var errorMessage="";
-			
+
 	//skip validation if cancel
 	if (theform["cancelclick"]){
 		if (theform["cancelclick"].value!=0) return true;
@@ -55,8 +55,8 @@ function validateForm(theform){
 			thereturn=false;
 			break;
 		}
-	}	
-		
+	}
+
 	//validate required fields first
 	for(i=0;i<requiredArray.length;i++){
 		if(!theform[requiredArray[i][0]].value) {
@@ -100,7 +100,7 @@ function validateForm(theform){
 			thereturn=false;
 		}
 	}
-	
+
 	//next phone numbers
 	for(i=0;i<phoneArray.length;i++){
 		var thevalue=theform[phoneArray[i][0]].value;
@@ -132,7 +132,7 @@ function validateForm(theform){
 		showModal(errorMessage,"Cannot Save",300);
 	}
 	return thereturn;
-	
+
 }
 
 //validate a time (12 hour)
@@ -208,7 +208,7 @@ function openWebpage(thefieldname){
 // checks and formats a field to dollars
 function validateCurrency(theitem){
 	theitem.value=numberToCurrency(currencyToNumber(theitem.value));
-	
+
 	//in case the field has an additional onchange code to be run
 	if (theitem.thechange) theitem.thechange();
 }
@@ -226,7 +226,7 @@ function getNumberFromPercentage(thenumber){
 	for(i=0;i<thenumber.length;i++){
 		if (thenumber.charAt(i)!="%" && thenumber.charAt(i)!="+" && thenumber.charAt(i)!=",") markupnumber+=thenumber.charAt(i);
 	}
-	
+
 	//get rid of trailing zeros and possibly "."
 	while(markupnumber.charAt(markupnumber.length-1)=="0" && markupnumber.indexOf(".")!=-1) markupnumber=markupnumber.substring(0,markupnumber.length-1);
 	if(markupnumber.charAt(markupnumber.length-1)==".") markupnumber=markupnumber.substring(0,markupnumber.length-1);
@@ -237,7 +237,7 @@ function getNumberFromPercentage(thenumber){
 }
 
 function checkUnique(tabledefid,column,checkvalue,excludeid){
-	
+
 	var theurl=APP_PATH+"checkunique.php?tdid="+parseInt(tabledefid);
 	theurl=theurl+"&c="+encodeURIComponent(column);
 	theurl=theurl+"&val="+encodeURIComponent(checkvalue);
@@ -245,9 +245,9 @@ function checkUnique(tabledefid,column,checkvalue,excludeid){
 
 
 	loadXMLDoc(theurl,null,false);
-	
+
 	response = req.responseXML.documentElement;
 	thevalue = response.getElementsByTagName('isunique')[0].firstChild.data;
-	
+
 	if(thevalue==1) return true; else return false;
 }

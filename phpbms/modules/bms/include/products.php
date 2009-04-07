@@ -39,17 +39,20 @@
 
 if(class_exists("phpbmsTable")){
 	class products extends phpbmsTable{
-	
+
+		var $availableCategoryIDs = array();
+		var $availableProducts = array();
+
 		function getDefaults(){
 			$therecord = parent::getDefaults();
-			
+
 			$therecord["type"]="Inventory";
-			$therecord["status"]="In Stock";		
+			$therecord["status"]="In Stock";
 			$therecord["taxable"]=1;
-			
+
 			return $therecord;
 		}
-	
+
 		function getPicture($name){
 			if (function_exists('file_get_contents')) {
 				$file = addslashes(file_get_contents($_FILES[$name]['tmp_name']));
@@ -57,200 +60,316 @@ if(class_exists("phpbmsTable")){
 				// If using PHP < 4.3.0 use the following:
 				$file = addslashes(fread(fopen($_FILES[$name]['tmp_name'], 'r'), filesize($_FILES[$name]['tmp_name'])));
 			}
-			
+
 			return $file;
 		}
-		
-		//This method is for when there is not categoryid specified
-		function _getCategoryID(){
-			
+
+
+		function populateCategoryArray(){
+
+			$this->availableCategoryIDs = array();
+
 			$querystatement = "
 				SELECT
 					`id`
 				FROM
-					`productcategories`
-				ORDER BY
-					`inactive` ASC
-				LIMIT 1;
+					`productcategories`;
 				";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			$therecord = $this->db->fetchArray($queryresult);
-			
-			if(!isset($therecord["id"]))
-				$therecord["id"] = 0;
-			
-			if(!$therecord["id"]){
-				
-				$querystatement = "
-					INSERT INTO
-						`productcategories`
-						(
-							`name`,
-							`inactive`,
-							`description`,
-							`webenabled`,
-							`webdisplayname`,
-							`createdby`,
-							`creationdate`,
-							`modifiedby`,
-							`modifieddate`
-						)VALUES(
-							'import_category',
-							'0',
-							'This category was automatically created by an import routine.  Please replace with a more applicable record',
-							'0',
-							'',
-							'".((int) $_SESSION["userinfo"]["id"])."',
-							NOW(),
-							'".((int) $_SESSION["userinfo"]["id"])."',
-							NOW()
-						);
-					";
-				
-				$queryresult = $this->db->query($querystatement);
-				$therecord["id"] = $this->db->insertId();
-				
+
+			if($this->db->numRows($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult))
+					$this->availableCategoryIDs[] = $therecord["id"];
+			}else
+				$this->availableCategoryIDs[] = "none";
+
+		}//end method --populateCategoryArray--
+
+
+		function populateProductArray(){
+
+			// I need id as well to let updates work with our verify function
+			// i.e. if its an update on existing record, its ok if the productnumber
+			// is not unique iff its already associated to the record being updated
+			$this->availableProducts = array();
+
+			$querystatement = "
+				SELECT
+					`id`,
+					`partnumber`
+				FROM
+					`products`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			if($this->db->numRows($queryresult)){
+
+				while($therecord = $this->db->fetchArray($queryresult)){
+					$partnumber = $therecord["partnumber"];
+					$id = $therecord["id"];
+
+					$this->availableProducts[$partnumber]["id"] = $id;
+				}//end while
+
+			}else{
+				$partnumber = "NoT a REAl parTNuMBE|7 DU|\/|MY!";//put in an impossible partnumber
+				$id = -1;//put in an impossible product id
+
+				$this->availableProducts[$partnumber]["id"] = $id;
 			}//end if
+
+		}//end method --populateProductArray--
+
+
+		function verifyVariables($variables){
+
+			//must have a partnumber...table default is not enough
+			if(isset($variables["partnumber"])){
+
+				//must have some sort of partnumber
+				if($variables["partnumber"] !== "" || $variables["partnumber"] !== NULL){
+
+					if(!count($this->availableProducts))
+						$this->populateProductArray();
+
+					//can't have this partnumber already chosen
+					if(!isset($variables["id"]))
+						$variables["id"] = 0;
+
+					if($variables["id"] < 0)
+						$variables["id"] = 0;
+
+					$temppartnumber = $variables["partnumber"];// using this because it looks ugly to but the brackets within brackets
+					if( array_key_exists($variables["partnumber"], $this->availableProducts) ){
+
+						if( $this->availableProducts[$temppartnumber]["id"] !== $variables["id"] )
+							$this->verifyErrors[] = "The `partnumber` field must give an unique part number.";
+
+					}else{
+						$this->availableProducts[$temppartnumber]["id"] = -1;// impossible id put in
+					}//end if
+
+				}else
+					$this->verifyErrors[] = "The `partnumber` field must not be blank.";
+
+			}else
+				$this->verifyErrors[] = "The `partnumber` field must be set.";
+
+
+			//STORE CATEGORY IDS, DON'T SELECT EVERY TIME
+			if(isset($variables["categoryid"])){
+
+				if(((int) $variables["categoryid"]) > 0){
+
+					if(!count($this->availableCategoryIDs))
+						$this->populateCategoryArray();
+
+					if( !in_array(((int) $variables["categoryid"]), $this->availableCategoryIDs) )
+						$this->verifyErrors[] = "The `categoryid` field does not give an existing/acceptable category id number.";
+
+				}else
+					$this->verifyErrors[] = "The `categoryid` field must be a positive number.";
+
+			}else
+				$this->verifyErrors[] = "The `categoryid` must be set.";
+
+
+			if(isset($variables["status"])){
+
+				switch($variables["status"]){
+
+					case "In Stock":
+					case "Out of Stock":
+					case "Backordered":
+						break;
+
+					default:
+						$this->verifyErrors[] = "The value of the `status` field is invalid.
+							It must be 'In Stock', 'Out of Stock', or 'Backordered'.";
+						break;
+
+				}//end switch
+
+			}//end if
+
+
+			if(isset($variables["type"])){
+
+				switch($variables["type"]){
+
+					case "Inventory":
+					case "Non-Inventory":
+					case "Service":
+					case "Kit":
+					case "Assembly":
+						break;
+
+					default:
+						$this->verifyErrors[] = "The value of the `type` field is invalid.
+							It must be 'Inventory', 'Non-Inventory', 'Service', 'Kit', or 'Assembly'.";
+						break;
+
+				}//end switch
+
+			}//end if
+
+			//check boolean
+			if(isset($variables["webenabled"]))
+				if($variables["webenabled"] && $variables["webenabled"] != 1)
+					$this->verifyErrors[] = "The `webenabled` field must be a boolean (equivalent to 0 or exactly 1).";
 			
-			return $therecord["id"];
-			
-		}//end method --_getCategoryID--
-		
-		function formatVariables($variables){
-			
+			if(isset($variables["isoversized"]))
+				if($variables["isoversized"] && $variables["isoversized"] != 1)
+					$this->verifyErrors[] = "The `isoversized` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["isprepackaged"]))
+				if($variables["isprepackaged"] && $variables["isprepackaged"] != 1)
+					$this->verifyErrors[] = "The `isprepackaged` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["taxable"]))
+				if($variables["taxable"] && $variables["taxable"] != 1)
+					$this->verifyErrors[] = "The `taxable` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
+		function _commonPrepareVariables($variables){
+
 			if(!isset($variables["unitprice"]))
 				$variables["thumchange"] = 0;
-			
+
 			if(!isset($variables["unitcost"]))
 				$variables["thumchange"] = 0;
-			
+
 			$variables["unitprice"] = currencyToNumber($variables["unitprice"]);
 			$variables["unitcost"] = currencyToNumber($variables["unitcost"]);
-			
+
 			if(!isset($variables["thumbchange"]))
 				$variables["thumbchange"] = NULL;
-			
+
 			if($variables["thumbchange"]){
-	
+
 				if($variables["thumbchange"] == "upload"){
 					$variables["thumbnail"] = $this->getPicture("thumbnailupload");
-					$variables["thumbnailmime"] = $_FILES['thumbnailupload']['type'];					
+					$variables["thumbnailmime"] = $_FILES['thumbnailupload']['type'];
 				} else {
 					//delete
 					$variables["thumbnail"] = NULL;
 					$variables["thumbnailmime"] = NULL;
 				}
-			
+
 			} // end thumbnail picture change if
-			
-			
+
+
 			if(!isset($variables["picturechange"]))
 				$variables["picturechange"] = NULL;
-			
+
 			if($variables["picturechange"]){
-	
+
 				if($variables["picturechange"] == "upload"){
 					$variables["picture"] = $this->getPicture("pictureupload");
-					$variables["picturemime"] = $_FILES['pictureupload']['type'];					
+					$variables["picturemime"] = $_FILES['pictureupload']['type'];
 				} else {
 					//delete
 					$variables["picture"] = NULL;
 					$variables["picturemime"] = NULL;
 				}
-	
-			}//end main picture change if			
-			
-			if(!isset($variables["categoryid"]))
-				$variables["categoryid"] = 0;
 
-			if(!$variables["categoryid"])
-				$variables["categoryid"] = $this->_getCategoryID();
-			
+			}//end main picture change if
+
 			return $variables;
-		
+
+		}//end method --_commonPrepareVariables--
+
+
+		function prepareVariables($variables){
+
+			switch($variables["id"]){
+
+				case "":
+				case NULL:
+				case 0:
+					if(!hasRights(20)){
+						unset($this->fields["partnumber"]);
+						unset($this->fields["partname"]);
+						unset($this->fields["upc"]);
+						unset($this->fields["description"]);
+						unset($this->fields["inactive"]);
+						unset($this->fields["taxable"]);
+						unset($this->fields["unitprice"]);
+						unset($this->fields["unitcost"]);
+						unset($this->fields["unitofmeasure"]);
+						unset($this->fields["type"]);
+						unset($this->fields["categoryid"]);
+
+						unset($this->fields["webenabled"]);
+						unset($this->fields["keywords"]);
+						unset($this->fields["webdescription"]);
+
+					} else {
+
+						//user has rights.  Let's format everything.
+						$variables = $this->_commonPrepareVariables($variables);
+
+					}//end if
+
+					if($variables["packagesperitem"])
+						$variables["packagesperitem"]=1/$variables["packagesperitem"];
+
+					break;
+
+				default:
+					$variables = $this->_commonPrepareVariables($variables);
+					if(isset($variables["packagesperitem"]))
+						if($variables["packagesperitem"])
+							$variables["packagesperitem"] = 1 / $variables["packagesperitem"];
+					break;
+
+			}//end switch
+
+			return $variables;
+
 		}//end function
-		
-	
+
+
 		function updateRecord($variables, $modifiedby = NULL){
-	
-			//need to override field information if they don't have the rights
-			if(!hasRights(20)){
-				unset($this->fields["partnumber"]);
-				unset($this->fields["partname"]);
-				unset($this->fields["upc"]);
-				unset($this->fields["description"]);
-				unset($this->fields["inactive"]);
-				unset($this->fields["taxable"]);
-				unset($this->fields["unitprice"]);
-				unset($this->fields["unitcost"]);
-				unset($this->fields["unitofmeasure"]);
-				unset($this->fields["type"]);
-				unset($this->fields["categoryid"]);			
-	
-				unset($this->fields["webenabled"]);			
-				unset($this->fields["keywords"]);			
-				unset($this->fields["webdescription"]);
-	
-			} else {
-				//user has rights.  Let's format everything.
-	
-				$variables = $this->formatVariables($variables);
-	
-		
-			}		
-			
-			if($variables["packagesperitem"])
-				$variables["packagesperitem"]=1/$variables["packagesperitem"];
-	
-	
+
 			parent::updateRecord($variables, $modifiedby);
-	
+
 			//need to reset the field information.  If they did not have rights
 			// we temporarilly removed the fields to be updated.
 			$this->getTableInfo();
 		}
-	
-	
-		function insertRecord($variables, $createdby = NULL){
 
-		
-			$variables = $this->formatVariables($variables);
-			
-			if(isset($variables["packagesperitem"]))
-				if($variables["packagesperitem"])
-					$variables["packagesperitem"]=1/$variables["packagesperitem"];
 
-			$newid = parent::insertRecord($variables, $createdby);
-			
-			return $newid;
-		}
-	
-	
 		function checkNumberCategories(){
 			$querystatement="SELECT count(id) AS thecount FROM productcategories WHERE inactive=0";
 			$queryresult=$this->db->query($querystatement);
 			$therecord=$this->db->fetchArray($queryresult);
-	
+
 			return $therecord["thecount"];
 		}
-	
-	
+
+
 		function displayProductCategories($categoryid){
 			$querystatement="SELECT `id`,`name` FROM `productcategories` WHERE `inactive` =0 OR `id` =".((int) $categoryid)." ORDER BY `name`";
 			$queryresult=$this->db->query($querystatement);
-	
+
 			?><select name="categoryid" id="categoryid">
-				<?php 
+				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
 						?><option value="<?php echo $therecord["id"]?>" <?php if($categoryid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
 						<?php
 					}
 				?>
 			</select><?php
-			
+
 		}
-	
+
 	}//end products class
 }//end if
 ?>

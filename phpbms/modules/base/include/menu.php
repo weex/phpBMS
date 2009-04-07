@@ -38,8 +38,118 @@
 */
 if(class_exists("phpbmsTable")){
 	class menus extends phpbmsTable{
-	
-		function formatVariables($variables){
+
+		var $availableRoleIDs = array();
+
+		function checkParentMenuIDs($currentID = 0, $parentID = 0){
+
+			//cannot be own parent
+			$currentID = ((int) $currentID);
+			//current setting of the parentid
+			$parentID = ((int) $parentID);
+
+			if(!$parentID)
+				return true;
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`menu`
+				WHERE
+					`id` = '".$parentID."'
+					AND
+					`id`!='".$currentID."'
+					AND
+					`parentid` = '0'
+					AND
+					(
+						`link` = ''
+						OR
+						`link` IS NULL
+					)
+					;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			return $this->db->numRows($queryresult);
+
+		}//end method --getParentMenuIDs--
+
+		//pouplate the id roles array
+		function populateRoleArray(){
+
+			$this->availableRoleIDs = array();
+
+			$querystatement = "
+				SELECT
+					`id`
+				FROM
+					`roles`;
+				";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$this->availableRoleIDs[] = 0;//for everyone
+			$this->availableRoleIDs[] = -100;//for admin
+
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$this->availableRoleIDs[] = $therecord["id"];
+
+		}//end method --populateRoleArray()--
+
+
+		function verifyVariables($variables){
+
+			//table default (0) for `roleid` is ok (i.e. doesn't have to be set)
+			if(isset($variables["roleid"])){
+
+				//can either be numeric or equivalent to 0
+				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+
+					//check for populated role id array
+					if(!count($this->availableRoleIDs))
+						$this->populateRoleArray();
+
+					//check to see if the int typecast role id is in one of the available ones
+					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
+						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
+				}else
+					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+
+			}//end if
+
+			//check parent ids under certain circumstances
+			//not set is acceptable
+			if(isset($variables["parentid"])){
+
+				//can be either numeric or equivalent to 0 and its int typecast must be non-negative
+				if( !$variables["parentid"] || ((int)$variables["parentid"]) > 0 ){
+
+					$id = 0;
+
+					//use the current id if it exists (A menu record cannot be its own parent)
+					if(isset($variables["id"]))
+						if(is_numeric($variables["id"]) && ((int) $variables["id"]) > 0)
+							$id = $variables["id"];
+
+					//Select run every time because `id` can be different
+					if( !$this->checkParentMenuIDs($id, ((int) $variables["parentid"])) )
+						$this->verifyErrors[] = "The `parentid` field does not give an existing/acceptable parent id number.";
+
+				}else
+					$this->verifyErrors[] = "The `roleid` field must be a non-negative number or equivalent to 0.";
+
+			}//end if
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
+		function prepareVariables($variables){
 			switch($variables["radio"]){
 				case "cat":
 					$variables["link"] = "";
@@ -51,83 +161,67 @@ if(class_exists("phpbmsTable")){
 				case "link":
 				default:
 			}
-		
+
 			return $variables;
 		}
-	
-		
-		function updateRecord($variables, $modifiedby = NULL){
-			
-			$variables = $this->formatVariables($variables);
-		
-			parent::updateRecord($variables, $modifiedby);
-		}
-	
-	
-		function insertRecord($variables, $createdby = NULL){
-			
-			$variables = $this->formatVariables($variables);
-		
-			return parent::insertRecord($variables, $createdby );
-		}
-	
-	
+
+
 		function displayTableDropDown($selectedlink){
-	
+
 			$querystatement="select id, displayname from tabledefs order by displayname";
 			$thequery=$this->db->query($querystatement);
-			
+
 			echo "<select id=\"linkdropdown\" name=\"linkdropdown\">\n";
 			while($therecord=$this->db->fetchArray($thequery)){
 				echo "<option value=\"search.php?id=".$therecord["id"]."\" ";
-	
-				if ($selectedlink == "search.php?id=".$therecord["id"]) 
+
+				if ($selectedlink == "search.php?id=".$therecord["id"])
 					echo "selected=\"selected\"";
-	
+
 				echo " >".$therecord["displayname"]."</option>\n";
 			}
 			echo "</select>\n";
-		
+
 		}//end method
-		
-		
+
+
 		function displayParentDropDown($selectedpid,$id=0){
-	
+
 			if($id=="")$id=0;
 			$querystatement="SELECT id, name FROM menu WHERE id!=".$id." and parentid=0 and (link=\"\" or link is null) ORDER BY displayorder";
 			$thequery=$this->db->query($querystatement);
-	
+
 			echo "<select name=\"parentid\" id=\"parentid\">\n";
 			echo "<option value=\"0\" ";
-	
+
 			if ($selectedpid=="0")
 				echo "selected=\"selected\"";
-				
+
 			echo " >-- none --</option>\n";
 			while($therecord=$this->db->fetchArray($thequery)){
 				echo "<option value=\"".$therecord["id"]."\" ";
-				if ($selectedpid==$therecord["id"]) 
+				if ($selectedpid==$therecord["id"])
 					echo "selected=\"selected\"";
-	
+
 				echo " >".$therecord["name"]."</option>\n";
 			}
 			echo "</select>\n";
-			
+
 		}//end method
-	
+
 	}//end class
 }//end if
 
 
 if(class_exists("searchFunctions")){
 	class menuSearchFunctions extends searchFunctions{
-	
+
 		function delete_record(){
-			
+
 			//passed variable is array of user ids to be revoked
 			$whereclause = $this->buildWhereClause();
 			$verifywhereclause = $this->buildWhereClause("menu.parentid");
-			
+
 			$querystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;
 			$queryresult = $this->db->query($querystatement);
 
@@ -135,12 +229,12 @@ if(class_exists("searchFunctions")){
 				$querystatement = "DELETE FROM menu WHERE ".$whereclause;
 				$queryresult = $this->db->query($querystatement);
 			}
-			
+
 			$message=$this->buildStatusMessage();
 			$message.=" deleted.";
 			return $message;
 		}
-	
+
 	}//end class
 }//end if
 ?>

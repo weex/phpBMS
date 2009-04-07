@@ -39,8 +39,8 @@
 
 /*
 
-	Here you can define and display information from your module that will show up on the snapshot 
-	(default) page.
+	Here you can define and display information from your module that
+	will show up on the snapshot (default) page.
 
 */
 ?>

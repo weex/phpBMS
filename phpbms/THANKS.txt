@@ -1,6 +1,8 @@
-This file will contain all the people who have contributed to phpBMS
-====================================================================
+This file will contain all the people and companies who have contributed to
+phpBMS
+================================================================================
 
  * Hauge Quality Water - http://haguekc.com/
- * Black Tie: Audio, Lighting & Video - http://blacktie.com.mx
+ * Black Tie: Audio, Lighting & Video - http://blacktie.com.mx/
  * Concept Z Performance - http://www.conceptzperformance.com/
+ * Dahl Photography - http://www.dahlphotographers.com/

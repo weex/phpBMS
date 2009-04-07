@@ -38,67 +38,77 @@
 */
 if(class_exists("phpbmsTable")){
 	class discounts extends phpbmsTable{
-	
+
 		function getDefaults(){
-			
+
 			$therecord = parent::getDefaults();
-			
+
 			$therecord["type"]="percent";
-			
+
 			return $therecord;
 		}
-	
-		
-		function formatValue($variables){
-		
+
+
+		function verifyVariables($variables){
+
+			//table's default is fine
+			if(isset($variables["type"])){
+
+				switch($variables["type"]){
+
+					case "percent":
+					case "amount":
+					break;
+
+					default:
+						$this->verifyErrors[] = "The value of the `type` field is invalid.
+							It must be either 'percent' or 'amount'.";
+					break;
+
+				}//end switch
+
+			}//end if
+
+			return parent::verifyVariables($variables);
+
+		}//end method --verifyVariables--
+
+
+		function prepareVariables($variables){
+
 			if($variables["type"] == "percent")
 				$variables["value"] = ((real) str_replace("%","",$variables["percentvalue"]));
-			else 
+			else
 				$variables["value"] =  currencyToNumber($variables["amountvalue"]);
-		
+
 			return $variables;
 		}
-	
-		
-		function updateRecord($variables, $modifiedby = NULL){
-			
-			$variables = $this->formatValue($variables);
-						
-			parent::updateRecord($variables,$modifiedby);
-		}
-	
-	
-		function insertRecord($variables,$createdby = NULL){
-		
-			$variables = $this->formatValue($variables);
-			return parent::insertRecord($variables,$createdby);
-		}
-		
-	
+
+
 		function getTotals($id=0){
-		
+
 			$returnArray["Invoice"]["total"]=0;
 			$returnArray["Invoice"]["sum"]=0;
 			$returnArray["Order"]["total"]=0;
 			$returnArray["Order"]["sum"]=0;
-			
+
 			if($id>0){
 				$querystatement="SELECT invoices.type,count(invoices.id) as total,sum(discountamount) as sum
-								FROM discounts inner join invoices on discounts.id=invoices.discountid 
+								FROM discounts inner join invoices on discounts.id=invoices.discountid
 								WHERE discounts.id=".((int) $id)." and (invoices.type=\"Order\" or invoices.type=\"Invoice\") GROUP BY invoices.type";
 				$queryresult = $this->db->query($querystatement);
-	
+
 				while($therecord=$this->db->fetchArray($queryresult)){
 					$returnArray[$therecord["type"]]["total"]=$therecord["total"];
 					$returnArray[$therecord["type"]]["sum"]=$therecord["sum"];
 				}
-				
+
 			}
-	
+
 			return $returnArray;
-	
+
 		}//end function
-		
+
 	}//end class
 }//end if
 ?>

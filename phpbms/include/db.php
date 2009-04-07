@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 249 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
@@ -40,7 +40,7 @@
 class db{
 		//we may want to do more than connect via mysql;
 		var $type="mysql";
-				
+
 		// mysql vars;
 		var $db_link;
 		var $hostname;
@@ -48,16 +48,16 @@ class db{
 		var $dbuser;
 		var $dbpass;
 		var $pconnect=true;
-		
+
 		var $showError=false;
 		var $logError=true;
 		var $stopOnError=true;
 		var $errorFormat="xhtml";
-		
+
 		var $error = NULL;
-				
+
 		function db($connect = true, $hostname = NULL, $schema = NULL, $user = NULL, $pass = NULL, $pconnect = NULL, $type = "mysql"){
-			
+
 			if($type!="mysql")
 			$this->type=$type;
 
@@ -68,35 +68,35 @@ class db{
 						$this->hostname = MYSQL_SERVER;
 					if($hostname!=NULL)
 						$this->hostname = $hostname;
-					
+
 					if(defined("MYSQL_DATABASE"))
 						$this->schema = MYSQL_DATABASE;
 					if($schema!=NULL)
 						$this->schema = $schema;
-		
+
 					if(defined("MYSQL_USER"))
 						$this->dbuser = MYSQL_USER;
 					if($schema!=NULL)
 						$this->dbuser = $user;
-		
+
 					if(defined("MYSQL_USERPASS"))
 						$this->dbpass = MYSQL_USERPASS;
 					if($schema!=NULL)
 						$this->dbpass = $pass;
-		
+
 					if(defined("MYSQL_PCONNECT"))
 						$this->pconnect = MYSQL_PCONNECT;
 					if($pconnect!=NULL)
 						$this->pconnect = $pconnect;
-				break;				
+				break;
 			}
-						
+
 			if($connect){
 				if($this->connect()){
 					if($this->selectSchema())
 						return $this->db_link;
 					else
-						return false;				
+						return false;
 				} else
 					return false;
 			} else return true;
@@ -105,45 +105,49 @@ class db{
 
 		function connect(){
 			// This functions connects to the database.  It uses pconnect if the variable is set;
-						
+
 			if($this->pconnect)
 				$this->db_link = @ mysql_pconnect($this->hostname,$this->dbuser,$this->dbpass);
 			else
 				$this->db_link = @ mysql_connect($this->hostname,$this->dbuser,$this->dbpass);
+
 			if(!$this->db_link){
+
 				$error = new appError(-400,"Could not connect to database server.\n\n".$this->getError(),"",$this->showError,$this->stopOnError,false,$this->errorFormat);
 				return false;
-			} else			
-				return $this->db_link;
-		}
 
-		
+			} else
+				return $this->db_link;
+
+		}//end function connect
+
+
 		function selectSchema($schema=NULL){
 			if($schema!=NULL)
 				$this->schema=$schema;
-				
+
 			if(! @ mysql_select_db($this->schema,$this->db_link)){
-				$error = new appError(-410,"Could not open schema ".$this->schema,"",$this->showError,$this->stopOnError,false,$this->errorFormat);	
+				$error = new appError(-410,"Could not open schema ".$this->schema,"",$this->showError,$this->stopOnError,false,$this->errorFormat);
 				return false;
 			} else
-				return true;							
+				return true;
 		}
 
 
 		function query($sqlstatement){
 			switch($this->type){
 				case "mysql":
-					if(!isset($this->db_link)) 
-						if(!$this->dataB()) die($this->error);
+					if(!isset($this->db_link))
+						if(!$this->db()) die($this->error);
 					$queryresult = @ mysql_query($sqlstatement,$this->db_link);
 					if(!$queryresult){
 						$this->error = $this->getError($this->db_link);
 						$error = new appError(-420,$this->getError($this->db_link)."\n\nStatement: ".$sqlstatement,"",$this->showError,$this->stopOnError,$this->logError,$this->errorFormat);
 						return false;
-					}					
+					}
 				break;
 			}//end case
-			
+
 			$this->error=NULL;
 			return $queryresult;
 		}//end function
@@ -152,27 +156,30 @@ class db{
 		function setEncoding($encoding = "utf8"){
 
 			switch($this->type){
-				case "mysql":			
+				case "mysql":
 					@ mysql_query("SET NAMES ".$encoding, $this->db_link);
 					break;
-					
+
 			}//endswitch
 
 		}//end method
 
 
 		function getError($link = NULL){
-			
+
 			switch($this->type){
 				case "mysql":
-					$thereturn = mysql_error($link);
+					if($link)
+						$thereturn = @ mysql_error($link);
+					else
+						$thereturn = @ mysql_error();
 				break;
 			}//end switch --type--
-			
+
 			return $thereturn;
-			
+
 		}//end method --getError--
-		
+
 
 		function numRows($queryresult){
 			switch($this->type){
@@ -199,45 +206,45 @@ class db{
 			return $row;
 		}//end function
 
-		
+
 		function startTransaction(){
-			
+
 			switch($this->type){
-				
+
 				case "mysql":
 					$this->query("START TRANSACTION;");
 				break;
-			
+
 			}//end switch
-			
+
 		}//end method --startTransaction--
-		
-		
+
+
 		function commitTransaction(){
-			
+
 			switch($this->type){
-				
+
 				case "mysql":
 					$this->query("COMMIT;");
 				break;
-			
+
 			}//end switch
-			
+
 		}//end method --startTransaction--
-		
-		
+
+
 		function rollbackTransaction(){
-			
+
 			switch($this->type){
-				
+
 				case "mysql":
 					$this->query("ROLLBACK;");
 				break;
-			
+
 			}//end switch
-			
+
 		}//end method --startTransaction--
-		
+
 
 		function seek($queryresult,$rownum){
 			switch($this->type){
@@ -277,8 +284,8 @@ class db{
 			}//end case
 			return $thereturn;
 		}//end function
-		
-		
+
+
 		function tableInfo($tablename){
 			//this function returns a multi-dimensional array describing the fields in a given table
 			$thereturn = false;
@@ -290,7 +297,7 @@ class db{
 							$name = $this->fieldName($queryresult,$offset);
 							$thereturn[$name]["type"] = @ mysql_field_type($queryresult,$offset);
 							$thereturn[$name]["length"] = mysql_field_len($queryresult,$offset);
-							$thereturn[$name]["flags"] = mysql_field_flags($queryresult,$offset);							
+							$thereturn[$name]["flags"] = mysql_field_flags($queryresult,$offset);
 						}
 					}
 				break;
@@ -304,22 +311,22 @@ class db{
 			switch($this->type){
 				case "mysql":
 					$thereturn = @ mysql_insert_id($this->db_link);
-				break;			
+				break;
 			}
-			
+
 			return $thereturn;
 		}
-		
+
 		function affectedRows(){
 			$thereturn = false;
 			switch($this->type){
 				case "mysql":
 					$thereturn = @ mysql_affected_rows($this->db_link);
-				break;			
+				break;
 			}
-			
+
 			return $thereturn;
 		}
-		
+
 }//end db class
 ?>
