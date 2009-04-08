@@ -22,7 +22,9 @@ ALTER TABLE `smartsearches` ENGINE=INNODB;
 ALTER TABLE `tablecolumns` ENGINE=INNODB;
 ALTER TABLE `tabledefs` ENGINE=INNODB;
 ALTER TABLE `tabledefs` ADD COLUMN `importfile` VARCHAR(128) DEFAULT NULL AFTER `addroleid`, ADD COLUMN `importroleid` int(11) NOT NULL DEFAULT '-100' AFTER `importfile`;
+ALTER TABLE `tabledefs` MODIFY COLUMN `defaultwhereclause` TEXT DEFAULT NULL, MODIFY COLUMN `defaultsortorder` TEXT;
 ALTER TABLE `tablefindoptions` ENGINE=INNODB;
+ALTER TABLE `tablefindoptions` MODIFY COLUMN `search` TEXT NOT NULL;
 ALTER TABLE `tablegroupings` ENGINE=INNODB;
 ALTER TABLE `tableoptions` ENGINE=INNODB;
 ALTER TABLE `tableoptions` ADD COLUMN `needselect` BOOLEAN NOT NULL DEFAULT 1 AFTER `option`;
@@ -45,6 +47,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('203', 'import', '0', '0', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('204', 'import', '0', '0', '0', '-100', '0');
 ALTER TABLE `tablesearchablefields` ENGINE=INNODB;
+ALTER TABLE `tablesearchablefields` MODIFY COLUMN `field` TEXT NOT NULL;
 ALTER TABLE `tabs` ENGINE=INNODB;
 ALTER TABLE `users` ENGINE=INNODB;
 ALTER TABLE `users` ADD COLUMN `lastip` VARCHAR(45) NOT NULL DEFAULT '' AFTER `lastname`;
