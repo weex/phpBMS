@@ -1,12 +1,12 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-SELECT, INPUT, TEXTAREA, .uneditable,button{ 
+SELECT, INPUT, TEXTAREA, .uneditable,button{
 	border:1px solid #ABB1B1;
-	font-size: 11px; 
-	padding: 2px 0px 2px 3px;  
+	font-size: 11px;
+	padding: 2px 0px 2px 3px;
 	background: #F7FAFA;
-	vertical-align: middle; 
+	vertical-align: middle;
 	font-style:normal;
 }
 
@@ -50,7 +50,7 @@ padding:0px;
 font-size:9px;
 color:#0B63A2;
 vertical-align:middle;
-cursor: pointer; 
+cursor: pointer;
 }
 .buttonsRight{
 	text-align:right
@@ -60,7 +60,7 @@ cursor: pointer;
 margin:0 0 0 3px;
 border:0;
 padding:0px;
-cursor: pointer; 
+cursor: pointer;
 width:16px;height:16px;
 vertical-align:middle;
 }
@@ -95,7 +95,15 @@ vertical-align:middle;
 .buttonMap{background:url(image/button-map.png) 0 0 no-repeat;}
 .buttonWWW{background:url(image/button-www.png) 0 0 no-repeat;}
 .buttonX{background:url(image/button-x.png) 0 0 no-repeat;}
-.buttonTimeStamp{background:url(image/button-timestamp.png) 100% 0 no-repeat;padding-right:20px;font-size:11px;margin-right:6px;color:black;width:auto;}
+
+.buttonTimeStamp{
+	background:url(image/button-timestamp.png) no-repeat;
+	padding-left:20px;
+	font-size:11px;
+	color : #455372;
+	font-weight:bold;
+	width:auto;}
+
 .buttonDownload{background:url(image/button-download.png) 0 0 no-repeat;}
 
 .buttonSpinner{

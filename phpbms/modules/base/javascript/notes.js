@@ -36,43 +36,10 @@
  +-------------------------------------------------------------------------+
 */
 
-window.onload=function(){
-	initializeOnClicks();
-	changeType()
-	completedCheck();
-	changeRepeatType();
-	changeRepeatEnd();
-	
-	var attachedField=getObjectFromID("attachedid");
-	if(attachedField)
-		if(attachedField.value!="" && attachedField.value!=0){
-			var associatedDiv=getObjectFromID("theassociated");
-			associatedDiv.style.display="block";
-
-			var leftside=getObjectFromID("leftSideDiv");
-			var timestamp=getObjectFromID("timeStampDiv");
-			var content=getObjectFromID("content");
-			var newHeight=leftside.offsetHeight-timestamp.offsetHeight-57;
-			content.style.height=newHeight+"px"
-		}
-	var theid=getObjectFromID("id");
-	var thetype=getObjectFromID("thetype");
-	if(theid.value)
-		thetype.disabled=true;
-	
-	var thetitle=getObjectFromID("subject");
-	if (thetitle.value=="") thetitle.focus();
-}
-
 function returnFalse(){
 	return false;
 }
 
-function timeStamp(){
-	var theDate= new Date()
-	var theform=document.forms["record"]
-	theform["content"].value=theform["content"].value+"[ "+theform["username"].value+" - "+theDate.toLocaleString()+" ]"
-}
 
 function changeType(){
 	var thetype=getObjectFromID("thetype");
@@ -88,7 +55,7 @@ function changeType(){
 	var parentid=getObjectFromID("parentid");
 	var prviatecheck=getObjectFromID("private");
 	var theid=getObjectFromID("id");
-	
+
 	switch(thetype.value){
 		case "NT":
 			datediv.style.display="none";
@@ -111,37 +78,39 @@ function changeType(){
 			prviatecheck.disabled=false;
 			if(!theid.value) prviatecheck.checked=true;
 		break;
-		
+
 		case "EV":
 			datediv.style.display="block";
 			compdiv.style.display="block";
 			comptext.innerHTML="done";
 			startcheck.checked=true;
-			endcheck.checked=true;			
+			endcheck.checked=true;
 			startcheck.disabled=true;
 			endcheck.disabled=true;
 			endtext.innerHTML="end"
-			thestatus.style.display="block";			
+			thestatus.style.display="block";
 			repeatdiv.style.display="block";
 			prviatecheck.disabled=false;
 			if(!theid.value) prviatecheck.checked=true;
 		break;
-		
+
 		case "SM":
 			thestatus.style.display="none";
 			datediv.style.display="none";
 			compdiv.style.display="none";
-			repeatdiv.style.display="none";			
+			repeatdiv.style.display="none";
 			prviatecheck.disabled=true;
 			if(!theid.value) prviatecheck.checked=false;
 		break;
 	}
-	var leftside=getObjectFromID("leftSideDiv");
-	var timestamp=getObjectFromID("timeStampDiv");
+
+	var rightside=getObjectFromID("rightSideDiv");
+	var timestamp=getObjectFromID("timeStampP");
 	var content=getObjectFromID("content");
-	var newHeight=leftside.offsetHeight-timestamp.offsetHeight-57;
+	var newHeight=rightside.offsetHeight - timestamp.offsetHeight - 61;
+
 	content.style.height=newHeight+"px"
-	
+
 	dateChecked("start");
 	dateChecked("end");
 
@@ -152,7 +121,7 @@ function completedCheck(){
 	var completedDate=getObjectFromID("completeddate");
 	var completedDateButton=getObjectFromID("completeddateButton");
 	if(checkbox.checked){
-		
+
 		completedDate.setAttribute("readonly",null);
 		completedDate.className=null;
 		completedDateButton.onclick=CDBOC;
@@ -164,7 +133,7 @@ function completedCheck(){
 		completedDate.setAttribute("readonly","readonly");
 		completedDate.className="uneditable";
 		completedDateButton.onclick=returnFalse;
-	}	
+	}
 }
 
 function checkEndDate(){
@@ -190,9 +159,9 @@ function dateChecked(type){
 	var checkbox=getObjectFromID(type+"check");
 
 	var thedate=getObjectFromID(type+"date");
-	var thetime=getObjectFromID(type+"time");		
+	var thetime=getObjectFromID(type+"time");
 	var thedateButton=getObjectFromID(type+"dateButton");
-	var thetimeButton=getObjectFromID(type+"timeButton");		
+	var thetimeButton=getObjectFromID(type+"timeButton");
 	var thetext=getObjectFromID(type+"text");
 	var repeat=getObjectFromID("repeating");
 
@@ -202,7 +171,7 @@ function dateChecked(type){
 			checkbox.checked=true;
 			return false;
 		}
-		thetext.className="disabledtext";		
+		thetext.className="disabledtext";
 		thedate.value="";
 		thetime.value="";
 		thedate.setAttribute("readonly","readonly");
@@ -212,7 +181,7 @@ function dateChecked(type){
 		thetimeButton.onclick=returnFalse;
 		thedateButton.onclick=returnFalse;
 	} else {
-		
+
 		if(!thedate.value){
 			var today=new Date();
 			if(type=="end")
@@ -224,7 +193,7 @@ function dateChecked(type){
 		thedate.removeAttribute("readonly");
 		thetime.removeAttribute("readonly");
 		thedate.className=null;
-		thetime.className=null;		
+		thetime.className=null;
 		if(type=="end"){
 			thetimeButton.onclick=ETBOC;
 			thedateButton.onclick=EDBOC;
@@ -233,27 +202,27 @@ function dateChecked(type){
 			thedateButton.onclick=SDBOC;
 		}
 	}
-	
+
 	return true;
 }
 
 function initializeOnClicks(){
 	var startDateButton=getObjectFromID("startdateButton");
-	SDBOC=startDateButton.onclick;	
+	SDBOC=startDateButton.onclick;
 	var startTimeButton=getObjectFromID("starttimeButton");
-	STBOC=startTimeButton.onclick;	
+	STBOC=startTimeButton.onclick;
 	var endDateButton=getObjectFromID("enddateButton");
-	EDBOC=endDateButton.onclick;	
+	EDBOC=endDateButton.onclick;
 	var endTimeButton=getObjectFromID("endtimeButton");
-	ETBOC=endTimeButton.onclick;	
+	ETBOC=endTimeButton.onclick;
 	var completedDateButton=getObjectFromID("completeddateButton");
-	CDBOC=completedDateButton.onclick;	
+	CDBOC=completedDateButton.onclick;
 }
 
 function addS(freqfield){
 	var rpType=getObjectFromID("repeattype");
 	var plural="";
-	
+
 	if(freqfield.value>1)
 		plural="s";
 	rpType.options[0].text="Day"+plural;
@@ -286,21 +255,21 @@ function sendEmailNotice(){
 
 
 function submitForm(theform,bypass){
-	
+
 	if (theform["cancelclick"])
-		if (theform["cancelclick"].value!=0) 
+		if (theform["cancelclick"].value!=0)
 			return true;
-			
-	if(!validateForm(theform)) 
-		return false;	
-	
+
+	if(!validateForm(theform))
+		return false;
+
 	if(theform["repeating"].checked){
 
 		var typeSelect = getObjectFromID("repeattype");
 		var tempButton;
 		var eachlistArray = Array();
 		var i;
-		
+
 		//first let's set the eachlist if necassary
 		switch(typeSelect.value){
 			case "Weekly":
@@ -310,7 +279,7 @@ function submitForm(theform,bypass){
 						eachlistArray[eachlistArray.length] = tempButton.value;
 				}
 			break;
-			
+
 			case "Monthly":
 				var monthlyEach = getObjectFromID("monthlyEach");
 				if(monthlyEach.checked){
@@ -321,7 +290,7 @@ function submitForm(theform,bypass){
 					}
 				}
 			break;
-			
+
 			case "Yearly":
 				for(i=1; i<=12; i++){
 					tempButton = getObjectFromID("yearlyMonthOption"+i);
@@ -330,13 +299,13 @@ function submitForm(theform,bypass){
 				}
 			break;
 		}//end switch
-		
+
 		if(eachlistArray.length > 0){
 			var tempeachlist = "";
 			for(i=0; i < eachlistArray.length; i++)
 				tempeachlist += eachlistArray[i]+"::";
 			tempeachlist = tempeachlist.substr(0,tempeachlist.length-2);
-			
+
 			var eachlist = getObjectFromID("eachlist");
 			eachlist.value = tempeachlist;
 		}
@@ -352,10 +321,10 @@ function submitForm(theform,bypass){
 		content +=' to reset. The connection between the current tasks already created form these repeat connections will be erased.</p>';
 		content +='<p>You may want to adjust the start date to compensate.</p>';
 		content +='<p align="right"><input type="button" class="Buttons" value="continue save" onclick="continueSubmit()" > <input type="button" class="Buttons" value="cancel" onclick="closeModal()" style="width:70px"></p>';
-		
+
 		showModal(content,"Confrim Change of Repeatable Task",400);
 		return false;
-	}else	
+	}else
 		return true;
 
 }//end function
@@ -374,37 +343,37 @@ function checkRepeat(){
 
 	var startCheckbox = getObjectFromID("startcheck");
 	var repeatCheckbox = getObjectFromID("repeating");
-	
+
 	var repeatOptions = getObjectFromID("repeatOptions");
 	var repeatEnd = getObjectFromID("repeatEnding");
-	
+
 	if(repeatCheckbox.checked){
-		
+
 		if(startCheckbox.checked){
-			
+
 			repeatOptions.style.display = "block";
 			repeatEnd.style.display = "block";
-			
+
 		} else {
-			
+
 			repeatCheckbox.checked=false;
 			alert("You must set a start date before setting repeat options");
-			
+
 		}//end if
-		
+
 	} else {
-	
+
 		repeatOptions.style.display = "none";
 		repeatEnd.style.display = "none";
-		
+
 	}//endif
 }//end function
 
 
 function changeRepeatType(){
 	var dropDown = getObjectFromID("repeattype");
-	var i;	
-	
+	var i;
+
 	for(i=0;i<dropDown.options.length;i++){
 		var theDiv = getObjectFromID(dropDown.options[i].value+"Div");
 		if(dropDown.options[i].selected)
@@ -412,7 +381,7 @@ function changeRepeatType(){
 		else
 			theDiv.style.display = "none";
 	}
-	
+
 	var typetext = getObjectFromID("repeatTypeText");
 	switch(dropDown.value){
 		case "Daily":
@@ -427,9 +396,9 @@ function changeRepeatType(){
 		case "Yearly":
 			typetext.innerHTML = "year(s) in:";
 		break;
-		
+
 	}
-	
+
 }//end function
 
 
@@ -437,7 +406,7 @@ function changeRepeatEnd(){
 	var theselect = getObjectFromID("repeatend");
 	var afterSpan = getObjectFromID("repeatAfterSpan");
 	var ondatespan = getObjectFromID("repeatOndateSpan");
-	
+
 	switch(theselect.value){
 		case "never":
 			afterSpan.style.display = "none";
@@ -469,7 +438,7 @@ function yearlyMonthSelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons yearlyMonths";
 	}
@@ -479,8 +448,8 @@ function yearlyMonthSelect(thebutton){
 function yearlyOnTheChecked(){
 	var thecheck = getObjectFromID("yearlyOnThe");
 	var ontheday = getObjectFromID("yearlyontheday");
-	var ontheweek = getObjectFromID("yearlyontheweek");		
-	
+	var ontheweek = getObjectFromID("yearlyontheweek");
+
 	ontheday.disabled = !thecheck.checked;
 	ontheweek.disabled = !thecheck.checked;
 }
@@ -491,9 +460,9 @@ function monthlyChange(){
 	var firstRadio = getObjectFromID("monthlyEach");
 	var dayButton;
 	var ontheday = getObjectFromID("monthlyontheday");
-	var ontheweek = getObjectFromID("monthlyontheweek");	
+	var ontheweek = getObjectFromID("monthlyontheweek");
 	var i;
-	
+
 	if(firstRadio.checked){
 		//enable each day button
 		for(i=1; i<32; i++){
@@ -502,7 +471,7 @@ function monthlyChange(){
 		}
 		//disable onthe buttons.
 		ontheday.disabled = true;
-		ontheweek.disabled = true;		
+		ontheweek.disabled = true;
 	} else {
 		//disable each day button
 		for(i=1; i<32; i++){
@@ -512,9 +481,9 @@ function monthlyChange(){
 
 		//enable onthe buttons.
 		ontheday.disabled = false;
-		ontheweek.disabled = false;		
+		ontheweek.disabled = false;
 	}
-		
+
 }//end function
 
 
@@ -533,7 +502,7 @@ function daySelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons";
 	}
@@ -555,8 +524,98 @@ function monthDaySelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons monthDays";
 	}
 }
+
+
+/* New Code ---------------------------------------------- */
+/* ------------------------------------------------------- */
+notes = {
+
+	contentHasFocus: false,
+
+	addTimeStamp: function(){
+		// This function called when time stamp button is pushed
+		// adds a time stamp to the memo field
+
+
+		var theDate= new Date();
+		var contentTextArea = getObjectFromID("content");
+		var username = getObjectFromID("username");
+
+		if(contentTextArea.value != "")
+			contentTextArea.value += "\n";
+
+		contentTextArea.value = contentTextArea.value + "[ " + username.value + " - " + theDate.toLocaleString() + " ]\n"
+
+		if(notes.contentHasFocus){
+
+			contentTextArea.focus();
+
+		}//end if
+
+	},//end function addTimeStamp
+
+
+	contentFocus: function(){
+
+		notes.contentHasFocus = true;
+
+	},//end function contentFocus
+
+
+	contentBlur: function(){
+
+		notes.contentHasFocus = false;
+
+	}//end function contentFocus
+
+}//end struct notes
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	initializeOnClicks();
+	changeType()
+	completedCheck();
+	changeRepeatType();
+	changeRepeatEnd();
+
+	var attachedField = getObjectFromID("attachedid");
+
+	if(attachedField)
+		if(attachedField.value!="" && attachedField.value!=0){
+
+			var associatedDiv=getObjectFromID("theassociated");
+			associatedDiv.style.display="block";
+
+			var rightside = getObjectFromID("rightSideDiv");
+			var timestamp = getObjectFromID("timeStampP");
+			var content = getObjectFromID("content");
+			var newHeight = leftside.offsetHeight - timestamp.offsetHeight-61;
+
+			content.style.height=newHeight+"px"
+
+		}//endif
+
+	var theid=getObjectFromID("id");
+	var thetype=getObjectFromID("thetype");
+	if(theid.value)
+		thetype.disabled=true;
+
+	var thetitle=getObjectFromID("subject");
+	if (thetitle.value=="") thetitle.focus();
+
+
+	var timeStampButton = getObjectFromID("timeStampButton");
+	connect(timeStampButton, "onclick", notes.addTimeStamp);
+
+	var contentTextArea = getObjectFromID("content");
+	connect(contentTextArea, "onfocus", notes.contentFocus);
+	connect(contentTextArea, "onblue", notes.contentBlur);
+
+});//end connect

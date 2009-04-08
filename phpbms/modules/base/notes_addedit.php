@@ -61,7 +61,7 @@
 
 	$pageTitle = "Note/Task/Event";
 
-	$phpbms->cssIncludes[] = "pages/notes.css";
+	$phpbms->cssIncludes[] = "pages/base/notes.css";
 	$phpbms->jsIncludes[] = "modules/base/javascript/notes.js";
 
 		//Form Elements
@@ -220,7 +220,7 @@
 		<p><?php $theform->showField("subject") ?></p>
 	</fieldset>
 
-	<div id="leftSideDiv">
+	<div id="rightSideDiv">
 		<fieldset>
 			<legend><label for="importance">importance / privacy</label></legend>
 			<p>
@@ -302,15 +302,15 @@
 
 	</div>
 
-	<div id="rightSideDiv">
+	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="content">memo</label></legend>
-			<p align="right" id="timeStampDiv">
-				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" onclick="timeStamp();">Time Stamp</button>
+			<p id="timeStampP">
+				<button id="timeStampButton" type="button" class="graphicButtons buttonTimeStamp" accesskey="t" title="Add time stamp to memo (Access Key - t)">time stamp</button>
 			</p>
 			<p>
 				<textarea name="content" cols="45" rows="23" id="content"><?php echo htmlQuotes($therecord["content"])?></textarea>
-				<input name="username" type="hidden" value="<?php echo $_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]?>" />
+				<input id = "username" type="hidden" value="<?php echo formatVariable(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>" />
 			</p>
 		</fieldset>
 	</div>
