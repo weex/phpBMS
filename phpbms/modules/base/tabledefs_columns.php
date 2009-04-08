@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -46,52 +46,52 @@
 	$thecommand="";
 	$action="add column";
 	$thecolumn=setColumnDefaults();
-	
+
 	//grab the table name
 	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
 	$queryresult = $db->query($querystatement);
 	$tableRecord = $db->fetchArray($queryresult);
-	
+
 	if (isset($_GET["command"])) $thecommand=$_GET["command"];
 	if (isset($_POST["command"])) $thecommand=$_POST["command"];
-	
+
 	switch($thecommand){
 		case "edit":
 			$singlecolumnsquery=getColumns($db,$_GET["id"],$_GET["columnid"]);
 			$thecolumn = $db->fetchArray($singlecolumnsquery);
 			$action="edit column";
 		break;
-		
+
 		case "delete":
 			$statusmessage=deleteColumn($db,$_GET["columnid"]);
 		break;
-		
+
 		case "add column":
 			$statusmessage=addColumn($db,addSlashesToarray($_POST),$_GET["id"]);
 		break;
-		
+
 		case "edit column":
 			$statusmessage=updateColumn($db,addSlashesToarray($_POST));
 		break;
-		
+
 		case "moveup":
 			$statusmessage=moveColumn($db,$_GET["columnid"],"up");
 		break;
-		
+
 		case "movedown":
 			$statusmessage=moveColumn($db,$_GET["columnid"],"down");
 		break;
 	}//end switch
-	
+
 	$columnsquery=getColumns($db,$_GET["id"]);
-	
+
 	$pageTitle="Table Definition Columns: ".$tableRecord["displayname"];
 	$phpbms->cssIncludes[] = "pages/tablecolumns.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("name",$thecolumn["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -119,10 +119,10 @@
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 	$phpbms->showTabs("tabledefs entry",2,$_GET["id"])?><div class="bodyline">
 	<h1><span><?php echo $pageTitle?></span></h1>
 	<div class="fauxP">
@@ -137,10 +137,10 @@
 	 <th align="left" nowrap="nowrap" class="queryheader">access</th>
 	 <th nowrap="nowrap" class="queryheader">&nbsp;</th>
 	</tr>
-	<?php 
+	<?php
 		$topdisplayorder=-1;
 		$row=1;
-		while($therecord=$db->fetchArray($columnsquery)){ 
+		while($therecord=$db->fetchArray($columnsquery)){
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
@@ -157,7 +157,7 @@
 		<td nowrap="nowrap"valign="top"><?php echo $therecord["align"]?></td>
 		<td align="center" nowrap="nowrap"valign="top"><?php echo booleanFormat($therecord["wrap"])?></td>
 		<td nowrap="nowrap" valign="top"><?php if($therecord["size"]) echo $therecord["size"]; else echo "&nbsp;";?></td>
-		<td nowrap="nowrap" valign="top"><?php  
+		<td valign="top"><?php
 			if($therecord["format"]) {
 				echo array_search($therecord["format"],$formatArray);
 			}else  echo "&nbsp;"
@@ -180,7 +180,7 @@
 		<td>&nbsp;</td>
 	</tr>
 	</table></div>
-	
+
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
@@ -188,19 +188,19 @@
 		<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>" />
 
 		<p><?php  $theform->showField("name")?></p>
-		
+
 		<p>
 			<label for="column">field</label><br />
 			<textarea id="column" name="column" cols="64" rows="2"><?php echo $thecolumn["column"] ?></textarea><br />
 			<span class="notes">This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname)</span>
 		</p>
-		
+
 		<p><?php $theform->showField("roleid")?></p>
-		
+
 		<p><?php $theform->showField("align");?></p>
-		
+
 		<p><?php $theform->showField("wrap")?></p>
-		
+
 		<p>
 			<label for="size">column size</label><br />
 			<input id="size" name="size" type="text" value="<?php echo htmlQuotes($thecolumn["size"])?>" size="32" maxlength="128" /><br />
@@ -218,7 +218,7 @@
 				This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname).
 			</span>
 		</p>
-		
+
 		<p>
 			<label for="footerquery">footer</label><br />
 			<textarea id="footerquery" name="footerquery" cols="32" rows="2"><?php echo $thecolumn["footerquery"] ?></textarea><br />

@@ -121,8 +121,7 @@ function completedCheck(){
 	var completedDate=getObjectFromID("completeddate");
 	var completedDateButton=getObjectFromID("completeddateButton");
 	if(checkbox.checked){
-
-		completedDate.setAttribute("readonly",null);
+		completedDate.readOnly = false;
 		completedDate.className=null;
 		completedDateButton.onclick=CDBOC;
 		if(!completedDate.value){
@@ -130,7 +129,7 @@ function completedCheck(){
 			completedDate.value=dateToString(today);
 		}
 	} else {
-		completedDate.setAttribute("readonly","readonly");
+		completedDate.readOnly = true;
 		completedDate.className="uneditable";
 		completedDateButton.onclick=returnFalse;
 	}

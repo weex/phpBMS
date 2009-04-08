@@ -52,3 +52,6 @@ ALTER TABLE `tabs` ENGINE=INNODB;
 ALTER TABLE `users` ENGINE=INNODB;
 ALTER TABLE `users` ADD COLUMN `lastip` VARCHAR(45) NOT NULL DEFAULT '' AFTER `lastname`;
 ALTER TABLE `usersearches` ENGINE=INNODB;
+UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = 23 AND `name` = 'Public Tasks';
+UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0' WHERE `tabledefid` = 23 AND `name` = 'Uncomplete Tasks Assigned By Me';
+UPDATE `menu` SET `link` = 'N/A' WHERE name = '----';

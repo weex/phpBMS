@@ -1,4 +1,4 @@
-<?php	
+<?php
 /*
  $Rev: 267 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-14 13:08:27 -0600 (Tue, 14 Aug 2007) $
@@ -43,8 +43,8 @@ class groupings{
 		$this->db = $db;
 		$this->tabledefid = (int) $tabledefid;
 	}
-	
-	
+
+
 	function processForm($command,$post,$get){
 		$therecord = $this->getDefaults();
 		$therecord["action"] = "add record";
@@ -54,47 +54,47 @@ class groupings{
 				$therecord = $this->getRecords($get["selid"]);
 				$therecord["action"] = "edit record";
 			break;
-			
+
 			case "delete":
 				$therecord["statusMessage"] = $this->delete($get["selid"]);
 			break;
-			
+
 			case "add record":
 				$therecord["statusMessage"] = $this->add(addSlashesToArray($post));
 			break;
-			
+
 			case "edit record":
 				$therecord["statusMessage"] = $this->update(addSlashesToArray($post));
 			break;
-			
+
 			case "moveup":
 				$therecord["statusMessage"] = $this->move($get["selid"],"up");
 			break;
-			
+
 			case "movedown":
 				$therecord["statusMessage"] = $this->move($get["selid"],"down");
-			break;			
+			break;
 		}
-		
+
 		return $therecord;
-				
+
 	}//end method
-	
-	
+
+
 	function getRecords($id=NULL){
 		$querystatement = "SELECT * FROM tablegroupings WHERE tabledefid=".$this->tabledefid;
 		if($id != NULL)
 			$querystatement .= " AND id =".((int) $id);
 		$querystatement .= " ORDER BY displayorder";
-		
-		$queryresult = $this->db->query($querystatement);		
+
+		$queryresult = $this->db->query($querystatement);
 		if($id != NULL)
 			return  $this->db->fetchArray($queryresult);
 		else
 			return $queryresult;
 	}
-	
-	
+
+
 	function getDefaults(){
 		$therecord["id"] = NULL;
 		$therecord["displayorder"] = 0;
@@ -102,64 +102,64 @@ class groupings{
 		$therecord["field"] = "";
 		$therecord["roleid"] = 0;
 		$therecord["ascending"] = 1;
-		
-		return $therecord;		
+
+		return $therecord;
 	}//end method
-	
-	
+
+
 	function delete($id){
 
 		$querystatement="SELECT displayorder FROM tablegroupings WHERE id=".((int) $id);
 		$theresult=$this->db->query($querystatement);
 		$therecord=$this->db->fetchArray($theresult);
-						
+
 		$querystatement="UPDATE tablegroupings SET displayorder=displayorder-1
 							WHERE tabledefid=".$this->tabledefid." AND displayorder>".$therecord["displayorder"];
 		$theresult=$this->db->query($querystatement);
 
 		$querystatement="DELETE FROM tablegroupings WHERE id=".((int) $id);
 		$theresult=$this->db->query($querystatement);
-				
+
 		return "Record deleted";
 
 	}//end method
-	
-	
+
+
 	function add($variables){
-	
+
 		$maxOrder = $this->getMaxOrder();
 
-	
+
 		$querystatement = "INSERT INTO tablegroupings (tabledefid, name, `field`, displayorder, `ascending`, roleid) VALUES (";
 		$querystatement .= $this->tabledefid.", ";
 		$querystatement .= "'".$variables["name"]."', ";
 		$querystatement .= "'".$variables["field"]."', ";
 		$querystatement .= (((int)$maxOrder) +1 ).", ";
-		
+
 		if(isset($variables["ascending"])) $querystatement .= "1, "; else $querystatement .= "0, ";
-	
+
 		$querystatement .= ((int) $variables["roleid"]).") ";
 
 		$this->db->query($querystatement);
-		
+
 		return "record added";
 	}//end method
-	
-	
+
+
 	function update($variables){
-	
+
 		$querystatement = "UPDATE tablegroupings SET ";
 		$querystatement .= "`name` = '".$variables["name"]."', ";
 		$querystatement .= "`field` = '".$variables["field"]."', ";
-		
+
 		$querystatement .= "`ascending` =";
 		if(isset($variables["ascending"])) $querystatement .= "1, "; else $querystatement .= "0, ";
-	
+
 		$querystatement .= "roleid = ".((int) $variables["roleid"])." ";
 		$querystatement .= "WHERE id = ".((int) $variables["id"]);
 
 		$this->db->query($querystatement);
-		
+
 		return "record updated";
 	}
 
@@ -168,11 +168,11 @@ class groupings{
 		$querystatement="select max(displayorder) as themax FROM tablegroupings WHERE tabledefid=".$this->tabledefid;
 		$thequery=$this->db->query($querystatement);
 		$maxrecord=$this->db->fetchArray($thequery);
-		
+
 		return($maxrecord["themax"]);
 	}
 
-	
+
 	function move($id,$direction = "down"){
 
 		if($direction=="down") $increment="1"; else $increment="-1";
@@ -182,7 +182,7 @@ class groupings{
 		$therecord=$this->db->fetchArray($thequery);
 
 		$maxOrder = $this->getMaxOrder();
-				
+
 		if(!(($direction=="down" and $therecord["displayorder"] == $maxOrder) or ($direction=="up" and $therecord["displayorder"]=="0"))){
 			$querystatement="UPDATE tablegroupings set displayorder=".$therecord["displayorder"]." WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$this->tabledefid;
 			$thequery=$this->db->query($querystatement);
@@ -190,12 +190,12 @@ class groupings{
 			$querystatement="UPDATE tablegroupings set displayorder=displayorder+".$increment." WHERE id=".((int) $id);
 			$thequery=$this->db->query($querystatement);
 		}// end if
-		
+
 		"position moved";
 
 	}
-	
-	
+
+
 	function showRecords($queryresult){
 		global $phpbms;
 ?>
@@ -204,15 +204,15 @@ class groupings{
 	<tr>
 	 <th nowrap="nowrap" class="queryheader">move</th>
 	 <th align="left" nowrap="nowrap" class="queryheader" width="100%">name/field</th>
-	 <th align="left" nowrap="nowrap" class="queryheader">acending</th>
+	 <th align="left" nowrap="nowrap" class="queryheader">ascending</th>
 	 <th align="left" nowrap="nowrap" class="queryheader">access</th>
 	 <th nowrap="nowrap" class="queryheader">&nbsp;</th>
 	</tr>
-	<?php 
+	<?php
 		$topdisplayorder=-1;
 		$row=1;
-		
-		while($therecord = $this->db->fetchArray($queryresult)){ 
+
+		while($therecord = $this->db->fetchArray($queryresult)){
 			$topdisplayorder=$therecord["displayorder"];
 			if($row==1) $row=2; else $row=1;
 	?>
@@ -223,7 +223,7 @@ class groupings{
 			<?php echo $therecord["displayorder"];?>
 		</td>
 
-		<td valign="top"><?php 
+		<td valign="top"><?php
 			if($therecord["name"])
 				echo "<strong>".$therecord["name"]."</strong><br />";
 
@@ -249,9 +249,6 @@ class groupings{
 	</tr>
 	</table></div>
 
-<?php	
+<?php
 	}//end method showRecords
 }//end class
-
-
-

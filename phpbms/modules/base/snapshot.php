@@ -59,9 +59,11 @@
 
 	$myBase = new baseSnapshot($db, $phpbms, $_SESSION["userinfo"]["id"]);
 
+	$headingTitle = formatVariable(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]));
+
 ?>
 <div class="bodyline">
-	<h1><?php echo $_SESSION["userinfo"]["firstname"]; if($_SESSION["userinfo"]["lastname"]) echo " ".$_SESSION["userinfo"]["lastname"]?>'s Snapshot</h1>
+	<h1><?php echo $headingTitle?>'s Snapshot</h1>
 
 	<?php $myBase->showSystemMessages() ?>
 
