@@ -68,23 +68,23 @@ class baseSnapshot{
 
 		if($this->db->numRows($queryresult)){ ?>
 
-		<div id="systemMessageContainer">
+		<div class="box" id="systemMessageContainer">
 			<h2>System Messages</h2>
 			<?php while($therecord = $this->db->fetchArray($queryresult)) {
 
 					$therecord["content"] = str_replace("\n","<br />",htmlQuotes($therecord["content"]));
 
 			?>
-				<div class="systemMessageLinks">
-					<h3><?php echo htmlQuotes($therecord["subject"])?></h3>
-					<div>by <?php echo htmlQuotes($therecord["createdby"])?> on <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?></div>
-				</div>
-				<div class="systemMessages"><p><?php echo $therecord["content"]?></p></div>
+			<h3 class="systemMessageLinks"><?php echo htmlQuotes($therecord["subject"])?> <span>[ <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?> <?php echo htmlQuotes($therecord["createdby"])?>]</span></h3>
+			<div class="systemMessages">
+				<p><?php echo $therecord["content"]?></p>
+			</div>
 			<?php }//end while ?>
 		</div>
 		<?php }//endif
 
 	}//end method showSystemMessages
+
 
 
 	function showTasks($type){
@@ -151,14 +151,9 @@ class baseSnapshot{
 
 		$querystatement.="AND (
 					(startdate IS NULL AND enddate IS NULL AND assignedtodate IS NULL)
-
-					OR (
-						(startdate IS NOT NULL AND startdate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
-						AND (
-							(enddate IS NOT NULL AND enddate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
-							OR (assignedtodate IS NOT NULL AND assignedtodate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
-						)
-					)
+					OR (startdate IS NOT NULL AND startdate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND enddate IS NULL AND assignedtodate IS NULL)
+					OR (enddate IS NOT NULL AND enddate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
+					OR (assignedtodate IS NOT NULL AND assignedtodate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
 				   )";
 
 		$querystatement.=" ORDER BY
@@ -166,12 +161,11 @@ class baseSnapshot{
 				xdate,
 				subject";
 
-
 		$queryresult = $this->db->query($querystatement);
 
 		$numRows = $this->db->numRows($queryresult);
-		?>
 
+		?>
 		<h3 class="tasksLinks"><?php echo $title; if($numRows) {?> <span class="small">(<?php echo $numRows?>)</span><?php } ?></h3>
 
 		<div class="tasksDivs">
@@ -181,7 +175,7 @@ class baseSnapshot{
 
 				$linkStart = getAddEditFile($this->db,12);
 				$section["title"] = "Now";
-				$section["date"] = mktime(0,0,0,date("m"),date("d")+3,date("Y"));;
+				$section["date"] = mktime(0,0,0,date("m"),date("d")+3,date("Y"));
 
 				while($therecord = $this->db->fetchArray($queryresult)) {
 
@@ -198,7 +192,7 @@ class baseSnapshot{
 
 					$checkBoxID = $id.$therecord["type"]."C".$therecord["id"];
 
-					$link = $linkStart."?id=".$therecord["id"]."&amp;backurl=snapshot.php";
+					$link = $linkStart."?id=".$therecord["id"]."&amp;backurl=".APP_PATH."modules/base/snapshot.php";
 
 					$rightSide = "";
 
@@ -239,6 +233,7 @@ class baseSnapshot{
 
 					// Looking for grouping changes in headers (3 days, 4-7 days, > 7 days)
 					$xdate = stringToDate($therecord["xdate"],"SQL") ;
+
 					if($xdate > $section["date"]){
 
 						while($xdate > $section["date"]){
@@ -255,6 +250,8 @@ class baseSnapshot{
 //									$section["date"] = mktime(0,0,0,date("m"),date("d")+31,date("Y"));
 									$section["date"] = mktime(0,0,0,date("m"),date("d"),2038);
 									break;
+								case "Later":
+									$section["date"] = $xdate;
 
 							}//end switch
 
