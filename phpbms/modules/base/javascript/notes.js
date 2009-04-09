@@ -550,27 +550,29 @@ notes = {
 
 		contentTextArea.value = contentTextArea.value + "[ " + username.value + " - " + theDate.toLocaleString() + " ]\n"
 
-		if(notes.contentHasFocus){
 
-			contentTextArea.focus();
-
-		}//end if
+		contentTextArea.focus();
+		//if(notes.contentHasFocus){
+		//
+		//	contentTextArea.focus();
+		//
+		//}//end if
 
 	},//end function addTimeStamp
 
 
-	contentFocus: function(){
-
-		notes.contentHasFocus = true;
-
-	},//end function contentFocus
-
-
-	contentBlur: function(){
-
-		notes.contentHasFocus = false;
-
-	}//end function contentFocus
+	//contentFocus: function(){
+	//
+	//	notes.contentHasFocus = true;
+	//
+	//},//end function contentFocus
+	//
+	//
+	//contentBlur: function(){
+	//
+	//	notes.contentHasFocus = false;
+	//
+	//}//end function contentFocus
 
 }//end struct notes
 
@@ -613,8 +615,8 @@ connect(window,"onload",function() {
 	var timeStampButton = getObjectFromID("timeStampButton");
 	connect(timeStampButton, "onclick", notes.addTimeStamp);
 
-	var contentTextArea = getObjectFromID("content");
-	connect(contentTextArea, "onfocus", notes.contentFocus);
-	connect(contentTextArea, "onblue", notes.contentBlur);
+	//var contentTextArea = getObjectFromID("content");
+	//connect(contentTextArea, "onfocus", notes.contentFocus);
+	//connect(contentTextArea, "onblur", notes.contentBlur);
 
 });//end connect
