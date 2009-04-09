@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,9 +38,9 @@
 */
 	include("../../include/session.php");
 	include("include/fields.php");
-	
+
 	if(!hasRights(30)) goURL(APP_PATH."noaccess.php");
-	
+
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
 	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
@@ -76,23 +76,23 @@
 	$refquery="select partname from products where id=".((int)$_GET["id"]);
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
-	
+
 	$querystatement="
 		SELECT
-				invoices.id AS id, 
-				IF(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) AS thedate, 
+				invoices.id AS id,
+				IF(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) AS thedate,
 				CONCAT(\"<strong>\",IF(clients.lastname!=\"\",CONCAT(clients.lastname,\", \",clients.firstname,IF(clients.company!=\"\",CONCAT(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\") AS client,
-				lineitems.quantity AS qty, 
+				lineitems.quantity AS qty,
 				lineitems.unitprice*lineitems.quantity AS extended,
 				lineitems.unitprice AS price,
-				lineitems.unitcost AS cost, 
+				lineitems.unitcost AS cost,
 				lineitems.unitcost*lineitems.quantity AS extendedcost
 		FROM
-				((products INNER JOIN lineitems ON products.id=lineitems.productid) 
-				INNER JOIN invoices ON lineitems.invoiceid=invoices.id) 
+				((products INNER JOIN lineitems ON products.id=lineitems.productid)
+				INNER JOIN invoices ON lineitems.invoiceid=invoices.id)
 					INNER JOIN clients ON invoices.clientid=clients.id
 		WHERE
-				products.id=".((int)$_GET["id"])." 
+				products.id=".((int)$_GET["id"])."
 				AND ".$thestatus."
 		HAVING
 				thedate >=\"".$mysqlfromdate."\"
@@ -104,28 +104,28 @@
 	$queryresult? $numrows=$db->numRows($queryresult): $numrows=0;
 
 	$pageTitle="Product Sales History: ".$refrecord["partname"];
-	
+
 	$phpbms->cssIncludes[] = "pages/products.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]), "from" ,true);
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputDatePicker("todate",sqlDateFromString($_POST["todate"]), "to" ,true);
 		$theform->addField($theinput);
-		
+
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 	include("header.php");
-	
+
 	$phpbms->showTabs("products entry",12,$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
-	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">		
+	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<div class="box">
 		<p class="timelineP">
 		   <label for="status">type</label><br />
@@ -133,20 +133,21 @@
 				<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected=\"selected\""?>>Orders/Invoices</option>
 				<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
 				<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
-		   </select>								
+		   </select>
 		</p>
-		
+
 		<p class="timelineP"><?php $theform->showField("fromdate")?></p>
 
 		<p class="timelineP"><?php $theform->showField("todate")?></p>
-		
+
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
 		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
 		<input name="date_order" id="date_order" type="hidden" value="<?php echo $_POST["date_order"]; ?>" />
 	</div>
 
-   <div class="fauxP">   
+   <div class="fauxP">
    <table border="0" cellpadding="3" cellspacing="0" class="querytable">
+      <thead>
 	<tr>
 	 <th align="center" nowrap="nowrap" class="queryheader" colspan="2">ID</th>
 	 <th align="center" nowrap="nowrap" class="queryheader">
@@ -159,13 +160,16 @@
 	 <th align="right" nowrap="nowrap" class="queryheader">Unit Price</th>
 	 <th align="right" nowrap="nowrap" class="queryheader">Price Ext.</th>
 	</tr>
-    <?php 	
+     </thead>
+    <?php
 	$totalextended=0;
 	$totalcostextended=0;
 	$totalquantity=0;
 	$avgprice=0;
 	$avgcost=0;
 	$row=1;
+	ob_start();
+	?><tbody><?php
 	while ($therecord=$db->fetchArray($queryresult)){
 		if($row==1) $row=2;else $row=1;
 		$avgcost+=$therecord["cost"];
@@ -189,19 +193,23 @@
 	</tr>
     <?php } if(!$db->numRows($queryresult)) {?>
 	<tr class="norecords"><td colspan="9">No Sales Data for Given Timeframe</td></tr>
-	<?php }else{?>
-	<tr>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter"><?php echo number_format($totalquantity,2)?></td>
-	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo numberToCurrency($avgcost)?></td>
-	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalcostextended)?></td>
-	 <td align="right" nowrap="nowrap" class="queryfooter">avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo numberToCurrency($avgprice)?></td>
-	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
+	<?php }?>
+	</tbody>
+	<?php $tbody = ob_get_clean(); ?>
+	<tfoot>
+	<tr class="queryfooter">
+	 <td align="center" >&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td align="center" ><?php echo number_format($totalquantity,2)?></td>
+	 <td align="right" nowrap="nowrap" >avg. = <?php $numrows?$avgcost=$avgcost/$numrows:$avgcost=0; echo numberToCurrency($avgcost)?></td>
+	 <td align="right" ><?php echo numberToCurrency($totalcostextended)?></td>
+	 <td align="right" nowrap="nowrap" >avg. = <?php $numrows?$avgprice=$avgprice/$numrows:$avgprice=0; echo numberToCurrency($avgprice)?></td>
+	 <td align="right" ><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
-        <?php }//end if --numrows-- ?>
-   </table></div></form>	
+	</tfoot>
+        <?php echo $tbody; ?>
+   </table></div></form>
 </div>
 <?php include("footer.php"); }//end if?>

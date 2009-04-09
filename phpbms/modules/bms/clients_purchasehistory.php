@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -64,7 +64,7 @@
 		$pageTitle.=$clientrecord["firstname"]." ".$clientrecord["lastname"];
 	else
 		$pageTitle.=$clientrecord["company"];
-	
+
 	$thestatus="(invoices.type =\"";
 	switch($_POST["status"]){
 		case "Orders/Invoices":
@@ -82,21 +82,21 @@
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
 	//get history
-	$querystatement="SELECT 
+	$querystatement="SELECT
 		invoices.id,
-		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
+		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
 		invoices.type,
-		products.partname as partname, 
+		products.partname as partname,
 		products.partnumber as partnumber,
-		lineitems.quantity as qty, 
+		lineitems.quantity as qty,
 		lineitems.unitprice*lineitems.quantity as extended,
 		lineitems.unitprice as price
-		FROM ((clients inner join invoices on clients.id=invoices.clientid) 
-				inner join lineitems on invoices.id=lineitems.invoiceid) 
+		FROM ((clients inner join invoices on clients.id=invoices.clientid)
+				inner join lineitems on invoices.id=lineitems.invoiceid)
 					inner join products on lineitems.productid=products.id
-		WHERE clients.id=".$_GET["id"]."   
-		and ".$thestatus."		
-		HAVING 
+		WHERE clients.id=".$_GET["id"]."
+		and ".$thestatus."
+		HAVING
 		thedate >=\"".$mysqlfromdate."\"
 		and thedate <=\"".$mysqltodate."\"
 		ORDER BY thedate,invoices.id;";
@@ -109,18 +109,18 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputDatePicker("fromdate",sqlDateFromString($_POST["fromdate"]), "from" ,true);
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputDatePicker("todate",sqlDateFromString($_POST["todate"]), "to" ,true);
 		$theform->addField($theinput);
-		
+
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
-	include("header.php");	
+
+	include("header.php");
 
 	$phpbms->showTabs("clients entry",7,$_GET["id"]);?><div class="bodyline">
 
@@ -134,11 +134,11 @@
 					<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected=\"selected\""?>>Orders/Invoices</option>
 					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
 					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
-			   </select>								
+			   </select>
 			</p>
-			
+
 			<p class="timelineP"><?php $theform->showField("fromdate")?></p>
-	
+
 			<p class="timelineP"><?php $theform->showField("todate")?></p>
 
 			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
@@ -147,24 +147,29 @@
 	</form>
 	<div class="fauxP">
 	<table border="0" cellpadding="0" cellspacing="0" class="querytable">
-		<tr>
-			<th align="left" nowrap="nowrap" class="queryheader" colspan="4">invoice</th>
-			<th align="left" nowrap="nowrap" class="queryheader" colspan="3">product</th>		
-			<th align="left" nowrap="nowrap" class="queryheader" colspan="2">line item</th>
-		</tr>
-		<tr>
-			<th align="center" nowrap="nowrap" class="queryheader" colspan="2">id</th>
-			<th align="left" nowrap="nowrap" class="queryheader">type</th>
-			<th align="left" nowrap="nowrap" class="queryheader">date</th>
-			<th nowrap="nowrap" class="queryheader" align="left">part num. </th>
-			<th width="100%" class="queryheader" align="left">name</th>
-			<th align="right" nowrap="nowrap" class="queryheader">price</th>
-			<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
-			<th align="right" nowrap="nowrap" class="queryheader">ext.</th>
-		</tr>
-    <?php 
-	$totalextended=0;		
+		<thead>
+				<tr>
+					<th align="left" nowrap="nowrap" class="queryheader" colspan="4">invoice</th>
+					<th align="left" nowrap="nowrap" class="queryheader" colspan="3">product</th>
+					<th align="left" nowrap="nowrap" class="queryheader" colspan="2">line item</th>
+				</tr>
+				<tr>
+					<th align="center" nowrap="nowrap" class="queryheader" colspan="2">id</th>
+					<th align="left" nowrap="nowrap" class="queryheader">type</th>
+					<th align="left" nowrap="nowrap" class="queryheader">date</th>
+					<th nowrap="nowrap" class="queryheader" align="left">part num. </th>
+					<th width="100%" class="queryheader" align="left">name</th>
+					<th align="right" nowrap="nowrap" class="queryheader">price</th>
+					<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
+					<th align="right" nowrap="nowrap" class="queryheader">ext.</th>
+				</tr>
+		</thead>
+
+    <?php
+	$totalextended=0;
 	$row=1;
+	ob_start();
+	?><tbody><?php
 	while ($therecord=$db->fetchArray($queryresult)){
 		$row==1? $row++ : $row--;
 		$totalextended=$totalextended+$therecord["extended"];
@@ -184,17 +189,24 @@
 	</tr>
     <?php }//end while ?>
     <?php  if(!$db->numRows($queryresult)) {?>
-	<tr><td colspan="9" align="center" style="padding:0px;"><div class="norecords">No Sales Data for Given Timeframe</div></td></tr>
-	<?php }?>	
-	<tr>
-	 <td align="center" class="queryfooter" colspan="2">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td class="queryfooter">&nbsp;</td>
-	 <td class="queryfooter">&nbsp;</td>
-	 <td align="right" class="queryfooter">&nbsp;</td>
-	 <td align="center" class="queryfooter">&nbsp;</td>
-	 <td align="right" class="queryfooter"><?php echo numberToCurrency($totalextended)?></td>
+	<tr class="norecords"><td colspan="9" align="center" >No Sales Data for Given Timeframe</td></tr>
+	<?php }?>
+	</tbody>
+    <?php
+		$tbody = ob_get_clean();
+    ?>
+	<tfoot>
+	<tr class="queryfooter">
+	 <td align="center" colspan="2">&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td >&nbsp;</td>
+	 <td >&nbsp;</td>
+	 <td align="right" >&nbsp;</td>
+	 <td align="center" >&nbsp;</td>
+	 <td align="right" ><?php echo numberToCurrency($totalextended)?></td>
 	</tr>
-   </table>	
+	</tfoot>
+	<?php echo $tbody; ?>
+   </table>
 	</div></div><?php include("footer.php"); } //end if?>
