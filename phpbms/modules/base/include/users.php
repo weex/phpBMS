@@ -105,9 +105,9 @@ if(class_exists("phpbmsTable")){
 				$this->verifyErrors[] = "The `login` field must be set.";
 
 			//---------[ check email ]---------------------------------
-			if(isset($variables["email"]))
-				if( $variables["email"] !== NULL && $variables["email"] !== "" && !validateEmail($variables["email"]))
-					$this->verifyErrors[] = "The `email` field must have a valid email or must be left blank.";
+			//if(isset($variables["email"]))
+			//	if( $variables["email"] !== NULL && $variables["email"] !== "" && !validateEmail($variables["email"]))
+			//		$this->verifyErrors[] = "The `email` field must have a valid email or must be left blank.";
 
 			//---------[ check booleans ]---------------------------------
 			if(isset($variables["revoked"]))

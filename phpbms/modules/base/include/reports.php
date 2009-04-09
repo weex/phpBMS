@@ -111,7 +111,7 @@ if(class_exists("phpbmsTable")) {
 
 			//Table default (NULL) OK
 			if(isset($variables["type"]))
-				if($variables["type"])//don't care if it's ""
+				if($variables["type"] !== "")//don't care if it's ""
 					switch($variables["type"]){
 						case "report":
 						case "PDF Report":

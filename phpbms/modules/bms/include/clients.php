@@ -290,13 +290,13 @@ if(class_exists("phpbmsTable")){
 			}else
 				$this->verifyErrors[] = "The `type` field must be set.";
 
-			//check for currency on credit limit (((real value) >= 0 ... non-negative)
-			if(isset($variables["creditlimit"]))
-				if(!is_numeric($variables["creditlimit"]) && $variables["creditlimit"])
-					$this->verifyErrors[] = "The `creditlimit` field must be a real number or equivalent to zero.";
+			////check for currency on credit limit (((real value) >= 0 ... non-negative)
+			//if(isset($variables["creditlimit"]))
+			//	if(!is_numeric($variables["creditlimit"]) && $variables["creditlimit"])
+			//		$this->verifyErrors[] = "The `creditlimit` field must be a real number or equivalent to zero.";
 
 			//----------------[ phone & email ]------------------------------------------------------
-			//check valid email
+			/*//check valid email
 			if(isset($variables["email"]))
 				if( $variables["email"] !== NULL && $variables["email"] !== "" && !validateEmail($variables["email"]))
 					$this->verifyErrors[] = "The `email` field must have a valid email or must be left blank.";
@@ -329,7 +329,7 @@ if(class_exists("phpbmsTable")){
 			//check bool on has credit
 			if(isset($variables["hascredit"]))
 				if($variables["hascredit"] && $variables["hascredit"] != 1)
-					$this->verifyErrors[] = "The `hascredit` field must be a boolean (equivalent to 0 or exactly 1).";
+					$this->verifyErrors[] = "The `hascredit` field must be a boolean (equivalent to 0 or exactly 1).";*/
 
 
 			//----------------[ Order Defaults]------------------------------------------------------
