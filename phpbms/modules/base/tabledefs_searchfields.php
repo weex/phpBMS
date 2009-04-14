@@ -166,7 +166,12 @@
 				(e.g. assignedto.firstname like "{{value}}%"or assignedto.lastname like "{{value}}%") depending on the type drop down (above) chosen.</span>
 			</p>
 
-			<p><input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" /></p>
+			<p>
+				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+			<?php if($action == "edit search field"){?>
+				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
+			<?php }?>
+			</p>
 		</form>
 	</fieldset>
 </div>

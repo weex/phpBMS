@@ -80,6 +80,7 @@
 		case "movedown":
 			$statusmessage=moveQuicksearch($db,$_GET["quicksearchid"],"down",$_GET["id"]);
 		break;
+
 	}//end switch
 
 	$quicksearchsquery=getQuicksearchs($db,$_GET["id"]);
@@ -164,6 +165,9 @@
 
 		<p>
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+			<?php if($action == "edit quick search item"){?>
+				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
+			<?php }?>
 		</p>
 	</fieldset>
 	</form>

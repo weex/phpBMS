@@ -81,6 +81,7 @@
 		case "movedown":
 			$statusmessage=moveColumn($db,$_GET["columnid"],"down");
 		break;
+	
 	}//end switch
 
 	$columnsquery=getColumns($db,$_GET["id"]);
@@ -226,6 +227,9 @@
 
 		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+			<?php if($action == "edit column"){?>
+				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
+			<?php }?>
 		</p>
 		</form>
 	</fieldset>

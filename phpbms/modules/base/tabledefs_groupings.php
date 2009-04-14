@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 267 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-14 13:08:27 -0600 (Tue, 14 Aug 2007) $
@@ -42,7 +42,7 @@
 
 	include("include/tablegroupings.php");
 
-	
+
 	//grab the table name
 	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
 	$queryresult = $db->query($querystatement);
@@ -50,19 +50,19 @@
 	$pageTitle="Table Definition Groupings: ".$tableRecord["displayname"];
 
 	$groupings = new groupings($db,$_GET["id"]);
-	
+
 	$thecommand="";
 	if (isset($_GET["command"])) $thecommand=$_GET["command"];
 	if (isset($_POST["command"])) $thecommand=$_POST["command"];
-	
+
 	$therecord = $groupings->processForm($thecommand,$_POST,$_GET);
 	$allRecords = $groupings->getRecords();
-	
+
 	$action = $therecord["action"];
-	
+
 	if(isset($therecord["statusMessage"]))
 		$statusmessage = $therecord["statusMessage"];
-	
+
 	$phpbms->cssIncludes[] = "pages/tablecolumns.css";
 
 		//Form Elements
@@ -75,7 +75,7 @@
 
 		$theinput = new inputField("name",$therecord["name"],NULL,false,NULL,32,64);
 		$theform->addField($theinput);
-	
+
 		$theinput = new inputCheckbox("ascending",$therecord["ascending"]);
 		$theform->addField($theinput);
 
@@ -84,34 +84,37 @@
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 	$phpbms->showTabs("tabledefs entry",100,$_GET["id"])?><div class="bodyline">
 	<h1><span><?php echo $pageTitle?></span></h1>
-	
+
 	<?php $groupings->showRecords($allRecords) ?>
-	
+
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />
-		
+
 		<p>
 			<?php $theform->showField("field")?><br />
 			<span class="notes">This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname)</span>
 		</p>
 
 		<p><?php  $theform->showField("name")?></p>
-		
-		
+
+
 		<p><?php $theform->showField("roleid")?></p>
-		
+
 		<p><?php $theform->showField("ascending")?></p>
-		
+
 		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+			<?php if($action == "edit record"){?>
+				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
+			<?php }?>
 		</p>
 		</form>
 	</fieldset>
