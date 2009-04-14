@@ -405,36 +405,50 @@ smartSearch = {
 	moveSearchHighlight: function(ssID, direction){
 
 		var sbResults = getObjectFromID("SBResults-" + ssID);
-		var currentItem = 0
-		var classes, newClassName
+		var currentItem = 0;
+		var classes, newClassName;
+		var hasSelected = false;
 
 		if(direction=="down")
 			direction = 1;
 		else
 			direction =-1;
 
+		//cycle through results
 		for(var i=0; i < sbResults.childNodes.length; i++){
 
+			//look at their classname
 			if(sbResults.childNodes[i].className){
+				//if they have a classname coresponding to selected:do stuff
 				if(sbResults.childNodes[i].className.indexOf("SBSelected") !== -1){
+
+					hasSelected = true;
 					currentItem = i;
-					newClassName = ""
+					newClassName = "";
 					classes = sbResults.childNodes[i].className.split(" ");
 
+					//strip out the classes corresponding to selected
 					for(var j=0; j < classes.length; j++)
 						if(classes[j] != "SBSelected" && classes[j].indexOf("SBSel-") === -1)
 							newClassName += " " + classes[j];
 
 					newClassName = newClassName.substr(1);
 
-					sbResults.childNodes[i].className = newClassName ;
+					//set the class to the old class name minus those relating to selection
+					sbResults.childNodes[i].className = newClassName;
 				}//endif - SBSELECTED
 			}//endif - clasname
 
 		}//endfor
 
-		var newItem = currentItem + direction
+		//find index of newitem
+		var newItem = currentItem
+		if(hasSelected)
+			newItem += direction;
 
+
+		//loop through til we find something with an existing class name making sure we have
+		//some length to the result children
 		while(newItem >= 0 && newItem < sbResults.childNodes.length){
 
 			if(sbResults.childNodes[newItem].className){
@@ -443,11 +457,11 @@ smartSearch = {
 				newItem = -1000;
 
 			}else
-				newItem += direction
+				newItem += direction;
 
 		}//endwhile
 
-	}, //endif
+	}, //end method
 
 
 	getMoreResults: function(e){
