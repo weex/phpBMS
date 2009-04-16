@@ -1,16 +1,21 @@
-/* $Rev: 450 $ | $LastChangedBy: nate $ */
-/* $LastChangedDate: 2009-03-05 17:32:04 -0700 (Thu, 05 Mar 2009) $ */
+h2{
+	margin: 0;
+	padding: 3px 2px 0;
+	border:0;
+	font-size:15px
+}
 
 #systemMessageContainer{
 	background: #0B63A2 url("../../image/statusmessage.png") no-repeat 7px 6px;
 	color: white;
 	padding: 4px 10px 10px;
-	margin:0 5px 8px;
+	margin:0 0 8px;
 }
 
 	#systemMessageContainer h2{
 		color: white;
 		margin: 0 0 5px 20px;
+                padding: 0 0 4px;
 		font-size: 15px;
 	}
 
@@ -51,157 +56,105 @@
 	background:white;
 }
 
-#notesStuff{
- margin:0 4px 6px;
+/* Widget Area */
+/* ========================================================================= */
+#bigArea{
+    width: 70%;
+    float:left;
+}
+    #bigArea.littleLeft{
+        float: right;
+    }
+
+    #bigArea .widgets{
+        margin: 0 10px 10px 0;
+    }
+
+        #bigArea.littleLeft .widgets{
+            margin: 0 0 10px 10px;
+        }
+
+#littleArea{
+    width:30%;
+    float:right;
 }
 
-#notesStuff table{
- width:100%
+    #littleArea.littleLeft{
+        float: left;
+    }
+
+    #littleArea .widgets{
+        margin: 0 0 10px 10px;
+    }
+
+        #littleArea.littleLeft .widgets{
+            margin: 0 10px 10px 0;
+        }
+
+#widgetContainer{
+    background: url("../../image/snapshot-separator.png") repeat-y 70% 0;
 }
 
-#spacertd{
-	overflow:hidden;
-	width:8px;
+    #widgetContainer.littleLeft{
+        background-position: 30% 0;
+    }
+
+#clearer{
+    clear: both;
+    height: 10px;
+    overflow: hidden;
 }
 
-#tasksBox{
-	vertical-align:top;
-	padding:10px;
+.widgets{
+    margin: 0;
+    padding: 0;
 }
 
-#tasksBox .box{
-	margin:0;
+    .widgets h2{
+        margin: 2px 4px 5px;
+    }
+
+/* Widget Configure Area */
+/* ========================================================================= */
+
+.configure{
+    height:20px;
 }
 
-h2{
-	margin:3px 0 5px;
-	padding:0 0 4px;
-	border:0;
-	font-size:15px
+    #littleArea .configure{
+        margin-left: 10px
+    }
+
+        #littleArea.littleLeft .configure{
+            margin-left: 0;
+        }
+
+    #bigArea.littleLeft .configure{
+        margin-left: 10px;
+    }
+
+    .configure div{
+        position: absolute;
+        background: white;
+        padding: 8px;
+        display: none;
+        border: 1px solid #999999;
+        z-index: 100;
+    }
+
+    .configure div button{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+.configureButtons{
+    display: none;
+    width: auto;
+    padding-left: 16px;
 }
 
-#tasksBox h3, #invoiceBox h3, #clientBox h3, #arBox h3{
-	margin:0;
-	cursor:pointer;font-size:13px;background:#EEEEEE url("../../image/section-down.png") 99% 3px no-repeat;
-	padding:4px;
-	border-bottom:1px solid #BBBBBB;
+.widgetOptions{
+    float:right;
+    padding: 6px 6px 0 0;
+    display:none;
 }
-#invoiceBox h3, #clientBox h3, #arBox h3{
-	margin-bottom:10px;
-}
-
-#arTotals td{width:100px;}
-
-#tasksBox h3:hover, #invoiceBox h3:hover, #clientBox h3:hover, #arBox h3:hover{
-	background-color:#DDDDDD
-}
-
-.tasksDivs div{
-	padding:5px 0 0;
-	background:white;
-	border-top:0;
-	margin:0 5px;
-}
-
-.tasksDivs div div{
-	clear: both;
-	margin:0;
-	padding:4px 4px 4px 8px;
-	border-bottom:1px solid #EEEEEE;
-	font-size:12px;
-}
-
-	.tasksDivs div div:hover{
-		background: #EEEEEE;
-	}
-
-	.tasksDivs div div.taskSection{
-		font-weight: bold;
-		border-bottom-color: #999999;
-		padding-top: 16px;
-	}
-
-		.tasksDivs div div.taskSection:hover{
-			background: #FFF;
-		}
-
-	.taskRight{
-		padding-left: 2px;
-		font-size: 10px;
-		display: block;
-		float: right;
-		text-align: right;
-	}
-
-	.tasksDivs div div p{
-		font-style: italic;
-		font-size: 11px;
-		padding: 2px 20px;
-	}
-
-.tasksDivs a{
-	font-weight:bold;
-}
-
-
-.tasksDivs .complete a {
-	text-decoration:line-through;
-	color:#CCCCCC;
-}
-
-.tasksDivs .pastDue a{color:#FF0000;}
-
-#eventsBox {margin:0;padding:0;}
-#eventsBox {vertical-align:top;padding:10px;}
-#eventsBox h2{margin:0; padding:4px 0 4px;}
-#eventsBox #eventsList table{border-collapse:collapse;}
-
-#eventsBox #eventsList td{
-	padding:10px 5px;
-	border-bottom:1px solid #DDDDDD;
-	font-size:11px;
-}
-
-#eventsBox #eventsList .eventDayName td{
-	font-size:13px;
-	background:#EEEEEE;
-	font-weight:bold;
-	padding:4px;
-	border-bottom:1px solid #BBBBBB;
-}
-
-#eventsBox #today td{
-	background:#DDDDDD
-}
-
-#eventButtons {
-	float:right;
-	margin:0;
-	padding:0;
-}
-
-#eventButtons li{
-	list-style-type:none;
-	display:inline;
-	padding:0 4px 0 0;
-	margin:0;
-}
-
-#eventButtons #lastEButton{
-	padding-right:0px;
-}
-
-#icalA {
-	float:left;
-	height:16px;
-	display:block;
-	width:27px;
-	background:url("../../image/button-ical.png") no-repeat;
-	margin-top:3px;
-}
-#icalA span{display:none;}
-
-
-#bmsBox {padding:10px;}
-#bmsBox .rightButtons{float:right;margin:2px 2px 0 0;}
-#bmsBox h2{margin:0 0 4px;}

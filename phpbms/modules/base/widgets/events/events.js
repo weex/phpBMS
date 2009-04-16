@@ -1,7 +1,6 @@
-<?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 489 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2009-04-08 12:46:29 -0600 (Wed, 08 Apr 2009) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -37,15 +36,59 @@
  +-------------------------------------------------------------------------+
 */
 
-	include_once("../../include/session.php");
-	include_once("include/snapshot_include.php");
+wdgt13d228d3bbeee7d2657183a568688e3d = {
 
-	$snapshot = new snapshot($db);
+	idents: Array(),
 
-	if(isset($_GET["uuid"])){
+	getWeek: function(e){
 
-		$_GET["cmd"] = "remove";
-		$snapshot->process($_GET);
+		var eventDate;
+                var theEvent = wdgt13d228d3bbeee7d2657183a568688e3d;
 
-	}//endif
-?>
+		if(e){
+			var srcObj = e.src();
+
+			for(var i=0; i<theEvent.idents.length; i++)
+				disconnect(theEvent.idents[i]);
+
+			switch(srcObj.id) {
+
+				case "eventLastWeek":
+					eventDate = getObjectFromID("eventDateLast").value;
+					break;
+
+				case "eventToday":
+					eventDate = getObjectFromID("eventDateToday").value;
+					break;
+
+				case "eventNextWeek":
+					eventDate = getObjectFromID("eventDateNext").value;
+					break;
+
+			}//endswitch
+		}//endif
+
+		var theURL = "widgets/events/ajax.php?cm=getWeek";
+		if(eventDate)
+			theURL += "&d="+eventDate;
+
+		var weekContainer = getObjectFromID("eventsBox");
+		loadXMLDoc(theURL,null,false);
+		weekContainer.innerHTML = req.responseText;
+
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventLastWeek"),"onclick",theEvent.getWeek);
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventToday"),"onclick",theEvent.getWeek);
+		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventNextWeek"),"onclick",theEvent.getWeek);
+
+	}//end method
+
+}//end class
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+    wdgt13d228d3bbeee7d2657183a568688e3d.getWeek();
+
+});
+

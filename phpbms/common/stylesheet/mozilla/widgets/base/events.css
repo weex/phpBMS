@@ -1,0 +1,55 @@
+#eventsBox {
+    margin:0;
+    padding:0;
+}
+
+    #eventsBox #eventsList{
+        border-collapse:collapse;
+        margin: 0;
+    }
+
+    #eventsBox #eventsList td{
+            padding: 8px 10px 8px 0;
+            font-size:10px;
+    }
+
+    #eventsBox #eventsList .eventDayName td{
+            font-size:12px;
+            background:#EEEEEE;
+            font-weight:bold;
+            padding:6px 6px 5px;
+            border-bottom:1px solid #BBBBBB;
+    }
+
+#eventsBox #today td{
+    background:#DDDDDD;
+}
+
+#eventButtons {
+    margin:0;
+    padding:0 6px;
+}
+
+    #eventButtons li{
+        list-style-type:none;
+        display:inline;
+        padding:0 4px 0 0;
+        margin:0;
+    }
+
+    #eventButtons #icalLi{
+        float:right;
+        padding: 0;
+    }
+
+#icalA {
+    height:16px;
+    display:block;
+    width:27px;
+    background:url("../../image/button-ical.png") no-repeat;
+    margin-top:3px;
+}
+
+    #icalA span{
+        display:none;
+    }

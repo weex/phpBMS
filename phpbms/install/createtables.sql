@@ -351,3 +351,29 @@ CREATE TABLE `smartsearches` (
   `modifieddate` timestamp,
   PRIMARY KEY  (`id`)
 ) ENGINE=INNODB;
+
+CREATE TABLE `widgets` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
+  `type` varchar(64) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `file` varchar(255) NOT NULL,
+  `roleid` int(11) NOT NULL default '0',
+  `moduleid` int(11) NOT NULL default '0',
+  `default` tinyint(4) NOT NULL default '0', 
+  `createdby` int(11) default NULL,
+  `creationdate` datetime default NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp,
+  PRIMARY KEY  (`id`),
+  KEY `uniqueid` (`uuid`)
+) ENGINE=INNODB;
+
+CREATE TABLE `userpreferences` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` int(120) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `value` TEXT,
+  PRIMARY KEY  (`id`),
+  KEY `thename` (`name`)
+) ENGINE=INNODB;

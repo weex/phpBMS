@@ -36,106 +36,219 @@
  +-------------------------------------------------------------------------+
 */
 
-theEvent = {
+snapshot = {
 
-	idents: Array(),
+    showConfigure: function(e){
 
-	getWeek: function(e){
+        var box = e.src();
+        var configure = getObjectFromID(box.id + "Configure");
+        configure.style.display = "inline";
 
-		var eventDate;
-
-		if(e){
-			var srcObj = e.src();
-
-			for(var i=0; i<theEvent.idents.length; i++)
-				disconnect(theEvent.idents[i]);
-
-			switch(srcObj.id) {
-
-				case "eventLastWeek":
-					eventDate = getObjectFromID("eventDateLast").value;
-					break;
-
-				case "eventToday":
-					eventDate = getObjectFromID("eventDateToday").value;
-					break;
-
-				case "eventNextWeek":
-					eventDate = getObjectFromID("eventDateNext").value;
-					break;
-
-			}//endswitch
-		}//endif
-
-		var theURL = "snapshot_ajax.php?cm=getWeek";
-		if(eventDate)
-			theURL += "&d="+eventDate;
-
-		var weekContainer = getObjectFromID("eventsBox");
-		loadXMLDoc(theURL,null,false);
-		weekContainer.innerHTML = req.responseText;
-
-		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventLastWeek"),"onclick",theEvent.getWeek);
-		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventToday"),"onclick",theEvent.getWeek);
-		theEvent.idents[theEvent.idents.length] = connect(getObjectFromID("eventNextWeek"),"onclick",theEvent.getWeek);
-
-	}//end method
-
-}//end class
+    },//end function showConfigure
 
 
-task = {
+    hideConfigure: function(e){
 
-	check: function(e){
-		var srcObj = e.src();
+        var box = e.src();
+        var section = getObjectFromID(box.id + "ConfigureDropdown");
 
-		var id = srcObj.id.substr(5);
-		var type =  srcObj.id.substr(2,2);
-		var section = srcObj.id.substr(0,2);
+        if(section.style.display != "block"){
 
-		var checkBox = srcObj;
-		var containerP = srcObj.parentNode;
+            var configure = getObjectFromID(box.id + "Configure");
+            configure.style.display = "none";
 
-		var theURL = "snapshot_ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
+        }//endif section display block
 
-		if(checkBox.checked){
+    },//end function hideConfigure
 
-			theURL += 1;
 
-			containerP.className += " complete";
+    showWidgetOptions: function(e){
 
-		} else {
+        var widget = e.src();
+        var options = getObjectFromID(widget.id + "Options");
+        options.style.display = "block";
 
-			theURL += 0;
+    },//end function showWdigetOptions
 
-			containerP.className = containerP.className.replace(/complete/g, "");
 
-		}//end if
+    hideWidgetOptions: function(e){
 
-		loadXMLDoc(theURL,null,false);
+        var widget = e.src();
+        var options = getObjectFromID(widget.id + "Options");
+        options.style.display = "none";
 
-	}//end method
-}//end class
+    },//end function hideWdigetOptions
+
+
+    removeWidget: function(e){
+
+        var button = e.src();
+
+        var uuid = button.id.replace("RemoveButton", "");
+
+        var widget = getObjectFromID(uuid);
+
+        //need to get widget's name
+        var widgetTitle = "";
+
+        for(var i=0; i<widget.childNodes.length; i++)
+            if(widget.childNodes[i].nodeName == "H2")
+                if(widget.childNodes[i].className == "widgetTitles")
+                    widgetTitle = widget.childNodes[i].innerHTML;
+
+        var parentDiv = widget.parentNode;
+
+        //remove widget from page
+        parentDiv.removeChild(widget);
+
+        //remove widget from session
+        var theURL = "snapshot_ajax.php?uuid=" + encodeURIComponent(uuid);
+        loadXMLDoc(theURL,null,false);
+
+        // add widget to configure "add" select
+        var addSelect = getObjectFromID(parentDiv.id + "AddWidget");
+
+        // if there is not optgroup titled "recently removed", then add it
+        var optgroup = null;
+
+        for(var i=0; i<addSelect.childNodes.length; i++)
+            if(addSelect.childNodes[i].nodeName == "OPTGROUP")
+                if(addSelect.childNodes[i].label == "Recently Removed")
+                    optgroup = addSelect.childNodes[i];
+
+        if(!optgroup){
+
+            var noWidgets = null;
+
+            for(var i=0; i<addSelect.childNodes.length; i++)
+                if(addSelect.childNodes[i].nodeName == "OPTION")
+                    noWidgets = addSelect.childNodes[i];
+
+            if(noWidgets)
+                addSelect.removeChild(noWidgets);
+
+            optgroup = document.createElement('optgroup');
+            optgroup.label = "Recently Removed";
+
+            addSelect.appendChild(optgroup);
+
+        }//endif no optgrouop
+
+        var newOption = document.createElement('option');
+        newOption.value = uuid;
+
+        optgroup.appendChild(newOption);
+        newOption.innerHTML = widgetTitle;
+
+        //remove widget from "after" select
+        var afterSelect = getObjectFromID(parentDiv.id + "AfterWidget");
+
+        var optionRemove = null;
+
+        for(var i=0; i<afterSelect.childNodes.length; i++)
+            if(afterSelect.childNodes[i].nodeName == "OPTION")
+                if(afterSelect.childNodes[i].value == uuid)
+                    optionRemove = afterSelect.childNodes[i];
+
+        afterSelect.removeChild(optionRemove);
+
+        if(!afterSelect.value){
+
+            newOption = document.createElement("option");
+            newOption.value = "first";
+            afterSelect.appendChild(newOption);
+            newOption.innerHTML = "place first";
+
+        }//endif
+
+    },//end function remove widget
+
+
+    configureButtonClick: function(e){
+
+        var button = e.src();
+
+        var section = getObjectFromID(button.id + "Dropdown");
+
+        if(section.style.display == "block")
+            section.style.display = "none";
+        else
+            section.style.display = "block";
+
+    }, //end function configureButtonClick
+
+
+    widgetAdd: function(e){
+
+        //check the configure form and hen submit the form
+        var button = e.src();
+        var theform = button.form;
+
+        var area = button.id.replace("AddButton", "");
+
+        var addSelect = getObjectFromID(area + "AddWidget");
+
+        var afterSelect = getObjectFromID(area + "AfterWidget");
+
+        if(addSelect.value && afterSelect.value)
+            theform.submit();
+
+    }, //end function widgetAdd
+
+
+    widgetCancel: function(e){
+
+        var button = e.src();
+        var options = getObjectFromID(button.id.replace("CancelButton", "") + "ConfigureDropdown");
+
+        options.style.display = "none";
+
+   }//end function widgetCancel
+
+}//end class snapshot
+
 
 
 /* OnLoad Listner ---------------------------------------- */
 /* ------------------------------------------------------- */
 connect(window,"onload",function() {
-	//SystemMessage Accordian
-	//we define two arrays, containing our toggles and divs.
-	var taskChecks = getElementsByClassName('taskChecks');
-	for(var i=0; i<taskChecks.length; i++)
-		connect(taskChecks[i],"onclick",task.check);
 
+        //system message accordian
 	var systemMessageDivs = getElementsByClassName('systemMessages');
 	var systemMessageLinks = getElementsByClassName('systemMessageLinks');
 
-	var taskDivs = getElementsByClassName('tasksDivs');
-	var taskLinks = getElementsByClassName('tasksLinks');
-
 	var systemMessageAccordion = new fx.Accordion(systemMessageLinks, systemMessageDivs, {opacity: true, duration:150});
-	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: true, duration:300});
-	taskAccordion.showThisHideOpen(taskDivs[1]);
 
-	theEvent.getWeek();
+        var bigArea = getObjectFromID("bigArea")
+        connect(bigArea, "onmouseover", snapshot.showConfigure);
+        connect(bigArea, "onmouseout", snapshot.hideConfigure);
+
+        var littleArea = getObjectFromID("littleArea")
+        connect(littleArea, "onmouseover", snapshot.showConfigure);
+        connect(littleArea, "onmouseout", snapshot.hideConfigure);
+
+        var widgets = getElementsByClassName('widgets');
+	for(var i=0; i<widgets.length; i++){
+
+		connect(widgets[i], "onmouseover", snapshot.showWidgetOptions);
+		connect(widgets[i], "onmouseout", snapshot.hideWidgetOptions);
+
+	}//endfor
+
+        var widgetRemoveButtons = getElementsByClassName('widgetRemoves');
+	for(var i=0; i<widgetRemoveButtons.length; i++)
+		connect(widgetRemoveButtons[i], "onclick", snapshot.removeWidget);
+
+        var configureButtons = getElementsByClassName('configureButtons');
+	for(var i=0; i<configureButtons.length; i++)
+		connect(configureButtons[i], "onclick", snapshot.configureButtonClick);
+
+        var widgetAddButtons = getElementsByClassName('widgetAddButtons');
+	for(var i=0; i<widgetAddButtons.length; i++)
+		connect(widgetAddButtons[i], "onclick", snapshot.widgetAdd);
+
+        var widgetCancelButtons = getElementsByClassName('widgetCancelButtons');
+	for(var i=0; i<widgetCancelButtons.length; i++)
+		connect(widgetCancelButtons[i], "onclick", snapshot.widgetCancel);
+
 });

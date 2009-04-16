@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev: 258 $ | $LastChangedBy: brieb $
- $LastChangedDate: 2007-08-08 21:59:28 -0600 (Wed, 08 Aug 2007) $
+ $Rev: 311 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2007-10-02 19:51:27 -0600 (Tue, 02 Oct 2007) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -36,11 +36,26 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+include_once("../../../../include/session.php");
+include_once("include/tables.php");
+include("modules/base/include/notes.php");
 
-/*
+//=================================================================================================
+if(isset($_GET["cm"])){
 
-	Here you can define and display information from your module that
-	will show up on the snapshot (default) page.
+    $thereturn="";
 
-*/
+    switch($_GET["cm"]){
+
+        case "updateTask":
+
+            $thetable = new notes($db,12);
+            $thereturn = $thetable->updateTask((int) $_GET["id"],(int) $_GET["cp"], mysql_real_escape_string($_GET["ty"]));
+            break;
+
+    }//endswitch
+
+    echo $thereturn;
+
+}//endif
 ?>

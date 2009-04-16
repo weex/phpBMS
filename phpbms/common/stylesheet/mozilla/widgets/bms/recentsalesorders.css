@@ -1,0 +1,17 @@
+.rsoLinks{
+        margin:0;
+        cursor:pointer;font-size:13px;background:#EEEEEE url("../../image/section-down.png") 99% 3px no-repeat;
+        padding:4px 8px;
+}
+
+.rsoLinks:hover{
+        background-color:#DDDDDD
+}
+
+.rsoDivs th{
+    font-size: 11px;
+}
+
+.rsoDivs .queryGroup td {
+    font-size: 12px;
+}

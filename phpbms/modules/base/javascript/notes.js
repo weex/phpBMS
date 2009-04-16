@@ -597,7 +597,7 @@ connect(window,"onload",function() {
 			var rightside = getObjectFromID("rightSideDiv");
 			var timestamp = getObjectFromID("timeStampP");
 			var content = getObjectFromID("content");
-			var newHeight = leftside.offsetHeight - timestamp.offsetHeight-61;
+			var newHeight = rightside.offsetHeight - timestamp.offsetHeight-61;
 
 			content.style.height=newHeight+"px"
 

@@ -1,293 +1,462 @@
 <?php
-/*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
- +-------------------------------------------------------------------------+
- | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
- | All rights reserved.                                                    |
- +-------------------------------------------------------------------------+
- |                                                                         |
- | Redistribution and use in source and binary forms, with or without      |
- | modification, are permitted provided that the following conditions are  |
- | met:                                                                    |
- |                                                                         |
- | - Redistributions of source code must retain the above copyright        |
- |   notice, this list of conditions and the following disclaimer.         |
- |                                                                         |
- | - Redistributions in binary form must reproduce the above copyright     |
- |   notice, this list of conditions and the following disclaimer in the   |
- |   documentation and/or other materials provided with the distribution.  |
- |                                                                         |
- | - Neither the name of Kreotek LLC nor the names of its contributore may |
- |   be used to endorse or promote products derived from this software     |
- |   without specific prior written permission.                            |
- |                                                                         |
- | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS     |
- | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT       |
- | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A |
- | PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
- | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,   |
- | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT        |
- | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,   |
- | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY   |
- | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT     |
- | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE   |
- | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    |
- |                                                                         |
- +-------------------------------------------------------------------------+
-*/
-class baseSnapshot{
-
-	function baseSnapshot($db, $phpbms, $userid){
-
-		$this->db = $db;
-		$this->phpbms = $phpbms;
-		$this->userid = $userid;
-
-	}//endmethod (init)
-
-
-	function showSystemMessages(){
-
-		$querystatement = "
-			SELECT
-				notes.id,
-				notes.subject,
-				notes.content,
-				concat(users.firstname,' ',users.lastname) AS createdby,
-				notes.creationdate
-			FROM
-				notes INNER JOIN users ON notes.createdby=users.id
-			WHERE
-				type='SM'
-			ORDER BY
-				importance DESC,
-				notes.creationdate";
-
-		$queryresult = $this->db->query($querystatement);
-
-		if($this->db->numRows($queryresult)){ ?>
-
-		<div class="box" id="systemMessageContainer">
-			<h2>System Messages</h2>
-			<?php while($therecord = $this->db->fetchArray($queryresult)) {
-
-					$therecord["content"] = str_replace("\n","<br />",htmlQuotes($therecord["content"]));
-
-			?>
-			<h3 class="systemMessageLinks"><?php echo htmlQuotes($therecord["subject"])?> <span>[ <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?> <?php echo htmlQuotes($therecord["createdby"])?>]</span></h3>
-			<div class="systemMessages">
-				<p><?php echo $therecord["content"]?></p>
-			</div>
-			<?php }//end while ?>
-		</div>
-		<?php }//endif
-
-	}//end method showSystemMessages
-
-
-
-	function showTasks($type){
-
-		$querystatement="
-			SELECT
-				id,
-				type,
-				subject,
-				completed,
-				if(enddate < CURDATE(),1,0) AS ispastdue,
-				if(assignedtodate < CURDATE(),1,0) AS ispastassigneddate,
-				startdate,
-				enddate,
-				assignedtodate,
-				private,
-				assignedbyid,
-				assignedtoid,
-				IF(assignedtodate IS NOT NULL, assignedtodate, IF((enddate IS NOT NULL && type = 'TS'), enddate, IF((startdate IS NOT NULL && type = 'EV'), startdate, CURDATE()))) AS xdate
-			FROM
-				notes
-			WHERE";
 
-		switch($type){
+class snapshot{
 
-			case "ReceivedAssignments":
+    var $db;
+    var $preferences;
+    var $widgets = array();
 
-				$querystatement.="
-					((
-						assignedtoid = ".$this->userid."
-						OR 	(
-							type = 'TS'
-							AND (assignedtoid = 0 OR assignedtoid IS NULL)
-							AND createdby = ".$this->userid."
-							)
-					)
-						AND 	(
-							completed = 0
-							OR 	(
-								completed = 1
-								AND completeddate >= CURDATE()
-								)
-							)
-					)";
+    function snapshot($db){
 
-				$title = "Assignments";
-				$id = "AS";
-				break;
+        $this->db = $db;
 
-			case "GivenAssignments":
+        if(!isset($_SESSION["userinfo"]["prefs"]["snapshot"]))
+            $this->setPreferenceDefaults();
+        else
+            $this->preferences = json_decode($_SESSION["userinfo"]["prefs"]["snapshot"]);
 
-				$querystatement.="
-					(assignedbyid = ".$this->userid."
-					AND (completed = 0
-						OR (completed = 1 AND completeddate >= CURDATE())
-					))";
+    }//end function init
 
-				$title = "Delegations";
-				$id = "DG";
-				break;
 
-		}//endswitch
+    function setPreferenceDefaults(){
+        // If the user does not have any snapshot preferences loaded from
+        // login, we should get the defaults from the widgets table and
+        // construct/save the preferences.
 
 
-		$querystatement.="AND (
-					(startdate IS NULL AND enddate IS NULL AND assignedtodate IS NULL)
-					OR (startdate IS NOT NULL AND startdate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND enddate IS NULL AND assignedtodate IS NULL)
-					OR (enddate IS NOT NULL AND enddate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
-					OR (assignedtodate IS NOT NULL AND assignedtodate <= DATE_ADD(CURDATE(),INTERVAL 30 DAY))
-				   )";
+        //build roles modifier.  For admins, they can see everything
+        // but for everyone else we need to make an IN statement
+        if(!$_SESSION["userinfo"]["admin"])
+            $rolemodifier = "AND `roleid` IN(".implode($_SESSION["userinfo"]["roles"],",").")";
+        else
+            $rolemodifier = "";
 
-		$querystatement.=" ORDER BY
-				importance DESC,
-				xdate,
-				subject";
+        $querystatement = "
+            SELECT
+                `uuid`,
+                `type`
+            FROM
+                `widgets`
+            WHERE
+                `default` = 1
+                ".$rolemodifier."
+            ORDER BY
+                `type`,
+                `moduleid`";
 
-		$queryresult = $this->db->query($querystatement);
+        //grab the defaults from the widgets table
+        $queryresult = $this->db->query($querystatement);
 
-		$numRows = $this->db->numRows($queryresult);
+        $big = array();
+        $little = array();
 
-		?>
-		<h3 class="tasksLinks"><?php echo $title; if($numRows) {?> <span class="small">(<?php echo $numRows?>)</span><?php } ?></h3>
+        //construct the object that will be converted to json
+        $preference = new stdClass();
+        $preference->bigArea = array();
+        $preference->littleArea = array();
+        $preference->orientation = "littleRight";
 
-		<div class="tasksDivs">
-			<div>
+        // add the default widget's uuid to the appropriate
+        // area array
+        while($therecord = $this->db->fetchArray($queryresult))
+            if($therecord["type"] == "little")
+                $preference->littleArea[] = $therecord["uuid"];
+            else
+                $preference->bigArea[] = $therecord["uuid"];
 
-			<?php if($numRows){
+        $this->preferences = $preference;
 
-				$linkStart = getAddEditFile($this->db,12);
-				$section["title"] = "Now";
-				$section["date"] = mktime(0,0,0,date("m"),date("d")+3,date("Y"));
+        $json = json_encode($preference);
 
-				while($therecord = $this->db->fetchArray($queryresult)) {
+        //set the session's json
+        $_SESSION["userinfo"]["prefs"]["snapshot"] = $json;
 
-					$className="tasks";
+        //insert the preference record
+        $insertstatement = "
+            INSERT INTO
+                `userpreferences`
+                (`userid`, `name`, `value`)
+            VALUES (
+                ".$_SESSION["userinfo"]["id"].",
+                'snapshot',
+                '".mysql_real_escape_string($json)."'
+            )";
 
-					if($therecord["completed"])
-						$className.=" complete";
-					else if($therecord["ispastdue"] || $therecord["ispastassigneddate"])
-						$className.=" pastDue";
+        $this->db->query($insertstatement);
 
-					if($therecord["private"]) $className.=" private";
+    }//end function setPreferenceDefaults
 
-					$className.=" ".$therecord["type"];
 
-					$checkBoxID = $id.$therecord["type"]."C".$therecord["id"];
+    function updatePreferences(){
+        // takes the objects preferences, encodes them in JSON and then saves
+        // them both in the current session and the userpreferences table for
+        // that user
 
-					$link = $linkStart."?id=".$therecord["id"]."&amp;backurl=".APP_PATH."modules/base/snapshot.php";
+        $json = json_encode($this->preferences);
 
-					$rightSide = "";
+        $_SESSION["userinfo"]["prefs"]["snapshot"] = $json;
 
-					if($therecord["assignedtodate"])
-						$rightSide .= "FUP: ".formatFromSQLDate($therecord["assignedtodate"])."<br />";
+        $updatestatement = "
+            UPDATE
+                `userpreferences`
+            SET
+                `value` = '".mysql_real_escape_string($json)."'
+            WHERE
+                `name` = 'snapshot'
+                AND `userid` = ".$_SESSION["userinfo"]["id"];
 
-					switch($therecord["type"] ){
+        $this->db->query($updatestatement);
 
-						case "TS":
-							if($therecord["enddate"])
-								$rightSide .= "Due: ".formatFromSQLDate($therecord["enddate"])."<br />";
-							break;
+    }//end function updatePreferences
 
-						case "EV":
-							$rightSide .= "Start: ".formatFromSQLDate($therecord["startdate"])."<br />";
-							$rightSide .= "End: ".formatFromSQLDate($therecord["enddate"])."<br />";
-							break;
 
-					}//endswitch
+    function getWidgets(){
+        // This function loads each of the widgets into the objects widgets array
+        // by first looking up the widget in the database, and then loading the
+        // corrsponding widget file and implementing the class that corresponds
+        // to the uuid of that widget
 
-					if(!$rightSide)
-						$rightSide = "&nbsp;";
+        if(count($this->preferences->bigArea) || count($this->preferences->littleArea)){
 
-					$bottomInfo = "";
+            if(count($this->preferences->bigArea))
+                $bigArea = "IN('".implode($this->preferences->bigArea, "','")."')";
+            else
+                $bigArea = "= 'N/A'";
 
-					switch($type){
+            if(count($this->preferences->littleArea))
+                $littleArea = "IN('".implode($this->preferences->littleArea, "','")."')";
+            else
+                $littleArea = "= 'N/A'";
 
-						case "ReceivedAssignments":
-							if($therecord["assignedbyid"])
-								$bottomInfo = "Assigned By: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedbyid"]));
-							break;
+            $querystatement = "
+                SELECT
+                    `uuid`,
+                    `file`
+                FROM
+                    `widgets`
+                WHERE
+                    `uuid` ".$bigArea."
+                    OR `uuid` ".$littleArea;
 
-						case "GivenAssignments":
-							$bottomInfo = "Assigned To: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedtoid"]));
-							break;
+            $queryresult = $this->db->query($querystatement);
 
-					}//endswitch
+            while($therecord = $this->db->fetchArray($queryresult)){
 
-					// Looking for grouping changes in headers (3 days, 4-7 days, > 7 days)
-					$xdate = stringToDate($therecord["xdate"],"SQL") ;
+                //load the widgets class definition file
+                if(! @ include($therecord["file"]))
+                    $error = new appError(-800,"Could not include widget file: ".$therecord["file"], "Widget load failed.");
 
-					if($xdate > $section["date"]){
+                // class name of widget should be the uuid (minus the : and - chars)
+                // so let's check for it ant then instanciate it in the widgets array
+                $className = str_replace("-", "", str_replace(":", "", $therecord["uuid"]));
+                if(class_exists($className))
+                    $this->widgets[$therecord["uuid"]] = new $className($this->db);
 
-						while($xdate > $section["date"]){
+            }//endwhile fetch record
 
-							switch($section["title"]){
+        }//endif big/littleareas
 
-								case "Now":
-									$section["title"] = "Soon";
-									$section["date"] = mktime(0,0,0,date("m"),date("d")+7,date("Y"));
-									break;
+    }//end function getWidgets
 
-								case "Soon":
-									$section["title"] = "Later";
-//									$section["date"] = mktime(0,0,0,date("m"),date("d")+31,date("Y"));
-									$section["date"] = mktime(0,0,0,date("m"),date("d"),2038);
-									break;
-								case "Later":
-									$section["date"] = $xdate;
 
-							}//end switch
+    function merge($existingArray, $type = "jsIncludes"){
+        // This function merges any js or CSS files form any widgets with
+        // and then returns the new array
 
-						}//endwhile
+        foreach($this->widgets as $widget)
+            $existingArray = array_merge($existingArray, $widget->$type);
 
-						?><div class="taskSection"><?php echo $section["title"] ?></div><?php
+        return $existingArray;
 
-					}//end if
+    }//end function merge
 
-					?>
 
-					<div id="<?php echo $id.$therecord["id"]?>" class="<?php echo $className?>">
+    function process($variables){
 
-						<span class="taskRight"><?php echo $rightSide ?></span>
+        $variables = addSlashesToArray($variables);
 
-						<input class="radiochecks taskChecks" id="<?php  echo $checkBoxID?>" name="<?php  echo $checkBoxID?>" type="checkbox" value="1" <?php if($therecord["completed"]) echo 'checked="checked"'?>  align="middle" />
+        switch($variables["cmd"]){
 
-						<a href="<?php echo $link?>"><?php echo htmlQuotes($therecord["subject"])?></a>
+            case "remove":
 
-						<?php if($bottomInfo){ ?>
+                $pos = array_search($variables["uuid"], $this->preferences->bigArea);
+                if($pos !== false)
+                    array_splice($this->preferences->bigArea, $pos, 1);
+                else {
+                    $pos = array_search($variables["uuid"], $this->preferences->littleArea);
+                    if($pos !== false)
+                        array_splice($this->preferences->littleArea, $pos, 1);
+                }//endif
 
-							<p><?php echo $bottomInfo ?></p>
+                $this->updatePreferences();
 
-						<? }//endif ?>
-					</div>
+                break;
 
-				<?php }//endwhile
-				} else { ?>
-					<p class="small disabledtext">no <?php echo strtolower($title)?></p><?php
-				}?>
-			</div>
-		</div> <?php
+            case "add":
 
-	}//end method showTasks
+                if($variables["afterwidget"] == "first")
+                    $this->preferences->$variables["area"] = array_merge(array($variables["widget"]), $this->preferences->$variables["area"]);
+                else {
 
+                    $newArray = array();
+                    while(count($this->preferences->$variables["area"])){
 
-}// end class baseSnapshot
+                        $item = array_pop($this->preferences->$variables["area"]);
+
+                        if($item == $variables["afterwidget"])
+                            $newArray[] = $variables["widget"];
+
+                        $newArray[] = $item;
+
+                    }//endwhile
+
+                    $this->preferences->$variables["area"] = array_reverse($newArray);
+
+                }//end if
+
+                $this->updatePreferences();
+                break;
+
+        }//endswitch
+
+    }//end function process
+
+
+    function displayWidgets(){
+        //Creates the two column, and places the widgets
+
+        ?>
+        <div id="widgetContainer" class="<?php echo $this->preferences->orientation ?>">
+
+            <div id="bigArea" class="<?php echo $this->preferences->orientation ?>">
+                <?php
+
+                    $this->displayConfigureSection("bigArea");
+
+                    foreach($this->preferences->bigArea as $uuid)
+                        $this->widgets[$uuid]->display();
+
+                ?>
+            </div>
+
+            <div id="littleArea" class="<?php echo $this->preferences->orientation ?>">
+                <?php
+
+                    $this->displayConfigureSection("littleArea");
+
+                    foreach($this->preferences->littleArea as $uuid)
+                        $this->widgets[$uuid]->display();
+
+                ?>
+            </div>
+
+            <div id= "clearer">&nbsp;</div>
+        </div>
+        <?php
+    }//end function display
+
+
+    function displayConfigureSection($area){
+
+        if(count($this->preferences->$area))
+            $areaWhere = "NOT IN('".implode($this->preferences->$area, "','")."')";
+        else
+            $areaWhere = "!= 'N/A'";
+
+        if(!$_SESSION["userinfo"]["admin"])
+            $rolewhere = "AND `roleid` IN ('".implode($_SESSION["userinfo"]["roles"])."')";
+        else
+            $rolewhere = "";
+
+        $querystatement = "
+            SELECT
+                `widgets`.`uuid`,
+                `widgets`.`title`,
+                `modules`.`name` AS module
+            FROM
+                `widgets` INNER JOIN `modules` ON `widgets`.`moduleid` = `modules`.`id`
+            WHERE
+                `widgets`.`type` = '".str_replace("Area", "", $area)."'
+                AND `widgets`.`uuid` ".$areaWhere."
+                ".$rolewhere."
+            ORDER BY
+                `widgets`.`moduleid`,
+                `widgets`.`title`";
+
+        $widgetresult = $this->db->query($querystatement);
+
+        ?>
+            <div class="configure">
+                <button id="<?php echo $area ?>Configure" class="graphicButtons buttonPlus configureButtons" type="button">add widget...</button>
+                <div id="<?php echo $area ?>ConfigureDropdown">
+                    <form action="snapshot.php" onsubmit="return false;" method="post">
+                        <input type="hidden" name="cmd"  value="add" />
+                        <input type="hidden" name="area" value="<?php echo $area?>" />
+                        <p>
+                            <label for="<?php echo $area?>AddWidget">widget</label><br />
+                            <select name="widget" id="<?php echo $area?>AddWidget">
+                                <?php
+
+                                    if(!$this->db->numRows($widgetresult)){
+
+                                        ?><option value="">no widgets available</option><?php
+
+                                    } else {
+
+                                        $module = "";
+
+                                        while($therecord = $this->db->fetchArray($widgetresult)){
+
+                                            if($module == ""){
+
+                                                $module = $therecord["module"];
+                                                ?><optgroup label="<?php echo formatVariable($module) ?>"><?php
+
+                                            }//endif
+
+                                            if($module != $therecord["module"]){
+
+                                                $module = $therecord["module"];
+
+                                                ?></optgroup>
+                                                <optgroup label="<?php echo formatVariable($module) ?>"><?php
+
+                                            }//endif
+
+                                            ?><option value="<?php echo formatVariable($therecord["uuid"])?>">
+                                                <?php echo formatVariable($therecord["title"])?>
+                                            </option><?php
+
+                                        }//endwhile
+
+                                        ?></optgroup><?php
+
+                                    }//endif widgets available
+
+                                ?>
+                            </select>
+                        </p>
+                        <p>
+                            <label for="<?php echo $area?>AfterWidget">after</label><br />
+                            <select name="afterwidget" id="<?php echo $area?>AfterWidget">
+                                <?php
+                                    $count = 0;
+
+                                    foreach($this->widgets as $widget){
+
+                                            if($widget->type == str_replace("Area", "", $area)){
+
+                                                ?><option value="<?php echo $widget->uuid ?>"><?php echo formatVariable($widget->title) ?></option><?php
+                                                $count++;
+
+                                            }//end if
+
+                                    }//end foreach
+
+                                    if(!$count) {
+                                        //no widgets beind displayed
+                                        ?><option value="first">place first</option><?php
+
+                                    }//endif
+                                ?>
+                            </select>
+                        </p>
+                        <p>
+                            <button type="button" class="Buttons widgetAddButtons" id="<?php echo $area ?>AddButton">add</button>
+                            <button type="button" class="Buttons widgetCancelButtons" id="<?php echo $area ?>CancelButton">cancel</button>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        <?php
+
+    }//end function display
+
+
+    function displaySystemMessages(){
+        //shows system messages, but only if they exist
+
+        $querystatement = "
+            SELECT
+                    notes.id,
+                    notes.subject,
+                    notes.content,
+                    concat(users.firstname,' ',users.lastname) AS createdby,
+                    notes.creationdate
+            FROM
+                    notes INNER JOIN users ON notes.createdby=users.id
+            WHERE
+                    type='SM'
+            ORDER BY
+                    importance DESC,
+                    notes.creationdate";
+
+        $queryresult = $this->db->query($querystatement);
+
+        if($this->db->numRows($queryresult)){ ?>
+
+        <div class="box" id="systemMessageContainer">
+            <h2>System Messages</h2>
+            <?php while($therecord = $this->db->fetchArray($queryresult)) {
+
+                $therecord["content"] = str_replace("\n","<br />",htmlQuotes($therecord["content"]));
+
+            ?>
+            <h3 class="systemMessageLinks"><?php echo htmlQuotes($therecord["subject"])?> <span>[ <?php echo htmlQuotes(formatFromSQLDateTime($therecord["creationdate"]))?> <?php echo htmlQuotes($therecord["createdby"])?>]</span></h3>
+            <div class="systemMessages">
+                <p><?php echo $therecord["content"]?></p>
+            </div>
+            <?php }//end while ?>
+        </div>
+        <?php }//endif
+
+    }//end method showSystemMessages
+
+
+}//end class snapshot
+
+
+// Widget Base Class
+//==============================================================================
+
+class widget{
+
+    var $db;
+    var $uuid;
+    var $type = "big";
+    var $title = "widget";
+    var $jsIncludes = array();
+    var $cssIncludes = array();
+
+    function widget($db){
+
+        $this->db = $db;
+
+    }//end function init
+
+
+    function display(){
+
+        ?>
+        <div class="box widgets" id="<?php echo $this->uuid; ?>">
+            <div class="widgetOptions" id="<?php echo $this->uuid; ?>Options">
+                <button type="button" id="<?php echo $this->uuid; ?>RemoveButton" class="graphicButtons buttonMinus widgetRemoves" title="remove widget"><span>remove widget</span></button>
+            </div>
+            <h2 class="widgetTitles"><?php echo formatVariable($this->title)?></h2>
+
+            <?php $this->displayMiddle(); ?>
+
+        </div>
+        <?php
+
+    }//end function display
+
+
+    function displayMiddle(){
+
+    }//end function displayMiddle
+
+
+}//end class widget
 
 ?>

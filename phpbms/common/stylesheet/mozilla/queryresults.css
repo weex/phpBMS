@@ -4,8 +4,8 @@
 .row1{background-color:white;}
 .row2{background-color:#D9DBE1;}
 
-.buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0; 
-	font-size:11px; padding:1px; padding-bottom:0px; 
+.buttonSectionTitles,.buttonSection{border: 1px #666666 solid; border-bottom: 0;
+	font-size:11px; padding:1px; padding-bottom:0px;
 }
 .buttonSection{border-top:0;  padding-top:0; padding-bottom:1px;}
 
@@ -17,23 +17,24 @@
 }
 
 
-.querytable{ 
+.querytable{
 	clear:both;
 	border:1px solid #BBBBBB;
 	border-right-width:0;
 }
 
-.querytable td, .querytable th{ 
-	font-size: 11px;
-	padding:6px;
-	border-right:1px solid #BBBBBB;
-}
-.norecords td {
-	font-size:16px; 
-	padding:20px; 
-	font-weight:bold; 
-	text-align:center;
-}
+	.querytable td, .querytable th{
+		font-size: 11px;
+		padding:6px;
+		border-right:1px solid #BBBBBB;
+	}
+
+	.norecords td {
+		font-size:16px;
+		padding:20px;
+		font-weight:bold;
+		text-align:center;
+	}
 
 .querytable th{
 	border-bottom:1px solid #BBBBBB;
@@ -46,9 +47,9 @@
 
 .queryGroup td{
 	background:#97A7BA;
-	font-size: 14px;	
+	font-size: 14px;
 	font-weight:bold;
-	border-bottom:1px solid #BBBBBB;	
+	border-bottom:1px solid #BBBBBB;
 }
 
 .querytable .queryfooter td{
@@ -58,8 +59,13 @@
 }
 
 .qr1 td,.qr2 td{background-color:white;
-			cursor: pointer; 
+			cursor: pointer;
 }
+
+	.simple .qr1 td, .simple .qr2 td{
+		cursor: auto;
+	}
+
 .qr2 td{background-color:#F5F6F8}
 
 .qr1:hover td, .qr2:hover td{background-color:#EAEDF1;}

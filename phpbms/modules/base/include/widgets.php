@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 254 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2007-08-07 18:38:38 -0600 (Tue, 07 Aug 2007) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -36,16 +36,28 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+if(class_exists("phpbmsTable")){
+	class widgets extends phpbmsTable{
 
-	include_once("../../include/session.php");
-	include_once("include/snapshot_include.php");
+		function getDefaults(){
 
-	$snapshot = new snapshot($db);
+			$therecord = parent::getDefaults();
 
-	if(isset($_GET["uuid"])){
+			$therecord["uuid"] = uuid("wdgt:");
 
-		$_GET["cmd"] = "remove";
-		$snapshot->process($_GET);
+			return $therecord;
 
-	}//endif
+		}//end function - getDefaults
+
+
+	}//end class
+}//end if
+
+
+if(class_exists("searchFunctions")){
+	class menuSearchFunctions extends searchFunctions{
+
+
+	}//end class
+}//end if
 ?>

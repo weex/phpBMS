@@ -37,60 +37,41 @@
  +-------------------------------------------------------------------------+
 */
 	require_once("../../include/session.php");
+	require_once("../../include/fields.php");
 	require_once("include/snapshot_include.php");
 
 	//Page details;
-	$pageTitle = APPLICATION_NAME;
+	$headingTitle = formatVariable(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])."'s Snapshot");
+	$pageTitle = APPLICATION_NAME." - ".$headingTitle;
 
 	$phpbms->cssIncludes[] = "pages/base/snapshot.css";
 
 	$phpbms->jsIncludes[] = "modules/base/javascript/snapshot.js";
 
-	foreach($phpbms->modules as $modulename => $modinfo){
-		if(file_exists("../".$modulename."/javascript/snapshot.js") && $modulename != "base")
-			$phpbms->jsIncludes[] = "modules/".$modulename."/javascript/snapshot.js";
+	$snapshot = new snapshot($db);
 
-		if(file_exists("../../common/stylesheet/".STYLESHEET."/pages/".$modulename."/snapshot.css"))
-			$phpbms->cssIncludes[] = "pages/".$modulename."/snapshot.css";
+	if(isset($_POST["cmd"]))
+		$snapshot->process($_POST);
 
-	}//end if
+	$snapshot->getWidgets();
+
+	$phpbms->jsIncludes = $snapshot->merge($phpbms->jsIncludes, "jsIncludes");
+	$phpbms->cssIncludes = $snapshot->merge($phpbms->cssIncludes, "cssIncludes");
 
 	require("header.php");
 
-	$myBase = new baseSnapshot($db, $phpbms, $_SESSION["userinfo"]["id"]);
-
-	$headingTitle = formatVariable(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]));
-
 ?>
 <div class="bodyline">
-	<h1><?php echo $headingTitle?>'s Snapshot</h1>
 
-	<?php $myBase->showSystemMessages() ?>
-
-	<div id="notesStuff">
-	<table cellpadding="0" cellspacing="0" border="0">
-		<tr>
-			<td id="eventsBox" class="box" width="60%">&nbsp;</td>
-			<td id="spacertd">&nbsp;</td>
-			<td class="box" id="tasksBox">
-				<h2>Workload</h2>
-				<?php
-					$myBase->showTasks("GivenAssignments");
-					$myBase->showTasks("ReceivedAssignments");
-					//showTasks($db,$_SESSION["userinfo"]["id"],"Tasks");
-				?>
-			</td>
-		</tr>
-	</table>
-	</div>
-
-	<div style="clear:both;"></div>
+	<h1><?php echo $headingTitle;?></h1>
 
 	<?php
-	foreach($phpbms->modules as $modulename => $modinfo)
-		if(file_exists("../".$modulename."/snapshot.php") && $modulename != "base")
-			include("../".$modulename."/snapshot.php");
+
+		$snapshot->displaySystemMessages();
+		$snapshot->displayWidgets();
+
 	?>
+
 </div>
 
 <?php include("footer.php")?>

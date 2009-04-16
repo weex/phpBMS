@@ -89,6 +89,23 @@ class login{
 			while($rolerecord = $this->db->fetchArray($rolesqueryresult))
 				$_SESSION["userinfo"]["roles"][]=$rolerecord["roleid"];
 
+			//Retrieve and Setup User Preferences
+			$_SESSION["userinfo"]["prefs"] = array();
+
+			$querystatement = "
+				SELECT
+					`name`,
+					`value`
+				FROM
+					`userpreferences`
+				WHERE
+					`userid` = ".$_SESSION["userinfo"]["id"];
+
+			$queryresult = $this->db->query($querystatement);
+
+			while($prefsrecord = $this->db->fetchArray($queryresult))
+				$_SESSION["userinfo"]["prefs"][$prefsrecord["name"]] = $prefsrecord["value"];
+
 			//update lastlogin
 			$ip = $_SERVER["REMOTE_ADDR"];
 

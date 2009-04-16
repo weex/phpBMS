@@ -1,7 +1,6 @@
-<?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 489 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2009-04-08 12:46:29 -0600 (Wed, 08 Apr 2009) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -37,15 +36,54 @@
  +-------------------------------------------------------------------------+
 */
 
-	include_once("../../include/session.php");
-	include_once("include/snapshot_include.php");
+// use the widgets uuid to define the js struct to use.
+wdgta1aec114954b37c104747d4e851c728c = {
 
-	$snapshot = new snapshot($db);
+	check: function(e){
+		var srcObj = e.src();
 
-	if(isset($_GET["uuid"])){
+		var id = srcObj.id.substr(5);
+		var type =  srcObj.id.substr(2,2);
+		var section = srcObj.id.substr(0,2);
 
-		$_GET["cmd"] = "remove";
-		$snapshot->process($_GET);
+		var checkBox = srcObj;
+		var containerP = srcObj.parentNode;
 
-	}//endif
-?>
+		var theURL = "widgets/workload/ajax.php?id="+id+"&ty="+type+"&cm=updateTask&cp=";
+
+		if(checkBox.checked){
+
+			theURL += 1;
+
+			containerP.className += " complete";
+
+		} else {
+
+			theURL += 0;
+
+			containerP.className = containerP.className.replace(/complete/g, "");
+
+		}//end if
+
+		loadXMLDoc(theURL,null,false);
+
+	}//end method
+
+}//end class workload
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
+
+	//we define two arrays, containing our toggles and divs.
+	var taskChecks = getElementsByClassName('taskChecks');
+	for(var i=0; i<taskChecks.length; i++)
+		connect(taskChecks[i], "onclick", wdgta1aec114954b37c104747d4e851c728c.check);
+
+	var taskDivs = getElementsByClassName('tasksDivs');
+	var taskLinks = getElementsByClassName('tasksLinks');
+
+	var taskAccordion = new fx.Accordion(taskLinks, taskDivs, {opacity: true, duration:300});
+	taskAccordion.showThisHideOpen(taskDivs[1]);
+
+});

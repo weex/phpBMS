@@ -1,7 +1,6 @@
-<?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 489 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2009-04-08 12:46:29 -0600 (Wed, 08 Apr 2009) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -37,15 +36,15 @@
  +-------------------------------------------------------------------------+
 */
 
-	include_once("../../include/session.php");
-	include_once("include/snapshot_include.php");
 
-	$snapshot = new snapshot($db);
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+connect(window,"onload",function() {
 
-	if(isset($_GET["uuid"])){
+	var Divs = getElementsByClassName('rsoDivs');
+	var Links = getElementsByClassName('rsoLinks');
 
-		$_GET["cmd"] = "remove";
-		$snapshot->process($_GET);
+	var rsoAccordion = new fx.Accordion(Links, Divs, {opacity: true, duration:300});
+	rsoAccordion.showThisHideOpen(Divs[0]);
 
-	}//endif
-?>
+});

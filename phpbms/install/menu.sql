@@ -26,3 +26,4 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('219', 'Help', '', '0', '200', '1', '1', NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('220', 'About phpBMS', 'javascript:menu.showHelp()', '219', '0', '1', '1', NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('100','Smart Searches', 'search.php?id=204', '6', '70', 1, 1, NOW(), NOW(), '-100');
+INSERT INTO `menu` (`name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('Widgets', 'search.php?id=205', '6', '110', 1, 1, NOW(), NOW(), '-100');

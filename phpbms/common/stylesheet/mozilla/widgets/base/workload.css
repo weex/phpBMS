@@ -1,0 +1,67 @@
+.tasksDivs div{
+	padding:5px 0 0;
+	background:white;
+	border-top:0;
+	margin:0 5px;
+}
+
+.tasksDivs div div{
+	clear: both;
+	margin:0;
+	padding:4px 4px 4px 8px;
+	border-bottom:1px solid #EEEEEE;
+	font-size:12px;
+}
+
+	.tasksDivs div div:hover{
+		background: #EEEEEE;
+	}
+
+	.tasksDivs div div.taskSection{
+		font-weight: bold;
+		border-bottom-color: #999999;
+		padding-top: 16px;
+	}
+
+		.tasksDivs div div.taskSection:hover{
+			background: #FFF;
+		}
+
+	.taskRight{
+		padding-left: 2px;
+		font-size: 10px;
+		display: block;
+		float: right;
+		text-align: right;
+	}
+
+	.tasksDivs div div p{
+		font-style: italic;
+		font-size: 11px;
+		padding: 2px 20px;
+	}
+
+.tasksDivs a{
+	font-weight:bold;
+}
+
+
+.tasksDivs .complete a {
+	text-decoration:line-through;
+	color:#CCCCCC;
+}
+
+.tasksDivs .pastDue a{
+        color:#FF0000;
+}
+
+.tasksLinks{
+        margin:0;
+        cursor:pointer;font-size:13px;background:#EEEEEE url("../../image/section-down.png") 99% 3px no-repeat;
+        padding:4px 8px;
+        border-bottom:1px solid #BBBBBB;
+}
+
+.taskLinks:hover{
+        background-color:#DDDDDD
+}

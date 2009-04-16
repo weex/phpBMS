@@ -97,6 +97,7 @@ class installAjax extends installUpdateBase{
 		// (one per line) that populates that table.
 		$tables = array(
 			"choices",
+			"files",
 			"menu",
 			"tabs",
 			"modules",
@@ -112,7 +113,7 @@ class installAjax extends installUpdateBase{
 			"smartsearches",
 			"users",
 			"settings",
-			"files",
+			"widgets"
 		);
 
 		$thereturn = "";

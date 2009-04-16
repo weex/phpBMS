@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,13 +44,13 @@
 
 	$thetable = new tableDefinitions($db,11);
 	$therecord = $thetable->processAddEditPage();
-	
-	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
 
-	
+	if(isset($therecord["phpbmsStatus"]))
+		$statusmessage = $therecord["phpbmsStatus"];
+
+
 	$pageTitle="Table Definition";
-	
+
 	$phpbms->cssIncludes[] = "pages/tabledefs.css";
 	$phpbms->jsIncludes[] = "modules/base/javascript/tabledefs.js";
 
@@ -66,16 +66,16 @@
 		$theinput = new inputBasicList ("type",$therecord["type"],$list = array("table"=>"table","view"=>"view","system"=>"system"));
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
-		
+
 		if(!$therecord["id"]){
-		
+
 			$theinput = new inputField("newid","","new id",false,"integer",9);
 			$theform->addField($theinput);
-		
+
 		}//endif - id
-						
-		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname", 
-								"", "", false, "module");							
+
+		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
+								"", "", false, "module");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("displayname",$therecord["displayname"],"display name",true,NULL,50,64,false);
@@ -84,19 +84,19 @@
 
 		$theinput = new inputField("maintable",$therecord["maintable"],"primary table name",true,NULL,50,64);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("importfile",$therecord["importfile"],"import records file",false,NULL,100,128);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputRolesList($db,"importroleid",$therecord["importroleid"],"import access (role)");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("addfile",$therecord["addfile"],"add new record file",true,NULL,100,128);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputRolesList($db,"addroleid",$therecord["addroleid"],"add access (role)");
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputField("editfile",$therecord["editfile"],"edit record file",true,NULL,100,128);
 		$theform->addField($theinput);
 
@@ -114,18 +114,18 @@
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
+		//End Form Elements
 
 	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('querytable','Search/Display SQL FROM clause cannot be blank.');";
 	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('defaultwhereclause','default search cannot be blank.');";
 	$phpbms->topJS[] = "requiredArray[requiredArray.length]=new Array('defaultsortorder','default sort order cannot be blank.');";
-		
+
 	include("header.php");
-	
+
 	$phpbms->showTabs("tabledefs entry",1,$therecord["id"]);
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>		  
-	
+	<?php $theform->startForm($pageTitle)?>
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 
@@ -137,7 +137,7 @@
 			specify the id to be used.  Make sure that
 			the id is not already in use.  Base module
 			ids run in the 200s, bms in the 300s, recurring
-			invoices in the 400s.			
+			invoices in the 400s.
 			</span>
 		</p>
 		<?php }?>
@@ -145,15 +145,19 @@
 		<p><?php $theform->showField("type"); ?></p>
 
 		<p><?php $theform->showField("moduleid");?></p>
-		
+
+		<p>
+			<label for="deletebutton">delete record display name</label><br />
+			<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20" /><br />
+		</p>
 	</fieldset>
 
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="displayname">name</label></legend>
-			<p><?php $theform->showField("displayname"); ?></p>				
+			<p><?php $theform->showField("displayname"); ?></p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>SQL table</legend>
 
@@ -162,94 +166,95 @@
 			<p>
 				<label for="querytable">search/display SQL FROM clause</label><br />
 				<textarea id="querytable" name="querytable" rows="2" cols="48"><?php echo htmlQuotes($therecord["querytable"])?></textarea><br />
-			</p>			
+			</p>
 
 			<p class="notes">
 				<strong>Note:</strong> For simple tables, entering the same information as the primary table name is sufficient.
 				For complex data views that invlolve multiple tables, you will want to enter the SQL's FROM clause.
 			</p>
-			<p class="notes">	
+			<p class="notes">
 				For example, for invoices, you want to show both the invoice information and the client's name, so you would enter:<br /><br />
 				invoices INNER JOIN clients ON invoices.clientid=clients.id
 			</p>
 		</fieldset>
-	
+
 		<fieldset>
-			<legend>add / edit options</legend>
+			<legend>Adding Records</legend>
 			<p>
 				<?php $theform->showField("addfile");?><br />
 				<span class="notes">file name, including path from application root, that is used for creating new records.</span>
 			</p>
 
 			<p><?php $theform->showField("addroleid");?></p>
+		</fieldset>
 
-			<p>&nbsp;</p>
+		<fieldset>
+			<legend>Editing Records</legend>
 
 			<p>
 				<?php $theform->showField("editfile");?><br />
-				<span class="notes">file name, including path from application root, that is used for editing existing records.</span>			
+				<span class="notes">file name, including path from application root, that is used for editing existing records.</span>
 			</p>
 
 			<p><?php $theform->showField("editroleid");?></p>
 		</fieldset>
-	
+
 		<fieldset>
-			<legend>import options</legend>
+			<legend>Importing Records</legend>
 			<p>
 				<?php $theform->showField("importfile") ?><br />
 				<span class="notes">file name, including path from application root, that is used for importing records.If none
 				is specfied, the general import for the table def will be used.  This may not always result in accurate imports for
 				the more complicated table definitions.</span>
 			</p>
-			
+
 			<p><?php $theform->showField("importroleid") ?></p>
 		</fieldset>
-		
+
 		<fieldset>
-			<legend>search screen options</legend>
-			
+			<legend>search screen access</legend>
+
 			<p><?php $theform->showField("searchroleid")?></p>
-			
+
 			<p><?php $theform->showField("advsearchroleid")?></p>
-			
+
 			<p><?php $theform->showField("viewsqlroleid")?></p>
-			
-			<p>
-				<label for="deletebutton">delete button name</label><br />
-				<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20" /><br />
-			</p>		
+		</fieldset>
+
+		<fieldset>
+			<legend>search screen defaults</legend>
 			<p>
 				<label for="defaultwhereclause">default search</label> <span class="notes">(SQL WHERE clause)</span><br />
-				<textarea id="defaultwhereclause" name="defaultwhereclause" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultwhereclause"])?></textarea>			
+				<textarea id="defaultwhereclause" name="defaultwhereclause" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultwhereclause"])?></textarea>
 			</p>
-			
+
 			<p>
 				<label for="defaultsortorder">default sort order</label> <span class="notes">(SQL ORDER BY clause)</span><br />
-				<textarea id="defaultsortorder" name="defaultsortorder" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultsortorder"])?></textarea>			
+				<textarea id="defaultsortorder" name="defaultsortorder" cols="32" rows="4"><?php echo htmlQuotes($therecord["defaultsortorder"])?></textarea>
 			</p>
 			<p>
 				Does the default search (above) correspond to a quick search (find drop down) item?<br />
 				<input type="radio" id="defaultsearchtypeNone" name="defaultsearchtype" class="radiochecks" value="" <?php if($therecord["defaultsearchtype"]=="") echo "checked=\"checked\""?> onchange="toggleDefaultSearch()" />
 				<label for="defaultsearchtypeNone">no</label>&nbsp;
-				
+
 				<input type="radio" id="defaultsearchtypeSearch" name="defaultsearchtype" class="radiochecks" value="search" <?php if($therecord["defaultsearchtype"]=="search") echo "checked=\"checked\""?>  onchange="toggleDefaultSearch()" />
-				<label for="defaultsearchtypeNone">yes</label>&nbsp;			
+				<label for="defaultsearchtypeNone">yes</label>&nbsp;
 			</p>
 			<div id="defaultQuickSearch" <?php if($therecord["defaultsearchtype"]=="") echo "style=\"display:none;\""?>>
 				<p>
 					<label for="defaultcriteriafindoptions">critera: selected find option</label> <span class="notes">(quick search)</span><br/>
 					<textarea id="defaultcriteriafindoptions" name="defaultcriteriafindoptions" cols="32" rows="2"><?php echo htmlQuotes($therecord["defaultcriteriafindoptions"])?></textarea>
-				
+
 				</p>
 				<p>
 					<label for="defaultcriteriaselection">criteria: selected search field</label><br />
-					<textarea id="defaultcriteriaselection" name="defaultcriteriaselection" cols="32" rows="2" ><?php echo htmlQuotes($therecord["defaultcriteriaselection"])?></textarea>		
+					<textarea id="defaultcriteriaselection" name="defaultcriteriaselection" cols="32" rows="2" ><?php echo htmlQuotes($therecord["defaultcriteriaselection"])?></textarea>
 				</p>
 			</div>
 		</fieldset>
 	</div>
-	
-	<?php 
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>
