@@ -81,7 +81,7 @@
 		case "movedown":
 			$statusmessage=moveColumn($db,$_GET["columnid"],"down");
 		break;
-	
+
 	}//end switch
 
 	$columnsquery=getColumns($db,$_GET["id"]);
@@ -224,14 +224,14 @@
 			<label for="footerquery">footer</label><br />
 			<textarea id="footerquery" name="footerquery" cols="32" rows="2"><?php echo $thecolumn["footerquery"] ?></textarea><br />
 			<span class="notes">SQL Group by function (e.g avg(invoices.totalti) whill display the average invoice total at the bottom of the table)</span>		</p>
-
+	</fieldset>
 		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
 			<?php if($action == "edit column"){?>
 				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
 			<?php }?>
 		</p>
-		</form>
-	</fieldset>
+	</form>
+
 </div>
 <?php include("footer.php")?>

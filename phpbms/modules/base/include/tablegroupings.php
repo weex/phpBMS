@@ -74,6 +74,7 @@ class groupings{
 			case "movedown":
 				$therecord["statusMessage"] = $this->move($get["selid"],"down");
 			break;
+		
 		}
 
 		return $therecord;

@@ -165,14 +165,14 @@
 				<span class="notes">This can be a simple SQL field name (e.g notes.title) or a complex SQL clause where the value is passed
 				(e.g. assignedto.firstname like "{{value}}%"or assignedto.lastname like "{{value}}%") depending on the type drop down (above) chosen.</span>
 			</p>
-
-			<p>
-				<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
-			<?php if($action == "edit search field"){?>
-				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
-			<?php }?>
-			</p>
-		</form>
 	</fieldset>
+		<p align="right">
+			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
+		<?php if($action == "edit search field"){?>
+			<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
+		<?php }?>
+		</p>
+	</form>
+
 </div>
 <?php include("footer.php");?>

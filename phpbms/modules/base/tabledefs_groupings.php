@@ -109,14 +109,14 @@
 		<p><?php $theform->showField("roleid")?></p>
 
 		<p><?php $theform->showField("ascending")?></p>
-
+	</fieldset>
 		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
 			<?php if($action == "edit record"){?>
 				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
 			<?php }?>
 		</p>
-		</form>
-	</fieldset>
+	</form>
+
 </div>
 <?php include("footer.php")?>

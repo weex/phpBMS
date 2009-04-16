@@ -162,14 +162,15 @@
 			<label for="search">search</label> <span class="notes">(SQL WHERE clause)</span><br />
 			<textarea id="search" name="search" cols="32" rows="2"><?php echo htmlQuotes($thequicksearch["search"]) ?></textarea>
 		</p>
+	</fieldset>
 
-		<p>
+		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />
 			<?php if($action == "edit quick search item"){?>
 				<input name="command" id="cancel" type="submit" value="cancel edit" class="Buttons" />
 			<?php }?>
 		</p>
-	</fieldset>
+
 	</form>
 </div>
 <?php include("footer.php")?>
