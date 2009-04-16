@@ -57,4 +57,5 @@ $theModule->tables = array(
 			"shippingmethods",
 			"paymentmethods",
 			"invoicestatuses",
+			"widgets"
 			);
