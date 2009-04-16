@@ -182,9 +182,9 @@
 	</tr>
 	</table></div>
 
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<input id="columnid" name="columnid" type="hidden" value="<?php echo $thecolumn["id"]?>" />
 		<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add column") echo $topdisplayorder+1; else echo $thecolumn["displayorder"]?>" />
 

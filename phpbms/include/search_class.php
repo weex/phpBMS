@@ -1163,7 +1163,7 @@ class simpleTable extends displaySearchTable{
 	function show(){
 
 		?>
-		<table class="querytable simple" id="<?php echo $uniqueName?>" border="0" cellpadding="0" cellspacing="0">
+		<table class="querytable simple" id="<?php echo $this->uniqueName?>" border="0" cellpadding="0" cellspacing="0">
 
 			<thead><?php $this->showHeader()?></thead>
 
@@ -1187,7 +1187,7 @@ class simpleTable extends displaySearchTable{
 	function showHeader(){
 
 		?>
-		<tr id="<?php echo $this->uniqueName."-".$therecord["theid"];?>">
+		<tr >
 			<?php
 				foreach ($this->thecolumns as $therow){
 
@@ -1241,7 +1241,7 @@ class simpleTable extends displaySearchTable{
 
 			}//endif
 
-			?><tr class="qr<?php echo $rownum?>"><?php
+			?><tr id="<?php echo $this->uniqueName.":".$therecord["theid"];?>" class="qr<?php echo $rownum?>"><?php
 
 				if ($rownum==1)
 					$rownum++;

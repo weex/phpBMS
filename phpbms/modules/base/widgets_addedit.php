@@ -117,7 +117,7 @@
 
 	<div id="leftSideDiv">
 		<fieldset>
-			<legend><label for="name">title / file</label></legend>
+			<legend>title / file</legend>
 
 			<p>
 				<?php $theform->showField("title"); ?>

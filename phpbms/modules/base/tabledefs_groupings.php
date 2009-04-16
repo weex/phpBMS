@@ -93,9 +93,9 @@
 
 	<?php $groupings->showRecords($allRecords) ?>
 
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />
 
 		<p>

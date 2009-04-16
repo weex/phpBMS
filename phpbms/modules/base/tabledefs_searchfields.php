@@ -150,9 +150,9 @@
 	</tr>
 	</table></div>
 
+	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
-		<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 			<input id="searchfieldid" name="searchfieldid" type="hidden" value="<?php echo $thesearchfield["id"]?>" />
 			<input id="displayorder" name="displayorder" type="hidden" value="<?php if($action=="add search field") echo $topdisplayorder+1; else echo $thesearchfield["displayorder"]?>" />
 

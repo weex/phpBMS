@@ -115,7 +115,7 @@ if(class_exists("phpbmsTable")){
 
 			}else{
 				$partnumber = "NoT a REAl parTNuMBE|7 DU|\/|MY!";//put in an impossible partnumber
-				$id = -1;//put in an impossible product id
+				$id = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg";//put in an impossible product id
 
 				$this->availableProducts[$partnumber]["id"] = $id;
 			}//end if
@@ -136,19 +136,18 @@ if(class_exists("phpbmsTable")){
 
 					//can't have this partnumber already chosen
 					if(!isset($variables["id"]))
-						$variables["id"] = 0;
+						$tempid = 0;
+					else
+						$tempid = $variables["id"];
 
-					if($variables["id"] < 0)
-						$variables["id"] = 0;
-
-					$temppartnumber = $variables["partnumber"];// using this because it looks ugly to but the brackets within brackets
+					$temppartnumber = $variables["partnumber"];// using this because it looks ugly to put the brackets within brackets
 					if( array_key_exists($variables["partnumber"], $this->availableProducts) ){
 
-						if( $this->availableProducts[$temppartnumber]["id"] !== $variables["id"] )
+						if( $this->availableProducts[$temppartnumber]["id"] !== $tempid )
 							$this->verifyErrors[] = "The `partnumber` field must give an unique part number.";
 
 					}else{
-						$this->availableProducts[$temppartnumber]["id"] = -1;// impossible id put in
+						$this->availableProducts[$temppartnumber]["id"] = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg";// impossible id put in
 					}//end if
 
 				}else
@@ -219,7 +218,7 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["webenabled"]))
 				if($variables["webenabled"] && $variables["webenabled"] != 1)
 					$this->verifyErrors[] = "The `webenabled` field must be a boolean (equivalent to 0 or exactly 1).";
-			
+
 			if(isset($variables["isoversized"]))
 				if($variables["isoversized"] && $variables["isoversized"] != 1)
 					$this->verifyErrors[] = "The `isoversized` field must be a boolean (equivalent to 0 or exactly 1).";
