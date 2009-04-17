@@ -1252,11 +1252,11 @@ if(class_exists("searchFunctions")){
 			$whereclause = $this->buildWhereClause();
 
 			include_once("include/post_class.php");
-			defineInvoicePost();
+			defineInvoicesPost();
 
-			$invoicePost = new invoicePost($this->db);
+			$invoicesPost = new invoicesPost($this->db);
 
-			$count = $invoicePost->post($whereclause);
+			$count = $invoicesPost->post($whereclause);
 
 			$message = $this->buildStatusMessage($count);
 			$message .= " posted as invoice";
@@ -1317,15 +1317,9 @@ function obfuscatePayment($variables){
 }//end function - obfuscatePayment
 
 
-function defineInvoicePost(){
+function defineInvoicesPost(){
 
-	class invoicePost extends tablePost{
-
-		function invoicePost($db, $modifiedby = NULL){
-
-			parent::tablePost($db, $modifiedby);
-
-		}//end method
+	class invoicesPost extends tablePost{
 
 
 		function prepareWhere($whereclause=NULL){
@@ -1340,11 +1334,13 @@ function defineInvoicePost(){
 		}//end method
 
 
-		function post($whereclause=NULL){
+		function post($whereclause = NULL, $postsessionid = NULL){
 
 			if($whereclause)
 				$this->prepareWhere($whereclause);
 
+			if(!$postsessionid)
+				$postsessionid = $this->generatePostingSession("search");
 
 			$querystatement = "
 				SELECT
@@ -1364,14 +1360,16 @@ function defineInvoicePost(){
 					".$this->whereclause;
 			$queryresult = $this->db->query($querystatement);
 
-			$count =0;
+			$count = 0;
+
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				$updatestatement = "
 					UPDATE
 						`invoices`
 					SET
-						`type` = 'Invoice', ";
+						`type` = 'Invoice',
+						`postingsessionid` = ".$postsessionid.",";
 
 				if(CLEAR_PAYMENT_ON_INVOICE){
 
@@ -1434,6 +1432,8 @@ function defineInvoicePost(){
 
 			}//endwhile
 
+			$this->updatePostingSession($postsessionid, $count);
+
 			return $count;
 
 		}//end method
@@ -1443,6 +1443,6 @@ function defineInvoicePost(){
 }//end function
 
 if(class_exists("tablePost")){
-	defineInvoicePost($db);
+	defineInvoicesPost($db);
 }
 ?>

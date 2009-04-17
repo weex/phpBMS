@@ -49,3 +49,5 @@ INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorde
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('304', 'receipts.id', 'id', '2', 'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('305', 'addresstorecord.id', 'id', '1', 'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('306', 'addresses.id', 'id', '1', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('307', 'postingsessions.id', 'id', '2', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('307', '(users.lastname LIKE \"{{value}}%\" OR users.firstname LIKE \"{{value}}%\")', 'user', '1', 'whereclause');

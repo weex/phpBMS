@@ -75,6 +75,7 @@ CREATE TABLE `invoices` (
   `id` int(11) NOT NULL auto_increment,
   `clientid` int(11) NOT NULL default '0',
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
+  `postingsessionid` int(11) default NULL,
   `statusid` int(10) unsigned default NULL,
   `statusdate` date default NULL,
   `readytopost` tinyint(3) unsigned NOT NULL default '0',
@@ -162,6 +163,15 @@ CREATE TABLE prerequisites (
   UNIQUE KEY theid (id),
   KEY child (childid),
   KEY parent (parentid)
+) ENGINE=INNODB;
+
+CREATE TABLE `postingsessions` (
+  `id` int(11) NOT NULL auto_increment,
+  `sessiondate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `source` varchar(64) NOT NULL default '',
+  `recordsposted` int(11) NOT NULL default '0',
+  `userid` int(11) NOT NULL default '0',
+  UNIQUE KEY `theid` (`id`)
 ) ENGINE=INNODB;
 
 CREATE TABLE productcategories (
@@ -308,6 +318,7 @@ CREATE TABLE `receipts` (
   `status` enum('open','collected') NOT NULL default 'open',
   `readytopost` tinyint(3) unsigned NOT NULL default '0',
   `posted` tinyint(3) unsigned NOT NULL default '0',
+  `postingsessionid` int(11) default NULL,
   `paymentmethodid` int(10) NOT NULL default '0',
   `ccnumber` varchar(64) default NULL,
   `ccexpiration` varchar(10) default NULL,

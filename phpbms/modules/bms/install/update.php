@@ -150,10 +150,14 @@ class updateBMS extends updateModuleAjax{
 				case 0.96:
 
 					$version = 0.98;
+
 					//Processing Data Structure Changes
 					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
 					if($thereturn !== true)
 						return $this->returnJSON(false, $thereturn);
+
+					//Create first posting session record
+					$this->v098UpdatePostingSession();
 
 					//Updating Module Table
 					$thereturn = $this->updateModuleVersion("bms", $version);
@@ -386,6 +390,61 @@ class updateBMS extends updateModuleAjax{
 			return $this->db->insertId();
 
 	}//end function - insertAddress
+
+
+	//==== v0.98 Specific Function =================================================
+
+	function v098UpdatePostingSession(){
+
+		$records = 0;
+
+		// Update invoices with to-be-created posting session id of 1
+		$updatestatement = "
+			UPDATE
+				invoices
+			SET
+				postingsessionid = 1
+			WHERE
+				type = 'Invoice'";
+
+		$this->db->query($updatestatement);
+
+		$records += (int) $this->db->affectedRows();
+
+		// Update receipts with to-be-created posting session id of 1
+		$updatestatement = "
+			UPDATE
+				reciepts
+			SET
+				postingsessionid = 1
+			WHERE
+				posted = 1";
+
+		$this->db->query($updatestatement);
+
+		$records += (int) $this->db->affectedRows();
+
+		//Create the posting session id if there were any posted records
+		if($records){
+
+			$insertstatement = "
+				INSERT INTO
+					postingsessions
+					(id, sessiondate, `source`, recordsposted, userid)
+				VALUES
+					(
+					1,
+					NOW(),
+					'Initial Upgrade',
+					".$records.",
+					1
+					)";
+
+			$this->db->query($insertstatement);
+
+		}//endif records
+
+	}//end function v098UpdatePostingSession
 
 }//end class updateBMS
 

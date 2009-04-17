@@ -428,11 +428,11 @@ if(class_exists("searchFunctions")){
 			$whereclause = $this->buildWhereClause();
 
 			include_once("include/post_class.php");
-			defineReceiptPost();
+			defineReceiptsPost();
 
-			$receiptPost = new receiptPost($this->db);
+			$receiptsPost = new receiptsPost($this->db);
 
-			$count = $receiptPost->post($whereclause);
+			$count = $receiptsPost->post($whereclause);
 
 			$message = $this->buildStatusMessage($count);
 			$message .= " posted.";
@@ -601,15 +601,9 @@ if(class_exists("searchFunctions")){
 }//end if
 
 
-function defineReceiptPost(){
+function defineReceiptsPost(){
 
-	class receiptPost extends tablePost{
-
-		function receiptPost($db, $modifiedby = NULL){
-
-			parent::tablePost($db, $modifiedby);
-
-		}//end method
+	class receiptsPost extends tablePost{
 
 
 		function prepareWhere($whereclause=NULL){
@@ -624,11 +618,13 @@ function defineReceiptPost(){
 		}//end method
 
 
-		function post($whereclause=NULL){
+		function post($whereclause = NULL, $postsessionid){
 
 			if($whereclause)
 				$this->prepareWhere($whereclause);
 
+			if(!$postsessionid)
+				$postsessionid = $this->generatePostingSession("search");
 
 			$querystatement = "
 				SELECT
@@ -718,7 +714,8 @@ function defineReceiptPost(){
 					UPDATE
 						receipts
 					SET
-						posted = 1,";
+						posted = 1,
+						postingsessionid = ".$postsessionid.",";
 
 				if(CLEAR_PAYMENT_ON_INVOICE){
 					$updatestatement .="
@@ -741,11 +738,14 @@ function defineReceiptPost(){
 
 			}//endif
 
+
+			$this->updatePostingSession($postsessionid, $count);
+			
 			return $count;
 
 		}//end method
 
-	}//end class invoicePost
+	}//end class receiptsPost
 
 }//end function
 

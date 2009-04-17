@@ -74,6 +74,9 @@
 
 		}//endif - id
 
+		$theinput = new inputCheckbox("canpost",$therecord["canpost"],"can post records");
+		$theform->addField($theinput);
+
 		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
 								"", "", false, "module");
 		$theform->addField($theinput);
@@ -150,6 +153,9 @@
 			<label for="deletebutton">delete record display name</label><br />
 			<input id="deletebutton" name="deletebutton" type="text" value="<?php echo htmlQuotes($therecord["deletebutton"])?>" size="20" maxlength="20" /><br />
 		</p>
+
+		<p><?php $theform->showField("canpost");?></p>
+
 	</fieldset>
 
 	<div id="leftSideDiv">
