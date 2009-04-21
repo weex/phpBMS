@@ -18,3 +18,7 @@ INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('221', 'Email Projects', 'search.php?id=22', '200', '100', 1, 1, NOW(), NOW(), '-100');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('240', 'AR Items', 'search.php?id=303', '204', '20', 1, 1, NOW(), NOW(), '0');
 INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('241', 'Receipts', 'search.php?id=304', '204', '30', 1, 1, NOW(), NOW(), '80');
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('529', '----', 'N/A', '1', '100', 1, 1, NOW(), NOW(), '50');
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('530', 'Post Records', 'modules/bms/post.php', '1', '110', 1, 1, NOW(), NOW(), '50');
+INSERT INTO `menu` (`id`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('531', 'Posting Sessions', 'search.php?id=307', '1', '120', 1, 1, NOW(), NOW(), '50');
+
