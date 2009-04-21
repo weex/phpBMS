@@ -680,10 +680,11 @@ if(class_exists("phpbmsTable")){
 					$atrRecord["state"] = $variables[$varprefix."state"];
 					$atrRecord["postalcode"] = $variables[$varprefix."postalcode"];
 					$atrRecord["country"] = $variables[$varprefix."country"];
-					$atrRecord["recordid"] = $variables[$varprefix."clientid"];
+					$atrRecord["recordid"] = $variables["clientid"];
 					$atrRecord["tabledefid"] = 2;
 					$atrRecord["primary"] = 0;
-					$atrRecord["shiptodefault"] = 0;
+					$atrRecord["defaultshipto"] = 0;
+					$atrRecord["existingaddressid"] = 0;
 					$atrRecord["notes"] = "Created from sales order #".$invoiceid;
 
 					$newAtrID = $addresstorecord->insertRecord($atrRecord, $modifiedby);
