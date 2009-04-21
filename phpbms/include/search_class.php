@@ -744,7 +744,7 @@
 										if($this->tableoptions["import"]["needselect"])
 											$class = 'class="needselectDisabled"';
 										?>
-										<li><a <?php echo $class; ?> href="#" title="" onclick="chooseOtherCommand('-2','', this); return false;"><strong>import</strong></a></li>
+										<li><a <?php echo $class; ?> href="#" title="" onclick="chooseOtherCommand('-2','', this); return false;">import</a></li>
 										<?php
 
 										$displayOrder = -1;
