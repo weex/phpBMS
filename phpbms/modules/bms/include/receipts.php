@@ -605,6 +605,9 @@ function defineReceiptsPost(){
 
 	class receiptsPost extends tablePost{
 
+		var $maintable = "receipts";
+		var $datefieldname = "receiptdate";
+		var $notpostedCriteria = "receipts.posted = 0";
 
 		function prepareWhere($whereclause=NULL){
 
@@ -740,7 +743,7 @@ function defineReceiptsPost(){
 
 
 			$this->updatePostingSession($postsessionid, $count);
-			
+
 			return $count;
 
 		}//end method
@@ -750,6 +753,6 @@ function defineReceiptsPost(){
 }//end function
 
 if(class_exists("tablePost")){
-	defineReceiptPost($db);
+	defineReceiptsPost($db);
 }
 ?>

@@ -1321,6 +1321,9 @@ function defineInvoicesPost(){
 
 	class invoicesPost extends tablePost{
 
+		var $maintable = "invoices";
+		var $datefieldname = "invoicedate";
+		var $notpostedCriteria = "(invoices.type != 'Invoice' && invoices.type != 'VOID')";
 
 		function prepareWhere($whereclause=NULL){
 

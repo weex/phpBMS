@@ -8,6 +8,7 @@
 
 		var $maintable = "";
 		var $datefieldname = "";
+		var $notpostedCriteria = "";
 
 		function tablePost($db, $modifiedby = NULL){
 
@@ -21,7 +22,7 @@
 		}//end method init
 
 
-		function getRecordsToPost($startdate, $enddate){
+		function getRecordsToPost($startdate = null, $enddate = null){
 			// This function creates an array of
 			// record ids within the date range given
 
@@ -33,13 +34,26 @@
 				FROM
 					`".$this->maintable."`
 				WHERE
-					`".$this->maintable."`.readytopost = 1
+					`".$this->maintable."`.readytopost = 1";
+
+			if($startdate){
+
+				$querystatement .= "
 					AND `".$this->maintable."`.`".$this->datefieldname."` >= '".dateToString($startdate, "SQL")."'
 					AND `".$this->maintable."`.`".$this->datefieldname."` <= '".dateToString($enddate, "SQL")."'";
 
+			}//endif
+
+			if($this->notpostedCriteria){
+
+				$querystatement .= "
+					AND ".$this->notpostedCriteria;
+
+			}//endif
+
 			$queryresult = $this->db->query($querystatement);
 
-			while($thecord = $this->db->fetchArray($queryresult))
+			while($therecord = $this->db->fetchArray($queryresult))
 				$idarray[] = $therecord["id"];
 
 			//return array of ids within that date range
@@ -52,7 +66,7 @@
 			// Takes an array of ids ad creates a SQL where clause
 			// segment using 'IN'
 
-			$where = "`".$this->maintable."`.id IN";
+			$where = "`".$this->maintable."`.id ";
 			if(count($idarray))
 				$where .= " IN(".implode(",", $idarray).")";
 			else

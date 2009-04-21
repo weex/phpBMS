@@ -1,0 +1,59 @@
+#footer, #mainline{
+    width: 500px;
+}
+
+#footer{
+    margin: 0 auto 15px;
+}
+
+#mainline{
+    margin: 0 auto 5px;
+}
+
+.dateranges{
+    float: left;
+    padding-right: 20px;
+}
+
+#changeDateRange{
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: bold;
+}
+
+#bottomButtonsP{
+    text-align: right;
+}
+
+    #bottomButtonsP button{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+.non{
+    color: #666666;
+}
+
+
+#postSections {
+    border-collapse: collapse;
+}
+
+    #postSections td{
+        padding: 4px;
+    }
+
+    #postSections th {
+        text-align: left;
+        font-size: 11px;
+        vertical-align: bottom;
+        padding: 4px;
+    }
+
+    #postSections input{
+        text-align: right;
+    }
+
+    #postSections #ttype{
+        padding-right:20px;
+    }
