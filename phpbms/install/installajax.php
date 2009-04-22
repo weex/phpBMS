@@ -86,7 +86,7 @@ class installAjax extends installUpdateBase{
 		$installer = new installer($this->db);
 
 		//Run create table sql file ocreate the tables
-		$tempReturn = $installer->createTables("createtables.sql");
+		$tempReturn = $installer->processSQLFile("createtables.sql");
 
 		if($tempReturn !== true)
 			return $this->returnJSON(false, $tempReturn);
@@ -318,7 +318,7 @@ class installModuleAjax extends installUpdateBase{
 		$installer = new installer($this->db);
 
 		//Run create table sql file ocreate the tables
-		$tempReturn = $installer->createTables($this->pathToModule.$this->createTablesSQL);
+		$tempReturn = $installer->processSQLfile($this->pathToModule.$this->createTablesSQL);
 
 		if($tempReturn !== true)
 			return $this->returnJSON(false, $tempReturn);

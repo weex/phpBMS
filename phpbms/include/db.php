@@ -454,7 +454,9 @@ class db{
 	$inParents = false;
 	$sqlstatement = "";
 	$lineNumber = 1;
+
 	$this->showError = false;
+	$this->stopOnError = false;
 
 	if(!$filePointer){
 	    //could not open file
@@ -464,7 +466,7 @@ class db{
 
 	}//end if
 
-	while($line = fgets($filePointer, 65536)){
+	while($line = @ fgets($filePointer, 65536)){
 
 	    // need to convert DOS or Mac line breaks
 	    $line = ereg_replace("\r\n$", "\n", $line);
@@ -479,7 +481,7 @@ class db{
 
 		if($skipline){
 
-		    $linenumber++;
+		    $lineNumber++;
 		    continue;
 
 		}//endif
@@ -495,9 +497,9 @@ class db{
 	    if ($parents%2!=0)
 		$inParents = !$inParents;
 
-	    $sqlstatement = $line;
+	    $sqlstatement .= $line;
 
-	    if (ereg(";$", trim($line)) && !$inparents) {
+	    if (ereg(";$", trim($line)) && !$inParents) {
 	    	// run the query.  If there is an error, log it and the
 		// line number it started on
 

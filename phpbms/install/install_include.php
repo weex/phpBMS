@@ -10,76 +10,25 @@
 		}//end function init
 
 
-		function createTables($sqlfile){
+		function processSQLfile($sqlfile){
 
-			$sqlstatement="";
-			$thereturn = "";
-			$line = 1;
+			$return = "";
 
-			$filePointer = @ fopen($sqlfile,"r");
+			$fileReturn = $this->db->processSQLFile($sqlfile);
 
-			if(!$filePointer)
-				return "Could not open SQL file: ".$sqlfile;
+			if(count($fileReturn->errors)){
 
-			while(!feof($filePointer)) {
+				foreach($fileReturn->errors as $error)
+					$return = "\n\n".$error;
 
-				$createstatement .= @ fgets($filePointer,1024);
+				$return = substr($return, 2);
 
-				if(strpos($createstatement,";")){
+				return $return;
 
-					$this->db->query(trim($createstatement));
-
-					if($this->db->error)
-						return "Error creating tables on line ".$line.": ".$this->db->error." SQL Statement: ".trim($createstatement);
-
-					$createstatement = "";
-
-				}//end if;
-
-				$line++;
-
-			}//end while
-
-			return true;
-
-		}//end function createTables
-
-
-		function processSQLfile($filename){
-
-			$thefile = @ fopen($filename,"r");
-			$line = 1;
-			$thereturn = "";
-
-			if(!$thefile)
-				return "Could not open the SQL file ".$filename;
-
-			while(!feof($thefile)) {
-
-				$sqlstatement .= @ trim(fgets($thefile));
-
-				// we look for the ; at the end of the line
-				// If it is not there, we keep adding to the sql statement
-				if(strrpos($sqlstatement,";") == strlen($sqlstatement)-1){
-
-					$this->db->query(trim($sqlstatement));
-					if($this->db->error)
-						$thereturn .= "Error processing SQL file '".$filename."' on line ".$line.": ".$this->db->error." - SQL Statement: ".$sqlstatement."\n";
-
-					$sqlstatement = "";
-
-				}//end if;
-
-				$line++;
-
-			}//end while
-
-			if($thereturn)
-				return $thereturn;
-			else
+			} else
 				return true;
 
-		}//end function
+		}//end function processSQLfile
 
 	}//end class
 
