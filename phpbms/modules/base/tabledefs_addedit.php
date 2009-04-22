@@ -209,7 +209,7 @@
 			<legend>Importing Records</legend>
 			<p>
 				<?php $theform->showField("importfile") ?><br />
-				<span class="notes">file name, including path from application root, that is used for importing records.If none
+				<span class="notes">file name, including path from application root, that is used for importing records. If none
 				is specfied, the general import for the table def will be used.  This may not always result in accurate imports for
 				the more complicated table definitions.</span>
 			</p>

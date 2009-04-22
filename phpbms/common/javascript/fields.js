@@ -127,7 +127,7 @@ function validateForm(theform){
 		}
 	}
 	if(errorMessage!=""){
-		errorMessage="<UL>"+errorMessage+"</UL><DIV align=\"right\"><button class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px;\">ok</button></DIV>";
+		errorMessage="<UL>"+errorMessage+"</UL><DIV align=\"right\"><button class=\"Buttons\" accesskey=\"o\" onclick=\"closeModal()\" style=\"width:75px;\">ok</button></DIV>";
 
 		showModal(errorMessage,"Cannot Save",300);
 	}

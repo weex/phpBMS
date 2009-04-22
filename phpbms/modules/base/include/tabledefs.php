@@ -272,6 +272,12 @@ if(class_exists("phpbmsTable")){
 			}else
 				$this->verifyErrors[] = "The `moduleid` field must be set."; //table default insufficent
 
+
+			// Check boolean
+			if(isset($variables["canpost"]))
+				if($variables["canpost"] && $variables["canpost"] != 1)
+					$this->verifyErrors[] = "The `canpost` field must be a boolean (equivalent to 0 or exactly 1).";
+
 			return parent::verifyVariables($variables);
 
 		}//end method --verifyVariables--
