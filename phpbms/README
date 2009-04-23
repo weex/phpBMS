@@ -5,43 +5,44 @@
 === SERVER REQUIREMENTS ===
 
 Your server must be running at least:
- * MySQL 3.2358+
- * PHP 4.3.0+ with MySQL support enabled. 
+ * MySQL Server 5.0+
+ * PHP 5.2.0+ with MySQL support enabled.
+ * Apache 2.0 or higher
 
 
 === INSTALLATION ===
 
- * To install, from a web broswer, point to the install.php file located 
-   in the install directory. (e.g. if you installed phpBMS to the root 
+ * To install, from a web broswer, point to the index.php file located
+   in the install directory. (e.g. if you installed phpBMS to the root
    web folder of www.mytest.com, point your browser to:
 
-    http://www.mytest.com/install/install.php
-	
+    http://www.mytest.com/install/
+    OR
+    http://www.mytest.com/install/index.php
+
  * Follow the instructions on the installation page
 
 
 === UPDATING AN INSTALLED VERSION OR MODULE ===
 
-'''NOTE BEFORE UPDATING'''
- 
-Because of the extensive changes and database modifications in v0.6b, 
-certain data will be replaced.  This should not affect your client,
-product, or invoice records, but may affect saved searches and sorts,
-displayable columns and report definitions.  If you wish to save these
-records, you may need to integrate the updates by hand. The 
-updatexml.php files give a general walkthrough on what changes are 
-needed
- 
- * If you are updating or upgrading your current installation of phpBMS 
-   from a web browser point to the update.php file located in the install 
-   directory. (e.g. if you installed phpBMS to the root web folder 
+ * If you are updating or upgrading your current installation of phpBMS
+   from a web browser point to the update.php file located in the install
+   directory. (e.g. if you installed phpBMS to the root web folder
    of www.mytest.com, point your browser to:
 
     http://www.mytest.com/install/update.php
-	
+
  * Follow the instructions on the update page
 
 
+ == AFTER INSTALL/UPDATE ==
+ 
+ * Be sure to make note of the admin password given to you at the end of the
+   installation process.
+
+ * You will need to delete your installation directories in the application
+   root and any installation directories in your modules directories.
+   (e.g. the /modules/bms/install/ directory)
 
 
 - phpbms project development team (http://www.phpbms.org)
