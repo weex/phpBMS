@@ -28,9 +28,10 @@ CREATE TABLE choices (
 
 CREATE TABLE menu (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   name varchar(64) NOT NULL default '',
   link varchar(128) NOT NULL default '',
-  parentid int(11) NOT NULL default '0',
+  parentid varchar(64) NOT NULL default '0',
   displayorder int(11) NOT NULL default '0',
   createdby int(11) NOT NULL default '0',
   modifiedby int(11) default '0',

@@ -1,2 +1,3 @@
 ALTER TABLE `recurringinvoices` ENGINE=INNODB;
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('400', 'import', '0', '0', '0', '-100', '0');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:1f7541a0-7bbe-6b9f-e7c5-2db926557e53', 'Recurring Invoices', 'search.php?id=400', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '17', 1, 1, NOW(), NOW(), '30');

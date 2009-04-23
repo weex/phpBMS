@@ -41,15 +41,25 @@ if(class_exists("phpbmsTable")){
 
 		var $availableRoleIDs = array();
 
-		function checkParentMenuIDs($currentID = 0, $parentID = 0){
+		function getDefaults(){
+
+			$therecord = parent::getDefaults();
+
+			$therecord["uuid"] = uuid("menu:");
+
+			return $therecord;
+
+		}//end function - getDefaults
+
+		function checkParentMenuUUIDs($currentUUID = 0, $parentUUID = 0){
+
+			if($parentUUID === 0)
+				return true;
 
 			//cannot be own parent
-			$currentID = ((int) $currentID);
+			$currentUUID = mysql_real_escape_string($currentUUID);
 			//current setting of the parentid
-			$parentID = ((int) $parentID);
-
-			if(!$parentID)
-				return true;
+			$parentUUID = mysql_real_escape_string($parentUUID);
 
 			$querystatement = "
 				SELECT
@@ -57,9 +67,9 @@ if(class_exists("phpbmsTable")){
 				FROM
 					`menu`
 				WHERE
-					`id` = '".$parentID."'
+					`uuid` = '".$parentUUID."'
 					AND
-					`id`!='".$currentID."'
+					`uuid`!='".$currentUUID."'
 					AND
 					`parentid` = '0'
 					AND
@@ -103,6 +113,13 @@ if(class_exists("phpbmsTable")){
 
 		function verifyVariables($variables){
 
+			if(isset($variables["uuid"])){
+				if($variables["uuid"] === "" && $variables["uuid"] === NULL)
+					$this->verifyErrors[] = "The `uuid` field cannot be blank.";
+			}else
+				$this->verifyErrors[] = "The `uuid` field must be set.";
+
+
 			//table default (0) for `roleid` is ok (i.e. doesn't have to be set)
 			if(isset($variables["roleid"])){
 
@@ -126,21 +143,21 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["parentid"])){
 
 				//can be either numeric or equivalent to 0 and its int typecast must be non-negative
-				if( !$variables["parentid"] || ((int)$variables["parentid"]) > 0 ){
+				if($variables["parentid"] !== "" && $variables["parentid"] !== NULL){
 
-					$id = 0;
+					$uuid = 0;// can still check for an invalid parentid even though the current uuid is bad
 
 					//use the current id if it exists (A menu record cannot be its own parent)
-					if(isset($variables["id"]))
-						if(is_numeric($variables["id"]) && ((int) $variables["id"]) > 0)
-							$id = $variables["id"];
+					if(isset($variables["uuid"]))
+						if($variables["uuid"] !== "" && $variables["uuid"] !== NULL)
+							$uuid = $variables["uuid"];
 
 					//Select run every time because `id` can be different
-					if( !$this->checkParentMenuIDs($id, ((int) $variables["parentid"])) )
+					if( !$this->checkParentMenuUUIDs($uuid, $variables["parentid"]) )
 						$this->verifyErrors[] = "The `parentid` field does not give an existing/acceptable parent id number.";
 
 				}else
-					$this->verifyErrors[] = "The `roleid` field must be a non-negative number or equivalent to 0.";
+					$this->verifyErrors[] = "The `parentid` field must be not be blank.";
 
 			}//end if
 
@@ -185,10 +202,31 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function displayParentDropDown($selectedpid,$id=0){
+		function displayParentDropDown($selectedpid, $uuid){
 
-			if($id=="")$id=0;
-			$querystatement="SELECT id, name FROM menu WHERE id!=".$id." and parentid=0 and (link=\"\" or link is null) ORDER BY displayorder";
+			//if($uuid == "")
+			//	$uuid = 0;
+
+			$querystatement = "
+				SELECT
+					`uuid`,
+					`name`
+				FROM
+					`menu`
+				WHERE
+					`uuid` != '".$uuid."'
+					AND
+					`parentid` = 0
+					AND
+					(
+						link=\"\"
+						OR
+						link IS NULL
+					)
+				ORDER BY
+					`displayorder`;
+				";
+
 			$thequery=$this->db->query($querystatement);
 
 			echo "<select name=\"parentid\" id=\"parentid\">\n";
@@ -199,8 +237,8 @@ if(class_exists("phpbmsTable")){
 
 			echo " >-- none --</option>\n";
 			while($therecord=$this->db->fetchArray($thequery)){
-				echo "<option value=\"".$therecord["id"]."\" ";
-				if ($selectedpid==$therecord["id"])
+				echo "<option value=\"".$therecord["uuid"]."\" ";
+				if ($selectedpid==$therecord["uuid"])
 					echo "selected=\"selected\"";
 
 				echo " >".$therecord["name"]."</option>\n";

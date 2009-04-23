@@ -281,7 +281,7 @@
 			if(isset($variables["inactive"]))
 				if($variables["inactive"] && $variables["inactive"] != 1)
 					$this->verifyErrors[] = "The `inactive` field must be a boolean (equivalent to 0 or exactly 1).";
-					
+
 			if(count($this->verifyErrors))
 				$thereturn = $this->verifyErrors;
 
@@ -471,7 +471,7 @@
 								$theid = $this->insertRecord($variables);
 								//get record
 								$therecord = $this->getRecord($theid);
-								$therecord["phpbmsStatus"] = "<div style=\"float:right;margin-top:-3px;\"><button type=\"button\" class=\"smallButtons\" onclick=\"document.location='".str_replace("&","&amp;",$_SERVER["REQUEST_URI"])."'\">add new</button></div>";
+								$therecord["phpbmsStatus"] = "<div style=\"float:right;margin-top:-3px;\"><button type=\"button\" accesskey=\"n\" class=\"smallButtons\" onclick=\"document.location='".str_replace("&","&amp;",$_SERVER["REQUEST_URI"])."'\">add new</button></div>";
 								$therecord["phpbmsStatus"] .= "Record Created";
 							}else{
 								foreach($errorArray as $error)

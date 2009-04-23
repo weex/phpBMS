@@ -5,6 +5,7 @@ http://phpbms.org/browser/tags/phpbms-0.98
  * Snapshot is now modular and uses widgets
  * Snapshot is customizable based on user's preference
  * Centralized posting for receipts and invoices
+ * Menu system now uses a uuid instead of an id, making module development easier.
 
 The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.98
 

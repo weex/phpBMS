@@ -38,54 +38,81 @@
 */
 
 class topMenu{
-	
+
 	var $db;
-	
+
 	function topMenu($db){
 		$this->db = $db;
 
-		$querystatement = "SELECT id,name,link,roleid FROM menu WHERE parentid=0 ORDER BY displayorder";
-		$this->menuresult = $this->db->query($querystatement);	
+		$querystatement = "
+			SELECT
+				`id`,
+				`name`,
+				`link`,
+				`uuid`,
+				`roleid`
+			FROM
+				`menu`
+			WHERE
+				`parentid` = '0'
+			ORDER BY
+				`displayorder`;
+			";
+
+		$this->menuresult = $this->db->query($querystatement);
 
 	}
 
 
 	function getSubItems($parentid){
-		$querystatement="SELECT id,name,link,roleid FROM menu WHERE parentid=".$parentid." ORDER BY displayorder";
-		$queryresult=$this->db->query($querystatement);
-	
+		$querystatement = "
+			SELECT
+				`id`,
+				`name`,
+				`link`,
+				`roleid`
+			FROM
+				`menu`
+			WHERE
+				`parentid` = '".$parentid."'
+			ORDER BY
+				`displayorder`;
+			";
+
+		$queryresult = $this->db->query($querystatement);
+
 		if ($this->db->numRows($queryresult)<1) return false; else return $queryresult;
 	}
 
-	
+
 	function display(){
-		
+
 ?>
 <div id="menu">
 	<h1><a href="<?php echo APP_PATH.DEFAULT_LOAD_PAGE ?>" title="<?php echo htmlQuotes(APPLICATION_NAME);?>" name="toptop"><span><?php echo APPLICATION_NAME;?></span></a></h1>
 
 	<div id="menuRighthand"><?php echo htmlQuotes(trim($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"]))?>	</div>
-		
+
 	<ul id="menuBar">
-	<?php 	
+	<?php
 		$submenustring="";
-		
+
 		while($menurecord = $this->db->fetchArray($this->menuresult)){
 
 			if(hasRights($menurecord["roleid"])){
 				if($menurecord["link"]) {
 					if(strpos($menurecord["link"],"http")!==0 && strpos($menurecord["link"],"javascript")!==0)
-						$menurecord["link"]=APP_PATH.$menurecord["link"];						
-					?><li class="firstLevel"><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php 
-				} else { 
-				
-				?><li class="firstLevel"><a href="#toptop" class="topMenus" id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php 
-										
-					$subitemsquery = $this->getSubItems($menurecord["id"]);
-					
+						$menurecord["link"]=APP_PATH.$menurecord["link"];
+					?><li class="firstLevel"><a href="<?php echo $menurecord["link"]?>"><?php echo $menurecord["name"]?></a></li><?php
+				} else {
+
+				?><li class="firstLevel"><a href="#toptop" class="topMenus" id="menu<?php echo $menurecord["id"]?>"><?php echo $menurecord["name"]; ?></a></li><li class="submenusli"><ul class="submenuitems" id="submenu<?php echo $menurecord["id"]?>"><?php
+
+					$subitemsquery = $this->getSubItems($menurecord["uuid"]);
+
 					if($subitemsquery){
 						$sep=false;
-						
+
 						while($subrecord=$this->db->fetchArray($subitemsquery)){
 							if($subrecord["name"]=="----")
 								$sep=true;
@@ -94,13 +121,13 @@ class topMenu{
 									if(strpos($subrecord["link"],"http")!==0 && strpos($subrecord["link"],"javascript")!==0)
 										$subrecord["link"]=APP_PATH.$subrecord["link"];
 									if(strpos($subrecord["link"],"javascript")===0)
-										$subrecord["link"]="#\" onclick=\"".str_replace("javascript:","",$subrecord["link"]);	
-								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php 
+										$subrecord["link"]="#\" onclick=\"".str_replace("javascript:","",$subrecord["link"]);
+								?><li <?php if($sep) echo " class=\"menuSep\" "?>><a href="<?php echo $subrecord["link"]?>">&nbsp;<?php echo $subrecord["name"] ?></a></li><?php
 									$sep=false;
 								}//end if
 							}//end if
 						}//end while
-						
+
 					}//end if
 					?></ul></li><?php ;
 
