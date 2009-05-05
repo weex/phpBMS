@@ -482,30 +482,33 @@ if(class_exists("phpbmsTable")){
 		}//end method - updateRecord
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
 			//$variables = $this->prepareVariables($variables);
 
-			$newid = parent::insertRecord($variables, $createdby);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			//need to create the address and addresstorecord id
 			// make sure we are not setting extra info
 			unset($this->address->fields["email"]);
 			unset($this->address->fields["phone"]);
 			unset($this->address->fields["notes"]);
+			unset($variables["id"]);// This breaks the import otherwise...needs further testing and possibly a better solution
 			$variables["title"] = "Main Addresss";
 			$variables["tabledefid"] = 2;
 			$variables["recordid"] = $newid;
 			$variables["defaultshipto"] = 1;
 			$variables["primary"] = 1;
 
-			$variables = $this->address->prepareVariables($variables);
-			$errorArray = $this->address->verifyVariables($variables);
-			if(!count($errorArray)){
-				$this->address->insertRecord($variables, $createdby);
-			}else{
-				foreach($errorArray as $error)
-					$logError = new appError(-910, $error, "Address Verification Error");
+			if($newid){// temporary fix... may need to verify client id before hand... dunno
+				$variables = $this->address->prepareVariables($variables);
+				$errorArray = $this->address->verifyVariables($variables);
+				if(!count($errorArray)){
+					$this->address->insertRecord($variables, $createdby);
+				}else{
+					foreach($errorArray as $error)
+						$logError = new appError(-910, $error, "Address Verification Error");
+				}//end if
 			}//end if
 
 			//restore the fields
@@ -1026,10 +1029,9 @@ if(class_exists("phpbmsImport")){
 
 						//if valid, insert, if not, log error and don't insert.
 						if($rowFieldNum == $fieldNum){
-							//$trimmedRowData = $this->table->prepareVariables($trimmedRowData);
 							$verify = $this->table->verifyVariables($trimmedRowData);
 							if(!count($verify))
-								$theid = $this->table->insertRecord($trimmedRowData);
+								$theid = $this->table->insertRecord($trimmedRowData, NULL, true);
 						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
 
