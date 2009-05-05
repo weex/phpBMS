@@ -48,7 +48,15 @@ CREATE TABLE `clients` (
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
-  UNIQUE KEY `theid` (`id`),
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
+  PRIMARY KEY (`id`),
   KEY `notin` (`inactive`),
   KEY `thefirstname` (`firstname`),
   KEY `created` (`creationdate`),
@@ -68,6 +76,14 @@ CREATE TABLE discounts (
   modifiedby int(11) default NULL,
   modifieddate timestamp(14) NOT NULL,
   creationdate datetime default NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY  (id)
 ) ENGINE=INNODB;
 
@@ -132,6 +148,14 @@ CREATE TABLE `invoices` (
   `billingaddressid` int(11) default NULL,
   `shiptoaddressid` int(11) default NULL,
   `shiptosameasbilling` tinyint(3) unsigned NOT NULL default '0',
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   UNIQUE KEY `theid` (`id`),
   KEY `client` (`clientid`)
 )  ENGINE=INNODB AUTO_INCREMENT=1000 PACK_KEYS=0;
@@ -151,7 +175,15 @@ CREATE TABLE lineitems (
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifiedby int(11) default NULL,
   modifieddate timestamp(14) NOT NULL,
-  UNIQUE KEY theid (id),
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
+  PRIMARY KEY (id),
   KEY invoice (invoiceid),
   KEY product (productid)
 ) ENGINE=INNODB;
@@ -160,7 +192,7 @@ CREATE TABLE prerequisites (
   childid int(11) NOT NULL default '0',
   id int(11) NOT NULL auto_increment,
   parentid int(11) NOT NULL default '0',
-  UNIQUE KEY theid (id),
+  PRIMARY KEY (id),
   KEY child (childid),
   KEY parent (parentid)
 ) ENGINE=INNODB;
@@ -171,7 +203,7 @@ CREATE TABLE `postingsessions` (
   `source` varchar(64) NOT NULL default '',
   `recordsposted` int(11) NOT NULL default '0',
   `userid` int(11) NOT NULL default '0',
-  UNIQUE KEY `theid` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=INNODB;
 
 CREATE TABLE productcategories (
@@ -185,6 +217,14 @@ CREATE TABLE productcategories (
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp(14) NOT NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 
@@ -218,6 +258,14 @@ CREATE TABLE products (
   taxable tinyint(4) NOT NULL default '1',
   memo text,
   upc varchar(128) default NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   UNIQUE KEY theid (id),
   UNIQUE KEY thpartnum (partnumber),
   KEY status (status)
@@ -232,6 +280,14 @@ CREATE TABLE tax (
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifiedby int(11) default NULL,
   modifieddate timestamp(14) NOT NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   UNIQUE KEY theid (id)
 ) ENGINE=INNODB;
 
@@ -246,6 +302,14 @@ CREATE TABLE `shippingmethods` (
   `creationdate` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 
@@ -276,6 +340,14 @@ CREATE TABLE `invoicestatuses` (
   `creationdate` DATETIME,
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 
@@ -334,6 +406,14 @@ CREATE TABLE `receipts` (
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp NOT NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY  (`id`)
 ) ENGINE=INNODB;
 
@@ -364,6 +444,14 @@ CREATE TABLE `addresses` (
   `creationdate` DATETIME NOT NULL,
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 

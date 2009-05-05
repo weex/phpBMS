@@ -89,6 +89,14 @@ CREATE TABLE `notes` (
   `lastrepeat` date default NULL,
   `timesrepeated` int(10) unsigned NOT NULL default '0',
   `repeatname` varchar(255) default NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY (`id`)
 ) ENGINE=INNODB;
 
@@ -160,6 +168,7 @@ CREATE TABLE `tabledefs` (
   `viewsqlroleid` int(11) NOT NULL default '-100',
   `deletebutton` varchar(32) default '',
   `canpost` tinyint(4) NOT NULL default '0',
+  `hascustomfields` tinyint(4) NOT NULL default '0',
   `defaultwhereclause` text,
   `defaultsortorder` text,
   `defaultsearchtype` varchar(64) default '',
@@ -206,6 +215,20 @@ CREATE TABLE tablesearchablefields (
   PRIMARY KEY  (id)
 ) ENGINE=INNODB  AUTO_INCREMENT=2000;
 
+CREATE TABLE tablecustomfields (
+  `id` int(11) NOT NULL auto_increment,
+  `tabledefid` int(11) NOT NULL default 0,
+  `name` varchar(128) NOT NULL default '',
+  `field` varchar(8) NOT NULL default '',
+  `format` varchar(32),
+  `generator` TEXT,
+  `required` TINYINT(4) NOT NULL default 0,
+  `displayorder` int(11) NOT NULL default 0,
+  `roleid` int(11) NOT NULL default 0,
+  PRIMARY KEY  (`id`),
+  KEY `tabledef` (`tabledefid`)
+) ENGINE=INNODB;
+
 CREATE TABLE users (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   login varchar(64) NOT NULL default '',
@@ -225,6 +248,14 @@ CREATE TABLE users (
   employeenumber varchar(64) default '',
   admin tinyint(4) NOT NULL default '0',
   portalaccess tinyint(4) NOT NULL default '0',
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY (`id`)
 ) ENGINE=INNODB  AUTO_INCREMENT=100;
 

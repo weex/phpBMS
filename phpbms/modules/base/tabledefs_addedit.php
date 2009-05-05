@@ -77,6 +77,9 @@
 		$theinput = new inputCheckbox("canpost",$therecord["canpost"],"can post records");
 		$theform->addField($theinput);
 
+		$theinput = new inputCheckbox("hascustomfields",$therecord["hascustomfields"],"has custom fields");
+		$theform->addField($theinput);
+
 		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
 								"", "", false, "module");
 		$theform->addField($theinput);
@@ -155,6 +158,8 @@
 		</p>
 
 		<p><?php $theform->showField("canpost");?></p>
+
+		<p><?php $theform->showField("hascustomfields");?></p>
 
 	</fieldset>
 

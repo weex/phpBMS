@@ -1,0 +1,41 @@
+.items{
+    float: left;
+    padding-right: 10px;
+}
+
+.formatting select{
+    width: 150px;
+}
+
+.generators{
+    clear: left;
+}
+
+    .generators textarea{
+        width: 700px;
+    }
+
+#noCustom{
+    clear: left;
+}
+
+#pageTitle{
+    float: left;
+}
+
+#topSaveP{
+    float: right
+}
+
+fieldset{
+    clear: both;
+}
+
+#bottomSaveP{
+    text-align: right;
+}
+
+.saveButtons{
+    padding-right: 15px;
+    padding-left: 15px;
+}
