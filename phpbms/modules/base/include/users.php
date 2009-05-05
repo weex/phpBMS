@@ -146,12 +146,12 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
 			$this->fields["password"]["type"] = "password";
 			unset($this->fields["lastlogin"]);
 
-			$theid = parent::insertRecord($variables, $createdby);
+			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			//reset field information
 			$this->fields = $this->db->tableInfo($this->maintable);

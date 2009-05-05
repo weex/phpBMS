@@ -784,9 +784,9 @@ if(class_exists("phpbmsTable")){
 		}//end endmethod
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
-			$newid = parent::insertRecord($variables, $createdby);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			if(isset($variables["completed"]) && isset($variables["repeating"]))
 				$this->repeatTask($newid);

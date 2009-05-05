@@ -95,13 +95,7 @@
 
 	 		$thetable = new clients($db,2,$backurl);
 			$import = new clientsImport($thetable, $importType);
-
-	//and if you are setting the backurl, make sure you pass that as well
-	// like this:
-
-	// 		$thetable = new [tablename]($db,[table definition id],$backurl);
-
-
+			
 	//Next we process the form (if submitted) and
 	// return the current record as an array ($therecord)
 	// or if this is a new record, it returns the defaults
@@ -114,22 +108,9 @@
 
 	$pageTitle = ($therecord["title"])?$therecord["title"]:"General Table Import";
 
-	// Next, we set up to include any
-	// additional css or javascript files we will be using
-	//  This does nto include any field-type specific js (like datepicker)
-	// as they are automatically icluded when you define the special fields you
-	// will be using below.
 	$phpbms->cssIncludes[] = "pages/imports.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/clients_import.js";
 
-	// if you need to define a body onlload function, do so with the phpbms property
-
-	//		$phpbms->onload[] = "initializePage()";
-
-
-	// Next we need to define any special fields that will be used in the form
-	// A list of field objects (with documentation)is available in the /include/fields.php
-	// file.
 
 	// We need to define them here in the head
 	// so that any necessay javascript is loaded appropriately.
@@ -153,11 +134,6 @@
 		$theinput = new inputBasicList("importType", $default, $list, "File Type");
 		$theform->addField($theinput);
 
-		// if you neeed to add additional attributes toa field, it's easy.
-		//$theinput = new inputBasicList("type",$therecord["type"],array("Quote"=>"Quote","Order"=>"Order","Invoice"=>"Invoice","VOID"=>"VOID"), $displayName = NULL, $displayLabel = true);
-		//$theinput->setAttribute("onchange","checkType(this)");
-		//$theinput->setAttribute("class","important");
-		//$theform->addField($theinput);
 
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();

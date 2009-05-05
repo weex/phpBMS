@@ -768,14 +768,14 @@ if(class_exists("phpbmsTable")){
 
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
 			if($createdby === NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
 
 			//$variables = $this->prepareVariables($variables);
 
-			$newid = parent::insertRecord($variables, $createdby);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
 

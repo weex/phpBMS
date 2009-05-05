@@ -244,7 +244,7 @@ if(class_exists("addresses")){
 		}//end function
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
 			//$variables = $this->prepareVariables($variables);
 
@@ -256,7 +256,7 @@ if(class_exists("addresses")){
 
 			} else {
 
-				$newid = parent::insertRecord($variables, $createdby);
+				$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 				//create the addresstorecord
 				$newAtrID = $this->createAddressToRecord($variables, $newid, $createdby);

@@ -514,19 +514,23 @@ class phpbmsSession{
 		if(file_exists("install") && is_dir("install"))
 			$error = new appError(-353,"You must remove the install directory and all modules' install directories before phpBMS can run.","Main Install Directory Present",true,true,true,$errorFormat);
 
-		$thedir= @ opendir("modules");
+		if(file_exists("modules") && is_dir("modules")){
 
-		while($entry = readdir($thedir)){
+			$thedir = @ opendir("modules");
 
-			if($entry != "." && $entry != ".." && $entry != "base" && $entry != "sample" && is_dir("modules/".$entry)){
+			while($entry = readdir($thedir)){
 
-				if(file_exists("modules/".$entry."/install") && is_dir("modules/".$entry."/install")){
+				if($entry != "." && $entry != ".." && $entry != "base" && $entry != "sample" && is_dir("modules/".$entry)){
 
-					$error = new appError(-354,"You must remove the install directory and all modules' install directories before phpBMS can run.","Module '".$entry."' Install Directory Present",true,true,true,$errorFormat);
+					if(file_exists("modules/".$entry."/install") && is_dir("modules/".$entry."/install")){
+
+						$error = new appError(-354,"You must remove the install directory and all modules' install directories before phpBMS can run.","Module '".$entry."' Install Directory Present",true,true,true,$errorFormat);
+
+					}//endif
 
 				}//endif
 
-			}//endif
+			}//end while
 
 		}//end if
 

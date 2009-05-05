@@ -344,7 +344,7 @@
 		}
 
 
-		function insertRecord($variables,$createdby = NULL, $overrideID = false){
+		function insertRecord($variables,$createdby = NULL, $overrideID = false, $replace = false){
 
 			if($createdby === NULL)
 				if(isset($_SESSION["userinfo"]["id"]))
@@ -395,7 +395,12 @@
 			$fieldlist = substr($fieldlist, 0, strlen($fieldlist)-2);
 			$insertvalues = substr($insertvalues, 0, strlen($insertvalues)-2);
 
-			$insertstatement = "INSERT INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
+			if($replace)
+				$insertstatement = "REPLACE";
+			else
+				$insertstatement = "INSERT";
+
+			$insertstatement .= " INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
 			$insertresult = $this->db->query($insertstatement);
 
 			if($insertresult)

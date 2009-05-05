@@ -134,9 +134,9 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
-			$newid = parent::insertRecord($variables, $createdby);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			//restore the fields
 			$this->getTableInfo();

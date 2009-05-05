@@ -90,25 +90,9 @@
 
 	$pageTitle = ($therecord["title"])?$therecord["title"]:"General Table Import";
 
-	// Next, we set up to include any
-	// additional css or javascript files we will be using
-	//  This does nto include any field-type specific js (like datepicker)
-	// as they are automatically icluded when you define the special fields you
-	// will be using below.
 	$phpbms->cssIncludes[] = "pages/imports.css";
 	//$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
-	// if you need to define a body onlload function, do so with the phpbms property
-
-	//		$phpbms->onload[] = "initializePage()";
-
-
-	// Next we need to define any special fields that will be used in the form
-	// A list of field objects (with documentation)is available in the /include/fields.php
-	// file.
-
-	// We need to define them here in the head
-	// so that any necessay javascript is loaded appropriately.
 
 		//Form Elements
 		//==============================================================
@@ -116,9 +100,6 @@
 		// Create the form
 		$theform = new importForm();
 		$theform->enctype = "multipart/form-data";
-		//if you need to set specific form vaiables (like enctype, or extra onsubmit
-		// you can set those form properties here.
-
 
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();
@@ -152,6 +133,7 @@
 					<input id="import" name="import" type="file" size="64"/><br/>
 				</p>
 
+
 				<div id="info0" class="info">
 					<p>
 						For any file that is a comma seperated value (csv) file:
@@ -171,6 +153,7 @@
 						When entering in currency, dates, or times use the format in the bms's configuration
 						(e.g. use English, US style dates if that is what the bms is configured to).
 					</p>
+
 				</div>
 			</div>
 

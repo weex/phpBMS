@@ -15,6 +15,7 @@
 		var $tempFileID = 0;
 		var $pageType = "main";
 
+
 		function phpbmsImport($table, $importType = "csv"){
 
 			$this->table = $table;
@@ -30,11 +31,6 @@
 			$this->table->db->stopOnError = false;
 			//Won't display db errors, just log them.
 			$this->table->db->showError = false;
-			if(isset($_POST["pageType"]))
-				$this->pageType = $_POST["pageType"];
-
-			if(isset($_POST["tempFileID"]))
-				$this->tempFileID = ((int)$_POST["tempFileID"]);
 
 		}//end method --imports--
 
@@ -257,7 +253,7 @@
 						if($rowFieldNum == $fieldNum){
 							$verify = $this->table->verifyVariables($trimmedRowData);
 							if(!count($verify))
-								$theid = $this->table->insertRecord($trimmedRowData);
+								$theid = $this->table->insertRecord($trimmedRowData, NULL, true);
 						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
 
@@ -330,6 +326,12 @@
 		function processImportPage(){
 
 			$this->table->getTableInfo();
+
+			if(isset($_POST["pageType"]))
+				$this->pageType = $_POST["pageType"];
+
+			if(isset($_POST["tempFileID"]))
+				$this->tempFileID = ((int)$_POST["tempFileID"]);
 
 			if(!isset($_POST["command"])){
 

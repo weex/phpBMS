@@ -324,7 +324,7 @@ if(class_exists("phpbmsTable")){
 			$this->db->query($querystatement);
 
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'import','1',0,0,'-100');";
+			VALUES (".$newid.",'import','0',0,0,'-100');";
 			$this->db->query($querystatement);
 
 			//next quicksearch

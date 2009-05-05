@@ -38,69 +38,69 @@
 */
 if(class_exists("phpbmsTable")){
 	class roles extends phpbmsTable{
-		
-		function updateRecord($variables, $modifiedby = NULL){	
+
+		function updateRecord($variables, $modifiedby = NULL){
 			parent::updateRecord($variables, $modifiedby);
 
 			if($variables["userschanged"]==1)
 				$this->assignUsers($variables["id"],$variables["newusers"]);
 		}
-	
-	
-		function insertRecord($variables, $createdby = NULL){	
-			$theid = parent::insertRecord($variables, $createdby);
-			
+
+
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+
 			if(isset($variables["userschanged"]))
 				if($variables["userschanged"]==1)
 					$this->assignUsers($theid,$variables["newusers"]);
-				
+
 			return $theid;
 		}
-	
-	
+
+
 		function assignUsers($id,$users){
 			$querystatement="DELETE FROM rolestousers WHERE roleid=".$id;
 			$queryresult=$this->db->query($querystatement);
-	
+
 			$newusers=explode(",",$users);
-	
+
 			foreach($newusers as $theuser)
 				if($theuser!=""){
 					$querystatement="INSERT INTO rolestousers (roleid,userid) VALUES(".$id.",".$theuser.")";
 					$queryresult=$this->db->query($querystatement);
 				}
 		}
-	
-	
+
+
 		function displayUsers($id,$type){
 			$querystatement="SELECT users.id,concat(users.firstname,' ',users.lastname) as name
-							FROM users INNER JOIN rolestousers ON rolestousers.userid=users.id 
+							FROM users INNER JOIN rolestousers ON rolestousers.userid=users.id
 							WHERE rolestousers.roleid=".((int) $id);
 			$assignedquery=$this->db->query($querystatement);
-	
+
 			$thelist=array();
-			
+
 			if($type=="available"){
 				$excludelist=array();
 				while($therecord=$this->db->fetchArray($assignedquery))
 					$excludelist[]=$therecord["id"];
-					
+
 				$querystatement="SELECT id,concat(users.firstname,' ',users.lastname) as name FROM users WHERE revoked=0 AND portalaccess=0";
 				$availablequery=$this->db->query($querystatement);
-	
+
 				while($therecord=$this->db->fetchArray($availablequery))
 					if(!in_array($therecord["id"],$excludelist))
-						$thelist[]=$therecord;		
-			} else 
+						$thelist[]=$therecord;
+			} else
 				while($therecord=$this->db->fetchArray($assignedquery))
 					$thelist[]=$therecord;
-					
+
 			foreach($thelist as $theoption){
 				?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
-		<?php 
+		<?php
 			}
 		}//end function
-	
+
 	}//end class
 }//end if
 ?>
