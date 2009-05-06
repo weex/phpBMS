@@ -116,9 +116,6 @@ class customFields{
 
         for($i = 1; $i < 9; $i++){
 
-            $theinput = new inputCheckbox("custom".$i."required", $settings["custom".$i]["required"], "required");
-            $theform->addField($theinput);
-
             $theinput = new inputField("custom".$i."name", $settings["custom".$i]["name"], "name");
             $theform->addField($theinput);
 
@@ -132,31 +129,50 @@ class customFields{
 
                 case 1:
                 case 2:
+                    $req = true;
                     $formatArray = array("integer" => "integer", "real" => "real", "currency" => "currency");
                     break;
 
                 case 3:
                 case 4:
-                    $formatArray = array("date" => "date", "time" => "time", "date and time" => "datetime");
+                    $req = true;
+                    $formatArray = array("date" => "date", "time" => "time");
                     break;
 
                 case 5:
                 case 6:
+                    $req = true;
                     $formatArray = array("no formatting" => "", "phone number" => "phone", "e-mail address" => "email", "Web address (URL)" => "www", "modifiable drop down list" => "list");
                     break;
 
                 case 7:
                 case 8:
+                    $req = false;
                     $formatArray = array("Not Applicable" => "");
                     break;
 
             }//endswitch
 
-	    $theinput = new inputBasicList("custom".$i."format", $settings["custom".$i]["format"], $formatArray, "formatting");
+	    $theinput = new inputBasicList("custom".$i."format", $settings["custom".$i]["format"], $formatArray, "format");
+
+            if(!$req){
+
+                $theinput->setAttribute("readonly", "readonly");
+                $theinput->setAttribute("class", "uneditable");
+
+            }//endif
+
             $theform->addField($theinput);
 
-            $theinput = new inputTextarea("custom".$i."generator", $settings["custom".$i]["generator"], "generation javascript", false, 2, 84);
+            $theinput = new inputCheckbox("custom".$i."required", $settings["custom".$i]["required"], "required", !$req);
             $theform->addField($theinput);
+
+            if($req){
+
+                $theinput = new inputTextarea("custom".$i."generator", $settings["custom".$i]["generator"], "generation javascript", false, 2, 84);
+                $theform->addField($theinput);
+
+            }//endif
 
         }//endfor i
 
@@ -179,7 +195,7 @@ class customFields{
 
                 case 3:
                 case 4:
-                    $type = "date and time";
+                    $type = "date or time";
                     break;
 
                 case 5:
@@ -214,7 +230,9 @@ class customFields{
 
                 <p class="items"><?php $theform->showField("custom".$i."roleid") ?></p>
 
-                <p class="generators"><?php $theform->showField("custom".$i."generator") ?></p>
+                <?php if($type != "boolean") {?>
+                    <p class="generators"><?php $theform->showField("custom".$i."generator") ?></p>
+                <?php }//endif ?>
 
             </fieldset>
             <?php
@@ -281,41 +299,54 @@ class customFields{
         $record["field"] = "custom".$i;
         $record["tabledefid"] = $this->tableinfo["id"];
 
-        foreach($fieldArray as $field)
+        foreach($fieldArray as $field) {
+
             if(isset($variables["custom".$i.$field]))
-                $record[$field] = mysql_real_escape_string($variables["custom".$i.$field]);
-            else
-                $record[$field] = 0;
+                $record[$field] = $variables["custom".$i.$field];
+            else{
+
+                if($field != "name" || $field != "generator")
+                    $record[$field] = 0;
+                else
+                    $record[$field] = "";
+
+            }//endif
+
+        }//endforeach
 
         return $record;
 
     }///end function _grabFieldInfo
 
 
-    //Create indvidual custom field record
+    //Create indvidual custom field record (only if name is present)
     function _insertRecord($record){
 
-        $fieldnames = "";
-        $values = "";
+        if($record["name"]) {
 
-        foreach($record as $field=>$value){
+            $fieldnames = "";
+            $values = "";
 
-            $fieldnames .= ", `".$field."`";
-            $values .= ", '".$value."'";
+            foreach($record as $field=>$value){
 
-        }//end foreach
+                $fieldnames .= ", `".$field."`";
+                $values .= ", '".$value."'";
 
-        $fieldnames = substr($fieldnames, 1);
-        $values = substr($values, 1);
+            }//end foreach
 
-        $insertstatement = "
-            INSERT INTO
-                `tablecustomfields`
-                (".$fieldnames.")
-            VALUES
-                (".$values.")";
+            $fieldnames = substr($fieldnames, 1);
+            $values = substr($values, 1);
 
-        $this->db->query($insertstatement);
+            $insertstatement = "
+                INSERT INTO
+                    `tablecustomfields`
+                    (".$fieldnames.")
+                VALUES
+                    (".$values.")";
+
+            $this->db->query($insertstatement);
+
+        }//endif
 
     }//end function
 

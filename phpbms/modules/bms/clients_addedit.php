@@ -137,6 +137,8 @@
 		$theinput = new inputField("taxid", $therecord["taxid"], "tax id", false, "", 25, 32);
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -298,6 +300,7 @@
 			</p>
 		</fieldset>
 
+		<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 	</div><?php $theform->showCreateModify($phpbms,$therecord);?>
 	</div>
 </form>

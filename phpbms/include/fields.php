@@ -37,137 +37,324 @@
  +-------------------------------------------------------------------------+
 */
 
+
+// phpBMS form handles the creation and display of most forms n phpBMS
+// it is a necessity in order to correctly implement any of the special
+// input fields ad verification
 class phpbmsForm{
 
-	var $jsIncludes = array("common/javascript/fields.js");
-	var $topJS = array(
-					"requiredArray= new Array();",
-					"integerArray= new Array();",
-					"phoneArray= new Array();",
-					"emailArray= new Array();",
-					"wwwArray= new Array();",
-					"realArray= new Array();",
-					"dateArray= new Array();",
-					"timeArray= new Array();",
-				 );
-	var $bottomJS = array();
+    var $jsIncludes = array("common/javascript/fields.js");
+    var $topJS = array(
+                "requiredArray= new Array();",
+                "integerArray= new Array();",
+                "phoneArray= new Array();",
+                "emailArray= new Array();",
+                "wwwArray= new Array();",
+                "realArray= new Array();",
+                "dateArray= new Array();",
+                "timeArray= new Array();",
+                );
 
-	var $fields = array();
+    var $bottomJS = array();
 
-	var $onload = array();
+    var $fields = array();
 
-	function phpbmsForm($action = NULL, $method="post", $name="record", $onsubmit="return validateForm(this);", $dontSubmit = true){
-		if ($action == NULL)
-			$action = $_SERVER["REQUEST_URI"];
+    var $onload = array();
 
-		$this->action= $action;
-		$this->method = $method;
-		$this->name = $name;
-		$this->onsubmit = $onsubmit;
+    function phpbmsForm($action = NULL, $method="post", $name="record", $onsubmit="return validateForm(this);", $dontSubmit = true){
 
-		$this->dontSubmit = $dontSubmit;
+        if ($action == NULL)
+            $action = $_SERVER["REQUEST_URI"];
 
-	}
+        $this->action= $action;
+        $this->method = $method;
+        $this->name = $name;
+        $this->onsubmit = $onsubmit;
 
-	function startForm($pageTitle){
+        $this->dontSubmit = $dontSubmit;
 
-		?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php
-			if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
-			if(isset($this->id)) echo ' id="'.$this->id.'" ';
-		?>><?php
-		if($this->dontSubmit){
-			?><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div><?php
-		} ?>
-		<div id="topButtons"><?php showSaveCancel(1); ?></div>
-		<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1><?php
-
-	}//end method
+    }//end function init (phpbmsForm)
 
 
-	function showCreateModify($phpbms, $therecord){
-	?>
+    //creates the form tag, displays the top save and cancel buttons
+    // and include the page title
+    function startForm($pageTitle){
+
+        ?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php
+                if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
+                if(isset($this->id)) echo ' id="'.$this->id.'" ';
+        ?>><?php
+        if($this->dontSubmit){
+                ?><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div><?php
+        } ?>
+        <div id="topButtons"><?php showSaveCancel(1); ?></div>
+        <h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1><?php
+
+    }//end function startFrom
+
+
+    // Displays the bottom record details that are present on almost all phpBMS
+    // records.  These are non-modifiable
+    function showCreateModify($phpbms, $therecord){
+        ?>
 <div id="createmodifiedby" >
-	<div id="savecancel2"><?php showSaveCancel(2)?></div>
-	<table>
-		<tr id="cmFirstRow">
-			<td class="cmTitles">
-				<input name="createdby" type="hidden" value="<?php $therecord["createdby"] ?>" />
-				<input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
-				created
-			</td>
-			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
-			<td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
-		</tr>
-		<tr>
-			<td class="cmTitles">
-				<input name="modifiedby" type="hidden" value="<?php $therecord["modifiedby"] ?>" />
-				<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
-				<input name="modifieddate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?>"/>
-				modified
-			</td>
-			<td><?php echo htmlQuotes($phpbms->getUserName($therecord["modifiedby"]))?></td>
-			<td><?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?></td>
-		</tr>
-	</table>
+    <div id="savecancel2"><?php showSaveCancel(2)?></div>
+    <table>
+        <tbody>
+            <tr id="cmFirstRow">
+                <td class="cmTitles">
+                        <input name="createdby" type="hidden" value="<?php $therecord["createdby"] ?>" />
+                        <input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
+                        created
+                </td>
+                <td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
+                <td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
+            </tr>
+            <tr>
+                <td class="cmTitles">
+                        <input name="modifiedby" type="hidden" value="<?php $therecord["modifiedby"] ?>" />
+                        <input id="cancelclick" name="cancelclick" type="hidden" value="0" />
+                        <input name="modifieddate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?>"/>
+                        modified
+                </td>
+                <td><?php echo htmlQuotes($phpbms->getUserName($therecord["modifiedby"]))?></td>
+                <td><?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-	<?php
-	}//end method
+        <?php
+    }//end function showCreateModify
 
 
-	function endForm(){
-		?></form><?php
-	}
+    //placeholder end form function for consistency (helps editors with HTML
+    // validation)
+    function endForm(){
+
+        ?></form><?php
+
+    }//end function endForm
 
 
-	function addField($inputObject){
-		if(is_object($inputObject))
-			$this->fields[$inputObject->id] = $inputObject;
-	}
+    //adds a phpBMS input field to the form
+    function addField($inputObject){
+
+        if(is_object($inputObject))
+            $this->fields[$inputObject->id] = $inputObject;
+
+    }//end function addField
 
 
-	function showField($fieldname){
-		if(isset($this->fields[$fieldname])){
-			if(is_object($this->fields[$fieldname])){
-				if(method_exists($this->fields[$fieldname],"display"))
-					$this->fields[$fieldname]->display();
-				else
-					echo "Error in form contruction (wrong object): ".$fieldname;
-			} else
-				echo "Error in form contruction: ".$fieldname;
-		}else
-			echo "Field Not Defined: ".$fieldname;
-	}
+    //given a field's unique name (to the form object)
+    //output the HTML used to display the field
+    function showField($fieldname){
+
+        //check to see if the form element even exists
+        if(isset($this->fields[$fieldname])){
+
+            //check to see if the field is a valid boject
+            if(is_object($this->fields[$fieldname])){
+
+                //check to see if it has a display method
+                if(method_exists($this->fields[$fieldname],"display"))
+                    $this->fields[$fieldname]->display();
+                else
+                    echo "Error in form contruction (wrong object): ".$fieldname;
+
+            } else
+                echo "Error in form contruction: ".$fieldname;
+
+        }else
+            echo "Field Not Defined: ".$fieldname;
+
+    }//end function showField
 
 
-	function jsMerge(){
-		global $phpbms;
+    // merges includes, top, bottom and onload javascripts that may have been
+    // generateed for individual fiels, with the corresponding main phpbms
+    // javascript sections.
+    //
+    // top and bottom are depreciated. Everything should eventually go through
+    // either an include javascript file, or an onload (document) event
+    function jsMerge(){
 
-		$phpbms->jsIncludes = array_merge($phpbms->jsIncludes,$this->jsIncludes);
-		$phpbms->topJS = array_merge($this->topJS,$phpbms->topJS);
-		$phpbms->bottomJS = array_merge($this->bottomJS,$phpbms->bottomJS);
-		$phpbms->onload = array_merge($this->onload,$phpbms->onload);
+        global $phpbms;
 
-		//next we go through the list of fields
-		foreach($this->fields as $field){
+        $phpbms->jsIncludes = array_merge($phpbms->jsIncludes,$this->jsIncludes);
+        $phpbms->topJS = array_merge($this->topJS,$phpbms->topJS);
+        $phpbms->bottomJS = array_merge($this->bottomJS,$phpbms->bottomJS);
+        $phpbms->onload = array_merge($this->onload,$phpbms->onload);
 
-			$toAdd = $field->getJSMods();
+        //next we go through the list of fields
+        foreach($this->fields as $field){
 
-			foreach($toAdd["jsIncludes"] as $jsinclude)
-				if(!in_array($jsinclude,$phpbms->jsIncludes))
-					$phpbms->jsIncludes[] = $jsinclude;
+            $toAdd = $field->getJSMods();
 
-			$phpbms->topJS = array_merge($phpbms->topJS,$toAdd["topJS"]);
-			$phpbms->bottomJS = array_merge($phpbms->bottomJS,$toAdd["bottomJS"]);
-			$phpbms->onload = array_merge($phpbms->onload,$toAdd["onload"]);
+            // only add an include if it is not already in the list
+            // of includes.  Don't want to redefine stuff in Javascript
+            foreach($toAdd["jsIncludes"] as $jsinclude)
+                if(!in_array($jsinclude,$phpbms->jsIncludes))
+                    $phpbms->jsIncludes[] = $jsinclude;
 
-		}//endforeach
+            $phpbms->topJS = array_merge($phpbms->topJS,$toAdd["topJS"]);
+            $phpbms->bottomJS = array_merge($phpbms->bottomJS,$toAdd["bottomJS"]);
+            $phpbms->onload = array_merge($phpbms->onload,$toAdd["onload"]);
 
-	}//end method - jsMerge
-}//end class
+        }//endforeach
+
+    }//end method - jsMerge
+
+    // defines and adds fields specified by administratively set custom fields
+    // the table's object should provide the queryresult that has all defined
+    // custom field information.  Make sure not to forget the record information
+    function prepCustomFields($db, $queryresult, $therecord){
+
+        while ($fieldInfo = $db->fetchArray($queryresult)){
+
+            $id = $fieldInfo["field"];
+            $name = $fieldInfo["name"];
+            $required = ((bool) $fieldInfo["required"]);
+            $format = ($fieldInfo["format"]) ? $fieldInfo["format"] : null;
+            $size = "40";
+            $value = (isset($therecord[$id])) ? $therecord[$id] : "";
+
+            //need to handle roleid
+            $disabled = !(hasRights($fieldInfo["roleid"]));
+
+            //different custom fields (based on number) have different types
+            switch(substr($id, 6)){
+
+                case 1:
+                case 2:
+                    if($value === "")
+                        $value = 0;
+
+                    if($format == "currency")
+                        $theinput = new inputCurrency($id, $value, $name, $required);
+                    else
+                        $theinput = new inputField($id, $value, $name, $required, $format, 8, 128);
+
+                    $generator = true;
+
+                    if($disabled) {
+
+                        $theinput->setAttribute("readonly","readonly");
+        		$theinput->setAttribute("class","uneditable");
+                        $generator = false;
+
+                    }//endif
+                    break;
+
+                case 3:
+                case 4:
+                    if($disabled){
+
+                        $theinput = new inputField($id, $value, $name, $required, null, 10, 15);
+                        $theinput->setAttribute("readonly","readonly");
+                        $theinput->setAttribute("class","uneditable");
+                        $generator = false;
+
+                    } else {
+
+                        if($format == "date")
+                            $theinput = new inputDatePicker($id, $value, $name, $required);
+                        else
+                            $theinput = new inputTimePicker($id, $value, $name, $required);
+                        $generator = true;
+
+                    }//endif
+
+                    break;
+
+                case 5:
+                case 6:
+                    if($format == "list" && !$disabled){
+
+                        $theinput = new inputChoiceList($db, $id, $value, $id."-".$fieldInfo["tabledefid"], $name);
+                        $generator = false;
+
+                    } else {
+
+                        $theinput = new inputField($id, $value, $name, $required, $format, 40, 254);
+                        $generator = true;
+
+                    }//endif
+
+                    if($disabled){
+
+                        $theinput->setAttribute("readonly","readonly");
+        		$theinput->setAttribute("class","uneditable");
+                        $generator = false;
+
+                    }//endif
+                    break;
+
+                case 7:
+                case 8:
+                    $generator = false;
+                    $theinput = new inputCheckbox($id, $value, $name, $disabled);
+                    break;
+
+            }//endswitch
+
+            //need to handle creation of onload js for generator, but only if type
+            // not = checkbox or list.
+            if($generator && $fieldInfo["generator"])
+                $this->onload[] = "var ".$id."Button = getObjectFromID('".$id."Button'); connect(".$id."Button, 'onclick', function(){var ".$id." = getObjectFromID('".$id."');".$id.".value = ".$fieldInfo["generator"]."})";
+
+            $this->addField($theinput);
+
+        }//endwile
+
+        //rewind the queryresult pointer (if not false)
+        if($queryresult)
+            $db->seek($queryresult, 0);
+
+    }//end function prepCustomFields
 
 
-//============================================================================================
-//============================================================================================
+    //show (HTML) the custom fields
+    //in their own fieldset
+    function showCustomFields($db, $queryresult){
+
+        if(!$queryresult)
+            return false;
+
+        if($db->numRows($queryresult)){
+
+        ?><fieldset id="customFields">
+            <legend>Additional Information</legend>
+            <?php
+
+                while ($fieldInfo = $db->fetchArray($queryresult)){
+
+                    ?><p><?php $this->showField($fieldInfo["field"]) ?>
+                    <?php
+                        //if the field has a gnerator javascript, let's add the button
+                        if($fieldInfo["generator"] && hasRights($fieldInfo["roleid"]) && $fieldInfo["format"] != "list"){
+
+                            ?><button class="Buttons" type="button" id="<?php echo $fieldInfo["field"]?>Button">generate</button><?php
+
+                        }//endif
+                    ?>
+                    </p><?php
+
+                }//endwhile
+
+            ?>
+        </fieldset>
+        <?php
+
+        }//endif
+
+        return true;
+
+    }//end function showCustomFields
+
+}//end class phpbmsForm
+
+
+
 class inputField{
 	/*
 		id =				id/name of input
