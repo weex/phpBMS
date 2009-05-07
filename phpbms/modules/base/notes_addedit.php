@@ -194,6 +194,8 @@
 		$theform->addField($theinput);
 		//end repeat fields
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -388,6 +390,9 @@
 		</fieldset>
 		<?php }//endif ?>
 	</div>
+
+	<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();

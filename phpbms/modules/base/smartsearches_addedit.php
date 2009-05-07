@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 285 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-27 14:05:27 -0600 (Mon, 27 Aug 2007) $
@@ -39,10 +39,10 @@
 	include("../../include/session.php");
 	include("include/fields.php");
 	include("include/tables.php");
-	
+
 	$thetable = new phpbmstable($db,204);
 	$therecord = $thetable->processAddEditPage();
-	
+
 
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
@@ -52,7 +52,7 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("id",$therecord["id"],NULL,false,NULL,9,64);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
@@ -62,11 +62,11 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname", 
-								"", "", false, "module");							
+		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
+								"", "", false, "module");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "tabledefid", $therecord["tabledefid"], "tabledefs", "id", "displayname", 
+		$theinput = new inputDataTableList($db, "tabledefid", $therecord["tabledefid"], "tabledefs", "id", "displayname",
 								"", "", false, "table");
 		$theform->addField($theinput);
 
@@ -94,14 +94,16 @@
 		$theinput = new inputTextarea("filterclause",$therecord["filterclause"], "filter clause" ,true, 3,80);
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 
 	$pageTitle="Smart Search";
-	
-	include("header.php");	 
+
+	include("header.php");
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 
@@ -109,8 +111,8 @@
 		<fieldset>
 			<legend>attribues</legend>
 			<p><?php $theform->showField("id");?></p>
-			<p><?php $theform->showField("moduleid");?></p>		
-			<p><?php $theform->showField("tabledefid");?></p>		
+			<p><?php $theform->showField("moduleid");?></p>
+			<p><?php $theform->showField("tabledefid");?></p>
 		</fieldset>
 	</div>
 
@@ -142,8 +144,11 @@
 			<p><?php $theform->showField("filterclause"); ?></p>
 
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

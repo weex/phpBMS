@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -43,10 +43,10 @@
 
 	$thetable = new relationships($db,10);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
-		
+		$statusmessage = $therecord["phpbmsStatus"];
+
 	$pageTitle="Table Relationship";
 
 	$phpbms->cssIncludes[] = "pages/relationships.css";
@@ -54,7 +54,7 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,64,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -67,51 +67,53 @@
 
 		$theinput = new inputCheckbox("inherint",$therecord["inherint"],"inherent relationship");
 		$theform->addField($theinput);
-		
+
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
-	
+
 	<fieldset id="fsID">
 		<legend>Attributes</legend>
 		<p><label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
 	</fieldset>
-	
+
 	<div id="nameDiv">
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 			<p>
 				<?php $theform->showField("name");?>
 			</p>
-		</fieldset>	
-	
+		</fieldset>
+
 		<fieldset>
 			<legend>From</legend>
 			<p>
 				<label for="fromtableid">from table definition</label><br />
-				<?php $thetable->displayTables("fromtableid",$therecord["fromtableid"]) ?>		
+				<?php $thetable->displayTables("fromtableid",$therecord["fromtableid"]) ?>
 			</p>
-			
+
 			<p><?php $theform->showField("fromfield"); ?></p>
 
 		</fieldset>
-	
+
 		<fieldset>
 			<legend>to</legend>
 			<p>
 				<label for="totableid">table</label><br />
-				<?php $thetable->displayTables("totableid",$therecord["totableid"]) ?>		
+				<?php $thetable->displayTables("totableid",$therecord["totableid"]) ?>
 			</p>
-			
+
 			<p><?php $theform->showField("tofield"); ?></p>
-			
+
 			<p><?php $theform->showField("inherint");?></p>
 
 			<p class="notes">
@@ -119,9 +121,12 @@
 				"from table's" definition)
 			</p>
 		</fieldset>
+
+	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
-	
-	<?php 
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

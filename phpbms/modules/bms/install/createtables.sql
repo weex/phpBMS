@@ -325,6 +325,14 @@ CREATE TABLE `paymentmethods` (
   `creationdate` datetime default NULL,
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY  (`id`)
 ) ENGINE=INNODB;
 

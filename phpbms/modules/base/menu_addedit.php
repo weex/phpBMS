@@ -72,6 +72,8 @@
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -144,6 +146,9 @@
 				<?php  $thetable->displayParentDropDown($therecord["parentid"],$therecord["uuid"]) ?>
 			</p>
 		</fieldset>
+
+	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
 	<?php

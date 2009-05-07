@@ -94,6 +94,8 @@
 		$theinput = new inputChoiceList($db,"department",$therecord["department"],"department");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -169,6 +171,9 @@
 				<input type="text" id="employeenumber" name="employeenumber" value="<?php echo htmlQuotes($therecord["employeenumber"]) ?>" size="32" maxlength="32" />
 			</p>
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 		<?php if($therecord["id"]){?>
 		<fieldset>
 			<legend>roles</legend>

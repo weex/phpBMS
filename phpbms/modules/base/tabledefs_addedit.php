@@ -118,6 +118,8 @@
 		$theinput = new inputRolesList($db,"viewsqlroleid",$therecord["viewsqlroleid"],"view SQL statement access (role)");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -263,6 +265,9 @@
 				</p>
 			</div>
 		</fieldset>
+
+		<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
 	<?php

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 155 $ | $LastChangedBy: mipalmer $
  $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
@@ -44,7 +44,7 @@
 
 	$thetable = new invoiceStatus($db,302);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
@@ -54,10 +54,10 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("priority",$therecord["priority"],NULL,false,"integer",8,8);
 		$theform->addField($theinput);
 
@@ -67,17 +67,19 @@
 
 		$theinput = new inputCheckbox("invoicedefault",$therecord["invoicedefault"],"new order default");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckbox("setreadytopost",$therecord["setreadytopost"],"set ready to post when status selected");
 		$theform->addField($theinput);
 
 		$theinput = new inputSmartSearch($db, "defaultassignedtoid", "Pick Active User", $therecord["defaultassignedtoid"], "assigned to", false, 42);
 		$theform->addField($theinput);
-		
+
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 	include("header.php");
 
 ?>
@@ -88,15 +90,15 @@
 		<legend>attribues</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
-		
+
 		<p><?php $theform->showField("inactive")?></p>
 
 		<p><?php $theform->showField("priority")?></p>
 
 		<p class="notes">Lower priority numbered items are displayed first.</p>
-		
+
 	</fieldset>
 
 	<div id="nameDiv">
@@ -118,9 +120,12 @@
 				<?php $theform->showField("defaultassignedtoid")?>
 			</p>
 		</fieldset>
-	</div>
-	
-	<?php 
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
+        </div>
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

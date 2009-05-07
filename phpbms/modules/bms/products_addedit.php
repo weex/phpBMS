@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,14 +44,14 @@
 
 	$thetable = new products($db,4);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
-	
+
 	$phpbms->topJS[] = "numcats = ".$thetable->checkNumberCategories().";";
-	
+
 	$pageTitle="Product";
-	
+
 	$phpbms->cssIncludes[] = "pages/products.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/product.js";
 
@@ -59,7 +59,7 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 		$theform->enctype = "multipart/form-data";
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
 
@@ -69,7 +69,7 @@
 		$temparray = array("Inventory"=>"Inventory","Non-Inventory"=>"Non-Inventory","Service"=>"Service","Kit"=>"Kit","Assembly"=>"Assembly");
 		$theinput = new inputBasicList("type",$therecord["type"],$temparray);
 		$theform->addField($theinput);
-		
+
 		$temparray = array("In Stock (Available)"=>"In Stock","Out of Stock (Unavailable)"=>"Out of Stock","Back Ordered"=>"Backordered");
 		$theinput = new inputBasicList("status",$therecord["status"],$temparray,"availablity");
 		$theform->addField($theinput);
@@ -82,7 +82,7 @@
 		$theinput->setAttribute("onchange","checkPartNumber()");
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("upc",$therecord["upc"],"UPC");
 		$theform->addField($theinput);
 
@@ -91,13 +91,13 @@
 
 		$theinput = new inputCurrency("unitprice", $therecord["unitprice"], "sell price" ,true);
 		$theinput->setAttribute("class","important");
-		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;';	
+		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitprice"); myitem.thechange=calculateMarkUp;';
 		$theform->addField($theinput);
 
 		$theinput = new inputCurrency("unitcost", $therecord["unitcost"], "cost");
-		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;';	
+		$phpbms->bottomJS[]='var myitem=getObjectFromID("unitcost"); myitem.thechange=calculateMarkUp;';
 		$theform->addField($theinput);
-		
+
 		$markup=0;
 		if($therecord["unitcost"]!=0)
 			$markup=round(($therecord["unitprice"]/$therecord["unitcost"])-1,4)*100;
@@ -105,7 +105,7 @@
 		$theinput = new inputPercentage("markup", $markup, "mark-up",2);
 		$theinput->setAttribute("size","10");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("unitofmeasure",$therecord["unitofmeasure"],"unit of measure");
 		$theform->addField($theinput);
 
@@ -116,10 +116,10 @@
 			$itemsperpackage=1/$therecord["packagesperitem"];
 		else
 			$itemsperpackage=NULL;
-		
+
 		$theinput = new inputField("packagesperitem",$itemsperpackage,NULL,false,"real",10,16,false);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckbox("isprepackaged",$therecord["isprepackaged"],"prepackaged");
 		$theform->addField($theinput);
 
@@ -129,24 +129,26 @@
 		$theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
-	include("header.php");	
+
+	include("header.php");
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php $phpbms->showTabs("products entry",10,$therecord["id"]);?><div class="bodyline">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 	<h1 id="topTitle"><?php echo $pageTitle ?></h1>
-	
+
 	<div id="rightsideDiv">
 		<fieldset>
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />			
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 			</p>
 
 			<p>
@@ -159,11 +161,11 @@
 			</p>
 
 			<p><?php $theform->showField("type")?></p>
-			
+
 			<p><?php $theform->showField("status")?></p>
 
 		</fieldset>
-		
+
 		<fieldset>
 			<legend><label for="memo">memo</label></legend>
 			<p>
@@ -171,21 +173,21 @@
 			</p>
 		</fieldset>
 	</div>
-	
+
 	<div id="leftsideDiv">
 		<fieldset>
 			<legend>identification</legend>
-			
+
 			<p><?php $theform->showField("partname")?></p>
-			
+
 			<p><?php $theform->showField("partnumber") ?></p>
-			
+
 			<p><?php $theform->showField("upc") ?></p>
 
 			<p><?php $theform->showField("description") ?></p>
-						
+
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>cost and weight</legend>
 
@@ -193,7 +195,7 @@
 
 			<p><?php $theform->showField("unitprice")?></p>
 
-			<p class="costsP"><?php $theform->showField("unitcost")?></p>			
+			<p class="costsP"><?php $theform->showField("unitcost")?></p>
 
 			<p class="costsP"><?php $theform->showField("markup")?></p>
 
@@ -206,14 +208,14 @@
 			<p><?php $theform->showField("unitofmeasure")?></p>
 
 		</fieldset>
-		
+
 		<fieldset>
-			<legend>shipping</legend>			
+			<legend>shipping</legend>
 			<p>
 				<label for="packagesperitem">items per package <span class="notes">(number of product items that can fit in a shipping package)</span></label><br />
-				<?php $theform->showfield("packagesperitem")?>	
+				<?php $theform->showfield("packagesperitem")?>
 			</p>
-			
+
 			<p>
 				<?php $theform->showfield("isprepackaged");?> <span class="notes">(product is not packed with any other product.)</span>
 			</p>
@@ -221,13 +223,13 @@
 				<?php $theform->showfield("isoversized");?> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span>
 			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>web</legend>
 			<p>
 				<?php $theform->showfield("webenabled");?>
 			</p>
-					
+
 			<div style=" <?php if(!$therecord["webenabled"]) echo "display:none;" ?>" id="webstuff">
 				<p>
 					<label for="keywords">keywords <span class="notes">(comma separated key word list)</span></label><br />
@@ -235,17 +237,17 @@
 				</p>
 				<div class="fauxP">
 					<label for="webdescription">web description <span class="notes">(HTML acceptable)</span></label><br />
-					
+
 					<div style=" <?php if($therecord["webdescription"]) echo "display:none;"?>" id="webDescEdit">
 						<textarea id="webdescription" name="webdescription" cols="60" rows="6"><?php echo $therecord["webdescription"] ?></textarea>
 					</div>
 					<div style=" <?php if(!$therecord["webdescription"]) echo "display:none;"?>" id="webDescPreview">
 					<?php echo $therecord["webdescription"] ?>
-					</div>			
+					</div>
 					<div><input id="buttonWebPreview" type="button" class="Buttons" onclick="editPreviewWebDesc(this)" value="<?php if(!$therecord["webdescription"]) echo "preview"; else echo "edit"?>"/></div>
-	
+
 				</div>
-				
+
 				<div class="fauxP">
 					thumbnail graphic<br />
 					<?php if($therecord["thumbnailmime"]) {?>
@@ -258,7 +260,7 @@
 					<div id="thumbdelete" style="display:<?php if($therecord["thumbnailmime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete thumbnail" onclick="deletePicture('thumb')" tabindex="260"/></div>
 					<div id="thumbadd" style="display:<?php if($therecord["thumbnailmime"]) echo "none"; else echo "block";?>"><input id="thumbnailupload" name="thumbnailupload" type="file" size="40" onchange="updatePictureStatus('thumb','upload')" tabindex="260" /></div>
 				</div>
-	
+
 				<div class="fauxP">
 					main picture<br />
 					<?php if($therecord["picturemime"]) {?>
@@ -268,15 +270,18 @@
 					<?php } ?>
 					upload picture <br />
 					<input type="hidden" id="picturechange" name="picturechange" value="" />
-					<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onclick="deletePicture('picture')" tabindex="270"/></div>				
-					<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onchange="updatePictureStatus('picture','upload')" tabindex="270"/></div>				
+					<div id="picturedelete" style="display:<?php if($therecord["picturemime"]) echo "block"; else echo "none";?>"><input type="button" class="Buttons" value="delete picture" onclick="deletePicture('picture')" tabindex="270"/></div>
+					<div id="pictureadd" style="display:<?php if($therecord["picturemime"]) echo "none"; else echo "block";?>"><input id="pictureupload" name="pictureupload" type="file" size="40" onchange="updatePictureStatus('picture','upload')" tabindex="270"/></div>
 				</div>
 			</div>
-		</fieldset>			
-	</div>
-	
+		</fieldset>
 
-	<?php $theform->showCreateModify($phpbms,$therecord);?>	
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
+	</div>
+
+
+	<?php $theform->showCreateModify($phpbms,$therecord);?>
 </div>
 </form>
 <?php include("footer.php");?>

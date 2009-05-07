@@ -95,7 +95,7 @@
 	$phpbms->cssIncludes[] = "pages/[modulename]/[tablename].css";
 	$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
-	// DEPRECIATED: 
+	// DEPRECIATED:
 	// if you need to define a body onlload function, do so with the phpbms property
 	$phpbms->onload[] = "initializePage()";
 
@@ -133,6 +133,10 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
+		//If you have setup your table with the phpBMS custom fields structure
+		//make sure to prep the custom fields here.
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		// lastly, use the jsMerge method to create the final Javascript formatting
 		$theform->jsMerge();
 		//==============================================================
@@ -165,6 +169,14 @@
 			<p><?php $theform->showField("percentage"); ?></p>
 
 		</fieldset>
+
+		<?php
+			// if you are using the phpBMS custom fields format, make sure to
+			// put this in to display administratively set custom fields.
+			// If you are not, leaving this in will not affect your form
+			$theform->showCustomFields($db, $thetable->customFieldsQueryResult)
+		?>
+
 	</div>
 	<?php
 		//Last, we show the create/modifiy with the bottom save and cancel buttons

@@ -76,7 +76,7 @@
         <?php } else { ?>
             <form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
 
-                <p id="topSaveP"><button type="button" class="Buttons saveButtons">save</button></p>
+                <p id="topSaveP"><button type="button" class="Buttons saveButtons" accesskey="s">save</button></p>
 
                 <?php $customFields->showFields($theform); ?>
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
@@ -33,34 +33,34 @@
  | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    |
  |                                                                         |
  +-------------------------------------------------------------------------+
-*/	
-	include("../../include/session.php");	
+*/
+	include("../../include/session.php");
 	include("include/fields.php");
 	include("modules/recurringinvoices/include/recurringinvoices.php");
 
 	if(!isset($_GET["id"]))
 		$_GET["id"] = 0;
 	$_GET["id"] = (int) $_GET["id"];
-	
+
 	if(isset($_POST["referrer"]))
 		$_SERVER['HTTP_REFERER'] = $_POST["referrer"];
-	
+
 	$thetable = new recurringinvoice($db,$_GET["id"]);
-	$therecord = $thetable->process();	
+	$therecord = $thetable->process();
 
 	//set the page title
 	$refquery="SELECT
 			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
 			   invoices.type,
 			   invoices.invoicedate
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 			   WHERE invoices.id=".$_GET["id"];
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
-	
+	$refrecord=$db->fetchArray($refquery);
+
 	$invoiceDate = stringToDate($refrecord["invoicedate"],"SQL");
 
-	$pageTitle="Invoice Recurrence: ".$refrecord["id"].": ".$refrecord["name"];	
+	$pageTitle="Invoice Recurrence: ".$refrecord["id"].": ".$refrecord["name"];
 	$phpbms->cssIncludes[] = "pages/recurringinvoices.css";
 	$phpbms->jsIncludes[] = "modules/recurringinvoices/javascript/recurringinvoices.js";
 
@@ -70,15 +70,15 @@
 
 		$theinput = new inputCheckbox("recurr","","recurr invoice",($invoiceDate == NULL));
 		$theform->addField($theinput);
-		
+
 		$temparray = array("Daily"=>"Daily", "Weekly"=>"Weekly", "Monthly"=>"Monthly", "Yearly"=>"Yearly");
 		$theinput = new inputBasiclist("type",$therecord["type"],$temparray,"frequency");
 		$theinput->setAttribute("onchange","changeType();");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("every",$therecord["every"],"frequency of repeating",false,"integer",2,4,false);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputBasiclist("monthlyontheweek",$therecord["ontheweek"],$thetable->weekArray,"on the week of",false);
 		$theinput2 = new inputBasiclist("yearlyontheweek",$therecord["ontheweek"],$thetable->weekArray,"on the week of",false);
 		if(!$therecord["ontheday"]) {
@@ -87,14 +87,14 @@
 
 			$weekNumber = ceil(date("d",$invoiceDate)/7);
 			if($weekNumber > 4) $weekNumber = 5;
-			
+
 			$theinput->value = $weekNumber;
 			$theinput2->value = $weekNumber;
-						
+
 		}
 		$theform->addField($theinput);
 		$theform->addField($theinput2);
-		
+
 		$temparray = array();
 		for($i=1; $i<8; $i++)
 			$temparray[nl_langinfo(constant("DAY_".$i))] = ($i==1)?(7):($i-1);
@@ -123,18 +123,18 @@
 
 		$theinput = new inputField("times",$therecord["times"],"repeat until number of times",false,"integer",3,5,false);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputDatePicker("until", $therecord["until"], "repeat until date" ,false, 10, 15, false);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckbox("includepaymenttype",$therecord["includepaymenttype"], "include payment type from original invoice");
 		$theinput->setAttribute("onchange","switchInclude();");
 		$theform->addField($theinput);
-		
-		if($therecord["includepaymenttype"]) 
+
+		if($therecord["includepaymenttype"])
 			$tempdisabled = false;
 		else
-			$tempdisabled = true;		
+			$tempdisabled = true;
 		$theinput = new inputCheckbox("includepaymentdetails",$therecord["includepaymentdetails"], "include payment details from original invoice",$tempdisabled);
 		$theform->addField($theinput);
 
@@ -143,21 +143,23 @@
 		$theinput->setAttribute("size","30");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		
+
 	include("header.php");
-	
+
 	$phpbms->showTabs("invoices entry",500,$_GET["id"]);
 ?><div class="bodyline">
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" 
+<form action="<?php echo $_SERVER["REQUEST_URI"] ?>"
 	method="post" name="record" id="record"
 	onsubmit="return false;">
 	<div id="topButtons">
 		<input type="button" class="Buttons" id="update1" name="update" value="save" onclick="submitForm('update');"/>
 		<?php if(strpos($_SERVER['HTTP_REFERER'],"search.php") != false){?>
 		<input type="button" class="Buttons" id="cancel1" name="cancel" value="cancel" onclick="submitForm('cancel');"/>
-		<?php }?>		
+		<?php }?>
 	</div>
 	<h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
 	<input type="hidden" id="id" name="id" value="<?php echo $therecord["id"]?>"/>
@@ -166,76 +168,76 @@
 	<input type="hidden" id="referrer" name="referrer" value="<?php echo str_replace("&","&amp;",$_SERVER['HTTP_REFERER'])?>" />
 	<fieldset>
 		<legend>Invoice Recurrence</legend>
-		
+
 		<p><?php $theform->showField("recurr")?></p>
 
 		<?php if($invoiceDate == NULL){?>
 			<p class="notes">The invoice cannot be repeated until an invoice date has been set.</p>
 		<?php }?>
-	</fieldset>	
-		
+	</fieldset>
+
 	<div id="recurrDetails">
 		<div id="rightSideDiv">
 			<fieldset>
 				<legend>Repeat Statistics</legend>
-				<p>	
+				<p>
 					first recurred<br />
 					<input readonly="readonly" class="uneditable" type="text" size="12" value="<?php if($therecord["lastrepeat"]) echo formatFromSQLDate($therecord["firstrepeat"])?>"/>
 				</p>
-				<p>	
+				<p>
 					last recurred<br />
 					<input readonly="readonly" class="uneditable" type="text" size="12" value="<?php if($therecord["lastrepeat"]) echo formatFromSQLDate($therecord["lastrepeat"])?>"/>
 				</p>
 				<p>
 					number of recurrences to date<br/>
-					<input readonly="readonly" class="uneditable" type="text" size="4" value="<?php echo $therecord["timesrepeated"]?>"/>					
+					<input readonly="readonly" class="uneditable" type="text" size="4" value="<?php echo $therecord["timesrepeated"]?>"/>
 				</p>
 			</fieldset>
 		</div>
-		
+
 		<div id="leftSideDiv">
 			<fieldset>
 				<legend>recurrence options</legend>
-				
+
 				<p>
 					invoice date<br/>
 					<input type="text" size="12" class="uneditable" readonly="readonly" value="<?php echo dateToString($invoiceDate) ?>" />
 				</p>
-	
+
 				<p><?php $theform->showField("type")?></p>
-	
+
 				<p>every <?php $theform->showField("every")?> <span id="typeText">day(s)</span></p>
-	
+
 				<div id="DailyDiv"></div>
-	
+
 				<div id="WeeklyDiv">
 					<p><?php $thetable->showWeeklyOptions($therecord,$invoiceDate)?></p>
 				</div>
-	
+
 				<div id="MonthlyDiv">
 					<p><input type="radio" id="monthlyEach" name="monthlyWhat" onchange="monthlyChange();" value="1" <?php if(!$therecord["ontheday"]) echo 'checked="checked"'?> /><label for="monthlyEach"> each</label></p>
-					
+
 					<p><?php $thetable->showMonthlyOptions($therecord,$invoiceDate)?></p>
-					
+
 					<p><input type="radio" id="monthlyOnThe" name="monthlyWhat" onchange="monthlyChange();" value="2" <?php if($therecord["ontheday"]) echo 'checked="checked"'?> /><label for="monthlyOnThe"> on the</label></p>
 					<p>
 						<?php $theform->showField("monthlyontheweek");?>
 						<?php $theform->showField("monthlyontheday");?>
 					</p>
 				</div>
-	
+
 				<div id="YearlyDiv">
 					<p><?php $thetable->showYearlyOptions($therecord,$invoiceDate)?></p>
-					
+
 					<p><input id="yearlyOnThe" type="checkbox" name="yearlyOnThe" onclick="yearlyOnTheChecked();" value="1" <?php if($therecord["type"]=="Yearly" && $therecord["ontheday"]) echo 'checked="checked"'?>/><label for="yearlyOnThe"> on the</label></p>
 					<p>
 						<?php $theform->showField("yearlyontheweek");?>
 						<?php $theform->showField("yearlyontheday");?>
 					</p>
-					
+
 				</div>
 			</fieldset>
-	
+
 			<fieldset>
 				<legend>end</legend>
 				<p>
@@ -248,29 +250,29 @@
 					</span>
 				</p>
 			</fieldset>
-			
+
 			<fieldset>
 				<legend>New Order Options</legend>
-	
+
 				<p><?php $theform->showfield("includepaymenttype");?></p>
-	
+
 				<p><?php $theform->showfield("includepaymentdetails");?></p>
-				
+
 				<p><?php $thetable->showStatusDropDown($therecord["statusid"]);?></p>
-				
+
 				<div class="fauxP"><?php $theform->showField("assignedtoid");?></div>
-	
+
 
 				<p><?php $thetable->showRolesDropDown($therecord["notificationroleid"]);?></p>
 
 			</fieldset>
-			
+
 			<p class="notes">
 				Note: Recurring invoices utilizes the scheduler function of phpBMS, which relies
 				on an external scheduler program (like cron).  Make sure these functions are enabled or
 				the invoices will not repeat.
 			</p>
-			
+
 		</div>
 	</div>
 
@@ -279,7 +281,7 @@
 		<input type="button" class="Buttons" id="update2" name="update" value="save" onclick="submitForm('update');"/>
 		<?php if(strpos($_SERVER['HTTP_REFERER'],"search.php") != false){?>
 		<input type="button" class="Buttons" id="cancel2" name="cancel" value="cancel" onclick="submitForm('cancel');"/>
-		<?php }?>		
+		<?php }?>
 	</div>
 </form>
 </div>

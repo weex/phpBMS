@@ -272,9 +272,11 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 	return $thedate;
 }
 
-function stringToTime($timestring,$format=TIME_FORMAT){
-	$thetime=NULL;
-	if($timestring){
+function stringToTime($timestring, $format=TIME_FORMAT){
+
+	$thetime = NULL;
+
+        if($timestring){
 		switch($format){
 
 			case "24 Hour":

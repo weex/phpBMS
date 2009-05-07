@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
@@ -33,8 +33,8 @@
  | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    |
  |                                                                         |
  +-------------------------------------------------------------------------+
-*/	
-	include("../../include/session.php");	
+*/
+	include("../../include/session.php");
 	include("include/tables.php");
 	include("include/fields.php");
 	include("modules/bms/include/receipts.php");
@@ -42,19 +42,19 @@
 	if(!isset($_GET["id"]))
 		$_GET["id"] = 0;
 	$_GET["id"] = (int) $_GET["id"];
-	
+
 	if(isset($_POST["referrer"]))
 		$_SERVER['HTTP_REFERER'] = $_POST["referrer"];
-	
+
 	$thetable = new receipts($db,304);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if($therecord["id"]){
 		$items = new receiptitems($db);
 		$itemsresult = $items->get($therecord["id"]);
 	}//end if
 
-	$pageTitle = "Receipt";	
+	$pageTitle = "Receipt";
 
 	$phpbms->cssIncludes[] = "pages/receipts.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/receipt.js";
@@ -83,14 +83,14 @@
 		$theinput = new inputSmartSearch($db, "clientid", "Pick Client With Credit", $therecord["clientid"], "client", true, 51);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCurrency("amount", $therecord["amount"], "amount", true);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("ccnumber", $therecord["ccnumber"], "card number", false, false, 28,40);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("ccexpiration", $therecord["ccexpiration"], "expiration", false, false, 8,10);
 		$theform->addField($theinput);
 
@@ -105,7 +105,7 @@
 
 		$theinput = new inputField("accountnumber", $therecord["accountnumber"], "account number", false, "integer", 20, 64);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("routingnumber", $therecord["routingnumber"], "routing number", false, "integer", 30, 64);
 		$theform->addField($theinput);
 
@@ -118,29 +118,31 @@
 		$theinput = new inputTextarea("memo", $therecord["memo"], NULL, false, 3, 48, false);
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
 <form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
-	
+
 	<h1 class="h1Title"><span><?php echo $pageTitle?></span></h1>
-	
+
 	<div id="rightSide">
 		<fieldset>
 			<legend>attributes</legend>
-			
+
 			<p>
 				<label for="id">id</label><br />
 				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable"  />
 			</p>
-			
+
 			<p><?php $theform->showField("receiptdate")?></p>
-			
+
 			<?php if($therecord["posted"]) { ?>
 				<p><?php $theform->showField("posted")?></p>
 			<?php }//endif ?>
@@ -148,83 +150,83 @@
 			<p><?php $theform->showField("status")?></p>
 
 			<p><?php $theform->showField("readytopost")?></p>
-			
+
 		</fieldset>
 	</div>
-	
+
 	<div id="leftSide">
-		
+
 		<fieldset>
 			<legend>Client / Amount</legend>
-			
+
 			<div class="fauxP"><?php $theform->showField("clientid")?></div>
-			
+
 			<p><?php $theform->showField("amount")?></p>
-			
+
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>Receipt Type</legend>
 			<p><?php $thetable->showPaymentOptions($therecord["paymentmethodid"])?></p>
-			
+
 			<div id="draft" class="paymentTypes">
 
 				<p id="bankNameP"><?php $theform->showField("bankname")?></p>
-			
+
 				<p ><?php $theform->showField("checkno")?></p>
 
 				<p id="routingNumberP" ><?php $theform->showField("routingnumber")?></p>
-				
+
 				<p><?php $theform->showField("accountnumber")?></p>
-				
+
 			</div>
 
 			<div id="charge" class="paymentTypes">
 
 				<p id="ccNumberP"><?php $theform->showField("ccnumber")?></p>
-				
+
 				<p><?php $theform->showField("ccexpiration")?></p>
-				
+
 				<p><?php $theform->showField("ccverification")?></p>
-			
+
 			</div>
 
 			<div id="other" class="paymentTypes">
 
 				<p><?php $theform->showField("paymentother")?></p>
-								
+
 			</div>
 
-			<div id="transactionP">				
-				
+			<div id="transactionP">
+
 				<input type="hidden" id="processscript" />
-				
+
 				<p id="transactionidP"><?php $theform->showField("transactionid")?></p>
-				
+
 				<p>
 					<br/>
 					<button id="paymentProcessButton" type="button" class="graphicButtons buttonMoney" title="process payment online"><span>process payment online</span></button>
 				</p>
-				
+
 			</div>
 
 		</fieldset>
-				
+
 	</div>
 
 	<fieldset>
 		<legend>Distribution Items</legend>
-		
+
 		<div id="arRightButtons">
 			<button type="button" class="smallButtons" id="loadOpenButton">load open AR items</button>
 			<button type="button" class="smallButtons" id="autoApplyButton">auto-apply</button>
 		</div>
-		
+
 		<div>
 			<button type="button" id="addARItemButton" class="graphicButtons buttonPlus" title="add item"><span>+</span></button>
 			&nbsp;distribution remaining: <input type="text" id="distributionRemaining" class="invisibleTextField" readonly="readonly"/>
 		</div>
-		
+
 		<input type="hidden" id="itemschanged" name="itemschanged" />
 		<input type="hidden" id="itemslist" name="itemslist" />
 		<table class="querytable" border="0" cellpadding="0" cellspacing="0" id="itemsTable">
@@ -252,25 +254,27 @@
 					<td colspan="3">&nbsp;</td>
 				</tr>
 			</tfoot>
-			
+
 			<tbody id="itemsTbody">
-				<?php 
+				<?php
 					if($therecord["id"]){
 						$items->show($itemsresult, $therecord["posted"], $therecord["id"]);
 					}//end if
 				?>
 			</tbody>
 		</table>
-		
+
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>notes</legend>
 
 		<p><?php $theform->showField("memo")?></p>
 
 	</fieldset>
-			
+
+        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	<?php $theform->showCreateModify($phpbms,$therecord) ?>
 </form>
 </div>

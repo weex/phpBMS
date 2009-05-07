@@ -258,8 +258,14 @@ class phpbmsForm{
 
                         if($format == "date")
                             $theinput = new inputDatePicker($id, $value, $name, $required);
-                        else
+                        else{
+
+                            $value = explode(" ", $value);
+                            $value = (count($value) > 1) ? $value[1] : "";
                             $theinput = new inputTimePicker($id, $value, $name, $required);
+
+                        }//endif
+
                         $generator = true;
 
                     }//endif

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,9 +44,9 @@
 
 	$thetable = new roles($db,200);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
+		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle="Role";
 
@@ -60,31 +60,33 @@
 
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
-	
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
 		</p>
-		
+
 		<p><?php $theform->showField("inactive")?></p>
-		
+
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>name</legend>
@@ -97,7 +99,9 @@
 				<textarea name="description" cols="45" rows="5" id="description"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
-		
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 		<?php if($therecord["id"]){?>
 		<fieldset>
 			<legend>users</legend>
@@ -125,11 +129,12 @@
 				</select>
 			</div>
 			</div>
-		</fieldset>		
+		</fieldset>
 		<?php }?>
+
 	</div>
 
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

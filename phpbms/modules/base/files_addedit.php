@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -59,14 +59,14 @@
 	}
 
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
-	
+		$statusmessage = $therecord["phpbmsStatus"];
+
 
 	function getAttachments($db,$id){
 		$querystatement="SELECT tabledefs.displayname, attachments.recordid, attachments.creationdate, tabledefs.editfile
-						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.id 
+						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.id
 						WHERE fileid=".$id;
 		$queryresult=$db->query($querystatement);
 
@@ -80,7 +80,7 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 		$theform->enctype = "multipart/form-data";
-		
+
 		if(isset($therecord["id"])){
 			$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,64,128);
 			$theinput->setAttribute("class","important");
@@ -89,32 +89,34 @@
 
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
 		$theform->addField($theinput);
-		
+
 		if(isset($_GET["tabledefid"]) && !isset($therecord["id"])){
-		
-			$theinput = new inputSmartSearch($db, "fileid", "Pick File", "", "exisiting file", false, 40);		
+
+			$theinput = new inputSmartSearch($db, "fileid", "Pick File", "", "exisiting file", false, 40);
 			$theform->addField($theinput);
-			
+
 		}//end if
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>	
+	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
 		<p id="roleidP"><?php $theform->showField("roleid")?></p>
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 	<fieldset>
 		<legend>file</legend>
@@ -123,7 +125,7 @@
 			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo (integer) $_GET["tabledefid"]?>" />
 			<input id="recordid" name="recordid" type="hidden" value="<?php echo (integer) $_GET["refid"]?>" />
 		<?php }?>
-		
+
 		<?php if($therecord["id"]) {?>
 			<p>
 				<button  type="button" class="Buttons" onclick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
@@ -134,11 +136,11 @@
 			</p>
 			<p>
 				<label for="type">file type </label><span class="notes">(MIME)</span><br />
-				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="readonly" class="uneditable" style="" />			
+				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="readonly" class="uneditable" style="" />
 			</p>
 			<p>
 				<label for="upload">replace file</label><br />
-				<input id="upload" name="upload" type="file" size="64" tabindex="260" />			
+				<input id="upload" name="upload" type="file" size="64" tabindex="260" />
 			</p>
 		<?php } else {?>
 			<?php if(isset($_GET["tabledefid"])){?>
@@ -148,20 +150,20 @@
 					<span class="notes">Choose "existing file" if the file has already been uploaded into phpBMS.</span>
 				</p>
 				<div class="fauxP" id="fileidlabel">
-					<?php $theform->showField("fileid");?>				
+					<?php $theform->showField("fileid");?>
 				</div>
 			<?php }?>
 				<p id="uploadlabel">
 					<label for="upload">upload new file</label><br />
-					<input id="upload" name="upload" type="file" size="64" tabindex="260" />				
+					<input id="upload" name="upload" type="file" size="64" tabindex="260" />
 				</p>
 		<?php } ?>
 		<p id="descriptionlabel">
 			<label for="content">description</label><br />
-			<textarea name="description" cols="45" rows="4" id="content"><?php echo htmlQuotes($therecord["description"])?></textarea>		
+			<textarea name="description" cols="45" rows="4" id="content"><?php echo htmlQuotes($therecord["description"])?></textarea>
 		</p>
 	</fieldset>
-	<?php 
+	<?php
 	if($therecord["id"]) {
 		$attchmentsquery=getAttachments($db,$therecord["id"]);
 		if($db->numRows($attchmentsquery)){
@@ -187,14 +189,16 @@
 					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo APP_PATH.$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
 				</td>
 			</tr>
-	<?php 
+	<?php
 			} ?></table></div></div><?php
-		} 
+		}
 	}?>
+
+        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
-
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

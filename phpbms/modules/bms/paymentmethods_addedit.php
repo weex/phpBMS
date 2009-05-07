@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 155 $ | $LastChangedBy: mipalmer $
  $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
@@ -42,7 +42,7 @@
 
 	$thetable = new phpbmstable($db,301);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
@@ -54,10 +54,10 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("priority",$therecord["priority"],NULL,false,"integer",8,8);
 		$theform->addField($theinput);
 
@@ -69,10 +69,12 @@
 		$theinput->setAttribute("onchange","checkScript(this);");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-			 
+
 	include("header.php");
 ?>
 	<div class="bodyline">
@@ -92,7 +94,7 @@
 			Lower priority numbered items are displayed first.
 		</p>
 	</fieldset>
-	
+
 	<div id="nameDiv">
 		<fieldset >
 			<legend>name / type</legend>
@@ -106,10 +108,10 @@
 						<option value="receivable"<?PHP if($therecord["type"]=="receivable") echo "selected=\"selected\""; ?>>Receivable</option>
 					</select>
 				</p>
-				<p class="notes">Type determines which fields are shown on the invoice creation 
-				  screen. For example, if a payment method of Business Check is selected with 
-				  a type of draft then the check number, routing number and account number 
-				  fields will be shown. However, if VISA is selected with a type of charge 
+				<p class="notes">Type determines which fields are shown on the invoice creation
+				  screen. For example, if a payment method of Business Check is selected with
+				  a type of draft then the check number, routing number and account number
+				  fields will be shown. However, if VISA is selected with a type of charge
 				  then the credit card number and expiration date fields will be shown.
 				</p>
 		</fieldset>
@@ -123,8 +125,11 @@
 				<input id="processscript" name="processscript" type="text" value="<?php echo htmlQuotes($therecord["processscript"])?>" size="64" maxlength="128"/>
 			</p>
 		</fieldset>
+
+	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

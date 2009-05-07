@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 155 $ | $LastChangedBy: mipalmer $
  $LastChangedDate: 2006-10-22 15:09:20 -0600 (Sun, 22 Oct 2006) $
@@ -42,25 +42,25 @@
 
 	$thetable = new phpbmstable($db,300);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
-		
+
 	$pageTitle="Shipping Method";
-	
+
 	$phpbms->cssIncludes[] = "pages/shippingmethods.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/shippingmethods.js";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("priority",$therecord["priority"],NULL,false,"integer",8,8);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,128);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -72,16 +72,16 @@
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 	include("header.php");
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle);?>
-	
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
 		<p><?php $theform->showField("inactive")?></p>
 
@@ -106,9 +106,12 @@
 				<input id="estimationscript" name="estimationscript" type="text" value="<?php echo htmlQuotes($therecord["estimationscript"])?>" size="64" maxlength="128"/>
 			</p>
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
-	
-	<?php 
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

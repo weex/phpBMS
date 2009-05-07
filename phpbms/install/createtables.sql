@@ -291,6 +291,14 @@ CREATE TABLE `files` (
   `modifiedby` int(11) default '0',
   `modifieddate` timestamp(14) NOT NULL,
   `roleid` int(11) NOT NULL default '0',
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY  (`id`)
 ) ENGINE=INNODB  AUTO_INCREMENT=100;
 
@@ -318,6 +326,14 @@ CREATE TABLE `roles` (
   `creationdate` DATETIME,
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
+  `custom1` DOUBLE,
+  `custom2` DOUBLE,
+  `custom3` DATETIME,
+  `custom4` DATETIME,
+  `custom5` VARCHAR(255),
+  `custom6` VARCHAR(255),
+  `custom7` TINYINT(1),
+  `custom8` TINYINT(1),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 

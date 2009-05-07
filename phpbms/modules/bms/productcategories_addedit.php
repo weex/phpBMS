@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -43,21 +43,21 @@
 
 	$thetable = new phpbmsTable($db,7);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
-	
+
 	$pageTitle="Product Category";
-	
+
 	$phpbms->cssIncludes[] = "pages/productcategories.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,128);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -65,14 +65,16 @@
 		$theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 	include("header.php");
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle);?>
-	
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 		<p>
@@ -81,21 +83,21 @@
 		</p>
 		<p>
 			<?php $theform->showField("inactive")?>
-		</p>		
+		</p>
 	</fieldset>
-	
+
 	<div id="leftDiv">
 		<fieldset>
 			<legend>name</legend>
 			<p>
 				<?php $theform->showField("name")?>
-			</p>			
+			</p>
 		</fieldset>
 		<fieldset>
 			<legend><label for="description">description</label></legend>
 			<p><textarea name="description" cols="38" rows="4" id="description"><?php echo $therecord["description"]?></textarea></p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>web</legend>
 			<p>
@@ -106,9 +108,12 @@
 				<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64" />
 			</p>
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

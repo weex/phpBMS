@@ -43,7 +43,7 @@
 
 	$thetable = new phpbmsTable($db,203);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
@@ -70,6 +70,8 @@
 		$theinput = new inputCheckbox("enableonnew",$therecord["enableonnew"],"enable on new");
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -120,6 +122,9 @@
 			<span class="notes">SQL statement used to determine display of notification icon on tab.  SQL statment should return a single record, with field "theresult" - a number.  Use {{id]}} for id substitution.</span><br />
 			<textarea id="notificationsql" name="notificationsql" cols="40" rows="5"><?php echo htmlQuotes($therecord["notificationsql"])?></textarea>
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
 	<?php

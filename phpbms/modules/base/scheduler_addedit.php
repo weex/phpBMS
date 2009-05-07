@@ -81,6 +81,8 @@
 		$theinput = new inputTimePicker("endtime",$therecord["endtime"], "end time" ,false,11, 15, false);
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
@@ -163,6 +165,9 @@
 				<?php $theform->showField("enddate");?> &nbsp; <?php $theform->showField("endtime");?>
 			</p>
 		</fieldset>
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
 
 	<?php

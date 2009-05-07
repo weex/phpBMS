@@ -226,16 +226,49 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         else
                             $value = "'".dateToString(mktime(),"SQL")." ".timeToString(mktime(),"24 Hour")."'";
 
-                    } else{
+                    } else {
 
                         $datetimearray = explode(" ",$value);
+                        $date = null;
+                        $time = null;
 
-                        if(count($datetimearray) > 1)
-                            $value = "'".sqlDateFromString($datetimearray[0])." ".sqlTimeFromString($datetimearray[1])."'";
-                        else
-                            $value = "'".$value."'";
+                        //If the value can be split by spaces we assume we
+                        // are looking at a "date time"
+                        if(count($datetimearray) > 1){
+
+                            $date = sqlDateFromString($datetimearray[0]);
+
+                            //times can have spaces... so we need
+                            //to resemble in some cases.
+                            if(count($datetimearray) > 2)
+                                $datetimearray[1] = $datetimearray[1]." ".$datetimearray[2];
+
+                            $time = sqlTimeFromString($datetimearray[1]);
+
+                        }//endif
+
+                        //If we don't have a date, perhaps only a date was passed
+                        if(!$date){
+
+                            $date = sqlDateFromString($value);
+
+                            //still no date?, then assume only a time was passed,
+                            // so we need to set the time to the deafult
+                            // date.
+                            if(!$date)
+                                $date = "0000-00-00";
+
+                        }//endif
+
+                        //if we don't have a time, let's try the getting the
+                        //time from the full value.
+                        if(!$time)
+                            $time = sqlTimeFromString($value);
+
+                        $value = "'".trim($date." ".$time)."'";
 
                     }//end if
+
                     break;
 
                 case "password":

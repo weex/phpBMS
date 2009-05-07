@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -39,10 +39,10 @@
 	include("../../include/session.php");
 	include("include/fields.php");
 	include("include/tables.php");
-	
+
 	$tax = new phpbmstable($db,6);
 	$therecord = $tax->processAddEditPage();
-	
+
 
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
@@ -52,25 +52,27 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,28,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
 		$theinput = new inputPercentage("percentage",$therecord["percentage"],NULL,5,true,28,64);
-		$theform->addField($theinput);		
+		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 
 	$pageTitle="Tax Area";
-	
-	include("header.php");	 
+
+	include("header.php");
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 
@@ -78,9 +80,9 @@
 		<legend>attribues</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />		
+			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
 		</p>
-		<p><?php $theform->showField("inactive");?></p>		
+		<p><?php $theform->showField("inactive");?></p>
 	</fieldset>
 
 	<div id="nameDiv">
@@ -92,8 +94,9 @@
 			<p><?php $theform->showField("percentage"); ?></p>
 
 		</fieldset>
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 	</div>
-	<?php 
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

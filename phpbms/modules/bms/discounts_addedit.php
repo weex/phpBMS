@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,12 +44,12 @@
 
 	$thetable = new discounts($db,25);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	$stats = $thetable->getTotals($therecord["id"]);
-	
+
 	$pageTitle="Discount / Promotion";
 
 	$phpbms->cssIncludes[] = "pages/discounts.css";
@@ -59,41 +59,43 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
-				
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
 		$theinput = new inputPercentage("percentvalue",$therecord["value"],"value",2,true);
-		$theform->addField($theinput);		
-		
+		$theform->addField($theinput);
+
 		$theinput = new inputCurrency("amountvalue",$therecord["value"], "value" ,true);
-		$theform->addField($theinput);	
-		
+		$theform->addField($theinput);
+
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 	include("header.php");
-		
+
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
-	
+
 	<div id="fsAttributes">
 		<fieldset>
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
 				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="readonly" class="uneditable" />
-			</p>			
+			</p>
 			<p>
 				<?php $theform->showField("inactive")?>
-			</p>		
+			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>statistics</legend>
 			<p>
@@ -114,7 +116,7 @@
 				<?php $theform->showField("name") ?>
 			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>discount</legend>
 			<p>
@@ -128,9 +130,9 @@
 			</p>
 			<p id="aValue">
 				<?php $theform->showField("amountvalue");?>
-			</p>			
+			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend><label for="description">description</label></legend>
 			<p>
@@ -138,9 +140,12 @@
 				<textarea id="description" name="description" cols="38" rows="4"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
-	</div>
-	
-	<?php 
+
+                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+                
+        </div>
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>

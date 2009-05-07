@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,9 +44,9 @@
 
 	$thetable = new reports($db,16);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
+		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle="Report";
 
@@ -55,29 +55,31 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputBasicList("type",$therecord["type"],array("Report"=>"report","PDF Report"=>"PDF Report","Export"=>"export"));
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
-		$theform->addField($theinput);			
+		$theform->addField($theinput);
 
 		$theinput = new inputField("reportfile",$therecord["reportfile"],"report file",true,NULL,64,128);
 		$theform->addField($theinput);
 
+		$thetable->getCustomFieldInfo();
+		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 
@@ -85,41 +87,44 @@
 		<legend>Attributes</legend>
 		<p>
 			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>		
+			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
 		<p>
 			<label for="tabledefid">report table</label><br />
 			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]);?><br />
 			<span class="notes">Note: Use the global option to associate the report with every table in the system.</span>
 		</p>
-		
+
 		<p>
 			<?php $theform->showField("displayorder"); ?><br />
 			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
-		
+
 		<p><?php $theform->showField("roleid")?></p>
-		
+
 	</fieldset>
-	
+
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend>details</legend>
-			
+
 			<p><?php $theform->showField("name"); ?></p>
-			
+
 			<p><?php $theform->showField("type")?></p>
-			
+
 			<p><?php $theform->showField("reportfile")?></p>
-			
+
 			<p>
 				<label for="description">description</label><br />
 				<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
+
+	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
 	</div>
-	
-	<?php 
+
+	<?php
 		$theform->showCreateModify($phpbms,$therecord);
 		$theform->endForm();
 	?>
