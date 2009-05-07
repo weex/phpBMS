@@ -209,13 +209,11 @@ function goURL($url){
 	exit;
 }
 
-function hasRights($roleid,$checkForAdmin = true){
+function hasRights($roleid,$fullAccessAdmin = true){
 	$hasrights=false;
 
-	if($_SESSION["userinfo"]["admin"]==1 && $checkForAdmin)
+	if($_SESSION["userinfo"]["admin"]==1 && ($fullAccessAdmin || $roleid == -100))
 		$hasrights=true;
-	elseif($_SESSION["userinfo"]["admin"] == 1 && $roleid == -100)//-100 is a special value for admin
-		$hasrights = true;
 	elseif($roleid==0)
 		$hasrights=true;
 	else
