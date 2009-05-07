@@ -942,7 +942,10 @@ if(class_exists("phpbmsImport")){
 						break;
 
 						case "website":
-							$newRowData["webaddress"] = trim($data);
+							if(strpos(trim($data), "http://") !== 0)
+								$newRowData["webaddress"] = "http://".trim($data);
+							else
+								$newRowData["webaddress"] = trim($data);
 						break;
 
 						case "shipping_address_street":
@@ -1125,37 +1128,7 @@ if(class_exists("phpbmsImport")){
 				case "sugarcrm":
 					$querystatement = "
 						SELECT
-							`clients`.`id`,
-							`clients`.`firstname`,
-							`clients`.`lastname`,
-							`clients`.`company`,
-							`clients`.`type`,
-							`clients`.`becameclient`,
-							`clients`.`inactive`,
-							`clients`.`category`,
-							`clients`.`homephone`,
-							`clients`.`workphone`,
-							`clients`.`mobilephone`,
-							`clients`.`fax`,
-							`clients`.`otherphone`,
-							`clients`.`email`,
-							`clients`.`webaddress`,
-							`clients`.`taxid`,
-							`clients`.`salesmanagerid`,
-							`clients`.`leadsource`,
-							`clients`.`comments`,
-							`clients`.`paymentmethodid`,
-							`clients`.`shippingmethodid`,
-							`clients`.`discountid`,
-							`clients`.`taxareaid`,
-							`clients`.`username`,
-							`clients`.`password`,
-							`clients`.`hascredit`,
-							`clients`.`creditlimit`,
-							`clients`.`createdby`,
-							`clients`.`creationdate`,
-							`clients`.`modifiedby`,
-							`clients`.`modifieddate`,
+							`clients`.*,
 							`addresses1`.`address1` AS `mainaddress1`,
 							`addresses1`.`address2` AS `mainaddress2`,
 							`addresses1`.`city` AS `maincity`,
@@ -1164,6 +1137,14 @@ if(class_exists("phpbmsImport")){
 							`addresses1`.`country` AS `maincountry`,
 							`addresses1`.`phone` AS `mainphone`,
 							`addresses1`.`email` AS `mainemail`,
+							`addresses1`.`custom1` AS `maincustom1`,
+							`addresses1`.`custom2` AS `maincustom2`,
+							`addresses1`.`custom3` AS `maincustom3`,
+							`addresses1`.`custom4` AS `maincustom4`,
+							`addresses1`.`custom5` AS `maincustom5`,
+							`addresses1`.`custom6` AS `maincustom6`,
+							`addresses1`.`custom7` AS `maincustom7`,
+							`addresses1`.`custom8` AS `maincustom8`,
 							`addresses2`.`address1` AS `shipaddress1`,
 							`addresses2`.`address2` AS `shipaddress2`,
 							`addresses2`.`city` AS `shipcity`,
@@ -1171,7 +1152,15 @@ if(class_exists("phpbmsImport")){
 							`addresses2`.`postalcode` AS `shippostalcode`,
 							`addresses2`.`country` AS `shipcountry`,
 							`addresses2`.`phone` AS `shipphone`,
-							`addresses2`.`email` AS `shipemail`
+							`addresses2`.`email` AS `shipemail`,
+							`addresses2`.`custom1` AS `shipcustom1`,
+							`addresses2`.`custom2` AS `shipcustom2`,
+							`addresses2`.`custom3` AS `shipcustom3`,
+							`addresses2`.`custom4` AS `shipcustom4`,
+							`addresses2`.`custom5` AS `shipcustom5`,
+							`addresses2`.`custom6` AS `shipcustom6`,
+							`addresses2`.`custom7` AS `shipcustom7`,
+							`addresses2`.`custom8` AS `shipcustom8`
 						FROM
 							((((clients INNER JOIN addresstorecord AS `addresstorecord1` ON clients.id = addresstorecord1.recordid AND addresstorecord1.tabledefid=2 AND addresstorecord1.primary=1) INNER JOIN addresses AS addresses1 ON  addresstorecord1.addressid = addresses1.id)LEFT JOIN addresstorecord AS `addresstorecord2` on clients.id = addresstorecord2.recordid AND addresstorecord2.tabledefid=2 AND addresstorecord2.primary=0 AND addresstorecord2.defaultshipto=1) LEFT JOIN addresses AS addresses2 ON  addresstorecord2.addressid = addresses2.id)
 						WHERE
@@ -1184,37 +1173,7 @@ if(class_exists("phpbmsImport")){
 				case "csv":
 					$querystatement = "
 						SELECT
-							`clients`.`id`,
-							`clients`.`firstname`,
-							`clients`.`lastname`,
-							`clients`.`company`,
-							`clients`.`type`,
-							`clients`.`becameclient`,
-							`clients`.`inactive`,
-							`clients`.`category`,
-							`clients`.`homephone`,
-							`clients`.`workphone`,
-							`clients`.`mobilephone`,
-							`clients`.`fax`,
-							`clients`.`otherphone`,
-							`clients`.`email`,
-							`clients`.`webaddress`,
-							`clients`.`taxid`,
-							`clients`.`salesmanagerid`,
-							`clients`.`leadsource`,
-							`clients`.`comments`,
-							`clients`.`paymentmethodid`,
-							`clients`.`shippingmethodid`,
-							`clients`.`discountid`,
-							`clients`.`taxareaid`,
-							`clients`.`username`,
-							`clients`.`password`,
-							`clients`.`hascredit`,
-							`clients`.`creditlimit`,
-							`clients`.`createdby`,
-							`clients`.`creationdate`,
-							`clients`.`modifiedby`,
-							`clients`.`modifieddate`,
+							`clients`.*,
 							`addresses`.`address1`,
 							`addresses`.`address2`,
 							`addresses`.`city`,
