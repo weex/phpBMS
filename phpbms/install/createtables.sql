@@ -144,7 +144,7 @@ CREATE TABLE `tablecolumns` (
   `wrap` tinyint(1) NOT NULL default '0',
   `size` varchar(16) NOT NULL default '',
   `format` enum('date','time','currency','boolean','datetime','filelink','noencoding','bbcode') default NULL,
-  `roleid` int(10) unsigned NOT NULL default '0',
+  `roleid` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)

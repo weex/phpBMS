@@ -211,8 +211,11 @@ function goURL($url){
 
 function hasRights($roleid,$checkForAdmin = true){
 	$hasrights=false;
+
 	if($_SESSION["userinfo"]["admin"]==1 && $checkForAdmin)
 		$hasrights=true;
+	elseif($_SESSION["userinfo"]["admin"] == 1 && $roleid == -100)//-100 is a special value for admin
+		$hasrights = true;
 	elseif($roleid==0)
 		$hasrights=true;
 	else

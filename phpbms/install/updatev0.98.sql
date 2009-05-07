@@ -20,6 +20,7 @@ INSERT INTO `scheduler` (`id`, `name`, `job`, `crontab`, `lastrun`, `startdateti
 ALTER TABLE `settings` ENGINE=INNODB;
 ALTER TABLE `smartsearches` ENGINE=INNODB;
 ALTER TABLE `tablecolumns` ENGINE=INNODB;
+ALTER TABLE `tablecolumns` MODIFY COLUMN `roleid` int(10) NOT NULL default '0';
 ALTER TABLE `tabledefs` ENGINE=INNODB;
 ALTER TABLE `tabledefs` ADD COLUMN `importfile` VARCHAR(128) DEFAULT NULL AFTER `addroleid`, ADD COLUMN `importroleid` int(11) NOT NULL DEFAULT '-100' AFTER `importfile`, ADD COLUMN `canpost` tinyint(4) NOT NULL default '0' AFTER `deletebutton`, ADD COLUMN `hascustomfields` tinyint(4) NOT NULL default '0' AFTER `canpost`;
 ALTER TABLE `tabledefs` MODIFY COLUMN `defaultwhereclause` TEXT DEFAULT NULL, MODIFY COLUMN `defaultsortorder` TEXT;
