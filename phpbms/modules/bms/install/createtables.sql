@@ -209,6 +209,8 @@ CREATE TABLE `postingsessions` (
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) default NULL,
+  `parentid` int(11) NOT NULL DEFAULT 0,
+  `displayorder` int(11) NOT NULL DEFAULT 0,
   `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `description` text,
   `webenabled` tinyint(1) NOT NULL default 0,
@@ -474,5 +476,12 @@ CREATE TABLE `addresstorecord` (
   `creationdate` DATETIME NOT NULL,
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
+  PRIMARY KEY(`id`)
+) ENGINE=INNODB;
+
+CREATE TABLE `productstoproductcategories` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `productid` INTEGER UNSIGNED NOT NULL,
+  `productcategoryid` INTEGER UNSIGNED NOT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;

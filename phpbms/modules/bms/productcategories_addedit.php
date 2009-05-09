@@ -37,85 +37,100 @@
  +-------------------------------------------------------------------------+
 */
 
-	include("../../include/session.php");
-	include("include/tables.php");
-	include("include/fields.php");
+    include("../../include/session.php");
+    include("include/tables.php");
+    include("include/fields.php");
+    include("include/productcategories.php");
 
-	$thetable = new phpbmsTable($db,7);
-	$therecord = $thetable->processAddEditPage();
+    $thetable = new productcategories($db, 7);
+    $therecord = $thetable->processAddEditPage();
 
-	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];
+    if(isset($therecord["phpbmsStatus"]))
+        $statusmessage = $therecord["phpbmsStatus"];
 
-	$pageTitle="Product Category";
+    $pageTitle="Product Category";
 
-	$phpbms->cssIncludes[] = "pages/productcategories.css";
+    $phpbms->cssIncludes[] = "pages/productcategories.css";
 
-		//Form Elements
-		//==============================================================
-		$theform = new phpbmsForm();
+        //Form Elements
+        //==============================================================
+        $theform = new phpbmsForm();
 
-		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
-		$theform->addField($theinput);
+        $theinput = new inputField("id",$therecord["id"],NULL,false,NULL,5,12);
+        $theinput->setAttribute("readonly","readonly");
+        $theinput->setAttribute("class","uneditable");
+        $theform->addField($theinput);
 
-		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,128);
-		$theinput->setAttribute("class","important");
-		$theform->addField($theinput);
+        $theinput = new inputCheckbox("inactive",$therecord["inactive"]);
+        $theform->addField($theinput);
 
-		$theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
-		$theform->addField($theinput);
+        $theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,128);
+        $theform->addField($theinput);
 
-		$thetable->getCustomFieldInfo();
-		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
-		$theform->jsMerge();
-		//==============================================================
-		//End Form Elements
+        $theinput = new inputField("displayorder",$therecord["displayorder"],"display order",true,NULL,10,10);
+        $theform->addField($theinput);
 
-	include("header.php");
+        $theinput = new inputField("webdisplayname",$therecord["webdisplayname"],"web display name");
+        $theform->addField($theinput);
+
+        $theinput = new inputTextarea("description", $therecord["description"]);
+        $theform->addField($theinput);
+
+        $theinput = new inputCheckbox("webenabled",$therecord["webenabled"],"web enabled");
+        $theform->addField($theinput);
+
+        $thetable->getCustomFieldInfo();
+        $theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
+        $theform->jsMerge();
+        //==============================================================
+        //End Form Elements
+
+    include("header.php");
+
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle);?>
+    <?php $theform->startForm($pageTitle);?>
 
-	<fieldset id="fsAttributes">
-		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" style="" />
-		</p>
-		<p>
-			<?php $theform->showField("inactive")?>
-		</p>
-	</fieldset>
 
-	<div id="leftDiv">
-		<fieldset>
-			<legend>name</legend>
-			<p>
-				<?php $theform->showField("name")?>
-			</p>
-		</fieldset>
-		<fieldset>
-			<legend><label for="description">description</label></legend>
-			<p><textarea name="description" cols="38" rows="4" id="description"><?php echo $therecord["description"]?></textarea></p>
-		</fieldset>
+    <fieldset id="fsAttributes">
+            <legend>attributes</legend>
 
-		<fieldset>
-			<legend>web</legend>
-			<p>
-				<?php $theform->showField("webenabled")?>
-			</p>
-			<p>
-				<label for="webdisplayname">web display name</label><br />
-				<input id="webdisplayname" name="webdisplayname" type="text" value="<?php echo htmlQuotes($therecord["webdisplayname"])?>" size="40" maxlength="64" />
-			</p>
-		</fieldset>
+            <p><?php $theform->showField("id")?></p>
 
-                <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+            <p><?php $theform->showField("inactive")?></p>
 
-	</div>
+            <p><?php $thetable->showParentsSelect($therecord["id"], $therecord["parentid"]); ?></p>
 
-	<?php
-		$theform->showCreateModify($phpbms,$therecord);
-		$theform->endForm();
-	?>
+            <p><?php $theform->showField("displayorder")?></p>
+
+    </fieldset>
+
+    <div id="leftDiv">
+
+        <fieldset>
+            <legend>name</legend>
+
+            <p class="big"><?php $theform->showField("name")?></p>
+
+        </fieldset>
+
+        <fieldset>
+            <legend>web</legend>
+
+            <p><?php $theform->showField("webenabled")?></p>
+
+            <p><?php $theform->showField("webdisplayname")?></p>
+
+            <p><?php $theform->showField("description")?>
+
+        </fieldset>
+
+        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
+
+    </div>
+
+    <?php
+            $theform->showCreateModify($phpbms,$therecord);
+            $theform->endForm();
+    ?>
 </div>
 <?php include("footer.php");?>

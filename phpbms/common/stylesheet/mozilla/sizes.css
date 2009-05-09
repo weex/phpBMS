@@ -11,10 +11,10 @@
 .tiny { font-size : 10px}
 .mono {font-family:'Courier New', Courier, mono;}
 
-.standout{ 
-	background-color:#0B63A2; 
-	color:white; 
-	font-weight:bold; 
+.standout{
+	background-color:#0B63A2;
+	color:white;
+	font-weight:bold;
 	font-size:15px;
 	padding:4px;
 }
@@ -33,9 +33,9 @@ H1 {
 	background: url("image/h1graphic.png") 4px 4px no-repeat;;
 }
 
-LEGEND,H2{	
+LEGEND,H2{
 	font-weight:bold;
-	font-size:15px; 
+	font-size:15px;
 	color:#455372;
 	text-transform:capitalize;
 	font-family: Arial, Helvitica, sans-serif;
@@ -49,7 +49,7 @@ H2{
 	padding-left:3px;
 	padding-bottom:0px;
 	margin:0px;
-	margin-top:30px; 
+	margin-top:30px;
 	margin-bottom:5px;
 }
 
@@ -67,4 +67,8 @@ H4{
 	margin:2px;
 	margin-top:10px;
     font-family: Arial, Helvitica, sans-serif;
+}
+
+.big input, .big button{
+    font-size: 15px;
 }

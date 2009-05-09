@@ -49,6 +49,7 @@ if(class_exists("phpbmsTable")){
 			$therecord["type"]="Inventory";
 			$therecord["status"]="In Stock";
 			$therecord["taxable"]=1;
+			$therecord["categoryid"]=0;
 
 			return $therecord;
 		}
@@ -63,28 +64,6 @@ if(class_exists("phpbmsTable")){
 
 			return $file;
 		}
-
-
-		function populateCategoryArray(){
-
-			$this->availableCategoryIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`productcategories`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableCategoryIDs[] = $therecord["id"];
-			}else
-				$this->availableCategoryIDs[] = "none";
-
-		}//end method --populateCategoryArray--
 
 
 		function populateProductArray(){
@@ -155,24 +134,6 @@ if(class_exists("phpbmsTable")){
 
 			}else
 				$this->verifyErrors[] = "The `partnumber` field must be set.";
-
-
-			//STORE CATEGORY IDS, DON'T SELECT EVERY TIME
-			if(isset($variables["categoryid"])){
-
-				if(((int) $variables["categoryid"]) > 0){
-
-					if(!count($this->availableCategoryIDs))
-						$this->populateCategoryArray();
-
-					if( !in_array(((int) $variables["categoryid"]), $this->availableCategoryIDs) )
-						$this->verifyErrors[] = "The `categoryid` field does not give an existing/acceptable category id number.";
-
-				}else
-					$this->verifyErrors[] = "The `categoryid` field must be a positive number.";
-
-			}else
-				$this->verifyErrors[] = "The `categoryid` must be set.";
 
 
 			if(isset($variables["status"])){
@@ -339,26 +300,49 @@ if(class_exists("phpbmsTable")){
 
 			parent::updateRecord($variables, $modifiedby);
 
+                        if(isset($variables["addcats"]))
+                                $this->updateCategories($variables["id"], $variables["addcats"]);
+
 			//need to reset the field information.  If they did not have rights
 			// we temporarilly removed the fields to be updated.
 			$this->getTableInfo();
-		}
+
+		}//end function updateRecord
 
 
-		function checkNumberCategories(){
-			$querystatement="SELECT count(id) AS thecount FROM productcategories WHERE inactive=0";
-			$queryresult=$this->db->query($querystatement);
-			$therecord=$this->db->fetchArray($queryresult);
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
 
-			return $therecord["thecount"];
-		}
+			if($createdby === NULL)
+				$createdby = $_SESSION["userinfo"]["id"];
+
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+
+                        if(isset($variables["addcats"]))
+                                $this->updateCategories($newid, $variables["addcats"]);
+
+                        return $newid;
+
+                }//end function insertRecord
 
 
+                //retrieves and displays a list of possible product categories
 		function displayProductCategories($categoryid){
-			$querystatement="SELECT `id`,`name` FROM `productcategories` WHERE `inactive` =0 OR `id` =".((int) $categoryid)." ORDER BY `name`";
-			$queryresult=$this->db->query($querystatement);
+
+			$querystatement = "
+                            SELECT
+                                `id`,
+                                `name`
+                            FROM
+                                `productcategories`
+                            WHERE
+                                `inactive` = 0 OR `id` =".((int) $categoryid)."
+                            ORDER BY
+                                `name`";
+
+			$queryresult = $this->db->query($querystatement);
 
 			?><select name="categoryid" id="categoryid">
+                                <option value="0" <?php if($categoryid==0) echo 'selected="selected"'?>>No Master Category</option>
 				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
 						?><option value="<?php echo $therecord["id"]?>" <?php if($categoryid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
@@ -367,7 +351,89 @@ if(class_exists("phpbmsTable")){
 				?>
 			</select><?php
 
-		}
+		}//end function displayProductCategories
+
+
+                function displayAdditionalCategories($id){
+
+                    ?>
+                    <div id="catDiv">
+                        <input type="hidden" id="addcats" name="addcats" value="" />
+                    <?php
+
+                    if($id){
+
+                        $id = (int) $id;
+
+                        $querystatement ="
+                            SELECT
+                                productcategories.id AS catid,
+                                productcategories.name
+                            FROM
+                                (products INNER JOIN productstoproductcategories ON products.id = productstoproductcategories.productid)
+                                INNER JOIN productcategories ON productstoproductcategories.productcategoryid = productcategories.id
+                            WHERE
+                                products.id = ".$id;
+
+                        $queryresult = $this->db->query($querystatement);
+
+                        $i = 0;
+
+                        while($therecord = $this->db->fetchArray($queryresult)){
+
+                            ?>
+                            <div class="moreCats" id="AC<?php echo $i; ?>">
+                                <input type="text" value="<?php echo formatVariable($therecord["name"]); ?>" id="AC-<?php echo $i ?>" size="30" readonly="readonly"/>
+                                <input type="hidden" id="AC-CatId-<?php echo $i ?>" value="<?php echo $therecord["catid"];?>" class="catIDs"/>
+                                <button type="button" class="graphicButtons buttonMinus catButtons" title="Remove Category"><span>-</span></button>
+                            </div>
+                            <?php
+
+                            $i++;
+
+                        }//endwhile
+
+                    }//endif
+
+                    ?></div><?php
+
+                }//end function displayAdditionalCategories
+
+
+                function updateCategories($recordid, $categoryList){
+
+                        if($categoryList){
+
+                                $categoryArray = explode(",", $categoryList);
+
+                                //first remove any existing records
+                                $deletestatement = "
+                                        DELETE FROM
+                                                `productstoproductcategories`
+                                        WHERE
+                                                `productid` = ".$recordid;
+
+                                $this->db->query($deletestatement);
+
+                                foreach($categoryArray as $categoryId){
+
+                                        $insertstatement = "
+                                                INSERT INTO
+                                                        `productstoproductcategories`
+                                                        (productid, productcategoryid)
+                                                VALUES
+                                                        (
+                                                        ".$recordid.",
+                                                        ".$categoryId."
+                                                        )";
+
+                                        $this->db->query($insertstatement);
+
+                                }//endforeach
+
+                        }//endif
+
+                }//end updateCategories
 
 	}//end products class
 }//end if

@@ -111,3 +111,19 @@ ALTER TABLE `invoices` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE,
 ALTER TABLE `shippingmethods` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `paymentmethods` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `tax` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
+-- Preping Product Categories to be more shopping cart synchronization friendly --
+ALTER TABLE `productcategories` ADD COLUMN `parentid` int(11) NOT NULL DEFAULT 0 AFTER `name`, ADD COLUMN `displayorder` INT(11) NOT NULL DEFAULT 0 AFTER `parentid`;
+UPDATE `tabledefs` SET `querytable` = '(productcategories LEFT JOIN productcategories AS `parents` ON productcategories.parentid = parents.id)' WHERE id = 7;
+DELETE FROM `tablecolumns` WHERE `tabledefid` = 7;
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'name', 'if(productcategories.description, concat(\'[b]\', productcategories.name,\'[/b][br]\',productcategories.description), concat(\'[b]\', productcategories.name,\'[/b]\'))', 'left', '', '1', 'productcategories.name', '0', '100%', 'bbcode', '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'parent category', 'if(parents.name, parents.name, \'No Parent\')', 'left', '', '2', '', '0', '', NULL, '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'display order', 'productcategories.displayorder', 'right', '', '3', '', '0', '', NULL, '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'web', 'productcategories.webenabled', 'center', '', '0', '', '0', '', 'boolean', '0');
+CREATE TABLE `productstoproductcategories` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `productid` INTEGER UNSIGNED NOT NULL,
+  `productcategoryid` INTEGER UNSIGNED NOT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE=INNODB;
+UPDATE `tabledefs` SET `querytable` = '(products LEFT JOIN productcategories ON products.categoryid = productcategories.id)' WHERE `id`=4;
+INSERT INTO `smartsearches` (`id`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('10', 'Pick Product Category For Product', 'productcategories', 'productcategories.id', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', '7', '2', 1, NOW(), 1, NOW());
