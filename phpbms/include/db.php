@@ -119,14 +119,22 @@ class db{
     }//end function init (db)
 
 
+    /**
+     * Establishes a connection to the database
+     *
+     * Establishes a connection to the database.  If the {@link $pconnect} setting
+     * is set, it uses the mysql_pconnect (for persistennt connections). We pass
+     * connection flags of 65536 so that calling simple stored procedures will
+     * successfully return results
+     */
     function connect(){
-        // This functions connects to the server.
-        // It uses pconnect if the constant is set (via the settings.php file)
 
         if($this->pconnect)
-            $this->db_link = @ mysql_pconnect($this->hostname,$this->dbuser,$this->dbpass);
+            $function = "mysql_pconnect";
         else
-            $this->db_link = @ mysql_connect($this->hostname,$this->dbuser,$this->dbpass);
+            $function = "mysql_connect";
+
+        $this->db_link = @ $function($this->hostname, $this->dbuser, $this->dbpass, 65536);
 
         if(!$this->db_link){
 

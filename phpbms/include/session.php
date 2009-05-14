@@ -445,7 +445,7 @@ class phpbmsSession{
 	}//end function startSesion
 
 
-	function verifyAPIlogin($user, $pass){
+	function verifyAPIlogin($user, $pass, $format = "json"){
 
 		$thereturn = false;
 		$this->db->stopOnError = false;
@@ -473,7 +473,7 @@ class phpbmsSession{
 
 		if(!$queryresult) {
 
-			$error = new appError(-720,"","Error retrieving user record",true,true,true,"json");
+			$error = new appError(-720,"","Error retrieving user record",true,true,true,$format);
 			return false;
 
 		}//endif
@@ -496,7 +496,7 @@ class phpbmsSession{
 			$queryresult = @ $this->db->query($querystatement);
 
 			if(!$queryresult)
-				$error = new appError(-730,"","Error Updating User Login Time",true,true,true,"json");
+				$error = new appError(-730,"","Error Updating User Login Time",true,true,true,$format);
 			else
 				$thereturn = true;
 
@@ -552,6 +552,10 @@ if(!defined("noStartup")){
 
 	//Testing for API login
 	if(strpos($scriptname,"api_")!==false){
+
+                if(!isset($_POST["phpbmsformat"]))
+                    $_POST["phpbmsformat"] = "json";
+
 		if(isset($_POST["phpbmsusername"]) && isset($_POST["phpbmspassword"])){
 
 			$phpbmsSession->loadDBSettings(APP_DEBUG);
@@ -568,11 +572,11 @@ if(!defined("noStartup")){
 			$phpbms = new phpbms($db);
 
 
-			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"]))
+			if(!$phpbmsSession->verifyAPILogin($_POST["phpbmsusername"],$_POST["phpbmspassword"], $_POST["phpbmsformat"]))
 				$error = new appError(-700,"","Login credentials incorrect",true,true,true,"json");
 
 		} else
-			$error= new appError(-710,"","No login credentials passed",true,true,true,"json");
+		    $error= new appError(-710, "", "No login credentials passed", true, true, true, $_POST["phpbmsformat"]);
 
 	} else {
 

@@ -62,6 +62,11 @@ if(class_exists("phpbmsTable")){
 
 			$this->phpbmsTable($db,$tabledefid,$backurl);
 
+			if(!class_exists("addresstorecord")){
+				include_once("modules/bms/include/addresses.php");
+				include_once("modules/bms/include/addresstorecord.php");
+			}//endif
+
 			$this->address = new addresstorecord($db, 306);
 
 		}//end function - init
@@ -447,7 +452,6 @@ if(class_exists("phpbmsTable")){
 
 
 		function updateRecord($variables, $modifiedby = NULL){
-
 			//$variables = $this->prepareVariables($variables);
 
 			$thereturn = parent::updateRecord($variables, $modifiedby);

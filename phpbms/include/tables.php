@@ -321,7 +321,8 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             return $therecord;
 
-        }//edn function getDefaults
+        }//end function getDefaults
+
 
         // Gets a specific individual record from the table
         function getRecord($id = 0){
