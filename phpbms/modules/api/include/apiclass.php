@@ -294,7 +294,7 @@ class api{
                                     if(((int) $request->data["id"]) !== 0)
                                         $overrideID = true;
 
-                            $newid = $processor->insertRecord((array) $request->data, $overrideID, true);
+                            $newid = $processor->insertRecord((array) $request->data, null, $overrideID, true);
 
                             $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid);
 
@@ -324,7 +324,7 @@ class api{
                             $this->sendError("Update failed from request number ".$i, $errorArray);
                         else {
 
-                            $processor->updateRecord((array) $request->data, true, true);
+                            $processor->updateRecord((array) $request->data);
 
                             $this->_addToResponse("updated", "record updated in tabledef ".$tabledefid);
 

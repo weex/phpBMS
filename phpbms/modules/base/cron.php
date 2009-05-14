@@ -1,8 +1,17 @@
 <?php
+
 	$loginNoKick=true;
 	$loginNoDisplayError=true;
 
  	include("../../include/session.php");
+
+	//testing cron access
+	if(isset($_GET["t"]) && !APP_DEBUG){
+
+		echo "ztz";
+		exit;
+
+	}//endif
 
 	$now = gmdate('Y-m-d H:i', strtotime('now'));
 

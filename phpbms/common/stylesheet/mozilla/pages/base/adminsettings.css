@@ -1,0 +1,114 @@
+/* $Rev: 285 $ | $LastChangedBy: brieb $ */
+/* $LastChangedDate: 2007-08-27 14:05:27 -0600 (Mon, 27 Aug 2007) $ */
+
+
+.moduleButtons{
+    margin:0;
+    cursor:pointer;
+    font-weight:bold;
+    background:#EFF9F9 url("../../image/section-down.png") 99% 3px no-repeat;
+    font-size: 18px;
+    padding:4px 8px;
+    border: 1px solid #CCCCCC;
+}
+
+.moduleButtons:hover{
+    background-color: #DDDDDD;
+}
+
+.moduleSections .containers{
+    border: 1px solid #CCCCCC;
+    border-top: none;
+    background: #EEEEEE;
+}
+
+.updateButtonP{
+    text-align:right;
+    padding: 0 10px 10px;
+}
+    .updateButtonP button{
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+fieldset{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#configWarnings{
+    background: #E6DD93;
+    display: none;
+}
+
+    #configWarnings h2{
+        color: black;
+        border: none;
+        margin-top: 0;
+    }
+
+    #configWarnings li{
+        margin-bottom: 15px;
+        display: none;
+    }
+
+.tabs{
+    background: white;
+    padding-top: 10px;
+}
+
+#h1Title{
+    margin-right:155px
+}
+
+#phpbmsSplash{
+    clear:both;
+    background-color:white;
+    height:40px;
+}
+
+#phpbmslogo{
+    float:right;
+    padding-top:9px;
+    padding-right:14px;
+}
+    #phpbmslogo a{
+            display: block;
+            width: 85px;
+            height: 22px;
+            background: url("../../../../image/logo.png") no-repeat;
+    }
+
+        #phpbmslogo a span{
+            display: none
+        }
+
+#splashTitle{
+    margin-right: 100px;
+    padding:3px 0 0 5px;
+}
+
+    #splashTitle h2{
+        padding:0;
+        margin:0;
+        border:0;
+    }
+
+#graphicHolder{
+    border: 1px solid black;
+    height: 150px;
+    width: 400px;
+    overflow:
+    scroll;
+}
+
+.newModule{clear:both}
+
+#invoice_default_printinstruc{
+    width:98%
+}
+
+#footerbox{
+    text-align:right;
+    clear:both;
+}

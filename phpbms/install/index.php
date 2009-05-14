@@ -371,6 +371,16 @@
 							folders before you can use the system
 						</p>
 					</li>
+					<li>
+						<h3>Setup and Restrict Access to the Cron Script</h3>
+						<p>
+                                                    phpBMS has a scheduler function that runs items on a timed basis using cron
+                                                    or another scheduler program to run php via command line.  Check the
+                                                    Scheduler under the system menu after loggin in for details on configuring this
+                                                    in your crontab file.  Once configured, you will want to disable your web server from
+                                                    allowing this file to be called from your web server (the outside).
+						</p>
+					</li>
 				</ul>
 
 				<h2>Suggested Security Steps</h2>

@@ -413,7 +413,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 if(isset($_SESSION["userinfo"]["id"]))
                     $modifiedby = $_SESSION["userinfo"]["id"];
                 else
-                    $error = new appError(-840,"Session Timed Out.","Creating New Record");
+                    $error = new appError(-840,"Session Timed Out.","Updating Record");
 
             //all updates should have an id
             if(!isset($variables["id"]))

@@ -19,7 +19,11 @@
 	padding:4px;
 }
 
-.notes {color:#DF0005}
+.notes {
+    font-style: italic;
+    color: #9F0000;
+    line-height: 1.5em;
+}
 
 .important {font-weight:bold;}
 

@@ -445,64 +445,75 @@ class phpbmsSession{
 	}//end function startSesion
 
 
-	function verifyAPIlogin($user, $pass, $format = "json"){
 
-		$thereturn = false;
-		$this->db->stopOnError = false;
+        /**
+         * Verifies login credentials from an API
+         *
+         * This functions verifies credentials for API (portal access) user.
+         *
+         * @param string $user user name
+         * @param string $pass password
+         * @param string $format format to send errors back in, currently supports 'json' (default) and 'xhtml'
+         *
+         */
+        function verifyAPIlogin($user, $pass, $format = "json"){
 
-		$querystatement = "
-			SELECT
-				id,
-				firstname,
-				lastname,
-				email,
-				phone,
-				department,
-				employeenumber,
-				admin
-			FROM
-				users
-			WHERE
-				login != 'Scheduler'
-				AND login = '".mysql_real_escape_string($user)."'
-				AND password = ENCODE('".mysql_real_escape_string($pass)."', '".mysql_real_escape_string(ENCRYPTION_SEED)."')
-				AND revoked = 0
-				AND portalaccess = 1";
+            $thereturn = false;
+            $this->db->stopOnError = false;
 
-		$queryresult = $this->db->query($querystatement);
+            $querystatement = "
+                SELECT
+                    id,
+                    firstname,
+                    lastname,
+                    email,
+                    phone,
+                    department,
+                    employeenumber,
+                    admin
+                FROM
+                    users
+                WHERE
+                login != 'Scheduler'
+                    AND login = '".mysql_real_escape_string($user)."'
+                    AND password = ENCODE('".mysql_real_escape_string($pass)."', '".mysql_real_escape_string(ENCRYPTION_SEED)."')
+                    AND revoked = 0
+                    AND portalaccess = 1";
 
-		if(!$queryresult) {
+            $queryresult = $this->db->query($querystatement);
 
-			$error = new appError(-720,"","Error retrieving user record",true,true,true,$format);
-			return false;
+            if(!$queryresult) {
 
-		}//endif
+                $error = new appError(-720,"","Error retrieving user record",true,true,true,$format);
+                return false;
 
-		if($this->db->numRows($queryresult)){
+            }//endif
 
-			//We found a record that matches in the database
-			// populate the session and go in
-			$_SESSION["userinfo"] = $this->db->fetchArray($queryresult);
+            if($this->db->numRows($queryresult)){
 
-			$querystatement = "
-				UPDATE
-					users
-				SET
-					modifieddate=modifieddate,
-					lastlogin=Now()
-				WHERE
-					id = ".$_SESSION["userinfo"]["id"];
+                //We found a record that matches in the database
+                // populate the session and go in
+                $_SESSION["userinfo"] = $this->db->fetchArray($queryresult);
 
-			$queryresult = @ $this->db->query($querystatement);
+                $querystatement = "
+                    UPDATE
+                        users
+                    SET
+                        modifieddate = modifieddate,
+                        lastlogin = NOW()
+                    WHERE
+                        id = ".$_SESSION["userinfo"]["id"];
 
-			if(!$queryresult)
-				$error = new appError(-730,"","Error Updating User Login Time",true,true,true,$format);
-			else
-				$thereturn = true;
+                $queryresult = @ $this->db->query($querystatement);
 
-		}//endif numrows
+                if(!$queryresult)
+                    $error = new appError(-730, "", "Error Updating User Login Time", true, true, true, $format);
+                else
+                    $thereturn = true;
 
-		return $thereturn;
+            }//endif numrows
+
+            return $thereturn;
 
 	}//end function verifyAPIlogin
 
