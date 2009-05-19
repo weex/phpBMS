@@ -83,8 +83,10 @@
 				if(is_array($module) && $name != "base"){
 
 					echo 'modules["'.$name.'"] = Array()'."\n";
+
 					foreach($module as $key=>$value)
-						echo 'modules["'.$name.'"]["'.$key.'"] = "'.$value.'";'."\n";
+                                                if($key!="requirements")
+                                                        echo 'modules["'.$name.'"]["'.$key.'"] = "'.$value.'";'."\n";
 				}//endif
 
 
@@ -107,32 +109,37 @@
 
 			ksort($this->list);
 
-			foreach($this->list as $key=>$module){
+                        if(isset($this->list["bms"]))
+                                $this->_displayModuleLine("bms", $this->list["bms"], "bmsModule");
 
-				if($key != "base"){
+			foreach($this->list as $key=>$module)
+				if($key != "base" && $key != "bms")
+                                        $this->_displayModuleLine($key, $module);
 
-					?>
-					<tr>
-						<td>
-							<h3><strong><?php echo $module["name"]?></strong></h3>
-							<p><?php echo $module["description"]?></p>
-							<p class="notes"><strong>Requirements:</strong> <?php echo $module["requirements"]?></p>
-						</td>
-						<td><?php echo $module["version"] ?></td>
-						<td class="moduleInstall">
-							<button class="Buttons moduleButtons" id="moduleButton<?php echo $key ?>">Install Module</button>
-							<p><span class="" id="Results<?php echo $key?>"></span></p>
-						</td>
-					</tr>
-					<?php
-
-				}//end if
-
-			}//end foreach
 
 			?></tbody></table><?php
 
 		}//end function displayInstallTable
+
+
+                function _displayModuleLine($name, $module, $class = null){
+
+                        ?>
+                        <tr <?php if($class)  echo 'class="'.$class.'"';?>>
+                                <td>
+                                        <h3><strong><?php echo $module["name"]?></strong></h3>
+                                        <p><?php echo $module["description"]?></p>
+                                        <p class="notes"><strong>Requirements:</strong> <?php echo $module["requirements"]?></p>
+                                </td>
+                                <td><?php echo $module["version"] ?></td>
+                                <td class="moduleInstall">
+                                        <button class="Buttons moduleButtons" id="moduleButton<?php echo $name ?>">Install Module</button>
+                                        <p><span class="" id="Results<?php echo $name?>"></span></p>
+                                </td>
+                        </tr>
+                        <?php
+
+                }//end
 
 	}//end class
 

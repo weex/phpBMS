@@ -86,14 +86,19 @@ p{
 
 #moduleTable td{
 
-    padding: 5px 10px;
+    padding: 12px 10px 5px;
     border-top: 1px solid #CCCCCC;
     vertical-align: top;
 }
 
-#moduleTable td h3{
-    margin-top: 0;
-    margin-left: 0;
+    #moduleTable td h3{
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+.bmsModule td{
+    background: #E4ECEC url("../common/stylesheet/mozilla/image/bodyline.png") repeat-x scroll left bottom;
+    border-bottom: 1px solid #999999;
 }
 
 #moduleTable th{
