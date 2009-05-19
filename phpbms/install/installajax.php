@@ -236,8 +236,12 @@ If you need further assistance, please use the community forum at http://www.php
 			$this->db->showError = false;
 			$this->db->logError = false;
 
-		} else
-			return $this->returnJSON(false, "Could not open session.php file");
+		} else {
+
+			echo $this->returnJSON(false, "Could not open session.php file");
+                        exit;
+                        
+		}
 
 		switch($command){
 
