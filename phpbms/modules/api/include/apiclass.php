@@ -248,10 +248,32 @@ class api{
             }//endif
 
 
+            /* If the command starts with api_, and there is a request overload, let's assume they
+               are trying to call a homeade function in the ovveriden phpBMS table that they created.
+            */
+            if(!$methodName && substr($request->command, 0, 4) == "api_" && $hasTableClassOveride){
+
+                @ include_once("modules/".$modulename."/include/".$maintable.".php");
+
+                if(class_exists($maintable))
+                    $processor = new $maintable($this->db, $tabledefid);
+                else
+                    $processor = new phpbmsTable($this->db, $tabledefid);
+
+                if(method_exists($processor, $request->command)){
+
+                    $methodName = $request->command;
+
+                    $this->response[] = $processor->$methodName($request->data);
+
+                }//endif
+
+            }//endif
+
             if(!$methodName) {
                 /* Either using the modules overriden table class or search
                    functions class or the standard one There are several
-                   standard commands that can be passed:;
+                   standard commands that can be passed:
 
                    * insert - calls the tabledefs insertRecord command, the
                                 same command that is called on standard
@@ -276,6 +298,7 @@ class api{
                     any additional commands as defined in the table definition
                     the request data passed should contain an array of ids
                 */
+
                 switch($request->command){
 
                     case "insert":
