@@ -177,22 +177,34 @@ class api{
 
                 if($this->db->numRows($queryresult) == 0){
 
-                    $this->sendError("Invalid tabledefid (".$tabledefid.") from request number ".$i);
-                    continue;
+                    if (!(in_array($request->command, array("procedure", "getsetting"))))
+                        $this->sendError("Invalid tabledefid (".$tabledefid.") from request number ".$i);
+                    else {
+
+                        $deletebutton = "delete";
+                        $maintable = "settings";
+                        $modulename = "base";
+
+                        $hasAPIOveride = false;
+                        $hasTableClassOveride = false;
+
+                    }//endif
+
+                } else {
+
+                    $therecord = $this->db->fetchArray($queryresult);
+
+                    $deletebutton = $therecord["deletebutton"];
+
+                    $maintable = $therecord["maintable"];
+
+                    $modulename = $therecord["name"];
+
+                    //check for ovridding classes only once.
+                    $hasAPIOveride = file_exists("../../extendedapi/".$maintable.".php");
+                    $hasTableClassOveride = file_exists("../../".$modulename."/include/".$maintable.".php");
 
                 }//endif
-
-                $therecord = $this->db->fetchArray($queryresult);
-
-                $deletebutton = $therecord["deletebutton"];
-
-                $maintable = $therecord["maintable"];
-
-                $modulename = $therecord["name"];
-
-                //check for ovridding classes only once.
-                $hasAPIOveride = file_exists("../../extendedapi/".$maintable.".php");
-                $hasTableClassOveride = file_exists("../../".$modulename."/include/".$maintable.".php");
 
             }//endif
 
@@ -436,6 +448,41 @@ class api{
                                 }//endif
 
                             }//endif
+
+                        }//endif
+
+                        break;
+
+                    case "getsetting":
+                        if(!is_array($request->data))
+                            $this->sendError("Wrong passed data format, expected array in request number ".$i, $request->data);
+                        else{
+
+                            $whereclause = "";
+                            foreach($request->data as $settingName)
+                                $whereclause = "OR `name` = '".mysql_real_escape_string($settingName)."' ";
+
+                            if($whereclause)
+                                $whereclause = "WHERE ".substr($whereclause, 2);
+
+                            $querystatement = "
+                                SELECT
+                                    `name`,
+                                    `value`
+                                FROM
+                                    `settings`
+                                ".$whereclause;
+
+                            $queryresult = $this->db->query($querystatement);
+
+                            $settings = array();
+
+                            while($therecord = $this->db->fetchArray($queryresult))
+                                $settings[$therecord["name"]] = $therecord["value"];
+
+                            $this->_addToResponse("result",
+                                                  "GetSettings returned (".count($settings).") in request number ".$i,
+                                                  $settings);
 
                         }//endif
 

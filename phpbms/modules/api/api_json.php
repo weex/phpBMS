@@ -38,15 +38,15 @@
 */
 
 //Test Information
-$_POST["phpbmsusername"] = "api";
-$_POST["phpbmspassword"] = "spiderman";
-$_POST["request"] = '[
-    {
-        "tabledefid": 2,
-        "command" : "update",
-        "data" : {"command":"save","id":"6","hascredit":0,"creditlimit":0,"type":"prospect","becameclient":null,"category":"","salesmanagerid":"","ds-salesmanagerid":"","leadsource":"","paymentmethodid":"0","shippingmethodid":"0","discountid":"0","taxareaid":"0","username":"","password":"","firstname":"Test x2","lastname":"API x2","company":"TEST","workphone":"","homephone":"","mobilephone":"","fax":"","otherphone":"","email":"","webaddress":"","taxid":"","addressid":"7","address1":"","address2":"","city":"","state":"","postalcode":"","country":"","comments":"","custom1":"0","custom2":"0","custom3":"","custom4":"","custom5":"","custom6":"G1242166240674","createdby":"","creationdate":"05\/12\/2009 5:08 PM","modifiedby":"","cancelclick":"0","modifieddate":"05\/12\/2009 5:08 PM"}
-    }
-]';
+//$_POST["phpbmsusername"] = "api";
+//$_POST["phpbmspassword"] = "spiderman";
+//$_POST["request"] = '[
+//    {
+//        "tabledefid": 0,
+//        "command" : "getsetting",
+//        "data" : ["company_phone"]
+//    }
+//]';
 
 
 require("../../include/session.php");
