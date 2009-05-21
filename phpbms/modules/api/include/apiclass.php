@@ -454,6 +454,7 @@ class api{
                         break;
 
                     case "getsetting":
+                        //======================================================
                         if(!is_array($request->data))
                             $this->sendError("Wrong passed data format, expected array in request number ".$i, $request->data);
                         else{

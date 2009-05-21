@@ -1,1 +1,1 @@
-INSERT INTO modules VALUES (2,'BMS Module','bms','The Business Magagement functionality of phpBMS.  This module includes clients/propsetcs, quote/order/invoice, and products sections.','0.98');
+INSERT INTO modules VALUES (10,'API','bms','The API module allows you to communicate with the phpBMS system programatically','0.98');
