@@ -42,7 +42,7 @@
  *
  * The api class handles processing and format conversion for API calls to the
  * system.
- * @auther Brian Rieb <brieb@kreotek.com>
+ * @author Brian Rieb <brieb@kreotek.com>
  *
  */
 class api{
@@ -97,6 +97,9 @@ class api{
      * @param string $data Information to be decoded
      */
     function decode($data){
+
+        if(get_magic_quotes_runtime() || get_magic_quotes_gpc())
+            $data = stripslashes($data);
 
         switch($this->format){
 
