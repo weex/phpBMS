@@ -42,9 +42,9 @@
 //$_POST["phpbmspassword"] = "spiderman";
 //$_POST["request"] = '[
 //    {
-//        "tabledefid": 0,
-//        "command" : "getsetting",
-//        "data" : ["company_phone"]
+//        "tabledefid": 1,
+//        "command" : "get",
+//        "data" : 1
 //    }
 //]';
 

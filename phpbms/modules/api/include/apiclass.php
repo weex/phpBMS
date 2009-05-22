@@ -157,6 +157,9 @@ class api{
 
         foreach($this->data as $request){
 
+            if(!is_object($request))
+                $this->sendError("Malformed request number ".$i, $request);
+
             if(!isset($request->tabledefid) || !isset($request->command) || !isset($request->data))
                 $this->sendError("Malformed request number ".$i, $request);
 
@@ -180,9 +183,12 @@ class api{
 
                 if($this->db->numRows($queryresult) == 0){
 
-                    if (!(in_array($request->command, array("procedure", "getsetting"))))
+                    if (!(in_array($request->command, array("procedure", "getsetting")))){
+
                         $this->sendError("Invalid tabledefid (".$tabledefid.") from request number ".$i);
-                    else {
+                        continue;
+
+                    } else {
 
                         $deletebutton = "delete";
                         $maintable = "settings";
@@ -204,8 +210,8 @@ class api{
                     $modulename = $therecord["name"];
 
                     //check for ovridding classes only once.
-                    $hasAPIOveride = file_exists("../../extendedapi/".$maintable.".php");
-                    $hasTableClassOveride = file_exists("../../".$modulename."/include/".$maintable.".php");
+                    $hasAPIOveride = file_exists("../extendedapi/".$maintable.".php");
+                    $hasTableClassOveride = file_exists("../".$modulename."/include/".$maintable.".php");
 
                 }//endif
 
