@@ -42,8 +42,8 @@
 //$_POST["phpbmspassword"] = "spiderman";
 //$_POST["request"] = '[
 //    {
-//        "tabledefid": 1,
-//        "command" : "get",
+//        "tabledefid": 2,
+//        "command" : "api_get",
 //        "data" : 1
 //    }
 //]';

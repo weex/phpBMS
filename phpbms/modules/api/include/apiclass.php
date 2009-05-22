@@ -262,6 +262,7 @@ class api{
             */
             if(!$methodName && substr($request->command, 0, 4) == "api_" && $hasTableClassOveride){
 
+                include_once("include/tables.php");
                 @ include_once("modules/".$modulename."/include/".$maintable.".php");
 
                 if(class_exists($maintable))
