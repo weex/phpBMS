@@ -46,6 +46,7 @@ if(class_exists("phpbmsTable")) {
 			$therecord = parent::getDefaults();
 
 			$therecord["type"]="report";
+                        $therecord["uuid"] = uuid("reports:");
 
 			return $therecord;
 

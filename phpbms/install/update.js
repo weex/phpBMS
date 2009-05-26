@@ -66,6 +66,7 @@ updater = {
 		loadXMLDoc(theURL,null,false);
 
 		var JSONresponse;
+console.log(req.responseText);
 		eval("JSONresponse = (" + req.responseText +")");
 
 		var responseText = getObjectFromID(command + "results");

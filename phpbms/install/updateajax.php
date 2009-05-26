@@ -41,7 +41,7 @@ define("noStartup",true);
 
 require("install_include.php");
 require("../include/session.php");
-
+require("../include/common_functions.php");
 
 
 class updateAjax extends installUpdateBase{
@@ -146,6 +146,8 @@ class updateAjax extends installUpdateBase{
 					$thereturn = $updater->processSQLfile("updatev".$version.".sql");
 					if($thereturn !== true)
 						return $this->returnJSON(false, $thereturn);
+
+                                        $this->v098UpdateReportUUID();
 
 					//Updating Module Table
 					$thereturn = $this->updateModuleVersion("base", $version);
@@ -271,6 +273,52 @@ class updateAjax extends installUpdateBase{
 			return true;
 
 	}//end function updateModuleVersion
+
+        function v098UpdateReportUUID(){
+
+                $querystatement = "
+                        SELECT
+                                `id`
+                        FROM
+                                `reports`
+                        WHERE
+                                `uuid`!='reports:37cee478-b57e-2d53-d951-baf3937ba9e0'
+                                AND
+                                `uuid`!='reports:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8'
+                                AND
+                                `uuid`!='reports:a6999cc3-59bb-6af3-460e-d5d791afb842'
+                                AND
+                                `uuid`!='reports:2944b204-5967-348a-8679-6835f45f0d79'
+                                AND
+                                `uuid`!='reports:37a299d1-d795-ad83-4b47-0778c16a381c';
+                        ";
+
+                $queryresult = $this->db->query($querystatement);
+
+                $theIDs = array();
+                while($therecord = $this->db->fetchArray($queryresult)){
+
+                        $theIDs[] = $therecord["id"];
+
+                }//end while
+
+                foreach($theIDs as $id){
+
+                        $querystatement = "
+                                UPDATE
+                                        `reports`
+                                SET
+                                        `uuid`='".uuid("reports:")."'
+                                WHERE
+                                        `id` = '".$id."';
+                                ";
+
+                        $queryresult = $this->db->query($querystatement);
+
+                }//end foreach
+
+
+        }//end method --v098UpdateReportUUID
 
 }//end class updateAjax
 

@@ -118,6 +118,7 @@ CREATE TABLE relationships (
 
 CREATE TABLE `reports` (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(64) default NULL,
   `type` varchar(32) default NULL,
   `tabledefid` int(11) NOT NULL default '0',

@@ -56,6 +56,11 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
+                $theinput = new inputField("uuid", $therecord["uuid"], NULL, true);
+		$theinput->setAttribute("class","uneditable");
+		$theinput->setAttribute("readonly","readonly");
+		$theform->addField($theinput);
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -89,6 +94,7 @@
 			<label for="id">id</label><br />
 			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
 		</p>
+                <p><?php $theform->showField("uuid"); ?></p>
 		<p>
 			<label for="tabledefid">report table</label><br />
 			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]);?><br />
