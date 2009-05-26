@@ -149,7 +149,7 @@ require("../include/session.php");
 						<td>
 							<h3><strong><?php echo $module["name"]?></strong></h3>
 							<p><?php echo $module["description"]?></p>
-							<p class="notes"><strong>Requirements:</strong> <?php echo $module["requirements"]?>
+							<p class="notes"><strong>Requirements:</strong><?php echo $module["requirements"]?></p>
 						</td>
 						<td><?php echo $module["version"] ?></td>
 						<td><?php echo $module["currentversion"] ?></td>
@@ -159,15 +159,15 @@ require("../include/session.php");
 								if($module["version"] != $module["currentversion"]){
 									if($module["currentversion"] == 0) {
 							?>
-								Not Installed>
+								Not Installed
 							<?php
-									} else {}
+									} else {
 							?>
 
 								<button class="Buttons moduleButtons" id="moduleButton<?php echo $key ?>">Update Module</button>
 								<p><span class="" id="Results<?php echo $key?>"></span></p>
 
-							<?php } else {?>
+							<?php }} else {?>
 								Versions Match<br />
 								Update Unnecessary
 							<?php }//endif version!=currentversion ?>
