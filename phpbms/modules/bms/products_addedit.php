@@ -300,7 +300,7 @@
 	</div>
 
 
-	<?php $theform->showCreateModify($phpbms,$therecord);?>
+	<?php $theform->showGeneralInfo($phpbms,$therecord);?>
 </div>
 </form>
 <?php include("footer.php");?>

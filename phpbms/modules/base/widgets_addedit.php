@@ -57,11 +57,6 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		$theinput = new inputField("id",$therecord["id"],NULL,false,NULL,9,64);
-		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("readonly","readonly");
-		$theform->addField($theinput);
-
 		$theinput = new inputField("title", $therecord["title"], NULL, true);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -75,11 +70,6 @@
 		$theform->addField($theinput);
 
 		$theinput = new inputCheckbox("default", $therecord["default"], NULL);
-		$theform->addField($theinput);
-
-		$theinput = new inputField("uuid", $therecord["uuid"], NULL, true);
-		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("file", $therecord["file"], NULL, true);
@@ -103,10 +93,6 @@
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 
-		<p><?php $theform->showField("id")?></p>
-
-		<p><?php $theform->showField("uuid")?></p>
-
 		<p><?php $theform->showField("type")?></p>
 
 		<p><?php $theform->showField("default")?></p>
@@ -121,7 +107,7 @@
 		<fieldset>
 			<legend>title / file</legend>
 
-			<p>
+			<p class="big">
 				<?php $theform->showField("title"); ?>
 			</p>
 
@@ -137,7 +123,7 @@
 	</div>
 
 	<?php
-		$theform->showCreateModify($phpbms,$therecord);
+		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>
 </div>

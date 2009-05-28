@@ -43,16 +43,6 @@ if(class_exists("phpbmsTable")){
 		var $availableRoleIDs = array();
 		var $availableUuids = array();
 
-		function getDefaults(){
-
-			$therecord = parent::getDefaults();
-
-			$therecord["uuid"] = uuid("wdgt:");
-
-			return $therecord;
-
-		}//end function - getDefaults
-
 
 		function _populateRoleArray(){
 

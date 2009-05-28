@@ -394,7 +394,7 @@
 	<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 
 	<?php
-		$theform->showCreateModify($phpbms,$therecord);
+		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>
 </div>

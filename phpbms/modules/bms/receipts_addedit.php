@@ -275,7 +275,7 @@
 
         <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 
-	<?php $theform->showCreateModify($phpbms,$therecord) ?>
+	<?php $theform->showGeneralInfo($phpbms,$therecord) ?>
 </form>
 </div>
 <?php include("footer.php")?>

@@ -646,7 +646,7 @@
 
 <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 
-<?php $theform->showCreateModify($phpbms,$therecord) ?>
+<?php $theform->showGeneralInfo($phpbms,$therecord) ?>
 </div>
 </form>
 <?php include("footer.php");?>

@@ -12,11 +12,11 @@
 
 #fsAttributes{
     float:right;
-    width:280px;
+    width:200px;
     margin-top:0;
 }
 
-#id, #uuid, #title {
+#title {
     width: 99%;
 }
 
@@ -25,9 +25,9 @@
 }
 
 #leftSideDiv{
-    margin-right:308px;
+    margin-right:228px;
 }
 
     #leftSideDiv fieldset{
-        height: 260px;
+        height: 168px;
     }

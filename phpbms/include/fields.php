@@ -95,13 +95,12 @@ class phpbmsForm{
 
     // Displays the bottom record details that are present on almost all phpBMS
     // records.  These are non-modifiable
-    function showCreateModify($phpbms, $therecord){
+    function showGeneralInfo($phpbms, $therecord){
         ?>
 <div id="createmodifiedby" >
-    <div id="savecancel2"><?php showSaveCancel(2)?></div>
     <table>
         <tbody>
-            <tr id="cmFirstRow">
+            <tr class="topRows">
                 <td class="cmTitles">
                         <input name="createdby" type="hidden" value="<?php $therecord["createdby"] ?>" />
                         <input name="creationdate" type="hidden" value="<?php echo formatFromSQLDatetime($therecord["creationdate"]) ?>"/>
@@ -109,8 +108,11 @@ class phpbmsForm{
                 </td>
                 <td><?php echo htmlQuotes($phpbms->getUserName($therecord["createdby"]))?></td>
                 <td><?php echo formatFromSQLDatetime($therecord["creationdate"]) ?></td>
+                <td id="cmButtonContainer" rowspan="3">
+                    <?php showSaveCancel(2)?>
+                </td>
             </tr>
-            <tr>
+            <tr class="topRows">
                 <td class="cmTitles">
                         <input name="modifiedby" type="hidden" value="<?php $therecord["modifiedby"] ?>" />
                         <input id="cancelclick" name="cancelclick" type="hidden" value="0" />
@@ -120,11 +122,19 @@ class phpbmsForm{
                 <td><?php echo htmlQuotes($phpbms->getUserName($therecord["modifiedby"]))?></td>
                 <td><?php echo formatFromSQLDatetime($therecord["modifieddate"]) ?></td>
             </tr>
+            <tr>
+                <td class="cmTitles">
+                        uuid / id
+                        <input name="uuid" id="uuid" type="hidden" value="<?php if(isset($therecord["uuid"])) echo $therecord["uuid"] ?>" />
+                        <input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />
+                </td>
+                <td colspan="2" id="cmIds"><span><?php echo isset($therecord["uuid"])?$therecord["uuid"]:'&nbsp;' ?></span><span id="cmId"><?php echo $therecord["id"] ?></span></td>
+            </tr>
         </tbody>
     </table>
 </div>
         <?php
-    }//end function showCreateModify
+    }//end function showGeneralInfo
 
 
     //placeholder end form function for consistency (helps editors with HTML

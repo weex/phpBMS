@@ -48,6 +48,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
         var $fields = array();
 
+
         function phpbmsTable($db,$tabledefid = 0,$backurl = NULL){
 
             if(is_object($db))
@@ -285,10 +286,13 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function prepareFieldForSQL
 
 
-        // retrieves default values for record
-        // uses the field name to retrieve the default value, and if it does not
-        // match one the predefined phpBMS names (such as id, or modified by)
-        // it uses the field type
+        /**
+          * Retrieves default values for a single record
+          *
+          * Uses the field names to guess a default value.  If it cannot find
+          * one of the standard names it sets the default value based on the type
+          *
+          */
         function getDefaults(){
 
             $therecord = array();
@@ -297,23 +301,27 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                 switch($fieldname){
 
-                        case "id":
-                        case "modifiedby":
-                        case "modifieddate":
+                    case "id":
+                    case "modifiedby":
+                    case "modifieddate":
+                        $therecord[$fieldname] = NULL;
+                        break;
+
+                    case "uuid":
+                        $therecord["uuid"] = uuid($this->prefix.":");
+                        break;
+
+                    case "createdby":
+                        $therecord["createdby"] = $_SESSION["userinfo"]["id"];
+                        break;
+
+                    default:
+                        if(strpos($thefield["flags"],"not_null") === false)
                             $therecord[$fieldname] = NULL;
-                            break;
+                        else
+                            $therecord[$fieldname] = $this->getDefaultByType($thefield["type"]);
 
-                        case "createdby":
-                            $therecord["createdby"] = $_SESSION["userinfo"]["id"];
-                            break;
-
-                        default:
-                            if(strpos($thefield["flags"],"not_null") === false)
-                                $therecord[$fieldname] = NULL;
-                            else
-                                $therecord[$fieldname] = $this->getDefaultByType($thefield["type"]);
-
-                            break;
+                        break;
 
                 }//endswitch
 

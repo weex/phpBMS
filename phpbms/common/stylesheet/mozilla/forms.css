@@ -18,24 +18,50 @@ INPUT[disabled],SELECT[disabled]{color:#AAAAAA;}
 
 FORM{margin:0px;padding:0px;}
 
-.uneditable,.uneditable:Focus {background-color:transparent; border-color:#ABB1B1; color:#666666;}
+.uneditable,.uneditable:Focus {
+	background-color:transparent;
+	border-color:#ABB1B1;
+	color:#666666;
+}
 
-.currency{text-align:right;}
-.disabledtext{color:#AAAAAA;}
-.radiochecks ,.radiochecks:Focus{background-color:transparent;color:black; border:0; padding:0px;margin:0px;margin-right:4px;}
+.currency{
+	text-align:right;
+}
+
+.disabledtext{
+	color:#AAAAAA;
+}
+
+.radiochecks ,.radiochecks:Focus{
+	background-color:transparent;
+	color:black;
+	border:0;
+	padding:0px;
+	margin:0px;
+	margin-right:4px;
+}
 
 .Buttons,.smallButtons,.disabledButtons,.pressedButtons{
 	cursor: pointer;
 	background:url(image/button-back.png) repeat-x;
 	padding:2px 4px;
 }
-.smallButtons{font-size:10px;}
-.pressedButtons{background-image:url("image/button-pressed.png")}
-.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover,.pressedButtons:Hover{
-	border-color:black;
+
+.smallButtons{
+	font-size:10px;
 }
 
-.disabledButtons{ color:#999999}
+.pressedButtons{
+	background-image:url("image/button-pressed.png")
+}
+
+	.Buttons:Focus,.smallButtons:Focus,.Buttons:Hover,.smallButtons:Hover,.pressedButtons:Hover{
+		border-color:black;
+	}
+
+.disabledButtons{
+	color:#999999
+}
 
 .invisibleButtons, .invisibleTextField, .invisibleTextField:focus{
 	border-style:none;
@@ -43,26 +69,27 @@ FORM{margin:0px;padding:0px;}
 }
 
 .invisibleButtons{
-display:inline;
-margin:0;
-border:0;
-padding:0px;
-font-size:9px;
-color:#0B63A2;
-vertical-align:middle;
-cursor: pointer;
+	display:inline;
+	margin:0;
+	border:0;
+	padding:0px;
+	font-size:9px;
+	color:#0B63A2;
+	vertical-align:middle;
+	cursor: pointer;
 }
+
 .buttonsRight{
 	text-align:right
 }
 
 .graphicButtons{
-margin:0 0 0 3px;
-border:0;
-padding:0px;
-cursor: pointer;
-width:16px;height:16px;
-vertical-align:middle;
+	margin:0 0 0 3px;
+	border:0;
+	padding:0px;
+	cursor: pointer;
+	width:16px;height:16px;
+	vertical-align:middle;
 }
 .graphicButtons span{display:none}
 
@@ -118,10 +145,56 @@ vertical-align:middle;
 
 #dontSubmit{position:absolute;display:none;}
 
-#createmodifiedby{clear:both;padding-top:10px;}
-#createmodifiedby table{border-collapse:collapse;}
-#createmodifiedby table td{background-color:#C1D4D4; font-size:11px; padding:2px 9px 2px 5px;margin:0 1px 1px 0; color:#666666;border-right:3px solid #D5D9DD;}
-#createmodifiedby td.cmTitles{background:none; padding-right:5px; padding-left:2px; color:black;}
-#cmFirstRow td{border-bottom:3px solid #D5D9DD}
+#createmodifiedby{
+	clear:both;
+	padding-top:10px;
+}
 
-#savecancel2{float:right;padding-top:12px;}
+	#createmodifiedby table{
+		border-collapse:collapse;
+	}
+
+		#createmodifiedby table td{
+			background-color:#C1D4D4;
+			font-size:11px;
+			padding:2px 9px 2px 5px;
+			margin:0 1px 1px 0;
+			color:#666666;
+			border-right:3px solid #D5D9DD;
+			white-space: nowrap;
+		}
+
+	#createmodifiedby td.cmTitles{
+		background:none;
+		padding-right:5px;
+		padding-left:2px;
+		color:black;
+	}
+
+		#createmodifiedby #cmIds{
+			padding:0;
+		}
+
+		#createmodifiedby td span{
+			padding:2px 9px 2px 5px;
+		}
+
+		#createmodifiedby td span#cmId{
+			border-left: 3px solid #D5D9DD;
+			margin-left: 5px;
+			padding-left: 5px;
+		}
+
+	#createmodifiedby #cmButtonContainer{
+		background: none;
+		border: 0;
+		vertical-align: bottom;
+		padding: 0;
+		width: 99%;
+		text-align: right;
+	}
+
+.topRows td{
+	border-bottom:3px solid #D5D9DD
+}
+

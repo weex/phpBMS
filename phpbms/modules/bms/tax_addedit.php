@@ -97,7 +97,7 @@
                 <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 	</div>
 	<?php
-		$theform->showCreateModify($phpbms,$therecord);
+		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>
 </div>

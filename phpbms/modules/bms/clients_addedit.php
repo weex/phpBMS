@@ -301,7 +301,7 @@
 		</fieldset>
 
 		<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
-	</div><?php $theform->showCreateModify($phpbms,$therecord);?>
+	</div><?php $theform->showGeneralInfo($phpbms,$therecord);?>
 	</div>
 </form>
 <?php include("footer.php")?>

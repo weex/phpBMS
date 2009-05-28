@@ -179,6 +179,12 @@ class phpbms{
 //=================================================
 //Most Common Functions of the Application go here.
 //=================================================
+
+/**
+  * generates a Universal Unique ID (UUID) with an optional prefix
+  *
+  * @param string $prefix prefix to prepend to the UUID
+  */
 function uuid($prefix = ''){
 
 	$chars = md5(uniqid(mt_rand(), true));
@@ -202,12 +208,14 @@ function xmlEncode($str){
 	return $str;
 }
 
+
 function goURL($url){
 	if(headers_sent())
 		$error = new appError("450","Could not redirect to: ".$url);
 		header("Location: ".$url);
 	exit;
 }
+
 
 function hasRights($roleid,$fullAccessAdmin = true){
 	$hasrights=false;

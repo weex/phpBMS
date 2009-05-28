@@ -181,7 +181,7 @@
 	<?php
 		//Last, we show the create/modifiy with the bottom save and cancel buttons
 		// and then close the form.
-		$theform->showCreateModify($phpbms,$therecord);
+		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>
 </div>

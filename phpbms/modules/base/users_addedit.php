@@ -206,7 +206,7 @@
 	</div>
 
 	<?php
-		$theform->showCreateModify($phpbms,$therecord);
+		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>
 </div>
