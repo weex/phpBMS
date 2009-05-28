@@ -1,5 +1,6 @@
 CREATE TABLE clientemailprojects (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   name varchar(64) default '',
   userid int(11) NOT NULL default '0',
   emailto varchar(9) NOT NULL default '',
@@ -12,6 +13,7 @@ CREATE TABLE clientemailprojects (
 
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `firstname` varchar(64) NOT NULL default '',
   `lastname` varchar(64) NOT NULL default '',
   `company` varchar(128) NOT NULL default '',
@@ -67,6 +69,7 @@ CREATE TABLE `clients` (
 
 CREATE TABLE discounts (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   name varchar(128) default '',
   inactive tinyint(1) NOT NULL default '0',
   type enum('percent','amount') NOT NULL default 'percent',
@@ -89,6 +92,7 @@ CREATE TABLE discounts (
 
 CREATE TABLE `invoices` (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `clientid` int(11) NOT NULL default '0',
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
   `postingsessionid` int(11) default NULL,
@@ -208,6 +212,7 @@ CREATE TABLE `postingsessions` (
 
 CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(64) default NULL,
   `parentid` int(11) NOT NULL DEFAULT 0,
   `displayorder` int(11) NOT NULL DEFAULT 0,
@@ -236,6 +241,7 @@ CREATE TABLE products (
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   description varchar(255) default NULL,
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   isoversized tinyint(4) NOT NULL default '0',
   isprepackaged tinyint(4) NOT NULL default '0',
   packagesperitem double default NULL,
@@ -275,6 +281,7 @@ CREATE TABLE products (
 
 CREATE TABLE tax (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   name varchar(64) default NULL,
   percentage double NOT NULL default '0',
   `inactive` tinyint(4) unsigned NOT NULL default '0',
@@ -295,6 +302,7 @@ CREATE TABLE tax (
 
 CREATE TABLE `shippingmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` VARCHAR(128) NOT NULL,
   `inactive` tinyint(4) NOT NULL DEFAULT 0,
   `priority` int(11) NOT NULL DEFAULT 0,
@@ -317,6 +325,7 @@ CREATE TABLE `shippingmethods` (
 
 CREATE TABLE `paymentmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(128) NOT NULL default '',
   `type` enum('draft','charge','receivable') default NULL,
   `priority` int(8) NOT NULL default '0',
@@ -340,6 +349,7 @@ CREATE TABLE `paymentmethods` (
 
 CREATE TABLE `invoicestatuses` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` VARCHAR(128),
   `setreadytopost` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
   `invoicedefault` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -394,6 +404,7 @@ CREATE TABLE `aritems` (
 
 CREATE TABLE `receipts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `clientid` int(10) unsigned NOT NULL,
   `amount` double NOT NULL default '0',
   `receiptdate` date NOT NULL,
@@ -439,6 +450,7 @@ CREATE TABLE `receiptitems` (
 
 CREATE TABLE `addresses` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `title` VARCHAR(128),
   `shiptoname` VARCHAR(128),
   `address1` VARCHAR(128),

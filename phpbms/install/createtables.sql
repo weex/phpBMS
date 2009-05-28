@@ -43,6 +43,7 @@ CREATE TABLE menu (
 
 CREATE TABLE modules (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   displayname varchar(128) NOT NULL default '',
   name varchar(64) NOT NULL default '',
   description text,
@@ -52,6 +53,7 @@ CREATE TABLE modules (
 
 CREATE TABLE `notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `assignedtoid` int(11) default NULL,
   `attachedid` int(11) default NULL,
   `attachedtabledefid` int(11) default NULL,
@@ -102,6 +104,7 @@ CREATE TABLE `notes` (
 
 CREATE TABLE relationships (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   tofield varchar(32) NOT NULL default '',
   name varchar(128) NOT NULL default '',
   fromfield varchar(32) NOT NULL default '',
@@ -153,6 +156,7 @@ CREATE TABLE `tablecolumns` (
 
 CREATE TABLE `tabledefs` (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `displayname` varchar(64) default NULL,
   `prefix` varchar(4) default NULL,
   `type` varchar(16) NOT NULL default 'table',
@@ -233,6 +237,7 @@ CREATE TABLE tablecustomfields (
 
 CREATE TABLE users (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   login varchar(64) NOT NULL default '',
   password blob,
   firstname varchar(64) NOT NULL default '',
@@ -284,6 +289,7 @@ CREATE TABLE `settings` (
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(128) NOT NULL default '',
   `description` text,
   `file` longblob,
@@ -321,6 +327,7 @@ CREATE TABLE `attachments` (
 
 CREATE TABLE `roles` (
   `id` INTEGER UNSIGNED DEFAULT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` VARCHAR(64) NOT NULL,
   `description` TEXT,
   `inactive` tinyint(4) NOT NULL DEFAULT 0,
@@ -348,6 +355,7 @@ CREATE TABLE `rolestousers` (
 
 CREATE TABLE `scheduler` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(45) default NULL,
   `job` varchar(128) default NULL,
   `crontab` varchar(64) default NULL,
@@ -368,6 +376,7 @@ CREATE TABLE `scheduler` (
 
 CREATE TABLE `tabs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(45) NOT NULL,
   `tabgroup` varchar(45) NOT NULL,
   `location` varchar(128) default NULL,
@@ -385,6 +394,7 @@ CREATE TABLE `tabs` (
 
 CREATE TABLE `smartsearches` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(128) NOT NULL,
   `fromclause` text NOT NULL,
   `valuefield` varchar(255) NOT NULL,

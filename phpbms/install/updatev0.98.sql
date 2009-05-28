@@ -1,30 +1,52 @@
 ALTER TABLE `attachments` ENGINE=INNODB;
 ALTER TABLE `choices` ENGINE=INNODB;
 ALTER TABLE `files` ENGINE=INNODB;
+ALTER TABLE `files` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `files` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `log` ENGINE=INNODB;
 ALTER TABLE `menu` ENGINE=INNODB;
 ALTER TABLE `menu` ADD COlUMN `uuid` varchar(64) NOT NULL AFTER `id`, MODIFY COLUMN `parentid` varchar(64) NOT NULL DEFAULT '0';
 ALTER TABLE `modules` ENGINE=INNODB;
+ALTER TABLE `modules` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `notes` ENGINE=INNODB;
 ALTER TABLE `notes` MODIFY COLUMN `type` CHAR(2) NOT NULL DEFAULT 'NT';
+ALTER TABLE `notes` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `notes` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `relationships` ENGINE=INNODB;
+ALTER TABLE `relationships` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `reports` ENGINE=INNODB;
 ALTER TABLE `reports` MODIFY COLUMN `reportfile` VARCHAR(128) NOT NULL;
 ALTER TABLE `reports` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 UPDATE `reports` SET `description` = 'This report will generate a comma-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.' WHERE `name` = 'Raw Table Export';
 ALTER TABLE `roles` ENGINE=INNODB;
 ALTER TABLE `roles` MODIFY COLUMN `inactive` TINYINT(4) NOT NULL DEFAULT 0;
+ALTER TABLE `roles` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `roles` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `rolestousers` ENGINE=INNODB;
 ALTER TABLE `scheduler` ENGINE=INNODB;
-INSERT INTO `scheduler` (`name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('Clean Import Files', './scheduler_delete_tempimport.php', '30::*::*::*::*', NULL, NOW(), NULL, 'This will delete any temporary import files that are present (for whatever reason) after 30 minutes of their creation.', '0', 1, NOW(), 1, NOW());
-INSERT INTO `scheduler` (`id`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('4', 'Remove Excess System Log Records', './scheduler_delete_logs.php', '*::24::*::*::*', NULL, '2009-03-31 12:00:00', NULL, 'This script will trim the system log when there are more than 2000 records present at the time of its calling (default will be every 24 hours).', '0', 1, NOW(), 1, NOW());
+ALTER TABLE `scheduler` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+--scheduler--
+INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:fb52e7fb-bb49-7f5f-89e1-002b2785f085', 'Clean Import Files', './scheduler_delete_tempimport.php', '30::*::*::*::*', '2009-05-28 12:30:02', '2009-05-07 17:27:13', NULL, 'This will delete any temporary import files that are present (for whatever reason) after 30 minutes of their creation.', '0', 1, NOW(), 1, NOW());
+INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:d1c247de-9811-d37f-ad94-a8472dc1bc9c', 'Remove Excess System Log Records', './scheduler_delete_logs.php', '*::24::*::*::*', NULL, '2009-03-31 12:00:00', NULL, 'This script will trim the system log when there are more than 2000 records present at the time of its calling (default will be every 24 hours).', '0', 1, NOW(), 1, NOW());
+--end insert scheduler
 ALTER TABLE `settings` ENGINE=INNODB;
 ALTER TABLE `smartsearches` ENGINE=INNODB;
+ALTER TABLE `smartsearches` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+--update smartsearches--
+UPDATE `smartsearches` SET `uuid`='smrt:ccc73fa4-6176-fad4-fbb1-5186d0edbdd1' WHERE `id`='2';
+UPDATE `smartsearches` SET `uuid`='smrt:855406d5-659d-c907-74a1-acfd3802fd73' WHERE `id`='5';
+UPDATE `smartsearches` SET `uuid`='smrt:ed5b1d7f-b0fe-2088-f17c-47bfbe1ace25' WHERE `id`='9';
+--end update smartsearches--
 ALTER TABLE `tablecolumns` ENGINE=INNODB;
 ALTER TABLE `tablecolumns` MODIFY COLUMN `roleid` int(10) NOT NULL default '0';
+
+--TABLEDEFS--
 ALTER TABLE `tabledefs` ENGINE=INNODB;
 ALTER TABLE `tabledefs` ADD COLUMN `importfile` VARCHAR(128) DEFAULT NULL AFTER `addroleid`, ADD COLUMN `importroleid` int(11) NOT NULL DEFAULT '-100' AFTER `importfile`, ADD COLUMN `canpost` tinyint(4) NOT NULL default '0' AFTER `deletebutton`, ADD COLUMN `hascustomfields` tinyint(4) NOT NULL default '0' AFTER `canpost`;
 ALTER TABLE `tabledefs` MODIFY COLUMN `defaultwhereclause` TEXT DEFAULT NULL, MODIFY COLUMN `defaultsortorder` TEXT;
+ALTER TABLE `tabledefs` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+--END TABLEDEFS--
+
 ALTER TABLE `tablefindoptions` ENGINE=INNODB;
 ALTER TABLE `tablefindoptions` MODIFY COLUMN `search` TEXT NOT NULL;
 ALTER TABLE `tablegroupings` ENGINE=INNODB;
@@ -51,17 +73,46 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 ALTER TABLE `tablesearchablefields` ENGINE=INNODB;
 ALTER TABLE `tablesearchablefields` MODIFY COLUMN `field` TEXT NOT NULL;
 ALTER TABLE `tabs` ENGINE=INNODB;
+ALTER TABLE `tabs` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `users` ENGINE=INNODB;
 ALTER TABLE `users` ADD COLUMN `lastip` VARCHAR(45) NOT NULL DEFAULT '' AFTER `lastname`;
+ALTER TABLE `users` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `users` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `usersearches` ENGINE=INNODB;
 UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = 23 AND `name` = 'Public Tasks';
 UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0' WHERE `tabledefid` = 23 AND `name` = 'Uncomplete Tasks Assigned By Me';
 UPDATE `menu` SET `link` = 'N/A' WHERE name = '----';
 CREATE TABLE `widgets` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `uuid` varchar(64) NOT NULL, `type` varchar(64) NOT NULL, `title` varchar(128) NOT NULL, `file` varchar(255) NOT NULL, `roleid` int(11) NOT NULL default '0', `moduleid` int(11) NOT NULL default '0', `default` tinyint(4) NOT NULL default '0', `createdby` int(11) default NULL, `creationdate` datetime default NULL, `modifiedby` int(10) unsigned default NULL, `modifieddate` timestamp, PRIMARY KEY  (`id`), KEY `uniqueid` (`uuid`)) ENGINE=INNODB;
 CREATE TABLE `userpreferences` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `userid` int(120) NOT NULL, `name` varchar(64) NOT NULL, `value` TEXT, PRIMARY KEY  (`id`), KEY `thename` (`name`)) ENGINE=INNODB;
-INSERT INTO `tabledefs` (`id`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.id) LEFT JOIN roles ON widgets.roleid = roles.id) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
+
+--tabledefs update/insert--
+INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.id) LEFT JOIN roles ON widgets.roleid = roles.id) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 DELETE FROM `tabledefs` WHERE `id` = '19';
-INSERT INTO `tabledefs` (`id`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('19', 'Menu', 'system', '1', 'menu', '((menu LEFT JOIN menu as parentmenu on menu.parentid=parentmenu.uuid) LEFT JOIN roles on menu.roleid=roles.id)', 'modules/base/menu_addedit.php', '-100', 'modules/base/menu_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', 'menu.id!=0', 'if(parentmenu.name is null,menu.displayorder,parentmenu.displayorder+(menu.displayorder+1)/10000)', NULL, NULL, NULL, 1, NOW(), 1, NOW());
+INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('19', 'tbld:83187e3d-101e-a8a5-037f-31e9800fed2d', 'Menu', 'system', '1', 'menu', '((menu LEFT JOIN menu as parentmenu on menu.parentid=parentmenu.id) LEFT JOIN roles on menu.roleid=roles.id)', 'modules/base/menu_addedit.php', '-100', 'modules/base/menu_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', '0', 'menu.id!=0', 'if(parentmenu.name is null,menu.displayorder,parentmenu.displayorder+(menu.displayorder+1)/10000)', '', '', '', 1, NOW(), 1, NOW());
+UPDATE `tabledefs` SET `uuid`='tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb' WHERE `id`='9';
+UPDATE `tabledefs` SET `uuid`='tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9' WHERE `id`='10';
+UPDATE `tabledefs` SET `uuid`='tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3' WHERE `id`='11';
+UPDATE `tabledefs` SET `uuid`='tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1' WHERE `id`='12';
+UPDATE `tabledefs` SET `uuid`='tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb' WHERE `id`='16';
+UPDATE `tabledefs` SET `uuid`='tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a' WHERE `id`='17';
+UPDATE `tabledefs` SET `uuid`='tbld:ea159d67-5e89-5b7f-f5a0-c740e147cd73' WHERE `id`='21';
+UPDATE `tabledefs` SET `uuid`='tbld:2bc3e683-81f9-694a-9550-a0c7263057de' WHERE `id`='23';
+UPDATE `tabledefs` SET `uuid`='tbld:0fcca651-6c34-c74d-ac04-2d88f602dd71' WHERE `id`='24';
+UPDATE `tabledefs` SET `uuid`='tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475' WHERE `id`='26';
+UPDATE `tabledefs` SET `uuid`='tbld:edb8c896-7ce3-cafe-1d58-5aefbcd5f3d7' WHERE `id`='27';
+UPDATE `tabledefs` SET `uuid`='tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a' WHERE `id`='200';
+UPDATE `tabledefs` SET `uuid`='tbld:83de284b-ef79-3567-145c-30ca38b40796' WHERE `id`='201';
+UPDATE `tabledefs` SET `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667' WHERE `id`='202';
+UPDATE `tabledefs` SET `uuid`='tbld:7e75af48-6f70-d157-f440-69a8e7f59d38' WHERE `id`='203';
+UPDATE `tabledefs` SET `uuid`='tbld:29925e0a-c825-0067-8882-db4b57866a96' WHERE `id`='204';
+--end tabledefs update/insert--
+
+--users update--
+UPDATE `users` SET `uuid`='usr:5c196e01-193a-8952-fee7-29b4e5e6a0b0' WHERE `id`='1';
+UPDATE `users` SET `uuid`='usr:cb67a60b-a264-735c-6189-49a7c883af0b' WHERE `id`='2';
+UPDATE `users` SET `uuid`='usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75' WHERE `id`='3';
+--end users update--
+
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'widget', 'concat(\'[b]\', widgets.title, \'[/b][br]\', widgets.uuid)', 'left', '', '0', 'widgets.title', '0', '100%', 'bbcode', '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'role', 'IF(widgets.roleid != 0, IF(widgets.roleid != -100, roles.name, \'Administrator\'), \'EVERYONE\')', 'left', '', '2', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'file', 'widgets.file', 'left', '', '1', '', '0', '', NULL, '0');
@@ -118,17 +169,24 @@ INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `created
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:f07d910f-f56d-3d24-e74f-7a3b36b2d3c8', 'Account', '', '0', '5', 1, 1, NOW(), NOW(), '0');
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:e8401ebb-c369-304f-053d-8195988e7faf', '----', 'N/A', 'menu:f07d910f-f56d-3d24-e74f-7a3b36b2d3c8', '30', 1, 1, NOW(), NOW(), '-100');
 UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(12, 9, 26, 200);
-ALTER TABLE `notes` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
-ALTER TABLE `users` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
-ALTER TABLE `roles` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
-ALTER TABLE `files` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
-INSERT INTO `tabs` (`id`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES (101, 'custom fields', 'tabledefs entry', 'modules/base/tabledefs_custom.php', '60', '0', '-100', NULL, NULL, 1, NOW(), 1, NOW());
+
+--tabs insert/update--
+INSERT INTO `tabs` (`id`, `uuid`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('101', 'tab:2ebf956d-5e39-c7d5-16b7-501b64685a5a', 'custom fields', 'tabledefs entry', 'modules/base/tabledefs_custom.php', '60', '0', '-100', NULL, NULL, 1, NOW(), 1, NOW());
+UPDATE `tabs` SET `uuid`='tab:fdf064e0-f2d9-6c67-b64f-449e72e859b9' WHERE `id`='1';
+UPDATE `tabs` SET `uuid`='tab:b1011143-1d47-520e-5879-3953a4f5055b' WHERE `id`='2';
+UPDATE `tabs` SET `uuid`='tab:c5bdaf10-062c-fb3a-f40f-ddce821fd579' WHERE `id`='3';
+UPDATE `tabs` SET `uuid`='tab:276dacd4-4a37-d979-aeda-a7982f632559' WHERE `id`='4';
+UPDATE `tabs` SET `uuid`='tab:22d08e82-5047-4150-6de7-49e89149f56b' WHERE `id`='5';
+UPDATE `tabs` SET `uuid`='tab:c111eaf5-692b-9c7d-1d46-1bacb6703361' WHERE `id`='100';
+--end tabs insert/update--
+--reports update--
 UPDATE `reports` SET `uuid`='reports:37cee478-b57e-2d53-d951-baf3937ba9e0' WHERE `name`='Raw Table Print';
 UPDATE `reports` SET `uuid`='reports:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8' WHERE `name`='Raw Table Export';
 UPDATE `reports` SET `uuid`='reports:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
 UPDATE `reports` SET `uuid`='reports:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
 UPDATE `reports` SET `uuid`='reports:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
--- Adding UUID prefix
+--end reports update--
+--ADD TABLEDEFS--
 ALTER TABLE `tabledefs` ADD COLUMN `prefix` VARCHAR(4) AFTER `displayname`;
 -- Setting BASE UUID prefix for needed records
 UPDATE `tabledefs` SET `prefix` = 'usr' WHERE id = 9;
