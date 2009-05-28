@@ -207,19 +207,12 @@
 
 	<fieldset id="fsTop">
 		<legend>Attributes</legend>
-		<p id="idP">
-			<label for="id">id</label><br/>
-			<input name="id" id="id"  type="text" value="<?php echo $therecord["id"]; ?>" size="8" maxlength="8" readonly="readonly" class="uneditable"/>
-			<input name="parentid" id="parentid" type="hidden" value="<?php echo $therecord["parentid"]; ?>" />
-			<input name="thebackurl" id="thebackurl" type="hidden" value="<?php if(isset($_GET["backurl"])) echo $_GET["backurl"]; ?>" />
-		</p>
-
 		<p>
 			<?php $theform->showField("thetype")?>
 			<input type="hidden" id="typeCheck" name="typeCheck" value="<?php echo $therecord["type"]?>" />
 		</p>
 
-		<p><?php $theform->showField("subject") ?></p>
+		<p class="big"><?php $theform->showField("subject") ?></p>
 	</fieldset>
 
 	<div id="rightSideDiv">

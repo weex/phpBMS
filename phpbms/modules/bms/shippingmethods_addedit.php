@@ -79,11 +79,7 @@
 
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
-		</p>
-		<p><?php $theform->showField("inactive")?></p>
+		<p><br/><?php $theform->showField("inactive")?></p>
 
 		<p><?php $theform->showField("priority")?></p>
 		<p class="notes">
@@ -94,7 +90,7 @@
 	<div id="nameDiv">
 		<fieldset >
 			<legend>name</legend>
-			<p><?php $theform->showField("name");?></p>
+			<p class="big"><?php $theform->showField("name");?></p>
 		</fieldset>
 		<fieldset>
 			<legend>estimate charges</legend>

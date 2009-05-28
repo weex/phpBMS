@@ -110,7 +110,6 @@
 	<div id="rightSideDiv">
 		<fieldset>
 			<legend>attribues</legend>
-			<p><?php $theform->showField("id");?></p>
 			<p><?php $theform->showField("moduleid");?></p>
 			<p><?php $theform->showField("tabledefid");?></p>
 		</fieldset>
@@ -120,7 +119,7 @@
 
 		<fieldset>
 			<legend><label for="name">name</label></legend>
-			<p><?php $theform->showField("name"); ?></p>
+			<p class="big"><?php $theform->showField("name"); ?></p>
 			<p class="notes">Name must be unique.</p>
 		</fieldset>
 

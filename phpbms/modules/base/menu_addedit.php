@@ -67,11 +67,6 @@
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("uuid", $therecord["uuid"], NULL, true);
-		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("readonly","readonly");
-		$theform->addField($theinput);
-
 		$thetable->getCustomFieldInfo();
 		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
@@ -87,12 +82,6 @@
 
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
-		</p>
-
-		<p><?php $theform->showField("uuid"); ?></p>
 
 		<p>
 			<?php $theform->showField("displayorder"); ?><br />
@@ -107,7 +96,7 @@
 		<fieldset>
 			<legend><label for="name">name</label></legend>
 
-			<p><?php $theform->showField("name"); ?></p>
+			<p class="big"><?php $theform->showField("name"); ?></p>
 
 		</fieldset>
 

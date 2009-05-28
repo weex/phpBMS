@@ -90,7 +90,9 @@ if(class_exists("phpbmsTable")){
 
 			//now for the address information.
 			$addressinfo = $this->address->getDefaults();
-			unset($addressinfo["id"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
+
+			unset($addressinfo["id"], $addressinfo["uuid"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
+
 			$addressinfo["addressid"] = NULL;
 
 			return array_merge($therecord, $addressinfo);
@@ -132,7 +134,7 @@ if(class_exists("phpbmsTable")){
 
 				}//endif
 
-				unset($addressinfo["id"], $addressinfo["notes"], $addressinfo["email"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
+				unset($addressinfo["id"], $addressinfo["uuid"], $addressinfo["notes"], $addressinfo["email"], $addressinfo["createdby"], $addressinfo["creationdate"], $addressinfo["modifiedby"], $addressinfo["modifieddate"]);
 
 				$therecord = array_merge($therecord, $addressinfo);
 

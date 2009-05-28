@@ -18,18 +18,18 @@ ALTER TABLE `receipts` ENGINE=INNODB;
 ALTER TABLE `shippingmethods` ENGINE=INNODB;
 
 --ADD UUID--
-ALTER TABLE `addresses` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `clientemailprojects` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `clients` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `discounts` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `invoices` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `invoicestatuses` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `paymentmethods` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `productcategories` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `products` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `receipts` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `shippingmethods` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
-ALTER TABLE `tax` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;--
+ALTER TABLE `addresses` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `clientemailprojects` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `clients` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `discounts` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `invoices` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `invoicestatuses` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `paymentmethods` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `productcategories` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `products` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `receipts` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `shippingmethods` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `tax` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `clients` ADD COLUMN `taxid` VARCHAR(64) default NULL AFTER `webaddress`;
 --END ADD UUID--
 
@@ -234,8 +234,8 @@ UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WH
 UPDATE `smartsearches` SET `uuid`='smrt:a18ca9d4-58aa-7a47-faa7-1ad0ed5ba8c6' WHERE `id`='7';
 UPDATE `smartsearches` SET `uuid`='smrt:3b48afbf-f18f-a18d-8aa8-f51f27008750' WHERE `id`='8';
 INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('smrt:eed8c810-f9c8-077b-4b3e-9aef451f8057 ', 'Pick Product Category For Product', 'productcategories', 'productcategories.id', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', '7', '2', 1, NOW(), 1, NOW());
---end smartsearches--
--- Adding UUID prefix for BMS tables
+--end smartsearches --
+-- Adding UUID prefix for BMS tables --
 UPDATE `tabledefs` SET `prefix` = 'tax' WHERE id = 6;
 UPDATE `tabledefs` SET `prefix` = 'smtd' WHERE id = 300;
 UPDATE `tabledefs` SET `prefix` = 'cli' WHERE id = 2;

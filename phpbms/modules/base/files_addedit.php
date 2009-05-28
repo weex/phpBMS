@@ -87,6 +87,11 @@
 			$theform->addField($theinput);
 		}
 
+                $theinput = new inputField("type", $therecord["type"], "file type", false, null, 25);
+                $theinput->setAttribute("readonly", "readonly");
+                $theinput->setAttribute("class", "uneditable");
+		$theform->addField($theinput);
+
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
 		$theform->addField($theinput);
 
@@ -110,11 +115,10 @@
 
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
-		</p>
 		<p id="roleidP"><?php $theform->showField("roleid")?></p>
+
+                <p><?php $theform->showField("type"); ?></p>
+
 	</fieldset>
 
 	<div id="leftSideDiv">
@@ -130,13 +134,9 @@
 			<p>
 				<button  type="button" class="Buttons" onclick="document.location='../../servefile.php?i=<?php echo $therecord["id"]?>'">View/Download <?php echo $therecord["name"] ?></button>
 			</p>
-			<p>
+			<p class="big">
 				<?php $theform->showField("name")?><br />
 				<span class="notes">If the file name does <strong>not</strong> include an extension your browser may not be able to download/view the file correctly.</span>
-			</p>
-			<p>
-				<label for="type">file type </label><span class="notes">(MIME)</span><br />
-				<input type="text" id="type" name="type" value="<?php echo htmlQuotes($therecord["type"])?>" size="64" maxlength="100" readonly="readonly" class="uneditable" style="" />
 			</p>
 			<p>
 				<label for="upload">replace file</label><br />

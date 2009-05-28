@@ -41,16 +41,6 @@ if(class_exists("phpbmsTable")){
 
 		var $availableRoleIDs = array();
 
-		function getDefaults(){
-
-			$therecord = parent::getDefaults();
-
-			$therecord["uuid"] = uuid("menu:");
-
-			return $therecord;
-
-		}//end function - getDefaults
-
 		function checkParentMenuUUIDs($currentUUID = 0, $parentUUID = 0){
 
 			if($parentUUID === 0)

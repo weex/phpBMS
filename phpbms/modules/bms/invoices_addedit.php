@@ -68,6 +68,11 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
+		$theinput = new inputField("theid", $therecord["id"], "id", false, NULL, 11);
+                $theinput->setAttribute("readonly", "readonly");
+                $theinput->setAttribute("class", "uneditable");
+		$theform->addField($theinput);
+
 		$theinput = new inputSmartSearch($db, "clientid", "Pick Sales Order Client", $therecord["clientid"], "client", true, 68, 255, false);
 		$theform->addField($theinput);
 
@@ -220,19 +225,15 @@
 			<legend>attributes</legend>
 
 			<div id="attributesRight">
-				<p><?php $theform->fields["orderdate"]->display(); ?></p>
+				<p><?php $theform->showField("orderdate"); ?></p>
 
-				<p><?php $theform->fields["invoicedate"]->display(); ?></p>
+				<p><?php $theform->showField("invoicedate"); ?></p>
 
-				<p><?php $theform->fields["requireddate"]->display(); ?></p>
+				<p><?php $theform->showField("requireddate"); ?></p>
 			</div>
 
 			<div>
-				<p>
-					<label for="id">id</label>
-					<br />
-					<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable"  />
-				</p>
+				<p><?php $theform->showField("theid")?></p>
 
 				<p>
 					<?php  if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice") {?>
@@ -278,7 +279,7 @@
 	<div id="fsTops">
 		<fieldset>
 			<legend><label for="ds-clientid">client</label></legend>
-			<div class="fauxP">
+			<div class="fauxP big">
 				<input type="hidden" id="clientAddEditFile" value="<?php echo getAddEditFile($db,2) ?>"/>
 				<?php $thetable->showClientType($therecord["clientid"])?>
 				<?php $theform->showField("clientid")?>

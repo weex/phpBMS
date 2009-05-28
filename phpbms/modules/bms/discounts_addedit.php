@@ -88,10 +88,6 @@
 		<fieldset>
 			<legend>attributes</legend>
 			<p>
-				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="22" maxlength="5" readonly="readonly" class="uneditable" />
-			</p>
-			<p>
 				<?php $theform->showField("inactive")?>
 			</p>
 		</fieldset>
@@ -112,7 +108,7 @@
 	<div id="nameDiv">
 		<fieldset>
 			<legend>name</legend>
-			<p>
+			<p class="big">
 				<?php $theform->showField("name") ?>
 			</p>
 		</fieldset>
@@ -142,7 +138,7 @@
 		</fieldset>
 
                 <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
-                
+
         </div>
 
 	<?php

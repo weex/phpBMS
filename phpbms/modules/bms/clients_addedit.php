@@ -97,6 +97,18 @@
 		$theinput->setAttribute("class","small");
 		$theform->addField($theinput);
 
+		$theinput = new inputField("firstname", $therecord["firstname"] , "first name", false, null, 30, 64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("lastname", $therecord["lastname"] , "last name", false, null, 30, 64);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
+		$theinput = new inputField("company", $therecord["company"], null, false, null, 64, 128);
+		$theinput->setAttribute("class","important");
+		$theform->addField($theinput);
+
 		$theinput = new inputDataTableList($db, "paymentmethodid",$therecord["paymentmethodid"],"paymentmethods","id","name",
 								"inactive=0", "priority,name", true, "payment method");
 		$theform->addField($theinput);
@@ -166,12 +178,6 @@
 		<?php } ?>
 		<fieldset>
 			<legend>attributes</legend>
-			<p>
-				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
-				<input type="hidden" id="hascredit" name="hascredit" value="<?php echo $therecord["hascredit"]?>"/>
-				<input type="hidden" id="creditlimit" name="creditlimit" value="<?php echo $therecord["creditlimit"]?>"/>
-			</p>
 
 			<p><?php $theform->showField("type");?></p>
 
@@ -180,6 +186,8 @@
 			<p id="becameclientDiv" <?php if($therecord["type"]=="prospect") echo "style=\"display:none;\"" ?>>
 				<label for="becameclient">became a client</label><br />
 				<input type="text" id="becameclient" name="becameclient" readonly="readonly" class="uneditable" value="<?php echo formatFromSQLDate($therecord["becameclient"])?>" size="8" />
+				<input type="hidden" id="hascredit" name="hascredit" value="<?php echo $therecord["hascredit"]?>"/>
+				<input type="hidden" id="creditlimit" name="creditlimit" value="<?php echo $therecord["creditlimit"]?>"/>
 			</p>
 
 			<p><?php $theform->showField("category")?></p>
@@ -225,19 +233,13 @@
 
 	<div id="leftSideDiv">
 		<fieldset>
-			<legend>name / company</legend>
-			<p id="firstnameP">
-				<label for="firstname" class="important">first name</label><br />
-				<input name="firstname" id="firstname" type="text" value="<?php echo htmlQuotes($therecord["firstname"])?>" size="32" maxlength="65" class="important" />
-			</p>
-			<p>
-				<label for="lastname" class="important">last name</label><br />
-				<input id="lastname" name="lastname" type="text" value="<?php echo htmlQuotes($therecord["lastname"])?>" size="32" maxlength="65" class="important" />
-			</p>
-			<p>
-				<label for="company" class="important">company</label><br />
-				<input name="company" type="text" id="company" value="<?php echo htmlQuotes($therecord["company"])?>" size="71" maxlength="128" class="important"/>
-			</p>
+			<legend>name</legend>
+			<p class="big"><?php $theform->showField("company")?></p>
+
+			<p id="firstnameP" class="big"><?php $theform->showField("firstname")?></p>
+
+			<p class="big"><?php $theform->showField("lastname")?></p>
+
 		</fieldset>
 
 		<fieldset>

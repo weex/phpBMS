@@ -82,10 +82,6 @@
 	<?php $theform->startForm($pageTitle)?>
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo htmlQuotes($therecord["id"]); ?>" size="10" maxlength="10" readonly="readonly" class="uneditable" />
-		</p>
 
 		<p>
 			<?php $theform->showField("displayorder"); ?><br />
@@ -102,7 +98,7 @@
 		<fieldset>
 			<legend>details</legend>
 
-			<p><?php $theform->showField("name"); ?></p>
+			<p class="big"><?php $theform->showField("name"); ?></p>
 
 			<p><?php $theform->showField("tabgroup"); ?></p>
 

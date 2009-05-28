@@ -511,10 +511,10 @@ class db{
 	    	// run the query.  If there is an error, log it and the
 		// line number it started on
 
-		$this->query($sqlstatement);
+		$this->query(trim($sqlstatement));
 
 		if($this->error)
-		    $return->errors[] = "Error Processing file '".$fileName."' on line ".$lineNumber.": ".$this->error."\n\n SQL Statement: ".$sqlstatement;
+		    $return->errors[] = "Error Processing file '".$fileName."' on line ".$lineNumber.": ".$this->error."\n\n SQL Statement: '".$sqlstatement."'";
 
 		$return->numQueries++;
 		$sqlstatement = "";

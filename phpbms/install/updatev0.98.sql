@@ -170,6 +170,21 @@ INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `created
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:e8401ebb-c369-304f-053d-8195988e7faf', '----', 'N/A', 'menu:f07d910f-f56d-3d24-e74f-7a3b36b2d3c8', '30', 1, 1, NOW(), NOW(), '-100');
 UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(12, 9, 26, 200);
 
+--create tablecustomfields--
+CREATE TABLE tablecustomfields (
+  `id` int(11) NOT NULL auto_increment,
+  `tabledefid` int(11) NOT NULL default 0,
+  `name` varchar(128) NOT NULL default '',
+  `field` varchar(8) NOT NULL default '',
+  `format` varchar(32),
+  `generator` TEXT,
+  `required` TINYINT(4) NOT NULL default 0,
+  `displayorder` int(11) NOT NULL default 0,
+  `roleid` int(11) NOT NULL default 0,
+  PRIMARY KEY  (`id`),
+  KEY `tabledef` (`tabledefid`)
+) ENGINE=INNODB;
+
 --tabs insert/update--
 INSERT INTO `tabs` (`id`, `uuid`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('101', 'tab:2ebf956d-5e39-c7d5-16b7-501b64685a5a', 'custom fields', 'tabledefs entry', 'modules/base/tabledefs_custom.php', '60', '0', '-100', NULL, NULL, 1, NOW(), 1, NOW());
 UPDATE `tabs` SET `uuid`='tab:fdf064e0-f2d9-6c67-b64f-449e72e859b9' WHERE `id`='1';

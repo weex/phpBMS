@@ -79,52 +79,42 @@
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 
-	<fieldset id="fsID">
-		<legend>Attributes</legend>
-		<p><label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
+	<fieldset>
+		<legend><label for="name">name</label></legend>
+		<p class="big">
+			<?php $theform->showField("name");?>
 		</p>
 	</fieldset>
 
-	<div id="nameDiv">
-		<fieldset>
-			<legend><label for="name">name</label></legend>
-			<p>
-				<?php $theform->showField("name");?>
-			</p>
-		</fieldset>
+	<fieldset>
+		<legend>From</legend>
+		<p>
+			<label for="fromtableid">from table definition</label><br />
+			<?php $thetable->displayTables("fromtableid",$therecord["fromtableid"]) ?>
+		</p>
 
-		<fieldset>
-			<legend>From</legend>
-			<p>
-				<label for="fromtableid">from table definition</label><br />
-				<?php $thetable->displayTables("fromtableid",$therecord["fromtableid"]) ?>
-			</p>
+		<p><?php $theform->showField("fromfield"); ?></p>
 
-			<p><?php $theform->showField("fromfield"); ?></p>
+	</fieldset>
 
-		</fieldset>
+	<fieldset>
+		<legend>to</legend>
+		<p>
+			<label for="totableid">table</label><br />
+			<?php $thetable->displayTables("totableid",$therecord["totableid"]) ?>
+		</p>
 
-		<fieldset>
-			<legend>to</legend>
-			<p>
-				<label for="totableid">table</label><br />
-				<?php $thetable->displayTables("totableid",$therecord["totableid"]) ?>
-			</p>
+		<p><?php $theform->showField("tofield"); ?></p>
 
-			<p><?php $theform->showField("tofield"); ?></p>
+		<p><?php $theform->showField("inherint");?></p>
 
-			<p><?php $theform->showField("inherint");?></p>
+		<p class="notes">
+			Note: Use "inherent relationship" if the "to table" is already included in the "from table" query table (see the
+			"from table's" definition)
+		</p>
+	</fieldset>
 
-			<p class="notes">
-				Note: Use "inherent relationship" if the "to table" is already included in the "from table" query table (see the
-				"from table's" definition)
-			</p>
-		</fieldset>
-
-	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
-
-	</div>
+	<?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 
 	<?php
 		$theform->showGeneralInfo($phpbms,$therecord);

@@ -67,6 +67,11 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
+		$theinput = new inputField("theid", $therecord["id"], "id", false, NULL, 11);
+                $theinput->setAttribute("readonly", "readonly");
+                $theinput->setAttribute("class", "uneditable");
+		$theform->addField($theinput);
+
 		$theinput = new inputDatePicker("receiptdate", $therecord["receiptdate"], "date", true);
 		$theform->addField($theinput);
 
@@ -136,10 +141,7 @@
 		<fieldset>
 			<legend>attributes</legend>
 
-			<p>
-				<label for="id">id</label><br />
-				<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="11" maxlength="11" readonly="readonly" class="uneditable"  />
-			</p>
+			<p><?php $theform->showField("theid")?></p>
 
 			<p><?php $theform->showField("receiptdate")?></p>
 
@@ -159,7 +161,7 @@
 		<fieldset>
 			<legend>Client / Amount</legend>
 
-			<div class="fauxP"><?php $theform->showField("clientid")?></div>
+			<div class="fauxP big"><?php $theform->showField("clientid")?></div>
 
 			<p><?php $theform->showField("amount")?></p>
 

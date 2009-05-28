@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 285 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-27 14:05:27 -0600 (Mon, 27 Aug 2007) $
@@ -40,15 +40,15 @@
 	include("include/fields.php");
 	include("include/tables.php");
 	include("modules/bms/include/aritems.php");
-	
+
 	$aritems = new phpbmstable($db,303);
 	$therecord = $aritems->processAddEditPage();
-	
+
 	$payments = new aritemPayments($db, $therecord);
-	
+
 	$client = new relatedClient($db, $therecord["clientid"]);
 	$clientName = $client->getName();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
@@ -58,11 +58,11 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputCheckbox("posted",$therecord["posted"]);
 		$theinput->setAttribute("disabled","disabled");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("client",$clientName,NULL,true,NULL,60,128);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
@@ -78,7 +78,7 @@
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("id",$therecord["id"],NULL,true,NULL,9,64);
+		$theinput = new inputField("theid",$therecord["id"],"id",true,NULL,9,64);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
@@ -87,12 +87,12 @@
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCurrency("amount", $therecord["amount"]);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCurrency("due", $therecord["amount"] - $therecord["paid"]);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
@@ -101,11 +101,11 @@
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 
 	$pageTitle="AR Item";
-	
-	include("header.php");	 
+
+	include("header.php");
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 	<input type="hidden" id="invoiceEdit" value="<?php echo getAddEditFile($db, 3) ?>" />
@@ -115,16 +115,16 @@
 	<div id="rightSideDiv">
 		<fieldset id="fsAttributes">
 			<legend>attribues</legend>
-			
-			<p><?php $theform->showField("id")?></p>
-			
+
+			<p><?php $theform->showField("theid")?></p>
+
 			<p><?php $theform->showField("status")?></p>
-			
+
 			<p><?php $theform->showField("posted")?></p>
-			
+
 		</fieldset>
 	</div>
-	
+
 
 	<div id="leftSideDiv">
 		<fieldset >
@@ -137,25 +137,25 @@
 			<p><?php $theform->showField("relatedid"); ?> <button type="button" title="view related record" class="graphicButtons buttonInfo" id="viewRelatedButton"><span>View Record</span></button></p>
 
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>amount</legend>
-			
+
 			<p><?php $theform->showField("amount")?></p>
 
 			<p><?php $theform->showField("due")?></p>
 
 		</fieldset>
 	</div>
-	
+
 	<fieldset>
 		<legend>payments</legend>
-		
+
 		<div class="fauxP"><?php $payments->show()?></div>
-		
+
 	</fieldset>
-	
-	<?php 
+
+	<?php
 		$theform->showGeneralInfo($phpbms,$therecord);
 		$theform->endForm();
 	?>

@@ -82,11 +82,8 @@
 
 	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
-		</p>
-		<p><?php $theform->showField("inactive")?></p>
+
+		<p><br /><?php $theform->showField("inactive")?></p>
 
 		<p><?php $theform->showField("priority")?></p>
 
@@ -98,7 +95,7 @@
 	<div id="nameDiv">
 		<fieldset >
 			<legend>name / type</legend>
-				<p><?php $theform->showField("name") ?></p>
+				<p class="big"><?php $theform->showField("name") ?></p>
 				<p>
 					<label for="type">type</label><br />
 					<select id="type" name="type">

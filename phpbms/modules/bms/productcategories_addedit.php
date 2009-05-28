@@ -56,11 +56,6 @@
         //==============================================================
         $theform = new phpbmsForm();
 
-        $theinput = new inputField("id",$therecord["id"],NULL,false,NULL,5,12);
-        $theinput->setAttribute("readonly","readonly");
-        $theinput->setAttribute("class","uneditable");
-        $theform->addField($theinput);
-
         $theinput = new inputCheckbox("inactive",$therecord["inactive"]);
         $theform->addField($theinput);
 
@@ -93,8 +88,6 @@
 
     <fieldset id="fsAttributes">
             <legend>attributes</legend>
-
-            <p><?php $theform->showField("id")?></p>
 
             <p><?php $theform->showField("inactive")?></p>
 

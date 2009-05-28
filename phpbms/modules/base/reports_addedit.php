@@ -56,11 +56,6 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-                $theinput = new inputField("uuid", $therecord["uuid"], NULL, true);
-		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("readonly","readonly");
-		$theform->addField($theinput);
-
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -90,11 +85,7 @@
 
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
-		</p>
-                <p><?php $theform->showField("uuid"); ?></p>
+
 		<p>
 			<label for="tabledefid">report table</label><br />
 			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]);?><br />
@@ -114,7 +105,7 @@
 		<fieldset>
 			<legend>details</legend>
 
-			<p><?php $theform->showField("name"); ?></p>
+			<p class="big"><?php $theform->showField("name"); ?></p>
 
 			<p><?php $theform->showField("type")?></p>
 
@@ -122,7 +113,7 @@
 
 			<p>
 				<label for="description">description</label><br />
-				<textarea id="description" name="description"  cols="61" rows="7" tabindex="35"><?php echo htmlQuotes($therecord["description"])?></textarea>
+				<textarea id="description" name="description"  cols="61" rows="5" tabindex="35"><?php echo htmlQuotes($therecord["description"])?></textarea>
 			</p>
 		</fieldset>
 

@@ -107,11 +107,6 @@
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 
-		<p>
-			<label for="id">id</label><br />
-			<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
-		</p>
-
 		<p><?php $theform->showField("admin");?></p>
 
 		<p><?php $theform->showField("revoked");?></p>
@@ -128,16 +123,16 @@
 		<fieldset id="fsName">
 			<legend>name</legend>
 
-			<p id="firstnameP"><?php $theform->showField("firstname");?></p>
+			<p id="firstnameP" class="big"><?php $theform->showField("firstname");?></p>
 
-			<p><?php $theform->showField("lastname");?></p>
+			<p class="big"><?php $theform->showField("lastname");?></p>
 
 		</fieldset>
 
 		<fieldset>
 			<legend>log in</legend>
 
-			<p><?php $theform->showField("login");?></p>
+			<p class="big"><?php $theform->showField("login");?></p>
 
 			<p>
 				<label for="lastlogin" >last log in</label><br />

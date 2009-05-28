@@ -40,8 +40,8 @@
 	include("include/fields.php");
 	include("include/tables.php");
 
-	$tax = new phpbmstable($db,6);
-	$therecord = $tax->processAddEditPage();
+	$thetable = new phpbmstable($db,6);
+	$therecord = $thetable->processAddEditPage();
 
 
 	if(isset($therecord["phpbmsStatus"]))
@@ -60,7 +60,7 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputPercentage("percentage",$therecord["percentage"],NULL,5,true,28,64);
+		$theinput = new inputPercentage("percentage",$therecord["percentage"],NULL,5,true,7,64);
 		$theform->addField($theinput);
 
 		$thetable->getCustomFieldInfo();
@@ -78,18 +78,14 @@
 
 	<fieldset id="fsAttributes">
 		<legend>attribues</legend>
-		<p>
-			<label for="id">id</label><br />
-			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />
-		</p>
-		<p><?php $theform->showField("inactive");?></p>
+		<p><br /><?php $theform->showField("inactive");?></p>
 	</fieldset>
 
 	<div id="nameDiv">
 		<fieldset >
 			<legend>name / percentage</legend>
 
-			<p><?php $theform->showField("name"); ?></p>
+			<p class="big"><?php $theform->showField("name"); ?></p>
 
 			<p><?php $theform->showField("percentage"); ?></p>
 
