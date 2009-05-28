@@ -154,3 +154,16 @@ CREATE TABLE `productstoproductcategories` (
 ) ENGINE=INNODB;
 UPDATE `tabledefs` SET `querytable` = '(products LEFT JOIN productcategories ON products.categoryid = productcategories.id)' WHERE `id`=4;
 INSERT INTO `smartsearches` (`id`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('10', 'Pick Product Category For Product', 'productcategories', 'productcategories.id', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', '7', '2', 1, NOW(), 1, NOW());
+-- Adding UUID prefix for BMS tables
+UPDATE `tabledefs` SET `prefix` = 'tax' WHERE id = 6;
+UPDATE `tabledefs` SET `prefix` = 'smtd' WHERE id = 300;
+UPDATE `tabledefs` SET `prefix` = 'cli' WHERE id = 2;
+UPDATE `tabledefs` SET `prefix` = 'rcpt' WHERE id = 304;
+UPDATE `tabledefs` SET `prefix` = 'prod' WHERE id = 4;
+UPDATE `tabledefs` SET `prefix` = 'pcat' WHERE id = 7;
+UPDATE `tabledefs` SET `prefix` = 'sord' WHERE id = 3;
+UPDATE `tabledefs` SET `prefix` = 'paym' WHERE id = 301;
+UPDATE `tabledefs` SET `prefix` = 'inst' WHERE id = 302;
+UPDATE `tabledefs` SET `prefix` = 'dsct' WHERE id = 25;
+UPDATE `tabledefs` SET `prefix` = 'arit' WHERE id = 303;
+UPDATE `tabledefs` SET `prefix` = 'addr' WHERE id = 306;

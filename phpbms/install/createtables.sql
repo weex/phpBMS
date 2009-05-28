@@ -154,6 +154,7 @@ CREATE TABLE `tablecolumns` (
 CREATE TABLE `tabledefs` (
   `id` int(11) NOT NULL auto_increment,
   `displayname` varchar(64) default NULL,
+  `prefix` varchar(4) default NULL,
   `type` varchar(16) NOT NULL default 'table',
   `moduleid` int(11) NOT NULL default '0',
   `maintable` varchar(64) NOT NULL default '',

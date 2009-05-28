@@ -88,6 +88,9 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
+		$theinput = new inputField("prefix", $therecord["prefix"], "uuid prefix", false, NULL, 10, 4);
+		$theform->addField($theinput);
+
 		$theinput = new inputField("maintable",$therecord["maintable"],"primary table name",true,NULL,50,64);
 		$theform->addField($theinput);
 
@@ -168,7 +171,9 @@
 	<div id="leftSideDiv">
 		<fieldset>
 			<legend><label for="displayname">name</label></legend>
-			<p><?php $theform->showField("displayname"); ?></p>
+			<p class="big"><?php $theform->showField("displayname"); ?></p>
+
+			<p><?php $theform->showField("prefix"); ?></p>
 		</fieldset>
 
 		<fieldset>

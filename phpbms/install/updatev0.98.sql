@@ -128,3 +128,19 @@ UPDATE `reports` SET `uuid`='reports:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8' WHERE
 UPDATE `reports` SET `uuid`='reports:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
 UPDATE `reports` SET `uuid`='reports:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
 UPDATE `reports` SET `uuid`='reports:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
+-- Adding UUID prefix
+ALTER TABLE `tabledefs` ADD COLUMN `prefix` VARCHAR(4) AFTER `displayname`;
+-- Setting BASE UUID prefix for needed records
+UPDATE `tabledefs` SET `prefix` = 'usr' WHERE id = 9;
+UPDATE `tabledefs` SET `prefix` = 'tab' WHERE id = 203;
+UPDATE `tabledefs` SET `prefix` = 'tbld' WHERE id = 11;
+UPDATE `tabledefs` SET `prefix` = 'smsr' WHERE id = 204;
+UPDATE `tabledefs` SET `prefix` = 'schd' WHERE id = 201;
+UPDATE `tabledefs` SET `prefix` = 'role' WHERE id = 200;
+UPDATE `tabledefs` SET `prefix` = 'rpt' WHERE id = 16;
+UPDATE `tabledefs` SET `prefix` = 'rln' WHERE id = 10;
+UPDATE `tabledefs` SET `prefix` = 'note' WHERE id = 12;
+UPDATE `tabledefs` SET `prefix` = 'wdgt' WHERE id = 205;
+UPDATE `tabledefs` SET `prefix` = 'mod' WHERE id = 21;
+UPDATE `tabledefs` SET `prefix` = 'file' WHERE id = 26;
+UPDATE `tabledefs` SET `prefix` = 'menu' WHERE id = 19;
