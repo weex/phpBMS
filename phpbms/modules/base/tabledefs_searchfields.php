@@ -107,7 +107,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("tabledefs entry",5,$_GET["id"])?><div class="bodyline">
+	$phpbms->showTabs("tabledefs entry","tab:22d08e82-5047-4150-6de7-49e89149f56b",$_GET["id"])?><div class="bodyline">
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 
 	<div class="fauxP">

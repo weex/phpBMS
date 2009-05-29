@@ -137,7 +137,7 @@
 	include("header.php");
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" id="record" onsubmit="return false;">
-<?php $phpbms->showTabs("products entry",10,$therecord["id"]);?><div class="bodyline">
+<?php $phpbms->showTabs("products entry","tab:17346362-261b-4d1d-fa77-99e84cfd9b8a",$therecord["id"]);?><div class="bodyline">
         <input type="hidden" value="" name="command" id="hiddenCommand"/>
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>

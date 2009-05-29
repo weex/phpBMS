@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,31 +38,31 @@
 */
 
 	include("../../include/session.php");
-	
+
 
 	require_once("../../include/search_class.php");
-		
+
 
 	//set the table passing stuff
 	$tabledefid=4;
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
 	$securitywhere="";
-	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)		
-		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";	
+	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
 	$backurl="../bms/products_attachments.php";
 	$base="../../";
 
 	$refquery="select partnumber,partname from products where id=".$refid;
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
-	
+	$refrecord=$db->fetchArray($refquery);
+
 	$pageTitle="Attachments: ".$refrecord["partname"];
 
 	$tabgroup="products entry";
-	$selectedtabid=13;
-		
+	$selectedtabid="tab:4c853d8b-8895-a8c5-8ff6-1128e6e1a798";
+
 	include("../base/attachments_records.php");
-	
+
 ?>

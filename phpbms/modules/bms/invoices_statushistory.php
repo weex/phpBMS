@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2007, Kreotek LLC                                  |
@@ -34,21 +34,21 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	include("../../include/session.php");	
+	include("../../include/session.php");
 	include("../../include/fields.php");
-		
+
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
 
 	$refquery="SELECT
 			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
 			   invoices.type
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id 
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
 			   WHERE invoices.id=".$refid;
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
+	$refrecord=$db->fetchArray($refquery);
 
-	$pageTitle="Status History: ".$refrecord["id"].": ".$refrecord["name"];	
+	$pageTitle="Status History: ".$refrecord["id"].": ".$refrecord["name"];
 	//================================================================
 
 		if(isset($_POST["command"])){
@@ -70,12 +70,12 @@
 		}//end command if
 
 	//================================================================
-	
+
 	$querystatement="SELECT id,name FROM invoicestatuses WHERE inactive=0 ORDER BY priority,name";
 	$statusresult=$db->query($querystatement);
-	
+
 	$querystatement="SELECT invoicestatushistory.id, invoicestatuses.name, invoicestatusid, assignedtoid, statusdate
-					FROM invoicestatushistory INNER JOIN invoicestatuses 
+					FROM invoicestatushistory INNER JOIN invoicestatuses
 					ON invoicestatushistory.invoicestatusid = invoicestatuses.id
 					WHERE invoiceid=".$refid;
 	$historyresult=$db->query($querystatement);
@@ -90,21 +90,21 @@
 		$theform = new phpbmsForm();
 
 		foreach($history as $historyrecord){
-			
+
 			$theinput = new inputSmartSearch($db, "as".$historyrecord["id"], "Pick Active User", $historyrecord["assignedtoid"], $historyrecord["name"]." assigned to", false, 36,255,false);
 			$theform->addField($theinput);
 
 			$theinput = new inputDatePicker("sh".$historyrecord["id"],$historyrecord["statusdate"], $historyrecord["name"]." status date" ,true, 11, 15, false);
-			$theform->addField($theinput);										
+			$theform->addField($theinput);
 		}
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
 
-	$phpbms->showTabs("invoices entry",16,$_GET["id"]);?><div class="bodyline">
+	$phpbms->showTabs("invoices entry","tab:809d644e-fa40-5ad3-0426-3d84cf15b32e",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?PHP echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 		<p>
@@ -117,13 +117,13 @@
 					<th align="left">date</th>
 					<th align="left">assigned to</th>
 				</tr>
-			<?php 
+			<?php
 				$row=1;
 				while($therecord=$db->fetchArray($statusresult)){
 				$row==1? $row++ : $row--;
 				$historyid=false;
 				$historydate=false;
-				
+
 				foreach($history as $historyrecord)
 					if($historyrecord["invoicestatusid"] == $therecord["id"]) {
 						$historyid=$historyrecord["id"];
@@ -138,14 +138,14 @@
 						} else {
 							echo "&nbsp;";
 						}
-					?>					
+					?>
 					</td>
 					<td><?php if($historyid) {
 							$theform->showField("as".$historyid);
 						} else {
 							echo "&nbsp;";
 						}
-					?>					
+					?>
 					</td>
 				</tr>
 			<?php }//end while ?>
@@ -155,6 +155,6 @@
 		<p>
 			<input name="command" type="submit" value="update statuses" class="Buttons" <?php if($refrecord["type"]=="Invoice") echo "disabled=\"disabled\""?>/>
 		</p>
-			
-	</form>	
+
+	</form>
 </div><?php include("footer.php")?>

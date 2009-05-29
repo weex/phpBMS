@@ -88,7 +88,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("tabledefs entry",100,$_GET["id"])?><div class="bodyline">
+	$phpbms->showTabs("tabledefs entry","tab:c111eaf5-692b-9c7d-1d46-1bacb6703361",$_GET["id"])?><div class="bodyline">
 	<h1><span><?php echo $pageTitle?></span></h1>
 
 	<?php $groupings->showRecords($allRecords) ?>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,10 +37,10 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	
+
 
 	require_once("../../include/search_class.php");
-		
+
 
 	//set the table passing stuff
 	$reftableid=4;
@@ -52,16 +52,16 @@
 
 	$refquery="select partnumber,partname from products where id=".$refid;
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
-	
+	$refrecord=$db->fetchArray($refquery);
+
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["partname"];
 
 	$tabgroup="products entry";
-	$selectedtabid=14;
-	
+	$selectedtabid="tab:d62cf7eb-fd2a-948a-6279-8a61d02390ae";
+
 	include("../base/notes_records.php");
 	//===================================================================================
 	//==  THAT's IT                                                                    ==
 	//===================================================================================
-	
+
 ?>

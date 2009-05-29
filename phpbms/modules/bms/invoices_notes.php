@@ -63,7 +63,7 @@
 		$pageTitle .= ", ".$refrecord["name"];
 
 	$tabgroup="invoices entry";
-	$selectedtabid=18;
+	$selectedtabid="tab:c4cbfabf-a00e-7b82-b411-0e442205360a";
 
 	include("../base/notes_records.php");
 	//===================================================================================

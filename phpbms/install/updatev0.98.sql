@@ -25,6 +25,9 @@ ALTER TABLE `roles` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, AD
 ALTER TABLE `rolestousers` ENGINE=INNODB;
 ALTER TABLE `scheduler` ENGINE=INNODB;
 ALTER TABLE `scheduler` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+--module update--
+UPDATE `modules` SET `uuid`='mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7' WHERE `id`='1';
+--end module update--
 --scheduler--
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:fb52e7fb-bb49-7f5f-89e1-002b2785f085', 'Clean Import Files', './scheduler_delete_tempimport.php', '30::*::*::*::*', '2009-05-28 12:30:02', '2009-05-07 17:27:13', NULL, 'This will delete any temporary import files that are present (for whatever reason) after 30 minutes of their creation.', '0', 1, NOW(), 1, NOW());
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:d1c247de-9811-d37f-ad94-a8472dc1bc9c', 'Remove Excess System Log Records', './scheduler_delete_logs.php', '*::24::*::*::*', NULL, '2009-03-31 12:00:00', NULL, 'This script will trim the system log when there are more than 2000 records present at the time of its calling (default will be every 24 hours).', '0', 1, NOW(), 1, NOW());
@@ -186,7 +189,7 @@ CREATE TABLE tablecustomfields (
 ) ENGINE=INNODB;
 
 --tabs insert/update--
-INSERT INTO `tabs` (`id`, `uuid`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('101', 'tab:2ebf956d-5e39-c7d5-16b7-501b64685a5a', 'custom fields', 'tabledefs entry', 'modules/base/tabledefs_custom.php', '60', '0', '-100', NULL, NULL, 1, NOW(), 1, NOW());
+INSERT INTO `tabs` (`uuid`, `name`, `tabgroup`, `location`, `displayorder`, `enableonnew`, `roleid`, `tooltip`, `notificationsql`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('tab:2ebf956d-5e39-c7d5-16b7-501b64685a5a', 'custom fields', 'tabledefs entry', 'modules/base/tabledefs_custom.php', '60', '0', '-100', NULL, NULL, 1, NOW(), 1, NOW());
 UPDATE `tabs` SET `uuid`='tab:fdf064e0-f2d9-6c67-b64f-449e72e859b9' WHERE `id`='1';
 UPDATE `tabs` SET `uuid`='tab:b1011143-1d47-520e-5879-3953a4f5055b' WHERE `id`='2';
 UPDATE `tabs` SET `uuid`='tab:c5bdaf10-062c-fb3a-f40f-ddce821fd579' WHERE `id`='3';

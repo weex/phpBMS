@@ -63,6 +63,9 @@ UPDATE `tablefindoptions` SET `displayorder` = 0 WHERE `tabledefid` = 25 AND `na
 UPDATE `tablefindoptions` SET `search`= 'clients.firstname=dclients.firstname AND clients.lastname=dclients.lastname AND addresses.postalcode = daddresses.postalcode AND clients.lastname != \'\' AND clients.firstname != \'\' AND addresses.postalcode != \'\' AND clients.id<>dclients.ID' WHERE `name` = 'match names and postal code' AND `tabledefid` = '18';
 UPDATE `tablefindoptions` SET `search`= 'addresses.address1=daddresses.address1 AND clients.id<>dclients.id' WHERE `name` = 'match addresses' AND `tabledefid` = '18';
 UPDATE `tablecolumns` SET `column`='IF(receipts.paymentmethodid = -1,concat( concat("Other... (", receipts.paymentother), ")"), paymentmethods.name)' WHERE `tabledefid` = '304' AND `name` = 'payment';
+--moudule update--
+UPDATE `modules` SET `uuid`='mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc' WHERE `id`='2';
+--end module update--
 --report updates--
 UPDATE `reports` SET `uuid`='reports:bac1d6eb-b2bb-9aa0-77c0-ff7f9046ca75' WHERE `name`='Invoice';
 UPDATE `reports` SET `uuid`='reports:a34dd4b5-6942-2b14-4a58-74345dce48de' WHERE `name`='Work Order';

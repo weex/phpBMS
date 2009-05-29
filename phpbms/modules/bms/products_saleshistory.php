@@ -123,7 +123,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("products entry",12,$_GET["id"]);?><div class="bodyline">
+	$phpbms->showTabs("products entry","tab:cd09d4a1-7d32-e08a-bd6e-5850bc9af88e",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<div class="box">

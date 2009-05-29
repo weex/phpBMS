@@ -124,7 +124,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("tabledefs entry",2,$_GET["id"])?><div class="bodyline">
+	$phpbms->showTabs("tabledefs entry","tab:b1011143-1d47-520e-5879-3953a4f5055b",$_GET["id"])?><div class="bodyline">
 	<h1><span><?php echo $pageTitle?></span></h1>
 	<div class="fauxP">
    <table border="0" cellpadding="0" cellspacing="0" class="querytable">

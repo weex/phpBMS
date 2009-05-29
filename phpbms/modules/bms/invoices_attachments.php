@@ -70,7 +70,7 @@
 		$pageTitle .= ", ".$refrecord["name"];
 
 	$tabgroup="invoices entry";
-	$selectedtabid=17;
+	$selectedtabid="tab:23687374-5c14-04af-74ac-0f74342e1019";
 
 	include("../base/attachments_records.php");
 

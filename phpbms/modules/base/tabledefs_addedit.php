@@ -133,7 +133,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("tabledefs entry",1,$therecord["id"]);
+	$phpbms->showTabs("tabledefs entry","tab:fdf064e0-f2d9-6c67-b64f-449e72e859b9",$therecord["id"]);
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
 

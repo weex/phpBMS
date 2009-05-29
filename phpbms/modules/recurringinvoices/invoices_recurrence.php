@@ -150,7 +150,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("invoices entry",500,$_GET["id"]);
+	$phpbms->showTabs("invoices entry","tab:d303321e-7ff5-fe4b-29ec-fe3eb0305576",$_GET["id"]);
 ?><div class="bodyline">
 <form action="<?php echo $_SERVER["REQUEST_URI"] ?>"
 	method="post" name="record" id="record"

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,63 +37,63 @@
  +-------------------------------------------------------------------------+
 */
 	include("../../include/session.php");
-	
+
 	include("../../include/fields.php");
 
 	$refquery="select partname from products where id=".((int) $_GET["id"]);
 	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);	
+	$refrecord=$db->fetchArray($refquery);
 
 if(isset($_POST["command"])){
 
 	switch($_POST["command"]){
-	
+
 		case"delete":
 			$deletestatement = "
-				DELETE FROM 
-					prerequisites 
+				DELETE FROM
+					prerequisites
 				WHERE
 					id=".((int) $_POST["deleteid"]);
-			
+
 			$db->query($deletestatement);
-			
+
 			$statusmessage = "Prerequisite removed.";
 			break;
-			
+
 		case"add":
 			if($_POST["productid"]!=$_GET["id"] && $_POST["productid"]!=""){
-			
+
 				$insertstatement = "
-					INSERT INTO 
-						prerequisites 
+					INSERT INTO
+						prerequisites
 						(parentid,
-						childid) 
+						childid)
 					VALUES
-						(".((int) $_GET["id"]).", 
+						(".((int) $_GET["id"]).",
 						".((int)$_POST["productid"]).")";
-						
+
 				$db->query($insertstatement);
-				
+
 				$statusmessage = "Prerequisite added.";
-				
+
 			} else {
-			
+
 				$statusmessage = "Prerequisite not added.";
-				
+
 			}//endif
-			break;	
+			break;
 	}//endswitch - comand
-	
+
 }//endif - command
 
-	$prerequstatement="SELECT DISTINCT prerequisites.id,partnumber,partname,description 
-						FROM prerequisites INNER JOIN products ON prerequisites.childid=products.id 
+	$prerequstatement="SELECT DISTINCT prerequisites.id,partnumber,partname,description
+						FROM prerequisites INNER JOIN products ON prerequisites.childid=products.id
 						WHERE prerequisites.parentid=\"".$_GET["id"]."\"";
 	$prereqresult=$db->query($prerequstatement);
 	$prereqresult? $numrows=$db->numRows($prereqresult): $numrows=0;
 
 	$pageTitle="Product Prerequisites: ".$refrecord["partname"];
-	
+
 	$phpbms->cssIncludes[] = "pages/products.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/prereq.js";
 
@@ -103,15 +103,15 @@ if(isset($_POST["command"])){
 
 		$theinput = new inputSmartSearch($db, "productid", "Pick Product", "", "product", false, 51, 255);
 		$theform->addField($theinput);
-				
+
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
-	include("header.php");	
+
+	include("header.php");
 
 ?>
-<?php $phpbms->showTabs("products entry",11,$_GET["id"]);?><div class="bodyline">
+<?php $phpbms->showTabs("products entry","tab:9bfc7eea-5abb-f5d8-763f-f78fe499464d",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
 	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
 	<input id="deleteid" name="deleteid" type="hidden" value="0" />
@@ -124,8 +124,8 @@ if(isset($_POST["command"])){
 		 <th align="left" width="100%" class="queryheader">Description</th>
 		 <th align="center" nowrap="nowrap" class="queryheader">&nbsp;</th>
 		</tr>
-		<?php 
-		$row = 1;	
+		<?php
+		$row = 1;
 		if($numrows){
 			while ($prereq=$db->fetchArray($prereqresult)){
 			$row = ($row == 1)? 2: 1;
@@ -135,7 +135,7 @@ if(isset($_POST["command"])){
 			<td align="left" nowrap="nowrap"><?php echo $prereq["partname"] ?></td>
 			<td align="left" width="100%"><?php echo $prereq["description"]?$prereq["description"]:"&nbsp;" ?></td>
 			<td align="center">
-				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?php echo $prereq["id"] ?>)"><span>-</span></button> 
+				<button type="submit" class="graphicButtons buttonMinus" onclick="return deleteLine(<?php echo $prereq["id"] ?>)"><span>-</span></button>
 			</td>
 		</tr>
 		<?php }//end while
@@ -159,12 +159,12 @@ if(isset($_POST["command"])){
 		<legend>add new prerequisite</legend>
 
 		<div class="preqAdd fauxP"><?php $theform->showField("productid")?></div>
-		
+
 		<p id="addButtonP"><br />
-			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button> 
+			<button type="submit" class="graphicButtons buttonPlus" onclick="return addLine()"><span>+</span></button>
 		</p>
    </fieldset>
-   
+
    <fieldset>
 		<legend>notes</legend>
 		<p class="notes">

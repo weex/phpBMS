@@ -66,7 +66,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("tabledefs entry", 101, ((int) $_GET["id"]))?><div class="bodyline">
+	$phpbms->showTabs("tabledefs entry", "tab:2ebf956d-5e39-c7d5-16b7-501b64685a5a", ((int) $_GET["id"]))?><div class="bodyline">
 	<h1 id="pageTitle"><span><?php echo $pageTitle?></span></h1>
 
         <?php if(!$customFields->tableinfo["hascustomfields"]) {?>

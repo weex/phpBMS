@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -47,50 +47,50 @@
 	$options = new tableOptions($db, $_GET["id"]);
 
 	$pageTitle = "Table Definition Options: ".$options->getTableName();
-	
+
 	if(isset($_POST["command"]))
 		$therecord = $options->processForm(addSlashesToArray($_POST));
 	else
 		$therecord = $options->getDefaults();
 
-	if(isset($therecord["statusmessage"]))	
+	if(isset($therecord["statusmessage"]))
 		$statusmessage = $therecord["statusmessage"];
-	
+
 	$queryresult = $options->get();
-		
+
 	$phpbms->cssIncludes[] = "pages/tableoptions.css";
 	$phpbms->jsIncludes[] = "modules/base/javascript/tableoptions.js";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-	
+
 		$temparray = array(
 			"Integrated Feature" => 0,
 			"Additional Commands" => 1,
 		);
 		$theinput = new inputBasicList("type", $therecord["othercommand"], $temparray);
 		$theform->addField($theinput);
-	
+
 		$temparray =array(
 			"new" => "new",
 			"edit" => "edit",
 			"select" => "select",
 			"reporting" => "printex",
 			"import" => "import"
-		);		
+		);
 		$theinput = new inputBasicList("ifName", $therecord["name"], $temparray, "name");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckBox("ifOption", $therecord["option"], "allowed");
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputField("acName", $therecord["name"],"php method", false, NULL, 64, 64);
 		$theform->addField($theinput);
 
 		$theinput = new inputField("acOption", $therecord["option"], "display name", false, NULL, 64, 64);
 		$theform->addField($theinput);
-		
+
 		$theinput = new inputCheckBox("needselect", $therecord["needselect"], "must select record to use");
 		$theform->addField($theinput);
 
@@ -102,22 +102,22 @@
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
-	$phpbms->showTabs("tabledefs entry",3,$_GET["id"])?>
+
+	$phpbms->showTabs("tabledefs entry","tab:c5bdaf10-062c-fb3a-f40f-ddce821fd579",$_GET["id"])?>
 <div class="bodyline">
 
 	<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
 
 	<div class="fauxP">
-	
+
 		<?php $options->showRecords($queryresult)?>
 
 	</div>
-	
-	<?php 
+
+	<?php
 		if($therecord["id"]){
 
 			$title = "Edit Option";
@@ -127,10 +127,10 @@
 
 			$title = "Add New Option";
 			$command = "add";
-			
+
 		}
 	?>
-	
+
 	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" id="record" name="record">
 
 		<fieldset>
@@ -138,14 +138,14 @@
 
 			<input type="hidden" id="command" name="command" value="<?php echo $command?>"/>
 			<input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />
-			
-			<p><?php $theform->showField("type")?></p>			
-			
+
+			<p><?php $theform->showField("type")?></p>
+
 			<div id="ifDiv">
-			
+
 				<p class="notes">
 					Integrated features allow you to set and access to
-					main buttons on the table definitions search screen.					
+					main buttons on the table definitions search screen.
 				</p>
 
 				<p><?php $theform->showField("ifName")?></p>
@@ -155,35 +155,35 @@
 			</div>
 
 			<div id="acDiv">
-			
+
 				<p class="notes">
 					Additional command allows you to add items to the
 					other commands drop down on the search screen.
 					The PHP method name should refrence a function
 					in the tables extended searchFunctions class
-					in the [tablename].php located in the modules 
+					in the [tablename].php located in the modules
 					include folder.
 				</p>
-				
+
 				<p><?php $theform->showField("acOption") ?></p>
-				
+
 				<p><?php $theform->showField("acName") ?></p>
-				
+
 				<p><?php $theform->showField("needselect") ?></p>
-				
+
 				<p><?php $theform->showField("displayorder")?></p>
-				
+
 				<p class="notes">Lower numbered display orders are displayed first, and grouped by display order.</p>
-				
+
 			</div>
 
 			<p><?php $theform->showField("roleid")?></p>
-						
+
 		</fieldset>
 
 		<p align="right">
 			<button id="save" type="button" class="Buttons">save</button>
-			<?php 
+			<?php
 				if($therecord["id"]){
 					?><button id="cancel" type="button" class="Buttons">cancel edit</button><?php
 				}//end if
