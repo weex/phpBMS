@@ -170,7 +170,7 @@
                         <button type="button" id="addCatButton" class="graphicButtons buttonPlus" title="Add Category"><span>+</span></button>
                     </p>
 
-                    <?php $thetable->displayAdditionalCategories($therecord["id"]) ?>
+                    <?php $thetable->displayAdditionalCategories($therecord["uuid"]) ?>
 
                 </fieldset>
 

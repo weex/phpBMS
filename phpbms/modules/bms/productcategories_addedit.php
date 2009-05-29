@@ -91,7 +91,7 @@
 
             <p><?php $theform->showField("inactive")?></p>
 
-            <p><?php $thetable->showParentsSelect($therecord["id"], $therecord["parentid"]); ?></p>
+            <p><?php $thetable->showParentsSelect($therecord["uuid"], $therecord["parentid"]); ?></p>
 
             <p><?php $theform->showField("displayorder")?></p>
 

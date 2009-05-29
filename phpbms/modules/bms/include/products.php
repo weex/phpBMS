@@ -40,7 +40,6 @@
 if(class_exists("phpbmsTable")){
 	class products extends phpbmsTable{
 
-		var $availableCategoryIDs = array();
 		var $availableProducts = array();
 
 		function getDefaults(){
@@ -49,7 +48,7 @@ if(class_exists("phpbmsTable")){
 			$therecord["type"]="Inventory";
 			$therecord["status"]="In Stock";
 			$therecord["taxable"]=1;
-			$therecord["categoryid"]=0;
+			$therecord["categoryid"]="";
 
 			return $therecord;
 		}
@@ -301,7 +300,7 @@ if(class_exists("phpbmsTable")){
 			parent::updateRecord($variables, $modifiedby);
 
                         if(isset($variables["addcats"]))
-                                $this->updateCategories($variables["id"], $variables["addcats"]);
+                                $this->updateCategories($variables["uuid"], $variables["addcats"]);
 
 			//need to reset the field information.  If they did not have rights
 			// we temporarilly removed the fields to be updated.
@@ -328,24 +327,26 @@ if(class_exists("phpbmsTable")){
                 //retrieves and displays a list of possible product categories
 		function displayProductCategories($categoryid){
 
+                        $categoryid = mysql_real_escape_string($categoryid);
+
 			$querystatement = "
                             SELECT
-                                `id`,
+                                `uuid`,
                                 `name`
                             FROM
                                 `productcategories`
                             WHERE
-                                `inactive` = 0 OR `id` =".((int) $categoryid)."
+                                `inactive` = 0 OR `uuid` ='".$categoryid."'
                             ORDER BY
                                 `name`";
 
 			$queryresult = $this->db->query($querystatement);
 
 			?><select name="categoryid" id="categoryid">
-                                <option value="0" <?php if($categoryid==0) echo 'selected="selected"'?>>No Master Category</option>
+                                <option value="" <?php if($categoryid=="") echo 'selected="selected"'?>>No Master Category</option>
 				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
-						?><option value="<?php echo $therecord["id"]?>" <?php if($categoryid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
+						?><option value="<?php echo $therecord["uuid"]?>" <?php if($categoryid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
 						<?php
 					}
 				?>
@@ -354,26 +355,27 @@ if(class_exists("phpbmsTable")){
 		}//end function displayProductCategories
 
 
-                function displayAdditionalCategories($id){
+                function displayAdditionalCategories($uuid){
 
                     ?>
                     <div id="catDiv">
                         <input type="hidden" id="addcats" name="addcats" value="" />
                     <?php
 
-                    if($id){
+                    if($uuid){
 
-                        $id = (int) $id;
+                        $uuid = mysql_real_escape_string($uuid);
 
                         $querystatement ="
                             SELECT
-                                productcategories.id AS catid,
+                                productcategories.uuid AS catid,
                                 productcategories.name
                             FROM
-                                (products INNER JOIN productstoproductcategories ON products.id = productstoproductcategories.productid)
-                                INNER JOIN productcategories ON productstoproductcategories.productcategoryid = productcategories.id
+                                (products INNER JOIN productstoproductcategories ON products.uuid = productstoproductcategories.productuuid)
+                                INNER JOIN productcategories ON productstoproductcategories.productcategoryuuid = productcategories.uuid
                             WHERE
-                                products.id = ".$id;
+                                products.uuid = '".$uuid."'
+                        ";
 
                         $queryresult = $this->db->query($querystatement);
 
@@ -400,7 +402,7 @@ if(class_exists("phpbmsTable")){
                 }//end function displayAdditionalCategories
 
 
-                function updateCategories($recordid, $categoryList){
+                function updateCategories($recorduuid, $categoryList){
 
                         if($categoryList){
 
@@ -411,20 +413,21 @@ if(class_exists("phpbmsTable")){
                                         DELETE FROM
                                                 `productstoproductcategories`
                                         WHERE
-                                                `productid` = ".$recordid;
+                                                `productuuid` = '".$recorduuid."'
+                                        ";
 
                                 $this->db->query($deletestatement);
 
-                                foreach($categoryArray as $categoryId){
+                                foreach($categoryArray as $categoryUuid){
 
                                         $insertstatement = "
                                                 INSERT INTO
                                                         `productstoproductcategories`
-                                                        (productid, productcategoryid)
+                                                        (productuuid, productcategoryuuid)
                                                 VALUES
                                                         (
-                                                        ".$recordid.",
-                                                        ".$categoryId."
+                                                        '".$recorduuid."',
+                                                        '".$categoryUuid."'
                                                         )";
 
                                         $this->db->query($insertstatement);

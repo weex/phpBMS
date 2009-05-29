@@ -35,10 +35,6 @@ ALTER TABLE `clients` ADD COLUMN `taxid` VARCHAR(64) default NULL AFTER `webaddr
 
 ALTER TABLE `receipts` MODIFY COLUMN `paymentmethodid` INTEGER NOT NULL DEFAULT 0;
 INSERT INTO `settings` (`name`, `value`) VALUES ('company_taxid', '');
-UPDATE `tabledefs` SET `deletebutton` = 'inactivate' WHERE `id` IN (6, 7);
-UPDATE `tabledefs` SET `importfile` = 'modules/bms/clients_import.php' WHERE `id` = 2;
-UPDATE `tabledefs` SET `defaultcriteriafindoptions` = 'Active Records', `defaultcriteriaselection` = 'name' WHERE `id` = 25;
-UPDATE `tabledefs` SET `deletebutton` = 'inactivate' WHERE `displayname` = 'Tax Areas';
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('2', 'import', '1', '0', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'import', '0', '0', '0', '-100', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('4', 'import', '1', '0', '0', '-100', '0');
@@ -134,7 +130,6 @@ INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `d
 INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `default`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('wdgt:06a30e04-55ad-75da-7bd6-0c4203210ac8', 'little', 'Accounts Receivable Statistics', '../bms/widgets/arstats/class.php', '80', '2', '1', 1, NOW(), 1, NOW());
 UPDATE `tabledefs` SET `canpost` = 1 WHERE id IN(3, 304);
 CREATE TABLE `postingsessions` (`id` int(11) NOT NULL auto_increment,`sessiondate` datetime NOT NULL default '0000-00-00 00:00:00',`source` varchar(64) NOT NULL default '',`recordsposted` int(11) NOT NULL default '0', `userid` int(11) NOT NULL default '0', UNIQUE KEY `theid` (`id`)) ENGINE=INNODB;
-INSERT INTO `tabledefs` (`id`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('307', 'Posting Sessions', 'table', '2', 'postingsessions', '(postingsessions INNER JOIN users ON postingsessions.userid = users.id)', 'N/A', '0', 'N/A', '0', NULL, '-100', '50', '-100', '-100', 'NA', '0', 'YEAR(postingsessions.sessiondate) = YEAR(NOW()) AND MONTH(postingsessions.sessiondate) = MONTH(NOW())', 'postingsessions.sessiondate DESC', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('307', 'id', 'postingsessions.id', 'left', '', '0', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('307', 'date', 'postingsessions.sessiondate', 'left', '', '1', '', '0', '', 'datetime', '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('307', 'source', 'postingsessions.source', 'left', '', '2', '', '0', '', NULL, '0');
@@ -229,11 +224,16 @@ ALTER TABLE `shippingmethods` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` 
 ALTER TABLE `paymentmethods` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `tax` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 -- Preping Product Categories to be more shopping cart synchronization friendly --
-ALTER TABLE `productcategories` ADD COLUMN `parentid` int(11) NOT NULL DEFAULT 0 AFTER `name`, ADD COLUMN `displayorder` INT(11) NOT NULL DEFAULT 0 AFTER `parentid`;
+ALTER TABLE `productcategories` ADD COLUMN `parentid` varchar(64) NOT NULL DEFAULT '' AFTER `name`, ADD COLUMN `displayorder` INT(11) NOT NULL DEFAULT 0 AFTER `parentid`;
 
 --Update tabledefs--
+UPDATE `tabledefs` SET `deletebutton` = 'inactivate' WHERE `id` IN (6, 7);
+UPDATE `tabledefs` SET `importfile` = 'modules/bms/clients_import.php' WHERE `id` = 2;
+UPDATE `tabledefs` SET `defaultcriteriafindoptions` = 'Active Records', `defaultcriteriaselection` = 'name' WHERE `id` = 25;
+INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('307', 'tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'Posting Sessions', 'table', '2', 'postingsessions', '(postingsessions INNER JOIN users ON postingsessions.userid = users.id)', 'N/A', '0', 'N/A', '0', NULL, '-100', '50', '-100', '-100', 'NA', '0', '0', 'YEAR(postingsessions.sessiondate) = YEAR(NOW()) AND MONTH(postingsessions.sessiondate) = MONTH(NOW())', 'postingsessions.sessiondate DESC', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(306, 2, 5, 25, 302, 7,4, 304,3, 300, 6, 301);
-UPDATE `tabledefs` SET `querytable` = '(productcategories LEFT JOIN productcategories AS `parents` ON productcategories.parentid = parents.id)' WHERE id = 7;
+UPDATE `tabledefs` SET `querytable`='(products left join productcategories on products.categoryid=productcategories.uuid)' WHERE `id`='4';
+UPDATE `tabledefs` SET `querytable`='(productcategories LEFT JOIN productcategories AS `parents` ON productcategories.parentid = parents.uuid)' WHERE `id`='7';
 UPDATE `tabledefs` SET `uuid`='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' WHERE `id`='2';
 UPDATE `tabledefs` SET `uuid`='tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883' WHERE `id`='3';
 UPDATE `tabledefs` SET `uuid`='tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34' WHERE `id`='4';
@@ -256,16 +256,15 @@ UPDATE `tabledefs` SET `uuid`='tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c' WHERE 
 
 DELETE FROM `tablecolumns` WHERE `tabledefid` = 7;
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'name', 'if(productcategories.description, concat(\'[b]\', productcategories.name,\'[/b][br]\',productcategories.description), concat(\'[b]\', productcategories.name,\'[/b]\'))', 'left', '', '1', 'productcategories.name', '0', '100%', 'bbcode', '0');
-INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'parent category', 'if(parents.name, parents.name, \'No Parent\')', 'left', '', '2', '', '0', '', NULL, '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'parent category', 'if(parents.uuid, parents.name, \'No Parent\')', 'left', '', '2', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'display order', 'productcategories.displayorder', 'right', '', '3', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('7', 'web', 'productcategories.webenabled', 'center', '', '0', '', '0', '', 'boolean', '0');
 CREATE TABLE `productstoproductcategories` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `productid` INTEGER UNSIGNED NOT NULL,
-  `productcategoryid` INTEGER UNSIGNED NOT NULL,
+  `productuuid` varchar(64) NOT NULL,
+  `productcategoryuuid` varchar(64) NOT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
-UPDATE `tabledefs` SET `querytable` = '(products LEFT JOIN productcategories ON products.categoryid = productcategories.id)' WHERE `id`=4;
 --update/insert smartsearches--
 UPDATE `smartsearches` SET `uuid`='smrt:5cf171f7-2284-1492-62bb-872bc222eaef' WHERE `id`='1';
 UPDATE `smartsearches` SET `uuid`='smrt:1b16f1e8-edf2-332e-e61b-3759f7020d41' WHERE `id`='3';
@@ -273,7 +272,7 @@ UPDATE `smartsearches` SET `uuid`='smrt:5634f7fb-a0c8-7e10-4c96-8bb043e7f478' WH
 UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WHERE `id`='6';
 UPDATE `smartsearches` SET `uuid`='smrt:a18ca9d4-58aa-7a47-faa7-1ad0ed5ba8c6' WHERE `id`='7';
 UPDATE `smartsearches` SET `uuid`='smrt:3b48afbf-f18f-a18d-8aa8-f51f27008750' WHERE `id`='8';
-INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('smrt:eed8c810-f9c8-077b-4b3e-9aef451f8057 ', 'Pick Product Category For Product', 'productcategories', 'productcategories.id', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', '7', '2', 1, NOW(), 1, NOW());
+INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('smrt:eed8c810-f9c8-077b-4b3e-9aef451f8057 ', 'Pick Product Category For Product', 'productcategories', 'productcategories.uuid', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', '7', '2', 1, NOW(), 1, NOW());
 --end smartsearches --
 -- Adding UUID prefix for BMS tables --
 UPDATE `tabledefs` SET `prefix` = 'tax' WHERE id = 6;

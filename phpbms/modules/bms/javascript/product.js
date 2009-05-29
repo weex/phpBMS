@@ -236,8 +236,13 @@ var product = {
                 theDiv.innerHTML = ' \
                     <input type="text" value="' + display.value + '" id="AC-' + newId + '" size="30" readonly="readonly"/>\
                     <input type="hidden" id="AC-CatId-' + newId + '" value="' + idToAdd.value + '" class="catIDs"/>\
-                    <button type="button" class="graphicButtons buttonMinus catButtons" title="Remove Category"><span>-</span></button>\
+                    <button type="button" id="RM-CatID-' + newId + '" class="graphicButtons buttonMinus catButtons" title="Remove Category"><span>-</span></button>\
                 ';
+
+
+                var buttonId = "RM-CatID-" + newId;
+                var newMinusButton = getObjectFromID(buttonId);
+                connect(newMinusButton, "onclick", product.removeCategory);
 
                 //flag a change for processing
                 var addcats = getObjectFromID("addcats");

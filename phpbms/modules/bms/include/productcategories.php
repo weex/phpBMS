@@ -41,33 +41,33 @@ if(class_exists("phpbmsTable")){
 
     class productcategories extends phpbmsTable{
 
-        function showParentsSelect($id = 0, $value){
+        function showParentsSelect($uuid = "", $value){
 
-            $id = (int) $id;
-            $value = (int) $id;
+            $id = mysql_real_escape_string($uuid);
+            $value = mysql_real_escape_string($value);
 
             $querystatement = "
                 SELECT
-                    `id`,
+                    `uuid`,
                     `name`
                 FROM
                     `productcategories`
                 WHERE
-                    `id` != ".$id."
-                    AND (`parentid` = 0 OR `parentid` != ".$id.")
-                    AND (`inactive` = 0 OR `id` = ".$value.")";
+                    `uuid` != '".$uuid."'
+                    AND (`parentid` = 0 OR `parentid` != '".$uuid."')
+                    AND (`inactive` = 0 OR `uuid` = '".$value."')";
 
             $queryresult = $this->db->query($querystatement);
 
             ?>
                 <label for="parentid">Parent Category</label><br />
                 <select id="parentid" name="parentid">
-                    <option value="0" <?php if($value == 0) echo 'selected="selected"'?>>No Parent</option>
+                    <option value="" <?php if($value == "") echo 'selected="selected"'?>>No Parent</option>
                     <?php
 
                         while($therecord = $this->db->fetchArray($queryresult)){
 
-                            ?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"] == $value) echo 'selected="selected"'?>><?php echo formatVariable($therecord["name"]); ?></option><?php
+                            ?><option value="<?php echo $therecord["uuid"]?>" <?php if($therecord["uuid"] == $value) echo 'selected="selected"'?>><?php echo formatVariable($therecord["name"]); ?></option><?php
 
                         }//endwhile
 

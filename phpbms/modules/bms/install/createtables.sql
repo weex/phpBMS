@@ -214,7 +214,7 @@ CREATE TABLE productcategories (
   `id` int(11) NOT NULL auto_increment,
   `uuid` varchar(64) NOT NULL,
   `name` varchar(64) default NULL,
-  `parentid` int(11) NOT NULL DEFAULT 0,
+  `parentid` varchar(64) NOT NULL DEFAULT '',
   `displayorder` int(11) NOT NULL DEFAULT 0,
   `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `description` text,
@@ -236,7 +236,7 @@ CREATE TABLE productcategories (
 ) ENGINE=INNODB;
 
 CREATE TABLE products (
-  categoryid int(11) NOT NULL default '0',
+  `categoryid` varchar(64) NOT NULL default '',
   createdby int(11) NOT NULL default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   description varchar(255) default NULL,
@@ -493,7 +493,7 @@ CREATE TABLE `addresstorecord` (
 
 CREATE TABLE `productstoproductcategories` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `productid` INTEGER UNSIGNED NOT NULL,
-  `productcategoryid` INTEGER UNSIGNED NOT NULL,
+  `productuuid` varchar(64) NOT NULL,
+  `productcategoryuuid` varchar(64) NOT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
