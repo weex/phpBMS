@@ -147,7 +147,14 @@ class updateAjax extends installUpdateBase{
 					if($thereturn !== true)
 						return $this->returnJSON(false, $thereturn);
 
-                                        $this->v098UpdateReportUUID();
+                                        $this->v098UpdateUUIDS("tabledefs", "tbld:", true);
+                                        $this->v098UpdateUUIDS("users", "usr:", true);
+                                        $this->v098UpdateUUIDS("roles", "role:", true);
+                                        $this->v098UpdateUUIDS("reports", "rpt:");
+                                        $this->v098UpdateUUIDS("scheduler", "schd:");
+                                        $this->v098UpdateUUIDS("smartsearches", "smrt:");
+
+                                        $this->v098UpdateNotesUUID();
 
 					//Updating Module Table
 					$thereturn = $this->updateModuleVersion("base", $version);
@@ -274,51 +281,118 @@ class updateAjax extends installUpdateBase{
 
 	}//end function updateModuleVersion
 
-        function v098UpdateReportUUID(){
-
-                $querystatement = "
-                        SELECT
-                                `id`
-                        FROM
-                                `reports`
-                        WHERE
-                                `uuid`!='reports:37cee478-b57e-2d53-d951-baf3937ba9e0'
-                                AND
-                                `uuid`!='reports:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8'
-                                AND
-                                `uuid`!='reports:a6999cc3-59bb-6af3-460e-d5d791afb842'
-                                AND
-                                `uuid`!='reports:2944b204-5967-348a-8679-6835f45f0d79'
-                                AND
-                                `uuid`!='reports:37a299d1-d795-ad83-4b47-0778c16a381c';
-                        ";
-
-                $queryresult = $this->db->query($querystatement);
-
-                $theIDs = array();
-                while($therecord = $this->db->fetchArray($queryresult)){
-
-                        $theIDs[] = $therecord["id"];
-
-                }//end while
-
-                foreach($theIDs as $id){
-
-                        $querystatement = "
-                                UPDATE
-                                        `reports`
-                                SET
-                                        `uuid`='".uuid("reports:")."'
-                                WHERE
-                                        `id` = '".$id."';
-                                ";
-
-                        $queryresult = $this->db->query($querystatement);
-
-                }//end foreach
 
 
-        }//end method --v098UpdateReportUUID
+        // ==== v0.98 functions ================================================
+
+
+        function v098UpdateNotesUUID(){
+
+            $updatestatement = "
+                UPDATE
+                    notes
+                SET
+                    parentid = NULL
+                WHERE
+                    parentid = '0'";
+
+            $this->db->query($updatestatement);
+
+            $querystatement = "
+                SELECT
+                    id,
+                    assignedtoid,
+                    assignebyid
+                FROM
+                    notes";
+
+            $queryresult = $this->db->query($querystatement);
+
+            while($therecord = $this->db->fetchArray($queryresult)){
+
+                $noteList[$therecord["id"]] = uuid("note:");
+
+                $updatestatement = "
+                    UPDATE
+                        notes
+                    SET
+                        uuid = '".$noteList[$therecord["id"]]."',
+                        assignedtoid = '".$this->uuids["users"][$therecord["assignedtoid"]]."',
+                        assignedbyid = '".$this->uuids["users"][$therecord["assignedbyid"]]."',
+                    WHERE
+                        id =".$therecord["id"];
+
+                $this->db->query($updatestatement);
+
+            }//endwhile
+
+            //next we need to update notes who have a parentid
+            $querystatement = "
+                SELECT
+                    id,
+                    parentid
+                FROM
+                    notes
+                WHERE
+                    parentid IS NOT NULL";
+
+            $queryresult = $this->db->query($querystatement);
+
+            while($therecord = $this->db->fetchArray($queryresult)){
+
+                $updatestatement = "
+                    UPDATE
+                        notes
+                    SET
+                        parentid ='".$noteList[$therecord["parentid"]]."'
+                    WHERE
+                        id = ".$therecord["id"];
+
+                $this->db->query($updatestatement);
+
+            }//endwhile
+
+        }//end function v098UpdateNotesUUID
+
+
+        function v098UpdateUUIDS($tablename, $prefix, $populateList = false){
+
+            $querystatement = "
+                    SELECT
+                        `id`
+                    FROM
+                        `".$tablename."`
+                    WHERE
+                        uuid = ''
+                        OR uuid IS NULL";
+
+            $queryresult = $this->db->query($querystatement);
+
+            if($populateList)
+                $uuidList[0] = "";
+
+            while($therecord = $this->db->fetchArray($queryresult)){
+
+                $uuid = uuid($prefix);
+                if($populateList)
+                    $uuidList[$therecord["id"]] = $uuid;
+                $updatestatement = "
+                    UPDATE
+                            `".$tablename."`
+                    SET
+                            `uuid`='".$uuid."'
+                    WHERE
+                            `id` = '".$therecord["id"]."';
+                    ";
+
+                $this->db->query($updatestatement);
+
+            }//end while
+
+            if($populateList)
+                $this->uuids[$tablename] = $uuidList;
+
+        }//end function
 
 }//end class updateAjax
 

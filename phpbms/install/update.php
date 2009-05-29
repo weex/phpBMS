@@ -113,7 +113,8 @@
 				<option value="1" selected="selected">* Preparing For Update</option>
 				<option value="2">* Update Core Program</option>
 				<option value="3">* Update Modules</option>
-				<option value="4">* Finish Update</option>
+				<option value="4">* Generate UUIDs</option>
+				<option value="5">* Finish Update</option>
 			</select>
 			<p><input type="checkbox" id="debug" /><label for="debug">updating debug</label></p>
 		</div>
@@ -231,6 +232,35 @@
 			</div>
 
 			<div class="steps" id="step4">
+
+				<p class="nextprevP">
+					<button type="button" class="Buttons prevButtons">back</button>
+					<button type="button" class="Buttons nextButtons">next</button>
+				</p>
+
+				<h1>Generate UUIDs</h1>
+
+                                <p>
+                                    Version 0.98 represents a fundamental shift in data record recognition.  By utilizing
+                                    Universal Unique IDs (UUID), phpBMS now becomes easier to share data with other applications,
+                                    program and update custom modules, and insure referential integrity.  To do this, te program
+                                    needs to transfer from the reliance on MySQL's auto increment ID system, and generate it's
+                                    own UUID's for all records and relationship records in your database.
+                                </p>
+
+                                <p class="notes"><strong>Warning:</strong> Make sure you have updated all modules to the latest version before performing this upgrade.</p>
+
+                                <p><button class="Buttons" id="updateUUIDsButton">Generate UUIDs</button> <span id="updateUUIDsNoDebug"></span></p>
+
+
+				<div class="debugResults">
+					<h3>UUID Generation Results</h3>
+					<p><textarea name="results" id="updateUUIDsResult" class="results" cols="80" rows="10"></textarea></p>
+				</div>
+
+			</div>
+
+			<div class="steps" id="step5">
 
 				<p class="nextprevP">
 					<button type="button" class="Buttons prevButtons">back</button>

@@ -3,9 +3,10 @@ ALTER TABLE `choices` ENGINE=INNODB;
 ALTER TABLE `files` ENGINE=INNODB;
 ALTER TABLE `files` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `files` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
+ALTER TABLE `files` MODIFY `roleid` varchar(64);
 ALTER TABLE `log` ENGINE=INNODB;
 ALTER TABLE `menu` ENGINE=INNODB;
-ALTER TABLE `menu` ADD COlUMN `uuid` varchar(64) NOT NULL AFTER `id`, MODIFY COLUMN `parentid` varchar(64) NOT NULL DEFAULT '0';
+ALTER TABLE `menu` ADD COlUMN `uuid` varchar(64) NOT NULL AFTER `id`, MODIFY COLUMN `parentid` varchar(64) NOT NULL DEFAULT '0', MODIFY `roleid` varchar(64);
 ALTER TABLE `modules` ENGINE=INNODB;
 ALTER TABLE `modules` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `notes` ENGINE=INNODB;
@@ -34,7 +35,7 @@ INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdate
 --end insert scheduler
 ALTER TABLE `settings` ENGINE=INNODB;
 ALTER TABLE `smartsearches` ENGINE=INNODB;
-ALTER TABLE `smartsearches` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+ALTER TABLE `smartsearches` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`, MODIFY `moduleid` VARCHAR(64), MODIFY `tabledefid` VARCHAR(64);
 --update smartsearches--
 UPDATE `smartsearches` SET `uuid`='smrt:ccc73fa4-6176-fad4-fbb1-5186d0edbdd1' WHERE `id`='2';
 UPDATE `smartsearches` SET `uuid`='smrt:855406d5-659d-c907-74a1-acfd3802fd73' WHERE `id`='5';
@@ -85,13 +86,38 @@ ALTER TABLE `usersearches` ENGINE=INNODB;
 UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = 23 AND `name` = 'Public Tasks';
 UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0' WHERE `tabledefid` = 23 AND `name` = 'Uncomplete Tasks Assigned By Me';
 UPDATE `menu` SET `link` = 'N/A' WHERE name = '----';
-CREATE TABLE `widgets` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `uuid` varchar(64) NOT NULL, `type` varchar(64) NOT NULL, `title` varchar(128) NOT NULL, `file` varchar(255) NOT NULL, `roleid` int(11) NOT NULL default '0', `moduleid` int(11) NOT NULL default '0', `default` tinyint(4) NOT NULL default '0', `createdby` int(11) default NULL, `creationdate` datetime default NULL, `modifiedby` int(10) unsigned default NULL, `modifieddate` timestamp, PRIMARY KEY  (`id`), KEY `uniqueid` (`uuid`)) ENGINE=INNODB;
-CREATE TABLE `userpreferences` (`id` int(10) unsigned NOT NULL AUTO_INCREMENT, `userid` int(120) NOT NULL, `name` varchar(64) NOT NULL, `value` TEXT, PRIMARY KEY  (`id`), KEY `thename` (`name`)) ENGINE=INNODB;
+--widgets--
+CREATE TABLE `widgets` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
+  `type` varchar(64) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `file` varchar(255) NOT NULL,
+  `roleid` VARCHAR(64),
+  `moduleid` VARCHAR(64),
+  `default` tinyint(4) NOT NULL default '0',
+  `createdby` int(11) default NULL,
+  `creationdate` datetime default NULL,
+  `modifiedby` int(10) unsigned default NULL,
+  `modifieddate` timestamp,
+  PRIMARY KEY  (`id`),
+  KEY `uniqueid` (`uuid`)
+) ENGINE=INNODB;
+
+CREATE TABLE `userpreferences` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `value` TEXT,
+  PRIMARY KEY  (`id`),
+  KEY `thename` (`name`)
+) ENGINE=INNODB;
 
 --tabledefs update/insert--
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.id) LEFT JOIN roles ON widgets.roleid = roles.id) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 DELETE FROM `tabledefs` WHERE `id` = '19';
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('19', 'tbld:83187e3d-101e-a8a5-037f-31e9800fed2d', 'Menu', 'system', '1', 'menu', '((menu LEFT JOIN menu as parentmenu on menu.parentid=parentmenu.id) LEFT JOIN roles on menu.roleid=roles.id)', 'modules/base/menu_addedit.php', '-100', 'modules/base/menu_addedit.php', '-100', NULL, '-100', '-100', '-100', '-100', 'delete', '0', '0', 'menu.id!=0', 'if(parentmenu.name is null,menu.displayorder,parentmenu.displayorder+(menu.displayorder+1)/10000)', '', '', '', 1, NOW(), 1, NOW());
+
 UPDATE `tabledefs` SET `uuid`='tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb' WHERE `id`='9';
 UPDATE `tabledefs` SET `uuid`='tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9' WHERE `id`='10';
 UPDATE `tabledefs` SET `uuid`='tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3' WHERE `id`='11';
@@ -198,11 +224,11 @@ UPDATE `tabs` SET `uuid`='tab:22d08e82-5047-4150-6de7-49e89149f56b' WHERE `id`='
 UPDATE `tabs` SET `uuid`='tab:c111eaf5-692b-9c7d-1d46-1bacb6703361' WHERE `id`='100';
 --end tabs insert/update--
 --reports update--
-UPDATE `reports` SET `uuid`='reports:37cee478-b57e-2d53-d951-baf3937ba9e0' WHERE `name`='Raw Table Print';
-UPDATE `reports` SET `uuid`='reports:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8' WHERE `name`='Raw Table Export';
-UPDATE `reports` SET `uuid`='reports:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
-UPDATE `reports` SET `uuid`='reports:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
-UPDATE `reports` SET `uuid`='reports:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
+UPDATE `reports` SET `uuid`='rpt:37cee478-b57e-2d53-d951-baf3937ba9e0' WHERE `name`='Raw Table Print';
+UPDATE `reports` SET `uuid`='rpt:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8' WHERE `name`='Raw Table Export';
+UPDATE `reports` SET `uuid`='rpt:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
+UPDATE `reports` SET `uuid`='rpt:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
+UPDATE `reports` SET `uuid`='rpt:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
 --end reports update--
 --ADD TABLEDEFS--
 ALTER TABLE `tabledefs` ADD COLUMN `prefix` VARCHAR(4) AFTER `displayname`;
@@ -220,3 +246,19 @@ UPDATE `tabledefs` SET `prefix` = 'wdgt' WHERE id = 205;
 UPDATE `tabledefs` SET `prefix` = 'mod' WHERE id = 21;
 UPDATE `tabledefs` SET `prefix` = 'file' WHERE id = 26;
 UPDATE `tabledefs` SET `prefix` = 'menu' WHERE id = 19;
+UPDATE `tabledefs` SET `prefix` = 'sss' WHERE id = 17;
+--other UUID stuff --
+ALTER TABLE `tabs` MODIFY `roleid` VARCHAR(64);
+ALTER TABLE `notes` MODIFY `assignedtoid` varchar(64), MODIFY `attachedid` varchar(64), MODIFY `attachedtabledefid` varchar(64), MODIFY `parentid` varchar(64), MODIFY `assignebyid` varchar(64);
+ALTER TABLE `rolestousers` MODIFY `userid` varchar(64), MODIFY `roleid` varchar(64);
+ALTER TABLE `tablecolumns` MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `tablecustomfields` MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `tablefindoptions` MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `tableoptions` MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `tablegroupings` MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
+ALTER TABLE `tablesearchablefields` MODIFY `tabledefid` VARCHAR(64) NOT NULL;
+ALTER TABLE `attachements` MODIFY `fileid` VARCHAR(64) NOT NULL, MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `recordid` VARCHAR(64);
+ALTER TABLE `log` MODIFY `userid` VARCHAR(64);
+ALTER TABLE `relaionships` MODIFY fromtableid VARCHAR(64) NOT NULL, MODIFY totableid VARCHAR(64) NOT NULL;
+ALTER TABLE `usersearches` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`, MODIFY `tabledefid` VARCHAR(64) NOT NULL, MODIFY `userid` VARCHAR(64) NOT NULL;
+

@@ -1,0 +1,24 @@
+/* $Rev: 159 $ | $LastChangedBy: brieb $ */
+/* $LastChangedDate: 2006-10-22 17:12:07 -0600 (Sun, 22 Oct 2006) $ */
+#fsAttributes{
+    float:right;
+    width:230px;
+}
+
+#leftSideDiv{
+    margin-right:262px;
+    padding-top:1px;
+}
+
+#fsDescription{
+    clear:both
+}
+
+#description{
+    width:99%
+}
+
+#cancel{
+    padding-right: 15px;
+    padding-left: 15px;
+}

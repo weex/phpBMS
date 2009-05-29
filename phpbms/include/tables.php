@@ -44,12 +44,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         var $customFieldsQueryResult = false;
 
         // The table definition record id.
-        var $id=0;
+        var $id = 0;
 
         var $fields = array();
 
 
-        function phpbmsTable($db,$tabledefid = 0,$backurl = NULL){
+        function phpbmsTable($db, $tabledefid = 0, $backurl = NULL){
 
             if(is_object($db))
                 if(get_class($db)=="db")
@@ -380,6 +380,10 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         // In most cases it is overriden.
         function prepareVariables($variables){
 
+            if(isset($variables["uuid"]))
+                if(!$variables["uuid"])
+                    $variables["uuid"] = uuid($this->prefix.":");
+
             return $variables;
 
         }//end function prepareVariables
@@ -397,6 +401,10 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 if(!is_numeric($variables["id"]) && $variables["id"])
                     $this->verifyErrors[] = "The `id` field must be numeric or equivalent to zero (although positive is reccomended).";
 
+            if(isset($variables["uuid"]))
+                if(!$variables["uuid"])
+                    $this->verifyErrors[] = "The `uuid` field annot be blank";
+
             if(isset($variables["inactive"]))
                 if($variables["inactive"] && $variables["inactive"] != 1)
                     $this->verifyErrors[] = "The `inactive` field must be a boolean (equivalent to 0 or exactly 1).";
@@ -411,8 +419,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function verifyVariables
 
 
-
-        function updateRecord($variables, $modifiedby = NULL){
+        function updateRecord($variables, $modifiedby = NULL, $uuid = false){
 
             //escape slashes
             $variables = addSlashesToArray($variables);
@@ -466,9 +473,20 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             $updatestatement = substr($updatestatement, 0, strlen($updatestatement)-2);
 
-            $updatestatement .= "
-                WHERE
-                    `id`=".((int) $variables["id"]);
+            if(!$uuid){
+
+                $updatestatement .= "
+                    WHERE
+                        `id`=".((int) $variables["id"]);
+
+
+            } else {
+
+                $updatestatement .= "
+                    WHERE
+                        `uuid` = '".mysql_real_escape_string($variables["id"])."'";
+
+            }//endif
 
             $this->db->query($updatestatement);
 
@@ -477,7 +495,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function updateRecord
 
 
-        function insertRecord($variables,$createdby = NULL, $overrideID = false, $replace = false){
+        function insertRecord($variables,$createdby = NULL, $overrideID = false, $replace = false, $uuid = false){
 
             if($createdby === NULL)
                 if(isset($_SESSION["userinfo"]["id"]))
@@ -546,9 +564,14 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
             $insertstatement .= " INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
             $insertresult = $this->db->query($insertstatement);
 
-            if($insertresult)
-                return $this->db->insertId();
-            else
+            if($insertresult) {
+
+                if($uuid)
+                    return $variables["uuid"];
+                else
+                    return $this->db->insertId();
+
+            } else
                 return false;
 
         }//end function insertRecord

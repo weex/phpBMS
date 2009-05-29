@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -45,39 +45,43 @@
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];	
-	
+		$statusmessage = $therecord["phpbmsStatus"];
+
 	$pageTitle="Installed Modules";
-	
-	$phpbms->cssIncludes[] = "pages/modules.css";
+
+	$phpbms->cssIncludes[] = "pages/base/modules.css";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?>
 
 <div class="bodyline">
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">			
-	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>	
-	
+<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
+	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
+
 		<fieldset id="fsAttributes">
 			<legend>attributes</legend>
 			<p>
 				<label for="id">id</label><br />
-				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>			
+				<input id="id" name="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable"/>
+			</p>
+			<p>
+				<label for="uuid">uuid</label><br />
+				<input id="uuid" name="uuid" type="text" value="<?php echo $therecord["uuid"]; ?>" size="32" maxlength="64" readonly="readonly" class="uneditable"/>
 			</p>
 			<p>
 				<label for="version">version</label><br />
 				<input id="version" name="version" type="text" value="<?php echo $therecord["version"]; ?>" size="8" maxlength="8" readonly="readonly" class="uneditable" />
 			</p>
-		</fieldset>			
+		</fieldset>
 
 		<div id="leftSideDiv">
 			<fieldset>
@@ -86,21 +90,22 @@
 					<label for="displayname">name</label><br />
 					<input id="displayname" name="displayname" type="text" value="<?php echo htmlQuotes($therecord["displayname"]); ?>" size="45" maxlength="128" readonly="readonly" class="uneditable" />
 				</p>
-				
+
 				<p>
 					<label for="name">folder name/location</label><br />
 					<input id="name" name="name" type="text" value="<?php echo htmlQuotes($therecord["name"]); ?>" size="64" maxlength="128" readonly="readonly" class="uneditable" />
-				</p>				
+				</p>
 			</fieldset>
+
+                        <fieldset>
+                                <legend><label for="description">description</label></legend>
+                                <p>
+                                        <br />
+                                        <textarea id="description" name="description" rows="5" cols="56" readonly="readonly" class="uneditable"><?php echo htmlQuotes($therecord["description"])?></textarea>
+                                </p>
+                        </fieldset>
+
 		</div>
-		<fieldset id="fsDescription">
-			<legend><label for="description">description</label></legend>
-			<p>
-				<br />
-				<textarea id="description" name="description" rows="7" cols="56" readonly="readonly" class="uneditable"><?php echo htmlQuotes($therecord["description"])?></textarea>
-			</p>
-		</fieldset>
-		
 		<p align="right">
 			<input name="cancelclick" type="hidden" value="0" />
 			<input name="command" id="cancel" type="submit" value="cancel" class="Buttons" onclick="this.form.cancelclick.value=true;" />

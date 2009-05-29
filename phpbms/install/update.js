@@ -66,7 +66,6 @@ updater = {
 		loadXMLDoc(theURL,null,false);
 
 		var JSONresponse;
-console.log(req.responseText);
 		eval("JSONresponse = (" + req.responseText +")");
 
 		var responseText = getObjectFromID(command + "results");
@@ -96,9 +95,50 @@ console.log(req.responseText);
 		for(var i = 0; i < debugDisplays.length; i ++)
 			debugDisplays[i].style.display = display;
 
-	}//end function toggleDebug
+	},//end function toggleDebug
 
-}//end class installer
+        /**
+         * Special v0.98 Update
+         */
+        generateUUIDs: function(){
+
+		var noDebug = getObjectFromID("updateUUIDsNoDebug");
+
+		noDebug.className = "running";
+		noDebug.innerHTML = "Running...";
+
+		var theURL = "generateuuids.php";
+
+		loadXMLDoc(theURL,null,false);
+
+		var JSONresponse;
+		eval("JSONresponse = (" + req.responseText +")");
+
+		var responseText = getObjectFromID("updateUUIDsResult");
+		if(typeof(responseText) != "undefined"){
+
+			if(responseText.value)
+				responseText.value += "\n";
+
+			responseText.value += JSONresponse.details;
+
+		}//endif
+
+		if(JSONresponse.success === true){
+
+			noDebug.className = "success";
+			noDebug.innerHTML = "UUID Generation Successful";
+
+		} else {
+
+			noDebug.className = "fail";
+			noDebug.innerHTML = "UUID Generation Failed!";
+
+		}//endif
+
+        }//endfunction generateUUIDs
+
+}//end class updater
 
 
 
@@ -152,9 +192,9 @@ stepsNav = {
 		stepsNav.navTo(parseInt(navSelect.value));
 
 
-	}
+	}//endfunction navLeft
 
-}
+}//end class stepsNav
 
 // ====== Init Listeners =======================================================
 
@@ -180,6 +220,11 @@ connect(window,"onload",function() {
 	var updatecoreButton = getObjectFromID("updatecoreButton");
 	if(updatecoreButton)
 		connect(updatecoreButton,"onclick", updater.coreDataUpdate);
+
+
+        //special v0.98 generator
+        var updateUUIDsButton = getObjectFromID("updateUUIDsButton");
+                connect(updateUUIDsButton, "onclick", updater.generateUUIDs);
 
 	moduleButtons = getElementsByClassName("moduleButtons");
 	for(i = 0; i < moduleButtons.length; i++)

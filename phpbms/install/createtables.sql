@@ -1,18 +1,18 @@
 CREATE TABLE `tablegroupings` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `tabledefid` INTEGER UNSIGNED NOT NULL,
+  `tabledefid` VARCHAR(64) NOT NULL,
   `field` TEXT NOT NULL,
   `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0,
   `ascending` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `name` VARCHAR(64),
-  `roleid` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  `roleid` VARCHAR(64),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `log` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(25),
-  `userid` INTEGER UNSIGNED,
+  `userid` VARCHAR(64),
   `ip` VARCHAR(45),
   `value` TEXT,
   `stamp` TIMESTAMP,
@@ -37,7 +37,7 @@ CREATE TABLE menu (
   modifiedby int(11) default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifieddate timestamp(14) NOT NULL,
-  roleid int(11) NOT NULL default '0',
+  `roleid` VARCHAR(64),
   PRIMARY KEY  (id)
 ) ENGINE=INNODB ;
 
@@ -54,9 +54,9 @@ CREATE TABLE modules (
 CREATE TABLE `notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL,
-  `assignedtoid` int(11) default NULL,
-  `attachedid` int(11) default NULL,
-  `attachedtabledefid` int(11) default NULL,
+  `assignedtoid` varchar(64) default NULL,
+  `attachedid` varchar(64) default NULL,
+  `attachedtabledefid` varchar(64) default NULL,
   `content` text,
   `assignedtodate` date default NULL,
   `subject` varchar(128) default NULL,
@@ -66,7 +66,7 @@ CREATE TABLE `notes` (
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
   `importance` int(11) NOT NULL default '0',
-  `parentid` int(11) default NULL,
+  `parentid` varchar(64) default NULL,
   `startdate` date default NULL,
   `enddate` date default NULL,
   `completed` tinyint(4) NOT NULL default '0',
@@ -78,7 +78,7 @@ CREATE TABLE `notes` (
   `assignedtotime` time default NULL,
   `starttime` time default NULL,
   `endtime` time default NULL,
-  `assignedbyid` int(11) NOT NULL default '0',
+  `assignedbyid` varchar(64) NOT NULL default '0',
   `repeating` smallint(5) unsigned NOT NULL default '0',
   `repeattype` enum('Daily','Weekly','Monthly','Yearly') default NULL,
   `repeatuntil` date default NULL,
@@ -108,8 +108,8 @@ CREATE TABLE relationships (
   tofield varchar(32) NOT NULL default '',
   name varchar(128) NOT NULL default '',
   fromfield varchar(32) NOT NULL default '',
-  fromtableid int(11) NOT NULL default '0',
-  totableid int(11) NOT NULL default '0',
+  fromtableid VARCHAR(64) NOT NULL default '',
+  totableid VARCHAR(64) NOT NULL default '0',
   createdby int(11) NOT NULL default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifiedby int(11) default '0',
@@ -126,7 +126,7 @@ CREATE TABLE `reports` (
   `type` varchar(32) default NULL,
   `tabledefid` int(11) NOT NULL default '0',
   `displayorder` int(11) NOT NULL default '0',
-  `roleid` int(11) NOT NULL default '0',
+  `roleid` VARCHAR(64),
   `reportfile` varchar(128) NOT NULL,
   `description` text,
   `createdby` int(11) NOT NULL default '0',
@@ -148,7 +148,7 @@ CREATE TABLE `tablecolumns` (
   `wrap` tinyint(1) NOT NULL default '0',
   `size` varchar(16) NOT NULL default '',
   `format` enum('date','time','currency','boolean','datetime','filelink','noencoding','bbcode') default NULL,
-  `roleid` int(10) NOT NULL default '0',
+  `roleid` VARCHAR(64),
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
@@ -164,14 +164,14 @@ CREATE TABLE `tabledefs` (
   `maintable` varchar(64) NOT NULL default '',
   `querytable` text,
   `editfile` varchar(128) default NULL,
-  `editroleid` int(11) NOT NULL default '0',
+  `editroleid` varchar(64),
   `addfile` varchar(100) default '',
-  `addroleid` int(11) NOT NULL default '0',
+  `addroleid` varchar(64),
   `importfile` VARCHAR(128) DEFAULT NULL,
-  `importroleid` int(11) NOT NULL DEFAULT '-100',
-  `searchroleid` int(11) NOT NULL default '0',
-  `advsearchroleid` int(11) NOT NULL default '-100',
-  `viewsqlroleid` int(11) NOT NULL default '-100',
+  `importroleid` VARCHAR(64) default 'admin',
+  `searchroleid` varchar(64),
+  `advsearchroleid` varchar(64) default 'admin',
+  `viewsqlroleid` varchar(64) default 'admin',
   `deletebutton` varchar(32) default '',
   `canpost` tinyint(4) NOT NULL default '0',
   `hascustomfields` tinyint(4) NOT NULL default '0',
@@ -189,23 +189,23 @@ CREATE TABLE `tabledefs` (
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
-  tabledefid int(11) NOT NULL default '0',
+  tabledefid varchar(64) NOT NULL,
   name varchar(64) NOT NULL default '',
   search text NOT NULL,
   displayorder int(11) NOT NULL default '0',
-  roleid int(11) NOT NULL default '0',
+  roleid varchar(64),
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
 ) ENGINE=INNODB  AUTO_INCREMENT=2000;
 
 CREATE TABLE tableoptions (
   id int(11) NOT NULL auto_increment,
-  tabledefid int(11) NOT NULL default '0',
+  tabledefid varchar(64) NOT NULL,
   name varchar(64) NOT NULL default '',
   `option` varchar(128) NOT NULL default '',
   `needselect` BOOLEAN NOT NULL DEFAULT 1,
   othercommand tinyint(1) NOT NULL default '0',
-  roleid int(11) NOT NULL default '0',
+  roleid varchar(64),
   `displayorder` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
@@ -213,7 +213,7 @@ CREATE TABLE tableoptions (
 
 CREATE TABLE tablesearchablefields (
   id int(11) NOT NULL auto_increment,
-  tabledefid int(11) NOT NULL default '0',
+  tabledefid VARCHAR(64) NOT NULL,
   field text NOT NULL,
   name varchar(64) NOT NULL default '',
   displayorder int(11) NOT NULL default '0',
@@ -223,14 +223,14 @@ CREATE TABLE tablesearchablefields (
 
 CREATE TABLE tablecustomfields (
   `id` int(11) NOT NULL auto_increment,
-  `tabledefid` int(11) NOT NULL default 0,
+  `tabledefid` varchar(64) NOT NULL,
   `name` varchar(128) NOT NULL default '',
   `field` varchar(8) NOT NULL default '',
   `format` varchar(32),
   `generator` TEXT,
   `required` TINYINT(4) NOT NULL default 0,
   `displayorder` int(11) NOT NULL default 0,
-  `roleid` int(11) NOT NULL default 0,
+  `roleid` VARCHAR(64),
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`)
 ) ENGINE=INNODB;
@@ -268,17 +268,17 @@ CREATE TABLE users (
 
 CREATE TABLE usersearches (
   id int(11) NOT NULL auto_increment,
-  userid int(11) NOT NULL default '0',
-  tabledefid int(11) NOT NULL default '0',
+  userid varchar(64) NOT NULL,
+  tabledefid varchar(64) NOT NULL,
   name varchar(128) default '',
   sqlclause text,
   type char(3) NOT NULL default 'SCH',
-  roleid int(11) NOT NULL default '0',
+  roleid varchar(64) NOT NULL,
   PRIMARY KEY  (id),
   KEY tabledefid (tabledefid),
   KEY thetype (type),
   KEY user (userid)
-) ENGINE=INNODB ;
+) ENGINE=INNODB;
 
 CREATE TABLE `settings` (
   `id` int(11) NOT NULL auto_increment,
@@ -298,7 +298,7 @@ CREATE TABLE `files` (
   `creationdate` datetime default '0000-00-00 00:00:00',
   `modifiedby` int(11) default '0',
   `modifieddate` timestamp(14) NOT NULL,
-  `roleid` int(11) NOT NULL default '0',
+  `roleid` VARCHAR(64),
   `custom1` DOUBLE,
   `custom2` DOUBLE,
   `custom3` DATETIME,
@@ -312,9 +312,9 @@ CREATE TABLE `files` (
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,
-  `fileid` int(11) NOT NULL default '0',
-  `tabledefid` int(11) NOT NULL default '0',
-  `recordid` int(11) NOT NULL default '0',
+  `fileid` VARCHAR(64) NOT NULL,
+  `tabledefid` VARCHAR(64) NOT NULL,
+  `recordid` VARCHAR(64) NOT NULL,
   `createdby` int(11) default '0',
   `creationdate` datetime default '0000-00-00 00:00:00',
   `modifiedby` int(11) default '0',
@@ -348,9 +348,10 @@ CREATE TABLE `roles` (
 
 CREATE TABLE `rolestousers` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `userid` INTEGER UNSIGNED NOT NULL,
-  `roleid` INTEGER UNSIGNED NOT NULL,
-  PRIMARY KEY(`id`)
+  `userid` VARCHAR(64) NOT NULL,
+  `roleid` VARCHAR(64) NOT NULL,
+  PRIMARY KEY(`id`),
+  KEY `theuser` (`userid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `scheduler` (
@@ -382,7 +383,7 @@ CREATE TABLE `tabs` (
   `location` varchar(128) default NULL,
   `displayorder` int(11) NOT NULL default '0',
   `enableonnew` tinyint(3) unsigned NOT NULL default '0',
-  `roleid` int(11) NOT NULL default '0',
+  `roleid` VARCHAR(64),
   `tooltip` varchar(128) default NULL,
   `notificationsql` text,
   `createdby` int(11) default NULL,
@@ -404,8 +405,8 @@ CREATE TABLE `smartsearches` (
   `searchfields` text NOT NULL,
   `filterclause` text NOT NULL,
   `rolefield` text,
-  `tabledefid` int(10) unsigned default NULL,
-  `moduleid` int(10) unsigned default NULL,
+  `tabledefid` VARCHAR(64),
+  `moduleid` VARCHAR(64),
   `createdby` int(10) unsigned NOT NULL,
   `creationdate` datetime NOT NULL,
   `modifiedby` int(10) unsigned default NULL,
@@ -419,8 +420,8 @@ CREATE TABLE `widgets` (
   `type` varchar(64) NOT NULL,
   `title` varchar(128) NOT NULL,
   `file` varchar(255) NOT NULL,
-  `roleid` int(11) NOT NULL default '0',
-  `moduleid` int(11) NOT NULL default '0',
+  `roleid` VARCHAR(64),
+  `moduleid` VARCHAR(64),
   `default` tinyint(4) NOT NULL default '0',
   `createdby` int(11) default NULL,
   `creationdate` datetime default NULL,
@@ -432,7 +433,7 @@ CREATE TABLE `widgets` (
 
 CREATE TABLE `userpreferences` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `userid` int(120) NOT NULL,
+  `userid` varchar(64) NOT NULL,
   `name` varchar(64) NOT NULL,
   `value` TEXT,
   PRIMARY KEY  (`id`),
