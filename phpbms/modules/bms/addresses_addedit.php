@@ -76,11 +76,6 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		$theinput = new inputField("id",$therecord["id"],NULL,false,NULL,5,12);
-		$theinput->setAttribute("readonly","readonly");
-		$theinput->setAttribute("class","uneditable");
-		$theform->addField($theinput);
-
 		$theinput = new inputField("title",$therecord["title"],NULL,false,NULL,71,128);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -183,7 +178,6 @@
 		<fieldset>
 			<legend>Attributes</legend>
 
-			<p><?php $theform->showField("id")?></p>
 
 			<?php if(isset($therecord["addressid"])) {?>
 
@@ -250,7 +244,7 @@
 		<fieldset>
 			<legend>address <button type="button" class="graphicButtons buttonMap" id="buttonMap" title="show map"><span>map</span></button></legend>
 
-			<p><?php $theform->showField("title")?></p>
+			<p class="big"><?php $theform->showField("title")?></p>
 
 			<p>
 				<?php $theform->showField("address1")?><br />

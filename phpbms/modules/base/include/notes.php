@@ -136,28 +136,44 @@ if(class_exists("phpbmsTable")){
 		function newerRepeats($parentid,$id){
 
 			if ($parentid=="NULL")
-				$parentid=$id;
+				$parentid = getUuid($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1", $id);
 
-			$querystatement="SELECT creationdate FROM notes WHERE id=".((int) $id);
+			$querystatement = "
+                            SELECT
+                                creationdate
+                            FROM
+                                notes
+                            WHERE id=".((int) $id);
+
 			$queryresult = $this->db->query($querystatement);
 			$therecord=$this->db->fetchArray($queryresult);
 
-			$querystatement="SELECT id FROM notes WHERE completed=0 AND parentid=".((int) $parentid)." AND creationdate > '".$therecord["creationdate"]."'";
+			$querystatement="
+                            SELECT
+                                id
+                            FROM
+                                notes
+                            WHERE
+                                completed = 0
+                                AND parentid='".mysql_real_escape_string($parentid)."'
+                                AND creationdate > '".$therecord["creationdate"]."'";
+
 			$queryresult = $this->db->query($querystatement);
 
 			if($this->db->numRows($queryresult)) return true; else return false;
-		}
+
+		}//end fucntion newerRepeats
 
 
 		function resetRepeating($parentid){
 
-			$deletstatement="DELETE FROM notes WHERE completed=0 AND parentid=".$parentid;
+			$deletstatement="DELETE FROM notes WHERE completed=0 AND parentid = '".$parentid."'";
 			$this->db->query($deletstatement);
 
-			$updatestatement="UPDATE notes SET parentid=NULL WHERE completed=1 AND parentid=".$parentid;
+			$updatestatement="UPDATE notes SET parentid=NULL WHERE completed=1 AND parentid= '".$parentid."'";
 			$queryresult = $this->db->query($updatestatement);
 
-		}
+		}//end function resetRepeating
 
 
 		function updateTask($id,$completed,$type){
@@ -175,28 +191,63 @@ if(class_exists("phpbmsTable")){
 
 			return "success";
 
-		}
+		}//end function updateTask
 
 
 		function repeatTask($id, $dateToCheck = NULL){
+
 			if($dateToCheck == NULL)
 				$dateToCheck = mktime(0,0,0);
-			//see if we need to grab the parent
-			$querystatement = "SELECT parentid,repeating FROM notes WHERE id=".((int) $id);
+
+                        //see if we need to grab the parent
+			$querystatement = "
+                            SELECT
+                                parentnotes.id as parentid,
+                                notes.repeating
+                            FROM
+                                notes LEFT JOIN notes AS parentnotes
+                                ON parentnotes.uuid = notes.parentid
+                            WHERE
+                                notes.id=".((int) $id);
+
 			$queryresult = $this->db->query($querystatement);
+
 			$therecord = $this->db->fetchArray($queryresult);
 				if($therecord["parentid"])
 					$id = $therecord["parentid"];
 				elseif(!$therecord["repeating"])
 					return false;
 
-			$querystatement = "SELECT notes.repeattype, notes.repeatevery, notes.startdate, notes.enddate, notes.firstrepeat,
-								notes.lastrepeat,
-								notes.timesrepeated, notes.repeatontheday, notes.repeatontheweek, notes.repeateachlist,
-								notes.repeatuntil, notes.repeattimes
-								FROM notes WHERE repeating=1 AND id=".((int) $id)." AND type='TS'
-							AND (notes.repeatuntil IS NULL OR notes.repeatuntil >= '".dateToString($dateToCheck,"SQL")."')
-							AND (notes.repeattimes IS NULL OR notes.repeattimes < notes.timesrepeated)";
+			$querystatement = "
+                            SELECT
+                                notes.uuid,
+                                notes.repeattype,
+                                notes.repeatevery,
+                                notes.startdate,
+                                notes.enddate,
+                                notes.firstrepeat,
+				notes.lastrepeat,
+				notes.timesrepeated,
+                                notes.repeatontheday,
+                                notes.repeatontheweek,
+                                notes.repeateachlist,
+				notes.repeatuntil,
+                                notes.repeattimes
+			    FROM
+                                notes
+                            WHERE
+                                repeating = 1
+                                AND id=".((int) $id)."
+                                AND type='TS'
+				AND (
+                                    notes.repeatuntil IS NULL
+                                    OR notes.repeatuntil >= '".dateToString($dateToCheck,"SQL")."'
+                                    )
+				AND (
+                                    notes.repeattimes IS NULL
+                                    OR notes.repeattimes < notes.timesrepeated
+                                    )";
+
 			$queryresult = $this->db->query($querystatement);
 
 			if($this->db->numRows($queryresult)){
@@ -219,8 +270,10 @@ if(class_exists("phpbmsTable")){
 						else
 							$enddate = NULL;
 
-						$return = $this->createChildTask($id, $date, stringToDate($therecord["startdate"],"SQL"), $enddate );
+						$return = $this->createChildTask($therecord["uuid"], $date, stringToDate($therecord["startdate"],"SQL"), $enddate );
+
 						if($return){
+
 							//child created update the parentrecord
 							$updatestatement = "UPDATE notes SET ";
 							$updatestatement .= "lastrepeat='".dateToString($date,"SQL")."',";
@@ -231,11 +284,14 @@ if(class_exists("phpbmsTable")){
 							$this->db->query($updatestatement);
 
 							break;
-						}
+						}//endif
+
 					}//endif
+
 				}//endforeach
 
 			}//endif
+                        
 		}//end method
 
 
@@ -374,8 +430,17 @@ if(class_exists("phpbmsTable")){
 		function createChildTask($parentid, $newdate, $startdate, $enddate=NULL){
 
 			//let's check to see if the new task already exists
-			$querystatement = "SELECT id FROM notes WHERE parentid=".$parentid." AND startdate='".dateToString($newdate,"SQL")."'";
+			$querystatement = "
+                            SELECT
+                                id
+                            FROM
+                                notes
+                            WHERE
+                                parentid='".$parentid."'
+                                AND startdate='".dateToString($newdate,"SQL")."'";
+
 			$queryresult = $this->db->query($querystatement);
+
 			if($this->db->numRows($queryresult))
 				return false;
 
@@ -383,14 +448,47 @@ if(class_exists("phpbmsTable")){
 			if($enddate)
 				$newenddate="\"".dateToString($newdate+($enddate-$startdate),"SQL")."\"";
 
-			$querystatement="SELECT id,type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,CURDATE() as creationdate,createdby,category,
-						attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid
-						FROM notes WHERE id=".$parentid;
+			$querystatement="
+                            SELECT
+                                id,
+                                uuid,
+                                type,
+                                subject,
+                                content,
+                                status,
+                                starttime,
+                                private,
+                                modifiedby,
+                                location,
+                                importance,
+                                endtime,
+                                CURDATE() as creationdate,
+                                createdby,
+                                category,
+                                attachedtabledefid,
+                                attachedid,
+                                assignedtoid,
+                                assignedtodate,
+                                assignedtotime,
+                                assignedbyid
+			    FROM
+                                notes
+                            WHERE
+                                uuid='".$parentid."'";
+
 			$queryresult=$this->db->query($querystatement);
 
 			$therecord=$this->db->fetchArray($queryresult);
 
-			$querystatement="SELECT id FROM notes WHERE parentid=".((int) $parentid)." AND completed=0 AND startdate=\"".dateToString($newdate,"SQL")."\"";
+			$querystatement = "
+                            SELECT
+                                id
+                            FROM
+                                notes
+                            WHERE
+                                parentid = '".$parentid."'
+                                AND completed = 0 AND startdate ='".dateToString($newdate,"SQL")."'";
+
 			$queryresult=$this->db->query($querystatement);
 
 			if($this->db->numRows($queryresult))
@@ -399,42 +497,75 @@ if(class_exists("phpbmsTable")){
 			if(!$therecord["assignedtoid"])
 				$therecord["assignedtoid"]="NULL";
 
-			$querystatement="INSERT INTO notes (parentid,startdate,enddate,completed,completeddate,
-						type,subject,content,status,starttime,private,modifiedby,location,importance,endtime,creationdate,createdby,category,
-						attachedtabledefid,attachedid,assignedtoid,assignedtodate,assignedtotime,assignedbyid) VALUES (
-						".$therecord["id"].", \"".dateToString($newdate,"SQL")."\",".$newenddate.", 0, NULL,";
-			$querystatement.="\"".$therecord["type"]."\", ";
-			$querystatement.="\"".$therecord["subject"]."\", ";
-			$querystatement.="\"".$therecord["content"]."\", ";
-			$querystatement.="\"".$therecord["status"]."\", ";
+			$querystatement="
+                            INSERT INTO
+                                notes
+                                    (
+                                    uuid,
+                                    parentid,
+                                    startdate,
+                                    enddate,
+                                    completed,
+                                    completeddate,
+                                    type,
+                                    subject,
+                                    content,
+                                    status,
+                                    starttime,
+                                    private,
+                                    modifiedby,
+                                    location,
+                                    importance,
+                                    endtime,
+                                    creationdate,
+                                    createdby,
+                                    category,
+                                    attachedtabledefid,
+                                    attachedid,
+                                    assignedtoid,
+                                    assignedtodate,
+                                    assignedtotime,
+                                    assignedbyid)
+                            VALUES (
+                                '".uuid(getUuidPrefix($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1"))."',
+				'".$therecord["uuid"]."',
+                                '".dateToString($newdate,"SQL")."',
+                                ".$newenddate.",
+                                0,
+                                NULL,";
+
+			$querystatement.="'".$therecord["type"]."', ";
+			$querystatement.="'".$therecord["subject"]."', ";
+			$querystatement.="'".$therecord["content"]."', ";
+			$querystatement.="'".$therecord["status"]."', ";
 			if($therecord["starttime"])
-				$querystatement.="\"".$therecord["starttime"]."\", ";
+				$querystatement.="'".$therecord["starttime"]."', ";
 			else
 				$querystatement.="NULL, ";
 
 			$querystatement.=$therecord["private"].", ";
 			$querystatement.=$therecord["modifiedby"].", ";
-			$querystatement.="\"".$therecord["location"]."\", ";
-			$querystatement.="\"".$therecord["importance"]."\", ";
+			$querystatement.="'".$therecord["location"]."', ";
+			$querystatement.="'".$therecord["importance"]."', ";
 			if($therecord["endtime"])
-				$querystatement.="\"".$therecord["endtime"]."\", ";
+				$querystatement.="'".$therecord["endtime"]."', ";
 			else
 				$querystatement.="NULL, ";
-			$querystatement.="\"".$therecord["creationdate"]."\", ";
+			$querystatement.="'".$therecord["creationdate"]."', ";
 			$querystatement.=$therecord["createdby"].", ";
-			$querystatement.="\"".$therecord["category"]."\", ";
-			$querystatement.=((int) $therecord["attachedtabledefid"]).", ";
-			$querystatement.=((int) $therecord["attachedid"]).", ";
-			$querystatement.=((int) $therecord["assignedtoid"]).", ";
+			$querystatement.="'".$therecord["category"]."', ";
+			$querystatement.="'".$therecord["attachedtabledefid"]."', ";
+			$querystatement.="'".$therecord["attachedid"]."', ";
+			$querystatement.="'".$therecord["assignedtoid"]."', ";
 			if($therecord["assignedtodate"])
-				$querystatement.="\"".$therecord["assignedtodate"]."\", ";
+				$querystatement.="'".$therecord["assignedtodate"]."', ";
 			else
 				$querystatement.="NULL, ";
 			if($therecord["assignedtotime"])
-				$querystatement.="\"".$therecord["assignedtotime"]."\", ";
+				$querystatement.="'".$therecord["assignedtotime"]."', ";
 			else
 				$querystatement.="NULL, ";
-			$querystatement.=$therecord["assignedbyid"].") ";
+			$querystatement.="'".$therecord["assignedbyid"]."') ";
 
 			$queryresult=$this->db->query($querystatement);
 
@@ -470,9 +601,10 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["attachedtabledefid"]=(isset($_GET["tabledefid"]))?$_GET["tabledefid"]:NULL;
 			$therecord["attachedid"]=(isset($_GET["refid"]))?$_GET["refid"]:NULL;
-			//form quickview
+
+			//from quickview
 			if(isset($_GET["cid"])){
-				$therecord["attachedtabledefid"]=2;
+				$therecord["attachedtabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 				$therecord["attachedid"]=$_GET["cid"];
 			}
 
@@ -749,9 +881,9 @@ if(class_exists("phpbmsTable")){
 
 				if($variables["assignedtoid"] != $variables["assignedtochange"]){
 					if($variables["assignedtoid"] != "")
-						$variables["assignedbyid"] = $userid;
+						$variables["assignedbyid"] = getUuid($this->db, "tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb", $userid);
 					else
-						$variables["assignedbyid"] = 0;
+						$variables["assignedbyid"] = '';
 				}//endif
 
 			return $variables;

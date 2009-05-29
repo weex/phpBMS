@@ -71,8 +71,6 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		$phpbms->bottomJS[] = 'var thefirstname=getObjectFromID("firstname");thefirstname.focus();';
-
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
 
@@ -162,7 +160,7 @@
 		$action .= "&amp;invoiceid=".$_GET["invoiceid"];
 ?>
 <form action="<?php echo $action; ?>" method="post" name="record" onsubmit="return validateForm(this);"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
-<?php $phpbms->showTabs("clients entry",6,$therecord["id"]); ?>
+<?php $phpbms->showTabs("clients entry", "tab:becfca94-ae25-a42c-7909-247d5324e4b5", $therecord["id"]); ?>
 <div class="bodyline">
 	<div id="topButtons">
 		<?php showSaveCancel(1); ?>

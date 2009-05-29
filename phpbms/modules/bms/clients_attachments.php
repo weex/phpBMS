@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,38 +37,39 @@
  +-------------------------------------------------------------------------+
 */
 
-	include("../../include/session.php");
-	
+    include("../../include/session.php");
 
-	require_once("../../include/search_class.php");
-		
+    require_once("../../include/search_class.php");
 
-	//set the table passing stuff
-	$tabledefid=2;
-	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
-	$refid=(integer) $_GET["id"];
+    //set the table passing stuff
+    $tabledefid = 2;
 
-	$securitywhere="";
-	if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
-		$securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+    if(isset($_GET["refid"]))
+        $_GET["id"]=$_GET["refid"];
 
-	$whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
-	$backurl="../bms/clients_attachments.php";
-	$base="../../";
+    $refid = (integer) $_GET["id"];
 
-	$refquery="select firstname,lastname,company from clients where id=".$refid;
-	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);
+    $securitywhere="";
+    if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
+        $securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
 
-	$pageTitle="Attachments: ";
-	if($refrecord["company"]=="")
-		$pageTitle.=$refrecord["firstname"]." ".$refrecord["lastname"];
-	else
-		$pageTitle.=$refrecord["company"];
+    $whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
+    $backurl="../bms/clients_attachments.php";
+    $base="../../";
 
-	$tabgroup="clients entry";
-	$selectedtabid=8;
-	
-	include("../base/attachments_records.php");
-	
+    $refquery = "select firstname,lastname,company from clients where id=".$refid;
+    $refquery = $db->query($refquery);
+    $refrecord = $db->fetchArray($refquery);
+
+    $pageTitle="Attachments: ";
+    if($refrecord["company"]=="")
+        $pageTitle.=$refrecord["firstname"]." ".$refrecord["lastname"];
+    else
+        $pageTitle.=$refrecord["company"];
+
+    $tabgroup = "clients entry";
+    $selectedtabid = "tab:19e34181-65f0-bfcf-6e09-99d0575ebd74";
+
+    include("../base/attachments_records.php");
+
 ?>

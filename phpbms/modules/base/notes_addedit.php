@@ -256,13 +256,14 @@
 				<input type="hidden" id="assignedtochange" name="assignedtochange" value="<?php echo $therecord["assignedtoid"] ?>" />
 			</div>
 
-			<?php if($therecord["assignedbyid"]!=0){ ?>
+			<?php if($therecord["assignedbyid"]){ ?>
 			<p>
 				<label for="assignedbyid">assigned by</label><br />
-				<input id="assignedbydisplay" value="<?php echo $phpbms->getUserName($therecord["assignedbyid"])?>" readonly="readonly" class="uneditable" />
+				<input id="assignedbydisplay" value="<?php echo $phpbms->getUserName($therecord["assignedbyid"], true)?>" readonly="readonly" class="uneditable" />
 				<input type="hidden" name="assignedbyid" id="assignedbyid" value="<?php echo $therecord["assignedbyid"]?>" />
 			</p>
-			<?php if($therecord["assignedbyid"] == $_SESSION["userinfo"]["id"]){?>
+			<?php
+			if($therecord["assignedbyid"] == $_SESSION["userinfo"]["uuid"]){?>
 			<p>
 				<button type="button" id="sendemailnotice" class="Buttons" onclick="sendEmailNotice()">send e-mail notice</button>
 			</p>

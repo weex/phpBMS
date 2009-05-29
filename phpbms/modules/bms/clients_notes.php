@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,10 +38,10 @@
 */
 
 	include("../../include/session.php");
-	
+
 
 	require_once("../../include/search_class.php");
-		
+
 
 	//set the table passing stuff
 	$reftableid=2;
@@ -63,11 +63,11 @@
 		$pageTitle.=$refrecord["company"];
 
 	$tabgroup="clients entry";
-	$selectedtabid=9;
-	
+	$selectedtabid="tab:d8e888af-d147-98ae-6849-a159a7c9daae";
+
 	include("../base/notes_records.php");
 	//===================================================================================
 	//==  THAT's IT                                                                    ==
 	//===================================================================================
-	
+
 ?>

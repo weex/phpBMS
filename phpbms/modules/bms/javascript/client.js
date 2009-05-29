@@ -64,29 +64,29 @@ function generateUserAndPass(){
 	var theusername;
 	var thepassword="";
 	var numI;
-	
+
 	if(company.value)
 		theusername=company.value.toLowerCase().replace(/ /g,"").substr(0,32);
 	else{
 		theusername=firstname.value.toLowerCase().replace(/ /,"").substr(0,1)+lastname.value.toLowerCase().replace(/ /,"");
 	}
 	username.value=theusername;
-	
+
 	for(i=0;i<=8;i++){
 		numI = getRandomNum();
-		while (checkPunc(numI)) 
+		while (checkPunc(numI))
 			numI = getRandomNum();
 		thepassword +=String.fromCharCode(numI).toLowerCase();
 	}
 	password.value=thepassword
-	
+
 }
 
 function changeClientType(theselect){
 	var becameclient=getObjectFromID("becameclient");
 	var becameclientDiv=getObjectFromID("becameclientDiv");
 	var thetitle=getObjectFromID("h1Title");
-	
+
 	if(theselect.value=="prospect"){
 		becameclientDiv.style.display="none";
 		becameclient.value="";
@@ -100,7 +100,7 @@ function changeClientType(theselect){
 }
 
 client = {
-	
+
 	mapIt: function(){
 
 		var q = "";
@@ -129,15 +129,15 @@ client = {
 			q += encodeURI(" " + tempInput.value);
 
 		if(q) {
-			
-			var theurl = "http://maps.google.com/maps?f=q&hl=en&geocode=&ie=UTF8&z=16&iwloc=addr&q=" + q;		
+
+			var theurl = "http://maps.google.com/maps?f=q&hl=en&geocode=&ie=UTF8&z=16&iwloc=addr&q=" + q;
 			window.open(theurl);
-		
+
 		} else
 			alert("No valid address given");
-			
+
 	}//end method
-	
+
 }//endstruct
 
 /* OnLoad Listner ---------------------------------------- */
@@ -146,5 +146,8 @@ connect(window,"onload",function() {
 
 	var mapIt = getObjectFromID("buttonMap");
 	connect(mapIt, "onclick", client.mapIt);
+
+        var company = getObjectFromID("company");
+        company.focus();
 
 })

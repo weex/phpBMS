@@ -87,7 +87,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("clients entry",300,$_GET["id"]);?><div class="bodyline">
+	$phpbms->showTabs("clients entry", "tab:5a6ef814-2689-4e3b-2609-db43fb3cc001", ((int) $_GET["id"]));?><div class="bodyline">
 	<form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>"
 	method="post" name="record" id="record">
 		<div id="topButtons">

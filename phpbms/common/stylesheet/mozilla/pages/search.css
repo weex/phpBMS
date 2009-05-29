@@ -19,7 +19,7 @@
 #commandSet{height:32px;}
 
 #recordCommands{
-	background:url("../image/search-toolbar-back.png") repeat-x; 
+	background:url("../image/search-toolbar-back.png") repeat-x;
 	height:32px;
 	float:left;
 	margin:0;padding:0;
@@ -43,6 +43,7 @@
 .needselectDisabled{
 	color:grey;
 }
+
 .sqlUp{background-image: url("../image/search-toolbar-sql.png")}
 .sqlDn{background-image: url("../image/search-toolbar-sql-dn.png")}
 
@@ -60,7 +61,7 @@
 		padding:0;
 		height:auto
 	}
-	
+
 	#recordCommands .toolbarDropDowns li{
 		padding:0;
 		margin:0;
@@ -78,22 +79,27 @@
 		border:0;
 		background-image:none;
 		margin:0px;
-		display:block; 
+		display:block;
 		padding:3px 25px 3px 10px;
 		font-size:11px;
 		white-space:nowrap;
 		font-weight:normal;
 	}
-	
+
 	#recordCommands .toolbarDropDowns .menuSep {
 		border-top:1px solid #CCCCCC; padding-top:3px;margin-top:3px;
 	}
-	
+
 	#recordCommands .toolbarDropDowns a:hover{
-		text-decoration:none; 
+		text-decoration:none;
 		background-color:#663366;
 		color:white;
 	}
+
+        #recordCommands .toolbarDropDowns a.needselectDisabled:hover{
+            background-color:grey;
+            cursor: default;
+        }
 
 	#sortSavedDeleteButton,#sortSavedLoadButton,#sortSavedCancelButton{
 		width:75px;

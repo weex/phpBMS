@@ -41,7 +41,9 @@
 
 	include("../../include/fields.php");
 
-	if(!isset($_GET["id"])) $error = new appError(300,"Passed variable not set (id)");
+	if(!isset($_GET["id"]))
+            $error = new appError(300,"Passed variable not set (id)");
+
 	$clientquerystatement="SELECT firstname,lastname,company FROM clients WHERE id=".$_GET["id"];
 	$clientqueryresult=$db->query($clientquerystatement);
 
@@ -122,7 +124,7 @@
 
 	include("header.php");
 
-	$phpbms->showTabs("clients entry",7,$_GET["id"]);?><div class="bodyline">
+	$phpbms->showTabs("clients entry", "tab:ef895fc0-bbea-9bf5-47ac-4913c6dace13", ((int) $_GET["id"]));?><div class="bodyline">
 
 	<h1><?php echo $pageTitle ?></h1>
 

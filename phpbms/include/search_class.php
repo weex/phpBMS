@@ -62,6 +62,7 @@
 			$querystatement="
 				SELECT
 					tabledefs.id,
+					tabledefs.uuid,
 					maintable,
 					querytable,
 					tabledefs.displayname,
@@ -82,7 +83,7 @@
 				FROM
 					tabledefs inner join modules on tabledefs.moduleid=modules.id
 				WHERE
-					tabledefs.id=".$id;
+					tabledefs.id=".$id."";
 
 			$queryresult=$this->db->query($querystatement);
 
@@ -228,19 +229,16 @@
 		}
 
 		function initialize($id){
+
 			$this->thetabledef=$this->getTableDef($id);
-			$this->ref=$this->thetabledef["id"];
 
-/*			if ($this->thetabledef["type"]!="view")
-				$this->ref=$this->thetabledef["maintable"];
-			else
-				$this->ref=$this->thetabledef["maintable"].$this->thetabledef["id"];
-*/
+			$this->ref = $this->thetabledef["id"];
+
 			//next we set the columns
-			$this->thecolumns=$this->getTableColumns($id);
-			$this->thegroupings = $this->getTableGroupings($id);
+			$this->thecolumns=$this->getTableColumns($this->ref);
+			$this->thegroupings = $this->getTableGroupings($this->ref);
 
-		}
+		}//end function initialize
 
 
 		function issueQuery(){
@@ -464,6 +462,7 @@
 
 		}//end getTableOptions
 
+
 		function getTableQuickSearchOptions($id){
 			$findoptions=Array();
 			$querystatement="SELECT name,search,roleid
@@ -477,6 +476,7 @@
 
 			return $findoptions;
 		}
+
 
 		function getTableSearchableFields($id){
 

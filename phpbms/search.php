@@ -38,39 +38,39 @@
 */
 	require_once("include/session.php");
 	require_once("include/search_class.php");
-	
+
 	if(!isset($_GET["id"])) $error = new appError(100,"Passed Parameter not present.");
 	$_GET["id"]= (integer) $_GET["id"];
-	
-	$displayTable= new displaySearchTable($db);	
+
+	$displayTable= new displaySearchTable($db);
 
 	//initialize the object
-	$displayTable->initialize($_GET["id"]);	
+	$displayTable->initialize($_GET["id"]);
 
 	session_register("passedjoinclause");
 	session_register("passedjoinwhere");
-	
 
-	//process commands... 
+
+	//process commands...
 	if(!isset($_POST["othercommands"])) $_POST["othercommands"]="";
 	if(!isset($_POST["relationship"])) $_POST["relationship"]="";
 	if(!isset($_POST["advancedsearch"])) $_POST["advancedsearch"]="";
 	if(!isset($_POST["advancedsort"])) $_POST["advancedsort"]="";
-			
-	if(isset($_POST["doprint"])) 
+
+	if(isset($_POST["doprint"]))
 		if($_POST["doprint"] == "print")
 			$_POST["command"]="print";
-		
+
 	if(isset($_POST["deleteCommand"]))
 		if($_POST["deleteCommand"]) $_POST["command"]=$_POST["deleteCommand"];
 	if($_POST["othercommands"]) $_POST["command"]="other";
 	if($_POST["relationship"]) $_POST["command"]="relate records";
 	if($_POST["advancedsearch"]) $_POST["command"]="advanced search";
 	if($_POST["advancedsort"]) $_POST["command"]="advanced sort";
-	
+
 
 	if(isset($_POST["command"])){
-		
+
 		switch($_POST["command"]){
 			//command switches go here
 		case "print":
@@ -89,26 +89,26 @@
 		break;
 		case "delete":
 			//=====================================================================================================
-			
+
 			$_POST["othercommands"] = -1;
-			
+
 		case "other":
-			$displayTable->recordoffset=0;		
-			// process table specific commands (passed by settings)		
+			$displayTable->recordoffset=0;
+			// process table specific commands (passed by settings)
 			//=====================================================================================================
 			$theids=explode(",",$_POST["theids"]);
-			
+
 			//try to include table specific functions
 			if(file_exists("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php"))
 				include("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php");
-			
+
 			//next, see if the searchclass exists
 			if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
 				$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
 				$searchFunctions = new $classname($db,$displayTable->thetabledef["id"],$theids);
 			} else
 				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["id"],$theids);
-										
+
 			//grab the method name
 			if(((int) $_POST["othercommands"]) === -1)
 				$functionname = "delete_record";
@@ -118,37 +118,37 @@
 				$therecord = $db->fetchArray($queryresult);
 				$functionname = $therecord["name"];
 			}
-			
+
 			if(method_exists($searchFunctions,$functionname))
 				$statusmessage = $searchFunctions->$functionname();
 			else
 				$statusmessage = "Function ".$functionname." not defined";
-			
+
 		break;
 		case "search":
-			$displayTable->recordoffset=0;		
-			$displayTable->buildSearch($_POST);		
-		break;		
-		case "reset":		
-			$displayTable->recordoffset=0;		
+			$displayTable->recordoffset=0;
+			$displayTable->buildSearch($_POST);
+		break;
+		case "reset":
+			$displayTable->recordoffset=0;
 			$displayTable->resetQuery();
 		break;
 		case "omit":
 			// omit selected from current query
 			//=====================================================================================================
-			$displayTable->recordoffset=0;		
+			$displayTable->recordoffset=0;
 			$tempwhere="";
 			$theids=explode(",",$_POST["theids"]);
 			foreach($theids as $theid){
 				$tempwhere.=" or ".$displayTable->thetabledef["maintable"].".id=".$theid;
 			}
 			$tempwhere=substr($tempwhere,3);
-			$displayTable->querywhereclause="(".$displayTable->querywhereclause.") and not (".$tempwhere.")";			
+			$displayTable->querywhereclause="(".$displayTable->querywhereclause.") and not (".$tempwhere.")";
 		break;
 		case "keep":
 			// keep only those ids
 			//=====================================================================================================
-			$displayTable->recordoffset=0;		
+			$displayTable->recordoffset=0;
 			$tempwhere="";
 			$theids=explode(",",$_POST["theids"]);
 			foreach($theids as $theid){
@@ -158,8 +158,8 @@
 			$displayTable->querywhereclause=$tempwhere;
 		break;
 		case "advanced search":
-			$displayTable->recordoffset=0;		
-			$displayTable->querywhereclause=stripslashes($_POST["advancedsearch"]);			
+			$displayTable->recordoffset=0;
+			$displayTable->querywhereclause=stripslashes($_POST["advancedsearch"]);
 			$displayTable->querytype="advanced search";
 		break;
 		case "advanced sort":
@@ -170,44 +170,44 @@
 		case "relate records":
 			include("include/relationships.php");
 			$theids=explode(",",$_POST["theids"]);
-			$goto=perform_relationship($_POST["relationship"],$theids);			
+			$goto=perform_relationship($_POST["relationship"],$theids);
 			$_SESSION["temp_relateto"]=$displayTable->thetabledef["maintable"];
 			$displayTable->querytype="relate";
 
 			goURL($goto);
-		break;		
-			
+		break;
+
 		}//end switch
 	}//end if
-	
+
 	//on the fly sorting... this needs to be done after command processing or the querystatement will not work.
 	if(!isset($_POST["newsort"])) $_POST["newsort"]="";
 	if(!isset($_POST["desc"])) $_POST["desc"]="";
-	
+
 	if($_POST["newsort"]!="") {
 		//$displayTable->setSort($_POST["newsort"]);
-		$displayTable->recordoffset=0;		
-		$displayTable->showGroupings = false;		
+		$displayTable->recordoffset=0;
+		$displayTable->showGroupings = false;
 		foreach ($displayTable->thecolumns as $therow){
 			if ($_POST["newsort"]==$therow["name"]) $therow["sortorder"]? $displayTable->querysortorder=$therow["sortorder"] : $displayTable->querysortorder=$therow["column"];
 		}
-		$_POST["startnum"]=1;		
+		$_POST["startnum"]=1;
 	} elseif($_POST["desc"]!="") {
-	
-		$displayTable->showGroupings = false;		
+
+		$displayTable->showGroupings = false;
 		$displayTable->querysortorder.=" DESC";
-		$displayTable->recordoffset=0;		
-		
+		$displayTable->recordoffset=0;
+
 	}
-	
+
 if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and $displayTable->querytype!="new" and $displayTable->querytype!="edit") {
-	
+
 	//Check for passed join clause from relationships
 	//==============================================================
 	if(isset($_SESSION["passedjoinclause"])) {
 		$displayTable->recordoffset=0;
 		$displayTable->queryjoinclause=$_SESSION["passedjoinclause"];
-		session_unregister("passedjoinclause");			
+		session_unregister("passedjoinclause");
 	}
 
 	//Check for passed whereclause
@@ -217,36 +217,36 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 		//gettin kinda ugly here... maybe there's a better solution somewhere?
 		$displayTable->querywhereclause=$_SESSION["passedjoinwhere"];
 		session_unregister("passedjoinwhere");
-	
+
 		//keeping settings
-		$displayTable->querytype="related records from ".$_SESSION["temp_relateto"];	
+		$displayTable->querytype="related records from ".$_SESSION["temp_relateto"];
 		session_unregister("temp_relateto");
 	}
-	
+
 	//record offset?
 	if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
-		
+
 	$displayTable->issueQuery();
-	
+
 	$pageTitle = $displayTable->thetabledef["displayname"];
-	
+
 	$phpbms->cssIncludes[] = "pages/search.css";
-	
+
 	$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
-	
+
 	include("header.php");
-	
+
 	?><div class="bodyline">
 	<h1 id="srchScreen<?php echo $displayTable->thetabledef["id"] ?>"><?php echo $displayTable->thetabledef["displayname"] ?></h1>
-	<?php  
+	<?php
 			//Search//select
 				$displayTable->displaySearch();
 				$displayTable->displayQueryButtons();
-				
+
 				$displayTable->displayResultTable();
-				
+
 				$displayTable->displayRelationships();
-				
+
 				$displayTable->saveQueryParameters();
 		?>
 	</div>

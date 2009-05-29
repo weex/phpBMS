@@ -120,38 +120,74 @@ class phpbms{
 			}//end case
 	}//end method
 
+        /**
+          * Generates and displays tabs based on a tab group name
+          *
+          * @param string $groupname The name of the tab grup to display
+          * @param string $currenttabid The UUID of the currentl selected tab
+          * @param string $recordid id of the current record
+          */
+	function showTabs($tabgroup, $currenttabid, $recordid = 0){
 
-	function showTabs($tabgroup,$currenttabid,$recordid=0){
+		$querystatement = "
+                        SELECT
+                                `uuid`,
+                                `name`,
+                                `location`,
+                                `enableonnew`,
+                                `notificationsql`,
+                                `tooltip`,
+                                `roleid`
+                        FROM
+                                `tabs`
+                        WHERE
+                                `tabgroup` ='".$tabgroup."'
+                        ORDER BY
+                                `displayorder`";
 
-		$querystatement="SELECT id,name,location,enableonnew,notificationsql,tooltip,roleid FROM tabs WHERE tabgroup=\"".$tabgroup."\" ORDER BY displayorder";
-		$queryresult=$this->db->query($querystatement);
+		$queryresult = $this->db->query($querystatement);
 
 		?><ul class="tabs"><?php
-			while($therecord=$this->db->fetchArray($queryresult)){
+
+                        while($therecord=$this->db->fetchArray($queryresult)){
 
 				if(hasRights($therecord["roleid"])){
 
-					?><li <?php if($therecord["id"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
-						if($therecord["id"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
+					?><li <?php if($therecord["uuid"]==$currenttabid) echo "class=\"tabsSel\"" ?>><?php
+
+                                		if($therecord["uuid"]==$currenttabid || ($recordid==0 && $therecord["enableonnew"]==0)){
+
 							$opener="<div>";
 							$closer="</div>";
-						} else{
-							$opener="<a href=\"".APP_PATH.$therecord["location"]."?id=".$recordid."\">";
+
+                                                } else {
+
+							$opener="<a href=\"".APP_PATH.$therecord["location"]."?id=".urlencode($recordid)."\">";
 							$closer="</a>";
-						}
+
+                                                }//endif
+
 						if($therecord["notificationsql"]!=""){
+
 							$therecord["notificationsql"]=str_replace("{{id}}",((int) $recordid),$therecord["notificationsql"]);
-							$notificationresult=$this->db->query($therecord["notificationsql"]);
+
+                                                        $notificationresult=$this->db->query($therecord["notificationsql"]);
 
 							if($this->db->numRows($notificationresult)!=0){
+
 								$notificationrecord=$this->db->fetchArray($notificationresult);
-								if(isset($notificationrecord["theresult"]))
+
+                                                                if(isset($notificationrecord["theresult"]))
 									if($notificationrecord["theresult"]>0){
-										$opener.="<span>";
+
+                                                                                $opener.="<span>";
 										$closer="</span>".$closer;
-									}
-							}
-						}
+
+									}//endif
+
+							}//endif
+
+						}//endif
 
 						echo $opener.$therecord["name"].$closer;
 
@@ -163,13 +199,33 @@ class phpbms{
 	}//end method
 
 
-	function getUserName($id=0){
+	function getUserName($id = null, $uuid = false){
 
-		$querystatement="select concat(firstname,\" \",lastname) as name from users where id=".((int) $id);
+                if($uuid){
+
+                        $getfield = "uuid";
+                        $id = "'".mysql_real_escape_string($id)."'";
+
+                } else {
+
+                        $getfield = "id";
+                        $id = (int) $id;
+                }//endif
+
+		$querystatement="
+                        SELECT
+                                `firstname`,
+                                `lastname`
+                        FROM
+                                `users`
+                        WHERE
+                                `".$getfield."` = ".$id;
+
 		$queryresult = $this->db->query($querystatement);
 
 		$tempinfo = $this->db->fetchArray($queryresult);
-		return trim($tempinfo["name"]);
+
+		return trim($tempinfo["firstname"]." ".$tempinfo["lastname"]);
 
 	}// end method
 
@@ -200,6 +256,64 @@ function uuid($prefix = ''){
 }//end function uuid
 
 
+/**
+  * retrieves a uuid given an id and a table definition's uuid
+  *
+  * @param object $db the database object
+  * @param string $tabledefuuid the table definition's uuid
+  * @param int $id the records id
+  */
+function getUuid($db, $tabledefuuid, $id){
+
+        $querystatement = "
+                SELECT
+                        `maintable`
+                FROM
+                        `tabledefs`
+                WHERE
+                        `uuid` = '".$tabledefuuid."'";
+
+        $queryresult = $db->query($querystatement);
+
+        $tablerecord = $db->fetchArray($queryresult);
+
+        $querystatement = "
+                SELECT
+                        `uuid`
+                FROM
+                        `".$tablerecord["maintable"]."`
+                WHERE
+                        `id` = ".$id;
+
+        $queryresult = $db->query($querystatement);
+
+        if($db->numRows($queryresult))
+                $therecord = $db->fetchArray($queryresult);
+        else
+                $therecord["uuid"] = "";
+
+        return $therecord["uuid"];
+
+}//end function getUuid
+
+
+function getUuidPrefix($db, $tabledefuuid){
+
+        $querystatement = "
+                SELECT
+                        `prefix`
+                FROM
+                        `tabledefs`
+                WHERE
+                        `uuid` = '".$tabledefuuid."'";
+
+        $queryresult = $db->query($querystatement);
+
+        $therecord = $db->fetchArray($queryresult);
+
+        return $therecord["prefix"];
+
+}//end function getUuidPrefix
 
 function xmlEncode($str){
 	$str=str_replace("&","&amp;",$str);

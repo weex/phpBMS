@@ -52,6 +52,7 @@ class login{
 		$querystatement = "
 			SELECT
 				id,
+				uuid,
 				firstname,
 				lastname,
 				email,

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,31 +38,63 @@
 */
 
 	require_once("../../include/session.php");
-	
 
-	function sendNoticeEmail($db,$noteid) {
-		
-		$querystatement="SELECT subject,assignedtoid,assignedbyid,content,type,
-						assignedtodate, assignedtotime,
-						startdate, starttime,
-						enddate, endtime
-						FROM notes WHERE id=".((int) $noteid);
-		$queryresult=$db->query($querystatement);
-		$therecord=$db->fetchArray($queryresult);
-		
-		$querystatement="SELECT firstname,lastname,email FROM users WHERE id=".$therecord["assignedtoid"];
+
+	function sendNoticeEmail($db, $noteid) {
+
+		$querystatement="
+                    SELECT
+                        subject,
+                        assignedtoid,
+                        assignedbyid,
+                        content,
+                        type,
+			assignedtodate,
+                        assignedtotime,
+			startdate,
+                        starttime,
+			enddate,
+                        endtime
+		    FROM
+                        notes
+                    WHERE
+                        id=".((int) $noteid);
+
+		$queryresult = $db->query($querystatement);
+		$therecord = $db->fetchArray($queryresult);
+
+		$querystatement = "
+                    SELECT
+                        firstname,
+                        lastname,
+                        email
+                    FROM
+                        users
+                    WHERE
+                        uuid='".$therecord["assignedtoid"]."'";
+
 		$queryresult=$db->query($querystatement);
 		$torecord=$db->fetchArray($queryresult);
+
 		if($torecord["email"]=="")
 			return "Assignee has no e-mail address set.";
-		
-		$querystatement="SELECT firstname,lastname,email FROM users WHERE id=".$therecord["assignedbyid"];
+
+		$querystatement = "
+                    SELECT
+                        firstname,
+                        lastname,
+                        email
+                    FROM
+                        users
+                    WHERE uuid = '".$therecord["assignedbyid"]."'";
+
 		$queryresult=$db->query($querystatement);
 		$fromrecord=$db->fetchArray($queryresult);
 		if($fromrecord["email"]=="")
 			return "You have no e-mail address set.";
+
 		$from="".trim($fromrecord["firstname"]." ".$fromrecord["lastname"])." <".$fromrecord["email"].">";
-		
+
 		$subject=APPLICATION_NAME." Assignment: ".$therecord["subject"];
 		switch($therecord["type"]){
 			case "NT":
@@ -115,14 +147,15 @@
 			if($therecord["endtime"])
 				$themessage.=" ".$therecord["endtime"];
 			$themessage.="\n\n";
-		}		
+		}
 		$themessage.="Memo:\n".$therecord["content"];
-		
+
 		if(! @ mail($torecord["email"],$subject,$themessage,"From: ".$from))
 			return "Error Processing E-Mail.";
-		
+
 		return "E-Mail Sent.";
-	}
+
+	}//end function
 
 	//=================================================================================================
 	if(isset($_GET["cm"])){

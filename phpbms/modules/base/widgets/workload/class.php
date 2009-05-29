@@ -46,6 +46,8 @@
 
         var $phpbms;
         var $userid;
+	var $useruuid;
+
 
         function displayMiddle(){
 
@@ -53,6 +55,7 @@
 
 	    $this->phpbms = $phpbms;
 	    $this->userid = $_SESSION["userinfo"]["id"];
+	    $this->useruuid = $_SESSION["userinfo"]["uuid"];
 
             $this->showTasks("GivenAssignments");
 
@@ -88,10 +91,10 @@
 
 				$querystatement.="
 					((
-						assignedtoid = ".$this->userid."
+						assignedtoid = '".$this->useruuid."'
 						OR 	(
 							type = 'TS'
-							AND (assignedtoid = 0 OR assignedtoid IS NULL)
+							AND (assignedtoid = '' OR assignedtoid IS NULL)
 							AND createdby = ".$this->userid."
 							)
 					)
@@ -111,7 +114,7 @@
 			case "GivenAssignments":
 
 				$querystatement.="
-					(assignedbyid = ".$this->userid."
+					(assignedbyid = '".$this->useruuid."'
 					AND (completed = 0
 						OR (completed = 1 AND completeddate >= CURDATE())
 					))";
@@ -196,11 +199,11 @@
 
 						case "ReceivedAssignments":
 							if($therecord["assignedbyid"])
-								$bottomInfo = "Assigned By: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedbyid"]));
+								$bottomInfo = "Assigned By: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedbyid"], true));
 							break;
 
 						case "GivenAssignments":
-							$bottomInfo = "Assigned To: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedtoid"]));
+							$bottomInfo = "Assigned To: ".htmlQuotes($this->phpbms->getUserName($therecord["assignedtoid"], true));
 							break;
 
 					}//endswitch

@@ -285,3 +285,10 @@ UPDATE `tabledefs` SET `prefix` = 'inst' WHERE id = 302;
 UPDATE `tabledefs` SET `prefix` = 'dsct' WHERE id = 25;
 UPDATE `tabledefs` SET `prefix` = 'arit' WHERE id = 303;
 UPDATE `tabledefs` SET `prefix` = 'addr' WHERE id = 306;
+-- Notes UUID switchover --
+ALTER TABLE `notes`
+MODIFY `assignedtoid` varchar(64),
+MODIFY `attachedid` varchar(64),
+MODIFY `attachedtabledefid` varchar(64),
+MODIFY `parentid` varchar(64),
+MODIFY `assignedbyid` varchar(64);
