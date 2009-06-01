@@ -894,33 +894,45 @@ class inputTimePicker extends inputField{
 //============================================================================================
 class inputRolesList extends inputField{
 
-	function inputRolesList($db,$id,$selected,$displayName = NULL, $required = false, $displayLabel = true){
+    function inputRolesList($db,$id,$selected,$displayName = NULL, $required = false, $displayLabel = true){
 
-		parent::inputField($id, $selected, $displayName, $required, NULL, NULL, NULL, $displayLabel);
+        parent::inputField($id, $selected, $displayName, $required, NULL, NULL, NULL, $displayLabel);
 
-		$this->db = $db;
+        $this->db = $db;
 
-		$querystatement = "SELECT name, id FROM roles WHERE inactive = 0";
-		$this->queryresult = $this->db->query($querystatement);
+        $querystatement = "
+            SELECT
+                name,
+                uuid
+            FROM
+                roles
+            WHERE
+                inactive = 0";
 
-	}
+        $this->queryresult = $this->db->query($querystatement);
+
+    }//end function init
 
 
-	function display(){
-		if($this->displayLabel)
-			$this->showLabel();
+    function display(){
 
-			?><select id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php $this->displayAttributes();?>>
-			<option value="0" <?php if($this->value==0) echo "selected=\"selected\""?>>EVERYONE</option>
-			<?php while($therecord = $this->db->fetchArray($this->queryresult)){ ?>
-			<option value="<?php echo $therecord["id"]?>" <?php if($this->value==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option>
-			<?php }?>
-			<option value="-100" <?php if($this->value == -100) echo "selected=\"selected\""?>>Administrators</option>
-			</select><?php
+            if($this->displayLabel)
+                $this->showLabel();
 
-	}
+            ?>
+            <select id="<?php echo $this->id?>" name="<?php echo $this->name?>" <?php $this->displayAttributes();?>>
+                <option value="" <?php if($this->value == "") echo 'selected="selected"' ?>>EVERYONE</option>
+                <?php
+                    while($therecord = $this->db->fetchArray($this->queryresult)){ ?>
+                    <option value="<?php echo $therecord["uuid"]?>" <?php if($this->value == $therecord["uuid"]) echo 'selected="selected"'?>><?php echo formatVariable($therecord["name"])?></option>
+                <?php }//endwhile ?>
+                <option value="Admin" <?php if($this->value == "Admin") echo 'selected="selected"'?>>Administrators</option>
+            </select>
+            <?php
 
-}//end class
+    }//end function display
+
+}//end class inputRolesList
 
 
 class inputSmartSearch extends inputField{

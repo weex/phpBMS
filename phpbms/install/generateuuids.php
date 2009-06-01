@@ -46,6 +46,10 @@ require("../include/common_functions.php");
 
 class generateUUIDS extends installUpdateBase{
 
+    var $userList;
+    var $roleList;
+    var $tabledefList;
+
 
     function process(){
 
@@ -70,11 +74,91 @@ class generateUUIDS extends installUpdateBase{
             return $this->returnJSON(false, "Could not open database schema '".MYSQL_DATABASE."'");
 
 
-        
+        $this->roleList = $this->generateUUIDList("roles");
+        $this->roleList[-100] = "Admin";
+        $this->roleList[0] = "";
+
+        $this->userList = $this->generateUUIDList("users");
+        $this->userList[0] ="";
+
+        $this->tabledefList = $this->generateUUIDList("tabledefs");
+
+        //function calls for all we have to do go here
+        //======================================================================
+        //$this->updateFields("rolestousers", array("userid"=>$this->userList, "roleid"=>$this->roleList));
+        //$this->updateFields("tablecolumns", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
+        //$this->updateFields("tablefindoptions", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
+        $this->updateFields("tablegroupings", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
+
 
         return $this->returnJSON(true, "UUID's Generated");
 
     }//endfunction process
+
+
+    function generateUUIDList($table, $whereclause = ""){
+
+        $querystatement = "
+            SELECT
+                `id`,
+                `uuid`
+            FROM
+                `".$table."`";
+
+        if($whereclause)
+            $querystatement .= "
+                WHERE ".$whereclause;
+
+        $queryresult = $this->db->query($querystatement);
+
+        $list = array();
+        while($therecord = $this->db->fetchArray($queryresult))
+            $list[$therecord["id"]] = $therecord["uuid"];
+
+        return $list;
+
+    }//end function generateUUDIList
+
+
+    function updateFields($table, $fields){
+
+        $fieldClause ="`id` ";
+
+        foreach($fields as $key=>$value)
+            $fieldClause .= ", `".$key."`";
+
+        $querystatement = "
+            SELECT
+                ".$fieldClause."
+            FROM
+                `".$table."`";
+
+        $queryresult = $this->db->query($querystatement);
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $updateClause = "";
+
+            foreach($fields as $key=>$value)
+                $updateClause .= ", `$key` = '".$value[$therecord[$key]]."'";
+
+            $updateClause = substr($updateClause, 1);
+
+            $updatestatement = "
+                UPDATE
+                    `".$table."`
+                SET
+                    $updateClause
+                WHERE
+                    `id` = ".$therecord["id"]."
+            ";
+
+//echo $updatestatement."<br />";
+            $this->db->query($updatestatement);
+
+        }//endwhile
+
+    }//end function updateField
 
 
 }//end class updateAjax

@@ -59,6 +59,7 @@
 
 		//given a table id, go grab the table definition information for that table
 		function getTableDef($id){
+
 			$querystatement="
 				SELECT
 					tabledefs.id,
@@ -98,38 +99,79 @@
 		}//end function getTableDef
 
 
-		//given a table id, go grab the grouping information
+		/**
+		 * retrieves groupings for a tabledefs
+		 *
+		 * @param string $id tabledef uuid
+		 */
 		function getTableGroupings($id){
 
 			$groupings = array();
-			$querystatement = "SELECT field,name as displayname, ascending, roleid
-								FROM tablegroupings WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=$this->db->query($querystatement);
+
+			$querystatement = "
+				SELECT
+					`field`,
+					`name` AS displayname,
+					`ascending`,
+					`roleid`
+				FROM
+					tablegroupings
+				WHERE
+					tabledefid = '".$id."'
+				ORDER BY
+					displayorder";
+
+			$queryresult = $this->db->query($querystatement);
 
 			while($therecord = $this->db->fetchArray($queryresult)) {
+
 				if(hasRights($therecord["roleid"],false))
 					$groupings[] = $therecord;
-			}
+
+			}//endwhile
+
 			return $groupings;
 
-		}
+		}//end function getTableGroupings
 
 
-		//given a table id, go grab the column and column information fro the table
+		/**
+		 * Retrieves table definition's columns (to be displayed)
+		 *
+		 * @param string $id tabledefs uuid
+		 */
 		function getTableColumns($id){
 
 			$thecolumns = array();
-			$querystatement="SELECT name,`column`,align,sortorder,footerquery,wrap,size,format,roleid
-								  FROM tablecolumns WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=$this->db->query($querystatement) ;
 
-			while($therecord = $this->db->fetchArray($queryresult)) {
-				if(hasRights($therecord["roleid"],false))
+			$querystatement = "
+				SELECT
+					name,
+					`column`,
+					align,
+					sortorder,
+					footerquery,
+					wrap,
+					size,
+					format,
+					roleid
+				FROM
+					tablecolumns
+				WHERE
+					tabledefid = '".$id."'
+				ORDER BY
+					displayorder";
+
+			$queryresult = $this->db->query($querystatement) ;
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				if(hasRights($therecord["roleid"], false))
 					$thecolumns[] = $therecord;
-			}
+
 			return $thecolumns;
 
-		}
+		}//end function getTableColumns
+
 
 		function showResultHeader(){
 			?>
@@ -230,13 +272,14 @@
 
 		function initialize($id){
 
-			$this->thetabledef=$this->getTableDef($id);
+			$this->thetabledef = $this->getTableDef($id);
 
 			$this->ref = $this->thetabledef["id"];
+			$this->uuid = $this->thetabledef["uuid"];
 
 			//next we set the columns
-			$this->thecolumns=$this->getTableColumns($this->ref);
-			$this->thegroupings = $this->getTableGroupings($this->ref);
+			$this->thecolumns=$this->getTableColumns($this->uuid);
+			$this->thegroupings = $this->getTableGroupings($this->uuid);
 
 		}//end function initialize
 
@@ -463,19 +506,38 @@
 		}//end getTableOptions
 
 
+		/**
+		 * Builds table definitions findoptions (find select box)
+		 *
+		 * @param string $id tabledefs UUID
+		 */
 		function getTableQuickSearchOptions($id){
-			$findoptions=Array();
-			$querystatement="SELECT name,search,roleid
-								  FROM tablefindoptions WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=$this->db->query($querystatement);
 
-			while($therecord=$this->db->fetchArray($queryresult)){
-				$therecord["search"]=$this->subout($therecord["search"]);
-				$findoptions[]=$therecord;
-			}
+			$findoptions = Array();
+			$querystatement = "
+				SELECT
+					name,
+					search,
+					roleid
+				FROM
+					tablefindoptions
+				WHERE
+					tabledefid = '".$id."'
+				ORDER BY
+					displayorder";
+
+			$queryresult = $this->db->query($querystatement);
+
+			while($therecord = $this->db->fetchArray($queryresult)){
+
+				$therecord["search"] = $this->subout($therecord["search"]);
+				$findoptions[] = $therecord;
+
+			}//endif
 
 			return $findoptions;
-		}
+
+		}//end function getTableQuickSearchOptions
 
 
 		function getTableSearchableFields($id){
@@ -886,10 +948,13 @@
 		}//end function
 
 		function initialize($id){
+
 			parent::initialize($id);
+
 			$this->tableoptions=$this->getTableOptions($id);
+
 			// now we need to populate the find (quick search) options
-			$this->findoptions=$this->getTableQuickSearchOptions($id);
+			$this->findoptions=$this->getTableQuickSearchOptions($this->uuid);
 
 			// next we need to get a list of  searchable fields for the quick search drop down
 			$this->searchablefields=$this->getTableSearchableFields($id);
@@ -999,31 +1064,42 @@
 		}
 
 		function buildSearch($params){
+
 			// assemble Search Criteria
 			//=====================================================================================================
 			//start with the find pull down
 			foreach($this->findoptions as $checkoption){
+
 				if(stripslashes($params["find"])==$checkoption["name"]) {
+
 					$params["find"]=$checkoption["search"];
 					//keep setting
 					$this->savedfindoptions=$checkoption["name"];
-				}
-			}
-			$find=$params["find"];
+
+				}//endif
+
+			}//endforeach
+
+			$find = $params["find"];
 
 			//add start with & end with stuff
 				if ($params["startswith"]){
+
 					$params["startswith"]=addslashes($params["startswith"]);
+
 					//Get the startswithfield info
 					$i=0;
-					while($this->searchablefields[$i]["id"]!=$params["startswithfield"]) $i++;
+					while($this->searchablefields[$i]["id"]!=$params["startswithfield"])
+						$i++;
 
 					if($this->searchablefields[$i]["type"]=="field")
 						$contains=$this->searchablefields[$i]["field"]." like \"".$params["startswith"]."%\"";
 					else
 						$contains=str_replace("{{value}}",$params["startswith"],$this->searchablefields[$i]["field"]);
+
 					$find= "(".$find.") and (".$contains.")";
-				}
+
+				}//endif
 
 			//need to account for add/new/remove
 			if(!isset($params["Selection"])) $params["Selection"]="new";

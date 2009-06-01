@@ -1,4 +1,4 @@
-<?php	
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -36,121 +36,267 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	function setColumnDefaults(){
-		$therecord["id"]=NULL;		
-		$therecord["displayorder"]=NULL;		
-		$therecord["wrap"]=0;		
-		$therecord["roleid"]=0;		
 
-		$therecord["size"]="";		
-		$therecord["name"]="";		
-		$therecord["column"]="";		
-		$therecord["align"]="left";		
-		$therecord["footerquery"]="";		
-		$therecord["sortorder"]="";
-		$therecord["format"]="";
+class tableColumns{
 
-		return $therecord;
-	}
-	
-	function getColumns($db,$tabledefid,$columnid=false){
-		$querystatement="SELECT id, name, `column`, align, footerquery, sortorder, displayorder,wrap,size,format, roleid
-		FROM tablecolumns 
-		WHERE tabledefid=".((int) $tabledefid);
-		if($columnid) $querystatement.=" AND id=".$columnid;
-		$querystatement.=" ORDER BY displayorder";
-		
-		$queryresult=$db->query($querystatement);
-		return $queryresult;
-	}// end function
+    var $db;
+    var $uuid;
+
+    function tableColumns($db, $tabledefid){
+
+        $this->db = $db;
+
+        $querystatement = "
+            SELECT
+                uuid
+            FROM
+                tabledefs
+            WHERE
+                id = ".((int) $tabledefid);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $this->tabledefuuid = $therecord["uuid"];
+
+    }//end function init
 
 
-	function addColumn($db,$variables,$tabledefid){
-		$thereturn = false;
+    function getDefaults(){
 
-		$querystatement="INSERT INTO tablecolumns (tabledefid, name, `column`, align, footerquery, sortorder, displayorder,size,format,wrap,roleid)
-		values (";
-		$querystatement.=$tabledefid.", ";
-		$querystatement.="\"".$variables["name"]."\", ";
-		$querystatement.="\"".$variables["column"]."\", ";
-		$querystatement.="\"".$variables["align"]."\", ";
-		$querystatement.="\"".$variables["footerquery"]."\", ";
-		$querystatement.="\"".$variables["sortorder"]."\", ";
-		$querystatement.="\"".$variables["displayorder"]."\", ";		
-		$querystatement.="\"".$variables["size"]."\", ";		
-		if($variables["format"])
-			$querystatement.="\"".$variables["format"]."\", ";
-		else
-			$querystatement.="NULL, ";
-		if(!isset($variables["wrap"])) $variables["wrap"]=0;
-		$querystatement.=" ".$variables["wrap"].", ";		
-		$querystatement.=" ".$variables["roleid"]." )";
+        $therecord["id"] = NULL;
+        $therecord["displayorder"] = NULL;
+        $therecord["wrap"] = 0;
+        $therecord["roleid"] = "";
 
-		if($db->query($querystatement)) $thereturn ="Column Added";
-		
-		return $thereturn;
-	}// end function
-	
+        $therecord["size"] = "";
+        $therecord["name"] = "";
+        $therecord["column"] = "";
+        $therecord["align"] = "left";
+        $therecord["footerquery"] = "";
+        $therecord["sortorder"] = "";
+        $therecord["format"] = "";
 
-	function updateColumn($db, $variables){
+        return $therecord;
 
-		$querystatement="UPDATE tablecolumns set ";
-		$querystatement.="name=\"".$variables["name"]."\", ";
-		$querystatement.="`column`=\"".$variables["column"]."\", ";
-		$querystatement.="align=\"".$variables["align"]."\", ";
-		$querystatement.="sortorder=\"".$variables["sortorder"]."\", ";
-		$querystatement.="footerquery=\"".$variables["footerquery"]."\", ";		
-		$querystatement.="size=\"".$variables["size"]."\", ";		
-		if($variables["format"])
-			$querystatement.="format=\"".$variables["format"]."\", ";
-		else
-			$querystatement.="format=NULL, ";
-		if(!isset($variables["wrap"])) $variables["wrap"]=0;
-		$querystatement.="wrap=".$variables["wrap"].", ";		
-		$querystatement.="roleid=".$variables["roleid"]." ";		
-		$querystatement.="WHERE id=".$variables["columnid"];
-		if($db->query($querystatement)) $thereturn ="Column Updated";
-		
-		return $thereturn;
-	}
+    }//end function getDefaults
 
-	function deleteColumn($db,$id){
-		
-		$querystatement="SELECT tabledefid,displayorder FROM tablecolumns WHERE id=".$id;
-		$theresult=$db->query($querystatement);
-		$therecord=$db->fetchArray($theresult);
-						
-		$querystatement="UPDATE tablecolumns SET displayorder=displayorder-1
-							WHERE tabledefid=".$therecord["tabledefid"]." AND displayorder>".$therecord["displayorder"];
-		if($db->query($querystatement)) {
 
-			$querystatement="DELETE FROM tablecolumns WHERE id=".$id;
-			if($db->query($querystatement)) $thereturn ="Column Deleted"; 
-		}
-				
-		return $thereturn;
-	}
+    function get($columnid = 0){
 
-	function moveColumn($db,$id,$direction="up"){
+        $querystatement = "
+            SELECT
+                id,
+                name,
+                `column`,
+                align,
+                footerquery,
+                sortorder,
+                displayorder,
+                wrap,
+                size,
+                format,
+                roleid
+            FROM
+                tablecolumns
+            WHERE
+                tabledefid = '".$this->tabledefuuid."'";
 
-		if($direction=="down") $increment="1"; else $increment="-1";
+        if($columnid)
+            $querystatement .= "
+                AND id = ".$columnid;
 
-		$querystatement="select displayorder,tabledefid FROM tablecolumns WHERE id=".$id;
-		$thequery=$db->query($querystatement);
-		$therecord=$db->fetchArray($thequery);
+        $querystatement .= "
+            ORDER BY
+                displayorder";
 
-		$querystatement="select max(displayorder) as themax FROM tablecolumns WHERE tabledefid=".$_GET["id"];
-		$thequery=$db->query($querystatement);
-		$maxrecord=$db->fetchArray($thequery);
-		
-		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
-			$querystatement="UPDATE tablecolumns set displayorder=".$therecord["displayorder"]." WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$therecord["tabledefid"];
-			$thequery=$db->query($querystatement);
+        return $this->db->query($querystatement);
 
-			$querystatement="UPDATE tablecolumns set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=$db->query($querystatement);
-		}// end if
-		
-		if(isset($thereturn)) return $thereturn; else return "column moved";
-	}
+    }//end function get
+
+
+    function add($variables){
+
+        if($variables["format"])
+            $variables["format"] = "'".$variables["format"]."'";
+        else
+            $variables["format"] = "NULL";
+
+        if(!isset($variables["wrap"]))
+            $variables["wrap"] = 0;
+
+        $insertstatement = "
+            INSERT INTO
+                `tablecolumns`
+            (
+                tabledefid,
+                name,
+                `column`,
+                align,
+                footerquery,
+                sortorder,
+                displayorder,
+                size,
+                format,
+                wrap,
+                roleid
+            ) VALUES (
+                '".$this->uuid."',
+                '".$variables["name"]."',
+                '".$variables["column"]."',
+                '".$variables["align"]."',
+                '".$variables["footerquery"]."',
+                '".$variables["sortorder"]."',
+                '".$variables["displayorder"]."',
+                '".$variables["size"]."',
+                ".$variables["format"].",
+                ".$variables["wrap"].",
+                '".$variables["roleid"]."',
+            )";
+
+            if($db->query($insertstatement))
+                return "Column Added";
+            else
+                return false;
+
+    }//end function add
+
+
+    function update($variables){
+
+        if($variables["format"])
+            $variables["format"] = "'".$variables["format"]."'";
+        else
+            $variables["format"] = "NULL";
+
+        if(!isset($variables["wrap"]))
+            $variables["wrap"] = 0;
+
+        $updatestatement = "
+            UPDATE
+                tablecolumns
+            SET
+                `name` = '".$variables["name"]."',
+                `column` = '".$variables["column"]."',
+                `align` = '".$variables["align"]."',
+                `sortorder` = '".$variables["sortorder"]."',
+                `footerquery` = '".$variables["footerquery"]."',
+                `size` = '".$variables["size"]."',
+                `format` = ".$variables["format"].",
+                `wrap` = ".$variables["wrap"].",
+                `roleid` = '".$variables["roleid"]."',
+            WHERE
+                id = ".((int) $variables["columnid"]);
+
+        if($db->query($updatestatement))
+            return "Column Updated";
+        else
+            return false;
+
+    }//end function update
+
+
+    function delete($id){
+
+        $querystatement = "
+            SELECT
+                displayorder
+            FROM
+                tablecolumns
+            WHERE
+                id = ".((int) $id);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $updatestatement = "
+            UPDATE
+                tablecolumns
+            SET
+                displayorder = displayorder -1
+            WHERE
+                tabledefid = '".$this->uuid."'
+                AND displayorder > ".$therecord["displayorder"];
+
+        if($this->db->query($queryresult)){
+
+            $deletestatement = "
+                DELETE FROM
+                    tablecolumns
+                WHERE
+                    id = ".$id;
+
+            if($this->db->query($deletestatement))
+                return "Column Deleted";
+
+        }//endif
+
+        return false;
+
+    }//end function delete
+
+
+    function move($id, $direction = "up"){
+
+        $increment = ($direction == "down")? "1": "-1";
+
+        $querstatement = "
+            SELECT
+                displayorder
+            FROM
+                tablecolumns
+            WHERE
+                id = ".((int) $id);
+
+        $queryresult = $this->db->query($querstatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $querstatement = "
+            SELECT
+                MAX(displayorder) AS themax
+            FROM
+                tablecolumns
+            WHERE
+                tabledefid = '".$this->uuid."'";
+
+        $queryresult = $this->db->query($querstatement);
+
+        $maxrecord = $this->db->fetchArray($queryresult);
+
+        if(!(($direction=="down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction == "up" and $therecord["displayorder"] == "0"))){
+
+            $updatestatement = "
+                UPDATE
+                    tablecolumns
+                SET
+                    displayorder = ".$therecord["displayorder"]."
+                WHERE
+                    displayorder = ".($increment+$therecord["displayorder"])."
+                    AND tabledefid = '".$this->uuid."'";
+
+            $this->db->query($updatestatement);
+
+            $updatestatement = "
+                UPDATE
+                    tablecolumns
+                SET
+                    displayorder = displayorder + ".$increment."
+                WHERE
+                    id = ".$id;
+
+            $this->db->query($updatestatement);
+
+            return "Column Moved";
+
+        }//endif
+
+        return false;
+
+    }//end function move
+
+}//end class tableColumns
+
 ?>

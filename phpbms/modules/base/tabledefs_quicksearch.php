@@ -42,6 +42,14 @@
 
 	include("include/tabledefs_quicksearch_include.php");
 
+	if(!hasRights("Admin"))
+		goURL(APP_PATH."noaccess.php");
+
+	if(!isset($_GET["id"]))
+		$error = new appError(-200, "Passed parameter missing", "Invalid request", true);
+
+	$quicksearches = new quickSearches($db, $_GET["id"]);
+
 	//grab the table name
 	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
 	$queryresult = $db->query($querystatement);
@@ -50,40 +58,41 @@
 	//process page
 	$thecommand="";
 	$action="add quick search item";
-	$thequicksearch=setDefaultQuickSearch();
+	$thequicksearch = $quicksearches->getDefaults();
+
 	if (isset($_GET["command"])) $thecommand=$_GET["command"];
 	if (isset($_POST["command"])) $thecommand=$_POST["command"];
 
 	switch($thecommand){
 		case "edit":
-			$singlequicksearchsquery=getQuicksearchs($db,$_GET["id"],$_GET["quicksearchid"]);
-			$thequicksearch=$db->fetchArray($singlequicksearchsquery);
-			$action="edit quick search item";
-		break;
+			$singlequicksearchsquery = $quicksearches->get($_GET["quicksearchid"]);
+			$thequicksearch = $db->fetchArray($singlequicksearchsquery);
+			$action = "edit quick search item";
+			break;
 
 		case "delete":
-			$statusmessage=deleteQuicksearch($db,$_GET["quicksearchid"]);
+			$statusmessage = $quicksearches->delete($_GET["quicksearchid"]);
 		break;
 
 		case "add quick search item":
-			$statusmessage=addQuicksearch($db,addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage = $quicksearches->add(addSlashesToArray($_POST));
 		break;
 
 		case "edit quick search item":
-			$statusmessage=updateQuicksearch($db,addSlashesToArray($_POST));
+			$statusmessage = $quicksearches->update(addSlashesToArray($_POST));
 		break;
 
 		case "moveup":
-			$statusmessage=moveQuicksearch($db,$_GET["quicksearchid"],"up",$_GET["id"]);
+			$statusmessage = $quicksearches->move($_GET["quicksearchid"],"up");
 		break;
 
 		case "movedown":
-			$statusmessage=moveQuicksearch($db,$_GET["quicksearchid"],"down",$_GET["id"]);
+			$statusmessage = $quicksearches->move($_GET["quicksearchid"],"down");
 		break;
 
 	}//end switch
 
-	$quicksearchsquery=getQuicksearchs($db,$_GET["id"]);
+	$quicksearchsquery = $quicksearches->get();
 
 	$pageTitle="Table Definition Quick Search: ".$tableRecord["displayname"];
 
@@ -133,7 +142,7 @@
 		<strong><?php echo htmlQuotes($therecord["name"])?></strong><br />
 		<?php echo htmlQuotes($therecord["search"])?>
 	 </td>
-	 <td valign="top" class="small" nowrap="nowrap"><?php echo $phpbms->displayRights($therecord["roleid"],$therecord["rolename"])?></td>
+	 <td valign="top" class="small" nowrap="nowrap"><?php echo $phpbms->displayRights($therecord["roleid"])?></td>
 	 <td nowrap="nowrap" valign="top">
 		 <button id="edit<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=edit&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonEdit"><span>edit</span></button>
 		 <button id="delete<?php echo $therecord["id"]?>" type="button" onclick="document.location='<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"]."&amp;command=delete&amp;quicksearchid=".$therecord["id"]?>';" class="graphicButtons buttonDelete"><span>delete</span></button>

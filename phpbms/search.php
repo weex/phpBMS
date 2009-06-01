@@ -39,7 +39,9 @@
 	require_once("include/session.php");
 	require_once("include/search_class.php");
 
-	if(!isset($_GET["id"])) $error = new appError(100,"Passed Parameter not present.");
+	if(!isset($_GET["id"]))
+		$error = new appError(100,"Passed Parameter not present.");
+
 	$_GET["id"]= (integer) $_GET["id"];
 
 	$displayTable= new displaySearchTable($db);

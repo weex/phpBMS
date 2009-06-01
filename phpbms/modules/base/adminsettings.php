@@ -48,7 +48,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 require_once("modules/base/include/adminsettings_include.php");
 $settings = new settings($db);
 
-if(!hasRights(-100))
+if(!hasRights("Admin"))
 	goURL(APP_PATH."noaccess.php");
 
 if (isset($_POST["command"]))

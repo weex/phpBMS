@@ -139,7 +139,7 @@ if(class_exists("phpbmsTable")){
 			parent::updateRecord($variables, $modifiedby);
 
 			if($variables["roleschanged"]==1)
-				$this->assignRoles($variables["id"],$variables["newroles"]);
+				$this->assignRoles($variables["uuid"],$variables["newroles"]);
 
 			//reset field information
 			$this->fields = $this->db->tableInfo($this->maintable);
@@ -159,48 +159,97 @@ if(class_exists("phpbmsTable")){
 			return $theid;
 		}
 
+                /**
+                 * assigns roles to a user
+                 * @param string $id uuid of user
+                 * @param string $roles comma separated list of roles to insert.
+                 */
 		function assignRoles($id,$roles){
-			$querystatement="DELETE FROM rolestousers WHERE userid=".$id;
-			$queryresult=$this->db->query($querystatement);
 
-			$newroles=explode(",",$roles);
+		    $deletestatement = "
+                        DELETE FROM
+                            rolestousers
+                        WHERE
+                            userid = '".$id."'";
 
-			foreach($newroles as $therole)
-				if($therole!=""){
-					$querystatement="INSERT INTO rolestousers (userid,roleid) VALUES(".$id.",".$therole.")";
-					$queryresult=$this->db->query($querystatement);
-				}
-		}
+                    $queryresult = $this->db->query($deletestatement);
+
+                    $newroles = explode(",", $roles);
+
+                    foreach($newroles as $therole)
+                        if($therole != ""){
+
+                            $insertstatement = "
+                                INSERT INTO
+                                    rolestousers
+                                    (userid,roleid)
+                                VALUES
+                                    ('".$id."', '".$therole."')";
+
+                            $this->db->query($insertstatement );
+
+                        }//endif
+
+		}//end function assignRoles
 
 
-		function displayRoles($id,$type){
-			$querystatement="SELECT roles.id,roles.name
-							FROM roles INNER JOIN rolestousers ON rolestousers.roleid=roles.id
-							WHERE rolestousers.userid=".((int) $id);
-			$assignedquery=$this->db->query($querystatement);
+                /**
+                 * displays the add roles select boxes
+                 *
+                 * @param string $id user's uuid
+                 * @param strng $type available/selected
+                 */
+		function displayRoles($id, $type){
 
-			$thelist=array();
+                    $querystatement="
+                        SELECT
+                            roles.uuid,
+                            roles.name
+                        FROM
+                            roles INNER JOIN rolestousers ON rolestousers.roleid = roles.uuid
+                        WHERE
+                            rolestousers.userid= '".mysql_real_escape_string($id)."'";
 
-			if($type=="available"){
-				$excludelist=array();
-				while($therecord=$this->db->fetchArray($assignedquery))
-					$excludelist[]=$therecord["id"];
+                    $assignedquery = $this->db->query($querystatement);
 
-				$querystatement="SELECT id,name FROM roles WHERE inactive=0";
-				$availablequery=$this->db->query($querystatement);
-				while($therecord=$this->db->fetchArray($availablequery))
-					if(!in_array($therecord["id"],$excludelist))
-						$thelist[]=$therecord;
-			} else
-				while($therecord=$this->db->fetchArray($assignedquery))
-					$thelist[]=$therecord;
+                    $thelist = array();
 
-			foreach($thelist as $theoption){
-				?>	<option value="<?php echo $theoption["id"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
-		<?php
-			}
-		}//end function
+                    if($type == "available"){
+
+                            $excludelist = array();
+
+                            while($therecord = $this->db->fetchArray($assignedquery))
+                                $excludelist[] = $therecord["uuid"];
+
+                            $querystatement = "
+                                SELECT
+                                    uuid,
+                                    name
+                                FROM
+                                    roles
+                                WHERE
+                                    inactive = 0";
+
+                            $availablequery = $this->db->query($querystatement);
+
+                            while($therecord = $this->db->fetchArray($availablequery))
+                                if(!in_array($therecord["uuid"], $excludelist))
+                                    $thelist[] = $therecord;
+
+                    } else
+                        while($therecord = $this->db->fetchArray($assignedquery))
+                            $thelist[] = $therecord;
+
+                    foreach($thelist as $theoption){
+                        ?>
+                        <option value="<?php echo $theoption["uuid"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
+                        <?php
+                    }//endif
+
+		}//end function displayRoles
+
 	}//end class
+
 }//end if
 
 if(class_exists("searchFunctions")){

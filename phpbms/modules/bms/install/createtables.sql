@@ -1,8 +1,8 @@
-CREATE TABLE clientemailprojects (
+CREATE TABLE `clientemailprojects` (
   id int(11) NOT NULL auto_increment,
   `uuid` varchar(64) NOT NULL,
   name varchar(64) default '',
-  userid int(11) NOT NULL default '0',
+  userid varchar(64) NOT NULL,
   emailto varchar(9) NOT NULL default '',
   emailfrom varchar(128) default '',
   subject varchar(128) default '',
@@ -28,8 +28,7 @@ CREATE TABLE `clients` (
   `otherphone` varchar(25) default NULL,
   `email` varchar(128) default NULL,
   `webaddress` varchar(128) default NULL,
-  `taxid` VARCHAR(64) default NULL,
-  `salesmanagerid` int(11) default NULL,
+  `salesmanagerid` VARCHAR(64),
   `leadsource` varchar(64) default NULL,
   `address1` varchar(128) default NULL,
   `address2` varchar(128) default NULL,
@@ -38,10 +37,10 @@ CREATE TABLE `clients` (
   `postalcode` varchar(15) default NULL,
   `country` varchar(64) default '',
   `comments` text,
-  `paymentmethodid` int(10) unsigned default '0',
-  `shippingmethodid` int(10) unsigned default '0',
-  `discountid` int(10) unsigned default '0',
-  `taxareaid` int(11) default '0',
+  `paymentmethodid` VARCHAR(64),
+  `shippingmethodid` VARCHAR(64),
+  `discountid` VARCHAR(64),
+  `taxareaid` VARCHAR(64),
   `username` varchar(32) default NULL,
   `password` varchar(32) default NULL,
   `hascredit` TINYINT UNSIGNED NOT NULL DEFAULT 0,
@@ -93,13 +92,13 @@ CREATE TABLE discounts (
 CREATE TABLE `invoices` (
   `id` int(11) NOT NULL auto_increment,
   `uuid` varchar(64) NOT NULL,
-  `clientid` int(11) NOT NULL default '0',
+  `clientid` VARCHAR(64),
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
   `postingsessionid` int(11) default NULL,
-  `statusid` int(10) unsigned default NULL,
+  `statusid` VARCHAR(64),
   `statusdate` date default NULL,
   `readytopost` tinyint(3) unsigned NOT NULL default '0',
-  `assignedtoid` int(10) unsigned default NULL,
+  `assignedtoid` VARCHAR(64),
   `ponumber` varchar(64) default NULL,
   `orderdate` date default NULL,
   `invoicedate` date default NULL,
@@ -113,21 +112,21 @@ CREATE TABLE `invoices` (
   `country` varchar(64) default '',
   `weborder` tinyint(1) default '0',
   `webconfirmationno` varchar(64) default '',
-  `discountid` int(11) NOT NULL default '0',
+  `discountid` VARCHAR(64),
   `discountamount` double NOT NULL default '0',
   `totaltni` double default '0',
-  `taxareaid` int(11) default '0',
+  `taxareaid` VARCHAR(64),
   `taxpercentage` double default NULL,
   `totaltaxable` double default '0',
   `tax` double default '0',
-  `shippingmethodid` int(10) unsigned default NULL,
+  `shippingmethodid` VARCHAR(64),
   `totalweight` double default '0',
   `trackingno` varchar(64) default NULL,
   `shipping` double default '0',
   `totalcost` double default '0',
   `totalti` double default '0',
   `amountpaid` double default '0',
-  `paymentmethodid` int(10) unsigned default NULL,
+  `paymentmethodid` VARCHAR(64),
   `ccexpiration` varchar(10) default NULL,
   `ccnumber` varchar(64) default NULL,
   `ccverification` varchar(4) default '',
@@ -149,8 +148,8 @@ CREATE TABLE `invoices` (
   `shiptostate` varchar(20) default NULL,
   `shiptopostalcode` varchar(15) default NULL,
   `shiptocountry` varchar(64) default NULL,
-  `billingaddressid` int(11) default NULL,
-  `shiptoaddressid` int(11) default NULL,
+  `billingaddressid` VARCHAR(64),
+  `shiptoaddressid` VARCHAR(64),
   `shiptosameasbilling` tinyint(3) unsigned NOT NULL default '0',
   `custom1` DOUBLE,
   `custom2` DOUBLE,
@@ -160,7 +159,7 @@ CREATE TABLE `invoices` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  UNIQUE KEY `theid` (`id`),
+  PRIMARY KEY `theid` (`id`),
   KEY `client` (`clientid`)
 )  ENGINE=INNODB AUTO_INCREMENT=1000 PACK_KEYS=0;
 
@@ -168,7 +167,7 @@ CREATE TABLE lineitems (
   id int(11) NOT NULL auto_increment,
   invoiceid int(11) NOT NULL default '0',
   `displayorder` INTEGER UNSIGNED NOT NULL DEFAULT 0,
-  productid int(11) default NULL,
+  `productid` VARCHAR(64),
   quantity double default NULL,
   unitcost double default NULL,
   unitprice double default NULL,
@@ -192,10 +191,10 @@ CREATE TABLE lineitems (
   KEY product (productid)
 ) ENGINE=INNODB;
 
-CREATE TABLE prerequisites (
-  childid int(11) NOT NULL default '0',
-  id int(11) NOT NULL auto_increment,
-  parentid int(11) NOT NULL default '0',
+CREATE TABLE `prerequisites` (
+  `id` int(11) NOT NULL auto_increment,
+  `childid` VARCHAR(64) NOT NULL,
+  `parentid` VARCHAR(64) NOT NULL,
   PRIMARY KEY (id),
   KEY child (childid),
   KEY parent (parentid)
@@ -236,12 +235,12 @@ CREATE TABLE productcategories (
 ) ENGINE=INNODB;
 
 CREATE TABLE products (
+  id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   `categoryid` varchar(64) NOT NULL default '',
   createdby int(11) NOT NULL default '0',
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   description varchar(255) default NULL,
-  id int(11) NOT NULL auto_increment,
-  `uuid` varchar(64) NOT NULL,
   isoversized tinyint(4) NOT NULL default '0',
   isprepackaged tinyint(4) NOT NULL default '0',
   packagesperitem double default NULL,
@@ -353,7 +352,7 @@ CREATE TABLE `invoicestatuses` (
   `name` VARCHAR(128),
   `setreadytopost` TINYINT UNSIGNED NOT NULL DEFAULT 0 ,
   `invoicedefault` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `defaultassignedtoid` INTEGER UNSIGNED,
+  `defaultassignedtoid` VARCHAR(64),
   `inactive` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `priority` INTEGER UNSIGNED NOT NULL DEFAULT 0,
   `createdby` INTEGER UNSIGNED,
@@ -374,20 +373,21 @@ CREATE TABLE `invoicestatuses` (
 CREATE TABLE `invoicestatushistory` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `invoicedefault` INTEGER UNSIGNED,
-  `invoiceid` INTEGER UNSIGNED,
-  `invoicestatusid` INTEGER UNSIGNED,
+  `invoiceid` VARCHAR(64) NOT NULL,
+  `invoicestatusid` VARCHAR(64) NOT NULL,
   `statusdate` DATE,
-  `assignedtoid` INTEGER UNSIGNED,
+  `assignedtoid` VARCHAR(64),
   PRIMARY KEY(`id`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `aritems` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `clientid` int(10) unsigned NOT NULL,
+  `uuid` VARCHAR(64) NOT NULL,
+  `clientid` VARCHAR(64) NOT NULL,
   `type` ENUM('invoice','credit','service charge') NOT NULL,
   `status` ENUM('open','closed') NOT NULL,
   `itemdate` DATE NOT NULL,
-  `relatedid` int(10) unsigned default NULL,
+  `relatedid` VARCHAR(64),
   `amount` double NOT NULL default '0',
   `paid` double NOT NULL default '0',
   `aged1` tinyint(3) unsigned NOT NULL default '0',
@@ -405,14 +405,14 @@ CREATE TABLE `aritems` (
 CREATE TABLE `receipts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL,
-  `clientid` int(10) unsigned NOT NULL,
+  `clientid` VARCHAR(64) NOT NULL,
   `amount` double NOT NULL default '0',
   `receiptdate` date NOT NULL,
   `status` enum('open','collected') NOT NULL default 'open',
   `readytopost` tinyint(3) unsigned NOT NULL default '0',
   `posted` tinyint(3) unsigned NOT NULL default '0',
   `postingsessionid` int(11) default NULL,
-  `paymentmethodid` int(10) NOT NULL default '0',
+  `paymentmethodid` VARCHAR(64) NOT NULL,
   `ccnumber` varchar(64) default NULL,
   `ccexpiration` varchar(10) default NULL,
   `ccverification` varchar(4) default NULL,
@@ -440,8 +440,8 @@ CREATE TABLE `receipts` (
 
 CREATE TABLE `receiptitems` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `receiptid` int(10) unsigned NOT NULL,
-  `aritemid` int(10) unsigned NOT NULL,
+  `receiptid` VARCHAR(64) NOT NULL,
+  `aritemid` VARCHAR(64) NOT NULL,
   `applied` double NOT NULL default '0',
   `discount` double NOT NULL default '0',
   `taxadjustment` double NOT NULL default '0',
@@ -479,9 +479,9 @@ CREATE TABLE `addresses` (
 
 CREATE TABLE `addresstorecord` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `tabledefid` INTEGER UNSIGNED NOT NULL,
-  `recordid` INTEGER UNSIGNED NOT NULL,
-  `addressid` INTEGER UNSIGNED NOT NULL,
+  `tabledefid` VARCHAR(64) NOT NULL,
+  `recordid` VARCHAR(64) NOT NULL,
+  `addressid` VARCHAR(64) NOT NULL,
   `defaultshipto` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `primary` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `createdby` INTEGER UNSIGNED NOT NULL,
@@ -492,7 +492,7 @@ CREATE TABLE `addresstorecord` (
 ) ENGINE=INNODB;
 
 CREATE TABLE `productstoproductcategories` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENTREMENT,
   `productuuid` varchar(64) NOT NULL,
   `productcategoryuuid` varchar(64) NOT NULL,
   PRIMARY KEY(`id`)

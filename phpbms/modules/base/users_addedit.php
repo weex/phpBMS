@@ -178,7 +178,7 @@
 			<div id="assignedrolesdiv">
 				assigned roles<br />
 				<select id="assignedroles" size="10" multiple="multiple">
-					<?php $thetable->displayRoles($therecord["id"],"assigned")?>
+					<?php $thetable->displayRoles($therecord["uuid"], "assigned")?>
 				</select>
 			</div>
 			<div id="rolebuttonsdiv">
@@ -192,7 +192,7 @@
 			<div id="availablerolesdiv">
 				available roles<br />
 				<select id="availableroles" size="10" multiple="multiple">
-					<?php $thetable->displayRoles($therecord["id"],"available")?>
+					<?php $thetable->displayRoles($therecord["uuid"],"available")?>
 				</select>
 			</div>
 			</div>

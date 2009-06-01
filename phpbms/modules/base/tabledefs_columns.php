@@ -42,51 +42,71 @@
 
 	include("include/tabledefs_columns_include.php");
 
+	if(!hasRights("Admin"))
+		goURL(APP_PATH."noaccess.php");
+
+	if(!isset($_GET["id"]))
+		$error = new appError(-200, "Passed parameter missing", "Invalid request", true);
+
+	$columns = new tableColumns($db, $_GET["id"]);
+
 	//process page
 	$thecommand="";
 	$action="add column";
-	$thecolumn=setColumnDefaults();
+	$thecolumn = $columns->getDefaults();
 
 	//grab the table name
-	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
+	$querystatement = "
+		SELECT
+			displayname
+		FROM
+			tabledefs
+		WHERE
+			id = ".((int) $_GET["id"]);
+
 	$queryresult = $db->query($querystatement);
 	$tableRecord = $db->fetchArray($queryresult);
 
-	if (isset($_GET["command"])) $thecommand=$_GET["command"];
-	if (isset($_POST["command"])) $thecommand=$_POST["command"];
+	if (isset($_GET["command"]))
+		$thecommand = $_GET["command"];
+
+	if (isset($_POST["command"]))
+		$thecommand = $_POST["command"];
 
 	switch($thecommand){
+
 		case "edit":
-			$singlecolumnsquery=getColumns($db,$_GET["id"],$_GET["columnid"]);
-			$thecolumn = $db->fetchArray($singlecolumnsquery);
+			$queryresult = $columns->get($_GET["columnid"]);
+			$thecolumn = $db->fetchArray($queryresult);
 			$action="edit column";
-		break;
+			break;
 
 		case "delete":
-			$statusmessage=deleteColumn($db,$_GET["columnid"]);
-		break;
+			$statusmessage = $columns->delete($_GET["columnid"]);
+			break;
 
 		case "add column":
-			$statusmessage=addColumn($db,addSlashesToarray($_POST),$_GET["id"]);
-		break;
+			$statusmessage = $columns->add(addSlashesToarray($_POST));
+			break;
 
 		case "edit column":
-			$statusmessage=updateColumn($db,addSlashesToarray($_POST));
-		break;
+			$statusmessage = $columns->update(addSlashesToarray($_POST));
+			break;
 
 		case "moveup":
-			$statusmessage=moveColumn($db,$_GET["columnid"],"up");
-		break;
+			$statusmessage = $columns->move($_GET["columnid"],"up");
+			break;
 
 		case "movedown":
-			$statusmessage=moveColumn($db,$_GET["columnid"],"down");
-		break;
+			$statusmessage = $columns->move($_GET["columnid"],"down");
+			break;
 
 	}//end switch
 
-	$columnsquery=getColumns($db,$_GET["id"]);
+	$columnsquery = $columns->get();
 
-	$pageTitle="Table Definition Columns: ".$tableRecord["displayname"];
+	$pageTitle = "Table Definition Columns: ".$tableRecord["displayname"];
+
 	$phpbms->cssIncludes[] = "pages/tablecolumns.css";
 
 		//Form Elements

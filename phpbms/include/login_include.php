@@ -77,13 +77,13 @@ class login{
 			$_SESSION["userinfo"] = $this->db->fetchArray($queryresult);
 
 			// Next get the users roles, and populate the session with them
-			$_SESSION["userinfo"]["roles"][] = 0;
+			$_SESSION["userinfo"]["roles"] = array();
 			$querystatement = "
 				SELECT
 					roleid
 				FROM
 					rolestousers
-				WHERE userid=".$_SESSION["userinfo"]["id"];
+				WHERE userid = '".$_SESSION["userinfo"]["uuid"]."'";
 
 			$rolesqueryresult = $this->db->query($querystatement);
 

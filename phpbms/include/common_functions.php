@@ -96,29 +96,49 @@ class phpbms{
 	}
 
 
-	function displayRights($roleid,$rolename = NULL){
+        /**
+         * displays the user name for a role
+         *
+         * @param string $roleid uuid of role
+         * @param string $rolename rolename to overwrite
+         */
+	function displayRights($roleid, $rolename = ""){
+
 			switch($roleid){
 
-				case 0:
+				case "":
 					echo "EVERYONE";
-				break;
+                                        break;
 
-				case -100:
+				case "Admin":
 					echo "Administrators";
-				break;
+                                        break;
 
 				default:
 					if(!$rolename){
-						$querystatement = "SELECT name FROM roles WHERE id=".((int) $roleid);
+
+						$querystatement = "
+                                                        SELECT
+                                                                name
+                                                        FROM
+                                                                roles
+                                                        WHERE
+                                                                uuid = '".mysql_real_escape_string($roleid)."'";
+
 						$queryresult = $this->db->query($querystatement);
 
 						$therecord = $this->db->fetchArray($queryresult);
+
 						$rolename = $therecord["name"];
+
 					}//end if
 
 					echo $rolename;
+
 			}//end case
+
 	}//end method
+
 
         /**
           * Generates and displays tabs based on a tab group name
@@ -296,7 +316,12 @@ function getUuid($db, $tabledefuuid, $id){
 
 }//end function getUuid
 
-
+/**
+ * retreive uuid prefix of a tabledef
+ *
+ * @param object $db database object
+ * @param sring $tabledefuuid uuid of tabledef to retrieve
+ */
 function getUuidPrefix($db, $tabledefuuid){
 
         $querystatement = "
@@ -315,6 +340,7 @@ function getUuidPrefix($db, $tabledefuuid){
 
 }//end function getUuidPrefix
 
+
 function xmlEncode($str){
 	$str=str_replace("&","&amp;",$str);
 	$str=str_replace("<","&lt;",$str);
@@ -331,20 +357,35 @@ function goURL($url){
 }
 
 
-function hasRights($roleid,$fullAccessAdmin = true){
-	$hasrights=false;
+/**
+ * Determines if currently logged in user has rights
+ *
+ * @param string $roleid uuid of the role to check for
+ * @param bool $fullAccessAdmin should we check for admin status?
+ */
+function hasRights($roleid, $fullAccessAdmin = true){
 
-	if($_SESSION["userinfo"]["admin"]==1 && ($fullAccessAdmin || $roleid == -100))
-		$hasrights=true;
-	elseif($roleid==0)
-		$hasrights=true;
+	$hasRights = false;
+
+	if($_SESSION["userinfo"]["admin"] == 1 && ($fullAccessAdmin || $roleid == "Admin"))
+		$hasRights = true;
+	elseif($roleid == "")
+		$hasRights = true;
 	else
-		foreach($_SESSION["userinfo"]["roles"] as $role)
-			if($role==$roleid)
-				$hasrights=true;
+		foreach($_SESSION["userinfo"]["roles"] as $role){
 
-	return $hasrights;
-}
+                        if($role == $roleid){
+
+				$hasRights = true;
+                                break;
+
+                        }//endif
+
+                }//endif
+
+	return $hasRights;
+
+}//end function hasRights
 
 
 

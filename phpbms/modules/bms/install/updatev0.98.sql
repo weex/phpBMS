@@ -30,7 +30,6 @@ ALTER TABLE `products` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `receipts` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `shippingmethods` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 ALTER TABLE `tax` ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
-ALTER TABLE `clients` ADD COLUMN `taxid` VARCHAR(64) default NULL AFTER `webaddress`;
 --END ADD UUID--
 
 ALTER TABLE `receipts` MODIFY COLUMN `paymentmethodid` INTEGER NOT NULL DEFAULT 0;
@@ -188,29 +187,29 @@ INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtablei
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:c003c109-b79b-eded-9acd-b251af8d92ec', 'postingsessionid', 'receipts', 'id', '307', '304', 1, NOW(), 1, NOW(), '0');
 --end relationships insert/update--
 
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:7261b6a1-6424-77a6-6a02-eada540ec092', 'Client', '', '0', '0', 1, 1, NOW(), NOW(), '20');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:42d221f6-37ef-c755-e335-39d00e3fda58', 'Quick View', 'modules/bms/quickview.php', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '0', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:d080b1a3-6fac-ae6e-2457-b969a8d67996', 'Clients', 'search.php?id=2', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '10', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:96809579-305c-19c3-042b-405e7763a000', 'Check for Duplicates', 'search.php?id=18', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '20', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:8cf7d073-72b9-93db-6d07-14578e2a694f', 'Sales', '', '0', '1', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:652204a6-c0c3-e0b7-d0e4-919c3f3f64f9', 'Sales Orders', 'search.php?id=3', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '10', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:23960b0a-316e-0070-8d64-0834aa443187', 'Item Analysis', 'search.php?id=5', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '55', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:7cc050a6-9742-ca54-3a19-3d08867e7cf7', 'Discounts', 'search.php?id=25', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '40', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:e7bb833c-a3ac-0619-88d2-990ab53e63e6', 'Tax Areas', 'search.php?id=6', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '70', 1, 1, NOW(), NOW(), '50');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', 'Product', '', '0', '2', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:4d49690e-980b-c705-271e-376339dde62f', 'Products', 'search.php?id=4', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '0', 1, 1, NOW(), NOW(), '10');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:24861935-096d-ed0b-98ce-2273da3054c6', 'Product Categories', 'search.php?id=7', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '1', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:8f14c059-2ff4-0ca6-21ec-7204c3cddb20', 'Prerequisites', 'search.php?id=8', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '2', 1, 1, NOW(), NOW(), '20');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:9352a813-3c5a-efd4-71dc-a5b8bcac2e3d', 'Shipping Methods', 'search.php?id=300', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '80', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:23c6a92e-932b-4861-1050-561b5f35f3a1', 'Payment Methods', 'search.php?id=301', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '90', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:48d55385-ce5e-53ca-34c2-1861da882442', '----', 'N/A', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '50', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:96171e3f-2499-9e75-248e-45d637df9128', 'Invoice Statuses', 'search.php?id=302', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '80', 1, 1, NOW(), NOW(), '30');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:f020a94f-f78f-c1f9-cd32-133089704403', 'Email Projects', 'search.php?id=22', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '100', 1, 1, NOW(), NOW(), '-100');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:abd768e4-10b4-607c-a760-ee58366437e6', 'AR Items', 'search.php?id=303', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '20', 1, 1, NOW(), NOW(), '0');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:279a030f-75b5-27bc-68fa-9f6597f785d8', 'Receipts', 'search.php?id=304', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '30', 1, 1, NOW(), NOW(), '80');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:94c0a95d-3244-107f-2c85-f4207e5cec94', '----', 'N/A', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '100', 1, 1, NOW(), NOW(), '50');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:1b9973a9-b1c7-8cf6-a5ea-ba041a19ac06', 'Post Records', 'modules/bms/post.php', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '110', 1, 1, NOW(), NOW(), '50');
-INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:07b85ffa-178b-f20f-36db-c2ca99274124', 'Posting Sessions', 'search.php?id=307', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '120', 1, 1, NOW(), NOW(), '50');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:7261b6a1-6424-77a6-6a02-eada540ec092', 'Client', '', '0', '0', 1, 1, NOW(), NOW(), 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:42d221f6-37ef-c755-e335-39d00e3fda58', 'Quick View', 'modules/bms/quickview.php', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '0', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:d080b1a3-6fac-ae6e-2457-b969a8d67996', 'Clients', 'search.php?id=2', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '10', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:96809579-305c-19c3-042b-405e7763a000', 'Check for Duplicates', 'search.php?id=18', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '20', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:8cf7d073-72b9-93db-6d07-14578e2a694f', 'Sales', '', '0', '1', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:652204a6-c0c3-e0b7-d0e4-919c3f3f64f9', 'Sales Orders', 'search.php?id=3', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '10', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:23960b0a-316e-0070-8d64-0834aa443187', 'Item Analysis', 'search.php?id=5', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '55', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:7cc050a6-9742-ca54-3a19-3d08867e7cf7', 'Discounts', 'search.php?id=25', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '40', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:e7bb833c-a3ac-0619-88d2-990ab53e63e6', 'Tax Areas', 'search.php?id=6', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '70', 1, 1, NOW(), NOW(), 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', 'Product', '', '0', '2', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:4d49690e-980b-c705-271e-376339dde62f', 'Products', 'search.php?id=4', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '0', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:24861935-096d-ed0b-98ce-2273da3054c6', 'Product Categories', 'search.php?id=7', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '1', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:8f14c059-2ff4-0ca6-21ec-7204c3cddb20', 'Prerequisites', 'search.php?id=8', 'menu:6f119c0c-241e-4dd8-42c9-c7321e9d5b53', '2', 1, 1, NOW(), NOW(), 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:9352a813-3c5a-efd4-71dc-a5b8bcac2e3d', 'Shipping Methods', 'search.php?id=300', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '80', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:23c6a92e-932b-4861-1050-561b5f35f3a1', 'Payment Methods', 'search.php?id=301', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '90', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:48d55385-ce5e-53ca-34c2-1861da882442', '----', 'N/A', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '50', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:96171e3f-2499-9e75-248e-45d637df9128', 'Invoice Statuses', 'search.php?id=302', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '80', 1, 1, NOW(), NOW(), 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:f020a94f-f78f-c1f9-cd32-133089704403', 'Email Projects', 'search.php?id=22', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '100', 1, 1, NOW(), NOW(), 'Admin');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:abd768e4-10b4-607c-a760-ee58366437e6', 'AR Items', 'search.php?id=303', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '20', 1, 1, NOW(), NOW(), '');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:279a030f-75b5-27bc-68fa-9f6597f785d8', 'Receipts', 'search.php?id=304', 'menu:8cf7d073-72b9-93db-6d07-14578e2a694f', '30', 1, 1, NOW(), NOW(), 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:94c0a95d-3244-107f-2c85-f4207e5cec94', '----', 'N/A', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '100', 1, 1, NOW(), NOW(), 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:1b9973a9-b1c7-8cf6-a5ea-ba041a19ac06', 'Post Records', 'modules/bms/post.php', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '110', 1, 1, NOW(), NOW(), 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520');
+INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:07b85ffa-178b-f20f-36db-c2ca99274124', 'Posting Sessions', 'search.php?id=307', 'menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', '120', 1, 1, NOW(), NOW(), 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520');
 ALTER TABLE `addresses` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `clients` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 ALTER TABLE `lineitems` ADD COLUMN `custom1` DOUBLE, ADD COLUMN `custom2` DOUBLE, ADD COLUMN `custom3` DATETIME, ADD COLUMN `custom4` DATETIME, ADD COLUMN `custom5` VARCHAR(255), ADD COLUMN `custom6` VARCHAR(255), ADD COLUMN `custom7` TINYINT(1) DEFAULT 0, ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
@@ -287,10 +286,47 @@ UPDATE `tabledefs` SET `prefix` = 'inst' WHERE id = 302;
 UPDATE `tabledefs` SET `prefix` = 'dsct' WHERE id = 25;
 UPDATE `tabledefs` SET `prefix` = 'arit' WHERE id = 303;
 UPDATE `tabledefs` SET `prefix` = 'addr' WHERE id = 306;
--- Notes UUID switchover --
-ALTER TABLE `notes`
-MODIFY `assignedtoid` varchar(64),
-MODIFY `attachedid` varchar(64),
-MODIFY `attachedtabledefid` varchar(64),
-MODIFY `parentid` varchar(64),
-MODIFY `assignedbyid` varchar(64);
+--UUID switchover--
+ALTER TABLE `clientemailprojects`
+    MODIFY `userid` VARCHAR(64) NOT NULL;
+ALTER TABLE `clients`
+    MODIFY `salesmanagerid` VARCHAR(64),
+    MODIFY `paymentmethodid` VARCHAR(64),
+    MODIFY `shippingmethodid` VARCHAR(64),
+    MODIFY `discountid` VARCHAR(64),
+    MODIFY `taxareaid` VARCHAR(64);
+ALTER TABLE `invoices`
+    MODIFY `clientid` VARCHAR(64) NOT NULL,
+    MODIFY `statusid` VARCHAR(64),
+    MODIFY `assignedtoid` VARCHAR(64),
+    MODIFY `discountid` VARCHAR(64),
+    MODIFY `taxareaid` VARCHAR(64),
+    MODIFY `shippingmethodid` VARCHAR(64),
+    MODIFY `paymentmethodid` VARCHAR(64),
+    MODIFY `billingaddressid` VARCHAR(64),
+    MODIFY `shiptoaddressid` VARCHAR(64);
+ALTER TABLE `lineitems`
+    MODIFY `productid` VARCHAR(64);
+ALTER TABLE `prerequisites`
+    MODIFY `childid` VARCHAR(64) NOT NULL,
+    MODIFY `parentid` VARCHAR(64) NOT NULL;
+ALTER TABLE `invoicestatuses`
+    MODIFY `defaultassignedtoid` VARCHAR(64);
+ALTER TABLE `invoicestatushistory`
+    MODIFY `invoiceid` VARCHAR(64) NOT NULL,
+    MODIFY `invoicestatusid` VARCHAR(64) NOT NULL,
+    MODIFY `assignedtoid` VARCHAR(64);
+ALTER TABLE `aritems`
+    ADD COLUMN `uuid` VARCHAR(64) NOT NULL,
+    MODIFY `clientid` VARCHAR(64) NOT NULL,
+    MODIFY `relatedid` VARCHAR(64);
+ALTER TABLE `receipts`
+    MODIFY `clientid` VARCHAR(64) NOT NULL,
+    MODIFY `paymentmethodid` VARCHAR(64) NOT NULL;
+ALTER TABLE `receiptitems`
+    MODIFY `receiptid` VARCHAR(64) NOT NULL,
+    MODIFY `aritemid` VARCHAR(64) NOT NULL;
+ALTER TABLE `addresstorecord`
+    MODIFY `tabledefid` VARCHAR(64) NOT NULL,
+    MODIFY `recordid` VARCHAR(64) NOT NULL,
+    MODIFY `addressid` VARCHAR(64) NOT NULL;

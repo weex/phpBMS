@@ -37,68 +37,236 @@
  +-------------------------------------------------------------------------+
 */
 
-	
-	function setDefaultQuickSearch(){
-		$therecord["id"]=NULL;		
-		$therecord["displayorder"]=NULL;		
+class quickSearches{
 
-		$therecord["name"]="";		
-		$therecord["roleid"]=0;		
-		$therecord["search"]="";		
+	var $db;
+	var $uuid;
+
+	/**
+	 * Initializes quickSearches object
+	 *
+	 * @param object $db database object
+	 * @param integer $id tabledefs id
+	 */
+	function quickSearches($db, $id){
+
+		$this->db = $db;
+
+		$querystatement = "
+			SELECT
+				uuid
+			FROM
+				tabledefs
+			WHERE
+				id =".((int) $id);
+
+		$queryresult = $this->db->query($querystatement);
+
+		$therecord = $this->db->fetchArray($queryresult);
+
+		$this->uuid = $therecord["uuid"];
+
+	}//end fnction init
+
+
+	function getDefaults(){
+
+		$therecord["id"] = NULL;
+		$therecord["displayorder"] = NULL;
+
+		$therecord["name"] = "";
+		$therecord["roleid"] = "";
+		$therecord["search"] = "";
 
 		return $therecord;
-	}
-	
-	function getQuicksearchs($db,$tabledefid,$quicksearchid=false){
 
-		$querystatement="SELECT tablefindoptions.id, tablefindoptions.name, tablefindoptions.search, tablefindoptions.displayorder, roleid,
-		roles.name as rolename
-		FROM tablefindoptions LEFT JOIN roles ON tablefindoptions.roleid=roles.id
-		WHERE tablefindoptions.tabledefid=".$tabledefid;
-		if($quicksearchid) $querystatement.=" AND tablefindoptions.id=".$quicksearchid;
-		$querystatement.=" ORDER BY tablefindoptions.displayorder";
-		
-		$thequery=$db->query($querystatement);
-		
-		return $thequery;
-	}// end function
+	}//end function getDefaults
 
 
-	function addQuicksearch($db,$variables,$tabledefid){
-		$thereturn = false;
-		
-		$querystatement="INSERT INTO tablefindoptions (tabledefid, name, `search`, roleid, displayorder)
-		values (";
-		$querystatement.=$tabledefid.", ";
-		$querystatement.="\"".$variables["name"]."\", ";
-		$querystatement.="\"".$variables["search"]."\", ";
-		$querystatement.="\"".$variables["roleid"]."\", ";
-		$querystatement.="\"".$variables["displayorder"]."\")";		
-		if($db->query($querystatement)) $thereturn ="Quick Search Item Added";
-		
-		return $thereturn;
-	}// end function
-	
+	/**
+	 * gets quick search records
+	 *
+	 * @param integer $id tabledef's id
+	 */
+	function get($id = 0){
 
-	function updateQuicksearch($db,$variables){
+		$querystatement = "
+			SELECT
+				tablefindoptions.id,
+				tablefindoptions.name,
+				tablefindoptions.search,
+				tablefindoptions.displayorder,
+				tablefindoptions.roleid,
+				roles.name as rolename
+			FROM
+				tablefindoptions LEFT JOIN roles ON tablefindoptions.roleid = roles.uuid
+			WHERE
+				tablefindoptions.tabledefid = '".$this->uuid."'";
 
-		$querystatement="UPDATE tablefindoptions set ";
-		$querystatement.="name=\"".$variables["name"]."\", ";
-		$querystatement.="roleid=\"".$variables["roleid"]."\", ";
-		$querystatement.="`search`=\"".$variables["search"]."\" ";
-		$querystatement.="WHERE id=".$variables["quicksearchid"];
-		if($db->query($querystatement)) $thereturn ="Quick Search Item Updated";
-		
-		return $thereturn;
-	}
+		if($id)
+			$querystatement .= "
+				AND tablefindoptions.id = ".((int) $id);
 
-	function deleteQuicksearch($db,$id){
+		$querystatement .= "
+			ORDER BY
+				tablefindoptions.displayorder";
 
-		$querystatement="DELETE FROM tablefindoptions WHERE id=".$id;
-		if($db->query($querystatement)) $thereturn ="Quick Search Item Deleted";
-		
-		return $thereturn;
-	}
+		$queryresult = $this->db->query($querystatement);
+
+		return $queryresult;
+
+	}//end function get
+
+
+	/**
+	 * adds quck search item
+	 *
+	 * @param array $variables post array
+	 */
+	function add($variables){
+
+		$querystatement = "
+			INSERT INTO
+				tablefindoptions
+				(
+				tabledefid,
+				name,
+				`search`,
+				roleid,
+				displayorder
+			) values (
+				'".$this->uuid."',
+				'".$variables["name"]."',
+				'".$variables["search"]."',
+				'".$variables["roleid"]."',
+				'".$variables["displayorder"]."'
+			)";
+
+		if($this->db->query($querystatement))
+			return "Quick Search Item Added";
+		else
+			return false;
+
+	}//end function add
+
+
+	/**
+	 * updates quick search
+	 *
+	 * @param array $variables post variables
+	 */
+	function update($variables){
+
+		$querystatement = "
+			UPDATE
+				tablefindoptions
+			SET
+				name = '".$variables["name"]."',
+				roleid = '".$variables["roleid"]."',
+				`search` = '".$variables["search"]."'
+			WHERE
+				id = ".((int) $variables["quicksearchid"]);
+
+		if($this->db->query($querystatement))
+			return "Quick Search Item Updated";
+		else
+			return false;
+
+	}//end function update
+
+
+	/*
+	 * delete a quick search item
+	 *
+	 * @param integer $id
+	 */
+	function delete($id){
+
+		$querystatement = "
+			DELETE FROM
+				tablefindoptions
+			WHERE
+				id=".((int) $id);
+
+		if($this->db->query($querystatement))
+			return "Quick Search Item Deleted";
+		else
+			return false;
+
+	}//end function delete
+
+	/**
+	 * reorders quick search item (displayorder)
+	 *
+	 * @param integer $id quick search id
+	 * @param string $direction up/down
+	 */
+	function move($id, $direction = "up"){
+
+		if($direction == "down")
+			$increment="1";
+		else
+			$increment="-1";
+
+		$querystatement = "
+			SELECT
+				displayorder
+			FROM
+				tablefindoptions
+			WHERE
+				id = ".((int) $id);
+
+		$queryresult = $this->db->query($querystatement);
+
+		$therecord = $this->db->fetchArray($queryresult);
+
+		$querystatement = "
+			SELECT
+				MAX(displayorder) AS themax
+			FROM
+				tablefindoptions
+			WHERE
+				tabledefid = '".$this->uuid."'";
+
+		$queryresult = $this->db->query($querystatement);
+
+		$maxrecord = $this->db->fetchArray($thequery);
+
+		if(!(($direction=="down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction == "up" && $therecord["displayorder"] == "0"))){
+
+			$querystatement = "
+				UPDATE
+					tablefindoptions
+				SET
+					displayorder=".$therecord["displayorder"]."
+				WHERE
+					displayorder = ".($increment + $therecord["displayorder"])."
+					AND tabledefid = '".$tabledefid."'";
+
+			$thequery = $this->db->query($querystatement);
+
+			$querystatement = "
+				UPDATE
+					tablefindoptions
+				SET
+					displayorder = displayorder + ".$increment."
+				WHERE
+					id =".((int) $id);
+			if($db->query($querystatement))
+				return "Position Moved";
+
+		}//endif
+
+		return false;
+
+	}//end function move
+
+}//end class quickSearches
+
+
+
+
+
 
 	function moveQuicksearch($db,$id,$direction="up",$tabledefid){
 
@@ -111,16 +279,16 @@
 		$querystatement="select max(displayorder) as themax FROM tablefindoptions WHERE tabledefid=".$tabledefid;
 		$thequery=$db->query($querystatement);
 		$maxrecord=$db->fetchArray($thequery);
-		
+
 		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
-			$querystatement="UPDATE tablefindoptions set displayorder=".$therecord["displayorder"]." 
+			$querystatement="UPDATE tablefindoptions set displayorder=".$therecord["displayorder"]."
 								WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$tabledefid;
 			$thequery=$db->query($querystatement);
 
 			$querystatement="UPDATE tablefindoptions set displayorder=displayorder+".$increment." WHERE id=".$id;
 			$thequery=$db->query($querystatement);
 		}// end if
-		
+
 		if(isset($thereturn)) return $thereturn; else return "Position Moved";
 	}
 ?>

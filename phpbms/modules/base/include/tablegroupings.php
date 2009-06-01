@@ -39,13 +39,40 @@
 
 class groupings{
 
-	function groupings($db,$tabledefid){
+	var $db;
+	var $tabledefid;
+	var $tabledefuuid;
+
+	/**
+	 * initialize group object
+	 *
+	 * @param object $db database object
+	 * @param int $tabledefid tabledef id
+	 */
+	function groupings($db, $tabledefid){
+
 		$this->db = $db;
 		$this->tabledefid = (int) $tabledefid;
-	}
+
+		$querystatement = "
+			SELECT
+				uuid
+			FROM
+				tabledefs
+			WHERE
+				id = ".$this->tabledefid;
+
+		$queryresult = $this->db->query($querystatement);
+
+		$therecord = $this->db->fetchArray($queryresult);
+
+		$this->tabledefuuid = $therecord["uuid"];
+
+	}//end fucntion tabledefid
 
 
-	function processForm($command,$post,$get){
+	function processForm($command,$post, $get){
+
 		$therecord = $this->getDefaults();
 		$therecord["action"] = "add record";
 
@@ -53,58 +80,78 @@ class groupings{
 			case "edit":
 				$therecord = $this->getRecords($get["selid"]);
 				$therecord["action"] = "edit record";
-			break;
+				break;
 
 			case "delete":
 				$therecord["statusMessage"] = $this->delete($get["selid"]);
-			break;
+				break;
 
 			case "add record":
 				$therecord["statusMessage"] = $this->add(addSlashesToArray($post));
-			break;
+				break;
 
 			case "edit record":
 				$therecord["statusMessage"] = $this->update(addSlashesToArray($post));
-			break;
+				break;
 
 			case "moveup":
 				$therecord["statusMessage"] = $this->move($get["selid"],"up");
-			break;
+				break;
 
 			case "movedown":
 				$therecord["statusMessage"] = $this->move($get["selid"],"down");
-			break;
-		
-		}
+				break;
+
+		}//endswitch
 
 		return $therecord;
 
-	}//end method
+	}//end method processFrom
 
+	/**
+	 * get grouping record (or records)
+	 *
+	 * @param integer $id
+	 */
+	function getRecords($id = NULL){
 
-	function getRecords($id=NULL){
-		$querystatement = "SELECT * FROM tablegroupings WHERE tabledefid=".$this->tabledefid;
+		$querystatement = "
+			SELECT
+				*
+			FROM
+				tablegroupings
+			WHERE
+				tabledefid = '".$this->tabledefuuid."'";
+
 		if($id != NULL)
-			$querystatement .= " AND id =".((int) $id);
-		$querystatement .= " ORDER BY displayorder";
+			$querystatement .= "
+				AND id =".((int) $id);
+
+		$querystatement .= "
+			ORDER BY
+				displayorder";
 
 		$queryresult = $this->db->query($querystatement);
+
 		if($id != NULL)
 			return  $this->db->fetchArray($queryresult);
 		else
 			return $queryresult;
-	}
+
+	}//end function getRecords
 
 
 	function getDefaults(){
+
 		$therecord["id"] = NULL;
 		$therecord["displayorder"] = 0;
 		$therecord["name"] = "";
 		$therecord["field"] = "";
-		$therecord["roleid"] = 0;
+		$therecord["roleid"] = "";
 		$therecord["ascending"] = 1;
 
 		return $therecord;
+
 	}//end method
 
 
@@ -132,19 +179,20 @@ class groupings{
 
 
 		$querystatement = "INSERT INTO tablegroupings (tabledefid, name, `field`, displayorder, `ascending`, roleid) VALUES (";
-		$querystatement .= $this->tabledefid.", ";
+		$querystatement .= "'".$this->tabledefuuid."', ";
 		$querystatement .= "'".$variables["name"]."', ";
 		$querystatement .= "'".$variables["field"]."', ";
 		$querystatement .= (((int)$maxOrder) +1 ).", ";
 
 		if(isset($variables["ascending"])) $querystatement .= "1, "; else $querystatement .= "0, ";
 
-		$querystatement .= ((int) $variables["roleid"]).") ";
+		$querystatement .= "'".$variables["roleid"]."') ";
 
 		$this->db->query($querystatement);
 
 		return "record added";
-	}//end method
+
+	}//end method add
 
 
 	function update($variables){
@@ -156,22 +204,25 @@ class groupings{
 		$querystatement .= "`ascending` =";
 		if(isset($variables["ascending"])) $querystatement .= "1, "; else $querystatement .= "0, ";
 
-		$querystatement .= "roleid = ".((int) $variables["roleid"])." ";
+		$querystatement .= "roleid = '".$variables["roleid"]."' ";
 		$querystatement .= "WHERE id = ".((int) $variables["id"]);
 
 		$this->db->query($querystatement);
 
 		return "record updated";
-	}
+
+	}//end function update
 
 
 	function getMaxOrder(){
+
 		$querystatement="select max(displayorder) as themax FROM tablegroupings WHERE tabledefid=".$this->tabledefid;
 		$thequery=$this->db->query($querystatement);
 		$maxrecord=$this->db->fetchArray($thequery);
 
 		return($maxrecord["themax"]);
-	}
+
+	}//end function getMaxOrder
 
 
 	function move($id,$direction = "down"){
