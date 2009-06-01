@@ -124,7 +124,7 @@ CREATE TABLE `reports` (
   `uuid` varchar(64) NOT NULL,
   `name` varchar(64) default NULL,
   `type` varchar(32) default NULL,
-  `tabledefid` int(11) NOT NULL default '0',
+  `tabledefid` varchar(64) NOT NULL,
   `displayorder` int(11) NOT NULL default '0',
   `roleid` VARCHAR(64),
   `reportfile` varchar(128) NOT NULL,
@@ -230,7 +230,7 @@ CREATE TABLE tablecustomfields (
   `generator` TEXT,
   `required` TINYINT(4) NOT NULL default 0,
   `displayorder` int(11) NOT NULL default 0,
-  `roleid` VARCHAR(64),
+  `roleid` VARCHAR(64) default '',
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`)
 ) ENGINE=INNODB;
