@@ -1,14 +1,20 @@
 <?php
 
 function displayRoles($db){
-	
-	$id = $_SESSION["userinfo"]["id"];
 
-	$querystatement="SELECT roles.id,roles.name
-					FROM roles INNER JOIN rolestousers ON rolestousers.roleid=roles.id 
-					WHERE rolestousers.userid=".$id;
-	$assignedquery=$db->query($querystatement);
-	while($therecord=$db->fetchArray($assignedquery))
+	$uuid = $_SESSION["userinfo"]["uuid"];
+
+	$querystatement = "
+		SELECT
+			`roles`.`id`,
+			`roles`.`name`
+		FROM
+			`roles` INNER JOIN `rolestousers` ON `rolestousers`.`roleid`=`roles`.`uuid`
+		WHERE
+			`rolestousers`.`userid` = '".mysql_real_escape_string($uuid)."'
+		";
+	$assignedquery = $db->query($querystatement);
+	while($therecord = $db->fetchArray($assignedquery))
 		echo "<li>".$therecord["name"]."</li>";
 }
 
@@ -21,8 +27,8 @@ function changePassword($variables,$id,$db){
 				$querystatement="UPDATE users SET password=ENCODE(\"".$variables["newPass"]."\",\"".ENCRYPTION_SEED."\") WHERE id=".$id;
 				$queryresult=$db->query($querystatement);
 				return "Password Updated";
-			} else 
-				return "Current Password Incorrect";			
+			} else
+				return "Current Password Incorrect";
 	} else
 		return "Changing password is disbabled in demonstration mode.";
 }
