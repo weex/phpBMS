@@ -718,7 +718,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                     FROM
                         `tablecustomfields`
                     WHERE
-                        `tabledefid` = ".$this->id."
+                        `tabledefid` = '".$this->uuid."'
                     ORDER BY
                         `displayorder`";
 
