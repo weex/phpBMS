@@ -152,10 +152,10 @@ class tableColumns{
                 '".$variables["size"]."',
                 ".$variables["format"].",
                 ".$variables["wrap"].",
-                '".$variables["roleid"]."',
+                '".$variables["roleid"]."'
             )";
 
-            if($db->query($insertstatement))
+            if($this->db->query($insertstatement))
                 return "Column Added";
             else
                 return false;
@@ -185,11 +185,11 @@ class tableColumns{
                 `size` = '".$variables["size"]."',
                 `format` = ".$variables["format"].",
                 `wrap` = ".$variables["wrap"].",
-                `roleid` = '".$variables["roleid"]."',
+                `roleid` = '".$variables["roleid"]."'
             WHERE
                 id = ".((int) $variables["columnid"]);
 
-        if($db->query($updatestatement))
+        if($this->db->query($updatestatement))
             return "Column Updated";
         else
             return false;

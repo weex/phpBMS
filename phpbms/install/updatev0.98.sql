@@ -227,6 +227,7 @@ ALTER TABLE `usersearches` ENGINE=INNODB;
 ALTER TABLE `usersearches`
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
     MODIFY `tabledefid` VARCHAR(64) NOT NULL,
+    MODIFY `roleid` VARCHAR(64),
     MODIFY `userid` VARCHAR(64) NOT NULL;
 --end usersearches ALTER--
 

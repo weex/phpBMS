@@ -42,7 +42,7 @@
 	if(!isset($_GET["id"]))
 		$error = new appError(100,"Passed Parameter not present.");
 
-	$_GET["id"]= (integer) $_GET["id"];
+	$_GET["id"]= mysql_real_escape_string($_GET["id"]);
 
 	$displayTable= new displaySearchTable($db);
 

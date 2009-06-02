@@ -59,7 +59,7 @@
 
             include_once("include/search_class.php");
 
-            $displayTable= new simpleTable($this->db, 2, "rcl");
+            $displayTable= new simpleTable($this->db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", "rcl");
             $displayTable->querywhereclause = $whereclause;
 
             $displayTable->issueQuery();

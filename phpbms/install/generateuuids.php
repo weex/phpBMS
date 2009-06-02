@@ -109,6 +109,13 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("tableoptions", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
         //$this->updateFields("tabledefs", array("moduleid"=>$this->moduleList, "editroleid"=>$this->roleList, "addroleid"=>$this->roleList, "searchroleid"=>$this->roleList, "advsearchroleid"=>$this->roleList, "viewsqlroleid"=>$this->roleList));
         //$this->updateFields("tablesearchablefields", array("tabledefid"=>$this->tabledefList));
+        //$this->updateFields("usersearches", array("tabledefid"=>$this->tabledefList, "userid"=>$this->userList, "roleid"=>$this->roleList));
+
+        $this->updateMenuLinks();
+
+        // ======
+        // This stuff probably won't be needed as they will be done during the update
+        //$this->updateFields("widgets", array("moduleid"=>$this->moduleList, "roleid"=>$this->roleList));
 
         return $this->returnJSON(true, "UUID's Generated");
 
@@ -174,7 +181,7 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-//echo $updatestatement."<br />";
+                $updatestatement."<br />";
                 $this->db->query($updatestatement);
 
             }//endif
@@ -227,6 +234,39 @@ class generateUUIDS extends installUpdateBase{
             }//endif //endwhile
 
     }//end function createUUIDs
+
+
+    function updateMenuLinks(){
+
+        $querystatement = "
+            SELECT
+                `id`,
+                `link`
+            FROM
+                `menu`
+            WHERE
+                `link` LIKE 'search.php?id=%'";
+
+        $queryresult = $this->db->query($querystatement);
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $id = substr($therecord["link"], 14);
+
+            $updatestatement = "
+                UPDATE
+                    `menu`
+                SET
+                    `link` = 'search.php?id=".urlencode($this->tabledefList[$id])."'
+                WHERE
+                    `id` = ".$therecord["id"];
+
+            $this->db->query($updatestatement);
+
+        }//endwhile
+
+
+    }//end function updateMenuLinks
 
 
 }//end class updateAjax

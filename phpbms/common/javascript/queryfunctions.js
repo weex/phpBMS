@@ -38,14 +38,14 @@
 window.onload=function(){
 
 	var sqlbttn=getObjectFromID("showSQLButton");;
-	
+
 	if(sqlbttn){
 		var sqlDivs = new Array();
 		sqlDivs[sqlDivs.length]=getObjectFromID("sqlstatement");
-	
+
 		var sqlLinks = new Array();
 		sqlLinks[sqlLinks.length]=sqlbttn;
-	
+
 		var sqlAccordion = new fx.Accordion(sqlLinks, sqlDivs, {opacity: true, duration:250, onComplete:function(){switchSqlButtons()}});
 	}
 }
@@ -87,7 +87,7 @@ function clickIt(theTR,theevent,disablectrl){
 			}
 		}
 	}
-	
+
 	var theID=theTR.id.substr(2,theTR.id.length-1);
 
 	if(!ctrlkeydown && shiftkeydown){
@@ -97,9 +97,9 @@ function clickIt(theTR,theevent,disablectrl){
 		var searchArray = "+"+selIDs.join("+")+"+";
 		var point1 = null;
 		var point2 = null;
-		
+
 		for(i=0;i<theTable.childNodes.length;i++){
-			if (theTable.childNodes[i].className){				
+			if (theTable.childNodes[i].className){
 				if(theTable.childNodes[i].className != "queryGroup"){
 					theTable.childNodes[i].className = "qr"+theTable.childNodes[i].className.charAt(theTable.childNodes[i].className.length-1);
 					curID = theTable.childNodes[i].id.substr(2);
@@ -129,7 +129,7 @@ function clickIt(theTR,theevent,disablectrl){
 				}
 			}
 		}
-		
+
 	} else {
 		// need to find the checkbox that the TR contains
 		var newClass="";
@@ -145,7 +145,7 @@ function clickIt(theTR,theevent,disablectrl){
 			selIDs[selIDs.length]=theTR.id.substring(2);
 		}
 		theTR.className=newClass;
-	
+
 		var disabledstatus=(selIDs.length==0);
 		setButtonStatus(disabledstatus);
 	}
@@ -157,9 +157,9 @@ function setSelIDs(theform){
 }
 
 function chooseOtherCommand(thevalue, thetext, thesource){
-	
+
 	if(!thesource.className.match(/Disabled/)){
-		
+
 		switch(thevalue){
 			case "-1":
 				var thediv = getObjectFromID("otherDropDown");
@@ -167,11 +167,11 @@ function chooseOtherCommand(thevalue, thetext, thesource){
 				confirmDelete(confirmcommand);
 				thediv.style.display = "none";
 				break;
-			
+
 			case "-2":
 				importRecord();
 				break;
-			
+
 			default:
 				var otherField = getObjectFromID("othercommands");
 				setSelIDs(otherField.form);
@@ -179,9 +179,9 @@ function chooseOtherCommand(thevalue, thetext, thesource){
 				otherField.form.submit();
 				break;
 		}//end switch
-		
+
 	}//end if
-	
+
 }
 
 function confirmDelete(deletename){
@@ -189,13 +189,13 @@ function confirmDelete(deletename){
 	if(deleteButton)
 		if(deleteButton.className == "deleteRecordDisabled")
 			return false;
-		
+
 		var howmany=selIDs.length+" selected record";
 
 		if(selIDs.length!=1)
 			howmany+="s"
 		var content="<div>Are you sure you want to "+deletename+" the "+howmany+"?</div>";
-			content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onclick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onclick=\"closeModal()\" /></div>"	
+			content+="<div align=\"right\"><input type=\"button\" class=\"\Buttons\" style=\"width:75px;margin-right:2px;\" value=\"yes\" onclick=\"doDelete()\" /><input type=\"button\" class=\"\Buttons\" style=\"width:75px;\" value=\"no\" onclick=\"closeModal()\" /></div>"
 		showModal(content,"Confirm",300) ;
 }
 
@@ -213,7 +213,7 @@ function doDelete(){
 	var thedelete=getObjectFromID("deleteCommand");
 	thedelete.value="delete";
 	setSelIDs(thedelete.form);
-	thedelete.form.submit();	
+	thedelete.form.submit();
 }
 
 
@@ -226,24 +226,24 @@ function setButtonStatus(disabledstatus){
 	var select = getElementsByClassName("needselect");
 	if(!select.length)
 		var select = getElementsByClassName("needselectDisabled");
-		
+
 	if(editButton)
 		editButton.className="editRecord"+((disabledstatus)?"Disabled":"");
-		
+
 	if(deleteButton)
 		deleteButton.className = "deleteRecord"+((disabledstatus)?"Disabled":"");
-			
-	
+
+
 	for(i = 0;i < select.length; i++)
 		select[i].className = "needselect"+((disabledstatus)?"Disabled":"");
-	
-	
+
+
 	//if(otherCommands) {
 	//	otherCommands.className = "otherCommands"+((disabledstatus)?"Disabled":"");
 	//	var otherDropDown = getObjectFromID("otherDropDown");
 	//	otherDropDown.style.display = "none";
 	//}
-		
+
 	if(relationship) relationship.disabled=disabledstatus;
 }
 
@@ -259,7 +259,7 @@ return false;
 //double click on row
 function editThis(therow){
 	var connector;
-	
+
 	if(therow){
 		// the row is used for doubleclicking
 		var therownum=therow.id.substr(2);
@@ -274,7 +274,7 @@ function editThis(therow){
 		editFile+=connector+"id="+selIDs[0];
 		if(typeof xtraParamaters != "undefined")
 			editFile+="&"+(xtraParamaters);
-		
+
 		document.location=editFile;
 	}
 }//end function
@@ -307,7 +307,7 @@ function selectRecords(allornone){
 	var newClass="qr";
 	if(!allornone) newClass="qh";
 	selIDs= new Array();
-	
+
 	var tbody = getObjectFromID("resultTbody");
 	for(var i=0;i<tbody.childNodes.length;i++){
 		if(tbody.childNodes[i].className){
@@ -347,12 +347,12 @@ function showDropDown(whatDD){
 
 	var otherDD;
 	var thediv = getObjectFromID(whatDD);
-	
-	if(whatDD == "searchSelectionDropDown")		
+
+	if(whatDD == "searchSelectionDropDown")
 		otherDD = getObjectFromID("otherDropDown");
 	else
 		otherDD = getObjectFromID("searchSelectionDropDown");
-	
+
 	if(thediv.style.display == "none")
 		thediv.style.display = "block";
 	else
@@ -363,7 +363,7 @@ function showDropDown(whatDD){
 }
 
 
-function perfromToSelection(option){		
+function perfromToSelection(option){
 
 	var thereset=getObjectFromID("reset");
 	var thediv = getObjectFromID("searchSelectionDropDown");
@@ -392,8 +392,8 @@ function perfromToSelection(option){
 			}
 		break;
 	}
-	thediv.style.display = "none";		
-	
+	thediv.style.display = "none";
+
 }
 
 
@@ -401,19 +401,19 @@ function perfromToSelection(option){
 function switchSearchTabs(taba,base){
 	if(taba.parentNode.className=="tabsSel")
 		return false;
-		
+
 	var basicTab=getObjectFromID("basicSearchT");
 	var advancedTab=getObjectFromID("advancedSearchT");
 	var loadTab=getObjectFromID("loadSearchT");
 	var saveTab=getObjectFromID("saveSearchT");
 	var sortTab=getObjectFromID("advancedSortT");
-	
+
 	basicTab.className="";
 	if(advancedTab) advancedTab.className="";
 	loadTab.className="";
 	saveTab.className="";
 	sortTab.className="";
-	
+
 	taba.parentNode.className="tabsSel";
 
 	basicTab=getObjectFromID("basicSearchTab");
@@ -431,16 +431,16 @@ function switchSearchTabs(taba,base){
 	var theURL;
 	switch(taba.parentNode.id){
 		case "basicSearchT":
-			basicTab.style.display="block";			
+			basicTab.style.display="block";
 		break;
 		case "advancedSearchT":
 			if(advancedTab.innerHTML==""){
 				var tabledefid=getObjectFromID("tabledefid");
 				advancedTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
-				advancedTab.style.display="block";			
+				advancedTab.style.display="block";
 				theURL=base+"advancedsearch.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
 				loadXMLDoc(theURL,null,false);
-				advancedTab.innerHTML=req.responseText;						
+				advancedTab.innerHTML=req.responseText;
 				ASParams= [1];
 			} else
 			advancedTab.style.display="block";
@@ -449,8 +449,8 @@ function switchSearchTabs(taba,base){
 			if(loadTab.innerHTML==""){
 				var tabledefid=getObjectFromID("tabledefid");
 				loadTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
-				loadTab.style.display="block";			
-				theURL=base+"loadsearch.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
+				loadTab.style.display="block";
+				theURL=base+"loadsearch.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+encodeURIComponent(tabledefid.value);
 				loadXMLDoc(theURL,null,false);
 				loadTab.innerHTML=req.responseText;
 			} else
@@ -459,27 +459,27 @@ function switchSearchTabs(taba,base){
 		case "saveSearchT":
 			var searchbutton=getObjectFromID("saveSearch");
 			var searchtext=getObjectFromID("saveSearchName");
-			var searchstatus=getObjectFromID("saveSearchReults");	
+			var searchstatus=getObjectFromID("saveSearchReults");
 			if(searchstatus.innerHTML!=""){
 				searchbutton.disabled=true;
 				searchtext.value="";
 				searchstatus.className="";
 				searchstatus.innerHTML="";
 			}
-			saveTab.style.display="block";			
+			saveTab.style.display="block";
 		break;
 		case "advancedSortT":
 			if(sortTab.innerHTML==""){
 				var tabledefid=getObjectFromID("tabledefid");
 				sortTab.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
-				sortTab.style.display="block";			
+				sortTab.style.display="block";
 				theURL=base+"advancedsort.php?cmd=show&base="+encodeURIComponent(base)+"&tid="+tabledefid.value;
 				loadXMLDoc(theURL,null,false);
-				sortTab.innerHTML=req.responseText;						
+				sortTab.innerHTML=req.responseText;
 				SortParams= [1];
 				updateSort();
 			} else
-			sortTab.style.display="block";			
+			sortTab.style.display="block";
 		break;
 	}
 }
@@ -487,7 +487,7 @@ function switchSearchTabs(taba,base){
 
 // Advanced Search Functions ==========================================
 function updateAS(){
-	var tempMinus;	
+	var tempMinus;
 	if(ASParams.length>1){
 		tempMinus=getObjectFromID("ASC"+ASParams[0]+"minus")
 		tempMinus.className="graphicButtons buttonMinus";
@@ -510,7 +510,7 @@ function updateAS(){
 	if(sqlText!="")
 		searchButton.disabled=false;
 	else
-		searchButton.disabled=true;	
+		searchButton.disabled=true;
 	var sqlBox=getObjectFromID("ASSQL");
 	sqlBox.value=sqlText;
 }
@@ -520,7 +520,7 @@ function ASEnableSave(thetextarea){
 	if (thetextarea.value!="")
 		searchButton.disabled=false;
 	else
-		searchButton.disabled=true;	
+		searchButton.disabled=true;
 }
 
 function addlineAS(){
@@ -532,25 +532,25 @@ function addlineAS(){
 	var tempContent=tempDiv.innerHTML;
 	var REcriteria = new RegExp("ASC"+ASParams[0],"g")
 	tempContent=tempContent.replace(REcriteria,"ASC"+(ASParams[ASParams.length-1]+1))
-		
+
 	var newDiv=document.createElement("div");
 	newDiv.id="ASC"+(ASParams[ASParams.length-1]+1);
-	newDiv.innerHTML=tempContent;	
-	
+	newDiv.innerHTML=tempContent;
+
 	var containerDiv=getObjectFromID("theASCs");
 	containerDiv.appendChild(newDiv);
 	var tempText=getObjectFromID("ASC"+(ASParams[ASParams.length-1]+1)+"text");
 	tempText.value="";
-	
+
 	ASParams[ASParams.length]=ASParams[ASParams.length-1]+1;
 }
 
 function removeLineAS(thebutton){
 	if(thebutton.className=="graphicButtons buttonMinusDisabled")
 		return false;
-	
+
 	var theDiv=thebutton.parentNode;
-		
+
 	var containerDiv=getObjectFromID("theASCs");
 	containerDiv.removeChild(theDiv);
 	var theid=theDiv.id.replace(/ASC/g,"");
@@ -572,7 +572,7 @@ function performAdvancedSearch(thebutton){
 	var tempsqlBox=getObjectFromID("ASSQL");
 	var realSQL=getObjectFromID("advancedsearch");
 	realSQL.value=tempsqlBox.value;
-	thebutton.form.submit();	
+	thebutton.form.submit();
 }
 
 // Load Search Functions ==========================================
@@ -603,11 +603,11 @@ function LSsearchSelect(theselect,base){
 		else
 			deletebutton.disabled=true;
 		reultbox.innerHTML="";
-	}	
+	}
 }
 
 function LSRunSearch(){
-	var sqlbox=getObjectFromID("LSSQL");	
+	var sqlbox=getObjectFromID("LSSQL");
 	var advancedsearch=getObjectFromID("advancedsearch");
 	advancedsearch.value=sqlbox.value
 	advancedsearch.form.submit();
@@ -623,12 +623,12 @@ function LSDeleteSearch(base){
 		reultbox.innerHTML="";
 		theselect.options[theselect.selectedIndex]=null;
 		if(theselect.options.length==1){
-			theselect.options[0].text="No Saved Searches";			
+			theselect.options[0].text="No Saved Searches";
 			theselect.disabled=true;
 		}
 		theselect.selectedIndex=0;
 		LSsearchSelect(theselect,base);
-	
+
 	}
 }
 
@@ -640,28 +640,28 @@ function enableSave(thetext){
 		searchbutton.disabled=true;
 	else
 		searchbutton.disabled=false;
-} 
+}
 
 function saveMySearch(base){
 	var searchtext=getObjectFromID("saveSearchName");
-	var searchstatus=getObjectFromID("saveSearchReults");	
+	var searchstatus=getObjectFromID("saveSearchReults");
 	var tabledefid=getObjectFromID("tabledefid");
-	
+
 	searchstatus.style.display="block";
 	searchstatus.className="";
 	searchstatus.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 	var theURL=base+"loadsearch.php?cmd=savesearch&name="+encodeURIComponent(searchtext.value)+"&tid="+tabledefid.value;
 	loadXMLDoc(theURL,null,false);
 	searchstatus.innerHTML=req.responseText;
-	searchstatus.className="standout";	
-	
+	searchstatus.className="standout";
+
 	loadTab=getObjectFromID("loadSearchTab");
-	loadTab.innerHTML="";	
+	loadTab.innerHTML="";
 }
 
 // Advanced Sort Functions ==========================================
 function sortEnableButtons(thetextarea){
-	
+
 	var buttonRunSort=getObjectFromID("sortRunSort");
 	var buttonSaveSort=getObjectFromID("sortSaveSort");
 	var buttonClearSort=getObjectFromID("sortClearSort");
@@ -671,14 +671,14 @@ function sortEnableButtons(thetextarea){
 		buttonClearSort.disabled=false;
 	}
 	else{
-		buttonRunSort.disabled=true;		
+		buttonRunSort.disabled=true;
 		buttonSaveSort.disabled=true;
 		buttonClearSort.disabled=true;
 	}
 }
 
 function clearSort(){
-	var sqlBox=getObjectFromID("sortSQL");	
+	var sqlBox=getObjectFromID("sortSQL");
 	sqlBox.value="";
 	var containerDiv=getObjectFromID("theSorts");
 	containerDiv.style.display="none";
@@ -686,12 +686,12 @@ function clearSort(){
 	for(var i=SortParams.length-1;i>0;i--){
 		tempbutton=getObjectFromID("Sort"+SortParams[i]+"Minus");
 		sortRemoveLine(tempbutton);
-	}	
+	}
 	containerDiv.style.display="block";
 }
 
 function updateSort(){
-	var tempMinus;	
+	var tempMinus;
 	if(SortParams.length>1){
 		tempMinus=getObjectFromID("Sort"+SortParams[0]+"Minus")
 		tempMinus.className="graphicButtons buttonMinus";
@@ -730,14 +730,14 @@ function sortAddLine(){
 
 	tempDown.className="graphicButtons buttonDown";
 	tempUp.className="graphicButtons buttonUpDisabled";
-		
+
 	var newDiv=document.createElement("div");
 	newDiv.id="Sort"+(SortParams[SortParams.length-1]+1);
-	newDiv.innerHTML=tempContent;	
-	
+	newDiv.innerHTML=tempContent;
+
 	var containerDiv=getObjectFromID("theSorts");
 	containerDiv.appendChild(newDiv);
-	
+
 	SortParams[SortParams.length]=SortParams[SortParams.length-1]+1;
 	for(var i=1;i<SortParams.length-1;i++){
 		tempDown=getObjectFromID("Sort"+SortParams[i]+"Down");
@@ -749,9 +749,9 @@ function sortAddLine(){
 function sortRemoveLine(thebutton){
 	if(thebutton.className=="graphicButtons buttonMinusDisabled")
 		return false;
-	
+
 	var theDiv=thebutton.parentNode;
-		
+
 	var containerDiv=getObjectFromID("theSorts");
 	containerDiv.removeChild(theDiv);
 	var theid=theDiv.id.replace(/Sort/g,"");
@@ -781,13 +781,13 @@ function sortMove(thebutton,direction){
 		direction=-1;
 	else
 		direction=1;
-	
+
 	var theDiv=thebutton.parentNode;
 	var theid=theDiv.id.replace(/Sort/g,"");
-	
+
 	var containerDiv=getObjectFromID("theSorts");
 	containerDiv.removeChild(theDiv);
-	
+
 	for(var i=0;i<SortParams.length;i++)
 		if(SortParams[i]==theid){
 			var mypos=i;
@@ -798,30 +798,30 @@ function sortMove(thebutton,direction){
 		moveto=movetopos+1;
 	else
 		moveto=movetopos;
-		
+
 	var movetodiv=getObjectFromID("Sort"+SortParams[moveto]);
 	containerDiv.insertBefore(theDiv,movetodiv);
 	SortParams[mypos]=SortParams[movetopos];
 	SortParams[movetopos]=theid;
 	updateSort();
-	
+
 	var tempUp=getObjectFromID("Sort"+SortParams[0]+"Up");
 	var tempDown=getObjectFromID("Sort"+SortParams[0]+"Down");
 	tempUp.className="graphicButtons buttonUpDisabled";
 	tempDown.className="graphicButtons buttonDown";
-	
+
 	for(var i=1;i<SortParams.length-1;i++){
 		tempUp=getObjectFromID("Sort"+SortParams[i]+"Up");
 		tempDown=getObjectFromID("Sort"+SortParams[i]+"Down");
 		tempUp.className="graphicButtons buttonUp";
 		tempDown.className="graphicButtons buttonDown";
 	}
-	
+
 	tempUp=getObjectFromID("Sort"+SortParams[SortParams.length-1]+"Up");
 	tempDown=getObjectFromID("Sort"+SortParams[SortParams.length-1]+"Down");
 	tempUp.className="graphicButtons buttonUp";
 	tempDown.className="graphicButtons buttonDownDisabled";
-	
+
 }
 
 function performAdvancedSort(thebutton){
@@ -897,19 +897,19 @@ function sortSavedDelete(base){
 		theURL=base+"advancedsort.php?cmd=showSaved&tid="+tabledefid.value+"&base="+encodeURIComponent(base);
 		loadXMLDoc(theURL,null,false);
 		modalContent.innerHTML=req.responseText;
-	} else 
+	} else
 		modalContent.innerHTML=req.responseText;
 }
 
 function sortSavedLoad(base){
-	var theselect=getObjectFromID("sortSavedList");	
+	var theselect=getObjectFromID("sortSavedList");
 	var modalContent=getObjectFromID("modalContent");
 	var theURL=base+"advancedsort.php?cmd=loadSaved&id="+theselect.value;
 	modalContent.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 
 	loadXMLDoc(theURL,null,false);
 	var sortSQL=getObjectFromID("sortSQL");
-	sortSQL.value=req.responseText;	
+	sortSQL.value=req.responseText;
 	var containerDiv=getObjectFromID("theSorts");
 	containerDiv.style.display="none";
 

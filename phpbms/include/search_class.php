@@ -84,7 +84,7 @@
 				FROM
 					tabledefs inner join modules on tabledefs.moduleid = modules.uuid
 				WHERE
-					tabledefs.id=".$id."";
+					tabledefs.uuid= '".$id."'";
 
 			$queryresult=$this->db->query($querystatement);
 
@@ -583,7 +583,7 @@
 		function displaySearch(){
 
 		?>
-<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["id"]?>" onsubmit="setSelIDs(this);return true;">
+<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["uuid"]?>" onsubmit="setSelIDs(this);return true;">
 <input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" />
 <input id="theids" name="theids" type="hidden" value="" />
 <input id="advancedsearch" name="advancedsearch" type="hidden" value="" />

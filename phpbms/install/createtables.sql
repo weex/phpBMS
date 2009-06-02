@@ -273,7 +273,7 @@ CREATE TABLE usersearches (
   name varchar(128) default '',
   sqlclause text,
   type char(3) NOT NULL default 'SCH',
-  roleid varchar(64) NOT NULL,
+  roleid varchar(64),
   PRIMARY KEY  (id),
   KEY tabledefid (tabledefid),
   KEY thetype (type),
