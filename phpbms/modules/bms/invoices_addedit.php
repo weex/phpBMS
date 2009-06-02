@@ -494,7 +494,7 @@
 			<div id="vContent4" class="vContent">
 				<fieldset>
 					<legend>Payment</legend>
-					<?php if(hasRights(20)){ ?>
+					<?php if(hasRights("role:de7e6679-8bb2-29ee-4883-2fcd756fb120")){ ?>
 					<p>
 						<label for="paymentmethodid">payment method</label><br />
 						<?php $thetable->showPaymentSelect($therecord["paymentmethodid"],$paymentMethods);

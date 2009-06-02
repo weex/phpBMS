@@ -63,18 +63,18 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					`id`
+					`uuid`
 				FROM
 					`roles`;
 				";
 
 			$queryresult = $this->db->query($querystatement);
 
-			$this->availableRoleIDs[] = 0;//for everyone
-			$this->availableRoleIDs[] = -100;//for administrators
+			$this->availableRoleIDs[] = "";//for everyone
+			$this->availableRoleIDs[] = "Admin";//for administrators
 
 			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
+				$this->availableRoleIDs[] = $therecord["uuid"];
 
 		}//end method --_populateRoleArray--
 
@@ -85,7 +85,7 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					`id`
+					`uuid`
 				FROM
 					`modules`;
 				";
@@ -94,7 +94,7 @@ if(class_exists("phpbmsTable")){
 
 			if($this->db->numRows($queryresult)){
 				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableModuleIDs[] = $therecord["id"];
+					$this->availableModuleIDs[] = $therecord["uuid"];
 			}else
 				$this->availableModuleIDs[] = "AN IMPOSSIBLE ID";
 
@@ -102,7 +102,6 @@ if(class_exists("phpbmsTable")){
 
 
 		function verifyVariables($variables){
-
 
 			//the following ifs are constructed in such a way as to allow
 			//the integer 0 as an acceptable value
@@ -167,107 +166,77 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["addroleid"])){
 
-				if(is_numeric($variables["addroleid"]) || !$variables["addroleid"]){
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!in_array(((int)$variables["addroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `addroleid` field does not give an existing/acceptable role id number.";
+				if(!in_array(((int)$variables["addroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `addroleid` field does not give an existing/acceptable role id number.";
 
-				}else
-					$this->verifyErrors[] = "The `addroleid` field must be numeric or equivalent to 0.";
 
 			}//end if
 
 			if(isset($variables["editroleid"])){
 
-				if(is_numeric($variables["editroleid"]) || !$variables["editroleid"]){
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
-
-					if(!in_array(((int)$variables["editroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `editroleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `editroleid` field must be numeric or equivalent to 0.";
+				if(!in_array(((int)$variables["editroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `editroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			if(isset($variables["importroleid"])){
 
-				if(is_numeric($variables["importroleid"]) || !$variables["importroleid"]){
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!in_array(((int)$variables["importroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `importroleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `importroleid` field must be numeric or equivalent to 0.";
+				if(!in_array(((int)$variables["importroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `importroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			if(isset($variables["searchroleid"])){
 
-				if(is_numeric($variables["searchroleid"]) || !$variables["searchroleid"]){
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
+				if(!in_array(((int)$variables["searchroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `searchroleid` field does not give an existing/acceptable role id number.";
 
-					if(!in_array(((int)$variables["searchroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `searchroleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `searchroleid` field must be numeric or equivalent to 0.";
 
 			}//end if
 
 			if(isset($variables["advsearchroleid"])){
 
-				if(is_numeric($variables["advsearchroleid"]) || !$variables["advsearchroleid"]){
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
-
-					if(!in_array(((int)$variables["advsearchroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `advsearchroleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `advsearchroleid` field must be numeric or equivalent to 0.";
+				if(!in_array(((int)$variables["advsearchroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `advsearchroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			if(isset($variables["viewsqlroleid"])){
 
-				if(is_numeric($variables["viewsqlroleid"]) || !$variables["viewsqlroleid"]){
+				if(!count($this->availableRoleIDs))
+					$this->_populateRoleArray();
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
-
-					if(!in_array(((int)$variables["viewsqlroleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `viewsqlroleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `viewsqlroleid` field must be numeric or equivalent to 0.";
+				if(!in_array(((int)$variables["viewsqlroleid"]), $this->availableRoleIDs))
+					$this->verifyErrors[] = "The `viewsqlroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			//check moduleid
 			if(isset($variables["moduleid"])){
 
-				if((int)$variables["moduleid"] > 0 ){
+				if(!count($this->availableModuleIDs))
+					$this->_populateModuleArray();
 
-					if(!count($this->availableModuleIDs))
-						$this->_populateModuleArray();
+				if(!in_array((int)$variables["moduleid"], $this->availableModuleIDs))
+					$this->verifyErrors[] = "The `moduleid` field does not give an existing/acceptable role id number.";
 
-					if(!in_array((int)$variables["moduleid"], $this->availableModuleIDs))
-						$this->verifyErrors[] = "The `moduleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `moduleid` field must be numeric and greater than 0.";
 
 			}else
 				$this->verifyErrors[] = "The `moduleid` field must be set."; //table default insufficent

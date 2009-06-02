@@ -39,125 +39,125 @@
 
 	if(!class_exists("phpbmsReport"))
 		include("report_class.php");
-		
+
 	class sqlExport extends phpbmsReport{
-	
+
 		var $maintable = "";
 		var $reportOutput = "";
-		
+
 		function sqlExport($db, $tabledefid){
-		
+
 			$this->tabledefid = ((int) $tabledefid);
-			
+
 			parent::phpbmsReport($db);
 
 			$querystatement = "
-				SELECT 
-					maintable 
-				FROM 
+				SELECT
+					maintable
+				FROM
 					tabledefs
-				WHERE 
+				WHERE
 					id=".((int) $tabledefid);
-					
-			$queryresult = $db->query($querystatement); 
+
+			$queryresult = $db->query($querystatement);
 			$therecord=$db->fetchArray($queryresult);
-			
+
 			$this->maintable = $therecord["maintable"];
-			
+
 		}//end method
-		
-		
+
+
 		function generate(){
-		
+
 			$querystatement = "
-				SELECT 
-					* 
-				FROM 
+				SELECT
+					*
+				FROM
 					".$this->maintable;
 
 			$querystatement = $this->assembleSQL($querystatement);
-			
+
 			$queryresult = $this->db->query($querystatement);
 
 			$num_fields = $this->db->numFields($queryresult);
-							
+
 			$statementstart = "INSERT INTO `".$this->maintable."` (";
-			
+
 			for($i=0; $i<$num_fields ;$i++)
 				$statementstart .= "`".$this->db->fieldName($queryresult,$i)."`, ";
-				
+
 			$statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
-		
+
 			while($therecord = $this->db->fetchArray($queryresult)){
-			
+
 				$insertstatement = $statementstart;
-		
+
 				foreach($therecord as $name => $field){
-				
+
 					if($field === NULL)
 						$addfield = "NULL, ";
 					else
 						$addfield = "'".mysql_real_escape_string($field)."', ";
 
 					//this is in temp for intallation exporting
-					if(hasRights(-100)){
-					
+					if(hasRights("Admin")){
+
 						switch($name){
-						
+
 							case "createdby":
 							case "modifiedby":
 								$addfield = "1, ";
 								break;
-								
+
 							case "creationdate":
 							case "modifieddate":
 								$addfield = "NOW(), ";
 								break;
-							
+
 						}//end switch
-					
+
 					}//endif
-										
+
 					$insertstatement .= $addfield;
-					
+
 				}//endforeach
-		
+
 				$insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
-		
+
 				$this->reportOutput .= $insertstatement;
-				
+
 			}//endwhile
-			
+
 		}//end method
-		
-		
+
+
 		function show(){
 
 			header("Content-type: text/plain");
 			header('Content-Disposition: attachment; filename="export.sql"');
-			
-			echo $this->reportOutput;
-			
-		}//end method		
-				
-	
-	}//end class 
 
-	//PROCESSING 
+			echo $this->reportOutput;
+
+		}//end method
+
+
+	}//end class
+
+	//PROCESSING
 	//========================================================================
-	
+
 	if(!isset($noOutput)){
 
 		session_cache_limiter('private');
-	
+
 		require("../include/session.php");
-		if(!isset($_GET["tid"])) 
+		if(!isset($_GET["tid"]))
 			$error = new appError(200,"URL variable missing: tid");
-	
+
 		$report = new sqlExport($db, $_GET["tid"]);
 		$report->setupFromPrintScreen();
-		$report->generate();	
-		$report->show();	
-		
+		$report->generate();
+		$report->show();
+
 	}//end if
 ?>

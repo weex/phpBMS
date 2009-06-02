@@ -720,7 +720,7 @@ if(class_exists("phpbmsTable")){
 
 			//$variables = $this->prepareVariables($variables);
 
-			if(!hasRights(20)){
+			if(!hasRights("role:de7e6679-8bb2-29ee-4883-2fcd756fb120")){
 
 				unset($this->fields["paymentmethodid"]);
 				unset($this->fields["checkno"]);

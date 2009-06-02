@@ -39,7 +39,7 @@
 	include("../../include/session.php");
 	include("include/fields.php");
 
-	if(!hasRights(30)) goURL(APP_PATH."noaccess.php");
+	if(!hasRights("role:259ead9f-100b-55b5-508a-27e33a6216bf")) goURL(APP_PATH."noaccess.php");
 
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());

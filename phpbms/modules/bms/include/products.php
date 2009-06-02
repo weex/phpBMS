@@ -252,7 +252,7 @@ if(class_exists("phpbmsTable")){
 				case "":
 				case NULL:
 				case 0:
-					if(!hasRights(20)){
+					if(!hasRights("role:de7e6679-8bb2-29ee-4883-2fcd756fb120")){
 						unset($this->fields["partnumber"]);
 						unset($this->fields["partname"]);
 						unset($this->fields["upc"]);

@@ -80,7 +80,7 @@
 		$theinput = new inputCheckbox("hascustomfields",$therecord["hascustomfields"],"has custom fields");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
+		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "uuid", "displayname",
 								"", "", false, "module");
 		$theform->addField($theinput);
 

@@ -46,7 +46,7 @@
 
 	$options = new tableOptions($db, $_GET["id"]);
 
-	$pageTitle = "Table Definition Options: ".$options->getTableName();
+	$pageTitle = "Table Definition Options: ".$options->tablename;
 
 	if(isset($_POST["command"]))
 		$therecord = $options->processForm(addSlashesToArray($_POST));
