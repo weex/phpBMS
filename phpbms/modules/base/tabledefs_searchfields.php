@@ -41,6 +41,9 @@
 	include("include/fields.php");
 	include("include/tabledefs_searchfields_include.php");
 
+
+	$searchfields = new tableSearchFields($db, $_GET["id"]);
+
 	//grab the table name
 	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);
 	$queryresult = $db->query($querystatement);
@@ -49,40 +52,40 @@
 	//process page
 	$thecommand="";
 	$action="add search field";
-	$thesearchfield=setDefaultSearchField();
+	$thesearchfield = $searchfields->getDefaults();
 
 	if (isset($_GET["command"])) $thecommand=$_GET["command"];
 	if (isset($_POST["command"])) $thecommand=$_POST["command"];
 
 	switch($thecommand){
 		case "edit":
-			$singlesearchfieldsquery=getSearchfields($db,$_GET["id"],$_GET["searchfieldid"]);
+			$singlesearchfieldsquery = $searchfields->get($_GET["searchfieldid"]);
 			$thesearchfield=$db->fetchArray($singlesearchfieldsquery);
 			$action="edit search field";
 		break;
 
 		case "delete":
-			$statusmessage=deleteSearchfield($db,$_GET["searchfieldid"]);
+			$statusmessage = $searchfields->delete($_GET["searchfieldid"]);
 		break;
 
 		case "add search field":
-			$statusmessage=addSearchfield($db,addSlashesToArray($_POST),$_GET["id"]);
+			$statusmessage = $searchfields->add(addSlashesToArray($_POST));
 		break;
 
 		case "edit search field":
-			$statusmessage=updateSearchfield($db,addSlashesToArray($_POST));
+			$statusmessage = $searchfields->update(addSlashesToArray($_POST));
 		break;
 
 		case "moveup":
-			$statusmessage=moveSearchfield($db,$_GET["columnid"],"up");
+			$statusmessage = $searchfields->move($_GET["columnid"], "up");
 		break;
 
 		case "movedown":
-			$statusmessage=moveSearchfield($db,$_GET["columnid"],"down");
+			$statusmessage = $searchfields->move($_GET["columnid"], "down");
 		break;
 	}//end switch
 
-	$searchfieldsquery=getSearchfields($db,$_GET["id"]);
+	$searchfieldsquery = $searchfields->get();
 	$pageTitle="Table Definition Search Fields: ".$tableRecord["displayname"];
 
 	$phpbms->cssIncludes[] = "pages/tablequicksearch.css";

@@ -458,9 +458,16 @@
 
 		var $tableoptions;
 
+		/**
+		 * get's table options (like new, edit, print)
+		 *
+		 * @param string $id tabledefs uuid;
+		 */
 		function getTableOptions($id){
-			$options=Array();
-			$querystatement="
+
+			$options = Array();
+
+			$querystatement = "
 				SELECT
 					id,
 					name,
@@ -472,12 +479,13 @@
 				FROM
 					tableoptions
 				WHERE
-					tabledefid = ".$id."
+					tabledefid = '".$id."'
 				ORDER BY
 					othercommand,
 					displayorder,
 					id";
-			$queryresult=$this->db->query($querystatement);
+
+			$queryresult = $this->db->query($querystatement);
 
 			while($therecord=$this->db->fetchArray($queryresult)) {
 
@@ -539,18 +547,38 @@
 
 		}//end function getTableQuickSearchOptions
 
-
+		/**
+		 * Builds table searchable fields list
+		 *
+		 * @param string $id tabledefs uuid
+		 */
 		function getTableSearchableFields($id){
 
-			$searchablefields=Array();
-			$querystatement="SELECT id,field,name,type
-								  FROM tablesearchablefields WHERE tabledefid=".$id." ORDER BY displayorder";
-			$queryresult=$this->db->query($querystatement);
+			$searchablefields = Array();
 
-			while($therecord=$this->db->fetchArray($queryresult)) $searchablefields[]=$therecord;
+			$querystatement = "
+				SELECT
+					id,
+					field,
+					name,
+					type
+				FROM
+					tablesearchablefields
+				WHERE
+					tabledefid = '".$id."'
+				ORDER BY
+					displayorder";
+
+			$queryresult = $this->db->query($querystatement);
+
+			while($therecord = $this->db->fetchArray($queryresult))
+				$searchablefields[] = $therecord;
 
 			return $searchablefields;
-		}
+
+		}//end function getTableSearchableFields
+
+
 
 		function displaySearch(){
 
@@ -951,13 +979,13 @@
 
 			parent::initialize($id);
 
-			$this->tableoptions=$this->getTableOptions($id);
+			$this->tableoptions=$this->getTableOptions($this->uuid);
 
 			// now we need to populate the find (quick search) options
 			$this->findoptions=$this->getTableQuickSearchOptions($this->uuid);
 
 			// next we need to get a list of  searchable fields for the quick search drop down
-			$this->searchablefields=$this->getTableSearchableFields($id);
+			$this->searchablefields=$this->getTableSearchableFields($this->uuid);
 
 
 			//check to see if critera has been saved to Session

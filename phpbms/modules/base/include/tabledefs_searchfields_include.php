@@ -1,4 +1,4 @@
-<?php	
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,87 +37,197 @@
  +-------------------------------------------------------------------------+
 */
 
+class tableSearchFields{
 
-	function setDefaultSearchField(){
-		$therecord["id"]=NULL;		
-		$therecord["displayorder"]=NULL;		
-		$therecord["name"]="";		
-		$therecord["type"]="field";		
-		$therecord["field"]="";		
+    var $db;
+    var $uuid;
 
-		return $therecord;	
-	}
-	
-	function getSearchfields($db,$tabledefid,$searchfieldid=false){
+    function tableSearchFields($db, $id){
 
-		$querystatement="SELECT id, field, name, displayorder,type
-		FROM tablesearchablefields 
-		WHERE tabledefid=".$tabledefid;
-		if($searchfieldid) $querystatement.=" AND id=".$searchfieldid;
-		$querystatement.=" ORDER BY displayorder";
-		
-		$thequery=$db->query($querystatement);
-		return $thequery;
-	}// end function
+        $this->db = $db;
+
+        $querystatement = "
+            SELECT
+                uuid
+            FROM
+                tabledefs
+            WHERE
+                id = ".((int) $id);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $this->uuid = $therecord["uuid"];
+
+    }//end function init
 
 
-	function addSearchfield($db,$variables,$tabledefid){
+    function getDefaults(){
 
-		$querystatement = "INSERT INTO tablesearchablefields (tabledefid, field, name, displayorder,type)
-		values (";
-		$querystatement.=$tabledefid.", ";
-		$querystatement.="\"".$variables["field"]."\", ";
-		$querystatement.="\"".$variables["name"]."\", ";
-		$querystatement.="\"".$variables["displayorder"]."\", ";		
-		$querystatement.="\"".$variables["type"]."\")";		
-		if($db->query($querystatement)) $thereturn ="Search Field Added";
-		
-		return $thereturn;
-	}// end function
-	
+        $therecord["id"]=NULL;
+        $therecord["displayorder"]=NULL;
+        $therecord["name"]="";
+        $therecord["type"]="field";
+        $therecord["field"]="";
 
-	function updateSearchfield($db,$variables){
+        return $therecord;
 
-		$querystatement="UPDATE tablesearchablefields set ";
-		$querystatement.="field=\"".$variables["field"]."\", ";
-		$querystatement.="type=\"".$variables["type"]."\", ";
-		$querystatement.="name=\"".$variables["name"]."\" ";
-		$querystatement.="WHERE id=".$variables["searchfieldid"];
-		if($db->query($querystatement)) $thereturn ="Search Field Updated";
-		
-		return $thereturn;
-	}
+    }//end function getDefaults
 
-	function deleteSearchfield($db,$id){
 
- 		$querystatement="DELETE FROM tablesearchablefields WHERE id=".$id;
+    function get($id = 0){
 
-		if($db->query($querystatement)) $thereturn ="Search Field Deleted";
-		
-		return $thereturn;
-	}
+        $querystatement = "
+            SELECT
+                `id`,
+                `field`,
+                `name`,
+                `displayorder`,
+                `type`
+            FROM
+                `tablesearchablefields`
+            WHERE
+                tabledefid = '".$this->uuid."'";
 
-	function moveSearchfield($db,$id,$direction="up"){
+        if($id)
+            $querystatement .= "
+                AND
+                    `id` = ".$id;
 
-		if($direction=="down") $increment="1"; else $increment="-1";
+        $querystatement .= "
+            ORDER BY
+                `displayorder`";
 
-		$querystatement="select displayorder FROM tablesearchablefields WHERE id=".$id;
-		$thequery = $db->query($querystatement);
-		$therecord = $db->fetchArray($thequery);
+        return $this->db->query($querystatement);
 
-		$querystatement="select max(displayorder) as themax FROM tablesearchablefields WHERE tabledefid=".$_GET["id"];
-		$thequery=$db->query($querystatement);
-		$maxrecord=$db->fetchArray($thequery);
-		
-		if(!(($direction=="down" and $therecord["displayorder"]==$maxrecord["themax"]) or ($direction=="up" and $therecord["displayorder"]=="0"))){
-			$querystatement="UPDATE tablesearchablefields set displayorder=".$therecord["displayorder"]." 
-								WHERE displayorder=".($increment+$therecord["displayorder"])." AND tabledefid=".$_GET["id"];
-			$thequery=$db->query($querystatement);
+    }//end function get
 
-			$querystatement="UPDATE tablesearchablefields set displayorder=displayorder+".$increment." WHERE id=".$id;
-			$thequery=$db->query($querystatement);
-		}// end if
-		
-		if(isset($thereturn)) return $thereturn; else return "Position Moved";
-	}
+
+    function add($variables){
+
+        $insertstatement = "
+            INSERT INTO
+                `tablesearchablefields`
+            (
+                `tabledefid`,
+                `field`,
+                `name`,
+                `displayorder`,
+                `type`
+            ) VALUES (
+                '".$this->uuid."',
+                '".$variables["field"]."',
+                '".$variables["name"]."',
+                '".$variables["displayorder"]."',
+                '".$variables["type"]."'
+            )";
+
+        if($this->db->query($insertstatement))
+            return "Search Field Added";
+        else
+            return false;
+
+    }//end function add
+
+
+    function update($variables){
+
+        $updatestatement = "
+            UPDATE
+                `tablesearchablefields`
+            SET
+                `field` = '".$variables["field"]."',
+                `type` = '".$variables["type"]."',
+                `name` = '".$variables["name"]."'
+            WHERE
+                `id` = ".$variables["searchfieldid"];
+
+        if($this->db->query($updatestatement))
+            return "Search Field Updated";
+        else
+            return false;
+
+    }//end function update
+
+
+    function delete($id){
+
+        $deletestatement = "
+            DELETE FROM
+                `tablesearchablefields`
+            WHERE
+                `id` =".((int) $id);
+
+        if($this->db->query($deletestatement))
+            return "Search Field Deleted";
+        else
+            return false;
+
+    }//end function delete
+
+
+    function move($id, $direction = "up"){
+
+        if($direction == "down")
+            $increment = "1";
+        else
+            $increment="-1";
+
+        $querystatement = "
+            SELECT
+                `displayorder`
+            FROM
+                `tablesearchablefields`
+            WHERE
+                id = ".((int) $id);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $querystatement = "
+            SELECT
+                MAX(`displayorder`) AS themax
+            FROM
+                `tablesearchablefields`
+            WHERE
+                `tabledefid` = '".$this->uuid."'";
+
+        $queryresult = $this->db->query($querystatement);
+
+        $maxrecord = $this->db->fetchArray($queryresult);
+
+        if(!(($direction == "down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction=="up" && $therecord["displayorder"]=="0"))){
+
+            $updatestatement = "
+                UPDATE
+                    `tablesearchablefields`
+                SET
+                    `displayorder` = ".$therecord["displayorder"]."
+                WHERE
+                    displayorder = ".($increment+$therecord["displayorder"])."
+                    AND tabledefid='".$this->uuid."'";
+
+            $this->db->query($updatestatement);
+
+            $updatestatement = "
+                UPDATE
+                    `tablesearchablefields`
+                SET
+                    displayorder = displayorder + ".$increment."
+                WHERE
+                    id=".((int) $id);
+
+            $this->db->query($querystatement);
+
+            return "Position Moved";
+
+        }//endif
+
+        return false;
+
+    }//end function move
+
+}//end class tableSearchFields
 ?>

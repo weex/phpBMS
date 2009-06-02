@@ -59,6 +59,7 @@ class customFields{
         $querystatement = "
             SELECT
                 `id`,
+                `uuid`,
                 `displayname`,
                 `hascustomfields`
             FROM
@@ -82,7 +83,7 @@ class customFields{
             FROM
                 `tablecustomfields`
             WHERE
-                `tabledefid` = ".$this->tableinfo["id"];
+                `tabledefid` = '".$this->tableinfo["uuid"]."'";
 
         $queryresult = $this->db->query($querystatement);
 
@@ -249,7 +250,7 @@ class customFields{
         $therecord["format"] = "";
         $therecord["required"] = 0;
         $therecord["displayorder"] = 0;
-        $therecord["roleid"] = 0;
+        $therecord["roleid"] = "";
         $therecord["generator"] = "";
 
         return $therecord;
@@ -284,7 +285,7 @@ class customFields{
             DELETE FROM
                 `tablecustomfields`
             WHERE
-                `tabledefid` = ".$this->tableinfo["id"];
+                `tabledefid` = '".$this->tableinfo["uuid"]."'";
 
         $this->db->query($deletestatement);
 
@@ -297,7 +298,7 @@ class customFields{
         $fieldArray = array("name", "format", "required", "displayorder", "roleid", "generator");
 
         $record["field"] = "custom".$i;
-        $record["tabledefid"] = $this->tableinfo["id"];
+        $record["tabledefid"] = $this->tableinfo["uuid"];
 
         foreach($fieldArray as $field) {
 

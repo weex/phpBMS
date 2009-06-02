@@ -75,18 +75,18 @@ class generateUUIDS extends installUpdateBase{
             return $this->returnJSON(false, "Could not open database schema '".MYSQL_DATABASE."'");
 
         //generate uuids for tables
-        $this->createUUIDs("tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb"); //Users
-        $this->createUUIDs("tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9"); //Relationships
-        $this->createUUIDs("tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3"); //Table Definitions
-        $this->createUUIDs("tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1"); //Notes
-        $this->createUUIDs("tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb"); //Reports
-        $this->createUUIDs("tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a"); //Saved Searches/Sorts
-        $this->createUUIDs("tbld:ea159d67-5e89-5b7f-f5a0-c740e147cd73"); //Installed Modules
-        $this->createUUIDs("tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475"); //Files
-        $this->createUUIDs("tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a"); //Roles
-        $this->createUUIDs("tbld:83de284b-ef79-3567-145c-30ca38b40796"); //Scheduler
-        $this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
-        $this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
+        //$this->createUUIDs("tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb"); //Users
+        //$this->createUUIDs("tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9"); //Relationships
+        //$this->createUUIDs("tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3"); //Table Definitions
+        //$this->createUUIDs("tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1"); //Notes
+        //$this->createUUIDs("tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb"); //Reports
+        //$this->createUUIDs("tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a"); //Saved Searches/Sorts
+        //$this->createUUIDs("tbld:ea159d67-5e89-5b7f-f5a0-c740e147cd73"); //Installed Modules
+        //$this->createUUIDs("tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475"); //Files
+        //$this->createUUIDs("tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a"); //Roles
+        //$this->createUUIDs("tbld:83de284b-ef79-3567-145c-30ca38b40796"); //Scheduler
+        //$this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
+        //$this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
 
         //generate lists used elsewhere
         $this->roleList = $this->generateUUIDList("roles");
@@ -108,6 +108,7 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("tablegroupings", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
         //$this->updateFields("tableoptions", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
         //$this->updateFields("tabledefs", array("moduleid"=>$this->moduleList, "editroleid"=>$this->roleList, "addroleid"=>$this->roleList, "searchroleid"=>$this->roleList, "advsearchroleid"=>$this->roleList, "viewsqlroleid"=>$this->roleList));
+        //$this->updateFields("tablesearchablefields", array("tabledefid"=>$this->tabledefList));
 
         return $this->returnJSON(true, "UUID's Generated");
 
@@ -150,7 +151,6 @@ class generateUUIDS extends installUpdateBase{
                 ".$fieldClause."
             FROM
                 `".$table."`";
-
         $queryresult = $this->db->query($querystatement);
 
         while($therecord = $this->db->fetchArray($queryresult)){
@@ -174,7 +174,7 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-    //echo $updatestatement."<br />";
+//echo $updatestatement."<br />";
                 $this->db->query($updatestatement);
 
             }//endif
