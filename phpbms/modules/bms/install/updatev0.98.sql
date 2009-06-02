@@ -50,6 +50,7 @@ ALTER TABLE `clientemailprojects`
 ALTER TABLE `clients` ENGINE=INNODB;
 ALTER TABLE `clients`
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
+    ADD COLUMN `taxid` VARCHAR(64) default NULL AFTER `webaddress`,
     ADD COLUMN `custom1` DOUBLE,
     ADD COLUMN `custom2` DOUBLE,
     ADD COLUMN `custom3` DATETIME,
@@ -375,7 +376,7 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 UPDATE `tablecolumns` SET `column`='IF(receipts.paymentmethodid = -1,concat( concat("Other... (", receipts.paymentother), ")"), paymentmethods.name)' WHERE `tabledefid` = '304' AND `name` = 'payment';
 --end tablecolumns UPDATE--
 --tabledefs INSERT--
-INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('307', 'tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'Posting Sessions', 'table', '2', 'postingsessions', '(postingsessions INNER JOIN users ON postingsessions.userid = users.id)', 'N/A', '0', 'N/A', '0', NULL, '-100', '50', '-100', '-100', 'NA', '0', '0', 'YEAR(postingsessions.sessiondate) = YEAR(NOW()) AND MONTH(postingsessions.sessiondate) = MONTH(NOW())', 'postingsessions.sessiondate DESC', NULL, NULL, NULL, 1, NOW(), 1, NOW());
+INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('307', 'tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'Posting Sessions', 'table', '2', 'postingsessions', '(postingsessions INNER JOIN users ON postingsessions.userid = users.id)', 'N/A', '0', 'N/A', '0', NULL, 'admin', '50', '-100', '-100', 'NA', '0', '0', 'YEAR(postingsessions.sessiondate) = YEAR(NOW()) AND MONTH(postingsessions.sessiondate) = MONTH(NOW())', 'postingsessions.sessiondate DESC', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 --end tabledefs INSERT--
 --tabledefs UPDATE--
 UPDATE `tabledefs` SET

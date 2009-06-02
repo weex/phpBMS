@@ -28,6 +28,7 @@ CREATE TABLE `clients` (
   `otherphone` varchar(25) default NULL,
   `email` varchar(128) default NULL,
   `webaddress` varchar(128) default NULL,
+  `taxid` VARCHAR(64) default NULL,
   `salesmanagerid` VARCHAR(64),
   `leadsource` varchar(64) default NULL,
   `address1` varchar(128) default NULL,
