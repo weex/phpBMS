@@ -44,7 +44,7 @@ CREATE TABLE `widgets` (
 
 --attachments ALTER--
 ALTER TABLE `attachments` ENGINE=INNODB;
-ALTER TABLE `attachements`
+ALTER TABLE `attachments`
     MODIFY `fileid` VARCHAR(64) NOT NULL,
     MODIFY `tabledefid` VARCHAR(64) NOT NULL,
     MODIFY `recordid` VARCHAR(64);
@@ -63,7 +63,7 @@ ALTER TABLE `files`
     ADD COLUMN `custom5` VARCHAR(255),
     ADD COLUMN `custom6` VARCHAR(255),
     ADD COLUMN `custom7` TINYINT(1) DEFAULT 0,
-    ADD COLUMN `custom8` TINYINT(1) DEFAULT 0
+    ADD COLUMN `custom8` TINYINT(1) DEFAULT 0,
     MODIFY `roleid` varchar(64);
 --end files ALTER--
 --log ALTER--
@@ -91,7 +91,7 @@ ALTER TABLE `notes`
     MODIFY `attachedid` varchar(64),
     MODIFY `attachedtabledefid` varchar(64),
     MODIFY `parentid` varchar(64),
-    MODIFY `assignebyid` varchar(64);
+    MODIFY `assignedbyid` varchar(64),
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
     ADD COLUMN `custom1` DOUBLE,
     ADD COLUMN `custom2` DOUBLE,
@@ -155,7 +155,6 @@ ALTER TABLE `smartsearches`
 --tablecolumns ALTER--
 ALTER TABLE `tablecolumns` ENGINE=INNODB;
 ALTER TABLE `tablecolumns`
-    MODIFY COLUMN `roleid` int(10) NOT NULL default '0',
     MODIFY `tabledefid` VARCHAR(64) NOT NULL,
     MODIFY `roleid` VARCHAR(64) NOT NULL DEFAULT '';
 --end tablecolumns ALTER--
@@ -266,11 +265,14 @@ UPDATE `modules` SET `uuid`='mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7' WHERE `id
 --end modules UPDATE--
 --reports UPDATE--
 UPDATE `reports` SET
-    `description` = 'This report will generate a comma-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.' WHERE `name` = 'Raw Table Export',
     `uuid`='rpt:37cee478-b57e-2d53-d951-baf3937ba9e0'
 WHERE
     `name`='Raw Table Print';
-UPDATE `reports` SET `uuid`='rpt:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8' WHERE `name`='Raw Table Export';
+UPDATE `reports` SET
+    `uuid`='rpt:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8',
+    `description` = 'This report will generate a comma-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.'
+WHERE
+    `name`='Raw Table Export';
 UPDATE `reports` SET `uuid`='rpt:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
 UPDATE `reports` SET `uuid`='rpt:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
 UPDATE `reports` SET `uuid`='rpt:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
@@ -302,7 +304,7 @@ INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maint
 --tabledefs UPDATE--
 UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(12, 9, 26, 200);
 UPDATE `tabledefs` SET
-    `uuid`='tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb',
+    `uuid` = 'tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb',
     `prefix` = 'usr'
 WHERE
     `id`='9';
@@ -362,7 +364,7 @@ WHERE
     `id`='203';
 UPDATE `tabledefs` SET
     `uuid`='tbld:29925e0a-c825-0067-8882-db4b57866a96',
-    SET `prefix` = 'smsr'
+    `prefix` = 'smsr'
 WHERE
     `id`='204';
 UPDATE `tabledefs` SET `prefix` = 'wdgt' WHERE id = 205;

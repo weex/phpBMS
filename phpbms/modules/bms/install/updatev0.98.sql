@@ -200,7 +200,6 @@ ALTER TABLE `receipts`
     ADD COLUMN `custom6` VARCHAR(255),
     ADD COLUMN `custom7` TINYINT(1) DEFAULT 0,
     ADD COLUMN `custom8` TINYINT(1) DEFAULT 0,
-    MODIFY COLUMN `paymentmethodid` INTEGER NOT NULL DEFAULT 0,
     MODIFY `clientid` VARCHAR(64) NOT NULL,
     MODIFY `paymentmethodid` VARCHAR(64) NOT NULL;
 --end recipts ALTER--
@@ -407,7 +406,7 @@ WHERE
     `id`='5';
 UPDATE `tabledefs` SET
     `uuid`='tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e',
-    `deletebutton = 'inactivate',
+    `deletebutton` = 'inactivate',
     `hascustomfields` = '1',
     `prefix` = 'tax'
 WHERE
