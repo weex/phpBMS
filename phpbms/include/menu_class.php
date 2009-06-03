@@ -54,7 +54,9 @@ class topMenu{
 			FROM
 				`menu`
 			WHERE
-				`parentid` = '0'
+				`parentid` = ''
+				OR
+				`parentid` IS NULL
 			ORDER BY
 				`displayorder`;
 			";

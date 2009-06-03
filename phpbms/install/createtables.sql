@@ -31,7 +31,7 @@ CREATE TABLE menu (
   `uuid` varchar(64) NOT NULL,
   name varchar(64) NOT NULL default '',
   link varchar(128) NOT NULL default '',
-  parentid varchar(64) NOT NULL default '0',
+  parentid varchar(64) default '',
   displayorder int(11) NOT NULL default '0',
   createdby int(11) NOT NULL default '0',
   modifiedby int(11) default '0',

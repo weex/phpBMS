@@ -39,7 +39,7 @@
 if(class_exists("phpbmsTable")){
 	class menus extends phpbmsTable{
 
-		var $availableRoleIDs = array();
+		var $_availableRoleUUIDs = NULL;
 
 		function checkParentMenuUUIDs($currentUUID = 0, $parentUUID = 0){
 
@@ -60,8 +60,11 @@ if(class_exists("phpbmsTable")){
 					`uuid` = '".$parentUUID."'
 					AND
 					`uuid`!='".$currentUUID."'
-					AND
-					`parentid` = '0'
+					AND(
+						`parentid` = ''
+						OR
+						`parentid` IS NULL
+						)
 					AND
 					(
 						`link` = ''
@@ -80,7 +83,7 @@ if(class_exists("phpbmsTable")){
 		//pouplate the id roles array
 		function populateRoleArray(){
 
-			$this->availableRoleIDs = array();
+			$this->_availableRoleUUIDs = array();
 
 			$querystatement = "
 				SELECT
@@ -91,12 +94,12 @@ if(class_exists("phpbmsTable")){
 
 			$queryresult = $this->db->query($querystatement);
 
-			$this->availableRoleIDs[] = 0;//for everyone
-			$this->availableRoleIDs[] = -100;//for admin
+			$this->_availableRoleUUIDs[] = 0;//for everyone
+			$this->_availableRoleUUIDs[] = -100;//for admin
 
 
 			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
+				$this->_availableRoleUUIDs[] = $therecord["id"];
 
 		}//end method --populateRoleArray()--
 
@@ -110,21 +113,19 @@ if(class_exists("phpbmsTable")){
 				$this->verifyErrors[] = "The `uuid` field must be set.";
 
 
-			//table default (0) for `roleid` is ok (i.e. doesn't have to be set)
+			//table default ('') for `roleid` is ok (i.e. doesn't have to be set)
 			if(isset($variables["roleid"])){
 
-				//can either be numeric or equivalent to 0
-				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+				//check for populated role id array
+				if($this->_availableRoleUUIDs === NULL){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = ""; //for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-					//check for populated role id array
-					if(!count($this->availableRoleIDs))
-						$this->populateRoleArray();
-
-					//check to see if the int typecast role id is in one of the available ones
-					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
-				}else
-					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+				//check to see if the int typecast role id is in one of the available ones
+				if(!in_array(((string)$variables["roleid"]), $this->_availableRoleUUIDs))
+					$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
@@ -132,22 +133,16 @@ if(class_exists("phpbmsTable")){
 			//not set is acceptable
 			if(isset($variables["parentid"])){
 
-				//can be either numeric or equivalent to 0 and its int typecast must be non-negative
-				if($variables["parentid"] !== "" && $variables["parentid"] !== NULL){
+				$uuid = 0;// can still check for an invalid parentid even though the current uuid is bad
 
-					$uuid = 0;// can still check for an invalid parentid even though the current uuid is bad
+				//use the current id if it exists (A menu record cannot be its own parent)
+				if(isset($variables["uuid"]))
+					if($variables["uuid"] !== "" && $variables["uuid"] !== NULL)
+						$uuid = $variables["uuid"];
 
-					//use the current id if it exists (A menu record cannot be its own parent)
-					if(isset($variables["uuid"]))
-						if($variables["uuid"] !== "" && $variables["uuid"] !== NULL)
-							$uuid = $variables["uuid"];
-
-					//Select run every time because `id` can be different
-					if( !$this->checkParentMenuUUIDs($uuid, $variables["parentid"]) )
-						$this->verifyErrors[] = "The `parentid` field does not give an existing/acceptable parent id number.";
-
-				}else
-					$this->verifyErrors[] = "The `parentid` field must be not be blank.";
+				//Select run every time because `id` can be different
+				if( !$this->checkParentMenuUUIDs($uuid, $variables["parentid"]) )
+					$this->verifyErrors[] = "The `parentid` field does not give an existing/acceptable parentid uuid.";
 
 			}//end if
 
@@ -175,14 +170,14 @@ if(class_exists("phpbmsTable")){
 
 		function displayTableDropDown($selectedlink){
 
-			$querystatement="select id, displayname from tabledefs order by displayname";
+			$querystatement="select uuid, displayname from tabledefs order by displayname";
 			$thequery=$this->db->query($querystatement);
 
 			echo "<select id=\"linkdropdown\" name=\"linkdropdown\">\n";
 			while($therecord=$this->db->fetchArray($thequery)){
-				echo "<option value=\"search.php?id=".$therecord["id"]."\" ";
+				echo "<option value=\"search.php?id=".urlencode($therecord["uuid"])."\" ";
 
-				if ($selectedlink == "search.php?id=".$therecord["id"])
+				if ($selectedlink == "search.php?id=".urlencode($therecord["uuid"]))
 					echo "selected=\"selected\"";
 
 				echo " >".$therecord["displayname"]."</option>\n";
@@ -220,9 +215,9 @@ if(class_exists("phpbmsTable")){
 			$thequery=$this->db->query($querystatement);
 
 			echo "<select name=\"parentid\" id=\"parentid\">\n";
-			echo "<option value=\"0\" ";
+			echo "<option value=\"\" ";
 
-			if ($selectedpid=="0")
+			if ($selectedpid=="")
 				echo "selected=\"selected\"";
 
 			echo " >-- none --</option>\n";
