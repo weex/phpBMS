@@ -283,7 +283,7 @@ class snapshot{
                 `widgets`.`title`,
                 `modules`.`name` AS module
             FROM
-                `widgets` INNER JOIN `modules` ON `widgets`.`moduleid` = `modules`.`id`
+                `widgets` INNER JOIN `modules` ON `widgets`.`moduleid` = `modules`.`uuid`
             WHERE
                 `widgets`.`type` = '".str_replace("Area", "", $area)."'
                 AND `widgets`.`uuid` ".$areaWhere."

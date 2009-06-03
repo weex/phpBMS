@@ -39,58 +39,14 @@
 if(class_exists("phpbmsTable")){
 	class widgets extends phpbmsTable{
 
-		var $availableModuleIDs = array();
-		var $availableRoleIDs = array();
-		var $availableUuids = array();
-
-
-		function _populateRoleArray(){
-
-			$this->availableRoleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableRoleIDs[] = 0;//for everyone
-			$this->availableRoleIDs[] = -100;//for administrators
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
-
-		}//end method --_populateRoleArray--
-
-
-		function _populateModuleArray(){
-
-			$this->availableModuleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`modules`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableModuleIDs[] = $therecord["id"];
-			}else
-				$this->availableModuleIDs[] = "AN IMPOSSIBLE ID";
-
-		}//end  method --_populateModuleArray--
+		var $_availableModuleUUIDs = NULL;
+		var $_availableRoleUUIDs = NULL;
+		var $_availableUUIDs = NULL;
 
 
 		function _populateUuidArray(){
 
-			$this->availableUuids = array();
+			$this->_availableUUIDs = array();
 
 			// I need id as well to let updates work with our verify function
 			// i.e. if its an update on existing record, its ok if the uuid
@@ -110,13 +66,13 @@ if(class_exists("phpbmsTable")){
 					$uuid = $therecord["uuid"];
 					$id = $therecord["id"];
 
-					$this->availableUuids[$uuid]["id"] = $id;
+					$this->_availableUUIDs[$uuid]["id"] = $id;
 				}
 			}else{
 				$uuid = "THIS IS a really WEIRD STRING that I *hope* would never ever ever ever ever be a uuid (despite its amazing uniqueness)";
 				$id = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg"; //put in an impossible widget id
 
-				$this->availableUuids[$uuid] = $id;
+				$this->_availableUUIDs[$uuid] = $id;
 			}//end if
 
 		}//end method --_populateUuidArray--
@@ -136,35 +92,28 @@ if(class_exists("phpbmsTable")){
 			}else
 				$this->verifyErrors[] = "The `file` field must be set.";
 
-			//table default of 0 is sufficient
+			//table default of '' is sufficient
 			if(isset($variables["roleid"])){
 
-				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+				if($this->_availableRoleUUIDs === NULL){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";// no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";// admin restriction
+				}//end if
 
-					if(!count($this->availableRoleIDs))
-						$this->_populateRoleArray();
-
-					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+				if(!in_array(((string)$variables["roleid"]), $this->_availableRoleUUIDs))
+					$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			//table default insufficient
 			if(isset($variables["moduleid"])){
 
-				if((int)$variables["moduleid"] > 0 ){
+				if($this->_availableModuleUUIDs === NULL)
+					$this->_availableModuleUUIDs = $this->_loadUUIDList("modules");
 
-					if(!count($this->availableModuleIDs))
-						$this->_populateModuleArray();
-
-					if(!in_array((int)$variables["moduleid"], $this->availableModuleIDs))
-						$this->verifyErrors[] = "The `moduleid` field does not give an existing/acceptable module id number.";
-
-				}else
-					$this->verifyErrors[] = "The `moduleid` field must be numeric and greater than 0.";
+				if(!in_array((string)$variables["moduleid"], $this->_availableModuleUUIDs))
+					$this->verifyErrors[] = "The `moduleid` field does not give an existing/acceptable module id number.";
 
 			}else
 				$this->verifyErrors[] = "The `moduleid` field must be set.";
@@ -193,7 +142,7 @@ if(class_exists("phpbmsTable")){
 
 				if($variables["uuid"] !== "" && $variables !== NULL){
 
-					if(!count($this->availableUuids))
+					if($this->_availableUUIDs === NULL)
 						$this->_populateUuidArray();
 
 					if(!isset($variables["id"]))
@@ -203,13 +152,12 @@ if(class_exists("phpbmsTable")){
 
 					$tempuuid = $variables["uuid"];// using this because it looks ugly to but the brackets within brackets
 
-					if( array_key_exists($variables["uuid"], $this->availableUuids)){
+					if( array_key_exists((string)$variables["uuid"], $this->_availableUUIDs)){
 
-						if( $this->availableUuids[$tempuuid]["id"] !== $tempid )
+						if( $this->_availableUUIDs[$tempuuid]["id"] !== $tempid )
 							$this->verifyErrors = "The `uuid` field must give an unique uuid.";
 
-					}else
-						$this->availableUuids[$tempuuid]["id"] = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg";
+					}//end if
 
 				}else
 					$this->verifyErrors[] = "The `uuid` field must not be blank.";

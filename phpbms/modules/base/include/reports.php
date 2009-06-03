@@ -39,8 +39,8 @@
 if(class_exists("phpbmsTable")) {
 	class reports extends phpbmsTable{
 
-		var $_availableTabledefUUIDs = array();
-		var $_availableRoleUUIDs = array();
+		var $_availableTabledefUUIDs = NULL;
+		var $_availableRoleUUIDs = NULL;
 
 		function getDefaults(){
 			$therecord = parent::getDefaults();
@@ -80,7 +80,7 @@ if(class_exists("phpbmsTable")) {
 			//Table Default ('') ok becuase it means report is globally available to any table
 			if(isset($variables["tabledefid"])){
 
-				if(!count($this->_availableTabledefUUIDs)){
+				if($this->_availableTabledefUUIDs === NULL){
 					$this->_availableTabledefUUIDs = $this->_loadUUIDList("tabledefs");
 					//add the global option
 					$this->_availableTabledefUUIDs[] = "";
@@ -94,7 +94,7 @@ if(class_exists("phpbmsTable")) {
 			//Table Default ('') ok becuase it means report is globally available to any user
 			if(isset($variables["roleid"])){
 
-				if(!count($this->_availableRoleUUIDs)){
+				if(!count($this->_availableRoleUUIDs === NULL)){
 					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
 					$this->_availableRoleUUIDs[] = ""; // for no role restrictions
 					$this->_availableRoleUUIDs[] = "Admin"; //for the Admin restriction

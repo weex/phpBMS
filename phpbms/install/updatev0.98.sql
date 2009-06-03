@@ -294,7 +294,7 @@ UPDATE `smartsearches` SET `uuid`='smrt:ed5b1d7f-b0fe-2088-f17c-47bfbe1ace25' WH
 --end smartsearches UPDATE--
 --tablecolumns INSERT--
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'widget', 'concat(\'[b]\', widgets.title, \'[/b][br]\', widgets.uuid)', 'left', '', '0', 'widgets.title', '0', '100%', 'bbcode', '0');
-INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'role', 'IF(widgets.roleid != 0, IF(widgets.roleid != -100, roles.name, \'Administrator\'), \'EVERYONE\')', 'left', '', '2', '', '0', '', NULL, '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'role', 'IF(widgets.roleid != '', IF(widgets.roleid != 'Admin', roles.name, \'Administrator\'), \'EVERYONE\')', 'left', '', '2', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'file', 'widgets.file', 'left', '', '1', '', '0', '', NULL, '0');
 DELETE FROM `tablecolumns` WHERE `tabledefid` = '19';
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'link', 'menu.link', 'left', '', '1', '', '1', '', NULL, '0');
@@ -383,7 +383,12 @@ UPDATE `tabledefs` SET
     `prefix` = 'smsr'
 WHERE
     `id`='204';
-UPDATE `tabledefs` SET `prefix` = 'wdgt' WHERE id = 205;
+--WILL NEED TO MAKE THIS INTO AN INSERT STATEMENT INSTEAD OF INSERT AND UPDATE--
+UPDATE `tabledefs` SET
+    `prefix` = 'wdgt',
+    `querytable` = '((`widgets` INNER JOIN `modules` ON `widgets`.`moduleid` = `modules`.`uuid`) LEFT JOIN `roles` ON `widgets`.`roleid` = `roles`.`uuid`)'
+WHERE
+    `id` = 205;
 UPDATE `tabledefs` SET `prefix` = 'menu' WHERE id = 19;
 --end tabledefs UPDATE--
 --tablefindoptions INSERST--
