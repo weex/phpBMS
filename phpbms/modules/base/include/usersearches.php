@@ -39,9 +39,9 @@
 if(class_exists("phpbmsTable")){
 	class userSearches extends phpbmsTable{
 
-		var $availableUserIDs = array();
-		var $availableTabledefIDs = array();
-		var $availableRoleIDs = array();
+		var $availableUserIDs = NULL;
+		var $availableTabledefIDs = NULL;
+		var $availableRoleIDs = NULL;
 
 
 		function populateUserArray(){
@@ -63,53 +63,6 @@ if(class_exists("phpbmsTable")){
 				$this->availableUserIDs[] = $therecord["id"];
 
 		}//end method --populateUserArray--
-
-
-		function populateRoleArray(){
-
-			$this->availableRoleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableRoleIDs[] = 0;//for global
-			$this->availableRoleIDs[] = -100;//for admin
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
-
-
-		}//end method --populateRoleArray--
-
-
-		function populateTabledefArray(){
-
-			$this->availableTabledefIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`tabledefs`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableTabledefIDs[] = $therecord["id"];
-			}else
-				$this->availableTabledefIDs[] = "none";// so the function doesn't keep
-				//getting called
-
-
-		}//end method --populateRoleArray--
 
 
 		function verifyVariables($variables){
@@ -135,76 +88,95 @@ if(class_exists("phpbmsTable")){
 			//table default (0) is sufficient
 			if(isset($variables["userid"])){
 
-				if( !$variables["userid"] || ((int) $variables["userid"] > 0) ){
+                                if($this->availableUserIDs === NULL){
 
-					if(!count($this->availableUserIDs))
-						$this->populateUserArray();
+                                        $this->availableUserIDs = $this->_loadUUIDList("users");
+                                        $this->availableUserIDs[] = '';
 
-					if(!in_array(((int)$variables["userid"]), $this->availableUserIDs))
-						$this->verifyErrors[] = "The `userid` field does not give an existing/acceptable user id number.";
+                                }//endif
 
-				}else
-					$this->verifyErrors[] = "The `userid` field must be a non-negative number or equivalent to 0.";
+                                if(!in_array((string) $variables["userid"], $this->availableUserIDs))
+                                        $this->verifyErrors[] = "The `userid` field does not give an existing/acceptable user id number.";
 
 			}//end if
 
 			//The table default is not enough, so it must be set
 			if(isset($variables["tabledefid"])){
 
-				if(is_numeric($variables["tabledefid"]) || !$variables["tabledefid"]){
+                                    if($this->availableTabledefIDs === NULL)
+                                            $this->availableTabledefIDs = $this->_loadUUIDList("tabledefs");
 
-					if(!count($this->availableTabledefIDs))
-						$this->populateTabledefArray();
+                                    if(!in_array($variables["tabledefid"], $this->availableTabledefIDs))
+                                            $this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
 
-					if(!in_array(((int)$variables["tabledefid"]), $this->availableTabledefIDs))
-						$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
-				}else
-					$this->verifyErrors[] = "The `tabledefid` field must be numeric or equivalent to 0.";
-			}else
+			} else
 				$this->verifyErrors[] = "The `tabledefid` field must be set.";
 
 			//table default (0) is sufficient
 			if(isset($variables["roleid"])){
 
-				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+                                if($this->availableRoleIDs === NULL){
 
-					if(!count($this->availableRoleIDs))
-						$this->populateRoleArray();
+                                        $this->availableRoleIDs = $this->_loadUUIDList("roles");
+                                        $this->availableRoleIDs[] = "";
+                                        $this->availableRoleIDs[] = "Admin";
 
-					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
-				}else
-					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+                                }//endif
+
+                                if(!in_array(((string) $variables["roleid"]), $this->availableRoleIDs))
+                                        $this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			return parent::verifyVariables($variables);
 
-		}//end method
+		}//end function verifyVariables
 
 
-		function displayTables($fieldname,$selectedid){
+                /**
+                 * display tables drop down for tabledefs
+                 *
+                 * @param string $fieldname name/id to give the select box
+                 * @param string $selectedid tabledef uuid currently selected
+                 */
+		function showTableSelect($fieldname, $selectedid){
 
-			$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
-			$thequery=$this->db->query($querystatement);
+                    $querystatement="
+                        SELECT
+                            uuid,
+                            displayname
+                        FROM
+                            tabledefs
+                        ORDER
+                            BY displayname";
 
-			echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
-			while($therecord=$this->db->fetchArray($thequery)){
-				echo "	<option value=\"".$therecord["id"]."\"";
-					if($selectedid==$therecord["id"]) echo " selected=\"selected\"";
-				echo ">".$therecord["displayname"]."</option>\n";
-			}
-			echo "</select>\n";
-		}
+                    $queryresult = $this->db->query($querystatement);
+
+                    ?><select id="<?php echo $fieldname ?>" name="<?php echo $fieldname ?>"><?php
+
+                    while($therecord = $this->db->fetchArray($queryresult)){
+
+                        ?><option value="<?php echo $therecord["uuid"]?>" <?php if($selectedid == $therecord["uuid"]) echo 'selected="selected"' ?>><?php
+
+                        echo formatVariable($therecord["displayname"]);
+
+                        ?></option><?php
+
+                    }//endwhile
+
+                    ?></select><?php
+
+		}//end function showTableSelect
 
 
 		function updateRecord($variables, $modifiedby = NULL){
 
 			if(isset($variables["makeglobal"]))
-				$variables["userid"] = 0;
+				$variables["userid"] = '';
 
 			parent::updateRecord($variables, $modifiedby);
-		}
+
+		}//end function updateRecord
 
 	}//end class
 }//end if

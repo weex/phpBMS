@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -44,18 +44,18 @@
 
 	$thetable = new userSearches($db,17);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	if($therecord["userid"])
-		$username = $phpbms->getUserName($therecord["userid"]);
+		$username = $phpbms->getUserName($therecord["userid"], true);
 	else
 		$username = "global";
 
-	
+
 	$pageTitle="Saved Searches";
-	
+
 	$phpbms->cssIncludes[] = "pages/usersearches.css";
 
 		//Form Elements
@@ -70,54 +70,56 @@
 		$theinput = new inputBasicList("typeDisplay", $therecord["type"], array("Search"=>"SCH","Sort"=>"SRT"), "type");
 		$theinput->setAttribute("disabled","disabled");
 		$theform->addField($theinput);
-		
-		if($therecord["userid"]==0){
+
+		if($therecord["userid"] === ""){
+
 			$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
-			$theform->addField($theinput);			
-		}
+			$theform->addField($theinput);
+
+		}//endif
 
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,64,128);
 		$theinput->setAttribute("class","important");
-		$theform->addField($theinput);		
+		$theform->addField($theinput);
 
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-		
+		//End Form Elements
+
 	include("header.php");
-	
+
 ?><div class="bodyline">
 	<?php $theform->startForm($pageTitle)?>
-	
+
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 
 		<p><?php $theform->showField("id"); ?></p>
-		
+
 		<p>
 			<?php $theform->showField("typeDisplay"); ?>
 			<input type="hidden" id="type" name="type" value="<?php echo $therecord["type"]?>" />
 		</p>
-		
+
 		<p>
 			<label for="tabledefid">table</label><br />
-			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]) ?>		
+			<?php $thetable->showTableSelect("tabledefid",$therecord["tabledefid"]) ?>
 		</p>
-		
+
 		<p>
 			<label for="username">user</label><br />
 			<input type="hidden" id="userid" name="userid" value="<?php echo $therecord["userid"]?>" />
 			<input id="username" name="username" type="text" value="<?php echo htmlQuotes($username) ?>" size="32" readonly="readonly" class="uneditable" />
 		</p>
-		
-		<?php if($therecord["userid"]!=0) {?>
+
+		<?php if($therecord["userid"] != "") {?>
 		<p>
 			<input id="makeglobal" name="makeglobal" type="checkbox" class="radiochecks" value="1" /><label for="makeglobal">make global</label>
 		</p>
 		<?php } else {?>
-		
+
 			<p><?php $theform->showField("roleid")?></p>
-			
+
 		<?php } ?>
 	</fieldset>
 
@@ -125,7 +127,7 @@
 		<fieldset>
 			<legend>name / sql</legend>
 			<p><?php $theform->showField("name");?></p>
-			
+
 			<p>
 				<label for="sqlclause">SQL where clause</label><br />
 				<textarea id="sqlclause" name="sqlclause" cols="62" rows="12"><?php echo htmlQuotes($therecord["sqlclause"])?></textarea>
@@ -137,7 +139,7 @@
 		<div id="savecancel2"><?php showSaveCancel(2)?></div>
 	</div>
 
-	<?php 
+	<?php
 		$theform->endForm();
 	?>
 </div>

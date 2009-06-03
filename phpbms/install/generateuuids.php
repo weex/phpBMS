@@ -110,8 +110,8 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("tabledefs", array("moduleid"=>$this->moduleList, "editroleid"=>$this->roleList, "addroleid"=>$this->roleList, "searchroleid"=>$this->roleList, "advsearchroleid"=>$this->roleList, "viewsqlroleid"=>$this->roleList));
         //$this->updateFields("tablesearchablefields", array("tabledefid"=>$this->tabledefList));
         //$this->updateFields("usersearches", array("tabledefid"=>$this->tabledefList, "userid"=>$this->userList, "roleid"=>$this->roleList));
+        //$this->updateFields("reports", array("roleid"=>$this->roleList, "tabledefid"=>$this->tabledefList));
         //$this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
-
 
         //$this->updateMenuLinks();
 
