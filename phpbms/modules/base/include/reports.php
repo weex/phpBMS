@@ -39,8 +39,8 @@
 if(class_exists("phpbmsTable")) {
 	class reports extends phpbmsTable{
 
-		var $availableTabledefIDs = array();
-		var $availableRoleIDs = array();
+		var $_availableTabledefUUIDs = array();
+		var $_availableRoleUUIDs = array();
 
 		function getDefaults(){
 			$therecord = parent::getDefaults();
@@ -51,54 +51,6 @@ if(class_exists("phpbmsTable")) {
 			return $therecord;
 
 		}
-
-		//populates tabledef id array
-		function populateTabledefArray(){
-
-			$this->availableTabledefIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`tabledefs`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			//This is for the "global" option
-			$this->availableTabledefIDs[] = 0;
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableTabledefIDs[] = $therecord["id"];
-
-
-
-		}//end method --populateRoleArray--
-
-		//populates role id array
-		function populateRoleArray(){
-
-			$this->availableRoleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			//These two are added for no restriction on the role (0) and for
-			//administrative restrictioin (-100)
-			$this->availableRoleIDs[] = 0;
-			$this->availableRoleIDs[] = -100;
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
-
-		}//end method --populateRoleArray--
 
 
 		function verifyVariables($variables){
@@ -125,37 +77,31 @@ if(class_exists("phpbmsTable")) {
 
 					}//end switch
 
-			//Table Default (0) ok becuase it means report is globally available to any table
+			//Table Default ('') ok becuase it means report is globally available to any table
 			if(isset($variables["tabledefid"])){
 
-				//must be a non-negative number or NULL/""
-				if( (!$variables["tabledefid"]) || ((int)$variables["tabledefid"]) > 0 ){
+				if(!count($this->_availableTabledefUUIDs)){
+					$this->_availableTabledefUUIDs = $this->_loadUUIDList("tabledefs");
+					//add the global option
+					$this->_availableTabledefUUIDs[] = "";
+				}//end if
 
-					if(!count($this->availableTabledefIDs))
-						$this->populateTabledefArray();
-
-					if( !in_array((int)$variables["tabledefid"], $this->availableTabledefIDs) )
-						$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable to table definition id number.";
-
-				}else
-					$this->verifyErrors[] = "The `tabledefid` field must be either a non-negative number or equivalent to 0.";
+				if( !in_array((string)$variables["tabledefid"], $this->_availableTabledefUUIDs) )
+					$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition uuid.";
 
 			}//end if
 
-			//Table Default (0) ok becuase it means report is globally available to any user
+			//Table Default ('') ok becuase it means report is globally available to any user
 			if(isset($variables["roleid"])){
 
-				//must be a number or NULL/""
-				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = ""; // for no role restrictions
+					$this->_availableRoleUUIDs[] = "Admin"; //for the Admin restriction
+				}//end if
 
-					if(!count($this->availableRoleIDs))
-						$this->populateRoleArray();
-
-					if( !in_array((int)$variables["roleid"], $this->availableRoleIDs) )
-						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable to role id number.";
-
-				}else
-					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
+				if( !in_array((string)$variables["roleid"], $this->_availableRoleUUIDs) )
+					$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable to role id number.";
 
 			}//end if
 
@@ -166,18 +112,18 @@ if(class_exists("phpbmsTable")) {
 
 		function displayTables($fieldname,$selectedid){
 
-			$querystatement="SELECT id, displayname FROM tabledefs ORDER BY displayname";
+			$querystatement="SELECT uuid, displayname FROM tabledefs ORDER BY displayname";
 			$thequery=$this->db->query($querystatement);
 
 			echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 
-			echo "<option value=\"0\" ";
-			if ($selectedid=="0") echo "selected=\"selected\"";
+			echo "<option value=\"\" ";
+			if ($selectedid=="") echo "selected=\"selected\"";
 			echo " style=\"font-weight:bold\">global</option>\n";
 
 			while($therecord=$this->db->fetchArray($thequery)){
-				echo "	<option value=\"".$therecord["id"]."\"";
-					if($selectedid==$therecord["id"]) echo " selected=\"selected\"";
+				echo "	<option value=\"".$therecord["uuid"]."\"";
+					if($selectedid==$therecord["uuid"]) echo " selected=\"selected\"";
 				echo ">".$therecord["displayname"]."</option>\n";
 			}
 

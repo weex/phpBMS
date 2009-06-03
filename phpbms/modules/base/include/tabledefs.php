@@ -39,8 +39,8 @@
 if(class_exists("phpbmsTable")){
 	class tableDefinitions extends phpbmsTable{
 
-		var $availableRoleIDs = array();
-		var $availableModuleIDs = array();
+		var $_availableRoleUUIDs = array();
+		var $_availableModuleUUIDs = array();
 
 		function getDefaults(){
 			$therecord = parent::getDefaults();
@@ -55,50 +55,6 @@ if(class_exists("phpbmsTable")){
 
 			return $therecord;
 		}
-
-		//populates $this->availableRoleIDs
-		function _populateRoleArray(){
-
-			$this->availableRoleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`uuid`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableRoleIDs[] = "";//for everyone
-			$this->availableRoleIDs[] = "Admin";//for administrators
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["uuid"];
-
-		}//end method --_populateRoleArray--
-
-
-		function _populateModuleArray(){
-
-			$this->availableModuleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`uuid`
-				FROM
-					`modules`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableModuleIDs[] = $therecord["uuid"];
-			}else
-				$this->availableModuleIDs[] = "AN IMPOSSIBLE ID";
-
-		}//end  method --populateModuleArray--
 
 
 		function verifyVariables($variables){
@@ -166,11 +122,13 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["addroleid"])){
 
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
-
-				if(!in_array(((int)$variables["addroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["addroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `addroleid` field does not give an existing/acceptable role id number.";
 
 
@@ -178,10 +136,13 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["editroleid"])){
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!in_array(((int)$variables["editroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["editroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `editroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
@@ -189,20 +150,26 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["importroleid"])){
 
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!in_array(((int)$variables["importroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["importroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `importroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			if(isset($variables["searchroleid"])){
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!in_array(((int)$variables["searchroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["searchroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `searchroleid` field does not give an existing/acceptable role id number.";
 
 
@@ -210,20 +177,26 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["advsearchroleid"])){
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!in_array(((int)$variables["advsearchroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["advsearchroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `advsearchroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 
 			if(isset($variables["viewsqlroleid"])){
 
-				if(!count($this->availableRoleIDs))
-					$this->_populateRoleArray();
+				if(!count($this->_availableRoleUUIDs)){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";//for no restrictions
+					$this->_availableRoleUUIDs[] = "Admin";//for admin restriction
+				}//end if
 
-				if(!in_array(((int)$variables["viewsqlroleid"]), $this->availableRoleIDs))
+				if(!in_array(((string)$variables["viewsqlroleid"]), $this->_availableRoleUUIDs))
 					$this->verifyErrors[] = "The `viewsqlroleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
@@ -231,12 +204,17 @@ if(class_exists("phpbmsTable")){
 			//check moduleid
 			if(isset($variables["moduleid"])){
 
-				if(!count($this->availableModuleIDs))
-					$this->_populateModuleArray();
+				if(!count($this->_availableModuleUUIDs)){
+					$this->_availableModuleUUIDs = $this->_loadUUIDList("modules");
 
-				if(!in_array((int)$variables["moduleid"], $this->availableModuleIDs))
+					//if there is still no module uuids, put in an imposssible one
+					//so as to not re-run this
+					if(!count($this->_availableModuleUUIDs))
+						$this->_availableModuleUUIDs[] = "AN IMPOSSIBLE ID";
+				}//end if
+
+				if(!in_array((string)$variables["moduleid"], $this->_availableModuleUUIDs))
 					$this->verifyErrors[] = "The `moduleid` field does not give an existing/acceptable role id number.";
-
 
 			}else
 				$this->verifyErrors[] = "The `moduleid` field must be set."; //table default insufficent

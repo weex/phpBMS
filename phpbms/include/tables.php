@@ -389,12 +389,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function prepareVariables
 
         /**
-         * function _loadList
+         * function _loadUUIDList
          * @param string $tableName The name of a table with `uuid` field.
          * @return array A list of uuids used in the table.
          */
 
-        function _loadList($tableName) {
+        function _loadUUIDList($tableName) {
 
             $list = array();
             $tableName = mysql_real_escape_string($tableName);
@@ -413,7 +413,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             return $list;
 
-        }//end method --_loadList--
+        }//end method --_loadUUIDList--
 
 
         /**
