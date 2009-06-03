@@ -422,7 +422,11 @@ WHERE
     `id`='7';
 UPDATE `tabledefs` SET `uuid`='tbld:8179e105-5487-5173-d835-d9d510cc7f1b' WHERE `id`='8';
 UPDATE `tabledefs` SET `uuid`='tbld:f993cf23-ad4a-047b-e920-d45fee1dc08e' WHERE `id`='18';
-UPDATE `tabledefs` SET `uuid`='tbld:157b7707-5503-4161-4dcf-6811f8b0322f' WHERE `id`='22';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:157b7707-5503-4161-4dcf-6811f8b0322f',
+    `querytable` = '`clientemailprojects` LEFT JOIN `users` ON `clientemailprojects`.`userid`=`users`.`uuid`'
+WHERE
+    `id`='22';
 UPDATE `tabledefs` SET
     `uuid`='tbld:455b8839-162b-3fcb-64b6-eeb946f873e1',
     `defaultcriteriafindoptions` = 'Active Records',
@@ -458,7 +462,8 @@ UPDATE `tabledefs` SET
     `uuid`='tbld:43678406-be25-909b-c715-7e2afc7db601',
     `canpost` = '1',
     `hascustomfields` = '1',
-    `prefix` = 'rcpt'
+    `prefix` = 'rcpt',
+    `querytable` = '((`receipts` INNER JOIN `clients` ON `receipts`.`clientid` = `clients`.`uuid`) LEFT JOIN `paymentmethods` ON `receipts`.`paymentmethodid` = `paymentmethods`.`uuid`)';
 WHERE
     `id`='304';
 UPDATE `tabledefs` SET `uuid`='tbld:e3ce122f-7c43-cfca-fd32-11c663567a2a' WHERE `id`='305';

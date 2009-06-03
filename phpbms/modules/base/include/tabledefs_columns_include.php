@@ -40,7 +40,7 @@
 class tableColumns{
 
     var $db;
-    var $uuid;
+    var $tabledefuuid;
 
     function tableColumns($db, $tabledefid){
 
@@ -48,11 +48,12 @@ class tableColumns{
 
         $querystatement = "
             SELECT
-                uuid
+                `uuid`
             FROM
-                tabledefs
+                `tabledefs`
             WHERE
-                id = ".((int) $tabledefid);
+                id = '".((int) $tabledefid)."'
+            ";
 
         $queryresult = $this->db->query($querystatement);
 
@@ -142,7 +143,7 @@ class tableColumns{
                 wrap,
                 roleid
             ) VALUES (
-                '".$this->uuid."',
+                '".$this->tabledefuuid."',
                 '".$variables["name"]."',
                 '".$variables["column"]."',
                 '".$variables["align"]."',
@@ -217,7 +218,7 @@ class tableColumns{
             SET
                 displayorder = displayorder -1
             WHERE
-                tabledefid = '".$this->uuid."'
+                tabledefid = '".$this->tabledefuuid."'
                 AND displayorder > ".$therecord["displayorder"];
 
         if($this->db->query($queryresult)){
@@ -260,7 +261,7 @@ class tableColumns{
             FROM
                 tablecolumns
             WHERE
-                tabledefid = '".$this->uuid."'";
+                tabledefid = '".$this->tabledefuuid."'";
 
         $queryresult = $this->db->query($querstatement);
 
@@ -275,7 +276,7 @@ class tableColumns{
                     displayorder = ".$therecord["displayorder"]."
                 WHERE
                     displayorder = ".($increment+$therecord["displayorder"])."
-                    AND tabledefid = '".$this->uuid."'";
+                    AND tabledefid = '".$this->tabledefuuid."'";
 
             $this->db->query($updatestatement);
 

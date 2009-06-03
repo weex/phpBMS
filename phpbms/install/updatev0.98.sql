@@ -303,7 +303,7 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'display order', 'menu.displayorder', 'right', '', '3', '', '0', '', NULL, '0');
 --end tablecolumns INSERT--
 --tabledefs INSERT--
-INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.id) LEFT JOIN roles ON widgets.roleid = roles.id) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
+INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.uuid) LEFT JOIN roles ON widgets.roleid = roles.uuid) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 DELETE FROM `tabledefs` WHERE `id` = '19';
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('19', 'tbld:83187e3d-101e-a8a5-037f-31e9800fed2d', 'Menu', 'system', '1', 'menu', '((menu LEFT JOIN menu as parentmenu on menu.parentid=parentmenu.id) LEFT JOIN roles on menu.roleid=roles.id)', 'modules/base/menu_addedit.php', '-100', 'modules/base/menu_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'menu.id!=0', 'if(parentmenu.name is null,menu.displayorder,parentmenu.displayorder+(menu.displayorder+1)/10000)', '', '', '', 1, NOW(), 1, NOW());
 --end tabledefs INSERT--
@@ -321,7 +321,8 @@ WHERE
     `id`='10';
 UPDATE `tabledefs` SET
     `uuid`='tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3',
-    `prefix` = 'tbld'
+    `prefix` = 'tbld',
+    `querytable` = '`tabledefs` LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`'
 WHERE
     `id`='11';
 UPDATE `tabledefs` SET
@@ -331,7 +332,8 @@ WHERE
     `id`='12';
 UPDATE `tabledefs` SET
     `uuid`='tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb',
-    `prefix` = 'rpt'
+    `prefix` = 'rpt',
+    `querytable` = '`reports` LEFT JOIN `tabledefs` ON `reports`.`tabledefid` = `tabledefs`.`uuid`'
 WHERE
     `id`='16';
 UPDATE `tabledefs` SET
@@ -344,8 +346,16 @@ UPDATE `tabledefs` SET
     `prefix` = 'mod'
 WHERE
     `id`='21';
-UPDATE `tabledefs` SET `uuid`='tbld:2bc3e683-81f9-694a-9550-a0c7263057de' WHERE `id`='23';
-UPDATE `tabledefs` SET `uuid`='tbld:0fcca651-6c34-c74d-ac04-2d88f602dd71' WHERE `id`='24';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:2bc3e683-81f9-694a-9550-a0c7263057de',
+    `querytable` = '((`notes` LEFT JOIN `users` AS `assignedto` ON `assignedto`.`uuid` = `notes`.`assignedtoid`)  LEFT JOIN `users` as `assignedby` ON `assignedby`.`uuid`=`notes`.`assignedbyid`)'
+WHERE
+    `id`='23';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:0fcca651-6c34-c74d-ac04-2d88f602dd71',
+    `querytable` = '((`notes` LEFT JOIN `users` AS `assignedto` ON `assignedto`.`uuid` = `notes`.`assignedtoid`)  LEFT JOIN `users` as `assignedby` ON `assignedby`.`uuid`=`notes`.`assignedbyid`)'
+WHERE
+    `id`='24';
 UPDATE `tabledefs` SET
     `uuid`='tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475',
     `prefix` = 'file'

@@ -6,4 +6,4 @@ UPDATE `scheduler` SET `uuid`='schd:ba7f18b4-3489-a970-bf4c-ed7e3053dabf' WHERE 
 UPDATE `tabledefs` SET `uuid`='tbld:3434bf2d-1337-5cab-0a7a-25e04f1c6d8f' WHERE `id`='400';
 UPDATE `users` SET `uuid`='usr:170c4b04-b8fe-a528-fcea-5a213669f400' WHERE `id`='5';
 UPDATE `tabs` SET `uuid`='tab:d303321e-7ff5-fe4b-29ec-fe3eb0305576' WHERE `id`='500';
-UPDATE `modules` SET `uuid`='mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc' WHERE `id`='200';
+UPDATE `modules` SET `uuid`='mod:a243321f-9095-e25b-2750-f7e8328e3d4c' WHERE `id`='200';
