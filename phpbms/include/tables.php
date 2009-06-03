@@ -388,6 +388,64 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
         }//end function prepareVariables
 
+        /**
+         * function _loadList
+         * @param string $tableName The name of a table with `uuid` field.
+         * @return array A list of uuids used in the table.
+         */
+
+        function _loadList($tableName) {
+
+            $list = array();
+            $tableName = mysql_real_escape_string($tableName);
+
+            $querystatement = "
+                SELECT
+                    `uuid`
+                FROM
+                    `".$tableName."`
+                ";
+
+            $queryresult = $this->db->query($querystatement);
+
+            while($therecord = $this->db->fetchArray($queryresult))
+                $list[] = $therecord["uuid"];
+
+            return $list;
+
+        }//end method --_loadList--
+
+
+        /**
+         * function _checkForPresentUUID
+         * @param string $tableName The name of a table with `uuid` field.
+         * @param string $uuid The uuid to be checked.
+         * @return boolean Whether or not the $uuid is a `uuid` in $tablename.
+         */
+
+        function _checkForValidUUID($tableName, $uuid) {
+
+            $tableName = mysql_real_escape_string($tableName);
+            $uuid = mysql_real_escape_string($uuid);
+
+            $querystatement = "
+                SELECT
+                    `uuid`
+                FROM
+                    `".$tableName."`
+                WHERE
+                    `uuid` = '".$uuid."'
+                ";
+
+            $queryresult = $this->db->query($querystatement);
+
+            if($this->db->numRows($queryresult))
+                return true;
+            else
+                return false;
+
+        }//end method --_checkForValidUUID--
+
 
         //verifies if variables passes will constitute a valid record creation/update
         function verifyVariables($variables){
