@@ -60,7 +60,7 @@
 
 	$displayTable= new displaySearchTable($db);
 	$displayTable->base = $base;
-	$displayTable->initialize(305);
+	$displayTable->initialize("tbld:e3ce122f-7c43-cfca-fd32-11c663567a2a");
 	$displayTable->querywhereclause = $whereclause;
 
 	if(isset($_POST["deleteCommand"]))

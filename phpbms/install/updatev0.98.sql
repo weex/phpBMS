@@ -294,14 +294,17 @@ UPDATE `smartsearches` SET `uuid`='smrt:ed5b1d7f-b0fe-2088-f17c-47bfbe1ace25' WH
 --end smartsearches UPDATE--
 --tablecolumns INSERT--
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'widget', 'concat(\'[b]\', widgets.title, \'[/b][br]\', widgets.uuid)', 'left', '', '0', 'widgets.title', '0', '100%', 'bbcode', '0');
-INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'role', 'IF(widgets.roleid != '', IF(widgets.roleid != 'Admin', roles.name, \'Administrator\'), \'EVERYONE\')', 'left', '', '2', '', '0', '', NULL, '0');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'role', 'IF(widgets.roleid != \'\', IF(widgets.roleid != \'Admin\', roles.name, \'Administrator\'), \'EVERYONE\')', 'left', '', '2', '', '0', '', NULL, '0');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('205', 'file', 'widgets.file', 'left', '', '1', '', '0', '', NULL, '0');
 DELETE FROM `tablecolumns` WHERE `tabledefid` = '19';
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'link', 'menu.link', 'left', '', '1', '', '1', '', NULL, '');
-INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'access', 'IF(menu.roleid='' OR menu.roleid IS NULL,'EVERYONE',if(menu.roleid='Admin','Administrators',roles.name)) ', 'left', '', '2', '', '0', '', NULL, '');
-INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'Item', 'IF(menu.parentid = '' OR menu.parentid IS NULL, CONCAT('[b]', menu.name,' [/b]'), menu.name) ', 'left', '', '0', '', '0', '100%', 'bbcode', '');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'access', 'IF(menu.roleid=\'\' OR menu.roleid IS NULL,\'EVERYONE\',if(menu.roleid=\'Admin\',\'Administrators\',roles.name)) ', 'left', '', '2', '', '0', '', NULL, '');
+INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'Item', 'IF(menu.parentid = \'\' OR menu.parentid IS NULL, CONCAT(\'[b]\', menu.name,\' [/b]\'), menu.name)', 'left', '', '0', '', '0', '100%', 'bbcode', '');
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'display order', 'menu.displayorder', 'right', '', '3', '', '0', '', NULL, '');
 --end tablecolumns INSERT--
+--tablecolumns UPDATE--
+UPDATE `tablecolumns` SET `column` = 'IF(`tabs`.`roleid`='' OR `tabs`.`roleid` IS NULL,\'EVERYONE\',IF(`tabs`.`roleid`=\'Admin\',\'Administrators\',`roles`.`name`))' WHERE `name` = 'access' AND `tabledefid` = '203';
+--end tablecolumns UPDATE--
 --tabledefs INSERT--
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.uuid) LEFT JOIN roles ON widgets.roleid = roles.uuid) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
 DELETE FROM `tabledefs` WHERE `id` = '19';
@@ -375,7 +378,8 @@ WHERE
 UPDATE `tabledefs` SET `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667' WHERE `id`='202';
 UPDATE `tabledefs` SET
     `uuid`='tbld:7e75af48-6f70-d157-f440-69a8e7f59d38',
-    `prefix` = 'tab'
+    `prefix` = 'tab',
+    `querytable` = '`tabs` LEFT JOIN `roles` ON `tabs`.`roleid`=`roles`.`uuid`';
 WHERE
     `id`='203';
 UPDATE `tabledefs` SET
@@ -395,14 +399,14 @@ UPDATE `tabledefs` SET `prefix` = 'menu' WHERE id = 19;
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('205', 'All Records', 'widgets.id!=-1', '0', '0');
 --end tablefindoptions INSERT--
 --tablefindoptions UPDATE--
-UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = 23 AND `name` = 'Public Tasks';
+UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = '23' AND `name` = 'Public Tasks';
 UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0' WHERE `tabledefid` = 23 AND `name` = 'Uncomplete Tasks Assigned By Me';
 --end tablefindoptions UPDATE--
 --tablegroupings INSERT--
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('205', 'modules.name', '1', '1', 'Module', '');
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('205', 'widgets.type', '2', '1', 'Area', '');
 DELETE FROM `tablegroupings` WHERE `tabledefid` = '19';
-INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('19', 'if(menu.parentid='' OR menu.parentid IS NULL,concat( lpad(menu.displayorder,3,"0"), " - " ,menu.name ) , concat( lpad(parentmenu.displayorder,3,"0") , " - ",parentmenu.name))', '1', '1', '', '');
+INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('19', 'if(menu.parentid=\'\' OR menu.parentid IS NULL,concat( lpad(menu.displayorder,3,"0"), " - " ,menu.name ) , concat( lpad(parentmenu.displayorder,3,"0") , " - ",parentmenu.name))', '1', '1', '', '');
 --end tablegroupings INSERT--
 --tableoptions INSERT--
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('9', 'import', '1', '0', '0', '-100', '0');

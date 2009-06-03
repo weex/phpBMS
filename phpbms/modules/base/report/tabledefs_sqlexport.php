@@ -44,22 +44,22 @@
 		require("../../../include/session.php");
 
 	}//end if
-	
+
 
 	if(!class_exists("phpbmsReport"))
 		include("report/report_class.php");
-		
+
 	class tabledefSQLExport extends phpbmsReport{
-			
+
 		var $reportOutput = "";
-			
+
 		function sqlExport($db){
-		
+
 			parent::phpbmsReport($db);
-			
+
 		}//end method
-		
-		
+
+
 		function generate(){
 
 			$this->reportOutput .= $this->_addTableInfo("tablecolumns");
@@ -67,17 +67,31 @@
 			$this->reportOutput .= $this->_addTableInfo("tablegroupings");
 			$this->reportOutput .= $this->_addTableInfo("tableoptions");
 			$this->reportOutput .= $this->_addTableInfo("tablesearchablefields");
-						
+
 		}//end method
-		
+
 
 		function _addTableInfo($tablename){
-		
-			$whereclause = str_replace("tabledefs.id", $tablename.".tabledefid", $this->whereclause);
-		
+
+			$querystatement = "
+				SELECT
+					`uuid`
+				FROM
+					`tabledefs`
+				WHERE
+					".$this->whereclause."
+				";
+
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+
+			$whereclause = "`tabledefid` = '".mysql_real_escape_string($therecord["uuid"])."'";
+
+			//$whereclause = str_replace("tabledefs.id", $tablename.".tabledefid", $this->whereclause);
+
 			$output = 	"/* Begin ".$tablename." */\n".
 						"/* ====================================================================== */\n";
-						
+
 			$querystatement = "
 				SELECT
 					*
@@ -87,76 +101,76 @@
 					".$whereclause."
 				ORDER BY
 					".$tablename.".tabledefid";
-			
+
 			$queryresult = $this->db->query($querystatement);
 
 			$num_fields = $this->db->numFields($queryresult);
-							
+
 			$statementstart = "INSERT INTO `".$tablename."` (";
-			
+
 			for($i=0; $i<$num_fields ;$i++){
-			
+
 				$fieldname = $this->db->fieldName($queryresult,$i);
-				
+
 				if($fieldname != "id")
 					$statementstart .= "`".$fieldname."`, ";
-				
+
 			}//endfor
-						
+
 			$statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
-			
+
 			while($therecord = $this->db->fetchArray($queryresult)){
-			
+
 				$insertstatement = $statementstart;
-		
+
 				foreach($therecord as $name => $field){
-				
+
 					if($field === NULL)
 						$addfield = "NULL, ";
 					else
 						$addfield = "'".mysql_real_escape_string($field)."', ";
-			
+
 					if($name != "id")
 						$insertstatement .= $addfield;
-										
-				}//endforeach				
+
+				}//endforeach
 
 				$insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
-		
+
 				$output .= $insertstatement;
-			
+
 			}//endwhile
-			
-		
+
+
 			$output .= 	"/* ====================================================================== */\n".
 						"/* END ".$tablename." - record count: ".$this->db->numRows($queryresult)."*/\n\n";
-						
+
 			return $output;
-			
+
 		}//end method
 
-		
+
 		function show(){
 
 			header("Content-type: text/plain");
 			header('Content-Disposition: attachment; filename="tableInfoSQL.sql"');
-			
-			echo $this->reportOutput;
-			
-		}//end method		
-				
-	
-	}//end class 
 
-	//PROCESSING 
+			echo $this->reportOutput;
+
+		}//end method
+
+
+	}//end class
+
+	//PROCESSING
 	//========================================================================
-	
+
 	if(!isset($noOutput)){
-	
+
 		$report = new tabledefSQLExport($db);
 		$report->setupFromPrintScreen();
-		$report->generate();	
-		$report->show();	
-		
+		$report->generate();
+		$report->show();
+
 	}//end if
 ?>
