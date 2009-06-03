@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -37,14 +37,14 @@
  +-------------------------------------------------------------------------+
 */
 
-	$displayTable= new displaySearchTable($db);	
+	$displayTable= new displaySearchTable($db);
 	$displayTable->base=$base;
-	$displayTable->initialize(27);	
+	$displayTable->initialize("tbld:edb8c896-7ce3-cafe-1d58-5aefbcd5f3d7");
 	$displayTable->querywhereclause=$whereclause;
 	$displayTable->tableoptions["printex"]=0;
 	$displayTable->tableoptions["othercommands"]=false;
 	$displayTable->tableoptions["select"]=0;
-	
+
 	if(isset($_POST["deleteCommand"]))
 		if($_POST["deleteCommand"]) $_POST["command"]=$_POST["deleteCommand"];
 
@@ -54,9 +54,9 @@
 				//=====================================================================================================
 
 			include_once("modules/base/include/attachments.php");
-			
+
 			$theids=explode(",",$_POST["theids"]);
-			
+
 			$searchFunctions = new attachmentsSearchFunctions($db,$displayTable->thetabledef["id"],$theids);
 
 			$tempmessage = $searchFunctions->delete_record();
@@ -66,26 +66,26 @@
 
 			break;
 		}//end switch
-	}	
+	}
 
 	//on the fly sorting... this needs to be done after command processing or the querystatement will not work.
 	if(!isset($_POST["newsort"])) $_POST["newsort"]="";
 	if(!isset($_POST["desc"])) $_POST["desc"]="";
-	
+
 	if($_POST["newsort"]!="") {
 		//$displayTable->setSort($_POST["newsort"]);
 		foreach ($displayTable->thecolumns as $therow){
 			if ($_POST["newsort"]==$therow["name"]) $therow["sortorder"]? $displayTable->querysortorder=$therow["sortorder"] : $displayTable->querysortorder=$therow["column"];
 		}
-		$_POST["startnum"]=1;		
+		$_POST["startnum"]=1;
 	} elseif($_POST["desc"]!="")  $displayTable->querysortorder.=" DESC";
-	
-	$displayTable->issueQuery();		
-	
+
+	$displayTable->issueQuery();
+
 	$phpbms->cssIncludes[] = "pages/search.css";
 	$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
 	$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid='.$tabledefid.'"+String.fromCharCode(38)+"refid='.$refid.'";';
-	
+
 	include("header.php");
 	$phpbms->showTabs($tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
@@ -94,7 +94,7 @@
 		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();
-			
+
 			$displayTable->displayResultTable();
 		?>
 		</form>

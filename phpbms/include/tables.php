@@ -60,13 +60,13 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             $this->id = ((int) $tabledefid);
 
-            if($backurl == NULL)
-                $this->backurl = APP_PATH."search.php?id=".$this->id;
-            else
-                $this->backurl = $backurl;
-
             if(!$this->getTableInfo())
                 $error = new appError(-810,"Table definition not found for id ".$this->id,"Initializing phpbmsTable Class");
+
+            if($backurl == NULL)
+                $this->backurl = APP_PATH."search.php?id=".urlencode($this->uuid);
+            else
+                $this->backurl = $backurl;
 
         }//end function init
 

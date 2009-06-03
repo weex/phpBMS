@@ -37,6 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 if(class_exists("phpbmsTable")){
+    
 	class relationships extends phpbmsTable{
 
 		var $availableTabledefIDs = array();

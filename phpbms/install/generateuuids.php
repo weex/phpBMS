@@ -110,8 +110,10 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("tabledefs", array("moduleid"=>$this->moduleList, "editroleid"=>$this->roleList, "addroleid"=>$this->roleList, "searchroleid"=>$this->roleList, "advsearchroleid"=>$this->roleList, "viewsqlroleid"=>$this->roleList));
         //$this->updateFields("tablesearchablefields", array("tabledefid"=>$this->tabledefList));
         //$this->updateFields("usersearches", array("tabledefid"=>$this->tabledefList, "userid"=>$this->userList, "roleid"=>$this->roleList));
+        $this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
 
-        $this->updateMenuLinks();
+
+        //$this->updateMenuLinks();
 
         // ======
         // This stuff probably won't be needed as they will be done during the update
@@ -181,7 +183,7 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-                $updatestatement."<br />";
+//echo $updatestatement."<br />";
                 $this->db->query($updatestatement);
 
             }//endif
