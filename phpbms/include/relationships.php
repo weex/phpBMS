@@ -36,39 +36,78 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+class relationship{
 
-//Perform the relationship lookup to construct join clause
-function perform_relationship($relationshipid,$theids){
-	global $db;
-	
-	$_SESSION["passedjoinclause"]="";
-	$_SESSION["passedjoinwhere"]="";
-	
-	$querystatement="SELECT 
-		fromtable.maintable as fromtable, relationships.totableid, totable.maintable as totable, 
-		relationships.tofield, relationships.fromfield, relationships.inherint
-		FROM
-		(relationships inner join tabledefs as fromtable on relationships.fromtableid=fromtable.id) 
-		inner join tabledefs as totable on relationships.totableid=totable.id	
-		WHERE relationships.id=".$relationshipid;
-	$queryresult=$db->query($querystatement);
+    var $db;
+    var $id;
 
-	$therelationship=$db->fetchArray($queryresult);
-	
-	//if the relationship is inherent (already exists due to the display nature of the table)
-	// then the join clause is not needed
-	if($therelationship["inherint"]=="0"){
-		// build the join clause
-		$_SESSION["passedjoinclause"]=" INNER JOIN ".$therelationship["fromtable"]." on ".$therelationship["totable"].".";
-		$_SESSION["passedjoinclause"].=$therelationship["tofield"]."=".$therelationship["fromtable"].".".$therelationship["fromfield"];
-	}
-	
-	// make the passed where clause for passed id's	 this will pass the saved where clause.
-	foreach($theids as $theid){
-		$_SESSION["passedjoinwhere"].=" or ".$therelationship["fromtable"].".id=".$theid;
-	}
-	$_SESSION["passedjoinwhere"]=substr($_SESSION["passedjoinwhere"],3);
+    /**
+     * Initializes object
+     *
+     * @param object $db database object
+     * @param integer $id relationship id
+     */
+    function relationship($db, $id){
 
-	return "search.php?id=".$therelationship["totableid"];
-}
+        $this->db = $db;
+        $this->id = ((int) $id);
+
+    }//end function init
+
+
+    /**
+     * create's and runs the  relationship
+     *
+     * @param string $theids comma separated list of record ids
+     *
+     * @return string returns the URL of the new search screen to go to.
+     */
+    function execute($theids){
+
+	$_SESSION["passedjoinclause"] = "";
+	$_SESSION["passedjoinwhere"] = "";
+
+	$querystatement = "
+            SELECT
+		fromtable.maintable AS fromtable,
+                relationships.totableid,
+                totable.maintable AS totable,
+		relationships.tofield,
+                relationships.fromfield,
+                relationships.inherint
+            FROM
+		(relationships INNER JOIN tabledefs AS fromtable ON relationships.fromtableid = fromtable.uuid)
+		INNER JOIN tabledefs AS totable ON relationships.totableid = totable.uuid
+	    WHERE
+                relationships.id=".$this->id;
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+	/*
+         if the relationship is inherent (already exists due to the display
+         nature of the table) then the join clause is not needed
+        */
+        if($therecord["inherint"] == 0){
+
+            $_SESSION["passedjoinclause"] = "
+                INNER JOIN ".$therecord["fromtable"]." ON ".$therecord["totable"].".".$therecord["tofield"]." = ".$therecord["fromtable"].".".$therecord["fromfield"];
+
+        }//end if
+
+	/*
+          make the passed where clause for passed id's this will pass the
+          saved where clause.
+        */
+	foreach($theids as $theid)
+            $_SESSION["passedjoinwhere"] .= " OR ".$therecord["fromtable"].".id = ".$theid;
+
+	$_SESSION["passedjoinwhere"] = substr($_SESSION["passedjoinwhere"], 3);
+
+	return "search.php?id=".urlencode($therecord["totableid"]);
+
+    }//end function execute
+
+}//end class relationship
 ?>

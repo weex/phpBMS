@@ -88,16 +88,17 @@
 			$_SESSION["printing"]["maintable"]=$displayTable->thetabledef["maintable"];
 			$_SESSION["printing"]["theids"]=$theids;
 			goURL("print.php");
-		break;
+			break;
+
 		case "delete":
 			//=====================================================================================================
 
 			$_POST["othercommands"] = -1;
 
 		case "other":
-			$displayTable->recordoffset=0;
 			// process table specific commands (passed by settings)
 			//=====================================================================================================
+			$displayTable->recordoffset=0;
 			$theids=explode(",",$_POST["theids"]);
 
 			//try to include table specific functions
@@ -125,16 +126,18 @@
 				$statusmessage = $searchFunctions->$functionname();
 			else
 				$statusmessage = "Function ".$functionname." not defined";
+			break;
 
-		break;
 		case "search":
 			$displayTable->recordoffset=0;
 			$displayTable->buildSearch($_POST);
-		break;
+			break;
+
 		case "reset":
 			$displayTable->recordoffset=0;
 			$displayTable->resetQuery();
-		break;
+			break;
+
 		case "omit":
 			// omit selected from current query
 			//=====================================================================================================
@@ -146,7 +149,8 @@
 			}
 			$tempwhere=substr($tempwhere,3);
 			$displayTable->querywhereclause="(".$displayTable->querywhereclause.") and not (".$tempwhere.")";
-		break;
+			break;
+
 		case "keep":
 			// keep only those ids
 			//=====================================================================================================
@@ -158,26 +162,34 @@
 			}
 			$tempwhere=substr($tempwhere,3);
 			$displayTable->querywhereclause=$tempwhere;
-		break;
+			break;
+
 		case "advanced search":
 			$displayTable->recordoffset=0;
 			$displayTable->querywhereclause=stripslashes($_POST["advancedsearch"]);
 			$displayTable->querytype="advanced search";
-		break;
+			break;
+
 		case "advanced sort":
 			$displayTable->showGroupings = 0;
 			$displayTable->recordoffset = 0;
 			$displayTable->querysortorder=$_POST["advancedsort"];
-		break;
+			break;
+
 		case "relate records":
 			include("include/relationships.php");
-			$theids=explode(",",$_POST["theids"]);
-			$goto=perform_relationship($_POST["relationship"],$theids);
-			$_SESSION["temp_relateto"]=$displayTable->thetabledef["maintable"];
+
+			$theids = explode(",",$_POST["theids"]);
+
+			$relationship = new relationship($db, $_POST["relationship"]);
+			$newURL = $relationship->execute($theids);
+
+			$_SESSION["temp_relateto"] = $displayTable->thetabledef["displayname"];
+
 			$displayTable->querytype="relate";
 
-			goURL($goto);
-		break;
+			goURL($newURL);
+			break;
 
 		}//end switch
 	}//end if
@@ -247,7 +259,7 @@ if($displayTable->querytype!="print" and $displayTable->querytype!="relate" and 
 
 				$displayTable->displayResultTable();
 
-				$displayTable->displayRelationships();
+				$displayTable->showRelationships();
 
 				$displayTable->saveQueryParameters();
 		?>

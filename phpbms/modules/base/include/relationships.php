@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 if(class_exists("phpbmsTable")){
-    
+
 	class relationships extends phpbmsTable{
 
 		var $availableTabledefIDs = array();
@@ -52,7 +52,7 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					`id`,
+					`uuid`,
 					`displayname`
 				FROM
 					`tabledefs`
@@ -65,18 +65,22 @@ if(class_exists("phpbmsTable")){
 			$queryresult = $this->db->query($querystatement);
 
 			if($this->db->numRows($queryresult)){
+
 				while($therecord = $this->db->fetchArray($queryresult)){
 
-					$this->availableTabledefIDs[] = $therecord["id"];
+					$this->availableTabledefIDs[] = $therecord["uuid"];
 					$this->availableTabledefNames[] = $therecord["displayname"];
 
 				}//end while
-			}else{
+
+			} else {
+
 				//if no valid id/names, I put in a value that will
 				//give the arrays a count but not actually match any integers
 				$this->availableTabledefIDs[] = "none";
 				$this->availableTabledefNames[] = "none";
-			}//end if
+
+			}//endif
 
 		}//end method --populateArrays--
 
@@ -100,34 +104,26 @@ if(class_exists("phpbmsTable")){
 			//cannot be table default (0)
 			if(isset($variables["fromtableid"])){
 
-				//must be a positive number
-				if(((int) $variables["fromtableid"]) > 0 ){
 
-					if(!count($this->availableTabledefIDs))
-						$this->populateTableDefArrays();
+                                if(!count($this->availableTabledefIDs))
+                                        $this->populateTableDefArrays();
 
-					if(!in_array(((int)$variables["fromtableid"]), $this->availableTabledefIDs))
-						$this->verifyErrors[] = "The `fromtableid` field does not give an existing/acceptable parent id number.";
-				}else
-					$this->verifyErrors[] = "The `fromtableid` field must be a positive number.";
+                                if(!in_array($variables["fromtableid"], $this->availableTabledefIDs))
+                                        $this->verifyErrors[] = "The `fromtableid` field does not give an existing/acceptable parent id number.";
 
-			}else
+			} else
 				$this->verifyErrors[] = "The `fromtableid` field must be set.";
 
 			//cannot be table default (0)
 			if(isset($variables["totableid"])){
 
-				//must be a positive number
-				if(((int) $variables["totableid"]) > 0 ){
 
-					if(!count($this->availableTabledefIDs))
-						$this->populateTableDefArrays();
+                                if(!count($this->availableTabledefIDs))
+                                        $this->populateTableDefArrays();
 
-					if(!in_array(((int)$variables["totableid"]), $this->availableTabledefIDs))
-						$this->verifyErrors[] = "The `totableid` field does not give an existing/acceptable to table id number.";
-				}else
-					$this->verifyErrors[] = "The `totableid` field must be a positive number.";
-			}else
+                                if(!in_array($variables["totableid"], $this->availableTabledefIDs))
+					$this->verifyErrors[] = "The `totableid` field does not give an existing/acceptable to table id number.";
+			} else
 				$this->verifyErrors[] = "The `totableid` field must be set.";
 
 			//check boolean

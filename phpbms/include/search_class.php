@@ -956,24 +956,45 @@
 		}//end function
 
 
-		function displayRelationships(){
-			// Get relationships
-			$querystatement="SELECT
-				 id, name
-				 FROM relationships
-				 WHERE fromtableid=\"".$this->thetabledef["id"]."\" ORDER BY name";
+		/**
+		 * displays the relationships drop down
+		 */
+		function showRelationships(){
+
+			$querystatement = "
+				SELECT
+					id,
+					name
+				 FROM
+					relationships
+				 WHERE
+					fromtableid = '".$this->thetabledef["uuid"]."'
+				ORDER BY
+					name";
+
 			$queryresult = $this->db->query($querystatement);
-			if (!$queryresult) $error = new appError(1,"Error Retrieving Relationships");
+
+			if (!$queryresult)
+				$error = new appError(1,"Error Retrieving Relationships");
+
 			if ($this->db->numRows($queryresult)) {
-				?><div class="small">
+
+				?>
+				<div class="small">
 				show related records in <select id="relationship" name="relationship" onchange="setSelIDs(this.form);this.form.submit();"	disabled="disabled">
 					<option value="" selected="selected" class="choiceListBlank">area...</option><?php
 					while($therecord = $this->db->fetchArray($queryresult)){
-					?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php }
+
+						?><option value="<?php echo $therecord["id"]?>"><?php echo formatVariable($therecord["name"]) ?></option><?php
+
+					}//endif
 				?></select></div>
 				<?php
-			}  ?></form><?php
-		}//end function
+
+			}//endif
+			?></form><?php
+
+		}//end function showRelationships
 
 		function initialize($id){
 
