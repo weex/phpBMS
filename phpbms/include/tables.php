@@ -567,7 +567,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             if(!$useUuid){
 
-                if(isset($variables["id"]))
+                if(!isset($variables["id"]))
                     $variables["id"] = 0;
 
                 $updatestatement .= "
@@ -618,6 +618,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
             $insertvalues = "";
 
             foreach($this->fields as $fieldname => $thefield){
+
                 if(!isset($thefield["select"])){
                     switch($fieldname){
                         case "id":
@@ -630,13 +631,14 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                             break;
 
-                        case uuid:
+                        case "uuid":
                             if(!$useUuid){
 
                                 $fieldlist .= "`uuid`, ";
                                 $insertvalues .= "'".mysql_real_escape_string($variables["uuid"])."', ";
 
                             }//endif
+                            break;
 
                         case "createdby":
                         case "modifiedby":
@@ -651,6 +653,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                             break;
 
                         default:
+
                             if(!isset($variables[$fieldname]) && strpos($thefield["flags"],"not_null") !== false)
                                 $variables[$fieldname] = $this->getDefaultByType($thefield["type"],true);
 
@@ -686,6 +689,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 $insertstatement = "INSERT";
 
             $insertstatement .= " INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
+
             $insertresult = $this->db->query($insertstatement);
 
             if($insertresult) {

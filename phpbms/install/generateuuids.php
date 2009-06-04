@@ -88,7 +88,7 @@ class generateUUIDS extends installUpdateBase{
         $this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
         $this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
         $this->createUUIDs("tbld:83187e3d-101e-a8a5-037f-31e9800fed2d"); //Menu
-        $this->createUUIDs("tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a"); //usersearches
+        $this->createUUIDs("tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e"); //tax
 
         //generate lists used elsewhere
         $this->moduleList= $this->generateUUIDList("modules");
