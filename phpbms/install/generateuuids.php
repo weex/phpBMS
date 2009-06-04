@@ -88,6 +88,7 @@ class generateUUIDS extends installUpdateBase{
         $this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
         $this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
         $this->createUUIDs("tbld:83187e3d-101e-a8a5-037f-31e9800fed2d"); //Menu
+        $this->createUUIDs("tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a"); //usersearches
 
         //generate lists used elsewhere
         $this->moduleList= $this->generateUUIDList("modules");
@@ -111,7 +112,7 @@ class generateUUIDS extends installUpdateBase{
 
         $this->tabledefList = $this->generateUUIDList("tabledefs");
         //
-        //$this->moduleList= $this->generateUUIDList("modules");
+        $this->moduleList= $this->generateUUIDList("modules");
 
         $menuList = $this->generateUUIDList("menu");
         $menuList[0] = "";
@@ -152,7 +153,7 @@ class generateUUIDS extends installUpdateBase{
         // attachments
         // addresstorecord
         // AR??
-
+        //
         // ======
         // This stuff probably won't be needed as they will be done during the update
         //$this->updateFields("widgets", array("moduleid"=>$this->moduleList, "roleid"=>$this->roleList));
@@ -211,7 +212,7 @@ class generateUUIDS extends installUpdateBase{
             $updateClause = "";
 
             foreach($fields as $key=>$value)
-                if(strpos(":", $therecord[$key]) === false)
+                if(strpos($therecord[$key],":") === false)
                     $updateClause .= ", `$key` = '".$value[$therecord[$key]]."'";
 
             if($updateClause){
@@ -258,14 +259,14 @@ class generateUUIDS extends installUpdateBase{
         $querystatement = "
             SELECT
                 id,
-                uuid,
+                uuid
             FROM
                 `".$tablename."`";
 
         $queryresult = $this->db->query($querystatement);
 
         while($therecord = $this->db->fetchArray($queryresult))
-            if(strpos(":", $therecord["uuid"]) === false){
+            if(strpos($therecord["uuid"], ":") === false){
 
                 $updatestatement = "
                     UPDATE

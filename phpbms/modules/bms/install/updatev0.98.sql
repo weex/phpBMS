@@ -292,7 +292,7 @@ UPDATE `reports` SET `uuid`='reports:aca42dbe-68c9-e966-c174-ed938e9b880a' WHERE
 UPDATE `reports` SET `uuid`='reports:e54cee32-b3c9-82cc-50c8-14848ece8e90' WHERE `name`='Receipt';
 --end reports UPDATE--
 --relationships INSERT--
-DELETE FROM `relationships` WHERE `id`< '32';
+DELETE FROM `relationships` WHERE `id`<= '32';
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:eb5f285a-da6b-73e4-c098-878f517863b9', 'id', 'sales managers', 'salesmanagerid', '2', '9', 1, NOW(), 1, NOW(), '0');
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:66443c52-6dd4-b339-aee5-d9794d076e1b', 'clientid', 'sales orders', 'id', '2', '3', 1, NOW(), 1, NOW(), '1');
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:758183a0-d5f1-eb19-8acc-2de7789895c9', 'id', 'clients', 'clientid', '3', '2', 1, NOW(), 1, NOW(), '0');
@@ -463,7 +463,7 @@ UPDATE `tabledefs` SET
     `canpost` = '1',
     `hascustomfields` = '1',
     `prefix` = 'rcpt',
-    `querytable` = '((`receipts` INNER JOIN `clients` ON `receipts`.`clientid` = `clients`.`uuid`) LEFT JOIN `paymentmethods` ON `receipts`.`paymentmethodid` = `paymentmethods`.`uuid`)';
+    `querytable` = '((`receipts` INNER JOIN `clients` ON `receipts`.`clientid` = `clients`.`uuid`) LEFT JOIN `paymentmethods` ON `receipts`.`paymentmethodid` = `paymentmethods`.`uuid`)'
 WHERE
     `id`='304';
 UPDATE `tabledefs` SET `uuid`='tbld:e3ce122f-7c43-cfca-fd32-11c663567a2a' WHERE `id`='305';

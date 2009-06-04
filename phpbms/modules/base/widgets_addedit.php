@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/widgets.php");
 
-	$thetable = new widgets($db, 205);
+	$thetable = new widgets($db, "tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

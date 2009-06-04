@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/scheduler.php");
 
-	$thetable = new schedulers($db,201);
+	$thetable = new schedulers($db,"tbld:83de284b-ef79-3567-145c-30ca38b40796");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

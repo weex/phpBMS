@@ -310,7 +310,7 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'display order', 'menu.displayorder', 'right', '', '3', '', '0', '', NULL, '');
 --end tablecolumns INSERT--
 --tablecolumns UPDATE--
-UPDATE `tablecolumns` SET `column` = 'IF(`tabs`.`roleid`='' OR `tabs`.`roleid` IS NULL,\'EVERYONE\',IF(`tabs`.`roleid`=\'Admin\',\'Administrators\',`roles`.`name`))' WHERE `name` = 'access' AND `tabledefid` = '203';
+UPDATE `tablecolumns` SET `column` = 'IF(`tabs`.`roleid`=\'\' OR `tabs`.`roleid` IS NULL,\'EVERYONE\',IF(`tabs`.`roleid`=\'Admin\',\'Administrators\',`roles`.`name`))' WHERE `name` = 'access' AND `tabledefid` = '203';
 --end tablecolumns UPDATE--
 --tabledefs INSERT--
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.uuid) LEFT JOIN roles ON widgets.roleid = roles.uuid) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
@@ -326,7 +326,8 @@ WHERE
     `id`='9';
 UPDATE `tabledefs` SET
     `uuid`='tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9',
-    `prefix` = 'rln'
+    `prefix` = 'rln',
+    `querytable` = '(`relationships` INNER JOIN `tabledefs` AS `fromtable` ON `relationships`.`fromtableid`=`fromtable`.`uuid`) INNER JOIN `tabledefs` AS `totable` ON `relationships`.`totableid`=`totable`.`uuid`'
 WHERE
     `id`='10';
 UPDATE `tabledefs` SET
@@ -348,7 +349,8 @@ WHERE
     `id`='16';
 UPDATE `tabledefs` SET
     `uuid`='tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a',
-    `prefix` = 'sss'
+    `prefix` = 'sss',
+    `querytable` = '(`usersearches` LEFT JOIN `users` ON `usersearches`.`userid` = `users`.`uuid`) INNER JOIN `tabledefs` ON `usersearches`.`tabledefid`=`tabledefs`.`uuid`'
 WHERE
     `id`='17';
 UPDATE `tabledefs` SET
@@ -390,12 +392,13 @@ UPDATE `tabledefs` SET `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667' WHERE 
 UPDATE `tabledefs` SET
     `uuid`='tbld:7e75af48-6f70-d157-f440-69a8e7f59d38',
     `prefix` = 'tab',
-    `querytable` = '`tabs` LEFT JOIN `roles` ON `tabs`.`roleid`=`roles`.`uuid`';
+    `querytable` = '`tabs` LEFT JOIN `roles` ON `tabs`.`roleid`=`roles`.`uuid`'
 WHERE
     `id`='203';
 UPDATE `tabledefs` SET
     `uuid`='tbld:29925e0a-c825-0067-8882-db4b57866a96',
-    `prefix` = 'smsr'
+    `prefix` = 'smsr',
+    `querytable` = '(`smartsearches` INNER JOIN `tabledefs` ON `smartsearches`.`tabledefid` = `tabledefs`.`uuid`) INNER JOIN `modules` ON `smartsearches`.`moduleid` = `modules`.`uuid`'
 WHERE
     `id`='204';
 --WILL NEED TO MAKE THIS INTO AN INSERT STATEMENT INSTEAD OF INSERT AND UPDATE--
@@ -465,6 +468,31 @@ UPDATE `users` SET `uuid`='usr:5c196e01-193a-8952-fee7-29b4e5e6a0b0' WHERE `id`=
 UPDATE `users` SET `uuid`='usr:cb67a60b-a264-735c-6189-49a7c883af0b' WHERE `id`='2';
 UPDATE `users` SET `uuid`='usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75' WHERE `id`='3';
 --end users UPDATE--
+--usersearches UPDATE--
+UPDATE `usersearches` SET `uuid`='sss:80d758f6-d96b-b2a7-1aba-1cddd2266c23' WHERE `id`='28';
+UPDATE `usersearches` SET `uuid`='sss:b55e4aa0-4dde-52be-c60d-7faea7237fa6' WHERE `id`='29';
+UPDATE `usersearches` SET `uuid`='sss:838153b2-a11a-8cd5-49e4-990b44bc83c3' WHERE `id`='30';
+UPDATE `usersearches` SET `uuid`='sss:4d864de7-7502-1193-eb32-665cadc66661' WHERE `id`='31';
+UPDATE `usersearches` SET `uuid`='sss:539ac44c-638a-a01a-d5d1-7e80803ab144' WHERE `id`='32';
+UPDATE `usersearches` SET `uuid`='sss:eb14f8bd-5b4c-e8f8-c158-5e24a3cd5663' WHERE `id`='33';
+UPDATE `usersearches` SET `uuid`='sss:a08d8603-cb8c-671d-fc72-15dfa500715d' WHERE `id`='34';
+UPDATE `usersearches` SET `uuid`='sss:a79c03a5-acb6-228b-c53b-97abd7e00bb9' WHERE `id`='35';
+UPDATE `usersearches` SET `uuid`='sss:315aed7f-ffff-3e16-b345-8b4420b4ad0f' WHERE `id`='36';
+UPDATE `usersearches` SET `uuid`='sss:c6128941-56d1-5307-61aa-1b443441bbd7' WHERE `id`='37';
+UPDATE `usersearches` SET `uuid`='sss:114f9c00-81a0-b2cf-c275-2bb665bf0370' WHERE `id`='38';
+UPDATE `usersearches` SET `uuid`='sss:ca0a886c-8668-e233-a64a-44107f1e7baa' WHERE `id`='39';
+UPDATE `usersearches` SET `uuid`='sss:4aa49326-37e8-7da6-4fff-689ca31d6543' WHERE `id`='40';
+UPDATE `usersearches` SET `uuid`='sss:1ab1baea-5ed2-d6f8-28e2-7e1c6e67835b' WHERE `id`='41';
+UPDATE `usersearches` SET `uuid`='sss:bd9877e7-bdf9-ea4a-fae8-9c1da5a4e83a' WHERE `id`='42';
+UPDATE `usersearches` SET `uuid`='sss:2df0e7fc-42bc-edcb-deb9-9966f2491cd7' WHERE `id`='43';
+UPDATE `usersearches` SET `uuid`='sss:4ce44288-db3f-e887-4f5c-1830171b5943' WHERE `id`='44';
+UPDATE `usersearches` SET `uuid`='sss:497987b3-9ecd-b002-b3d1-14d3ee7b19b2' WHERE `id`='45';
+UPDATE `usersearches` SET `uuid`='sss:3661c9eb-3018-9a68-f697-de35b10cbc50' WHERE `id`='46';
+UPDATE `usersearches` SET `uuid`='sss:0f622991-46b7-c197-5c3c-abe668638d50' WHERE `id`='47';
+UPDATE `usersearches` SET `uuid`='sss:3b58e5b3-6015-9214-4f74-8f4a4b3ca906' WHERE `id`='48';
+UPDATE `usersearches` SET `uuid`='sss:464bd15b-a5ce-25f5-4178-ff7ef02a5ed2' WHERE `id`='49';
+UPDATE `usersearches` SET `uuid`='sss:5b591200-0b48-dc0e-d88d-f165e32c490a' WHERE `id`='70';
+--end usersearches UPDATE--
 --widgets INSERT--
 INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `default`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('wdgt:a1aec114-954b-37c1-0474-7d4e851c728c', 'little', 'Workload', 'widgets/workload/class.php', '0', '1', '1', 1, NOW(), 1, NOW());
 INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `default`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('wdgt:13d228d3-bbee-e7d2-6571-83a568688e3d', 'big', 'Events', 'widgets/events/class.php', '0', '1', '1', 1, NOW(), 1, NOW());

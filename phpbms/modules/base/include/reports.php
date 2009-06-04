@@ -94,7 +94,7 @@ if(class_exists("phpbmsTable")) {
 			//Table Default ('') ok becuase it means report is globally available to any user
 			if(isset($variables["roleid"])){
 
-				if(!count($this->_availableRoleUUIDs === NULL)){
+				if($this->_availableRoleUUIDs === NULL){
 					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
 					$this->_availableRoleUUIDs[] = ""; // for no role restrictions
 					$this->_availableRoleUUIDs[] = "Admin"; //for the Admin restriction

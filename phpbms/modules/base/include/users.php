@@ -45,7 +45,7 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement="
 				SELECT
-					`uuid`,
+					`id`,
 					`login`
 				FROM
 					`users`;
