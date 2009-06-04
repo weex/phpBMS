@@ -84,7 +84,7 @@
 				$_POST["theids"]="-100";
 
 			$theids=explode(",",$_POST["theids"]);
-			$_SESSION["printing"]["tableid"]=$displayTable->thetabledef["id"];
+			$_SESSION["printing"]["tableid"]=$displayTable->thetabledef["uuid"];
 			$_SESSION["printing"]["maintable"]=$displayTable->thetabledef["maintable"];
 			$_SESSION["printing"]["theids"]=$theids;
 			goURL("print.php");

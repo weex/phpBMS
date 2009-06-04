@@ -42,7 +42,7 @@
     require_once("../../include/search_class.php");
 
     //set the table passing stuff
-    $tabledefid = 2;
+    $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 
     if(isset($_GET["refid"]))
         $_GET["id"]=$_GET["refid"];
@@ -51,24 +51,9 @@
 
     $querystatement = "
         SELECT
-            `uuid`,
-            `maintable`
-        FROM
-            `tabledefs`
-        WHERE
-            `id` = '".(int)$tabledefid."'
-        ";
-
-    $queryresult = $db->query($querystatement);
-    $therecord = $db->fetchArray($queryresult);
-    $tabledefuuid = $therecord["uuid"];
-    $maintable = $therecord["maintable"];
-
-    $querystatement = "
-        SELECT
             `uuid`
         FROM
-            `".$maintable."`
+            `clients`
         WHERE
             `id` = '".$refid."'
         ";

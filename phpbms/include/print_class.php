@@ -55,18 +55,16 @@
 
 			$querystatement = "
 				SELECT
-					`maintable`,
-					`uuid`
+					`maintable`
 				FROM
 					`tabledefs`
 				WHERE
-					`id` = '".$this->tableid."'
+					`uuid` = '".$this->tableid."'
 				";
 			$queryresult = $this->db->query($querystatement);
 			if(!$queryresult) $error = new appError(500,"Error retreving table info.");
 			$therecord = $this->db->fetchArray($queryresult);
 			$this->maintable = $therecord["maintable"];
-			$this->tableuuid = $therecord["uuid"];
 
 			$securitywhere="";
 			if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
@@ -91,7 +89,7 @@
 					(
 						`tabledefid` = ''
 						OR
-						`tabledefid` = '".$this->tableuuid."'
+						`tabledefid` = '".$this->tableid."'
 					) ".$securitywhere."
 				ORDER BY
 					`tabledefid` DESC,
@@ -134,7 +132,7 @@
 				FROM
 					`usersearches`
 				WHERE
-					`tabledefid`='".$this->tableuuid."'
+					`tabledefid`='".$this->tableid."'
 					AND
 					type=\"".$type."\"
 					AND

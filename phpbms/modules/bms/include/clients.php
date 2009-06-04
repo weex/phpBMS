@@ -67,7 +67,7 @@ if(class_exists("phpbmsTable")){
 				include_once("modules/bms/include/addresstorecord.php");
 			}//endif
 
-			$this->address = new addresstorecord($db, 306);
+			$this->address = new addresstorecord($db, "tbld:27b99bda-7bec-b152-8397-a3b09c74cb23");
 
 		}//end function - init
 

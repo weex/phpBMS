@@ -50,7 +50,7 @@
 			$backurl .= "?refid=".$_GET["refid"];
 	}
 
-	$thetable = new invoices($db,3,$backurl);
+	$thetable = new invoices($db,"tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883",$backurl);
 	$therecord = $thetable->processAddEditPage();
 
 	$lineitems = new lineitems($db, $therecord["id"], $therecord["type"]);
@@ -194,8 +194,8 @@
 
 
 	$pageTitle = "Sales Order";
-
-	$_SESSION["printing"]["tableid"]=3;
+	
+	$_SESSION["printing"]["tableid"]="tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
 
 	$shippingMethods = $thetable->getShipping($therecord["shippingmethodid"]);

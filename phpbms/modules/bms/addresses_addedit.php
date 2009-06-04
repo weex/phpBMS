@@ -44,7 +44,7 @@
 
 	if(!isset($_GET["backurl"])){
 
-		$thetable = new addresses($db,306);
+		$thetable = new addresses($db,"tbld:27b99bda-7bec-b152-8397-a3b09c74cb23");
 
 		$pageTitle="Address";
 
@@ -57,7 +57,7 @@
 		if(isset($_GET["refid"]))
 			$backurl .= "?refid=".$_GET["refid"];
 
-		$thetable = new addresstorecord($db,306,$backurl);
+		$thetable = new addresstorecord($db,"tbld:27b99bda-7bec-b152-8397-a3b09c74cb23",$backurl);
 
 		$pageTitle="Client Address";
 

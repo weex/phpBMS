@@ -93,9 +93,9 @@
 
 			}//end if
 
-	 		$thetable = new clients($db,2,$backurl);
+	 		$thetable = new clients($db,"tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083",$backurl);
 			$import = new clientsImport($thetable, $importType);
-			
+
 	//Next we process the form (if submitted) and
 	// return the current record as an array ($therecord)
 	// or if this is a new record, it returns the defaults

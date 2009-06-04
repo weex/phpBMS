@@ -52,7 +52,7 @@
 			$backurl .= "?refid=".$_GET["refid"];
 	}
 
-	$thetable = new clients($db,2,$backurl);
+	$thetable = new clients($db,"tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083",$backurl);
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

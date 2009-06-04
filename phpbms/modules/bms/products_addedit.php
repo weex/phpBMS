@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/products.php");
 
-	$thetable = new products($db,4);
+	$thetable = new products($db,"tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

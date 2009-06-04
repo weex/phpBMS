@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("./include/discounts.php");
 
-	$thetable = new discounts($db,25);
+	$thetable = new discounts($db,"tbld:455b8839-162b-3fcb-64b6-eeb946f873e1");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

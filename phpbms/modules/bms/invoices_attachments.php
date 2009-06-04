@@ -44,30 +44,15 @@
 
 
 	//set the table passing stuff
-	$tabledefid=3;
+	$tabledefuuid = "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
 
     $querystatement = "
         SELECT
-            `uuid`,
-            `maintable`
-        FROM
-            `tabledefs`
-        WHERE
-            `id` = '".(int)$tabledefid."'
-        ";
-
-    $queryresult = $db->query($querystatement);
-    $therecord = $db->fetchArray($queryresult);
-    $tabledefuuid = $therecord["uuid"];
-    $maintable = $therecord["maintable"];
-
-    $querystatement = "
-        SELECT
             `uuid`
         FROM
-            `".$maintable."`
+            `invoices`
         WHERE
             `id` = '".$refid."'
         ";

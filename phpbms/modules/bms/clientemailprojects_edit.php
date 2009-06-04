@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -42,22 +42,22 @@
 	include("include/fields.php");
 	include("include/clientemailprojects.php");
 
-	if(isset($_GET["backurl"])) 
+	if(isset($_GET["backurl"]))
 		$backurl=$_GET["backurl"]."?refid=".$_GET["refid"];
 	else
 		$backurl = NULL;
 
-	$thetable = new clientEmailProjects($db,22,$backurl);
+	$thetable = new clientEmailProjects($db,"tbld:157b7707-5503-4161-4dcf-6811f8b0322f",$backurl);
 	$therecord = $thetable->processAddEditPage();
-	
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
-	
+
 	if($therecord["userid"])
 		$username = $phpbms->getUserName($therecord["userid"]);
 	else
 		$username = "global";
-	
+
 	$pageTitle="Client E-mail Project";
 
 	$phpbms->cssIncludes[] = "pages/clientemailprojects.css";
@@ -65,7 +65,7 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,60,128);
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
@@ -73,11 +73,11 @@
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-			 
+
 	include("header.php");
 ?>
 	<div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>	
+	<?php $theform->startForm($pageTitle)?>
 	<fieldset id="fsID">
 		<legend><label for="id">id</label></label></legend>
 		<p>
@@ -94,7 +94,7 @@
 			</p>
 		</fieldset>
 	</div>
-	
+
 	<fieldset id="fsUser">
 		<legend><label for="username">user</label></legend>
 		<p><br />
@@ -104,7 +104,7 @@
 		<?php if($therecord["userid"]!=0) {?>
 		<p>
 			<input id="makeglobal" name="makeglobal" type="checkbox" class="radiochecks" value="1" /><label for="makeglobal">make global</label>
-		</p>		
+		</p>
 		<?php } ?>
 	</fieldset>
 
@@ -113,19 +113,19 @@
 		<p>
 			<label for="from">from</label><br />
 			<?php if(is_numeric($therecord["emailfrom"])) $therecord["emailfrom"]=getEmailInfo($therecord["emailfrom"]);?>
-			<input id="from" name="from" value="<?php echo htmlQuotes($therecord["emailfrom"])?>" readonly="readonly" class="uneditable" size="60" />		
+			<input id="from" name="from" value="<?php echo htmlQuotes($therecord["emailfrom"])?>" readonly="readonly" class="uneditable" size="60" />
 		</p>
 		<p>
 			<label for="to">to</label><br />
 			<input id="to" name="to" value="<?php if($therecord["emailto"]=="selected" or $therecord["emailto"]=="all") echo htmlQuotes($therecord["emailto"]); else echo "saved search"?>" size="60" readonly="readonly" class="uneditable" />
-			<?php if(is_numeric($therecord["emailto"]))	{?>			
+			<?php if(is_numeric($therecord["emailto"]))	{?>
 			<br /><input id="to2" name="to2" value="<?php echo htmlQuotes(showSavedSearch($therecord["emailto"]))?>" readonly="readonly" class="uneditable" size="60"/>
-			<?php } ?>		
+			<?php } ?>
 		</p>
-		
+
 		<p>
 			<label for="subject">subject</label><br />
-			<input id="subject" name="subject" type="text" value="<?php echo $therecord["subject"]?>" size="32" readonly="readonly" class="uneditable" />		
+			<input id="subject" name="subject" type="text" value="<?php echo $therecord["subject"]?>" size="32" readonly="readonly" class="uneditable" />
 		</p>
 		<p>
 			<textarea id="body" name="body" readonly="readonly" class="uneditable" cols="80" rows="40"><?php echo htmlQuotes($therecord["body"])?></textarea>
@@ -136,7 +136,7 @@
 		<?php showSaveCancel(2); ?>
 		<input id="cancelclick" name="cancelclick" type="hidden" value="0" />
 	</div>
-	<?php 
+	<?php
 		$theform->endForm();
 	?>
 </div>

@@ -41,7 +41,7 @@
 	include("include/tables.php");
 	include("modules/bms/include/aritems.php");
 
-	$aritems = new phpbmstable($db,303);
+	$aritems = new phpbmstable($db,"tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
 	$therecord = $aritems->processAddEditPage();
 
 	$payments = new aritemPayments($db, $therecord);

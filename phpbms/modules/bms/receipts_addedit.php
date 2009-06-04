@@ -46,7 +46,7 @@
 	if(isset($_POST["referrer"]))
 		$_SERVER['HTTP_REFERER'] = $_POST["referrer"];
 
-	$thetable = new receipts($db,304);
+	$thetable = new receipts($db,"tbld:43678406-be25-909b-c715-7e2afc7db601");
 	$therecord = $thetable->processAddEditPage();
 
 	if($therecord["id"]){
