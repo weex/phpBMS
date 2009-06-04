@@ -371,7 +371,11 @@ UPDATE `tabledefs` SET
     `prefix` = 'file'
 WHERE
     `id`='26';
-UPDATE `tabledefs` SET `uuid`='tbld:edb8c896-7ce3-cafe-1d58-5aefbcd5f3d7' WHERE `id`='27';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:edb8c896-7ce3-cafe-1d58-5aefbcd5f3d7',
+    `querytable` = '(`attachments` INNER JOIN `files` ON `attachments`.`fileid`=`files`.`uuid`)'
+WHERE
+    `id`='27';
 UPDATE `tabledefs` SET
     `uuid`='tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a',
     `prefix` = 'role'
