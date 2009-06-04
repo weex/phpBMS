@@ -89,9 +89,9 @@
 				//next, see if the searchclass exists
 				if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
 					$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
-					$searchFunctions = new $classname($db,$displayTable->thetabledef["id"],$theids);
+					$searchFunctions = new $classname($db,$displayTable->thetabledef["uuid"],$theids);
 				} else
-					$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["id"],$theids);
+					$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
 
 				//grab the method name
 				if(((int) $_POST["othercommands"]) === -1)

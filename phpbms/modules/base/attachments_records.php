@@ -57,7 +57,7 @@
 
 			$theids=explode(",",$_POST["theids"]);
 
-			$searchFunctions = new attachmentsSearchFunctions($db,$displayTable->thetabledef["id"],$theids);
+			$searchFunctions = new attachmentsSearchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
 
 			$tempmessage = $searchFunctions->delete_record();
 			if($tempmessage) $statusmessage=$tempmessage;
