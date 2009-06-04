@@ -214,7 +214,7 @@ class recurr{
 
 				case uuid:
 					$fieldlist[] = "uuid";
-					$thereord["uuid"] = uuid(getUuidPrefix($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883"));
+					$thereord["uuid"] = uuid(getUuidPrefix($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883").":");
 					break;
 
 				case "checkno":

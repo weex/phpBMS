@@ -338,13 +338,29 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function getDefaults
 
 
-        // Gets a specific individual record from the table
-        function getRecord($id = 0){
+        /**
+         * Retrieves a single record from the database
+         *
+         * @param integer|string $id the record id or uuid
+         * @param bool $useUuid specifies whther the $id is a uuid (true) or not.  Default is false
+         *
+         * @return array the record as an associative array
+         */
+        function getRecord($id, $useUuid = false){
 
-            $id = (int) $id;
+            $whereclause = "`".$this->maintable."`.";
 
-            $querystatement = "
-                SELECT ";
+            if($useUuid){
+
+                $id = mysql_real_escape_string($id);
+                $whereclause .= "`uuid` = '".$id."'";
+
+            } else {
+
+                $id = (int) $id;
+                $whereclause .= "`id` = ".$id;
+
+            }//endif
 
             // iterate through all possible fields and comprise a list
             // of columns to retrieve
@@ -368,7 +384,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 FROM
                     `".$this->maintable."`
                 WHERE
-                    `".$this->maintable."`.`id` = ".$id;
+                    ".$whereclause;
 
             $queryresult = $this->db->query($querystatement);
 
@@ -397,7 +413,9 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
         /**
          * function _loadUUIDList
+         *
          * @param string $tableName The name of a table with `uuid` field.
+         *
          * @return array A list of uuids used in the table.
          */
         function _loadUUIDList($tableName) {
@@ -424,8 +442,10 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
         /**
          * function _checkForPresentUUID
+         *
          * @param string $tableName The name of a table with `uuid` field.
          * @param string $uuid The uuid to be checked.
+         *
          * @return boolean Whether or not the $uuid is a `uuid` in $tablename.
          */
         function _checkForValidUUID($tableName, $uuid) {
@@ -482,20 +502,28 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function verifyVariables
 
 
-        function updateRecord($variables, $modifiedby = NULL, $uuid = false){
+        /**
+         * updates a record
+         *
+         * @param array $variables associative array with the record information
+         * @param int|NULL $modifiedby The user's id that modiied the record.
+         *                             If the modified is not passed or is NULL the function will use
+         *                             the currently logged in user.
+         * @param bool $useUuid specifies whther the $id is a uuid (true) or not.  Default is false.
+         *
+         * @return bool true or false depending upon update success
+         */
+        function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
             //escape slashes
             $variables = addSlashesToArray($variables);
 
+            // if no modified by was passed, use the currently logged in user
             if($modifiedby === NULL)
                 if(isset($_SESSION["userinfo"]["id"]))
                     $modifiedby = $_SESSION["userinfo"]["id"];
                 else
                     $error = new appError(-840,"Session Timed Out.","Updating Record");
-
-            //all updates should have an id
-            if(!isset($variables["id"]))
-                $error = new appError(-820,"id not set","Updating Record");
 
 
             $updatestatement = "
@@ -509,6 +537,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                     switch($fieldname){
 
                         case "id":
+                        case "uuid":
                         case "creationdate":
                         case "createdby":
                             break;
@@ -536,14 +565,19 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             $updatestatement = substr($updatestatement, 0, strlen($updatestatement)-2);
 
-            if(!$uuid){
+            if(!$useUuid){
+
+                if(isset($variables["id"]))
+                    $variables["id"] = 0;
 
                 $updatestatement .= "
                     WHERE
                         `id`=".((int) $variables["id"]);
 
-
             } else {
+
+                if(!isset($variables["uuid"]))
+                    $variables["uuid"] = '';
 
                 $updatestatement .= "
                     WHERE
@@ -558,7 +592,19 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function updateRecord
 
 
-        function insertRecord($variables,$createdby = NULL, $overrideID = false, $replace = false, $uuid = false){
+        /**
+         * Inserts a new record into the table.
+         *
+         * @param array $variables associaive array with the record information
+         * @param int $createdby id of the user creating the record.  If NULL (default) it will use the currently logged in user
+         * @param bool $overrideID
+         * @param bool $replace use the SQL replace statement (true) instead of insert (false, deault)
+         * @param bool $useUuid generates a uuid and specifies the function to retrn the an array with uuid and id instead of just the id
+         *
+         * @return int|array|bool retruns the id of the newly created record of false on error.  If $useUuid is set to true, it will
+         *                        return an associaive array with both the new uuid and new id.
+         */
+        function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
             if($createdby === NULL)
                 if(isset($_SESSION["userinfo"]["id"]))
@@ -575,15 +621,22 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 if(!isset($thefield["select"])){
                     switch($fieldname){
                         case "id":
-                            if(isset($variables["id"]))
-                                if($overrideID && $variables["id"]){
+                            if($overrideID && $variables["id"]){
 
-                                    $fieldlist .= "id, ";
-                                    $insertvalues .= ((int) $variables["id"]).", ";
+                                $fieldlist .= "id, ";
+                                $insertvalues .= ((int) $variables["id"]).", ";
 
-                                }//endif
+                            }//endif
 
                             break;
+
+                        case uuid:
+                            if(!$useUuid){
+
+                                $fieldlist .= "`uuid`, ";
+                                $insertvalues .= "'".mysql_real_escape_string($variables["uuid"])."', ";
+
+                            }//endif
 
                         case "createdby":
                         case "modifiedby":
@@ -616,6 +669,14 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             }//end foreach
 
+            //generate uuid
+            if($useUuid){
+
+                $fieldlist .= "`uuid`, ";
+                $insertvalues .= "'".uuid($this->prefix.":")."', ";
+
+            }//endif
+
             $fieldlist = substr($fieldlist, 0, strlen($fieldlist)-2);
             $insertvalues = substr($insertvalues, 0, strlen($insertvalues)-2);
 
@@ -629,10 +690,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             if($insertresult) {
 
-                if($uuid)
-                    return $variables["uuid"];
+                $newid = $this->db->insertId();
+
+                if($useUuid)
+                    return array("uuid" => $variables["uuid"], "id" => $newid);
                 else
-                    return $this->db->insertId();
+                    return $newid;
 
             } else
                 return false;

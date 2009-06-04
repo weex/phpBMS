@@ -527,7 +527,7 @@ if(class_exists("phpbmsTable")){
                                     assignedtotime,
                                     assignedbyid)
                             VALUES (
-                                '".uuid(getUuidPrefix($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1"))."',
+                                '".uuid(getUuidPrefix($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1").":")."',
 				'".$therecord["uuid"]."',
                                 '".dateToString($newdate,"SQL")."',
                                 ".$newenddate.",
@@ -605,7 +605,7 @@ if(class_exists("phpbmsTable")){
                     }//endif
 
                     return $therecord;
-                
+
 		}//endif
 
 
