@@ -49,11 +49,42 @@
 
     $refid = (integer) $_GET["id"];
 
-    $securitywhere="";
-    if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0)
-        $securitywhere=" AND files.roleid IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
+    $querystatement = "
+        SELECT
+            `uuid`,
+            `maintable`
+        FROM
+            `tabledefs`
+        WHERE
+            `id` = '".(int)$tabledefid."'
+        ";
 
-    $whereclause="attachments.tabledefid=".$tabledefid." AND attachments.recordid=".$refid.$securitywhere;
+    $queryresult = $db->query($querystatement);
+    $therecord = $db->fetchArray($queryresult);
+    $tabledefuuid = $therecord["uuid"];
+    $maintable = $therecord["maintable"];
+
+    $querystatement = "
+        SELECT
+            `uuid`
+        FROM
+            `".$maintable."`
+        WHERE
+            `id` = '".$refid."'
+        ";
+
+    $queryresult = $db->query($querystatement);
+    $therecord = $db->fetchArray($queryresult);
+    $refuuid = $therecord["uuid"];
+
+    $securitywhere="";
+    if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
+        $securitywhere = "''";
+        foreach($_SESSION["userinfo"]["roles"] as $roleuuid)
+            $securitywhere .= ",'".$roleuuid."'";
+    }//end if
+
+    $whereclause="attachments.tabledefid='".$tabledefuuid."' AND attachments.recordid='".$refuuid."'".$securitywhere;
     $backurl="../bms/clients_attachments.php";
     $base="../../";
 

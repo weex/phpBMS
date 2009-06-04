@@ -231,6 +231,13 @@ ALTER TABLE `usersearches`
     MODIFY `userid` VARCHAR(64) NOT NULL;
 --end usersearches ALTER--
 
+--files UPDATE--
+UPDATE `files` SET
+    `uuid`='file:ad761197-e5a2-3fdf-f330-d1508f10813e',
+    `roleid` = 'Admin'
+WHERE
+    `id`='1';
+--end files UPDATE--
 --menu INSERT--
 DELETE FROM `menu`;
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:1e23c59e-c429-fec5-cc94-99b53c4fc6b0', 'Tools', '', '', '3', 1, 1, NOW(), NOW(), '');

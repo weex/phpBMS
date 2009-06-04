@@ -109,6 +109,10 @@ class generateUUIDS extends installUpdateBase{
         $this->roleList[-100] = "Admin";
         $this->roleList[0] = "";
 
+        $this->tabledefList = $this->generateUUIDList("tabledefs");
+        //
+        //$this->moduleList= $this->generateUUIDList("modules");
+
         $menuList = $this->generateUUIDList("menu");
         $menuList[0] = "";
 
@@ -127,6 +131,8 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("widgets", array("roleid"=>$this->roleList, "moduleid"=>$this->moduleList));
         //$this->updateFields("usersearches", array("tabledefid"=>$this->tabledefList, "userid"=>$this->userList, "roleid"=>$this->roleList));
         //$this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
+
+        //$this->updateFields("files", array("roleid"=>$this->roleList));
         //$this->updateFields("menu", array("parentid"=>$menuList, "roleid"=>$this->roleList));
         //$this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         //$this->updateFields("tabs", array("roleid"=>$this->roleList));

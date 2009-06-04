@@ -291,7 +291,6 @@
 			//Add limit (settings)
 			$_SESSION["thequerystatement"].=" limit ".$this->recordoffset.", ".RECORD_LIMIT.";";
 
-
 			$this->db->logError=false;
 			$this->db->stopOnError=false;
 

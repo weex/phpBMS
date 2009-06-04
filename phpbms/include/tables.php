@@ -393,7 +393,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
          * @param string $tableName The name of a table with `uuid` field.
          * @return array A list of uuids used in the table.
          */
- 
+
         function _loadUUIDList($tableName) {
 
             $list = array();
@@ -461,7 +461,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             if(isset($variables["uuid"]))
                 if(!$variables["uuid"])
-                    $this->verifyErrors[] = "The `uuid` field annot be blank";
+                    $this->verifyErrors[] = "The `uuid` field cannot be blank";
 
             if(isset($variables["inactive"]))
                 if($variables["inactive"] && $variables["inactive"] != 1)
@@ -704,6 +704,10 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                             if(!count($errorArray)){
 
                                 $this->updateRecord($variables);
+                                if(isset($variables["getid"]))
+                                    if(is_numeric($variables["getid"]))
+                                        $theid = (int) $variables["getid"];// special variable to override the
+                                        //id for get record
 
                                 //get record
                                 $this->getCustomFieldInfo();

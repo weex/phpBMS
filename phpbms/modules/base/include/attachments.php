@@ -38,84 +38,147 @@
 */
 if(class_exists("files")){
 	class attachments extends files{
-	
-	
+
+
 		function getRecord($id){
 			$id = (int) $id;
-			
-			$querystatement = "SELECT
-					files.id,attachments.id as attachmentid,name,description,type,roleid,ISNULL(file) as nofile,
-					
-					attachments.createdby, attachments.creationdate, 
-					attachments.modifiedby, attachments.modifieddate
-	
-					FROM attachments INNER JOIN files on attachments.fileid=files.id
-					WHERE attachments.id=".$id;
-					
+
+			$querystatement = "
+				SELECT
+					`files`.`id`,
+					`files`.`uuid`,
+					`attachments`.`id` AS `attachmentid`,
+					`name`,
+					`description`,
+					`type`,
+					`roleid`,
+					ISNULL(`file`) AS `nofile`,
+					`attachments`.`createdby`,
+					`attachments`.`creationdate`,
+					`attachments`.`modifiedby`,
+					`attachments`.`modifieddate`
+				FROM
+					`attachments`INNER JOIN `files` ON `attachments`.`fileid`=`files`.`uuid`
+				WHERE
+					`attachments`.`id`='".$id."'
+				";
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			if($this->db->numRows($queryresult))
 				$therecord = $this->db->fetchArray($queryresult);
-			else 
+			else
 				$therecord = $this-> getDefaults();
-		
-			
+
+
 			return $therecord;
-	
+
 		}
-		
+
 		function getDefaults(){
 			$therecord = parent::getDefaults();
-			
+
 			$therecord["attachmentid"] = NULL;
 			$therecord["nofile"] = 1;
-			
-			return $therecord;	
-	
+
+			return $therecord;
+
 		}
-		
-		
+
+
+		function prepareVariables($variables){
+
+			$variables["getid"] = $variables["attachmentid"]; //to fix the get record problem
+
+			return parent::prepareVariables($variables);
+
+		}//end method
+
+
 		function updateRecord($variables, $modifiedby = NULL){
 			parent::updateRecord($variables, $modifiedby);
-			
+
 			$_POST["id"] = $variables["attachmentid"];
+
 		}
-		
-	
+
+
 		function insertRecord($variables, $createdby = NULL){
-			
+
 			if($createdby == NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
-			
+
 			if($variables["newexisting"]=="new"){
 				//we need to add a new file record before adding a new
 				//attachment record
-				
-				$variables["fileid"] = parent::insertRecord($variables, $createdby);			
+
+				$variables["fileid"] = parent::insertRecord($variables, $createdby);
 			}
-			
+
 			//next we create the attachment record
-			$querystatement="INSERT INTO attachments ";	
+
+			$querystatement = "
+				SELECT
+					`uuid`,
+					`maintable`
+				FROM
+					`tabledefs`
+				WHERE
+					`id` = '".(int)$variables["tabledefid"]."'
+				";
+
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+			$tabldefid = $therecord["uuid"];
+			$maintable = $therecord["maintable"];
+
+			$querystatement = "
+				SELECT
+					`uuid`
+				FROM
+					`".$maintable."`
+				WHERE
+					`id` = '".$variables["recordid"]."'
+				";
+
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+			$recordid = $therecord["uuid"];
+
+			$querystatement = "
+				SELECT
+					`uuid`
+				FROM
+					`files`
+				WHERE
+					`id` = '".$variables["fileid"]."'
+				";
+
+			$queryresult = $this->db->query($querystatement);
+			$therecord = $this->db->fetchArray($queryresult);
+			$fileid = $therecord["uuid"];
+
+			$querystatement="INSERT INTO attachments ";
 			$querystatement.="(fileid,tabledefid,recordid,
 								createdby,creationdate,modifiedby) VALUES (";
-			
-			$querystatement.=$variables["fileid"].", "; 
-			$querystatement.=$variables["tabledefid"].", "; 
-			$querystatement.=$variables["recordid"].", "; 
-						
-			$querystatement.=$createdby.", "; 
+
+			$querystatement.="'".$fileid."', ";
+			$querystatement.="'".$tabldefid."', ";
+			$querystatement.="'".$recordid."', ";
+
+			$querystatement.=$createdby.", ";
 			$querystatement.="Now(), ";
-			$querystatement.=$createdby.")"; 
-		
+			$querystatement.=$createdby.")";
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			if($queryresult)
 				return $this->db->insertId();
 			else
 				return false;
-					
+
 		}//end method
-		
+
 	}//end class
 }//end if
 
@@ -123,19 +186,19 @@ if(class_exists("searchFunctions")){
 	class attachmentsSearchFunctions extends searchFunctions{
 
 		function delete_record(){
-			
+
 			$whereclause = $this->buildWhereClause();
-			
+
 			$rowsdeleted=0;
 			foreach($this->idsArray as $id){
 				$querystatement = "SELECT fileid FROM attachments WHERE id=".$id;
 				$queryresult = $this->db->query($querystatement);
 				$therecord=$this->db->fetchArray($queryresult);
-				
+
 				$querystatement = "DELETE FROM attachments WHERE id=".$id.";";
 				$queryresult = $this->db->query($querystatement);
 				$rowsdeleted++;
-				
+
 				$querystatement = "SELECT id FROM attachments WHERE fileid=".$therecord["fileid"].";";
 				$queryresult = $this->db->query($querystatement);
 
@@ -143,12 +206,12 @@ if(class_exists("searchFunctions")){
 					$querystatement = "DELETE FROM files WHERE id=".$therecord["fileid"].";";
 					$queryresult = $this->db->query($querystatement);
 				}
-				
+
 			}
-		
+
 			$querystatement = "DELETE FROM attachments WHERE ".$whereclause.";";
 			$queryresult = $this->db->query($querystatement);
-			
+
 			$message = $this->buildStatusMessage($rowsdeleted);
 			$message.=" deleted.";
 			return $message;

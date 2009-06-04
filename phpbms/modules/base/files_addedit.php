@@ -66,7 +66,7 @@
 
 	function getAttachments($db,$id){
 		$querystatement="SELECT tabledefs.displayname, attachments.recordid, attachments.creationdate, tabledefs.editfile
-						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.id
+						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.uuid
 						WHERE fileid=".$id;
 		$queryresult=$db->query($querystatement);
 

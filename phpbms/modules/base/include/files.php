@@ -40,7 +40,7 @@
 if(class_exists("phpbmsTable")){
 	class files extends phpbmsTable{
 
-		var $availableRoleIDs = array();
+		var $_availableRoleUUIDs = NULL;
 
 		function getPicture($name){
 			if (function_exists('file_get_contents')) {
@@ -53,50 +53,23 @@ if(class_exists("phpbmsTable")){
 			return $file;
 		}
 
-		//populates the list of possible role ids
-		//into $this->availableRoleIDs (an array)
-		function populateRoleArray(){
-
-			$this->availableRoleIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			//next two should also be allowed, but aren't stored in the database
-			$this->availableRoleIDs[] = 0;//for everyone
-			$this->availableRoleIDs[] = -100;//for administrators
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableRoleIDs[] = $therecord["id"];
-
-		}//end method --populateRoleArray--
-
 
 		function verifyVariables($variables){
 
-			//if it is set, we'll have to check, if not, it defaults to 0 which is an acceptable
+			//if it is set, we'll have to check, if not, it defaults to '' which is an acceptable
 			//value.
 			if(isset($variables["roleid"])){
 
-				//either its numeric or == 0
-				if(is_numeric($variables["roleid"]) || !$variables["roleid"]){
+				//check to see if the RoleIDs are populated
+				if($this->_availableRoleUUIDs === NULL){
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";
+					$this->_availableRoleUUIDs[] = "Admin";
+				}//end if
 
-					//check to see if the RoleIDs are populated
-					if(!count($this->availableRoleIDs))
-						$this->populateRoleArray();//populate if not
+				if(!in_array(((string)$variables["roleid"]), $this->_availableRoleUUIDs))
+					$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
 
-					//check to see if the int typecast of the roleid (to allow for values
-					//equivalent to 0) is an acceptable role id.
-					if(!in_array(((int)$variables["roleid"]), $this->availableRoleIDs))
-						$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
-				}else
-					$this->verifyErrors[] = "The `roleid` field must be numeric or equivalent to 0.";
 			}//end if
 
 			return parent::verifyVariables($variables);
@@ -118,7 +91,7 @@ if(class_exists("phpbmsTable")){
 					unset($this->fields["file"]);
 				}//end if
 
-			return $variables;
+			return parent::prepareVariables($variables);
 
 		}//end function
 
