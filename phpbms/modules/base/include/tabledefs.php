@@ -224,57 +224,44 @@ if(class_exists("phpbmsTable")){
 
 		function insertRecord($variables,$createdby = NULL){
 
-			if(!isset($variables["newid"]))
-				$variables["newid"] = "";
-
-			if($variables["newid"]){
-				//this will set a specific ID to be used.
-				$variables["id"] = $variables["newid"];
-				parent::insertRecord($variables,$createdby,true);
-				$newid =  $variables["newid"];
-
-			} else {
-
-				$newid = parent::insertRecord($variables,$createdby);
-
-			}//endif - newid
+			$newid = parent::insertRecord($variables,$createdby);
 
 			//we need to create the some default supporting records
 			//first a single column.
 			$querystatement = "INSERT INTO `tablecolumns`
 			(`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`)
-			VALUES (".$newid.",'id','".$variables["maintable"].".id','left','',0,'',0,'',NULL,0);";
+			VALUES ('".$variables["uuid"]."','id','".$variables["maintable"].".id','left','',0,'',0,'',NULL, '');";
 			$this->db->query($querystatement);
 
 			//next default button options
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'new','1',0,0,0);";
+			VALUES ('".$variables["uuid"]."','new','1',0,0, '');";
 			$this->db->query($querystatement);
 
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'edit','1','1',0,0);";
+			VALUES ('".$variables["uuid"]."','edit','1','1',0, '');";
 			$this->db->query($querystatement);
 
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'printex','1',0,0,0);";
+			VALUES ('".$variables["uuid"]."','printex','1',0,0, '');";
 			$this->db->query($querystatement);
 
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'select','1',0,0,0);";
+			VALUES ('".$variables["uuid"]."','select','1',0,0,'');";
 			$this->db->query($querystatement);
 
 			$querystatement = "INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`)
-			VALUES (".$newid.",'import','0',0,0,'-100');";
+			VALUES ('".$variables["uuid"]."','import','0',0,0,'Admin');";
 			$this->db->query($querystatement);
 
 			//next quicksearch
 			$querystatement = "INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`)
-			VALUES (".$newid.",'All Records','".$variables["maintable"].".id!=-1',0,0);";
+			VALUES ('".$variables["uuid"]."','All Records','".$variables["maintable"].".id!=-1',0, '');";
 			$this->db->query($querystatement);
 
 			//and last findfields
 			$querystatement = "INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`)
-			VALUES (".$newid.",'".$variables["maintable"].".id','id',1,'field');";
+			VALUES ('".$variables["uuid"]."','".$variables["maintable"].".uuid','uuid',1,'field');";
 			$this->db->query($querystatement);
 
 			return $newid;

@@ -44,10 +44,11 @@
 
 		var $maintable = "";
 		var $reportOutput = "";
+                var $tabledefuuid;
 
-		function sqlExport($db, $tabledefid){
+		function sqlExport($db, $tabledefuuid){
 
-			$this->tabledefid = ((int) $tabledefid);
+			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
 
 			parent::phpbmsReport($db);
 
@@ -57,7 +58,7 @@
 				FROM
 					tabledefs
 				WHERE
-					id=".((int) $tabledefid);
+					uuid = '".$this->tabledefuuid."'";
 
 			$queryresult = $db->query($querystatement);
 			$therecord=$db->fetchArray($queryresult);

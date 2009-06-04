@@ -58,21 +58,9 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		$theinput = new inputField("id",$therecord["id"],NULL,false,NULL,9,64);
-		$theinput->setAttribute("class","uneditable");
-		$theinput->setAttribute("readonly","readonly");
-		$theform->addField($theinput);
-
 		$theinput = new inputBasicList ("type",$therecord["type"],$list = array("table"=>"table","view"=>"view","system"=>"system"));
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
-
-		if(!$therecord["id"]){
-
-			$theinput = new inputField("newid","","new id",false,"integer",9);
-			$theform->addField($theinput);
-
-		}//endif - id
 
 		$theinput = new inputCheckbox("canpost",$therecord["canpost"],"can post records");
 		$theform->addField($theinput);
@@ -139,19 +127,6 @@
 
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
-
-		<p><?php $theform->showField("id"); ?></p>
-
-		<?php if(!$therecord["id"]){?>
-		<p><?php $theform->showField("newid"); ?><br />
-			<span class="notes">Optionally, you can
-			specify the id to be used.  Make sure that
-			the id is not already in use.  Base module
-			ids run in the 200s, bms in the 300s, recurring
-			invoices in the 400s.
-			</span>
-		</p>
-		<?php }?>
 
 		<p><?php $theform->showField("type"); ?></p>
 
