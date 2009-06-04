@@ -40,55 +40,56 @@
 		include("report_class.php");
 
 	class generalExport extends phpbmsReport {
-	
+
 		var $maintable = "";
 		var $resultOutput = "";
-		
-		function generalExport($db, $tabledefid){
-		
-			$this->tabledefid = ((int) $tabledefid);
-			
+                var $tabledefuuid;
+
+		function generalExport($db, $tabledefuuid){
+
+			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
+
 			parent::phpbmsReport($db);
 
 			$querystatement = "
-				SELECT 
-					maintable 
-				FROM 
+				SELECT
+					maintable
+				FROM
 					tabledefs
-				WHERE 
-					id=".((int) $tabledefid);
-					
-			$queryresult = $db->query($querystatement); 
+				WHERE
+					uuid = '".$this->tabledefuuid."'";
+
+			$queryresult = $db->query($querystatement);
 			$therecord=$db->fetchArray($queryresult);
-			
+
 			$this->maintable = $therecord["maintable"];
-			
+
 		}//end method
 
-		
+
 		function generate(){
-		
+
 			$querystatement = "
-				SELECT 
-					* 
-				FROM 
+				SELECT
+					*
+				FROM
 					".$this->maintable;
 
 			$querystatement = $this->assembleSQL($querystatement);
-			
+
 			$queryresult = $this->db->query($querystatement);
 
 			$num_fields = $this->db->numFields($queryresult);
-		
-			for($i=0;$i<$num_fields;$i++)			
+
+			for($i=0;$i<$num_fields;$i++)
 				$this->reportOutput .= ",".$this->db->fieldName($queryresult, $i);
 
 			$this->reportOutput = substr($this->reportOutput, 1)."\n";
-		
+
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
+
 				$line = "";
-				
+
 				foreach($therecord as $value)
 					$line .= ',"'.mysql_real_escape_string($value).'"';
 
@@ -97,40 +98,40 @@
 				$this->reportOutput .= $line;
 
 			}//endwhile
-			
+
 			$this->reportOutput = substr($this->reportOutput, 0, strlen($this->reportOutput)-1);
-		
+
 		}//end method
-		
-		
+
+
 		function show(){
 
 			header("Content-type: text/plain");
-			header('Content-Disposition: attachment; filename="export.txt"');		
-			
+			header('Content-Disposition: attachment; filename="export.txt"');
+
 			echo $this->reportOutput;
-			
+
 		}//end method
-		
+
 	}//end class
-	
-	
-	//PROCESSING 
+
+
+	//PROCESSING
 	//========================================================================
-	
+
 	if(!isset($noOutput)){
 
 		session_cache_limiter('private');
-	
+
 		require("../include/session.php");
-		if(!isset($_GET["tid"])) 
+		if(!isset($_GET["tid"]))
 			$error = new appError(200,"URL variable missing: tid");
-	
+
 		$report = new generalExport($db, $_GET["tid"]);
 		$report->setupFromPrintScreen();
-		$report->generate();	
-		$report->show();	
-		
+		$report->generate();
+		$report->show();
+
 	}//end if
-	
+
 ?>

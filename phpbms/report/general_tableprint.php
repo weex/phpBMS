@@ -40,43 +40,44 @@
 		include("report_class.php");
 
 	class generalTablePrint extends phpbmsReport {
-	
+
 		var $maintable = "";
 		var $resultOutput = "";
-		
-		function generalTablePrint($db, $tabledefid){
-		
-			$this->tabledefid = ((int) $tabledefid);
-			
+                var $tabledefuuid;
+
+		function generalTablePrint($db, $tabledefuuid){
+
+			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
+
 			parent::phpbmsReport($db);
 
 			$querystatement = "
-				SELECT 
+				SELECT
 					maintable, displayname
-				FROM 
+				FROM
 					tabledefs
-				WHERE 
-					id=".((int) $tabledefid);
-					
-			$queryresult = $db->query($querystatement); 
+				WHERE
+					uuid = '".$this->tabledefuuid."'";
+
+			$queryresult = $db->query($querystatement);
 			$therecord=$db->fetchArray($queryresult);
-			
+
 			$this->maintable = $therecord["maintable"];
 			$this->displayname = $therecord["displayname"];
-			
+
 		}//end method
 
-		
+
 		function generate(){
-		
+
 			$querystatement = "
-				SELECT 
-					* 
-				FROM 
+				SELECT
+					*
+				FROM
 					".$this->maintable;
 
 			$querystatement = $this->assembleSQL($querystatement);
-			
+
 			$queryresult = $this->db->query($querystatement);
 
 			$num_fields = $this->db->numFields($queryresult);
@@ -90,88 +91,88 @@
 					<thead>
 						<tr>
 			<?php
-			
+
 			for($i=0;$i<$num_fields;$i++){
-				
+
 				?>
 					<th <?php if($i == $num_fields-1) echo 'id="lastHeader"' ?>><?php echo $this->db->fieldName($queryresult, $i); ?></th>
-					
-				<?php 
-			
+
+				<?php
+
 			}//end for
-			
+
 			?>
 						</tr>
 					</thead>
-					
+
 					<tbody>
-			<?php 
-		
+			<?php
+
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
-				?><tr><?php 
-				
+
+				?><tr><?php
+
 				foreach($therecord as $value){
-					
+
 					?><td><?php echo formatVariable($value)?></td><?php
-				
+
 				}//end foreach
 
-				?></tr><?php 
+				?></tr><?php
 
 			}//endwhile
 
 			?>
-					</tbody>					
-					
+					</tbody>
+
 				</table>
 			</div>
 			<?php
 
 			$this->reportOutput = ob_get_contents();
-			ob_end_clean();			
-		
+			ob_end_clean();
+
 		}//end method
-		
-		
+
+
 		function show(){
-		
+
 			global $phpbms;
 			$db = &$this->db;
-			
+
 			$phpbms->cssIncludes[] = "reports.css";
 			$phpbms->cssIncludes[] = "pages/generaltableprint.css";
-			
+
 			$phpbms->showMenu = false;
 			$phpbms->showFooter = false;
-			
+
 			include("header.php");
-			
+
 			echo $this->reportOutput;
-			
+
 			include("footer.php");
 
 		}//end method
-		
+
 	}//end class
-	
-	
-	//PROCESSING 
+
+
+	//PROCESSING
 	//========================================================================
-	
+
 	if(!isset($noOutput)){
 
 		session_cache_limiter('private');
-	
+
 		require("../include/session.php");
-		if(!isset($_GET["tid"])) 
+		if(!isset($_GET["tid"]))
 			$error = new appError(200,"URL variable missing: tid");
-	
+
 		$report = new generalTablePrint($db, $_GET["tid"]);
 		$report->setupFromPrintScreen();
-		$report->generate();	
-		$report->show();	
-		
+		$report->generate();
+		$report->show();
+
 	}//end if
-	
+
 ?>

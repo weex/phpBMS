@@ -120,7 +120,7 @@ class generateUUIDS extends installUpdateBase{
 
         //function calls for all we have to do go here
         //======================================================================
-        //$this->updateFields("reports", array("roleid"=>$this->roleList, "tabledefid"=>$this->tabledefList));
+        $this->updateFields("reports", array("roleid"=>$this->roleList, "tabledefid"=>$this->tabledefList));
         //$this->updateFields("rolestousers", array("userid"=>$this->userList, "roleid"=>$this->roleList));
         //$this->updateFields("tablecolumns", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
         //$this->updateFields("tablefindoptions", array("tabledefid"=>$this->tabledefList, "roleid"=>$this->roleList));
@@ -136,7 +136,7 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("menu", array("parentid"=>$menuList, "roleid"=>$this->roleList));
         //$this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         //$this->updateFields("tabs", array("roleid"=>$this->roleList));
-        $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
+        //$this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
 
         //custom stuff
         //$this->updateMenuLinks();
@@ -227,8 +227,8 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-echo $updatestatement."<br />";
-//                $this->db->query($updatestatement);
+//echo $updatestatement."<br />";
+                $this->db->query($updatestatement);
 
             }//endif
 
