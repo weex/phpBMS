@@ -38,7 +38,7 @@
 */
 
 if(isset($_POST["command"])) {
-	
+
 	//convert any checked records to an array of ids
 	foreach($HTTP_POST_VARS as $key=>$value){
 		if (substr($key,0,5)=="check") $theids[]=$value;
@@ -50,13 +50,13 @@ if(isset($_POST["command"])) {
 	case "new":
 		// relocate to new screen
 		//=====================================================================================================
-		$theurl=getAddEditFile($db,12)."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
+		$theurl=getAddEditFile($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1")."?reftable=".$reftable."&refid=".$_GET["refid"]."&backurl=".$backurl;
 		goURL($theurl );
 	break;
 	case "delete":
 		//a bit more complicated so we'll put it in it's own function?
 		//=====================================================================================================
-			
+
 			include_once("modules/base/include/notes.php");
 			$searchFunctions = new notesSearchFunctions($db,12,$theids);
 			$statusmessage = $searchFunctions->delete_record();
@@ -65,7 +65,7 @@ if(isset($_POST["command"])) {
 	case "edit/view":
 		// relocate to edit screen
 		//=====================================================================================================
-		  goURL(getAddEditFile($db,12)."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
+		  goURL(getAddEditFile($db,"tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1")."?id=".$theids[0]."&refid=".$_GET["refid"]."&backurl=".$backurl);
 	break;
 	}//end switch
 } //end if

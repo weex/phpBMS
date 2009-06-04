@@ -830,13 +830,31 @@ function showSaveCancel($ids=1){
 }
 
 
-function getAddEditFile($db,$tabledefid,$addedit="edit"){
-	$querystatement="SELECT ".$addedit."file AS thefile FROM tabledefs WHERE id=".((int) $tabledefid);
+/**
+ * get's the add or edit file for a tabledefinition
+ *
+ * @param object $db database object
+ * @param string $tabledefid tabledef's uuid
+ * @param string $addedit add/edit - which file to get
+ *
+ * @return string file name and path of add or edit file
+ */
+function getAddEditFile($db, $tabledefid, $addedit="edit"){
+
+	$querystatement = "
+                SELECT
+                        ".$addedit."file AS thefile
+                FROM
+                        tabledefs
+                WHERE uuid = '".mysql_real_escape_string($tabledefid)."'";
+
 	$queryresult = $db->query($querystatement);
 
-	$therecord=$db->fetchArray($queryresult);
-	return APP_PATH.$therecord["thefile"];
-}
+	$therecord = $db->fetchArray($queryresult);
+
+        return APP_PATH.$therecord["thefile"];
+
+}//end function getAddEditFile
 
 
 function booleanFormat($bool){

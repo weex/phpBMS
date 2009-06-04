@@ -38,7 +38,7 @@
 */
 	require_once("../../include/session.php");
 	require_once("include/fields.php");
-	
+
 	$pagetitle="Quick View";
 
 	$phpbms->cssIncludes[] = "pages/quickview.css";
@@ -48,7 +48,7 @@
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		if(isset($_GET["cid"]))
 			$passedValue = ((int) $_GET["cid"]);
 		else
@@ -60,11 +60,11 @@
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-	
+
 		$lookUp["name"] = $theinput->getSearchInfo("Pick Sales Order Client");
 		$lookUp["e-mail address"] = $theinput->getSearchInfo("Pick Client By Email");
 		$lookUp["phone"] = $theinput->getSearchInfo("Pick Client By Phone");
-	
+
 	include("header.php");
 	?>
 <form method="post" name="record" id="record" onsubmit="return false;" action="#">
@@ -76,19 +76,19 @@
 		<label for="lookupby">search by</label><br />
 
 		<select id="lookupby">
-			<?php foreach($lookUp as $key=>$value) {?>			
+			<?php foreach($lookUp as $key=>$value) {?>
 			<option value="<?php echo $value["id"] ?>"><?php echo $key?></option>
 			<?php }//endforeach - lookup?>
-		</select>				
+		</select>
 
-		<?php $theform->showField("clientid")?>		
+		<?php $theform->showField("clientid")?>
 
-		<input type="hidden" id="addeditfile" value="<?php echo getAddEditFile($db,2,"add")?>" />
+		<input type="hidden" id="addeditfile" value="<?php echo getAddEditFile($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083","add")?>" />
 		<input type="button" value="view" id="viewButton" class="disabledButtons" />
 		<input type="button" value="add new" id="addButton" class="Buttons" />
 	</div>
 
-	
+
 </div>
 <div id="clientrecord" />
 </form>

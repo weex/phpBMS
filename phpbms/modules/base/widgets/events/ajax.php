@@ -211,7 +211,7 @@ class eventCalendar{
                                 ?>
                                 <tr>
                                         <td nowrap="nowrap" valign="top" align="right"><?php echo formatFromSQLTime($event["starttime"])?></td>
-                                        <td valign="top" ><a href="<?php echo getAddEditFile($this->db, 12)."?id=".$event["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($event["subject"])?></a></td>
+                                        <td valign="top" ><a href="<?php echo getAddEditFile($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1")."?id=".$event["id"]?>&amp;backurl=snapshot.php"><?php echo htmlQuotes($event["subject"])?></a></td>
                                 </tr><?php
 
                                 }//endforeach events

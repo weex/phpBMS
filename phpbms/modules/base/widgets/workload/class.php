@@ -150,7 +150,7 @@
 
 			<?php if($numRows){
 
-				$linkStart = getAddEditFile($this->db,12);
+				$linkStart = getAddEditFile($this->db,"tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1");
 				$section["title"] = "Today";
 				$section["date"] = mktime(0,0,0,date("m"),date("d"),date("Y"));
 

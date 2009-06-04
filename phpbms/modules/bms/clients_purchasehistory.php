@@ -178,7 +178,7 @@
 	?>
 	<tr class="row<?php echo $row?>">
 		<td >
-			<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
+			<button type="button" class="invisibleButtons" onclick="location.href='<?php echo getAddEditFile($db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883") ?>?id=<?php echo $therecord["id"]?>'"><img src="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/image/button-edit.png" align="middle" alt="edit" width="16" height="16" border="0" /></button>
 		</td>
 		<td align="left" nowrap="nowrap"><?php echo $therecord["id"]?$therecord["id"]:"&nbsp;" ?></td>
 		<td align="left" nowrap="nowrap"><?php echo $therecord["type"]?$therecord["type"]:"&nbsp;" ?></td>

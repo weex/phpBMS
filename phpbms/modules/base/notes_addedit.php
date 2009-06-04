@@ -385,7 +385,7 @@
 			<p>This record was created from a repeated task/event.</p>
 			<p>Click the <strong>Edit Repeating Options</strong> button to edit the options for the repeatable parent record.</p>
 			<p class="notes">Any unsaved changes with the current record will be lost.</p>
-			<p><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onclick="goParent('<?php echo getAddEditFile($db,12) ?>')" class="Buttons" /></p>
+			<p><input id="goparent" name="goparent" type="button" value="Edit Repeating Options..." onclick="goParent('<?php echo getAddEditFile($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1") ?>')" class="Buttons" /></p>
 		</fieldset>
 		<?php }//endif ?>
 	</div>

@@ -171,7 +171,7 @@
 	<div id="rightSideDiv">
 		<?php if(isset($_GET["invoiceid"])){?>
 		<p id="backtoorderP">
-			<input name="gotoinvoice" id="gotoinvoice" type="button" value="return to order" onclick="location.href='<?php echo getAddEditFile($db,3) ?>?id=<?php echo $_GET["invoiceid"] ?>'" class="Buttons" />
+			<input name="gotoinvoice" id="gotoinvoice" type="button" value="return to order" onclick="location.href='<?php echo getAddEditFile($db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883") ?>?id=<?php echo $_GET["invoiceid"] ?>'" class="Buttons" />
 		</p>
 		<?php } ?>
 		<fieldset>

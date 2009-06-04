@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -45,66 +45,66 @@ require("include/addresses.php");
 require("include/addresstorecord.php");
 
 class quickView{
-	
+
 	function quickView($db){
-	
+
 		$this->db = $db;
-				
+
 	}//end method - id
-	
-	
+
+
 	function get($clientid){
-	
+
 		$clientid = (int) $clientid;
-		
+
 		$thetable = new clients($this->db,2);
-		
+
 		$clientRecord = $thetable->getRecord($clientid);
-		
+
 		$clientRecord["invoices"] = $this->_getInvoices($clientid);
 		$clientRecord["notes"] = $this->_getnotes($clientid);
-		
+
 		return $clientRecord;
-		
+
 	}//end method - get
 
-	
+
 	function _getInvoices($clientid){
 
 		$querystatement = "
-			SELECT 
+			SELECT
 				invoices.id,
 				invoices.type,
 				if(invoices.type='Invoice',invoices.invoicedate,invoices.orderdate) as thedate,
 				totalti
-			FROM 
-				invoices 
-			WHERE 
-				invoices.clientid=".$clientid." 
-			ORDER BY 
+			FROM
+				invoices
+			WHERE
+				invoices.clientid=".$clientid."
+			ORDER BY
 				type,
 				thedate";
 
 		return $this->_buildRecordArray($this->db->query($querystatement));
-		
+
 	}//end method - _getInvoices
 
-	
+
 	function _getNotes($clientid){
-	
+
 		$querystatement = "
-			SELECT 
+			SELECT
 				notes.id,
 				notes.type,
 				notes.subject,
-				notes.category, 
+				notes.category,
 				notes.completed
-			FROM 
-				notes 
-			WHERE 
-				notes.attachedtabledefid=2 
-				AND notes.attachedid=".$clientid." 
-			ORDER BY 
+			FROM
+				notes
+			WHERE
+				notes.attachedtabledefid=2
+				AND notes.attachedid=".$clientid."
+			ORDER BY
 				notes.completed,
 				notes.category,
 				notes.type,
@@ -112,36 +112,36 @@ class quickView{
 				notes.creationdate";
 
 		return $this->_buildRecordArray($this->db->query($querystatement));
-	
+
 	}//end method - _getNotes
-	
-	
+
+
 	function _buildRecordArray($queryresult){
-	
+
 		$returnArray = array();
-		
+
 		while($therecord = $this->db->fetchArray($queryresult))
 			$returnArray[] = $therecord;
-			
+
 		return $returnArray;
-	
+
 	}//end method - _buildRecordArray
 
-	
+
 	function display($clientInfo){
 
-	$invoiceEditFile = getAddEditFile($this->db,3);
-	$noteEditFile = getAddEditFile($this->db,12);
-	$clientEditFile = getAddEditFile($this->db,2);
+	$invoiceEditFile = getAddEditFile($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883");
+	$noteEditFile = getAddEditFile($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1");
+	$clientEditFile = getAddEditFile($this->db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083");
 
 	?><div class="bodyline" id="theDetails">
 
 		<div id="rightSideDiv">
-		
+
 			<fieldset>
 				<legend>sales</legend>
 				<p>
-					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($this->db,3,"add")?>')"><span>new</span></button>							
+					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883","add")?>')"><span>new</span></button>
 					<button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
 				</p>
 				<div class="fauxP">
@@ -165,18 +165,18 @@ class quickView{
 						<td nowrap="nowrap"><?php echo formatFromSQLDate($invoicerecord["thedate"])?></td>
 						<td align="right"><?php echo numberToCurrency($invoicerecord["totalti"])?></td>
 					</tr>
-					<?php }?></table><?php }?>	
+					<?php }?></table><?php }?>
 				</div>
 				</div>
-				
+
 			</fieldset>
-			
+
 			<fieldset>
 				<legend>notes</legend>
 
 				<div class="fauxP">
 				<p>
-					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($this->db,12,"add")?>')"><span>new</span></button>
+					<button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1","add")?>')"><span>new</span></button>
 					<button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" disabled="disabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></button>
 				</p>
 				<div id="notesTable"  class="smallQueryTableHolder">
@@ -204,98 +204,98 @@ class quickView{
 					<?php }?></table><?php }?>
 				</div>
 				</div>
-				
+
 			</fieldset>
-		
+
 		</div>
-	
+
 		<div id="leftSideDiv">
-			
+
 			<fieldset id="crTile" class="fs<?php echo $clientInfo["type"]?>">
-			
-				<h1><?php 
+
+				<h1><?php
 					if($clientInfo["company"])
 						echo htmlQuotes($clientInfo["company"]);
 					else
 						echo htmlQuotes($clientInfo["firstname"]." ".$clientInfo["lastname"]);
 				?> <button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo" onclick="addEditRecord('edit','client','<?php echo $clientEditFile?>')"><span>view client</span></button></h1>
-				
-				<?php 
+
+				<?php
 				if($clientInfo["company"] && $clientInfo["firstname"] && $clientInfo["lastname"]){
-				
-					?><p id="crName"><?php echo htmlQuotes($clientInfo["firstname"])?> <?php echo htmlQuotes($clientInfo["lastname"])?></p><?php 
-				
+
+					?><p id="crName"><?php echo htmlQuotes($clientInfo["firstname"])?> <?php echo htmlQuotes($clientInfo["lastname"])?></p><?php
+
 				}//endif
 				?>
-			
-				<?php 
-				
+
+				<?php
+
 				$location = "";
 				$location .= htmlQuotes($clientInfo["address1"]);
-				
+
 				if($clientInfo["address2"])
 					$location .= "<br />".htmlQuotes($clientInfo["address2"]);
-				
+
 				if($clientInfo["city"] || $clientInfo["state"] || $clientInfo["postalcode"]){
-					
+
 					$location .= "<br/>".htmlQuotes($clientInfo["city"]);
 					if($clientInfo["city"] && $clientInfo["state"])
 						$location .= ", ";
 					$location .= htmlQuotes($clientInfo["state"]);
 					$location .= " ".htmlQuotes($clientInfo["postalcode"]);
-					
+
 				}//endif
-				
+
 				if($clientInfo["country"])
 					$location .= "<br />".htmlQuotes($clientInfo["country"]);
-				
+
 				if($location == "")
 					$location = "unspecified location";
-						
-				?><p id="crLocation"><?php echo $location?></p>			
-			
+
+				?><p id="crLocation"><?php echo $location?></p>
+
 			</fieldset>
-			
+
 			<fieldset>
 				<legend>Contact</legend>
 				<?php if($clientInfo["workphone"] || $clientInfo["homephone"] || $clientInfo["mobilephone"] || $clientInfo["otherphone"] || $clientInfo["fax"]){ ?>
 
 					<p class="RDNames">phone</p>
-					
+
 					<div class="fauxP RDData">
 						<ul>
 						<?php if($clientInfo["workphone"]){ ?>
 							<li><?php echo $clientInfo["workphone"] ?> (w)</li>
 						<?php }?>
-										
+
 						<?php if($clientInfo["homephone"]){ ?>
 							<li><?php echo $clientInfo["homephone"] ?> (h)</li>
 						<?php }?>
-		
+
 						<?php if($clientInfo["mobilephone"]){ ?>
 							<li><?php echo $clientInfo["mobilephone"] ?> (m)</li>
 						<?php }?>
-		
+
 						<?php if($clientInfo["otherphone"]){ ?>
 							<li><?php echo $clientInfo["otherphone"] ?> (o)</li>
 						<?php }?>
-		
+
 						<?php if($clientInfo["fax"]){ ?>
 							<li><?php echo $clientInfo["fax"] ?> (fax)</li>
-						<?php }?>						
+						<?php }?>
 						</ul>
 					</div>
-					
+
 				<?php }?>
-				
+
 				<?php if($clientInfo["email"]){ ?>
 					<p class="RDNames">e-mail</p>
 					<p class="RDData">
 						<button type="button" class="graphicButtons buttonEmail" onclick="document.location='mailto:<?php echo $clientInfo["email"]?>'"><span>send email</span></button>
-						&nbsp;<a href="mailto:<?php echo $clientInfo["email"]?>"><?php echo htmlQuotes($clientInfo["email"])?></a>					
+						&nbsp;<a href="mailto:<?php echo $clientInfo["email"]?>"><?php echo htmlQuotes($clientInfo["email"])?></a>
 					</p>
 				<?php }?>
-				
+
 
 				<?php if($clientInfo["webaddress"]){ ?>
 					<p class="RDNames">web site</p>
@@ -305,10 +305,10 @@ class quickView{
 					</p>
 				<?php }?>
 			</fieldset>
-					
+
 			<fieldset>
 				<legend>Details</legend>
-				
+
 				<?php if($clientInfo["becameclient"]){ ?>
 					<p class="RDNames">became client</p>
 					<p class="RDData">
@@ -322,7 +322,7 @@ class quickView{
 						<?php echo htmlQuotes($clientInfo["category"])?>
 					</p>
 				<?php }?>
-				
+
 				<?php if($clientInfo["leadsource"]){ ?>
 					<p class="RDNames">lead source</p>
 					<p class="RDData">
@@ -337,10 +337,10 @@ class quickView{
 						<?php echo htmlQuotes($phpbms->getUserName($clientInfo["salesmanagerid"]))?>
 					</p>
 				<?php }?>
-								
+
 			</fieldset>
-			
-			
+
+
 			<?php if($clientInfo["comments"]){?>
 			<fieldset>
 				<legend>memo</legend>
@@ -349,12 +349,12 @@ class quickView{
 				</p>
 			</fieldset>
 			<?php }?>
-			
+
 		</div>
 		<p id="theclear">&nbsp;</p>
 	</div>
 	<?php
-	
+
 	}//endMethod - get
 
 }//end class
@@ -364,9 +364,9 @@ class quickView{
 if(isset($_GET["id"])){
 
 	$quickView = new quickView($db);
-	
+
 	$clientInfo = $quickView->get($_GET["id"]);
-	
+
 	$quickView->display($clientInfo);
 
 }//endif - id
