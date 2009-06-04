@@ -44,17 +44,20 @@
 
 
 	//set the table passing stuff
-	$reftableid=2;
+	$reftableid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+
 	$refid=(integer) $_GET["id"];
 
-  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
-	$backurl="../bms/clients_notes.php";
-	$base="../../";
-
-	$refquery="select firstname,lastname,company from clients where id=".$refid;
+        $refquery="select uuid, firstname,lastname,company from clients where id=".$refid;
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
+
+        $refuuid = $refrecord["uuid"];
+
+  	$whereclause="attachedtabledefid = '".$reftableid."' AND attachedid = '".$refuuid."'";
+	$backurl="../bms/clients_notes.php";
+	$base="../../";
 
 	$pageTitle="Notes/Tasks/Events: ";
 	if($refrecord["company"]=="")

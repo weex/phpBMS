@@ -37,26 +37,34 @@
  +-------------------------------------------------------------------------+
 */
 
-	include("../../include/session.php");
-
-
+	require("../../include/session.php");
 	require_once("../../include/search_class.php");
 
-
 	//set the table passing stuff
-	$reftableid=3;
-	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
-	$refid=(integer) $_GET["id"];
-  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
-	$backurl="../bms/invoices_notes.php";
-	$base="../../";
+	$reftableid="tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
 
-	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
-			   WHERE invoices.id=".$refid;
+	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+
+        $refid=(integer) $_GET["id"];
+
+	$refquery="
+            SELECT
+		invoices.id,
+                invoices.uuid,
+                if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
+	    FROM
+                invoices INNER JOIN clients ON invoices.clientid=clients.id
+	    WHERE
+                invoices.id=".$refid;
+                
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
+
+        $refuuid = $refrecord["uuid"];
+
+        $whereclause="attachedtabledefid = '".$reftableid."' AND attachedid = '".$refuuid."'";
+        $backurl="../bms/invoices_notes.php";
+	$base="../../";
 
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["id"];
 	if($refrecord["name"] !== "")

@@ -62,11 +62,11 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "id", "displayname",
+		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "uuid", "displayname",
 								"", "", false, "module");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "tabledefid", $therecord["tabledefid"], "tabledefs", "id", "displayname",
+		$theinput = new inputDataTableList($db, "tabledefid", $therecord["tabledefid"], "tabledefs", "uuid", "displayname",
 								"", "", false, "table");
 		$theform->addField($theinput);
 

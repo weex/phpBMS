@@ -43,16 +43,31 @@
 
 
 	//set the table passing stuff
-	$reftableid=4;
+	$reftableid = 'tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34';
+
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
+
 	$refid=(integer) $_GET["id"];
-  	$whereclause="attachedtabledefid=\"".$reftableid."\" and attachedid=".$refid;
+
+	$refquery = "
+            SELECT
+                uuid,
+                partnumber,
+                partname
+            FROM
+                products
+            WHERE
+                id=".$refid;
+
+	$refquery=$db->query($refquery);
+	$refrecord=$db->fetchArray($refquery);
+
+        $refuuid = $refrecord["uuid"];
+
+        $whereclause="attachedtabledefid = '".$reftableid."' AND attachedid = '".$refuuid."'";
 	$backurl="../bms/products_notes.php";
 	$base="../../";
 
-	$refquery="select partnumber,partname from products where id=".$refid;
-	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);
 
 	$pageTitle="Notes/Tasks/Events: ".$refrecord["partname"];
 

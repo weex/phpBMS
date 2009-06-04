@@ -48,12 +48,12 @@
 
 	$pageTitle = $clientAddress->getPageTitle();
 
-	// clients table definition
-	$reftableid = 2;
+	// clients table definition uuid
+	$reftableid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 
   	$whereclause = "
-		tabledefid = ".$reftableid."
-		AND recordid = ".$clientAddress->clientid;
+		tabledefid = '".$reftableid."'
+		AND recordid = '".$clientAddress->clientuuid."'";
 
 	$backurl="../bms/clients_addresses.php";
 	$base="../../";

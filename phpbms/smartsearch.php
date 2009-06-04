@@ -115,12 +115,16 @@ class smartSearch{
 			// If the rolefield is present, we need to make sure the rolefield
 			// of each record matches the logged in users array of roles
 
-			if ($_SESSION["userinfo"]["admin"]!=1){
+			if ($_SESSION["userinfo"]["admin"] !=1 ){
 
-				if(count($_SESSION["userinfo"]["roles"])>0)
-					$securityWhere = " AND ".$this->searchParams["rolefield"]." IN (".implode(",",$_SESSION["userinfo"]["roles"]).",0)";
-				else
-					$securityWhere = " AND ".$this->searchParams["rolefield"]." = 0";
+				if(count($_SESSION["userinfo"]["roles"])>0){
+
+                                        foreach($_SESSION["userinfo"]["roles"] as $role)
+                                            $securityWhere .= ", '".$role."'";
+
+					$securityWhere = " AND (".$this->searchParams["rolefield"]." IN ('', ".$securityWhere." ) OR ".$this->searchParams["rolefield"]." IS NULL)";
+				} else
+					$securityWhere = " AND (".$this->searchParams["rolefield"]." = '' OR ".$this->searchParams["rolefield"]." IS NULL)";
 
 			}//endif admin
 
@@ -206,7 +210,7 @@ class smartSearch{
 		return $string;
 
 	}//end function
-	
+
 }//end class
 
 

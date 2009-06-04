@@ -87,18 +87,32 @@ class generateUUIDS extends installUpdateBase{
         //$this->createUUIDs("tbld:83de284b-ef79-3567-145c-30ca38b40796"); //Scheduler
         //$this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
         //$this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
+        //$this->createUUIDs("tbld:83187e3d-101e-a8a5-037f-31e9800fed2d"); //Menu
 
         //generate lists used elsewhere
+        $this->moduleList= $this->generateUUIDList("modules");
+
+        $this->tabledefList = $this->generateUUIDList("tabledefs");
+
+        //BMS updates
+        if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList)){
+
+            //$this->createUUIDs("tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083"); //clients
+
+        }//endif
+
+
+        $this->userList = $this->generateUUIDList("users");
+        $this->userList[0] ="";
+
         $this->roleList = $this->generateUUIDList("roles");
         $this->roleList[-100] = "Admin";
         $this->roleList[0] = "";
 
-        //$this->userList = $this->generateUUIDList("users");
-        //$this->userList[0] ="";
-        //
-        //$this->tabledefList = $this->generateUUIDList("tabledefs");
-        //
-        //$this->moduleList= $this->generateUUIDList("modules");
+        $menuList = $this->generateUUIDList("menu");
+        $menuList[0] = "";
+
+        $notesList = $this->generateUUIDList("notes");
 
         //function calls for all we have to do go here
         //======================================================================
@@ -112,11 +126,26 @@ class generateUUIDS extends installUpdateBase{
         //$this->updateFields("tablesearchablefields", array("tabledefid"=>$this->tabledefList));
         //$this->updateFields("widgets", array("roleid"=>$this->roleList, "moduleid"=>$this->moduleList));
         //$this->updateFields("usersearches", array("tabledefid"=>$this->tabledefList, "userid"=>$this->userList, "roleid"=>$this->roleList));
-        //$this->updateFields("reports", array("roleid"=>$this->roleList, "tabledefid"=>$this->tabledefList));
         //$this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
-        $this->updateFields("tabs", array("roleid"=>$this->roleList));
+        //$this->updateFields("menu", array("parentid"=>$menuList, "roleid"=>$this->roleList));
+        //$this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
+        //$this->updateFields("tabs", array("roleid"=>$this->roleList));
+        $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
 
+        //custom stuff
         //$this->updateMenuLinks();
+
+        //BMS updates
+        if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList)){
+
+        }//endif
+
+
+        //Updates that need to be done after all the other updates
+        // Notes attachedtoid
+        // attachments
+        // addresstorecord
+        // AR??
 
         // ======
         // This stuff probably won't be needed as they will be done during the update
@@ -192,8 +221,8 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-//echo $updatestatement."<br />";
-                $this->db->query($updatestatement);
+echo $updatestatement."<br />";
+//                $this->db->query($updatestatement);
 
             }//endif
 

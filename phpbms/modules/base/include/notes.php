@@ -291,7 +291,7 @@ if(class_exists("phpbmsTable")){
 				}//endforeach
 
 			}//endif
-                        
+
 		}//end method
 
 
@@ -573,18 +573,40 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function getAttachedTableDefInfo($id){
-			if($id){
-				$querystatement="SELECT displayname,editfile FROM tabledefs WHERE id =".((int) $id);
-				$queryresult=$this->db->query($querystatement);
-				$therecord=$this->db->fetchArray($queryresult);
-			}else{
-				$therecord["displayname"]="";
-				$therecord["editfile"]="";
-			}
+		/**
+                 * retrieves table name for a record with attached information
+                 *
+                 * @param string $uuid tabledef's uuid
+                 *
+                 * return array the tabledef's displayname and editfile
+                 */
+                function getAttachedTableDefInfo($uuid){
 
-			return $therecord;
-		}
+                    if($uuid){
+
+                        $querystatement = "
+                            SELECT
+                                displayname,
+                                editfile
+                            FROM
+                                tabledefs
+                            WHERE
+                                uuid = '".mysql_real_escape_string($uuid)."'";
+
+                        $queryresult = $this->db->query($querystatement);
+
+                        $therecord=$this->db->fetchArray($queryresult);
+
+                    } else {
+
+                        $therecord["displayname"]="";
+                        $therecord["editfile"]="";
+
+                    }//endif
+
+                    return $therecord;
+                
+		}//endif
 
 
 		//CLASS OVERRIDES =============================================================================

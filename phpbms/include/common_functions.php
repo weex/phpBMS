@@ -316,6 +316,50 @@ function getUuid($db, $tabledefuuid, $id){
 
 }//end function getUuid
 
+
+/**
+  * retrieves an id given a uuid and a table definition's uuid
+  *
+  * @param object $db the database object
+  * @param string $tabledefuuid the table definition's uuid
+  * @param string $uuid the records id
+  *
+  * @return int id
+  */
+function getId($db, $tabledefuuid, $uuid){
+
+        $querystatement = "
+                SELECT
+                        `maintable`
+                FROM
+                        `tabledefs`
+                WHERE
+                        `uuid` = '".$tabledefuuid."'";
+
+        $queryresult = $db->query($querystatement);
+
+        $tablerecord = $db->fetchArray($queryresult);
+
+        $querystatement = "
+                SELECT
+                        `id`
+                FROM
+                        `".$tablerecord["maintable"]."`
+                WHERE
+                        `uuid` = '".$uuid."'";
+
+        $queryresult = $db->query($querystatement);
+
+        if($db->numRows($queryresult))
+                $therecord = $db->fetchArray($queryresult);
+        else
+                $therecord["id"] = null;
+
+        return $therecord["id"];
+
+}//end function getId
+
+
 /**
  * retreive uuid prefix of a tabledef
  *

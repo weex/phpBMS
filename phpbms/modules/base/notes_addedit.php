@@ -44,9 +44,14 @@
 	require_once("include/notes.php");
 
 	if(isset($_GET["backurl"])){
+
 		$backurl=$_GET["backurl"];
-		if(isset($_GET["refid"]))
+
+		if(isset($_GET["refid"]) && $_GET["tabledefid"])
+			$backurl.="?refid=".getId($db, $_GET["tabledefid"], $_GET["refid"]);
+		elseif(isset($_GET["refid"]))
 			$backurl.="?refid=".$_GET["refid"];
+
 	} else
 		$backurl = NULL;
 
@@ -281,9 +286,9 @@
 				</p>
 
 				<p>
-					<label for="attachedid">record id</label><br />
-					<input id="attachedid" name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="6" />&nbsp;
-					<input name="link" type="button" class="Buttons" value=" go to record " onclick="document.location='<?php echo APP_PATH?><?php echo $attachedtableinfo["editfile"]."?id=".$therecord["attachedid"]; ?>'" />
+					<label for="attachedid">record uuid</label><br />
+					<input id="attachedid" name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="40" />&nbsp;
+					<input name="link" type="button" class="Buttons" value="edit" onclick="document.location='<?php echo APP_PATH?><?php echo $attachedtableinfo["editfile"]."?id=".getId($db, $therecord["attachedtabledefid"], $therecord["attachedid"]); ?>'" />
 				</p>
 		</fieldset>
 
