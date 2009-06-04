@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/menu.php");
 
-	$thetable = new menus($db,19);
+	$thetable = new menus($db, "tbld:83187e3d-101e-a8a5-037f-31e9800fed2d");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

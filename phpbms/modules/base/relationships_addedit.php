@@ -41,7 +41,7 @@
 	include("include/fields.php");
 	include("include/relationships.php");
 
-	$thetable = new relationships($db,10);
+	$thetable = new relationships($db, "tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

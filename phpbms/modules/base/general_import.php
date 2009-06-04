@@ -43,38 +43,45 @@
 	include("include/imports.php");
 	include("include/parsecsv.lib.php");
 
+        if(!isset($_GET["id"]))
+            exit;
 
-	$tabledefid = (int) $_GET["id"];
+	$tabledefid = mysql_real_escape_string($_GET["id"]);
 
 	$querystatement = "
-			SELECT
-				`modules`.`name` AS `modulename`,
-				`tabledefs`.`maintable` AS `maintable`
-			FROM
-				`tabledefs` INNER JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`id`
-			WHERE
-				`tabledefs`.`id` = '".$tabledefid."';
-			";
+	    SELECT
+                `modules`.`name` AS `modulename`,
+		`tabledefs`.`maintable` AS `maintable`
+	    FROM
+                `tabledefs` INNER JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`
+	    WHERE
+                `tabledefs`.`uuid` = '".$tabledefid."'";
 
 	$queryresult = $db->query($querystatement);
 
 	$thereturn = $db->fetchArray($queryresult);
 
 	//try to include table specific functions
-	if(file_exists("../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php"))
-		include("../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php");
+        $tableFile = "../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php";
+
+	if(file_exists($tableFile))
+	    include_once($tableFile);
 
 	//next, see if the table class exists
 	if(class_exists($thereturn["maintable"])){
-		$classname = $thereturn["maintable"];
-		$thetable = new $classname($db,$tabledefid);
+
+            $classname = $thereturn["maintable"];
+            $thetable = new $classname($db,$tabledefid);
+
 	} else
-		$thetable = new phpbmsTable($db,$tabledefid);
+            $thetable = new phpbmsTable($db,$tabledefid);
 
 	//finally, check to see if import class exists
 	if(class_exists($thereturn["maintable"]."Import")){
-		$classname = $thereturn["maintable"]."Import";
-		$import = new $classname($thetable);
+
+            $classname = $thereturn["maintable"]."Import";
+            $import = new $classname($thetable);
+
 	} else
 		$import = new phpbmsImport($thetable);
 
@@ -86,12 +93,11 @@
 	//make sure that we set the status message id the processing returned one
 	// (e.g. "Record Updated")
 	if(isset($therecord["phpbmsStatus"]))
-		$statusmessage = $therecord["phpbmsStatus"];
+            $statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle = ($therecord["title"])?$therecord["title"]:"General Table Import";
 
 	$phpbms->cssIncludes[] = "pages/imports.css";
-	//$phpbms->jsIncludes[] = "modules/[modulename]/javascript/[tablename].js";
 
 
 		//Form Elements

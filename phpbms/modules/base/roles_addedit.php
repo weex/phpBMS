@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/roles.php");
 
-	$thetable = new roles($db,200);
+	$thetable = new roles($db, "tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

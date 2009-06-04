@@ -55,7 +55,7 @@
 	} else
 		$backurl = NULL;
 
-	$thetable = new notes($db,12,$backurl);
+	$thetable = new notes($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1", $backurl);
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

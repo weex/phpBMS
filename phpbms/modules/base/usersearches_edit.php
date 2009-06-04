@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/usersearches.php");
 
-	$thetable = new userSearches($db,17);
+	$thetable = new userSearches($db, "tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

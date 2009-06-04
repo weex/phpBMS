@@ -43,7 +43,7 @@
 	include("include/files.php");
 
 	if(!isset($_GET["backurl"])){
-		$thetable = new files($db,26);
+		$thetable = new files($db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475");
 
 		$pageTitle="File";
 	} else {
@@ -53,7 +53,7 @@
 		if(isset($_GET["refid"]))
 		$backurl.="?refid=".$_GET["refid"];
 
-		$thetable = new attachments($db,26,$backurl);
+		$thetable = new attachments($db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475",$backurl);
 
 		$pageTitle="File Attachment";
 	}

@@ -908,7 +908,7 @@
 			$phpbms->bottomJS[] = ' var editFile = "'.APP_PATH.$this->thetabledef["editfile"].'"';
 
 			//for the import page, "" == the general page instead.
-			$import = ($this->thetabledef["importfile"])?$this->thetabledef["importfile"]:"modules/base/general_import.php?id=".$this->thetabledef["id"];
+			$import = ($this->thetabledef["importfile"])?$this->thetabledef["importfile"]:"modules/base/general_import.php?id=".urlencode($this->thetabledef["uuid"]);
 			$phpbms->bottomJS[] = ' var importFile = "'.APP_PATH.$import.'"';
 
 		}//end method

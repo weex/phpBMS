@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/reports.php");
 
-	$thetable = new reports($db,16);
+	$thetable = new reports($db, "tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

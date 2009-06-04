@@ -42,7 +42,7 @@
 	include("include/fields.php");
 	include("include/users.php");
 
-	$thetable = new users($db,9);
+	$thetable = new users($db, "tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

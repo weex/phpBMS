@@ -146,7 +146,7 @@ class eventCalendar{
 
         $queryresult = $this->db->query($querystatement);
 
-        $thetable = new notes($this->db, 12);
+        $thetable = new notes($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1");
 
         while($therecord = $this->db->fetchArray($queryresult)){
 
