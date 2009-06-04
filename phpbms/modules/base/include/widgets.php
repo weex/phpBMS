@@ -67,12 +67,7 @@ if(class_exists("phpbmsTable")){
 					$id = $therecord["id"];
 
 					$this->_availableUUIDs[$uuid]["id"] = $id;
-				}
-			}else{
-				$uuid = "THIS IS a really WEIRD STRING that I *hope* would never ever ever ever ever be a uuid (despite its amazing uniqueness)";
-				$id = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg"; //put in an impossible widget id
-
-				$this->_availableUUIDs[$uuid] = $id;
+				}//end if
 			}//end if
 
 		}//end method --_populateUuidArray--

@@ -58,7 +58,9 @@ if(isset($_POST["command"])) {
 		//=====================================================================================================
 
 			include_once("modules/base/include/notes.php");
+			
 			$searchFunctions = new notesSearchFunctions($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1",$theids);
+
 			$statusmessage = $searchFunctions->delete_record();
 
 	break;

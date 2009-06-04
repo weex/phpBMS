@@ -38,9 +38,7 @@
 */
 if(class_exists("phpbmsTable")){
 	class schedulers extends phpbmsTable{
-
-		var $availableRoleIDs = array();
-
+		
 		function getDefaults(){
 			$therecord = parent::getDefaults();
 

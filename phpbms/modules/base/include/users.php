@@ -39,13 +39,13 @@
 if(class_exists("phpbmsTable")){
 	class users extends phpbmsTable{
 
-		var $usedLoginNames = array();
+		var $usedLoginNames = NULL;
 
 		function populateLoginNameArray(){
 
 			$querystatement="
 				SELECT
-					`id`,
+					`uuid`,
 					`login`
 				FROM
 					`users`;
@@ -61,13 +61,6 @@ if(class_exists("phpbmsTable")){
 					$this->usedLoginNames[$login]["id"] = $id;
 
 				}//end while
-			}else{
-				//if no valid login names, I put in a value that will
-				//give the arrays a count but not actually match any realistic login names
-				$login = "THIS is @ ve|2`/ D|_||\/|B |_0GI|\| and stupid too.";
-				$id = -1;
-
-				$this->usedLoginNames[$login]["id"] = $id;
 			}//end if
 
 		}//end method
@@ -79,24 +72,26 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["login"])){
 				if( $variables["login"] !== "" || $variables["login"] !== NULL ){
 
-					if(!count($this->usedLoginNames))
+					if($this->usedLoginNames === NULL)
 						$this->populateLoginNameArray();
 
 					if(!isset($variables["id"]))
-						$variables["id"] = 0;
+						$tempid = 0;
+					else
+						$tempid = $variables["id"];
 
-					if($variables["id"] < 0)
-						$variables["id"] = 0;
+					if($tempid < 0)
+						$tempid = 0;
 
 					//check to see new login name is taken
 					$templogin = $variables["login"];// using this because it looks ugly to but the brackets within brackets
 					if( array_key_exists($variables["login"], $this->usedLoginNames) ){
 
-						if( $this->usedLoginNames[$templogin]["id"] !== $variables["id"] )
+						if( $this->usedLoginNames[$templogin]["id"] !== $tempid )
 							$this->verifyErrors[] = "The `login` field must give an unique login name.";
 
 					}else{
-						$this->availableProducts[$templogin]["id"] = -1;// impossible id put in (besides the type will through off the if anyways)
+						$this->availableProducts[$templogin]["id"] = -1;// impossible id put in (besides the type will throw off the if anyways)
 					}//end if
 
 				}else

@@ -102,8 +102,8 @@ class quickView{
 			FROM
 				notes
 			WHERE
-				notes.attachedtabledefid=2
-				AND notes.attachedid=".$clientid."
+				notes.attachedtabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+				AND notes.attachedid='".$clientid."'
 			ORDER BY
 				notes.completed,
 				notes.category,

@@ -39,31 +39,9 @@
 if(class_exists("phpbmsTable")){
 	class userSearches extends phpbmsTable{
 
-		var $availableUserIDs = NULL;
-		var $availableTabledefIDs = NULL;
-		var $availableRoleIDs = NULL;
-
-
-		function populateUserArray(){
-
-			$this->availableUserIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`users`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableUserIDs[] = 0;//for global
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableUserIDs[] = $therecord["id"];
-
-		}//end method --populateUserArray--
-
+		var $_availableUserUUIDs = NULL;
+		var $_availableTabledefUUIDs = NULL;
+		var $_availableRoleUUIDs = NULL;
 
 		function verifyVariables($variables){
 
@@ -88,26 +66,26 @@ if(class_exists("phpbmsTable")){
 			//table default (0) is sufficient
 			if(isset($variables["userid"])){
 
-                                if($this->availableUserIDs === NULL){
+				if($this->_availableUserUUIDs === NULL){
 
-                                        $this->availableUserIDs = $this->_loadUUIDList("users");
-                                        $this->availableUserIDs[] = '';
+					$this->_availableUserUUIDs = $this->_loadUUIDList("users");
+					$this->_availableUserUUIDs[] = '';
 
-                                }//endif
+				}//endif
 
-                                if(!in_array((string) $variables["userid"], $this->availableUserIDs))
-                                        $this->verifyErrors[] = "The `userid` field does not give an existing/acceptable user id number.";
+				if(!in_array((string) $variables["userid"], $this->_availableUserUUIDs))
+					$this->verifyErrors[] = "The `userid` field does not give an existing/acceptable user id number.";
 
 			}//end if
 
 			//The table default is not enough, so it must be set
 			if(isset($variables["tabledefid"])){
 
-                                    if($this->availableTabledefIDs === NULL)
-                                            $this->availableTabledefIDs = $this->_loadUUIDList("tabledefs");
+				if($this->_availableTabledefUUIDs === NULL)
+						$this->_availableTabledefUUIDs = $this->_loadUUIDList("tabledefs");
 
-                                    if(!in_array($variables["tabledefid"], $this->availableTabledefIDs))
-                                            $this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
+				if(!in_array($variables["tabledefid"], $this->_availableTabledefUUIDs))
+					$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
 
 			} else
 				$this->verifyErrors[] = "The `tabledefid` field must be set.";
@@ -115,16 +93,16 @@ if(class_exists("phpbmsTable")){
 			//table default (0) is sufficient
 			if(isset($variables["roleid"])){
 
-                                if($this->availableRoleIDs === NULL){
+				if($this->_availableRoleUUIDs === NULL){
 
-                                        $this->availableRoleIDs = $this->_loadUUIDList("roles");
-                                        $this->availableRoleIDs[] = "";
-                                        $this->availableRoleIDs[] = "Admin";
+					$this->_availableRoleUUIDs = $this->_loadUUIDList("roles");
+					$this->_availableRoleUUIDs[] = "";
+					$this->_availableRoleUUIDs[] = "Admin";
 
-                                }//endif
+				}//endif
 
-                                if(!in_array(((string) $variables["roleid"]), $this->availableRoleIDs))
-                                        $this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
+				if(!in_array(((string) $variables["roleid"]), $this->_availableRoleUUIDs))
+					$this->verifyErrors[] = "The `roleid` field does not give an existing/acceptable role id number.";
 
 			}//end if
 

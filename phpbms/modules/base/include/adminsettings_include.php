@@ -58,7 +58,7 @@ class settings{
      */
     function settings($db){
 
-	$this->db = $db;
+		$this->db = $db;
 
     }//end function constructor
 
@@ -69,21 +69,21 @@ class settings{
      */
     function getSettings(){
 
-	$therecord = array();
+		$therecord = array();
 
-	$querystatement = "
-	    SELECT
-		`name`,
-		`value`
-	    FROM
-		`settings`";
+		$querystatement = "
+			SELECT
+			`name`,
+			`value`
+			FROM
+			`settings`";
 
-	$queryresult = $this->db->query($querystatement);
+		$queryresult = $this->db->query($querystatement);
 
-	while($setting = $this->db->fetchArray($queryresult))
-		$therecord[$setting["name"]] = $setting["value"];
+		while($setting = $this->db->fetchArray($queryresult))
+			$therecord[$setting["name"]] = $setting["value"];
 
-	return $therecord;
+		return $therecord;
 
     }//end function getSettings
 
@@ -98,123 +98,125 @@ class settings{
      */
     function updateSettings($variables){
 
-	global $phpbms;
+		global $phpbms;
 
-	if(!isset($variables["persistent_login"]))
-	    $variables["persistent_login"] = 0;
+		if(!isset($variables["persistent_login"]))
+			$variables["persistent_login"] = 0;
 
-	//include any procesing that needs to be done by modules
-	foreach($phpbms->modules as $module => $moduleinfo)
-	    if($module != "base")
-		if(class_exists($module."Update")){
+		//include any procesing that needs to be done by modules
+		foreach($phpbms->modules as $module => $moduleinfo){
+			if($module != "base"){
+				if(class_exists($module."Update")){
 
-		    $class = $module."Update";
-		    $extraUpdate = new $class($this->db);
-		    $variables = $extraUpdate->updateSettings($variables);
+					$class = $module."Update";
+					$extraUpdate = new $class($this->db);
+					$variables = $extraUpdate->updateSettings($variables);
 
-		}//end if
-
-	// Update the settings records
-	foreach($variables as $settingname => $settingvalue){
-
-	    if(defined(strtoupper($settingname))){
-
-		if(constant(strtoupper($settingname)) != $settingvalue){
-
-		    $updatestatement = "
-			UPDATE
-			    settings
-			SET
-			    value ='".$settingvalue."'
-			WHERE
-			    name='".mysql_real_escape_string($settingname)."'";
-
-		    $updateresult = $this->db->query($updatestatement);
-
-			if(!$this->db->affectedRows()){
-
-			    //check to see why the update did not work
-			    $querystatement = "
-				SELECT
-				    name
-				FROM
-				    settings
-				WHERE
-				    name = '".mysql_real_escape_string($settingname)."'";
-
-			    $queryresult = $this->db->query($querystatement);
-
-			    if(!$this->db->numRows($queryresult)){
-
-				//insert the setting if need be
-				$insertstatement ="
-				    INSERT INTO
-					settings (
-					    `value`,
-					    `name`,
-					) VALUES (
-					    '".$settingvalue."',
-					    '".mysql_real_escape_string($settingname)."'
-					    )";
-
-				$this->db-query($insertstatement);
-
-			    }//end if
-
+				}//end if
 			}//end if
+		}//end foreach
 
-		}//end if
+		// Update the settings records
+		foreach($variables as $settingname => $settingvalue){
 
-	    }//endif
+			if(defined(strtoupper($settingname))){
 
-	}//end foreach
+				if(constant(strtoupper($settingname)) != $settingvalue){
 
-	// deal with logo graphic.
-	if(isset($_FILES["printedlogo"])){
+					$updatestatement = "
+						UPDATE
+							settings
+						SET
+							value ='".$settingvalue."'
+						WHERE
+							name='".mysql_real_escape_string($settingname)."'";
 
-	    $validFileTypes = array(
-		"image/png",
-		"image/x-png",
-		"image/jpg",
-		"image/jpeg",
-		"imagep/jpeg",
-	    );
+					$updateresult = $this->db->query($updatestatement);
 
-	    if(in_array($_FILES["printedlogo"]["type"], $validFileTypes)){
+					if(!$this->db->affectedRows()){
 
-		if (function_exists('file_get_contents')) {
+						//check to see why the update did not work
+						$querystatement = "
+							SELECT
+								name
+							FROM
+								settings
+							WHERE
+								name = '".mysql_real_escape_string($settingname)."'";
 
-		    $file = mysql_real_escape_string(file_get_contents($_FILES['printedlogo']['tmp_name']));
+						$queryresult = $this->db->query($querystatement);
 
-		} else {
+						if(!$this->db->numRows($queryresult)){
 
-			// If using PHP < 4.3.0 use the following:
-			$file = mysql_real_escape_string(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
+						//insert the setting if need be
+						$insertstatement ="
+							INSERT INTO
+							settings (
+								`value`,
+								`name`,
+							) VALUES (
+								'".$settingvalue."',
+								'".mysql_real_escape_string($settingname)."'
+								)";
 
-		}//endif
+						$this->db-query($insertstatement);
 
-		if($_FILES["printedlogo"]["type"] == "image/jpeg")
-		    $name = "logo.jpg";
-		else
-		    $name = "logo.png";
+						}//end if
 
-		$updatestatement = "
-		    UPDATE
-			`files`
-		    SET
-			`file` = '".$file."',
-			`type` = '".$_FILES["printedlogo"]["type"]."',
-			`name`='".$name."'
-		    WHERE
-			id = 1";
+					}//end if
 
-		$this->db->query($updatestatement);
+				}//end if
 
-	    }//endif file types
+			}//endif
 
-	}//endif file exists
+		}//end foreach
 
-	return true;
+		// deal with logo graphic.
+		if(isset($_FILES["printedlogo"])){
+
+			$validFileTypes = array(
+			"image/png",
+			"image/x-png",
+			"image/jpg",
+			"image/jpeg",
+			"imagep/jpeg",
+			);
+
+			if(in_array($_FILES["printedlogo"]["type"], $validFileTypes)){
+
+			if (function_exists('file_get_contents')) {
+
+				$file = mysql_real_escape_string(file_get_contents($_FILES['printedlogo']['tmp_name']));
+
+			} else {
+
+				// If using PHP < 4.3.0 use the following:
+				$file = mysql_real_escape_string(fread(fopen($_FILES['printedlogo']['tmp_name'], 'r'), filesize($_FILES['printedlogo']['tmp_name'])));
+
+			}//endif
+
+			if($_FILES["printedlogo"]["type"] == "image/jpeg")
+				$name = "logo.jpg";
+			else
+				$name = "logo.png";
+
+			$updatestatement = "
+				UPDATE
+				`files`
+				SET
+				`file` = '".$file."',
+				`type` = '".$_FILES["printedlogo"]["type"]."',
+				`name`='".$name."'
+				WHERE
+				id = 1";
+
+			$this->db->query($updatestatement);
+
+			}//endif file types
+
+		}//endif file exists
+
+		return true;
 
     }//end function updateSettings
 
@@ -231,57 +233,57 @@ class settings{
      */
     function updateEncyptionSeed($newseed, $currpassword, $userid){
 
-	$userid = (int) $userid;
+		$userid = (int) $userid;
 
-	//first let's make sure the password matches
-	$querystatement="
-	    SELECT
-		id
-	    FROM
-		users
-	    WHERE
-		id = ".$userid."
-		AND password = ENCODE('".$currpassword."','".ENCRYPTION_SEED."')";
+		//first let's make sure the password matches
+		$querystatement="
+			SELECT
+			id
+			FROM
+			users
+			WHERE
+			id = ".$userid."
+			AND password = ENCODE('".$currpassword."','".ENCRYPTION_SEED."')";
 
-	$queryresult = $this->db->query($querystatement);
+		$queryresult = $this->db->query($querystatement);
 
-	if(!$this->db->numRows($queryresult))
-	    return "Encryption Seed not Updated: Invalid Current Password";
+		if(!$this->db->numRows($queryresult))
+			return "Encryption Seed not Updated: Invalid Current Password";
 
-	//let's update the encryption seed then
-	$querystatement = "
-	    UPDATE
-		`settings`
-	    SET
-		`value` = '".$newseed."'
-	    WHERE
-		`name` = 'encryption_seed'";
+		//let's update the encryption seed then
+		$querystatement = "
+			UPDATE
+			`settings`
+			SET
+			`value` = '".$newseed."'
+			WHERE
+			`name` = 'encryption_seed'";
 
-	$queryresult = $this->db->query($querystatement);
+		$queryresult = $this->db->query($querystatement);
 
-	//last, reencode the current password
-	$querystatement = "
-	    UPDATE
-		users
-	    SET
-		password = ENCODE('".$currpassword."','".$newseed."')
-	    WHERE
-	     id = ".$userid;
+		//last, reencode the current password
+		$querystatement = "
+			UPDATE
+			users
+			SET
+			password = ENCODE('".$currpassword."','".$newseed."')
+			WHERE
+			 id = ".$userid;
 
-	$queryresult=$this->db->query($querystatement);
+		$queryresult=$this->db->query($querystatement);
 
-	//rencode all other passwords
-	$querystatement = "
-	    UPDATE
-		users
-	    SET
-		password = ENCODE(DECODE(password,'".ENCRYPTION_SEED."'),'".$newseed."')
-	    WHERE
-		id !=".$userid;
+		//rencode all other passwords
+		$querystatement = "
+			UPDATE
+			users
+			SET
+			password = ENCODE(DECODE(password,'".ENCRYPTION_SEED."'),'".$newseed."')
+			WHERE
+			id !=".$userid;
 
-	$queryresult=$this->db->query($querystatement);
+		$queryresult=$this->db->query($querystatement);
 
-	return "Encryption Seed Updated.";
+		return "Encryption Seed Updated.";
 
     }//end function updateEncryptionSeed
 
@@ -295,23 +297,23 @@ class settings{
     */
     function processForm($variables){
 
-	$variables = addSlashesToArray($variables);
+		$variables = addSlashesToArray($variables);
 
-	switch($variables["command"]){
+		switch($variables["command"]){
 
-	    case "save":
-		if($this->updateSettings($variables))
-		    $statusmessage="Settings Updated";
-		break;
+			case "save":
+			if($this->updateSettings($variables))
+				$statusmessage="Settings Updated";
+			break;
 
-	    case "encryption seed":
-		if(isset($variables["changeseed"]))
-		    $statusmessage = $this->updateEncyptionSeed($variables["encryption_seed"],$variables["currentpassword"],$_SESSION["userinfo"]["id"]);
-		break;
+			case "encryption seed":
+			if(isset($variables["changeseed"]))
+				$statusmessage = $this->updateEncyptionSeed($variables["encryption_seed"],$variables["currentpassword"],$_SESSION["userinfo"]["id"]);
+			break;
 
-	}//endswitch
+		}//endswitch
 
-	return $statusmessage;
+		return $statusmessage;
 
     }//end function processForm
 
@@ -325,53 +327,53 @@ class settings{
      */
     function displayStylesheets($stylesheet){
 
-	$thedir="../../common/stylesheet";
-	$thedir_stream = @opendir($thedir);
+		$thedir="../../common/stylesheet";
+		$thedir_stream = @opendir($thedir);
 
-	while($entry = @ readdir($thedir_stream)){
+		while($entry = @ readdir($thedir_stream)){
 
-	    if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
+			if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
 
-		?><option value="<?php echo $entry?>" <?php if($entry = $stylesheet) echo 'selected="selected"'; ?>><?php echo $entry?></option><?php
+			?><option value="<?php echo $entry?>" <?php if($entry = $stylesheet) echo 'selected="selected"'; ?>><?php echo $entry?></option><?php
 
-	    }//endif
+			}//endif
 
-	}//endwhile
+		}//endwhile
 
     }//end function displayStyleSheets
 
-    
+
     /**
      * Check to see if the scheduler has ever run
      */
     function checkForSchedulerRunning(){
 
-	//first, if this is within the first day of the installation, we skip the check
+		//first, if this is within the first day of the installation, we skip the check
 
-	$querystatement = "SELECT creationdate FROM users WHERE id = 1";
+		$querystatement = "SELECT creationdate FROM users WHERE id = 1";
 
-	$queryresult = $this->db->query($querystatement);
+		$queryresult = $this->db->query($querystatement);
 
-	$therecord = $this->db->fetchArray($queryresult);
+		$therecord = $this->db->fetchArray($queryresult);
 
-	if(stringToDate($therecord["creationdate"], "SQL") < strtotime("yesterday")){
+		if(stringToDate($therecord["creationdate"], "SQL") < strtotime("yesterday")){
 
-	    $querystatement = "
-		SELECT
-		    MAX(lastrun) AS lastrun
-		FROM
-		    scheduler";
+			$querystatement = "
+				SELECT
+					MAX(lastrun) AS lastrun
+				FROM
+					scheduler";
 
-	    $queryresult = $this->db->query($querystatement);
+			$queryresult = $this->db->query($querystatement);
 
-	    $therecord = $this->db->fetchArray($queryresult);
+			$therecord = $this->db->fetchArray($queryresult);
 
-	    if(!$therecord["lastrun"])
-		return false;
+			if(!$therecord["lastrun"])
+			return false;
 
-	}//endif
+		}//endif
 
-	return true;
+		return true;
 
     }//end function checkForSchedulerRunning
 

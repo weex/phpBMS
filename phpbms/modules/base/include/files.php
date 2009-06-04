@@ -119,6 +119,7 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 	}//end class
+
 }//end if
 
 if(class_exists("searchFunctions")){
@@ -129,10 +130,10 @@ if(class_exists("searchFunctions")){
 			$whereclause = $this->buildWhereClause();
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
 
-			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!=1;";
+			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!='file:c1818692-cfaa-8536-7f62-e385c0f6920d';";
 			$queryresult = $this->db->query($querystatement);
 
-			$querystatement = "DELETE FROM files WHERE ".$whereclause." AND files.id!=1;";
+			$querystatement = "DELETE FROM files WHERE ".$whereclause." AND files.uuid!='file:c1818692-cfaa-8536-7f62-e385c0f6920d';";
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

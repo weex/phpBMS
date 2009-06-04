@@ -40,15 +40,15 @@ if(class_exists("phpbmsTable")){
 
 	class relationships extends phpbmsTable{
 
-		var $availableTabledefIDs = array();
-		var $availableTabledefNames = array();
+		var $_availableTabledefUUIDs = NULL;
+		var $_availableTabledefNames = NULL;
 
-		//function populateds the tabledef ids
+		//function populates the tabledef ids
 		//and the tabledef names corresponding to those ids
 		function populateTabledefArrays(){
 
-			$this->availableTabledefIDs = array();
-			$this->availableTabledefNames = array();
+			$this->_availableTabledefUUIDs = array();
+			$this->_availableTabledefNames = array();
 
 			$querystatement = "
 				SELECT
@@ -68,19 +68,12 @@ if(class_exists("phpbmsTable")){
 
 				while($therecord = $this->db->fetchArray($queryresult)){
 
-					$this->availableTabledefIDs[] = $therecord["uuid"];
-					$this->availableTabledefNames[] = $therecord["displayname"];
+					$this->_availableTabledefUUIDs[] = $therecord["uuid"];
+					$this->_availableTabledefNames[] = $therecord["displayname"];
 
 				}//end while
 
-			} else {
-
-				//if no valid id/names, I put in a value that will
-				//give the arrays a count but not actually match any integers
-				$this->availableTabledefIDs[] = "none";
-				$this->availableTabledefNames[] = "none";
-
-			}//endif
+			}//end if
 
 		}//end method --populateArrays--
 
@@ -101,27 +94,25 @@ if(class_exists("phpbmsTable")){
 			}else
 				$this->verifyErrors[] = "The `fromfield` field must be set.";
 
-			//cannot be table default (0)
+			//cannot be table default
 			if(isset($variables["fromtableid"])){
 
+				if($this->_availableTabledefUUIDs === NULL || $this->_availableTabledefNames === NULL)
+						$this->populateTableDefArrays();
 
-                                if(!count($this->availableTabledefIDs))
-                                        $this->populateTableDefArrays();
-
-                                if(!in_array($variables["fromtableid"], $this->availableTabledefIDs))
-                                        $this->verifyErrors[] = "The `fromtableid` field does not give an existing/acceptable parent id number.";
+				if(!in_array($variables["fromtableid"], $this->_availableTabledefUUIDs))
+						$this->verifyErrors[] = "The `fromtableid` field does not give an existing/acceptable parent id number.";
 
 			} else
 				$this->verifyErrors[] = "The `fromtableid` field must be set.";
 
-			//cannot be table default (0)
+			//cannot be table default
 			if(isset($variables["totableid"])){
 
+				if($this->_availableTabledefUUIDs === NULL || $this->_availableTabledefNames === NULL)
+						$this->populateTableDefArrays();
 
-                                if(!count($this->availableTabledefIDs))
-                                        $this->populateTableDefArrays();
-
-                                if(!in_array($variables["totableid"], $this->availableTabledefIDs))
+				if(!in_array($variables["totableid"], $this->_availableTabledefUUIDs))
 					$this->verifyErrors[] = "The `totableid` field does not give an existing/acceptable to table id number.";
 			} else
 				$this->verifyErrors[] = "The `totableid` field must be set.";
@@ -138,15 +129,15 @@ if(class_exists("phpbmsTable")){
 
 		function displayTables($fieldname,$selectedid){
 
-			if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
+			if(!count($this->_availableTabledefUUIDs) || !count($this->_availableTabledefNames))
 				$this->populateTabledefArrays();
 
 			echo "<select id=\"".$fieldname."\" name=\"".$fieldname."\">\n";
 
-			for($i = 0; $i < count($this->availableTabledefIDs); $i++){
-				echo "	<option value=\"".$this->availableTabledefIDs[$i]."\"";
-					if($selectedid==$this->availableTabledefIDs[$i]) echo " selected=\"selected\"";
-				echo ">".$this->availableTabledefNames[$i]."</option>\n";
+			for($i = 0; $i < count($this->_availableTabledefUUIDs); $i++){
+				echo "	<option value=\"".$this->_availableTabledefUUIDs[$i]."\"";
+					if($selectedid==$this->_availableTabledefUUIDs[$i]) echo " selected=\"selected\"";
+				echo ">".$this->_availableTabledefNames[$i]."</option>\n";
 			}
 
 			echo "</select>\n";

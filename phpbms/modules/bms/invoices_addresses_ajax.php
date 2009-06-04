@@ -44,17 +44,17 @@ include("../../include/session.php");
 class clientAddresses{
 
 	function clientAddresses($db){
-		
+
 		$this->db = $db;
-		
+
 	}//end method - init
 
 
 	function getList($id){
-	
+
 		$querystatement = "
-			SELECT 
-				addresses.*, 
+			SELECT
+				addresses.*,
 				addresstorecord.primary,
 				addresstorecord.defaultshipto
 			FROM
@@ -62,89 +62,89 @@ class clientAddresses{
 			WHERE
 				addresstorecord.tabledefid = 2
 				AND addresstorecord.recordid = ".((int) $_GET["id"]);
-	
+
 		return $this->db->query($querystatement);
 
 	}//end method - get
-	
-	
+
+
 	function displayList($queryresult){
-	
+
 		?><div class="fauxP">
 			client addresses<br />
 			<div id="LAPickDiv">
-			<?php 
-			
+			<?php
+
 			if($this->db->numRows($queryresult)){
 
 				while($therecord = $this->db->fetchArray($queryresult)){
-					
+
 					$content = "";
 					if($therecord["title"])
 						$content .= "<strong>".htmlQuotes($therecord["title"])."</strong><br/>";
-					
+
 					$content .= htmlQuotes($therecord["address1"]);
-					
+
 					if($therecord["address2"])
 						$content .= "<br/>".htmlQuotes($therecord["address2"]);
-					
+
 					$content .= "<br/>".htmlQuotes($therecord["city"]);
-					
+
 					if($therecord["state"])
 						$content .= ", ".htmlQuotes($therecord["state"]);
 
 					if($therecord["postalcode"])
 						$content .= " ".htmlQuotes($therecord["postalcode"]);
-					
+
 					if($therecord["country"])
 						$content .= "<br/>".htmlQuotes($therecord["country"]);
 
 					?><a href="#" id="LA-<?php echo $therecord["id"]?>" class="LAPickAs"><?php echo $content?></a><?php
-				
+
 				}//endwhile - therecord
 
 			} else {
-			
+
 				?><p><em>no records found</em></p><?
-			
+
 			}//endif numrows
-			
+
 			?>
 			</div>
 		</div>
-		
+
 		<p align="right">
 			<button type="button" class="disabledButtons addressButtons" id="LALoadButton">load</button>
 			<button type="button" class="Buttons addressButtons" id="LACancelButton">cancel</button>
 		</p>
 		<?php
-	
+
 	}//end method - display
-	
+
 	function showSingle($id){
-	
+
 		$querystatement = "
-			SELECT 
+			SELECT
 				*
 			FROM
 				addresses
 			WHERE
 				id =".((int) $id);
-				
+
 		$therecord = $this->db->fetchArray($this->db->query($querystatement));
 
 		$output = "{";
 
 		foreach($therecord as $key=>$value)
-			$output .= $key .": '".str_replace("'","\\'",htmlQuotes($value))."' ,";		
-		
+			$output .= $key .": '".str_replace("'","\\'",htmlQuotes($value))."' ,";
+
 		$output = substr($output, 0, -1);
 		$output .= "}";
-		
+
 		echo $output;
-	
+
 	}//end method - showSingle
-	
+
 }//end class
 
 
@@ -153,23 +153,23 @@ class clientAddresses{
 if(isset($_GET["w"]) && isset($_GET["id"])){
 
 	$addresses = new clientAddresses($db);
-	
+
 	switch($_GET["w"]){
-	
+
 		case "s":
 			//single address record
 			$addresses->showSingle($_GET["id"]);
 			break;
-			
+
 		case "l":
 			//list of addresses for client
 			$addressResult = $addresses->getList($_GET["id"]);
-			
+
 			$addresses->displayList($addressResult);
-			
+
 			break;
-	
+
 	}//endswitch - get w
-	
+
 }//end if
 ?>
