@@ -43,22 +43,28 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         var $verifyErrors = array();
         var $customFieldsQueryResult = false;
 
-        // The table definition record id.
-        var $id = 0;
-
+        var $id;
+        var $uuid;
         var $fields = array();
 
 
-        function phpbmsTable($db, $tabledefid = 0, $backurl = NULL){
+        /**
+         * Initializes phpBMS Table object
+         *
+         * @param object $db database object
+         * @param string $tabledefid table definition's uuid
+         * @param string $backurl string with the web URL of where to redirect
+         */
+        function phpbmsTable($db, $tabledefid, $backurl = NULL){
 
             if(is_object($db))
-                if(get_class($db)=="db")
+                if(get_class($db) == "db")
                     $this->db = $db;
 
             if($this->db === NULL)
                 $error = new appError(-800,"database object is required for parameter 1.","Initializing phpbmsTable Class");
 
-            $this->id = ((int) $tabledefid);
+            $this->uuid = mysql_real_escape_string($tabledefid);
 
             if(!$this->getTableInfo())
                 $error = new appError(-810,"Table definition not found for id ".$this->id,"Initializing phpbmsTable Class");
@@ -71,9 +77,9 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function init
 
 
-        // gets table definition information
-        // based on passed id, and sets class
-        // porperties based on results
+        /**
+         * rerieves table definition information and creates object variables of the data retrieved
+         */
         function getTableInfo(){
 
             $querystatement = "
@@ -82,7 +88,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 FROM
                     `tabledefs`
                 WHERE
-                    `id` = ".$this->id;
+                    `uuid` = '".$this->uuid."'";
 
             $queryresult = $this->db->query($querystatement);
 
