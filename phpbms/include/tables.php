@@ -394,12 +394,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
         }//end function prepareVariables
 
+
         /**
          * function _loadUUIDList
          * @param string $tableName The name of a table with `uuid` field.
          * @return array A list of uuids used in the table.
          */
-
         function _loadUUIDList($tableName) {
 
             $list = array();
@@ -428,7 +428,6 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
          * @param string $uuid The uuid to be checked.
          * @return boolean Whether or not the $uuid is a `uuid` in $tablename.
          */
-
         function _checkForValidUUID($tableName, $uuid) {
 
             $tableName = mysql_real_escape_string($tableName);

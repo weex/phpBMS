@@ -107,20 +107,32 @@
 
 			//next, see if the searchclass exists
 			if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
+
 				$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
-				$searchFunctions = new $classname($db,$displayTable->thetabledef["id"],$theids);
+				$searchFunctions = new $classname($db,$displayTable->thetabledef["uuid"],$theids);
+
 			} else
-				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["id"],$theids);
+				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
 
 			//grab the method name
 			if(((int) $_POST["othercommands"]) === -1)
 				$functionname = "delete_record";
 			else {
-				$querystatement = "SELECT name FROM tableoptions WHERE id=".((int) $_POST["othercommands"]);
+
+				$querystatement = "
+					SELECT
+						name
+					FROM
+						tableoptions
+					WHERE id = ".((int) $_POST["othercommands"]);
+
 				$queryresult = $db->query($querystatement);
+
 				$therecord = $db->fetchArray($queryresult);
+
 				$functionname = $therecord["name"];
-			}
+
+			}//endif
 
 			if(method_exists($searchFunctions,$functionname))
 				$statusmessage = $searchFunctions->$functionname();

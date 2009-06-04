@@ -1185,19 +1185,32 @@
 
 		var $db;
 		var $tabledefid;
-		var $idsArray = array();
+		var $tabledefuuid;
+		var $idsArray;
 		var $maintable;
 		var $deletebutton;
 
-		function searchFunctions($db,$tabledefid,$idsArray=array()){
+		function searchFunctions($db, $tabledefuuid, $idsArray = array()){
 
 			$this->db = $db;
-			$this->tabledefid = (int) $tabledefid;
+			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
 			$this->idsArray = $idsArray;
 
-			$querystatement = "SELECT maintable,deletebutton FROM tabledefs WHERE id=".$this->tabledefid;
+			$querystatement = "
+				SELECT
+					id,
+					maintable,
+					deletebutton
+				FROM
+					tabledefs
+				WHERE
+					uuid = '".$this->tabledefuuid."'";
+
 			$queryresult = $this->db->query($querystatement);
+
 			$therecord = $this->db->fetchArray($queryresult);
+
+			$this->tabledefid = $therecord["id"];
 
 			$this->maintable = $therecord["maintable"];
 			$this->deletebutton = $therecord["deletebutton"];
