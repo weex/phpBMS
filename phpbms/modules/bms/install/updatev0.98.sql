@@ -231,6 +231,12 @@ ALTER TABLE `tax`
     ADD COLUMN `custom8` TINYINT(1) DEFAULT 0;
 --end tax ALTER--
 
+--invoicestatuses UPDATE--
+UPDATE `invoicestatuses` SET `uuid`='inst:2d08635f-5341-46f5-d2a3-b0ae0008b4d4' WHERE `id`='1';
+UPDATE `invoicestatuses` SET `uuid`='inst:00b9767c-a8d5-358e-8d35-824c530d06eb' WHERE `id`='2';
+UPDATE `invoicestatuses` SET `uuid`='inst:7b97bb4b-406f-1eb5-ce0c-e5ffa4946267' WHERE `id`='3';
+UPDATE `invoicestatuses` SET `uuid`='inst:e8b5e6a7-5797-7901-6266-6adeedd15ec9' WHERE `id`='4';
+--end invoicestatuses UPDATE--
 --menu INSERT--
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:7261b6a1-6424-77a6-6a02-eada540ec092', 'Client', '', '0', '0', 1, 1, NOW(), NOW(), 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120');
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:42d221f6-37ef-c755-e335-39d00e3fda58', 'Quick View', 'modules/bms/quickview.php', 'menu:7261b6a1-6424-77a6-6a02-eada540ec092', '0', 1, 1, NOW(), NOW(), 'role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52');

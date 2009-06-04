@@ -40,25 +40,7 @@
 if(class_exists("phpbmsTable")){
 	class invoiceStatus extends phpbmsTable {
 
-		var $availableUserIDs = array();
-
-		function populateUserArray(){
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`users`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableUserIDs[] = 0;//for everyone
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableUserIDs[] = $therecord["id"];
-
-		}//end method --populateUserArray--
+		var $_availableUserUUIDs = NULL;
 
 
 		function verifyVariables($variables){
@@ -73,16 +55,13 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["defaultassignedtoid"])){
 
-				if( !$variables["defaultassignedtoid"] || ((int)$variables["defaultassignedtoid"]) > 0 ){
+				if($this->_availableUserUUIDs === NULL){
+					$this->_availableUserUUIDs = $this->_loadUUIDList("users");
+					$this->_availableUserUUIDs[] = "";//for everyone/no one
+				}//end if
 
-					if(!count($this->availableUserIDs))
-						$this->populateUserArray();
-
-					if(!in_array(((int)$variables["defaultassignedtoid"]), $this->availableUserIDs))
-						$this->verifyErrors[] = "The `defaultassignedtoid` field does not give an existing/acceptable user id number.";
-
-				}else
-					$this->verifyErrors[] = "The `defaultassignedtoid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array(((string)$variables["defaultassignedtoid"]), $this->_availableUserUUIDs))
+					$this->verifyErrors[] = "The `defaultassignedtoid` field does not give an existing/acceptable user uuid.";
 
 			}//end if
 

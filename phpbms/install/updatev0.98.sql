@@ -295,7 +295,11 @@ INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdate
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:d1c247de-9811-d37f-ad94-a8472dc1bc9c', 'Remove Excess System Log Records', './scheduler_delete_logs.php', '*::24::*::*::*', NULL, '2009-03-31 12:00:00', NULL, 'This script will trim the system log when there are more than 2000 records present at the time of its calling (default will be every 24 hours).', '0', 1, NOW(), 1, NOW());
 --end scheduler INSERT--
 --smartsearches UPDATE--
-UPDATE `smartsearches` SET `uuid`='smrt:ccc73fa4-6176-fad4-fbb1-5186d0edbdd1' WHERE `id`='2';
+UPDATE `smartsearches` SET
+    `uuid`='smrt:ccc73fa4-6176-fad4-fbb1-5186d0edbdd1',
+    `valuefield`='`users`.`uuid`' WHERE `id`='2'
+WHERE
+    `id`='2';
 UPDATE `smartsearches` SET `uuid`='smrt:855406d5-659d-c907-74a1-acfd3802fd73' WHERE `id`='5';
 UPDATE `smartsearches` SET `uuid`='smrt:ed5b1d7f-b0fe-2088-f17c-47bfbe1ace25' WHERE `id`='9';
 --end smartsearches UPDATE--
