@@ -314,7 +314,7 @@ INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquer
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('19', 'display order', 'menu.displayorder', 'right', '', '3', '', '0', '', NULL, '');
 --end tablecolumns INSERT--
 --tablecolumns UPDATE--
-UPDATE `tablecolumns` SET `column` = 'IF(`tabs`.`roleid`=\'\' OR `tabs`.`roleid` IS NULL,\'EVERYONE\',IF(`tabs`.`roleid`=\'Admin\',\'Administrators\',`roles`.`name`))' WHERE `name` = 'access' AND `tabledefid` = '203';
+UPDATE `tablecolumns` SET `column` = 'IF(`tabs`.`roleid`=\'\' OR `tabs`.`roleid` IS NULL,\'EVERYONE\',IF(`tabs`.`roleid`=\'Admin\',\'Administrators\',`roles`.`name`))' WHERE `column` = 'if(tabs.roleid=0,\'EVERYONE\',if(tabs.roleid=-100,\'Administrators\',roles.name))' AND `tabledefid` = '203';
 --end tablecolumns UPDATE--
 --tabledefs INSERT--
 INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maintable`, `querytable`, `editfile`, `editroleid`, `addfile`, `addroleid`, `importfile`, `importroleid`, `searchroleid`, `advsearchroleid`, `viewsqlroleid`, `deletebutton`, `canpost`, `hascustomfields`, `defaultwhereclause`, `defaultsortorder`, `defaultsearchtype`, `defaultcriteriafindoptions`, `defaultcriteriaselection`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('205', 'tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'Snapshot Widgets', 'system', '1', 'widgets', '((widgets INNER JOIN modules ON widgets.moduleid = modules.uuid) LEFT JOIN roles ON widgets.roleid = roles.uuid) ', 'modules/base/widgets_addedit.php', '-100', 'modules/base/widgets_addedit.php', '-100', NULL, 'Admin', '-100', '-100', '-100', 'delete', '0', '0', 'widgets.id != -1', 'widgets.title', NULL, NULL, NULL, 1, NOW(), 1, NOW());
@@ -417,8 +417,14 @@ UPDATE `tabledefs` SET `prefix` = 'menu' WHERE id = 19;
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('205', 'All Records', 'widgets.id!=-1', '0', '0');
 --end tablefindoptions INSERT--
 --tablefindoptions UPDATE--
-UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' AND notes.private=0' WHERE `tabledefid` = '23' AND `name` = 'Public Tasks';
-UPDATE `tablefindoptions` SET `search` = 'notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0' WHERE `tabledefid` = 23 AND `name` = 'Uncomplete Tasks Assigned By Me';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'TS\' AND `notes`.`private`=\'0\'' WHERE `tabledefid` = '23' AND `search` = 'notes.type=\'NT\' AND notes.private=0';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'NT\' AND `notes`.`assignedbyid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='12' AND `search`='notes.type=\'NT\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'NT\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='12' AND `search`='notes.type=\'NT\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'TS\' AND `notes`.`assignedbyid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='23' AND `search`='notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'TS\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='23' AND `search`='notes.type=\'TS\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
+--Whereclause in the next update is NOT a typo.
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'EV\' AND `notes`.`assignedbyid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='24' AND `search`='notes.type=\'NT\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
+UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'EV\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='24' AND `search`='notes.type=\'EV\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
 --end tablefindoptions UPDATE--
 --tablegroupings INSERT--
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('205', 'modules.name', '1', '1', 'Module', '');
