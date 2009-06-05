@@ -288,7 +288,11 @@
 				<p>
 					<label for="attachedid">record uuid</label><br />
 					<input id="attachedid" name="attachedid" type="text" readonly="readonly" class="uneditable" value="<?php echo $therecord["attachedid"]?>" size="40" />&nbsp;
-					<input name="link" type="button" class="Buttons" value="edit" onclick="document.location='<?php echo APP_PATH?><?php echo $attachedtableinfo["editfile"]."?id=".getId($db, $therecord["attachedtabledefid"], $therecord["attachedid"]); ?>'" />
+					<input name="link" type="button" class="Buttons" value="edit" onclick="document.location='<?php
+						echo APP_PATH.$attachedtableinfo["editfile"]."?id=";
+						if($therecord["attachedtabledefid"])
+							echo getId($db, $therecord["attachedtabledefid"], $therecord["attachedid"]);
+					?>'" />
 				</p>
 		</fieldset>
 

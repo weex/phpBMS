@@ -53,6 +53,7 @@ class appError{
 	var $stop=true;
 	var $logerror=true;
 	var $format="xhtml";
+        var $backtrace = array();
 
 	//init
 	function appError($number=0,$details="",$title="",$display=false,$stop=true,$logerror=true,$format="xhtml"){
@@ -91,6 +92,11 @@ class appError{
 			}//end case;
 
 		}//endif this->number
+
+                $this->backtrace = debug_backtrace();
+
+                if(count($this->backtrace) > 1)
+                    array_shift($this->backtrace);
 
 		if($display || APP_DEBUG) $this->display($format);
 		if($logerror) $this->logError();
@@ -144,7 +150,34 @@ class appError{
 					<div class="box">
 						<?php echo $this->details?>
 					</div>
-					<?php  } //end if?>
+					<?php  } //end if
+                                        if(count($this->backtrace) && APP_DEBUG){
+
+                                            ?>
+                                            <ul class="notes">
+                                                <?php foreach($this->backtrace as $trace){
+
+                                                    ?>
+                                                    <li>
+                                                        <strong>
+                                                        <?php
+                                                            if(isset($trace["class"]))
+                                                                echo $trace["class"]."-&gt;";
+
+                                                            if(isset($trace["function"]))
+                                                                echo $trace["function"];
+                                                        ?>
+                                                        </strong>
+                                                        in <?php echo $trace["file"] ?>
+                                                        on line <?php echo $trace["line"] ?>
+                                                    </li>
+                                                    <?php
+
+                                                }//end while ?>
+                                            </ul>
+                                            <?php
+
+                                        }//endif ?>
 				</div><?php
 
 				break;
@@ -154,6 +187,25 @@ class appError{
 				echo "phpBMS Error: ".$this->number;
 				if($this->title) echo ": ".$this->title;
 				if($this->details) echo  " - ".$this->details;
+
+                                if(count($this->backtrace) && APP_DEBUG){
+
+                                    echo "\n";
+
+                                    foreach($this->backtrace as $trace){
+
+                                        if(isset($trace["class"]))
+                                            echo $trace["class"]."->";
+
+                                        if(isset($trace["function"]))
+                                            echo $trace["function"];
+
+                                        echo " in ".$trace["file"];
+                                        echo " on line ".$trace["line"];
+
+                                    }//end while
+
+                                }//endif
 
 				break;
 		}//end switch
