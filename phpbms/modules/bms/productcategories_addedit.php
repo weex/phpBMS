@@ -113,7 +113,7 @@
 
             <p><?php $theform->showField("webdisplayname")?></p>
 
-            <p><?php $theform->showField("description")?>
+            <p><?php $theform->showField("description")?></p>
 
         </fieldset>
 

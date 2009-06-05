@@ -422,7 +422,7 @@ UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'NT\' AND `notes`.`ass
 UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'NT\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='12' AND `search`='notes.type=\'NT\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
 UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'TS\' AND `notes`.`assignedbyid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='23' AND `search`='notes.type=\'TS\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
 UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'TS\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='23' AND `search`='notes.type=\'TS\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
---Whereclause in the next update is NOT a typo.
+--Whereclause in the next update is NOT a typo.--
 UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'EV\' AND `notes`.`assignedbyid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='24' AND `search`='notes.type=\'NT\' and notes.assignedbyid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
 UPDATE `tablefindoptions` SET `search` = '`notes`.`type`=\'EV\' AND `notes`.`assignedtoid`=\'{{$_SESSION[\'userinfo\'][\'id\']}}\' AND `notes`.`completed`=\'0\'' WHERE `tabledefid`='24' AND `search`='notes.type=\'EV\' and notes.assignedtoid={{$_SESSION[\'userinfo\'][\'id\']}} and notes.completed=0';
 --end tablefindoptions UPDATE--

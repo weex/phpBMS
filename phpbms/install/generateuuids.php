@@ -89,6 +89,8 @@ class generateUUIDS extends installUpdateBase{
         $this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
         $this->createUUIDs("tbld:83187e3d-101e-a8a5-037f-31e9800fed2d"); //Menu
         $this->createUUIDs("tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e"); //tax
+        $this->createUUIDs("tbld:d6e4e1fb-4bfa-cb53-ab9c-1b3e7f907ae2"); //invoicestatuses
+        $this->createUUIDs("tbld:380d4efa-a825-f377-6fa1-a030b8c58ffe"); //payment methods
 
         //generate lists used elsewhere
         $this->moduleList= $this->generateUUIDList("modules");
@@ -102,6 +104,7 @@ class generateUUIDS extends installUpdateBase{
 
         }//endif
 
+        $this->productcatList = $this->generateUUIDList("productcategories");
 
         $this->userList = $this->generateUUIDList("users");
         $this->userList[0] ="";
@@ -138,7 +141,7 @@ class generateUUIDS extends installUpdateBase{
         $this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         $this->updateFields("tabs", array("roleid"=>$this->roleList));
         $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
-
+        $this->updateFields("products", array("categoryid"=>$this->productcatList));
         //custom stuff
         $this->updateMenuLinks();
 

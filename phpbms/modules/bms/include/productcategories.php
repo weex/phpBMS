@@ -41,6 +41,55 @@ if(class_exists("phpbmsTable")){
 
     class productcategories extends phpbmsTable{
 
+        function checkForValidParentid($uuid, $parentid){
+
+            if((string)$parentid != ""){
+                $querystatement = "
+                    SELECT
+                        `id`
+                    FROM
+                        `productcategories`
+                    WHERE
+                        (
+                            `uuid` != '".$uuid."'
+                            AND (`parentid` = '' OR `parentid` != '".$uuid."')
+                            AND (`uuid` = '".$parentid."')
+                        )
+                    ";
+
+                $queryresult = $this->db->query($querystatement);
+
+                return $this->db->numRows($queryresult);
+            }else{
+                return true;
+            }//end if
+
+        }//end function
+
+        function verifyVariables($variables){
+
+            //check booleans
+            if(isset($variables["webenabled"]))
+                if($variables["webenabled"] && $variables["webenabled"] != 1)
+                    $this->verifyErrors[] = "The `webenabled` field must be a boolean (equivalent to 0 or exactly 1).";
+
+            if(isset($variables["parentid"])){
+
+                $tempParentId = $variables["parentid"];
+
+                $tempUUID = "";
+                if(isset($variables["uuid"]))
+                    $tempUUID = $variables["uuid"];
+
+                if(!$this->checkForValidParentid($tempUUID, $tempParentId))
+                    $this->verifyErrors[] = "The `parentid` field does not give a valid parent id.";
+
+            }//end if
+
+            return parent::verifyVariables($variables);
+
+        }//end method
+
         function showParentsSelect($uuid = "", $value){
 
             $id = mysql_real_escape_string($uuid);
@@ -54,7 +103,7 @@ if(class_exists("phpbmsTable")){
                     `productcategories`
                 WHERE
                     `uuid` != '".$uuid."'
-                    AND (`parentid` = 0 OR `parentid` != '".$uuid."')
+                    AND (`parentid` = '' OR `parentid` != '".$uuid."')
                     AND (`inactive` = 0 OR `uuid` = '".$value."')";
 
             $queryresult = $this->db->query($querystatement);
