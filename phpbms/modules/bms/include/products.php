@@ -40,7 +40,7 @@
 if(class_exists("phpbmsTable")){
 	class products extends phpbmsTable{
 
-		var $availableProducts = array();
+		var $availableProducts = NULL;
 
 		function getDefaults(){
 			$therecord = parent::getDefaults();
@@ -91,12 +91,7 @@ if(class_exists("phpbmsTable")){
 					$this->availableProducts[$partnumber]["id"] = $id;
 				}//end while
 
-			}else{
-				$partnumber = "NoT a REAl parTNuMBE|7 DU|\/|MY!";//put in an impossible partnumber
-				$id = "aoihweoighaow giuahrweughauerhgaiudsf iaheiugaiuweg iagweiuha wiueg";//put in an impossible product id
-
-				$this->availableProducts[$partnumber]["id"] = $id;
-			}//end if
+			}
 
 		}//end method --populateProductArray--
 
@@ -109,7 +104,7 @@ if(class_exists("phpbmsTable")){
 				//must have some sort of partnumber
 				if($variables["partnumber"] !== "" || $variables["partnumber"] !== NULL){
 
-					if(!count($this->availableProducts))
+					if($this->availableProducts === NULL)
 						$this->populateProductArray();
 
 					//can't have this partnumber already chosen
@@ -299,8 +294,8 @@ if(class_exists("phpbmsTable")){
 
 			parent::updateRecord($variables, $modifiedby);
 
-                        if(isset($variables["addcats"]))
-                                $this->updateCategories($variables["uuid"], $variables["addcats"]);
+			if(isset($variables["addcats"]))
+				$this->updateCategories($variables["uuid"], $variables["addcats"]);
 
 			//need to reset the field information.  If they did not have rights
 			// we temporarilly removed the fields to be updated.
@@ -316,34 +311,35 @@ if(class_exists("phpbmsTable")){
 
 			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
-                        if(isset($variables["addcats"]))
-                                $this->updateCategories($newid, $variables["addcats"]);
+			if(isset($variables["addcats"]))
+				$this->updateCategories($newid, $variables["addcats"]);
 
-                        return $newid;
+			return $newid;
 
-                }//end function insertRecord
+		}//end function insertRecord
 
 
-                //retrieves and displays a list of possible product categories
+		//retrieves and displays a list of possible product categories
 		function displayProductCategories($categoryid){
 
-                        $categoryid = mysql_real_escape_string($categoryid);
+            $categoryid = mysql_real_escape_string($categoryid);
 
 			$querystatement = "
-                            SELECT
-                                `uuid`,
-                                `name`
-                            FROM
-                                `productcategories`
-                            WHERE
-                                `inactive` = 0 OR `uuid` ='".$categoryid."'
-                            ORDER BY
-                                `name`";
+				SELECT
+					`uuid`,
+					`name`
+				FROM
+					`productcategories`
+				WHERE
+					`inactive` = 0 OR `uuid` ='".$categoryid."'
+				ORDER BY
+					`name`
+				";
 
 			$queryresult = $this->db->query($querystatement);
 
 			?><select name="categoryid" id="categoryid">
-                                <option value="" <?php if($categoryid=="") echo 'selected="selected"'?>>No Master Category</option>
+                   <option value="" <?php if($categoryid=="") echo 'selected="selected"'?>>No Master Category</option>
 				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
 						?><option value="<?php echo $therecord["uuid"]?>" <?php if($categoryid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
@@ -355,88 +351,88 @@ if(class_exists("phpbmsTable")){
 		}//end function displayProductCategories
 
 
-                function displayAdditionalCategories($uuid){
+		function displayAdditionalCategories($uuid){
 
-                    ?>
-                    <div id="catDiv">
-                        <input type="hidden" id="addcats" name="addcats" value="" />
-                    <?php
+			?>
+			<div id="catDiv">
+				<input type="hidden" id="addcats" name="addcats" value="" />
+			<?php
 
-                    if($uuid){
+			if($uuid){
 
-                        $uuid = mysql_real_escape_string($uuid);
+				$uuid = mysql_real_escape_string($uuid);
 
-                        $querystatement ="
-                            SELECT
-                                productcategories.uuid AS catid,
-                                productcategories.name
-                            FROM
-                                (products INNER JOIN productstoproductcategories ON products.uuid = productstoproductcategories.productuuid)
-                                INNER JOIN productcategories ON productstoproductcategories.productcategoryuuid = productcategories.uuid
-                            WHERE
-                                products.uuid = '".$uuid."'
-                        ";
+				$querystatement ="
+					SELECT
+						productcategories.uuid AS catid,
+						productcategories.name
+					FROM
+						(products INNER JOIN productstoproductcategories ON products.uuid = productstoproductcategories.productuuid)
+						INNER JOIN productcategories ON productstoproductcategories.productcategoryuuid = productcategories.uuid
+					WHERE
+						products.uuid = '".$uuid."'
+				";
 
-                        $queryresult = $this->db->query($querystatement);
+				$queryresult = $this->db->query($querystatement);
 
-                        $i = 0;
+				$i = 0;
 
-                        while($therecord = $this->db->fetchArray($queryresult)){
+				while($therecord = $this->db->fetchArray($queryresult)){
 
-                            ?>
-                            <div class="moreCats" id="AC<?php echo $i; ?>">
-                                <input type="text" value="<?php echo formatVariable($therecord["name"]); ?>" id="AC-<?php echo $i ?>" size="30" readonly="readonly"/>
-                                <input type="hidden" id="AC-CatId-<?php echo $i ?>" value="<?php echo $therecord["catid"];?>" class="catIDs"/>
-                                <button type="button" class="graphicButtons buttonMinus catButtons" title="Remove Category"><span>-</span></button>
-                            </div>
-                            <?php
+					?>
+					<div class="moreCats" id="AC<?php echo $i; ?>">
+						<input type="text" value="<?php echo formatVariable($therecord["name"]); ?>" id="AC-<?php echo $i ?>" size="30" readonly="readonly"/>
+						<input type="hidden" id="AC-CatId-<?php echo $i ?>" value="<?php echo $therecord["catid"];?>" class="catIDs"/>
+						<button type="button" class="graphicButtons buttonMinus catButtons" title="Remove Category"><span>-</span></button>
+					</div>
+					<?php
 
-                            $i++;
+					$i++;
 
-                        }//endwhile
+				}//endwhile
 
-                    }//endif
+			}//endif
 
-                    ?></div><?php
+			?></div><?php
 
-                }//end function displayAdditionalCategories
+		}//end function displayAdditionalCategories
 
 
-                function updateCategories($recorduuid, $categoryList){
+		function updateCategories($recorduuid, $categoryList){
 
-                        if($categoryList){
+			if($categoryList){
 
-                                $categoryArray = explode(",", $categoryList);
+				$categoryArray = explode(",", $categoryList);
 
-                                //first remove any existing records
-                                $deletestatement = "
-                                        DELETE FROM
-                                                `productstoproductcategories`
-                                        WHERE
-                                                `productuuid` = '".$recorduuid."'
-                                        ";
+				//first remove any existing records
+				$deletestatement = "
+					DELETE FROM
+						`productstoproductcategories`
+					WHERE
+						`productuuid` = '".$recorduuid."'
+					";
 
-                                $this->db->query($deletestatement);
+				$this->db->query($deletestatement);
 
-                                foreach($categoryArray as $categoryUuid){
+				foreach($categoryArray as $categoryUuid){
 
-                                        $insertstatement = "
-                                                INSERT INTO
-                                                        `productstoproductcategories`
-                                                        (productuuid, productcategoryuuid)
-                                                VALUES
-                                                        (
-                                                        '".$recorduuid."',
-                                                        '".$categoryUuid."'
-                                                        )";
+					$insertstatement = "
+						INSERT INTO
+							`productstoproductcategories`
+							(productuuid, productcategoryuuid)
+						VALUES
+							(
+							'".$recorduuid."',
+							'".$categoryUuid."'
+							)";
 
-                                        $this->db->query($insertstatement);
+					$this->db->query($insertstatement);
 
-                                }//endforeach
+				}//endforeach
 
-                        }//endif
+			}//endif
 
-                }//end updateCategories
+		}//end updateCategories
 
 	}//end products class
 }//end if

@@ -172,6 +172,7 @@ ALTER TABLE `productcategories`
 --products ALTER--
 ALTER TABLE `products` ENGINE=INNODB;
 ALTER TABLE `products`
+    MODIFY COLUMN `categoryid` varchar(64),
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
     ADD COLUMN `custom1` DOUBLE,
     ADD COLUMN `custom2` DOUBLE,
