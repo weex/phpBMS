@@ -64,10 +64,17 @@
 		$statusmessage = $therecord["phpbmsStatus"];
 
 
-	function getAttachments($db,$id){
-		$querystatement="SELECT tabledefs.displayname, attachments.recordid, attachments.creationdate, tabledefs.editfile
-						FROM attachments INNER JOIN tabledefs ON attachments.tabledefid=tabledefs.uuid
-						WHERE fileid=".$id;
+	function getAttachments($db,$uuid){
+		$querystatement="
+			SELECT
+				`tabledefs`.`displayname`,
+				`attachments`.`recordid`,
+				`attachments`.`creationdate`,
+				`tabledefs`.`editfile`
+			FROM
+				`attachments`INNER JOIN `tabledefs` ON `attachments`.`tabledefid`=`tabledefs`.`uuid`
+			WHERE `attachments`.`fileid`='".$uuid."'
+			";
 		$queryresult=$db->query($querystatement);
 
 		return $queryresult;
@@ -126,7 +133,7 @@
 		<legend>file</legend>
 		<?php if(isset($_GET["tabledefid"])){?>
 			<input id="attachmentid" name="attachmentid" type="hidden" value="<?php echo $therecord["attachmentid"]?>" />
-			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo (integer) $_GET["tabledefid"]?>" />
+			<input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $_GET["tabledefid"]?>" />
 			<input id="recordid" name="recordid" type="hidden" value="<?php echo (integer) $_GET["refid"]?>" />
 		<?php }?>
 
@@ -165,7 +172,7 @@
 	</fieldset>
 	<?php
 	if($therecord["id"]) {
-		$attchmentsquery=getAttachments($db,$therecord["id"]);
+		$attchmentsquery=getAttachments($db,$therecord["uuid"]);
 		if($db->numRows($attchmentsquery)){
 		?>
 		<h2>Record Attachments</h2>
@@ -174,8 +181,8 @@
 		<table border="0" cellpadding="0" cellspacing="0" class="smallQueryTable">
 			<tr>
 				<th align="left">table</th>
-				<th align="left" nowrap="nowrap">ID</th>
-				<th align="right" width="99%">attached</th>
+				<th align="left" nowrap="nowrap" width="99%">ID</th>
+				<th align="right" nowrap="nowrap">attached</th>
 				<th align="left" nowrap="nowrap">&nbsp;</th>
 			</tr>
 		<?php
@@ -184,7 +191,7 @@
 			<tr>
 				<td nowrap="nowrap"><?php echo $attachmentrecord["displayname"] ?></td>
 				<td><?php echo $attachmentrecord["recordid"] ?></td>
-				<td align="right"><?php echo formatFromSQLDatetime($attachmentrecord["creationdate"]) ?></td>
+				<td align="right" nowrap="nowrap"><?php echo formatFromSQLDatetime($attachmentrecord["creationdate"]) ?></td>
 				<td>
 					<button class="graphicButtons buttonEdit" type="button" onclick="document.location='<?php echo APP_PATH.$attachmentrecord["editfile"]."?id=".$attachmentrecord["recordid"] ?>'"><span>edit</span></button>
 				</td>

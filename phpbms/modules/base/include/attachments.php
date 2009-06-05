@@ -111,26 +111,23 @@ if(class_exists("files")){
 			if($variables["newexisting"]=="new"){
 				//we need to add a new file record before adding a new
 				//attachment record
-
 				$variables["fileid"] = parent::insertRecord($variables, $createdby);
 			}
 
 			//next we create the attachment record
-
 			$querystatement = "
 				SELECT
-					`uuid`,
 					`maintable`
 				FROM
 					`tabledefs`
 				WHERE
-					`id` = '".(int)$variables["tabledefid"]."'
+					`uuid` = '".mysql_real_escape_string($variables["tabledefid"])."'
 				";
 
 			$queryresult = $this->db->query($querystatement);
 			$therecord = $this->db->fetchArray($queryresult);
-			$tabldefid = $therecord["uuid"];
-			$maintable = $therecord["maintable"];
+			$tabldefid = mysql_real_escape_string($variables["tabledefid"]);
+			$maintable = mysql_real_escape_string($therecord["maintable"]);
 
 			$querystatement = "
 				SELECT
@@ -143,7 +140,7 @@ if(class_exists("files")){
 
 			$queryresult = $this->db->query($querystatement);
 			$therecord = $this->db->fetchArray($queryresult);
-			$recordid = $therecord["uuid"];
+			$recordid = mysql_real_escape_string($therecord["uuid"]);
 
 			$querystatement = "
 				SELECT
@@ -156,7 +153,7 @@ if(class_exists("files")){
 
 			$queryresult = $this->db->query($querystatement);
 			$therecord = $this->db->fetchArray($queryresult);
-			$fileid = $therecord["uuid"];
+			$fileid = mysql_real_escape_string($therecord["uuid"]);
 
 			$querystatement="INSERT INTO attachments ";
 			$querystatement.="(fileid,tabledefid,recordid,
@@ -199,11 +196,11 @@ if(class_exists("searchFunctions")){
 				$queryresult = $this->db->query($querystatement);
 				$rowsdeleted++;
 
-				$querystatement = "SELECT id FROM attachments WHERE fileid=".$therecord["fileid"].";";
+				$querystatement = "SELECT id FROM attachments WHERE fileid='".$therecord["fileid"]."'";
 				$queryresult = $this->db->query($querystatement);
 
 				if(!$this->db->numRows($queryresult)){
-					$querystatement = "DELETE FROM files WHERE id=".$therecord["fileid"].";";
+					$querystatement = "DELETE FROM files WHERE id='".$therecord["fileid"]."'";
 					$queryresult = $this->db->query($querystatement);
 				}
 

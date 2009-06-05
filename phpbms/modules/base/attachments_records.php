@@ -84,7 +84,7 @@
 
 	$phpbms->cssIncludes[] = "pages/search.css";
 	$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
-	$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid='.$tabledefid.'"+String.fromCharCode(38)+"refid='.$refid.'";';
+	$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid='.$tabledefuuid.'"+String.fromCharCode(38)+"refid='.$refid.'";';
 
 	include("header.php");
 	$phpbms->showTabs($tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
