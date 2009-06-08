@@ -40,13 +40,19 @@
 	if(isset($_GET["refid"])) $_GET["id"]=$_GET["refid"];
 	$refid=(integer) $_GET["id"];
 
-	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
-			   invoices.type
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
-			   WHERE invoices.id=".$refid;
-	$refquery=$db->query($refquery);
-	$refrecord=$db->fetchArray($refquery);
+	$refquery = "
+		SELECT
+			`invoices`.`id`,
+			IF(`clients`.`lastname`!='',concat(`clients`.`lastname`,', ',`clients`.`firstname`,IF(`clients`.`company`!='',concat(' (',`clients`.`company`,')'),'')),`clients`.`company`) AS `name`,
+			`invoices`.`type`
+		FROM
+			`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`id`
+		WHERE
+			`invoices`.`id`='".$refid."'
+	";
+
+	$refquery = $db->query($refquery);
+	$refrecord = $db->fetchArray($refquery);
 
 	$pageTitle="Status History: ".$refrecord["id"].": ".$refrecord["name"];
 	//================================================================
@@ -56,13 +62,17 @@
 				if(strpos($key,"sh")===0){
 					$historyid=substr($key,2);
 					$assignedtoid=((int) $_POST["as".$historyid]);
-					$querystatement="UPDATE invoicestatushistory SET statusdate=";
+					$querystatement = "
+						UPDATE
+							`invoicestatushistory`
+						SET
+							`statusdate`=";
 					if($value=="" || $value=="0/0/0000") $tempdate="NULL";
 					else
-						$tempdate="\"".sqlDateFromString($value)."\"";
+						$tempdate="'".sqlDateFromString($value)."'";
 					$querystatement.=$tempdate;
-					$querystatement.=",assignedtoid=".$assignedtoid;
-					$querystatement.=" WHERE id=".((int) $historyid);
+					$querystatement.=",`assignedtoid`='".$assignedtoid."'";
+					$querystatement.=" WHERE `id`='".((int) $historyid)."'";
 					$queryresult=$db->query($querystatement);
 				}//end find if
 			}//end for each
@@ -74,10 +84,18 @@
 	$querystatement="SELECT id,name FROM invoicestatuses WHERE inactive=0 ORDER BY priority,name";
 	$statusresult=$db->query($querystatement);
 
-	$querystatement="SELECT invoicestatushistory.id, invoicestatuses.name, invoicestatusid, assignedtoid, statusdate
-					FROM invoicestatushistory INNER JOIN invoicestatuses
-					ON invoicestatushistory.invoicestatusid = invoicestatuses.id
-					WHERE invoiceid=".$refid;
+	$querystatement = "
+		SELECT
+			`invoicestatushistory`.`id`,
+			`invoicestatuses`.`name`,
+			`invoicestatusid`,
+			`assignedtoid`,
+			`statusdate`
+		FROM
+			`invoicestatushistory` INNER JOIN `invoicestatuses` ON `invoicestatushistory`.`invoicestatusid` = `invoicestatuses`.`id`
+		WHERE
+			`invoiceid` = '".$refid."'
+	";
 	$historyresult=$db->query($querystatement);
 
 	while($therecord=$db->fetchArray($historyresult))

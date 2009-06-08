@@ -181,16 +181,18 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement="
 				SELECT
-					id,
-					name,
-					type,
-					onlineprocess,
-					processscript
+					`id`,
+					`uuid`,
+					`name`,
+					`type`,
+					`onlineprocess`,
+					`processscript`
 				FROM
-					paymentmethods
+					`paymentmethods`
 				WHERE
-					inactive=0
-					OR id=".((int) $paymentmethodid)."
+					`inactive`=0
+					OR
+					id=".((int) $paymentmethodid)."
 				ORDER BY
 					priority,
 					name";
@@ -204,13 +206,15 @@ if(class_exists("phpbmsTable")){
 			$phpbms->topJS[] = 'paymentMethods=Array();';
 
 			while($therecord = $this->db->fetchArray($queryresult)) {
-				$thereturn[$therecord["id"]]=$therecord;
+				$thereturn[$therecord["uuid"]]=$therecord;
 
-				$phpbms->topJS[] = 'paymentMethods['.$therecord["id"].']=Array();';
-				$phpbms->topJS[] = 'paymentMethods['.$therecord["id"].']["name"]="'.htmlQuotes($therecord["name"]).'";';
-				$phpbms->topJS[] = 'paymentMethods['.$therecord["id"].']["type"]="'.htmlQuotes($therecord["type"]).'";';
-				$phpbms->topJS[] = 'paymentMethods['.$therecord["id"].']["onlineprocess"]="'.htmlQuotes($therecord["onlineprocess"]).'";';
-				$phpbms->topJS[] = 'paymentMethods['.$therecord["id"].']["processscript"]="'.htmlQuotes($therecord["processscript"]).'";';
+				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+
+				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]=Array();';
+				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
+				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]["type"]="'.htmlQuotes($therecord["type"]).'";';
+				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]["onlineprocess"]="'.htmlQuotes($therecord["onlineprocess"]).'";';
+				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]["processscript"]="'.htmlQuotes($therecord["processscript"]).'";';
 			}
 
 			return $thereturn;
@@ -218,12 +222,12 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function showShippingSelect($id,$shippingMethods){
+		function showShippingSelect($uuid,$shippingMethods){
 
 			?><select name="shippingmethodid" id="shippingmethodid" onchange="changeShipping()">
-				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+				<option value="" <?php if($uuid=="") echo "selected=\"selected\""?>>&lt;none&gt;</option>
 			<?php foreach($shippingMethods as $method){?>
-				<option value="<?php echo $method["id"]?>" <?php if($id==$method["id"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>
+				<option value="<?php echo $method["uuid"]?>" <?php if($uuid==$method["uuid"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>
 			<?php } ?>
 			</select>
 			<?php
@@ -233,36 +237,43 @@ if(class_exists("phpbmsTable")){
 
 		function getShipping($shippingmethodid){
 
-			$querystatement="
+			$shippingmethodid = mysql_real_escape_string($shippingmethodid);
+
+			$querystatement = "
 				SELECT
-					id,
-					name,
-					canestimate,
-					estimationscript
+					`id`,
+					`uuid`,
+					`name`,
+					`canestimate`,
+					`estimationscript`
 				FROM
-					shippingmethods
+					`shippingmethods`
 				WHERE
-					inactive=0
-					OR id=".((int) $shippingmethodid)."
+					`inactive`='0'
+					OR
+					`uuid`='".$shippingmethodid."'
 				ORDER BY
-					priority,
-					name";
+					`priority`,
+					`name`
+			";
 
-			$queryresult=$this->db->query($querystatement);
+			$queryresult = $this->db->query($querystatement);
 
-			$thereturn=array();
+			$thereturn = array();
 
 			global $phpbms;
 
 			$phpbms->topJS[] = 'shippingMethods=Array();';
 
 			while($therecord = $this->db->fetchArray($queryresult)) {
-				$thereturn[$therecord["id"]]=$therecord;
+				$thereturn[$therecord["uuid"]]=$therecord;
 
-				$phpbms->topJS[] = 'shippingMethods['.$therecord["id"].']=Array();';
-				$phpbms->topJS[] = 'shippingMethods['.$therecord["id"].']["name"]="'.htmlQuotes($therecord["name"]).'";';
-				$phpbms->topJS[] = 'shippingMethods['.$therecord["id"].']["canestimate"]='.((int) $therecord["canestimate"]).';';
-				$phpbms->topJS[] = 'shippingMethods['.$therecord["id"].']["estimationscript"]="'.htmlQuotes($therecord["estimationscript"]).'";';
+				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+
+				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]=Array();';
+				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
+				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]["canestimate"]='.((int) $therecord["canestimate"]).';';
+				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]["estimationscript"]="'.htmlQuotes($therecord["estimationscript"]).'";';
 			}
 
 			return $thereturn;
@@ -270,17 +281,28 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function showTaxSelect($id){
+		function showTaxSelect($uuid){
 
-			$id=(int) $id;
-			$querystatement="SELECT id,name,percentage FROM tax WHERE inactive=0 OR id=".$id." ORDER BY name";
-			$queryresult=$this->db->query($querystatement);
+			$uuid = mysql_real_escape_string($uuid);
+			$querystatement = "
+				SELECT
+					`uuid`,
+					`name`,
+					`percentage`
+				FROM
+					`tax`
+				WHERE
+					`inactive`='0' OR `uuid`='".$uuid."'
+				ORDER BY
+					`name`";
+
+			$queryresult = $this->db->query($querystatement);
 
 			?><select name="taxareaid" id="taxareaid" onchange="getPercentage()" size="5">
-				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+				<option value="" <?php if($uuid=="") echo "selected=\"selected\""?>>&lt;none&gt;</option>
 				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
-						?><option value="<?php echo $therecord["id"]?>" <?php if($id==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["percentage"]."%"?></option><?php
+						?><option value="<?php echo $therecord["uuid"]?>" <?php if($uuid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["percentage"]."%"?></option><?php
 					}
 				?>
 			</select><?php
@@ -288,21 +310,32 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function showDiscountSelect($id){
+		function showDiscountSelect($uuid){
 
-			$id=(int) $id;
-			$querystatement="SELECT id,name,type,value FROM discounts WHERE inactive!=1 ORDER BY name";
+			$uuid = mysql_real_escape_string($uuid);
+			$querystatement = "
+				SELECT
+					`uuid`,
+					`name`,
+					`type`,
+					`value`
+				FROM
+					`discounts`
+				WHERE
+					`inactive` != '1'
+				ORDER BY
+					`name`";
 			$queryresult=$this->db->query($querystatement);
 
 			?><select name="discountid" id="discountid" size="8">
-				<option value="0" <?php if($id==0) echo 'selected="selected"'?>>&lt;none&gt;</option>
+				<option value="" <?php if($uuid=='') echo 'selected="selected"'?>>&lt;none&gt;</option>
 				<?php
 					while($therecord=$this->db->fetchArray($queryresult)){
 						if($therecord["type"]=="amount")
 							$therecord["value"]=numberToCurrency($therecord["value"]);
 						else
 							$therecord["value"].="%";
-						?><option value="<?php echo $therecord["id"]?>" <?php if($id==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["value"]?></option><?php
+						?><option value="<?php echo $therecord["uuid"]?>" <?php if($uuid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"].": ".$therecord["value"]?></option><?php
 					}
 				?>
 			</select><?php
@@ -310,13 +343,25 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function getDiscount($id){
+		function getDiscount($uuid){
 
 			$therecord["name"]="";
 			$therecord["value"]=0;
 
-			if(((int) $id)!=0){
-				$querystatement="SELECT name,type,value FROM discounts WHERE id=".$id;
+			if($uuid){
+
+				$uuid = mysql_real_escape_string($uuid);
+				$querystatement = "
+					SELECT
+						`name`,
+						`type`,
+						`value`
+					FROM
+						`discounts`
+					WHERE
+						`uuid`='".$uuid."'
+				";
+
 				$queryresult=$this->db->query($querystatement);
 
 				$therecord=$this->db->fetchArray($queryresult);
@@ -334,14 +379,24 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function getTax($id){
+		function getTax($uuid){
 
 			$therecord["name"]="";
 
-			if(((int) $id)!=0){
+			if($uuid){
 
-				$querystatement="SELECT name,percentage FROM tax WHERE id=".$id;
-				$queryresult=$this->db->query($querystatement);
+				$uuid = mysql_real_escape_string($uuid);
+				$querystatement = "
+					SELECT
+						`name`,
+						`percentage`
+					FROM
+						`tax`
+					WHERE
+						`uuid`='".$uuid."'
+				";
+
+				$queryresult = $this->db->query($querystatement);
 
 				if($this->db->numRows($queryresult))
 					$therecord=$this->db->fetchArray($queryresult);

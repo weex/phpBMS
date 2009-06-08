@@ -43,19 +43,27 @@
 	include("include/imports.php");
 	include("include/parsecsv.lib.php");
 
-        if(!isset($_GET["id"]))
-            exit;
+    if(!isset($_GET["id"]))
+        exit;
+
+	if(!isset($_GET["backurl"]))
+		$backurl = NULL;
+	else{
+		$backurl = $_GET["backurl"];
+		if(isset($_GET["refid"]))
+			$backurl .= "?refid=".$_GET["refid"];
+	}
 
 	$tabledefid = mysql_real_escape_string($_GET["id"]);
 
 	$querystatement = "
 	    SELECT
-                `modules`.`name` AS `modulename`,
-		`tabledefs`.`maintable` AS `maintable`
+            `modules`.`name` AS `modulename`,
+            `tabledefs`.`maintable` AS `maintable`
 	    FROM
-                `tabledefs` INNER JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`
+            `tabledefs` INNER JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`
 	    WHERE
-                `tabledefs`.`uuid` = '".$tabledefid."'";
+            `tabledefs`.`uuid` = '".$tabledefid."'";
 
 	$queryresult = $db->query($querystatement);
 
@@ -71,10 +79,10 @@
 	if(class_exists($thereturn["maintable"])){
 
             $classname = $thereturn["maintable"];
-            $thetable = new $classname($db,$tabledefid);
+            $thetable = new $classname($db,$tabledefid, $backurl);
 
 	} else
-            $thetable = new phpbmsTable($db,$tabledefid);
+            $thetable = new phpbmsTable($db,$tabledefid, $backurl);
 
 	//finally, check to see if import class exists
 	if(class_exists($thereturn["maintable"]."Import")){

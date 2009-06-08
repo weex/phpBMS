@@ -39,14 +39,22 @@
 
 	require("../../include/session.php");
 
-	$querystatement="SELECT percentage FROM tax where id=".((int) $_GET["id"]);
+	$querystatement = "
+        SELECT
+            `percentage`
+        FROM
+            `tax`
+        WHERE
+            `uuid`='".mysql_real_escape_string($_GET["id"])."'
+    ";
+
 	$queryresult = $db->query($querystatement);
 	if(!$queryresult) reporError(100,"Tax percentage could not be retrieved");
 	if($db->numRows($queryresult))
 		$therecord=$db->fetchArray($queryresult);
 	else
 		$therecord["percentage"]=0;
-		
+
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 ?>

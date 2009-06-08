@@ -194,7 +194,7 @@
 
 
 	$pageTitle = "Sales Order";
-	
+
 	$_SESSION["printing"]["tableid"]="tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
 

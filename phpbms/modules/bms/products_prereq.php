@@ -148,7 +148,7 @@ if(isset($_POST["command"])){
 		</tr>
 		<?php
 		} else {?>
-		<tr><td colspan="4" align="center" style="padding:0px;"><div class="norecords">No Prerequisites to Display</div></td></tr>
+		<tr class="norecords"><td colspan="4" align="center">No Prerequisites to Display</td></tr>
 		<?php
 		}//end if
 		?>

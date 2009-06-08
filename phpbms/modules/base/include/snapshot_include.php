@@ -26,19 +26,17 @@ class snapshot{
 
         //build roles modifier.  For admins, they can see everything
         // but for everyone else we need to make an IN statement
-	$rolemodifier = "";
+        $rolemodifier = "";
 
         if(!$_SESSION["userinfo"]["admin"]){
 
-	    foreach($_SESSION["userinfo"]["roles"] as $role)
-		$rolemodifier .= ", '".$role."'";
+            $rolemodifier = "''";
+            foreach($_SESSION["userinfo"]["roles"] as $role)
+                $rolemodifier .= ", '".$role."'";
 
-	    if($rolemodifier)
-		$rolemodifier = substr($rolemodifier, 1);
+            $rolemodifier = "AND `roleid` IN(".$rolemodifier.") OR roleid IS NULL";
 
-	    $rolemodifier = "AND `roleid` IN(".$rolemodifier.") OR roleid IS NULL OR roleid = ''";
-
-	}//endif
+        }//endif
 
         $querystatement = "
             SELECT

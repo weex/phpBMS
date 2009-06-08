@@ -41,9 +41,9 @@ if(class_exists("phpbmsTable")){
 
 		var $_availableRoleUUIDs = NULL;
 
-		function checkParentMenuUUIDs($currentUUID = 0, $parentUUID = 0){
+		function checkParentMenuUUIDs($currentUUID = "", $parentUUID = ""){
 
-			if($parentUUID === 0)
+			if($parentUUID === "")
 				return true;
 
 			//cannot be own parent
@@ -78,30 +78,7 @@ if(class_exists("phpbmsTable")){
 
 			return $this->db->numRows($queryresult);
 
-		}//end method --getParentMenuIDs--
-
-		//pouplate the id roles array
-		function populateRoleArray(){
-
-			$this->_availableRoleUUIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`roles`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->_availableRoleUUIDs[] = 0;//for everyone
-			$this->_availableRoleUUIDs[] = -100;//for admin
-
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->_availableRoleUUIDs[] = $therecord["id"];
-
-		}//end method --populateRoleArray()--
+		}//end method --checkParentMenuIDs--
 
 
 		function verifyVariables($variables){
@@ -141,7 +118,7 @@ if(class_exists("phpbmsTable")){
 						$uuid = $variables["uuid"];
 
 				//Select run every time because `id` can be different
-				if( !$this->checkParentMenuUUIDs($uuid, $variables["parentid"]) )
+				if( !$this->checkParentMenuUUIDs($uuid, (string)$variables["parentid"]) )
 					$this->verifyErrors[] = "The `parentid` field does not give an existing/acceptable parentid uuid.";
 
 			}//end if

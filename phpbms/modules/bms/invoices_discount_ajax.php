@@ -38,17 +38,25 @@
 */
 
 	require("../../include/session.php");
-	
+
 	if(!isset($_GET["id"])) $error = new appError(300,"Passed veriable not set (id)");
-	
-	$querystatement="SELECT if(discounts.type+0=1,concat(discounts.value,\"%\"),discounts.value) AS value FROM discounts WHERE id=".$_GET["id"];
+
+	$querystatement = "
+        SELECT
+            IF(`discounts`.`type` + 0 = 1,concat(`discounts`.`value`,'%'),`discounts`.`value`) AS `value`
+        FROM
+            `discounts`
+        WHERE
+            `uuid`='".mysql_real_escape_string($_GET["id"])."'
+    ";
+
 	$queryresult = $db->query($querystatement);
 	if(!$queryresult) reporError(100,"Discount could not be retrieved");
 	if($db->numRows($queryresult))
 		$therecord=$db->fetchArray($queryresult);
 	else
 		$therecord["value"]=0;
-		
+
 	header('Content-Type: text/xml');
 	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
 ?>

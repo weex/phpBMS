@@ -107,7 +107,7 @@
 			<div id="assignedusersdiv">
 				users assigned to group<br />
 				<select id="assignedusers" size="10" multiple>
-					<?php $thetable->displayUsers($therecord["id"],"assigned")?>
+					<?php $thetable->displayUsers($therecord["uuid"],"assigned")?>
 				</select>
 			</div>
 			<div id="usersbuttonsdiv">
@@ -121,7 +121,7 @@
 			<div id="availableusersdiv">
 				available users<br />
 				<select id="availableusers" size="10" multiple>
-					<?php $thetable->displayUsers($therecord["id"],"available")?>
+					<?php $thetable->displayUsers($therecord["uuid"],"available")?>
 				</select>
 			</div>
 			</div>
