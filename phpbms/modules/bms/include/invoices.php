@@ -40,8 +40,8 @@ if(class_exists("phpbmsTable")){
 	class invoices extends phpbmsTable{
 
 		var $availableClientIDs = array();
-		var $availableUserIDs = array();
-		var $availableStatusIDs = array();
+		var $_availableUserUUIDs = NULL;
+		var $_availableStatusUUIDs = NULL;
 
 		function showClientType($id){
 
@@ -70,12 +70,42 @@ if(class_exists("phpbmsTable")){
 
 		function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid){
 
-			$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$invoiceid." AND invoicestatusid=".$statusid;
+			$invoiceid = mysql_real_escape_string($invoiceid);
+
+			$querystatement = "
+				SELECT
+					`uuid`
+				FROM
+					`invoices`
+				WHERE
+					`id`='".(int)$invoiceid."'
+			";
+
+			$queryresult = $this->db->query($querystatement);
+
+			$therecord = $this->db->fetchArray($queryresult);
+			$invoiceuuid = mysql_real_escape_string($therecord["uuid"]);
+
+			$statusid = mysql_real_escape_string($statusid);
+			$assignedtoid = mysql_real_escape_string($assignedtoid);
+
+			$querystatement = "
+				DELETE FROM
+					`invoicestatushistory`
+				WHERE
+					`invoiceid`='".$invoiceid."'
+					AND
+					`invoicestatusid`='".$statusid."'
+			";
+
 			$queryresult=$this->db->query($querystatement);
 
-			$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values(";
-			$querystatement.=((int) $invoiceid).", ";
-			$querystatement.=((int) $statusid).", ";
+			$querystatement = "
+				INSERT INTO
+					`invoicestatushistory`
+					(invoiceid,invoicestatusid,statusdate,assignedtoid) VALUES (";
+			$querystatement .= "'".$invoiceuuid."', ";
+			$querystatement .= "'".$statusid."', ";
 
 			if($statusdate=="" || $statusdate=="0/0/0000") $tempdate="NULL";
 			else{
@@ -85,7 +115,7 @@ if(class_exists("phpbmsTable")){
 			if($assignedtoid=="")
 				$querystatement.="NULL";
 			else
-				$querystatement.=((int) $assignedtoid);
+				$querystatement .= "'".$assignedtoid."'";
 
 			$querystatement.=")";
 
@@ -93,11 +123,11 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function showPaymentSelect($id,$paymentMethods){
+		function showPaymentSelect($uuid,$paymentMethods){
 			?><select name="paymentmethodid" id="paymentmethodid" onchange="showPaymentOptions()">
-				<option value="0" <?php if($id==0) echo "selected=\"selected\""?>>&lt;none&gt;</option>
+				<option value="" <?php if($uuid=="") echo "selected=\"selected\""?>>&lt;none&gt;</option>
 			<?php foreach($paymentMethods as $method){?>
-				<option value="<?php echo $method["id"]?>" <?php if($id==$method["id"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>
+				<option value="<?php echo $method["uuid"]?>" <?php if($uuid==$method["uuid"]) echo "selected=\"selected\""?>><?php echo $method["name"]?></option>
 			<?php } ?>
 			</select>
 			<?php
@@ -106,12 +136,12 @@ if(class_exists("phpbmsTable")){
 
 		function getDefaultStatus(){
 
-			$querystatement="SELECT id FROM invoicestatuses WHERE invoicedefault=1";
+			$querystatement="SELECT uuid FROM invoicestatuses WHERE invoicedefault=1";
 			$queryresult=$this->db->query($querystatement);
 
 			$therecord=$this->db->fetchArray($queryresult);
 
-			return $therecord["id"];
+			return $therecord["uuid"];
 		}
 
 
@@ -121,21 +151,22 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement="
 				SELECT
-					invoicestatuses.id,
-					invoicestatuses.name,
-					invoicestatuses.invoicedefault,
-					invoicestatuses.setreadytopost,
-					invoicestatuses.defaultassignedtoid,
-					users.firstname,
-					users.lastname
+					`invoicestatuses`.`uuid`,
+					`invoicestatuses`.`name`,
+					`invoicestatuses`.`invoicedefault`,
+					`invoicestatuses`.`setreadytopost`,
+					`invoicestatuses`.`defaultassignedtoid`,
+					`users`.`firstname`,
+					`users`.`lastname`
 				FROM
-					(invoicestatuses LEFT JOIN users ON invoicestatuses.defaultassignedtoid=users.id)
+					(`invoicestatuses` LEFT JOIN `users` ON `invoicestatuses`.`defaultassignedtoid`=`users`.`uuid`)
 				WHERE
-					invoicestatuses.inactive=0
-					OR invoicestatuses.id =".((int) $statusid)."
+					`invoicestatuses`.`inactive`='0'
+					OR
+					`invoicestatuses`.`uuid`='".mysql_real_escape_string($statusid)."'
 				ORDER BY
-					invoicestatuses.priority,
-					invoicestatuses.name";
+					`invoicestatuses`.`priority`,
+					`invoicestatuses`.`name`";
 
 			$queryresult=$this->db->query($querystatement);
 
@@ -148,12 +179,14 @@ if(class_exists("phpbmsTable")){
 
 				$thereturn[] = $therecord;
 
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']=Array();';
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["name"]="'.htmlQuotes($therecord["name"]).'";';
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["setreadytopost"]='.$therecord["setreadytopost"].';';
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["userid"]="'.htmlQuotes($therecord["defaultassignedtoid"]).'";';
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["firstname"]="'.htmlQuotes($therecord["firstname"]).'";';
-				$phpbms->topJS[] = 'statuses['.$therecord["id"].']["lastname"]="'.htmlQuotes($therecord["lastname"]).'";';
+				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]=Array();';
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["setreadytopost"]='.$therecord["setreadytopost"].';';
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["userid"]="'.htmlQuotes($therecord["defaultassignedtoid"]).'";';
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["firstname"]="'.htmlQuotes($therecord["firstname"]).'";';
+				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["lastname"]="'.htmlQuotes($therecord["lastname"]).'";';
 
 			}//endwhile
 
@@ -162,13 +195,13 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function displayStatusDropDown($statusid,$statuses){
+		function showStatusDropDown($statusid,$statuses){
 
 			?><select id="statusid" name="statusid" class="important">
 				<?php
 
 				foreach($statuses as $therecord){
-					?><option value="<?php echo $therecord["id"]?>" <?php if($statusid==$therecord["id"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
+					?><option value="<?php echo $therecord["uuid"]?>" <?php if($statusid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
 				}//endforeach
 
 				?>
@@ -190,12 +223,12 @@ if(class_exists("phpbmsTable")){
 				FROM
 					`paymentmethods`
 				WHERE
-					`inactive`=0
+					`inactive`='0'
 					OR
-					id=".((int) $paymentmethodid)."
+					`uuid`='".mysql_real_escape_string($paymentmethodid)."'
 				ORDER BY
-					priority,
-					name";
+					`priority`,
+					`name`";
 
 			$queryresult=$this->db->query($querystatement);
 
@@ -520,50 +553,6 @@ if(class_exists("phpbmsTable")){
 		}//end method --populateClientArray--
 
 
-		function populateUserArray(){
-
-			$this->availableUserIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`users`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableUserIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableUserIDs[] = $therecord["id"];
-
-		}//end method  --populateUserArray--
-
-
-		function populateInvoiceStatusArray(){
-
-			$this->availableStatusIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`invoicestatuses`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableStatusIDs[] = $therecord["id"];
-			}else{
-				$this->availableStatusIDs[] = "none";
-			}//end if
-
-		}//end method --populateInvoiceStatusArray--
-
-
 		function verifyVariables($variables){
 
 			//must have a client
@@ -607,32 +596,24 @@ if(class_exists("phpbmsTable")){
 			//check assigned to id
 			if(isset($variables["assignedtoid"])){
 
-				//assignedtoid needs to be a non-negative number or equivalent to 0
-				if( !$variables["assignedtoid"] || ((int)$variables["assignedtoid"]) > 0 ){
+				if($this->_availableUserUUIDs === NULL){
+					$this->_availableUserUUIDs = $this->_loadUUIDList("users");
+					$this->_availableUserUUIDs[] = "''";//for none
+				}//end if
 
-					if(!count($this->availableUserIDs))
-						$this->populateUserArray();
-
-					if(!in_array(((int)$variables["assignedtoid"]),$this->availableUserIDs))
-						$this->verifyErrors[] = "The `assignedtoid` field does not give an existing/acceptable user id number.";
-				}else
-					$this->verifyErrors[] = "The `assignedtoid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array(((string)$variables["assignedtoid"]),$this->_availableUserUUIDs))
+					$this->verifyErrors[] = "The `assignedtoid` field does not give an existing/acceptable user id number.";
 
 			}//end if
 
 			//check status id
 			if(isset($variables["statusid"])){
 
-				//assignedtoid needs to be a non-negative number or equivalent to 0
-				if( !$variables["statusid"] || ((int)$variables["statusid"]) > 0 ){
+				if($this->_availableStatusUUIDs === NULL)
+					$this->_availableStatusUUIDs = $this->_loadUUIDList("invoicestatuses");
 
-					if(!count($this->availableStatusIDs))
-						$this->populateInvoiceStatusArray();
-
-					if(!in_array(((int)$variables["statusid"]),$this->availableStatusIDs))
-						$this->verifyErrors[] = "The `statusid` field does not give an existing/acceptable status id number.";
-				}else
-					$this->verifyErrors[] = "The `statusid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array(((string)$variables["statusid"]),$this->_availableStatusUUIDs))
+					$this->verifyErrors[] = "The `statusid` field does not give an existing/acceptable status id number.";
 
 			}//end if
 
@@ -849,7 +830,7 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
-			if($variables["statuschanged"]==1)
+			//if($variables["statuschanged"]==1)
 				$this->updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);
 
 			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")

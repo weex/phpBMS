@@ -210,20 +210,21 @@ theStatus = {
 	statusChosen: function(e){
 
 		var status = getObjectFromID("statusid");
+		var statusVal = status.value.replace(/[\-\:]/g, "");
 		var assignedto = getObjectFromID("ds-assignedtoid");
 		var assignedtoid = getObjectFromID("assignedtoid");
 
 		//update assignedto
-		if(statuses[status.value]["firstname"] || statuses[status.value]["lastname"]){
+		if(statuses[statusVal]["firstname"] || statuses[statusVal]["lastname"]){
 
-			assignedto.value = (statuses[status.value]["firstname"]+" "+statuses[status.value]["lastname"]).replace(/^\s+|\s+$/g,"");
-			assignedtoid.value = statuses[status.value]["userid"]
+			assignedto.value = (statuses[statusVal]["firstname"]+" "+statuses[statusVal]["lastname"]).replace(/^\s+|\s+$/g,"");
+			assignedtoid.value = statuses[statusVal]["userid"]
 
 		}//endif
 
 		var readytopost = getObjectFromID("readytopost");
 
-		if(statuses[status.value]["setreadytopost"] == 1){
+		if(statuses[statusVal]["setreadytopost"] == 1){
 
 			var invoicedate = getObjectFromID("invoicedate");
 			if(!invoicedate.value)
@@ -1316,6 +1317,7 @@ function calculateTotal(){
 
 function showPaymentOptions(){
 	var paymentmethodid = getObjectFromID("paymentmethodid");
+	paymentIdVal = paymentmethodid.value.replace(/[\-\:]/g, "");
 
 	var checkinfo=getObjectFromID("checkpaymentinfo");
 	var ccinfo=getObjectFromID("ccpaymentinfo");
@@ -1327,10 +1329,10 @@ function showPaymentOptions(){
 	var totalti = getObjectFromID("totalti");
 
 	var theType;
-	if(parseInt(paymentmethodid.value) == 0)
+	if(paymentIdVal == "")
 		theType="";
 	else
-		theType=paymentMethods[parseInt(paymentmethodid.value)]["type"];
+		theType=paymentMethods[paymentIdVal]["type"];
 
 	//display appropriate payment details
 	switch(theType){
@@ -1407,26 +1409,26 @@ function showPaymentOptions(){
 
 	//update parentesis display
 	var parenPayment=getObjectFromID("parenPayment");
-	if(parseInt(paymentmethodid.value) == 0)
+	if(paymentIdVal == "")
 		parenPayment.innerHTML="&nbsp;";
 	else
-		parenPayment.innerHTML="("+paymentMethods[parseInt(paymentmethodid.value)]["name"]+")";
+		parenPayment.innerHTML="("+paymentMethods[paymentIdVal]["name"]+")";
 
 	//next onlinceprocessing
 	var online;
 	var transactionid=getObjectFromID("pTransactionid");
 	var paymentButton=getObjectFromID("paymentProcessButton");
 
-	if(parseInt(paymentmethodid.value) == 0)
+	if(paymentIdVal == "")
 		online = 0;
 	else
-		online = paymentMethods[parseInt(paymentmethodid.value)]["onlineprocess"];
+		online = paymentMethods[paymentIdVal]["onlineprocess"];
 
 	var processscript = getObjectFromID("processscript");
 
 	if(online==1){
 
-		processscript.value = paymentMethods[parseInt(paymentmethodid.value)]["processscript"];
+		processscript.value = paymentMethods[parseInt(paymentIdVal)]["processscript"];
 		transactionid.style.display="block";
 		paymentButton.className="graphicButtons buttonMoney";
 
@@ -1612,6 +1614,14 @@ connect(window,"onload",function() {
 	calculateTotal();
 	showPaymentOptions();
 
+	var id = getObjectFromID("id");
+	if(!id.value){
+		theStatus.statusChosen();
+		//to correct the incorrect status change resulting from the above function:
+		var statuschanged=getObjectFromID("statuschanged");
+		statuschanged.value=0;
+	}//end if
+
 	var clientid = getObjectFromID("clientid");
 	var clientdisplay = getObjectFromID("ds-clientid");
 
@@ -1620,7 +1630,6 @@ connect(window,"onload",function() {
 
 	connect(clientid,"onchange",client.getInfo)
 
-	var id = getObjectFromID("id");
 	var viewClientButton = getObjectFromID("viewClientButton");
 
 	connect(viewClientButton, "onclick", client.confirmClient);

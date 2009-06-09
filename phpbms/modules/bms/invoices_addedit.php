@@ -261,7 +261,7 @@
 			<legend>Status</legend>
 			<p>
 				<label for="statusid" class="important">current status</label><br />
-				<?php $thetable->displayStatusDropDown($therecord["statusid"],$statuses)?>
+				<?php $thetable->showStatusDropDown($therecord["statusid"],$statuses)?>
 				<input type="hidden" id="statuschanged" name="statuschanged" value="<?php if($therecord["id"]=="") echo "1"; else echo "0"?>" />
 			</p>
 			<p>
@@ -460,11 +460,12 @@
 						<label for="shippingmethodid">ship via</label><br />
 						<?php  $thetable->showShippingSelect($therecord["shippingmethodid"],$shippingMethods);
 							$shipButtonDisable="";
-							if($therecord["shippingmethodid"]==0)
+							if($therecord["shippingmethodid"]=="")
 								$shipButtonDisable="Disabled";
-							else
+							else{
 								if($shippingMethods[$therecord["shippingmethodid"]]["canestimate"]==0)
 									$shipButtonDisable="Disabled";
+							}
 						?>
 						<button id="estimateShippingButton" type="button" onclick="startEstimateShipping()" class="graphicButtons buttonShip<?php echo $shipButtonDisable?>" title="Estimate Shipping"><span>Estimate Shipping</span></button>
 					</p>
@@ -579,10 +580,10 @@
 							} else echo "&nbsp;";
 						?>
 					</td></tr>
-					<tr><td id="parenShipping"><?php if($therecord["shippingmethodid"]!=0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
+					<tr><td id="parenShipping"><?php if($therecord["shippingmethodid"]!="" && $therecord["shippingmethodid"] != 0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
 					<tr><td class="blanks">&nbsp;</td></tr>
 					<tr><td id="parenSpacer" class="blanks">&nbsp;</td></tr>
-					<tr><td id="parenPayment"><?php if($therecord["paymentmethodid"]!=0) echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
+					<tr><td id="parenPayment"><?php if($therecord["paymentmethodid"]!="") echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
 				</tbody>
 			</table>
 

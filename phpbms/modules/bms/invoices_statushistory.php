@@ -43,6 +43,7 @@
 	$refquery = "
 		SELECT
 			`invoices`.`id`,
+			`invoices`.`uuid`,
 			IF(`clients`.`lastname`!='',concat(`clients`.`lastname`,', ',`clients`.`firstname`,IF(`clients`.`company`!='',concat(' (',`clients`.`company`,')'),'')),`clients`.`company`) AS `name`,
 			`invoices`.`type`
 		FROM
@@ -61,7 +62,7 @@
 			foreach($_POST as $key=>$value){
 				if(strpos($key,"sh")===0){
 					$historyid=substr($key,2);
-					$assignedtoid=((int) $_POST["as".$historyid]);
+					$assignedtoid=mysql_real_escape_string($_POST["as".$historyid]);
 					$querystatement = "
 						UPDATE
 							`invoicestatushistory`
@@ -81,23 +82,24 @@
 
 	//================================================================
 
-	$querystatement="SELECT id,name FROM invoicestatuses WHERE inactive=0 ORDER BY priority,name";
+	$querystatement="SELECT uuid,name FROM invoicestatuses WHERE inactive='0' ORDER BY priority,name";
 	$statusresult=$db->query($querystatement);
 
 	$querystatement = "
 		SELECT
 			`invoicestatushistory`.`id`,
 			`invoicestatuses`.`name`,
-			`invoicestatusid`,
-			`assignedtoid`,
-			`statusdate`
+			`invoicestatushistory`.`invoicestatusid`,
+			`invoicestatushistory`.`assignedtoid`,
+			`invoicestatushistory`.`statusdate`
 		FROM
-			`invoicestatushistory` INNER JOIN `invoicestatuses` ON `invoicestatushistory`.`invoicestatusid` = `invoicestatuses`.`id`
+			`invoicestatushistory` INNER JOIN `invoicestatuses` ON `invoicestatushistory`.`invoicestatusid` = `invoicestatuses`.`uuid`
 		WHERE
-			`invoiceid` = '".$refid."'
+			`invoicestatushistory`.`invoiceid` = '".$refrecord["uuid"]."'
 	";
 	$historyresult=$db->query($querystatement);
 
+	$history = array();
 	while($therecord=$db->fetchArray($historyresult))
 		$history[]=$therecord;
 
@@ -143,7 +145,7 @@
 				$historydate=false;
 
 				foreach($history as $historyrecord)
-					if($historyrecord["invoicestatusid"] == $therecord["id"]) {
+					if($historyrecord["invoicestatusid"] == $therecord["uuid"]) {
 						$historyid=$historyrecord["id"];
 						$historydate=$historyrecord["statusdate"];
 						$assignedtoid=$historyrecord["assignedtoid"];
