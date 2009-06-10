@@ -48,15 +48,15 @@
         $refid=(integer) $_GET["id"];
 
 	$refquery="
-            SELECT
-		invoices.id,
-                invoices.uuid,
-                if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
+        SELECT
+            invoices.id,
+            invoices.uuid,
+            if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
 	    FROM
-                invoices INNER JOIN clients ON invoices.clientid=clients.id
+            invoices INNER JOIN clients ON invoices.clientid=clients.uuid
 	    WHERE
-                invoices.id=".$refid;
-                
+            invoices.id=".$refid;
+
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
 

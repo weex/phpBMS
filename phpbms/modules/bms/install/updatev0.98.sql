@@ -351,6 +351,9 @@ INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtablei
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:b25f7c4f-678e-b2e7-21c0-9c28fa034df7', 'postingsessionid', 'sales orders', 'id', '307', '3', 1, NOW(), 1, NOW(), '0');
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:c003c109-b79b-eded-9acd-b251af8d92ec', 'postingsessionid', 'receipts', 'id', '307', '304', 1, NOW(), 1, NOW(), '0');
 --end relationships INSERT--
+--relationships UPDATE--
+UPDATE `relationships` SET `tofield`='uuid' WHERE `uuid`='rln:bbef27de-ade8-6f22-e87d-481614b0ecca';
+--end relationships UPDATE--
 --role UPDATE--
 UPDATE `roles` SET `uuid`='role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52' WHERE `id`='10';
 UPDATE `roles` SET `uuid`='role:de7e6679-8bb2-29ee-4883-2fcd756fb120' WHERE `id`='20';
@@ -375,7 +378,13 @@ INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displa
 --end smartsearches INSERT--
 --smartsearches UPDATE--
 UPDATE `smartsearches` SET `uuid`='smrt:5cf171f7-2284-1492-62bb-872bc222eaef' WHERE `id`='1';
-UPDATE `smartsearches` SET `uuid`='smrt:1b16f1e8-edf2-332e-e61b-3759f7020d41' WHERE `id`='3';
+UPDATE
+    `smartsearches`
+SET
+    `uuid`='smrt:1b16f1e8-edf2-332e-e61b-3759f7020d41',
+    `valuefield`='`clients`.`uuid`'
+WHERE
+    `id`='3';
 UPDATE `smartsearches` SET `uuid`='smrt:5634f7fb-a0c8-7e10-4c96-8bb043e7f478' WHERE `id`='4';
 UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WHERE `id`='6';
 UPDATE `smartsearches` SET `uuid`='smrt:a18ca9d4-58aa-7a47-faa7-1ad0ed5ba8c6' WHERE `id`='7';
@@ -411,7 +420,8 @@ UPDATE `tabledefs` SET
     `uuid`='tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883',
     `canpost`= '1',
     `hascustomfields` = '1',
-    `prefix` = 'sord'
+    `prefix` = 'sord',
+    `querytable` = '(((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`) INNER JOIN `invoicestatuses` ON `invoices`.`statusid`=`invoicestatuses`.`uuid`) LEFT JOIN `paymentmethods` ON `invoices`.`paymentmethodid` = `paymentmethods`.`uuid`)';
 WHERE
     `id`='3';
 UPDATE `tabledefs` SET

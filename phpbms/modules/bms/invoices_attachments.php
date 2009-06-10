@@ -78,7 +78,7 @@
 
 	$refquery="SELECT
 			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
+			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.uuid
 			   WHERE invoices.id=".$refid;
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);

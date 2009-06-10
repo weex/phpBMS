@@ -74,7 +74,7 @@ class generateUUIDS extends installUpdateBase{
         if(!$this->db->selectSchema())
             return $this->returnJSON(false, "Could not open database schema '".MYSQL_DATABASE."'");
 
-        //generate uuids for tables
+        //generate base uuids for tables
         $this->createUUIDs("tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb"); //Users
         $this->createUUIDs("tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9"); //Relationships
         $this->createUUIDs("tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3"); //Table Definitions
@@ -88,21 +88,36 @@ class generateUUIDS extends installUpdateBase{
         $this->createUUIDs("tbld:7e75af48-6f70-d157-f440-69a8e7f59d38"); //Tabs
         $this->createUUIDs("tbld:29925e0a-c825-0067-8882-db4b57866a96"); //Smart Searches
         $this->createUUIDs("tbld:83187e3d-101e-a8a5-037f-31e9800fed2d"); //Menu
-        $this->createUUIDs("tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e"); //tax
-        $this->createUUIDs("tbld:d6e4e1fb-4bfa-cb53-ab9c-1b3e7f907ae2"); //invoicestatuses
-        $this->createUUIDs("tbld:380d4efa-a825-f377-6fa1-a030b8c58ffe"); //payment methods
+
 
         //generate lists used elsewhere
         $this->moduleList= $this->generateUUIDList("modules");
 
-        $this->tabledefList = $this->generateUUIDList("tabledefs");
+        $bmsModulePresent = false;
+        if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList))
+            $bmsModulePresent = true;
 
         //BMS updates
-        if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList)){
+        if($bmsModulePresent){
 
+            $this->createUUIDs("tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e"); //tax
+            $this->createUUIDs("tbld:d6e4e1fb-4bfa-cb53-ab9c-1b3e7f907ae2"); //invoicestatuses
+            $this->createUUIDs("tbld:380d4efa-a825-f377-6fa1-a030b8c58ffe"); //payment methods
             $this->createUUIDs("tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083"); //clients
+            $this->createUUIDs("tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883"); //invoices
+            $this->createUUIDs("tbld:455b8839-162b-3fcb-64b6-eeb946f873e1"); //discounts
+            $this->createUUIDs("tbld:fa8a0ddc-87d3-a9e9-60b0-1bab374b2993"); //shippingmethods
+
+            $this->clientList = $this->generateUUIDList("clients");
+            $this->statusList = $this->generateUUIDList("invoicestatuses");
+            $this->discountList = $this->generateUUIDList("discounts");
+            $this->taxList = $this->generateUUIDList("tax");
+            $this->shippingList = $this->generateUUIDList("shippingmethods");
+            $this->paymentList = $this->generateUUIDList("paymentmethods");
 
         }//endif
+
+        $this->tabledefList = $this->generateUUIDList("tabledefs");
 
         $this->productcatList = $this->generateUUIDList("productcategories");
 
@@ -141,12 +156,24 @@ class generateUUIDS extends installUpdateBase{
         $this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         $this->updateFields("tabs", array("roleid"=>$this->roleList));
         $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
-        $this->updateFields("products", array("categoryid"=>$this->productcatList));
+
         //custom stuff
         $this->updateMenuLinks();
 
         //BMS updates
-        if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList)){
+        if($bmsModulePresent){
+
+            $this->updateFields("products", array("categoryid"=>$this->productcatList));
+            $invoiceArray = array(
+                                  "clientid"        =>$this->clientList,
+                                  "stausid"         =>$this->statusList,
+                                  "assignedtoid"    =>$this->userList,
+                                  "discountid"      =>$this->discountList,
+                                  "taxareaid"       =>$this->taxList,
+                                  "shippingmethodid"=>$this->shippingList,
+                                  "paymentmethodid" =>$this->paymentList
+                                  );
+            $this->updateFields("invoices", $invoiceArray);
 
         }//endif
 
