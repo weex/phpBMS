@@ -39,8 +39,8 @@
 if(class_exists("addresses")){
 	class addresstorecord extends addresses{
 
-		var $availableTabledefIDs = array();
-		var $availableTabledefNames = array();
+		var $_availableTabledefUUIDs = NULL;
+		var $_availableTabledefNames = NULL;
 
 		function createAddressToRecord($variables, $addressid, $createdby = NULL){
 			// This functions adds the addresstorecord record tying the client and address
@@ -63,11 +63,11 @@ if(class_exists("addresses")){
 					modifiedby,
 					modifieddate
 				) VALUES (
-					".((int) $variables["tabledefid"]).",
-					".((int) $variables["recordid"]).",
+					'".mysql_real_escape_string($variables["tabledefid"])."',
+					'".mysql_real_escape_string($variables["recordid"])."',
 					".((int) $variables["defaultshipto"]).",
 					".((int) $variables["primary"]).",
-					".((int) $addressid).",
+					'".mysql_real_escape_string($addressid)."',
 					".((int) $createdby).",
 					NOW(),
 					".((int) $createdby).",
@@ -100,11 +100,30 @@ if(class_exists("addresses")){
 			if($this->db->numRows($queryresult)) {
 
 				$therecord = $this->db->fetchArray($queryresult);
-				$addressrecord = parent::getRecord($therecord["addressid"]);
 
-				unset($addressrecord["id"], $addressrecord["createdby"], $addressrecord["creationdate"], $addressrecord["modifiedby"], $addressrecord["modifieddate"]);
+				$querystatement = "
+					SELECT
+						`id` AS `addressid`
+					FROM
+						`addresses`
+					WHERE
+						`uuid`='".mysql_real_escape_string($therecord["addressid"])."'
+				";
 
-				$therecord = array_merge($addressrecord, $therecord);
+				$queryresult = $this->db->query($querystatement);
+				if($this->db->numRows($queryresult)){
+
+					$addressID = $this->db->fetchArray($queryresult);
+					$therecord["addressid"] = $addressID["addressid"];
+
+					$addressrecord = parent::getRecord($therecord["addressid"]);
+
+					unset($addressrecord["id"], $addressrecord["createdby"], $addressrecord["creationdate"], $addressrecord["modifiedby"], $addressrecord["modifieddate"]);
+
+					$therecord = array_merge($addressrecord, $therecord);
+
+				}else
+					$therecord = $this->getDefaults();
 
 			} else
 				$therecord = $this->getDefaults();
@@ -131,12 +150,12 @@ if(class_exists("addresses")){
 
 		function populateTabledefArrays(){
 
-			$this->availableTabledefIDs = array();
-			$this->availableTabledefNames = array();
+			$this->_availableTabledefUUIDs = array();
+			$this->_availableTabledefNames = array();
 
 			$querystatement = "
 				SELECT
-					`id`,
+					`uuid`,
 					`maintable`
 				FROM
 					`tabledefs`;
@@ -146,12 +165,9 @@ if(class_exists("addresses")){
 
 			if($this->db->numRows($queryresult)){
 				while($therecord = $this->db->fetchArray($queryresult)){
-					$this->availableTabledefIDs[] = $therecord["id"];
-					$this->availableTabledefNames[$therecord["id"]] = $therecord["maintable"];
+					$this->_availableTabledefUUIDs[] = $therecord["uuid"];
+					$this->_availableTabledefNames[$therecord["uuid"]] = $therecord["maintable"];
 				}//end while
-			}else{
-				$this->availableTabledefIDs[] = "none";
-				$this->availableTabledefNames[] = "none";
 			}//end if
 
 		}//end method --populateTabledefArray--
@@ -159,8 +175,8 @@ if(class_exists("addresses")){
 
 		function checkRecordID($recordid, $tablename){
 
-			$recordid = ((int) $recordid);
-			$tablename = addslashes($tablename);
+			$recordid = mysql_real_escape_string($recordid);
+			$tablename = mysql_real_escape_string($tablename);
 
 			$querystatement = "
 				SELECT
@@ -168,7 +184,7 @@ if(class_exists("addresses")){
 				FROM
 					`".$tablename."`
 				WHERE
-					`id` = '".$recordid."';
+					`uuid` = '".$recordid."';
 				";
 
 			$queryresult = $this->db->query($querystatement);
@@ -183,35 +199,25 @@ if(class_exists("addresses")){
 			//Check tabledefs
 			if(isset($variables["tabledefid"])){
 
-				if(is_numeric($variables["tabledefid"])){
+				if($this->_availableTabledefUUIDs === NULL || $this->_availableTabledefNames === NULL)
+					$this->populateTabledefArrays();
 
-					if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
-						$this->populateTabledefArrays();
+				if(in_array((string)$variables["tabledefid"], $this->_availableTabledefUUIDs)){
 
-					if(in_array($variables["tabledefid"], $this->availableTabledefIDs)){
+					//check recordid
+					if(isset($variables["recordid"])){
 
-						//check recordid
-						if(isset($variables["recordid"])){
+						if($this->_availableTabledefUUIDs === NULL || $this->_availableTabledefNames === NULL)
+							$this->populateTabledefArrays();
 
-							if((int) $variables["recordid"] > 0){
-
-								if(!count($this->availableTabledefIDs) || !count($this->availableTabledefNames))
-									$this->populateTabledefArrays();
-
-								if(!$this->checkRecordID($variables["recordid"], $this->availableTabledefNames[$variables["tabledefid"]]))
-									$this->verifyErrors[] = "The `recordid` field does match an id number in ".$this->availableTabledefNames[$variables["tabledefid"]].".";
-
-							}else
-								$this->verifyErrors[] = "The `recordid` field must be a positive number.";
-
-						}else
-							$this->verifyErrors[] = "The `recordid` field must be set.";
+						if(!$this->checkRecordID((string)$variables["recordid"], $this->_availableTabledefNames[$variables["tabledefid"]]))
+								$this->verifyErrors[] = "The `recordid` field does match an uuid  in ".$this->_availableTabledefNames[$variables["tabledefid"]].".";
 
 					}else
-						$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition id number.";
+						$this->verifyErrors[] = "The `recordid` field must be set.";
 
 				}else
-					$this->verifyErrors[] = "The `tabledefid` field must be numeric.";
+					$this->verifyErrors[] = "The `tabledefid` field does not give an existing/acceptable table definition uuids.";
 
 			}else
 				$this->verifyErrors[] = "The `tabledefid` field must be set.";
@@ -222,6 +228,8 @@ if(class_exists("addresses")){
 
 
 		function prepareVariables($variables){
+
+			$variables = parent::prepareVariables($variables);
 
 			if(!isset($variables['primary']))
 				$variables['primary'] = 0;
@@ -239,14 +247,12 @@ if(class_exists("addresses")){
 
 				}//end if
 
-			return $variables;
+			return parent::prepareVariables($variables);
 
 		}//end function
 
 
 		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
-
-			//$variables = $this->prepareVariables($variables);
 
 			if($variables["existingaddressid"]){
 
@@ -259,7 +265,10 @@ if(class_exists("addresses")){
 				$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 				//create the addresstorecord
-				$newAtrID = $this->createAddressToRecord($variables, $newid, $createdby);
+				if(!isset($variables["uuid"]))
+					$variables["uuid"] = "";
+
+				$newAtrID = $this->createAddressToRecord($variables, $variables["uuid"], $createdby);
 
 			}//endif - existingaddressid
 

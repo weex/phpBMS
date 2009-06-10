@@ -625,12 +625,13 @@ class inputDataTableList extends inputField{
 	*/
 
 	function inputDataTableList($db, $id, $value, $table, $valuefield, $displayfield,
-								$whereclause = "", $orderclause = "", $hasblank = true, $displayName=NULL, $displayLabel = true){
+								$whereclause = "", $orderclause = "", $hasblank = true, $displayName=NULL, $displayLabel = true, $blankValue = 0){
 
 		parent::inputField($id, $value, $displayName, false, NULL, NULL, NULL, $displayLabel);
 
 		$this->hasblank = $hasblank;
 		$this->db = $db;
+        $this->blankValue = $blankValue;
 
 		$querystatement = "SELECT (".$valuefield.") AS thevalue, (".$displayfield.") as thedisplay FROM (".$table.")";
 		if($whereclause)
@@ -651,7 +652,7 @@ class inputDataTableList extends inputField{
 			$this->displayAttributes();
 		?> ><?php
 			if($this->hasblank){
-				?><option value="0" <?php
+				?><option value="<?php echo($this->blankValue); ?>" <?php
 				if ($this->value==0 || $this->value==""){
 					echo " selected=\"selected\" ";
 				}//end if --value--

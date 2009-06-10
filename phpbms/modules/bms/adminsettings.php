@@ -42,20 +42,20 @@
 			$theinput = new inputField("shipping_postalcode",$therecord["shipping_postalcode"],"shipping orginiation zip/postal code",false,NULL,32,128);
 			$fields[] = $theinput;
 
-			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","id","name",
-									"inactive=0 AND (`type` != 'receivable' OR `type` IS NULL)", "priority,name", true, "default payment method");
+			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","uuid","name",
+									"inactive=0 AND (`type` != 'receivable' OR `type` IS NULL)", "priority,name", true, "default payment method", true, "");
 			$fields[] = $theinput;
 
-			$theinput = new inputDataTableList($db, "default_shipping",$therecord["default_shipping"],"shippingmethods","id","name",
-									"`inactive`=0", "priority,name", true, "default shipping method");
+			$theinput = new inputDataTableList($db, "default_shipping",$therecord["default_shipping"],"shippingmethods","uuid","name",
+									"inactive=0", "priority,name", true, "default shipping method", true, "");
 			$fields[] = $theinput;
 
-			$theinput = new inputDataTableList($db, "default_discount",$therecord["default_discount"],"discounts","id","name",
-									"inactive=0", "name", true, "default discount");
+			$theinput = new inputDataTableList($db, "default_discount",$therecord["default_discount"],"discounts","uuid","name",
+									"inactive=0", "name", true, "default discount", true, "");
 			$fields[] = $theinput;
 
-			$theinput = new inputDataTableList($db, "default_taxarea",$therecord["default_taxarea"],"tax","id","name",
-									"inactive=0", "name", true, "default tax area");
+			$theinput = new inputDataTableList($db, "default_taxarea",$therecord["default_taxarea"],"tax","uuid","name",
+									"inactive=0", "name", true, "default tax area", true, "");
 			$fields[] = $theinput;
 
 			$theinput = new inputBasicList("default_clienttype",$therecord["default_clienttype"],array("prospect"=>"prospect","client"=>"client"), "default type");

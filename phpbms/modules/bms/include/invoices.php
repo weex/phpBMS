@@ -39,7 +39,7 @@
 if(class_exists("phpbmsTable")){
 	class invoices extends phpbmsTable{
 
-		var $availableClientIDs = array();
+		var $_availableClientUUIDs = NULL;
 		var $_availableUserUUIDs = NULL;
 		var $_availableStatusUUIDs = NULL;
 
@@ -531,49 +531,20 @@ if(class_exists("phpbmsTable")){
 			return $therecord;
 		}
 
-		/*------[verification related functions]---------------------------*/
-
-		function populateClientArray(){
-
-			$this->availableClientIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`clients`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableClientIDs[] = $therecord["id"];
-			}else{
-				$this->availableClientIDs[] = "none";
-			}//end if
-
-		}//end method --populateClientArray--
-
 
 		function verifyVariables($variables){
 
 			//must have a client
-			//if(isset($variables["clientid"])){
-			//
-			//	//must be numeric and positive
-			//	if(!$variables["clientid"] || (int)$variables["clientid"] > 0){
-			//
-			//		if(!count($this->availableClientIDs))
-			//			$this->populateClientArray();
-			//
-			//		if(!in_array(((int)$variables["clientid"]),$this->availableClientIDs))
-			//			$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
-			//	}else
-			//		$this->verifyErrors[] = "The `clientid` field must be a non-negative number or equivalent to 0.";
-			//
-			//}else
-			//	$this->verifyErrors[] = "The `clientid` field must be set.";
+			if(isset($variables["clientid"])){
+
+				if($this->_availableClientUUIDs === NULL)
+					$this->_availableClientUUIDs = $this->_loadUUIDList("clients");
+
+				if(!in_array(((string)$variables["clientid"]),$this->_availableClientUUIDs))
+					$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
+
+			}else
+				$this->verifyErrors[] = "The `clientid` field must be set.";
 
 			//table default (NULL) is not enough
 			if(isset($variables["type"])){

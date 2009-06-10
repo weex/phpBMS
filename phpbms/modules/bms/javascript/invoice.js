@@ -361,7 +361,7 @@ client = {
 
 			var prop, tempitem;
 			for(prop in clientRecord){
-
+				console.log(prop);
 				switch(prop){
 					case "billingaddress":
 					case "shiptoaddress":

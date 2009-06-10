@@ -107,20 +107,20 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "paymentmethodid",$therecord["paymentmethodid"],"paymentmethods","id","name",
-								"inactive=0", "priority,name", true, "payment method");
+		$theinput = new inputDataTableList($db, "paymentmethodid",$therecord["paymentmethodid"],"paymentmethods","uuid","name",
+								"inactive=0", "priority,name", true, "payment method", true, "");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "shippingmethodid",$therecord["shippingmethodid"],"shippingmethods","id","name",
-								"inactive=0", "priority,name", true, "shipping method");
+		$theinput = new inputDataTableList($db, "shippingmethodid",$therecord["shippingmethodid"],"shippingmethods","uuid","name",
+								"inactive=0", "priority,name", true, "shipping method", true, "");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "discountid",$therecord["discountid"],"discounts","id","name",
-								"inactive=0", "name", true, "discount");
+		$theinput = new inputDataTableList($db, "discountid",$therecord["discountid"],"discounts","uuid","name",
+								"inactive=0", "name", true, "discount", true, "");
 		$theform->addField($theinput);
 
-		$theinput = new inputDataTableList($db, "taxareaid",$therecord["taxareaid"],"tax","id","name",
-								"inactive=0", "name", true, "tax area");
+		$theinput = new inputDataTableList($db, "taxareaid",$therecord["taxareaid"],"tax","uuid","name",
+								"inactive=0", "name", true, "tax area", true, "");
 		$theform->addField($theinput);
 
 		$theinput = new inputField("workphone",$therecord["workphone"],"work phone",false,"phone",25,32);

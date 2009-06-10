@@ -44,43 +44,43 @@ include("../../include/session.php");
 class clientInfo{
 
 	function clientInfo($db){
-		
+
 		$this->db = $db;
-		
+
 	}//end method - init
 
 
-	function get($id){
-	
-		$id = ((int) $id);
-		
-		$return = $this->_getClient($id);
-		
-		$return["billingaddress"] = $this->_getAddress($id, "primary");
-		
-		$return["shiptoaddress"] = $this->_getAddress($id, "defaultshipto");
-		
+	function get($uuid){
+
+		$uuid = mysql_real_escape_string($uuid);
+
+		$return = $this->_getClient($uuid);
+
+		$return["billingaddress"] = $this->_getAddress($uuid, "primary");
+
+		$return["shiptoaddress"] = $this->_getAddress($uuid, "defaultshipto");
+
 		if($return["hascredit"])
-			$return["creditleft"] = $this->_getCreditLeft($id, $return["creditlimit"]);
+			$return["creditleft"] = $this->_getCreditLeft($uuid, $return["creditlimit"]);
 
 		return $return;
-		
+
 	}//end method - get
 
 
 
-	function _getClient($id){
-	
+	function _getClient($uuid){
+
 		$returnArray = array(
 			"hascredit" => 0,
 			"creditlimit" => 0,
 			"creditleft" => 0,
 			"type" => "client",
 
-			"paymentmethodid" => 0,
-			"shippingmethodid" => 0,
-			"discountid" => 0,
-			"taxareaid" => 0
+			"paymentmethodid" => "",
+			"shippingmethodid" => "",
+			"discountid" => "",
+			"taxareaid" => ""
 		);
 
 		$querystatement = "
@@ -89,23 +89,24 @@ class clientInfo{
 			FROM
 				clients
 			WHERE
-				id = ".$id;
-				
+				`uuid` = '".$uuid."'
+		";
+
 		$therecord = $this->db->fetchArray($this->db->query($querystatement));
-		
-		if($therecord){		
+
+		if($therecord){
 			foreach($returnArray as $key =>$value)
 				if($key != "creditleft")
 					$returnArray[$key] = $therecord[$key];
 		}//endif
-	
+
 		return $returnArray;
-	
+
 	}//end method - _getClient
 
 
 	function _getAddress($clientID, $type){
-	
+
 		$returnArray = array(
 			"id" => "",
 			"address1" => "",
@@ -116,7 +117,7 @@ class clientInfo{
 			"country" => "",
 			"shiptoname" => "",
 		);
-		
+
 		$querystatement = "
 			SELECT
 				addresses.*
@@ -124,74 +125,74 @@ class clientInfo{
 				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.id
 			WHERE
 				addresstorecord.tabledefid = 2
-				AND addresstorecord.recordid = ".$clientID."
+				AND addresstorecord.recordid = '".$clientID."'
 				AND addresstorecord.".$type." = 1";
 
 		$therecord = $this->db->fetchArray($this->db->query($querystatement));
-		
+
 		if($therecord)
 			foreach($returnArray as $key =>$value)
 				$returnArray[$key] = $therecord[$key];
-										
+
 		return $returnArray;
-	
+
 	}//end method - _getAddress
 
 
 	function _getCreditLeft($clientID, $creditlimit){
-	
+
 		$querystatement = "
-			SELECT 
-				SUM(`amount` - `paid`) AS amtopen 
-			FROM 
-				aritems 
-			WHERE 
-				`status` = 'open' 
-				 AND clientid=".$clientID."
+			SELECT
+				SUM(`amount` - `paid`) AS amtopen
+			FROM
+				aritems
+			WHERE
+				`status` = 'open'
+				 AND clientid='".$clientID."'
 				 AND posted=1";
-				
+
 		$arrecord = $this->db->fetchArray($this->db->query($querystatement));
-		
-		return  ((real) $creditlimit) - ((real) $arrecord["amtopen"]);		
-	
+
+		return  ((real) $creditlimit) - ((real) $arrecord["amtopen"]);
+
 	}//end method - _getCreditLeft
 
-		
+
 
 	function display($record){
-	
+
 		$output = "{";
 
 		foreach($record as $key=>$value){
-		
+
 			if(!is_array($value)){
-				
+
 				$output.= $key.":'".str_replace("'", "\'", formatVariable($value))."',";
-			
+
 			} else {
-			
+
 				$output .= $key.":{";
-				
+
 				foreach($value as $skey => $svalue)
 					$output.= $skey.":'".str_replace("'", "\'", formatVariable($svalue))."',";
-						
+
 				$output = substr($output, 0, strlen($output)-1);
-			
-				$output .= "},";		
-				
+
+				$output .= "},";
+
 			}//endif is_array
-		
+
 		}//endforeach - record
 
 		$output = substr($output, 0, strlen($output)-1);
 
-		$output .= "}";		
+		$output .= "}";
 
 		header("Content-type: text/plain");
 		echo $output;
 
 	}//end method - display
-	
+
 }//end class
 
 
@@ -202,8 +203,8 @@ if(isset($_GET["id"])){
 	$clientInfo = new clientInfo($db);
 
 	$clientRecord = $clientInfo->get($_GET["id"]);
-	
+
 	$clientInfo->display($clientRecord);
-	
+
 }//end if
 ?>

@@ -40,12 +40,11 @@
 if(class_exists("phpbmsTable")){
 	class clients extends phpbmsTable{
 
-		var $availablePaymentMethodIDs = array();
-		var $availableShippingMethodIDs = array();
-		var $availableDiscountIDs = array();
-		var $availableTaxIDs = array();
-		var $availableUserIDs = array();
-		var $verifyErrors = array();
+		var $_availablePaymentMethodUUIDs = NULL;
+		var $_availableShippingMethodUUIDs = NULL;
+		var $_availableDiscountUUIDs = NULL;
+		var $_availableTaxUUIDs = NULL;
+		var $_availableUserUUIDs = NULL;
 
 		function checkForInvoices($id){
 			$querystatement="SELECT id FROM invoices WHERE clientid=".((int) $id);
@@ -115,9 +114,10 @@ if(class_exists("phpbmsTable")){
 					FROM
 						addresstorecord
 					WHERE
-						tabledefid = 2
-						AND `primary` = 1
-						AND recordid = ".$id;
+						`tabledefid` = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+						AND `primary` = '1'
+						AND `recordid` = '".$therecord["uuid"]."'
+				";
 
 				$queryresult = $this->db->query($querystatement);
 
@@ -143,111 +143,6 @@ if(class_exists("phpbmsTable")){
 			return $therecord;
 
 		}//end function - getRecord
-
-
-		function populatePaymentMethodArray(){
-
-			$this->availablePaymentMethodIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`paymentmethods`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availablePaymentMethodIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availablePaymentMethodIDs[] = $therecord["id"];
-
-		}//end method --populatePaymentMethodArray--
-
-
-		function populateShippingMethodArray(){
-
-			$this->availableShippingMethodIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`shippingmethods`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableShippingMethodIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableShippingMethodIDs[] = $therecord["id"];
-
-		}//end method --populateShippingMethodArray--
-
-
-		function populateDiscountArray(){
-
-			$this->availableDiscountIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`discounts`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableDiscountIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableDiscountIDs[] = $therecord["id"];
-
-		}//end method  --populateDiscountArray--
-
-
-		function populateTaxArray(){
-
-			$this->availableTaxIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`tax`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableTaxIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableTaxIDs[] = $therecord["id"];
-
-		}//end method  --populateTaxArray--
-
-
-		function populateUserArray(){
-
-			$this->availableUserIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`users`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$this->availableUserIDs[] = 0;//for none
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availableUserIDs[] = $therecord["id"];
-
-		}//end method  --populateUserArray--
 
 
 		function verifyVariables($variables){
@@ -344,61 +239,49 @@ if(class_exists("phpbmsTable")){
 			//Payement Method
 			if(isset($variables["paymentmethodid"])){
 
-				if( !$variables["paymentmethodid"] || ((int)$variables["paymentmethodid"]) > 0 ){
+				if($this->_availablePaymentMethodUUIDs === NULL){
+					$this->_availablePaymentMethodUUIDs = $this->_loadUUIDList("paymentmethods");
+					$this->_availablePaymentMethodUUIDs[] = ""; //for none
+				}
 
-					if(!count($this->availablePaymentMethodIDs))
-						$this->populatePaymentMethodArray();
-
-					if(!in_array($variables["paymentmethodid"], $this->availablePaymentMethodIDs))
-						$this->verifyErrors[] = "The `paymentmethodid` field does not give an existing/acceptable payment method id number.";
-
-				}else
-					$this->verifyErrors[] = "The `addroleid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array((string)$variables["paymentmethodid"], $this->_availablePaymentMethodUUIDs))
+					$this->verifyErrors[] = "The `paymentmethodid` field does not give an existing/acceptable payment method uuid.";
 
 			}//end if
 
 			if(isset($variables["shippingmethodid"])){
 
-				if( !$variables["shippingmethodid"] || ((int)$variables["shippingmethodid"]) > 0){
+				if($this->_availableShippingMethodUUIDs === NULL){
+					$this->_availableShippingMethodUUIDs = $this->_loadUUIDList("shippingmethods");
+					$this->_availableShippingMethodUUIDs[] = ""; // for none
+				}//end if
 
-					if(!count($this->availableShippingMethodIDs))
-						$this->populateShippingMethodArray();
-
-					if(!in_array($variables["shippingmethodid"], $this->availableShippingMethodIDs))
-						$this->verifyErrors[] = "The `shippingmethodid` field does not give an existing/acceptable shipping method id number.";
-
-				}else
-					$this->verifyErrors[] = "The `shippingmethodid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array((string)$variables["shippingmethodid"], $this->_availableShippingMethodUUIDs))
+					$this->verifyErrors[] = "The `shippingmethodid` field does not give an existing/acceptable shipping method uuid.";
 
 			}//end if
 
 			if(isset($variables["discountid"])){
 
-				if( !$variables["discountid"] || ((int)$variables["discountid"]) > 0){
+				if($this->_availableDiscountUUIDs === NULL){
+					$this->_availableDiscountUUIDs = $this->_loadUUIDList("discounts");
+					$this->_availableDiscountUUIDs[] = ""; //for none
+				}//end if
 
-					if(!count($this->availableDiscountIDs))
-						$this->populateDiscountArray();
-
-					if(!in_array($variables["discountid"], $this->availableDiscountIDs))
-						$this->verifyErrors[] = "The `discount` field does not give an existing/acceptable discount id number.";
-
-				}else
-					$this->verifyErrors[] = "The `discountid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array((string)$variables["discountid"], $this->_availableDiscountUUIDs))
+					$this->verifyErrors[] = "The `discount` field does not give an existing/acceptable discount uuid.";
 
 			}//end if
 
 			if(isset($variables["taxareaid"])){
 
-				if( !$variables["taxareaid"] || ((int)$variables["taxareaid"]) > 0){
+				if($this->_availableTaxUUIDs === NULL){
+					$this->_availableTaxUUIDs = $this->_loadUUIDList("tax");
+					$this->_availableTaxUUIDs[] = ""; //for none
+				}//end if
 
-					if(!count($this->availableTaxIDs))
-						$this->populateTaxArray();
-
-					if(!in_array($variables["taxareaid"], $this->availableTaxIDs))
-						$this->verifyErrors[] = "The `taxareaid` field does not give an existing/acceptable tax id number.";
-
-				}else
-					$this->verifyErrors[] = "The `taxareaid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array((string)$variables["taxareaid"], $this->_availableTaxUUIDs))
+					$this->verifyErrors[] = "The `taxareaid` field does not give an existing/acceptable tax uuid.";
 
 			}//end if
 
@@ -407,16 +290,13 @@ if(class_exists("phpbmsTable")){
 			//check sales manager id
 			if(isset($variables["salesmanagerid"])){
 
-				if( !$variables["salesmanagerid"] || ((int)$variables["salesmanagerid"]) > 0 ){
+				if($this->_availableUserUUIDs === NULL){
+					$this->_availableUserUUIDs = $this->_loadUUIDList("users");
+					$this->_availableUserUUIDs[] = "";
+				}//end if
 
-					if(!count($this->availableUserIDs))
-						$this->populateUserArray();
-
-					if(!in_array($variables["salesmanagerid"], $this->availableUserIDs))
-						$this->verifyErrors[] = "The `salesmanagerid` field does not give an existing/acceptable user id number.";
-
-				}else
-					$this->verifyErrors[] = "The `salesmanagerid` field must be a non-negative number or equivalent to 0.";
+				if(!in_array((string)$variables["salesmanagerid"], $this->_availableUserUUIDs))
+					$this->verifyErrors[] = "The `salesmanagerid` field does not give an existing/acceptable user uuid.";
 
 			}//end if
 
@@ -458,10 +338,10 @@ if(class_exists("phpbmsTable")){
 
 			$thereturn = parent::updateRecord($variables, $modifiedby);
 
-			$variables["recordid"] = $variables["id"];//here to pass addresstorecord validation
-			$variables["tabledefid"] = 2;//here to pass addresstorecord validation
+			$variables["recordid"] = $variables["uuid"];//here to pass addresstorecord validation
+			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";//here to pass addresstorecord validation
 			//need to update the address
-			$variables["id"] = $variables["addressid"];
+			$variables["uuid"] = $variables["addressid"];
 			// don't want to blank out extra address information
 			// if it was added later.
 			unset($this->address->fields["email"]);
@@ -474,7 +354,7 @@ if(class_exists("phpbmsTable")){
 			$variables = $this->address->prepareVariables($variables);
 			$errorArray = $this->address->verifyVariables($variables);
 			if(!count($errorArray)){
-				$this->address->updateRecord($variables, $modifiedby);
+				$this->address->updateRecord($variables, $modifiedby, true);
 			}else{
 				foreach($errorArray as $error)
 					$logError = new appError(-910, $error, "Address Verification Error");
@@ -501,8 +381,9 @@ if(class_exists("phpbmsTable")){
 			unset($this->address->fields["notes"]);
 			unset($variables["id"]);// This breaks the import otherwise...needs further testing and possibly a better solution
 			$variables["title"] = "Main Addresss";
-			$variables["tabledefid"] = 2;
-			$variables["recordid"] = $newid;
+			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
+			$variables["recordid"] = $variables["uuid"];
+			$variables["uuid"] = "";
 			$variables["defaultshipto"] = 1;
 			$variables["primary"] = 1;
 
