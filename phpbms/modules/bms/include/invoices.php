@@ -43,9 +43,9 @@ if(class_exists("phpbmsTable")){
 		var $_availableUserUUIDs = NULL;
 		var $_availableStatusUUIDs = NULL;
 
-		function showClientType($id){
+		function showClientType($uuid){
 
-			if(((int) $id) != 0){
+			if($uuid){
 
 				$querystatement="
 					SELECT
@@ -53,7 +53,8 @@ if(class_exists("phpbmsTable")){
 					FROM
 						clients
 					WHERE
-						id=".((int) $id);
+						`uuid`='".mysql_real_escape_string($uuid)."'
+				";
 
 				$therecord = $this->db->fetchArray($this->db->query($querystatement));
 
@@ -63,7 +64,7 @@ if(class_exists("phpbmsTable")){
 
 			}//endif id
 
-			?><input type="hidden" id="clienttype" name="clienttype"  <?php if($id) echo 'value="'.$therecord["type"].'"'?> /><?php
+			?><input type="hidden" id="clienttype" name="clienttype"  <?php echo 'value="'.$therecord["type"].'"'?> /><?php
 
 		}//end method
 
@@ -454,7 +455,8 @@ if(class_exists("phpbmsTable")){
 					type='client',
 					becameclient = NOW()
 				WHERE
-					id=".$clientid;
+					`uuid`='".$clientid."'
+			";
 
 			$this->db->query($updatestatement);
 
@@ -510,7 +512,8 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["amountdue"] = $therecord["totalti"] - $therecord["amountpaid"];
 
-			$querystatement = "SELECT hascredit, creditlimit FROM clients WHERE id=".$therecord["clientid"];
+			$querystatement = "SELECT hascredit, creditlimit FROM clients WHERE `uuid`='".$therecord["clientid"]."'";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$therecord = array_merge($this->db->fetchArray($queryresult), $therecord);
@@ -556,21 +559,21 @@ if(class_exists("phpbmsTable")){
 		function verifyVariables($variables){
 
 			//must have a client
-			if(isset($variables["clientid"])){
-
-				//must be numeric and positive
-				if(!$variables["clientid"] || (int)$variables["clientid"] > 0){
-
-					if(!count($this->availableClientIDs))
-						$this->populateClientArray();
-
-					if(!in_array(((int)$variables["clientid"]),$this->availableClientIDs))
-						$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
-				}else
-					$this->verifyErrors[] = "The `clientid` field must be a non-negative number or equivalent to 0.";
-
-			}else
-				$this->verifyErrors[] = "The `clientid` field must be set.";
+			//if(isset($variables["clientid"])){
+			//
+			//	//must be numeric and positive
+			//	if(!$variables["clientid"] || (int)$variables["clientid"] > 0){
+			//
+			//		if(!count($this->availableClientIDs))
+			//			$this->populateClientArray();
+			//
+			//		if(!in_array(((int)$variables["clientid"]),$this->availableClientIDs))
+			//			$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
+			//	}else
+			//		$this->verifyErrors[] = "The `clientid` field must be a non-negative number or equivalent to 0.";
+			//
+			//}else
+			//	$this->verifyErrors[] = "The `clientid` field must be set.";
 
 			//table default (NULL) is not enough
 			if(isset($variables["type"])){

@@ -47,7 +47,7 @@
 			IF(`clients`.`lastname`!='',concat(`clients`.`lastname`,', ',`clients`.`firstname`,IF(`clients`.`company`!='',concat(' (',`clients`.`company`,')'),'')),`clients`.`company`) AS `name`,
 			`invoices`.`type`
 		FROM
-			`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`id`
+			`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`
 		WHERE
 			`invoices`.`id`='".$refid."'
 	";
