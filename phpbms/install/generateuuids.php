@@ -106,20 +106,25 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083"); //clients
             $this->createUUIDs("tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883"); //invoices
             $this->createUUIDs("tbld:455b8839-162b-3fcb-64b6-eeb946f873e1"); //discounts
-            $this->createUUIDs("tbld:fa8a0ddc-87d3-a9e9-60b0-1bab374b2993"); //shippingmethods
+            $this->createUUIDs("tbld:fa8a0ddc-87d3-a9e9-60b0-1bab374b2993"); //shipping methods
+            $this->createUUIDs("tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34"); //products
+            $this->createUUIDs("tbld:3342a3d4-c6a2-3a38-6576-419299859561"); //product categories
+            $this->createUUIDs("tbld:27b99bda-7bec-b152-8397-a3b09c74cb23"); //addresses
 
+            $this->productsList = $this->generateUUIDList("products");
+            $this->productcatList = $this->generateUUIDList("productcategories");
             $this->clientList = $this->generateUUIDList("clients");
             $this->statusList = $this->generateUUIDList("invoicestatuses");
             $this->discountList = $this->generateUUIDList("discounts");
             $this->taxList = $this->generateUUIDList("tax");
             $this->shippingList = $this->generateUUIDList("shippingmethods");
             $this->paymentList = $this->generateUUIDList("paymentmethods");
+            $this->invoiceList = $this->generateUUIDList("invoices");
+            $this->invoiceStatusList = $this->generateUUIDList("invoicestatuses");
 
         }//endif
 
         $this->tabledefList = $this->generateUUIDList("tabledefs");
-
-        $this->productcatList = $this->generateUUIDList("productcategories");
 
         $this->userList = $this->generateUUIDList("users");
         $this->userList[0] ="";
@@ -129,8 +134,8 @@ class generateUUIDS extends installUpdateBase{
         $this->roleList[0] = "";
 
         $this->tabledefList = $this->generateUUIDList("tabledefs");
-        //
         $this->moduleList= $this->generateUUIDList("modules");
+        $this->fileList= $this->generateUUIDList("files");
 
         $menuList = $this->generateUUIDList("menu");
         $menuList[0] = "";
@@ -152,6 +157,7 @@ class generateUUIDS extends installUpdateBase{
         $this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
 
         $this->updateFields("files", array("roleid"=>$this->roleList));
+        $this->updateFields("attachments", array("fileid"=>$this->fileList));
         $this->updateFields("menu", array("parentid"=>$menuList, "roleid"=>$this->roleList));
         $this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         $this->updateFields("tabs", array("roleid"=>$this->roleList));
@@ -164,6 +170,7 @@ class generateUUIDS extends installUpdateBase{
         if($bmsModulePresent){
 
             $this->updateFields("products", array("categoryid"=>$this->productcatList));
+
             $invoiceArray = array(
                                   "clientid"        =>$this->clientList,
                                   "stausid"         =>$this->statusList,
@@ -174,6 +181,13 @@ class generateUUIDS extends installUpdateBase{
                                   "paymentmethodid" =>$this->paymentList
                                   );
             $this->updateFields("invoices", $invoiceArray);
+
+            $this->updateFields("invoicestatuses", array("defaultassignedtoid"=>$this->userList));
+            $this->updateFields("invoicestatushistory", array("invoiceid"=>$this->invoiceList, "invoicestatusid"=>$this->invoiceStatsList, "assignedtoid"=>$this->userList));
+
+            $this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
+
+            $this->updateBMSSettings();
 
         }//endif
 
@@ -186,7 +200,8 @@ class generateUUIDS extends installUpdateBase{
         //
         // ======
         // This stuff probably won't be needed as they will be done during the update
-        //$this->updateFields("widgets", array("moduleid"=>$this->moduleList, "roleid"=>$this->roleList));
+        $this->updateVariableUUIDs("notes", "attachedtabledefid", "attachedid");
+        $this->updateVariableUUIDs("attachments", "tabledefid", "recordid");
 
         return $this->returnJSON(true, "UUID's Generated");
 
@@ -344,6 +359,127 @@ class generateUUIDS extends installUpdateBase{
 
 
     }//end function updateMenuLinks
+
+    /**
+     * Updates specific settings that reference ids
+     *
+     */
+    function updateBMSSettings(){
+
+        $querystatement = "
+            SELECT
+                *
+            FROM
+                `setings`
+            WHERE
+                `name` = 'default_payment'
+                OR `name` = 'default_shipping'
+                OR `name` = 'default_discount'
+                OR `name` = 'default_taxarea'";
+
+        $queryresult = $this->db->query($querystatement);
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $updatestatement = "
+                UPDATE
+                    `settings`
+                SET
+                    `value` = '";
+            if($therecord["value"] != 0)
+                switch($therecord["name"]){
+
+                    case "default_payment":
+                        $updatestatement.=$this->paymentList[$therecord["value"]];
+                        break;
+
+                    case "default_shipping":
+                        $updatestatement.=$this->shippingList[$therecord["value"]];
+                        break;
+
+                    case "default_discount":
+                        $updatestatement.=$this->discountList[$therecord["value"]];
+                        break;
+
+                    case "default_taxarea":
+                        $updatestatement.=$this->taxList[$therecord["value"]];
+                        break;
+
+                }//endswitch
+
+            $updatestatement .= "'
+                WHERE
+                    `name` ='".$therecord["name"]."'";
+
+            $this->db->query($updatestatement);
+
+        }//endwhile
+
+    }//end function updateBMSSettings
+
+    /**
+     * Updates records that have variable uuid record fields (such as notes attached to and addresses)
+     *
+     * @param string $tablename name of the table to update
+     * @param string $tabledeffield name of the field that holds the tabledef uuid reference
+     * @param string $recordfield name of the field that holds the record uuid
+     */
+    function updateVariableUUIDs($tablename, $tabledeffield, $recordfield){
+
+        $querystatement = "
+            SELECT
+                `".$tablename."`.`id`,
+                tabledefs.maintable,
+                `".$tablename."`.`".$tabledeffield."`,
+                `".$tablename."`.`".$recordfield."`
+            FROM
+                `".$tablename."` INNER JOIN tabledefs ON `".$tablename."`.`".$tabledeffield."` = tabledefs.uuid
+            ORDER BY
+                `".$tablename."`.`".$tabledeffield."`";
+
+        $queryresult = $this->db->query($querystatement);
+
+        $currentTabledefID = NULL;
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            if($currentTabledefID !== $therecord[$tabledeffield]){
+
+                switch($therecord[$tabledeffield]){
+
+                    case "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083": //clients:
+                        $theList = $this->clientList;
+                        break;
+
+                    case "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34": //products:
+                        $theList = $this->clientList;
+                        break;
+
+                    case "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883": //invoices:
+                        $theList = $this->invoiceList;
+                        break;
+
+                    //no list exists, so let's generate it
+                    default:
+                        $thelist = $this->generateUUIDList($therecord["maintable"]);
+
+                }//endswitch
+
+                $currentTabledefID = $therecord[$tabledeffield];
+
+            }//endif
+
+            $updatestatement = "
+                UPDATE
+                    `".$tablename."`
+                SET
+                    `".$recordfield."` = '".$theList[$therecord[$recordfield]]."'
+                WHERE
+                    `id` = ".$therecord["id"];
+
+        }//endwhile
+
+    }//end function updateVariableUUIDs
 
 
 }//end class updateAjax
