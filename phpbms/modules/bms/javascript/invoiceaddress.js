@@ -144,7 +144,7 @@ addresses = {
 
 			var clientid = getObjectFromID("clientid");
 
-			var theurl = "invoices_addresses_ajax.php?w=l&id="+clientid.value;
+			var theurl = "invoices_addresses_ajax.php?w=l&id="+encodeURIComponent(clientid.value);
 
 			loadXMLDoc(theurl,null,false);
 
@@ -191,7 +191,7 @@ addresses = {
 				if(atags[i].className == "LAPickAs LASel")
 					addressid = atags[i].id.substr(3);
 
-			var theurl = "invoices_addresses_ajax.php?w=s&id=" + addressid
+			var theurl = "invoices_addresses_ajax.php?w=s&id=" + encodeURIComponent(addressid);
 
 			loadXMLDoc(theurl,null,false);
 

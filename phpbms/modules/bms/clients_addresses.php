@@ -159,7 +159,7 @@
 		$phpbms->cssIncludes[] = "pages/search.css";
 		$phpbms->cssIncludes[] = "pages/bms/clientaddresses.css";
 		$phpbms->jsIncludes[] = "common/javascript/queryfunctions.js";
-		$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid='.$reftableid.'"+String.fromCharCode(38)+"refid='.$clientAddress->clientid.'";';
+		$phpbms->topJS[] = 'xtraParamaters="backurl="+encodeURIComponent("'.$backurl.'")+String.fromCharCode(38)+"tabledefid="+encodeURIComponent("'.$reftableid.'")+String.fromCharCode(38)+"refid="+encodeURIComponent("'.$clientAddress->clientid.'");';
 
 		include("header.php");
 
