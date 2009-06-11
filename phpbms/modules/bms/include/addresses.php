@@ -41,10 +41,10 @@ if(class_exists("phpbmsTable")){
 	class addresses extends phpbmsTable{
 
 		function getName($tabledefid, $recordid){
-
+			
 			switch($tabledefid){
 
-				case 2:
+				case "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083":
 				default:
 					$querystatement = "
 						SELECT
@@ -52,7 +52,8 @@ if(class_exists("phpbmsTable")){
 						FROM
 							clients
 						WHERE
-							id = ".$recordid;
+							`uuid` = '".$recordid."'
+					";
 					break;
 
 			}//endswitch tabledefid
@@ -76,16 +77,16 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					addresstorecord.tabledefid,
-					addresstorecord.recordid,
-					addresstorecord.primary,
-					addresstorecord.defaultshipto
+					`addresstorecord`.`tabledefid`,
+					`addresstorecord`.`recordid`,
+					`addresstorecord`.`primary`,
+					`addresstorecord`.`defaultshipto`
 				FROM
-					addresstorecord
+					`addresstorecord`
 				WHERE
-					addresstorecord.addressid =".((int) $addressid)."
+					`addresstorecord`.`addressid` ='".mysql_real_escape_string($addressid)."'
 				ORDER BY
-					addresstorecord.tabledefid
+					`addresstorecord`.`tabledefid`
 			";
 
 			$queryresult = $this->db->query($querystatement);
@@ -94,8 +95,8 @@ if(class_exists("phpbmsTable")){
 			<table class="querytable" cellspacing="0" cellpadding="0" border="0">
 				<thead>
 					<tr>
-						<th align="left" nowrap="nowrap">id</th>
-						<th width="100%" align="left">record</th>
+						<th width="30%" align="left" nowrap="nowrap">uuid</th>
+						<th width="70%" align="left">record</th>
 						<th align="center" nowrap="nowrap">primary</th>
 						<th align="center" nowrap="nowrap">default ship to</th>
 					</tr>

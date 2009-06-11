@@ -109,6 +109,7 @@ class clientInfo{
 
 		$returnArray = array(
 			"id" => "",
+			"uuid" => "",
 			"address1" => "",
 			"address2" => "",
 			"city" => "",
@@ -122,9 +123,9 @@ class clientInfo{
 			SELECT
 				addresses.*
 			FROM
-				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.id
+				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid
 			WHERE
-				addresstorecord.tabledefid = 2
+				addresstorecord.tabledefid = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
 				AND addresstorecord.recordid = '".$clientID."'
 				AND addresstorecord.".$type." = 1";
 

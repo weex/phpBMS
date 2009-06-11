@@ -58,7 +58,6 @@
 			$backurl .= "?refid=".$_GET["refid"];
 
 		$thetable = new addresstorecord($db,"tbld:27b99bda-7bec-b152-8397-a3b09c74cb23",$backurl);
-
 		$pageTitle="Client Address";
 
 	}//end if
@@ -115,21 +114,55 @@
 		if(isset($therecord["tabledefid"])){
 			//these are fields used only when displaying connected addresses
 
-			if($therecord["addressid"] == 0){
+			if($therecord["addressid"] == ""){
 				//this is a new record from a linked item
 				// so we need to generate the controls that
 				// allow creating a new, or linking an existing.
 
 				$showNewChoice = true;
 
-				$therecord["tabledefid"] = (int) $_GET["tabledefid"];
-				$therecord["recordid"] = (int) $_GET["refid"];
+				$therecord["tabledefid"] = mysql_real_escape_string($_GET["tabledefid"]);
+				$querystatement = "
+					SELECT
+						`maintable`
+					FROM
+						`tabledefs`
+					WHERE
+						`uuid` = '".$therecord["tabledefid"]."'
+				";
+				$queryresult = $thetable->db->query($querystatement);
+				if($thetable->db->numRows($queryresult)){
+					$record = $thetable->db->fetchArray($queryresult);
+					$maintable = $record["maintable"];
+
+					$querystatement = "
+						SELECT
+							`uuid`
+						FROM
+							`".$maintable."`
+						WHERE
+							`id`='".(int)$_GET["refid"]."'
+					";
+
+					$queryresult = $thetable->db->query($querystatement);
+
+					if($thetable->db->numRows($queryresult)){
+						$brecord = $thetable->db->fetchArray($queryresult);
+						$therecord["recordid"] = mysql_real_escape_string($brecord["uuid"]);
+
+					}else{
+						$therecord["recordid"] = mysql_real_escape_string($_GET["refid"]);
+					}//endif
+
+				}else{
+					$therecord["recordid"] = mysql_real_escape_string($_GET["refid"]);
+				}//end if
 
 				switch($therecord["tabledefid"]){
 					//diferent tables will need different views
 					//and displays (will eventurally need one for vendors)
 
-					case 2: //clients
+					case "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083": //clients
 					default:
 						$smartSearch = "Pick Exisiting Client Address";
 						break;
@@ -192,6 +225,10 @@
 				</p>
 
 			<?php }//endif - addressid ?>
+
+			<?php if(isset($_GET["id"])){ ?>
+				<input type="hidden" name="getid" id="getid" value="<?php echo((int)$_GET["id"]); ?>" />
+			<?php }//end if ?>
 
 		</fieldset>
 
@@ -290,7 +327,12 @@
 				<legend>Associations</legend>
 
 				<div class="fauxP">
-				<?php $thetable->showAssociations($therecord["addressid"])?>
+				<?php
+					$addressid = $therecord["addressid"];
+					if(isset($therecord["addressuuid"]))
+						$addressid = $therecord["addressuuid"];
+					$thetable->showAssociations($addressid);
+					?>
 				</div>
 			</fieldset>
 		<?php } //endif record if?>

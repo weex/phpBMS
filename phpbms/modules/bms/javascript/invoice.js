@@ -411,7 +411,7 @@ client = {
 
 			//now for billing address
 			tempitem = getObjectFromID("billingaddressid");
-			tempitem.value = clientRecord.billingaddress.id;
+			tempitem.value = clientRecord.billingaddress.uuid;
 
 			tempitem = getObjectFromID("address1");
 			tempitem.value = clientRecord.billingaddress.address1;
@@ -433,7 +433,7 @@ client = {
 
 			//now for shipto address
 			tempitem = getObjectFromID("shiptoaddressid");
-			tempitem.value = clientRecord.shiptoaddress.id;
+			tempitem.value = clientRecord.shiptoaddress.uuid;
 
 			tempitem = getObjectFromID("shiptoaddress1");
 			tempitem.value = clientRecord.shiptoaddress.address1;

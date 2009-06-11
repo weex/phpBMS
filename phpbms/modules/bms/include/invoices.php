@@ -660,10 +660,20 @@ if(class_exists("phpbmsTable")){
 				case "updateAddress":
 					if($variables[$idprefix."addressid"]){
 
-						$address = new addresses($this->db, 306);
+						$address = new addresses($this->db, "tbld:27b99bda-7bec-b152-8397-a3b09c74cb23");
 
-						$addressRecord = $address->getRecord($variables[$idprefix."addressid"]);
+						$querystatment = "
+							SELECT
+								`id`
+							FROM
+								`addresses`
+							WHERE
+								`uuid` = '".mysql_real_escape_string($variables[$idprefix."addressid"])."'
+						";
+						$queryresult = $this->db->query($querystatment);
+						$arecord = $this->db->fetchArray($queryresult);
 
+						$addressRecord = $address->getRecord($arecord["id"]);
 						if($varprefix == "shipto")
 							$addressRecord["shiptoname"] = $variables["shiptoname"];
 						$addressRecord["address1"] = $variables[$varprefix."address1"];
@@ -680,10 +690,11 @@ if(class_exists("phpbmsTable")){
 					break;
 
 				case "createAddress":
-					$addresstorecord = new addresstorecord($this->db,306);
+					$addresstorecord = new addresstorecord($this->db,"tbld:27b99bda-7bec-b152-8397-a3b09c74cb23");
 
 					if($varprefix == "shipto")
 						$addressRecord["shiptoname"] = $variables["shiptoname"];
+					$atrRecord["uuid"] = uuid($addresstorecord->prefix.":");
 					$atrRecord["address1"] = $variables[$varprefix."address1"];
 					$atrRecord["address2"] = $variables[$varprefix."address2"];
 					$atrRecord["city"] = $variables[$varprefix."city"];
@@ -691,7 +702,7 @@ if(class_exists("phpbmsTable")){
 					$atrRecord["postalcode"] = $variables[$varprefix."postalcode"];
 					$atrRecord["country"] = $variables[$varprefix."country"];
 					$atrRecord["recordid"] = $variables["clientid"];
-					$atrRecord["tabledefid"] = 2;
+					$atrRecord["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 					$atrRecord["primary"] = 0;
 					$atrRecord["defaultshipto"] = 0;
 					$atrRecord["existingaddressid"] = 0;
@@ -706,9 +717,10 @@ if(class_exists("phpbmsTable")){
 						UPDATE
 							invoices
 						SET
-							".$idprefix."addressid = ".$atrRecord["id"]."
+							".$idprefix."addressid = '".$atrRecord["uuid"]."'
 						WHERE
-							id = ".$invoiceid;
+							uuid = '".$invoiceid."'
+					";
 
 					$this->db->query($updatestatement);
 
@@ -792,8 +804,10 @@ if(class_exists("phpbmsTable")){
 				require_once("addresses.php");
 				require_once("addresstorecord.php");
 
-				$this->addressUpdate($variables, $newid, $createdby, "billing");
-				$this->addressUpdate($variables, $newid, $createdby, "shipping");
+				$newuuid = mysql_real_escape_string($variables["uuid"]);
+
+				$this->addressUpdate($variables, $newuuid, $createdby, "billing");
+				$this->addressUpdate($variables, $newuuid, $createdby, "shipping");
 
 			}//end if
 
@@ -1061,7 +1075,15 @@ if(class_exists("searchFunctions")){
 		function _mark_as_status($statusid){
 
 			//Look up shippings defaults
-			$querystatement="SELECT defaultassignedtoid,setreadytopost FROM invoicestatuses WHERE id = ".$statusid;
+			$querystatement = "
+				SELECT
+					`defaultassignedtoid`,
+					`setreadytopost
+				FROM
+					`invoicestatuses`
+				WHERE
+					`uuid` = '".$statusid."'
+			";
 			$queryresult = $this->db->query($querystatement);
 
 			if($this->db->numRows($queryresult)){
@@ -1074,21 +1096,22 @@ if(class_exists("searchFunctions")){
 
 				$readytopost = $therecord["setreadytopost"];
 			} else {
-				return "No status with id ".$statusid." found.";
+				return "No status with uuid ".$statusid." found.";
 			}
 
 			$whereclause=$this->buildWhereClause();
-			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID' AND invoices.statusid !=".$statusid;
+			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID' AND invoices.statusid !='".$statusid."'";
 
 			// since marking RTP is dependent on the payment method type,
 			// items must be updated individually
 			$querystatement = "
 				SELECT
 					invoices.id,
+					invoices.uuid,
 					paymentmethods.type,
 					invoices.invoicedate
 				FROM
-					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
 				WHERE
 					".$whereclause;
 
@@ -1102,7 +1125,7 @@ if(class_exists("searchFunctions")){
 						invoices
 					SET
 						invoices.statusdate=NOW(),
-						assignedtoid=".$assignedtoid.",
+						assignedtoid='".$assignedtoid."',
 						modifiedby=".$_SESSION["userinfo"]["id"].", ";
 
 				if($readytopost){
@@ -1120,7 +1143,7 @@ if(class_exists("searchFunctions")){
 				}//endif
 
 				$updatestatement.="
-						invoices.statusid=".$statusid.",
+						invoices.statusid='".$statusid."',
 						modifieddate=NOW()
 					WHERE
 						id =".$therecord["id"];
@@ -1128,13 +1151,13 @@ if(class_exists("searchFunctions")){
 				$updateresult = $this->db->query($updatestatement);
 
 				//delete conlflicting history
-				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid=".$therecord["id"]." AND invoicestatusid=".$statusid;
+				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid='".$therecord["uuid"]."' AND invoicestatusid='".$statusid."'";
 				$deleteresult = $this->db->query($querystatement);
 
 				//insert new history
 				$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
-				$querystatement.=$therecord["id"].",".$statusid.",NOW(),";
-				$querystatement.=$assignedtoid;
+				$querystatement.="'".$therecord["uuid"]."','".$statusid."',NOW(),";
+				$querystatement.="'".$assignedtoid."'";
 				$querystatement.=")";
 				$insertresult = $this->db->query($querystatement);
 
@@ -1151,7 +1174,7 @@ if(class_exists("searchFunctions")){
 
 		function mark_ashipped(){
 
-			$statusid = 4; //The default id for "shipped";
+			$statusid = "inst:e8b5e6a7-5797-7901-6266-6adeedd15ec9"; //The default id for "shipped";
 
 			$message = $this->_mark_as_status($statusid);
 
@@ -1173,7 +1196,7 @@ if(class_exists("searchFunctions")){
 					paymentmethods.type,
 					invoices.invoicedate
 				FROM
-					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
 				WHERE
 					".$whereclause;
 
@@ -1225,7 +1248,7 @@ if(class_exists("searchFunctions")){
 				SELECT
 					invoices.id
 				FROM
-					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
 				WHERE
 					".$whereclause;
 
@@ -1369,7 +1392,7 @@ function defineInvoicesPost(){
 					invoices.routingnumber,
 					invoices.accountnumber
 				FROM
-					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id
+					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
 				WHERE
 					".$this->whereclause;
 			$queryresult = $this->db->query($querystatement);
@@ -1436,7 +1459,7 @@ function defineInvoicesPost(){
 					if(!class_exists("phpbmsTable"))
 						include("include/tables.php");
 
-					$aritems = new phpbmsTable($this->db, 303);
+					$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
 
 					$aritems->insertRecord($arrecord,$this->modifiedby);
 

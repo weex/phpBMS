@@ -293,7 +293,9 @@
 
 			$this->db->logError=false;
 			$this->db->stopOnError=false;
-
+//echo "<pre>";
+//var_dump($_SESSION["thequerystatement"]);
+//exit;
 			$this->queryresult = $this->db->query($_SESSION["thequerystatement"]);
 
 			$this->db->logError=true;

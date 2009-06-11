@@ -86,6 +86,7 @@ if(class_exists("addresses")){
 		// CLASS OVERRIDES ===============================================
 		// ===============================================================
 		function getRecord($id){
+
 			$id = (int) $id;
 
 			$querystatement = "
@@ -114,11 +115,12 @@ if(class_exists("addresses")){
 				if($this->db->numRows($queryresult)){
 
 					$addressID = $this->db->fetchArray($queryresult);
+					$therecord["addressuuid"] = $therecord["addressid"]; //artificial uuid field... maybe bad
 					$therecord["addressid"] = $addressID["addressid"];
 
 					$addressrecord = parent::getRecord($therecord["addressid"]);
 
-					unset($addressrecord["id"], $addressrecord["createdby"], $addressrecord["creationdate"], $addressrecord["modifiedby"], $addressrecord["modifieddate"]);
+					unset($therecord["id"], $addressrecord["createdby"], $addressrecord["creationdate"], $addressrecord["modifiedby"], $addressrecord["modifieddate"]);
 
 					$therecord = array_merge($addressrecord, $therecord);
 
@@ -138,8 +140,9 @@ if(class_exists("addresses")){
 			$therecord = parent::getDefaults();
 
 			$therecord["addressid"] = 0;
-			$therecord["tabledefid"] = 0;
-			$therecord["recordid"] = NULL;
+			$therecord["addressuuid"] = ""; // may not be the best way
+			$therecord["tabledefid"] = "";
+			$therecord["recordid"] = "";
 			$therecord["defaultshipto"] = 0;
 			$therecord["primary"] = 0;
 
@@ -315,9 +318,10 @@ if(class_exists("searchFunctions")){
 						FROM
 							addresstorecord
 						WHERE
-							addressid = ".$therecord["addressid"]."
-							AND tabledefid = ".$therecord["tabledefid"]."
-							AND recordid != ".$therecord["recordid"];
+							addressid = '".$therecord["addressid"]."'
+							AND tabledefid = '".$therecord["tabledefid"]."'
+							AND recordid != '".$therecord["recordid"]."'
+					";
 
 					$lookupResult = $this->db->query($querystatement);
 
@@ -328,7 +332,8 @@ if(class_exists("searchFunctions")){
 							DELETE FROM
 								addresses
 							WHERE
-								id =".$therecord["addressid"];
+								`uuid` = '".$therecord["addressid"]."'
+						";
 
 						$this->db->query($deletestatement);
 
@@ -342,7 +347,8 @@ if(class_exists("searchFunctions")){
 						DELETE FROM
 							addresstorecord
 						WHERE
-							id =".$therecord["id"];
+							id ='".$therecord["id"]."'
+					";
 
 					$this->db->query($deletestatement);
 
@@ -416,7 +422,7 @@ if(class_exists("searchFunctions")){
 				FROM
 					addresstorecord
 				WHERE
-					id =".((int) $this->idsArray[0]);
+					`id` =".((int) $this->idsArray[0]);
 
 			$relatedInfo = $this->db->fetchArray($this->db->query($querystatement));
 
@@ -427,8 +433,9 @@ if(class_exists("searchFunctions")){
 				SET
 					`".$what."` = 0
 				WHERE
-					tabledefid = ".$relatedInfo["tabledefid"]."
-					AND recordid = ".$relatedInfo["recordid"];
+					tabledefid = '".$relatedInfo["tabledefid"]."'
+					AND recordid = '".$relatedInfo["recordid"]."'
+			";
 
 			$this->db->query($updatestatement);
 
