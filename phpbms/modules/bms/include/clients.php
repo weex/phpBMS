@@ -99,11 +99,11 @@ if(class_exists("phpbmsTable")){
 		}//end function - getDefaults
 
 
-		function getRecord($id){
+		function getRecord($id, $useUuid = false){
 
-			$id = (int) $id;
+			$id = (!$useUuid)? (int) $id: mysql_real_escape_string($id);
 
-			$therecord = parent::getRecord($id);
+			$therecord = parent::getRecord($id, $useUuid);
 
 			if($therecord["id"]){
 				//need to grab the address as well

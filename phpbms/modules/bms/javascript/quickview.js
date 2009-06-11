@@ -41,41 +41,54 @@ function addClient(){
 	addEditRecord("new","client",clientaddedit.value);
 }
 
-function addEditRecord(newedit,what,addeditfile){
 
-	var clientid=getObjectFromID("clientid");	
-	var theURL=addeditfile;
-	var currentURL=""+document.location;
-	currentURL = currentURL.substring(0,currentURL.indexOf(".php")+4);
-	var theid="";
-	switch(what){
-		case "note":
-			theid=selectedNote;
-		break;
-		case "invoice":
-			theid=selectedInvoice;
-		break;
-		case "client":
-			theid=clientid.value;
-		break;
-	}	
-	theURL+="?backurl="+encodeURIComponent(currentURL+"?cid="+clientid.value)
-	if(newedit=="edit")
-		theURL+="&id="+theid;
-	else
-		theURL+="&cid="+clientid.value;
-	document.location=theURL;
-}
+function addEditRecord(newedit, what, addeditfile){
 
-function selectEdit(thetr,id,noteinvoice){	
-	var theeditbutton=getObjectFromID(noteinvoice+"edit");	
+    var clientid = getObjectFromID("theid");
+    var theURL = addeditfile;
+
+    var currentURL = "" + document.location;
+
+    currentURL = currentURL.substring(0,currentURL.indexOf(".php") + 4);
+
+    var theid = "";
+
+    switch(what){
+
+        case "note":
+            theid = selectedNote;
+            break;
+
+        case "invoice":
+            theid = selectedInvoice;
+            break;
+
+        case "client":
+            theid = clientid.value;
+            break;
+
+    }//endswitch
+
+    theURL += "?backurl=" + encodeURIComponent(currentURL + "?cid=" + clientid.value)
+
+    if(newedit == "edit")
+        theURL += "&id="  + encodeURIComponent(theid);
+    else
+        theURL += "&cid=" + encodeURIComponent(clientid.value);
+
+    document.location = theURL;
+
+}//end function addEditRecord
+
+function selectEdit(thetr,id,noteinvoice){
+	var theeditbutton=getObjectFromID(noteinvoice+"edit");
 	var theSelected;
 	if(noteinvoice=="note")
 		theSelected=selectedNote;
 	else
 		theSelected=selectedInvoice;
-	
-	
+
+
 	if(theSelected==id){
 		theeditbutton.className="graphicButtons buttonEditDisabled";
 		theeditbutton.disabled = true;
@@ -96,7 +109,7 @@ function selectEdit(thetr,id,noteinvoice){
 		selectedNote=theSelected;
 	else
 		selectedInvoice=theSelected;
-	
+
 }
 
 
@@ -107,56 +120,56 @@ function selectEdit(thetr,id,noteinvoice){
 quickView = {
 
 	changeLookup: function(e){
-		
+
 		var dropDown = e.src();
 		var smartSearchID = getObjectFromID("sdbid-clientid");
-		
+
 		smartSearchID.value = dropDown.value;
-		
+
 	},//end method - changeLookup
-	
-	
+
+
 	changeClient: function(e){
-		
+
 		var clientid = e.src();
 		var viewButton = getObjectFromID("viewButton");
-		
+
 		if(clientid.value)
 			viewButton.className = "Buttons"
 		else
 			viewButton.className = "dsiabledButtons";
-		
+
 	},//end method - changeClient
-	
+
 
 	viewClient: function(){
-		
+
 		var clientid = getObjectFromID("clientid");
 		var viewButton = getObjectFromID("viewButton");
-		
+
 		if (clientid.value != "" && viewButton.className != "disabledButtons"){
-			
+
 			var clientrecord = getObjectFromID("clientrecord");
-			
+
 			clientrecord.innerHTML = '<div align="center"><img src="' + APP_PATH + 'common/image/spinner.gif" alt="0" width="16" height="16" align="absmiddle"><strong>Loading...</strong></div>';
 
 			var theURL = APP_PATH + "modules/bms/quickview_ajax.php?cm=showClient&id=" + clientid.value;
-			
+
 			loadXMLDoc(theURL,null,false);
 
 			clientrecord.innerHTML = req.responseText;
-			
+
 			var goalHeight = clientrecord.offsetHeight;
-			
+
 			if(document.comboFX){
-				
+
 				document.comboFX.hide();
 				document.comboFX.toggle();
-				
+
 			}//endif
-			
+
 		}//endif - clientid
-		
+
 	}//end method - viewClient
 
 }//end class
@@ -173,30 +186,30 @@ connect(window,"onload",function() {
 
 	var clientid = getObjectFromID("clientid");
 	connect(clientid, "onchange", quickView.changeClient);
-	
+
 	if(clientid.value != ""){
-		
+
 		var viewButton = getObjectFromID("viewButton");
 
 		viewButton.className = "Buttons";
 
 		quickView.viewClient();
-		
+
 	} else{
-		
+
 		var focusobject = getObjectFromID("ds-clientid");
 
 		focusobject.focus();
-		
+
 	}//endif - clientid
-	
+
 	var viewButton = getObjectFromID("viewButton");
 	connect(viewButton, "onclick", quickView.viewClient)
-	
+
 	var addButton = getObjectFromID("addButton");
 	connect(addButton, "onclick", addClient);
-	
+
 	selectedInvoice = "";
 	selectedNote = "";
-	
+
 })

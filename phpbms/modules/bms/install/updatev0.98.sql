@@ -267,18 +267,18 @@ INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `created
 UPDATE `modules` SET `uuid`='mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc' WHERE `id`='2';
 --end module UPDATE--
 --paymentmethods UPDATE--
-UPDATE `payementmethods` SET `uuid`='paym:5efd94ea-8e71-f5a2-d30a-b23e1ef54b26' WHERE `id`='1';
-UPDATE `payementmethods` SET `uuid`='paym:1e3fb0cd-7a39-cbc5-6a46-3ff95c07f94d' WHERE `id`='2';
-UPDATE `payementmethods` SET `uuid`='paym:d1aabcd6-0999-03b8-20e1-1b940b58346e' WHERE `id`='3';
-UPDATE `payementmethods` SET `uuid`='paym:f193f243-29e6-ee37-e73b-d0808d1d22d2' WHERE `id`='4';
-UPDATE `payementmethods` SET `uuid`='paym:c9a4e2f4-2f46-761c-6bb0-6b01de0d0470' WHERE `id`='5';
-UPDATE `payementmethods` SET `uuid`='paym:085963a3-a30b-a4ee-887d-d199a0e1ec65' WHERE `id`='6';
-UPDATE `payementmethods` SET `uuid`='paym:9fd45f33-ba56-e9a9-e167-00c0ea2200ad' WHERE `id`='7';
-UPDATE `payementmethods` SET `uuid`='paym:c4d76cc7-9368-16a1-7cc9-443fe5479fb4' WHERE `id`='8';
-UPDATE `payementmethods` SET `uuid`='paym:a911dad0-d393-e86d-b238-24aea7f6f797' WHERE `id`='9';
-UPDATE `payementmethods` SET `uuid`='paym:77411629-5911-f318-cadd-e6e8b14203e2' WHERE `id`='10';
-UPDATE `payementmethods` SET `uuid`='paym:aa837c8a-8878-5339-bc5c-0004cd6e091c' WHERE `id`='11';
-UPDATE `payementmethods` SET `uuid`='paym:d2909465-4a20-9e88-5e2a-d4f85a57a547' WHERE `id`='12';
+UPDATE `paymentmethods` SET `uuid`='paym:5efd94ea-8e71-f5a2-d30a-b23e1ef54b26' WHERE `id`='1';
+UPDATE `paymentmethods` SET `uuid`='paym:1e3fb0cd-7a39-cbc5-6a46-3ff95c07f94d' WHERE `id`='2';
+UPDATE `paymentmethods` SET `uuid`='paym:d1aabcd6-0999-03b8-20e1-1b940b58346e' WHERE `id`='3';
+UPDATE `paymentmethods` SET `uuid`='paym:f193f243-29e6-ee37-e73b-d0808d1d22d2' WHERE `id`='4';
+UPDATE `paymentmethods` SET `uuid`='paym:c9a4e2f4-2f46-761c-6bb0-6b01de0d0470' WHERE `id`='5';
+UPDATE `paymentmethods` SET `uuid`='paym:085963a3-a30b-a4ee-887d-d199a0e1ec65' WHERE `id`='6';
+UPDATE `paymentmethods` SET `uuid`='paym:9fd45f33-ba56-e9a9-e167-00c0ea2200ad' WHERE `id`='7';
+UPDATE `paymentmethods` SET `uuid`='paym:c4d76cc7-9368-16a1-7cc9-443fe5479fb4' WHERE `id`='8';
+UPDATE `paymentmethods` SET `uuid`='paym:a911dad0-d393-e86d-b238-24aea7f6f797' WHERE `id`='9';
+UPDATE `paymentmethods` SET `uuid`='paym:77411629-5911-f318-cadd-e6e8b14203e2' WHERE `id`='10';
+UPDATE `paymentmethods` SET `uuid`='paym:aa837c8a-8878-5339-bc5c-0004cd6e091c' WHERE `id`='11';
+UPDATE `paymentmethods` SET `uuid`='paym:d2909465-4a20-9e88-5e2a-d4f85a57a547' WHERE `id`='12';
 --end paymentmethods UPDATE--
 --reports INSERT--
 INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('reports:0df82ecf-5f05-56bd-18c3-e7cb27c0cf8a', 'Client Statements', 'PDF Report', '303', '10', '80', 'modules/bms/report/aritems_clientstatement.php', 'Client AR statement balances and activity.', 1, NOW(), 1, NOW());
@@ -378,6 +378,7 @@ INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displa
 --end smartsearches INSERT--
 --smartsearches UPDATE--
 UPDATE `smartsearches` SET `uuid`='smrt:5cf171f7-2284-1492-62bb-872bc222eaef' WHERE `id`='1';
+
 UPDATE
     `smartsearches`
 SET
@@ -385,10 +386,25 @@ SET
     `valuefield`='`clients`.`uuid`'
 WHERE
     `id`='3';
+
 UPDATE `smartsearches` SET `uuid`='smrt:5634f7fb-a0c8-7e10-4c96-8bb043e7f478' WHERE `id`='4';
 UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WHERE `id`='6';
-UPDATE `smartsearches` SET `uuid`='smrt:a18ca9d4-58aa-7a47-faa7-1ad0ed5ba8c6' WHERE `id`='7';
-UPDATE `smartsearches` SET `uuid`='smrt:3b48afbf-f18f-a18d-8aa8-f51f27008750' WHERE `id`='8';
+
+UPDATE
+    `smartsearches`
+SET
+    `uuid`='smrt:a18ca9d4-58aa-7a47-faa7-1ad0ed5ba8c6',
+    `valuefield`='`clients`.`uuid`'
+WHERE
+    `id`='7';
+
+UPDATE
+    `smartsearches`
+SET
+    `uuid`='smrt:3b48afbf-f18f-a18d-8aa8-f51f27008750',
+    `valuefield`='`clients`.`uuid`'
+WHERE
+    `id`='8';
 --end smartsearches UPDATE--
 --tablecolumns INSERT--
 INSERT INTO `tablecolumns` (`tabledefid`, `name`, `column`, `align`, `footerquery`, `displayorder`, `sortorder`, `wrap`, `size`, `format`, `roleid`) VALUES ('307', 'id', 'postingsessions.id', 'left', '', '0', '', '0', '', NULL, '0');
@@ -421,7 +437,7 @@ UPDATE `tabledefs` SET
     `canpost`= '1',
     `hascustomfields` = '1',
     `prefix` = 'sord',
-    `querytable` = '(((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`) INNER JOIN `invoicestatuses` ON `invoices`.`statusid`=`invoicestatuses`.`uuid`) LEFT JOIN `paymentmethods` ON `invoices`.`paymentmethodid` = `paymentmethods`.`uuid`)';
+    `querytable` = '(((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`) INNER JOIN `invoicestatuses` ON `invoices`.`statusid`=`invoicestatuses`.`uuid`) LEFT JOIN `paymentmethods` ON `invoices`.`paymentmethodid` = `paymentmethods`.`uuid`)'
 WHERE
     `id`='3';
 UPDATE `tabledefs` SET

@@ -49,9 +49,11 @@
 		//==============================================================
 		$theform = new phpbmsForm();
 
-		if(isset($_GET["cid"]))
-			$passedValue = ((int) $_GET["cid"]);
-		else
+		if(isset($_GET["cid"])) {
+
+                    $passedValue = getUuid($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", (int) $_GET["cid"]);
+
+		} else
 			$passedValue = NULL;
 
 			$theinput = new inputSmartSearch($db, "clientid", "Pick Sales Order Client", $passedValue, "client", false, 55, 255, false);

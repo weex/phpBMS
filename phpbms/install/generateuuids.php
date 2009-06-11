@@ -173,7 +173,7 @@ class generateUUIDS extends installUpdateBase{
 
             $invoiceArray = array(
                                   "clientid"        =>$this->clientList,
-                                  "stausid"         =>$this->statusList,
+                                  "statusid"        =>$this->statusList,
                                   "assignedtoid"    =>$this->userList,
                                   "discountid"      =>$this->discountList,
                                   "taxareaid"       =>$this->taxList,
