@@ -50,7 +50,7 @@ class clientAddresses{
 	}//end method - init
 
 
-	function getList($id){
+	function getList($uuid){
 
 		$querystatement = "
 			SELECT
@@ -58,10 +58,11 @@ class clientAddresses{
 				addresstorecord.primary,
 				addresstorecord.defaultshipto
 			FROM
-				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.id
+				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid
 			WHERE
-				addresstorecord.tabledefid = 2
-				AND addresstorecord.recordid = ".((int) $_GET["id"]);
+				addresstorecord.tabledefid = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+				AND addresstorecord.recordid = '".mysql_real_escape_string($uuid)."'
+		";
 
 		return $this->db->query($querystatement);
 
@@ -99,7 +100,7 @@ class clientAddresses{
 					if($therecord["country"])
 						$content .= "<br/>".htmlQuotes($therecord["country"]);
 
-					?><a href="#" id="LA-<?php echo $therecord["id"]?>" class="LAPickAs"><?php echo $content?></a><?php
+					?><a href="#" id="LA-<?php echo $therecord["uuid"]?>" class="LAPickAs"><?php echo $content?></a><?php
 
 				}//endwhile - therecord
 
@@ -121,7 +122,7 @@ class clientAddresses{
 
 	}//end method - display
 
-	function showSingle($id){
+	function showSingle($uuid){
 
 		$querystatement = "
 			SELECT
@@ -129,7 +130,8 @@ class clientAddresses{
 			FROM
 				addresses
 			WHERE
-				id =".((int) $id);
+				uuid ='".mysql_real_escape_string($uuid)."'
+		";
 
 		$therecord = $this->db->fetchArray($this->db->query($querystatement));
 
