@@ -281,9 +281,12 @@
 			<legend><label for="ds-clientid">client</label></legend>
 			<div class="fauxP big">
 				<input type="hidden" id="clientAddEditFile" value="<?php echo getAddEditFile($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083") ?>"/>
+                                <input type="hidden" id="clientRealId" value="<?php echo $therecord["clientrealid"]?>"/>
 				<?php $thetable->showClientType($therecord["clientid"])?>
-				<?php $theform->showField("clientid")?>
-				<button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo"><span>view client</span></button>
+
+                                <?php $theform->showField("clientid")?>
+
+                                <button id="viewClientButton" type="button" title="view client" class="graphicButtons buttonInfo"><span>view client</span></button>
 			</div>
 		</fieldset>
 

@@ -323,7 +323,8 @@ client = {
 
 		if(client.confirmDirection == "edit"){
 
-			var theclient = getObjectFromID("clientid");
+			var theclient = getObjectFromID("clientRealId");
+
 			var theid = getObjectFromID("id");
 
 			if (theclient.value != "" &&  theclient.value!=0)
@@ -357,11 +358,12 @@ client = {
 
 				alert(err);
 
-			}
+			}//end try/catch
 
 			var prop, tempitem;
+
 			for(prop in clientRecord){
-				console.log(prop);
+
 				switch(prop){
 					case "billingaddress":
 					case "shiptoaddress":
@@ -388,6 +390,11 @@ client = {
 						}//endif - clientid
 
 						break;
+
+                                        case "id":
+                                                var clientRealId = getObjectFromID("clientRealId");
+                                                clientRealId.value = clientRecord["id"];
+                                                break;
 
 					default:
 						tempitem = getObjectFromID(prop);
@@ -983,6 +990,8 @@ lineitems = {
 		lineitems._hover(theTR, "out");
 
 		lineitems.markChanged();
+
+                return true;
 
 	},//end function
 
@@ -1592,15 +1601,20 @@ vTab = {
 
 	clearTO: function(e){
 
-		window.clearTimeout(vTab.timeout);
-		vTab.timeout = 0;
+                if(vTab.timeout != 0){
+
+                        window.clearTimeout(vTab.timeout);
+                        vTab.timeout = 0;
+
+                }//endif
 
 	},//end method
 
 
 	setTO: function(e){
 
-		vTab.timeout = window.setTimeout("vTab.out()",1000);
+                if(vTab.timeout == 0)
+        		vTab.timeout = window.setTimeout("vTab.out()",1250);
 
 	}//end method
 

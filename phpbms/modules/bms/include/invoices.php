@@ -499,37 +499,69 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function getRecord($id){
+		/**
+		 * retrieves sales order record
+		 *
+		 * @param int|string $id the id or uuid of the sales order record
+		 * @param bool $useUuid is the passed $id is referenceing an id (false/default) or a uuid (true)
+		 *
+		 * @return array associateive array with the record information
+		 */
+		function getRecord($id, $useUuid = false){
 
-			$therecord = parent::getRecord($id);
+			$therecord = parent::getRecord($id, $useUuid);
 
-			$discountinfo=$this->getDiscount($therecord["discountid"]);
-			$therecord["discountname"]=$discountinfo["name"];
-			$therecord["discount"]=$discountinfo["value"];
+			$discountinfo = $this->getDiscount($therecord["discountid"]);
+
+			$therecord["discountname"] = $discountinfo["name"];
+			$therecord["discount"] = $discountinfo["value"];
 
 			$taxinfo = $this->getTax($therecord["taxareaid"]);
-			$therecord["taxname"]=$taxinfo["name"];
+			$therecord["taxname"] = $taxinfo["name"];
 
+			//need to clculate the amount due
 			$therecord["amountdue"] = $therecord["totalti"] - $therecord["amountpaid"];
 
-			$querystatement = "SELECT hascredit, creditlimit FROM clients WHERE `uuid`='".$therecord["clientid"]."'";
+			$querystatement = "
+				SELECT
+					id AS clientrealid,
+					hascredit,
+					creditlimit
+				FROM
+					clients
+				WHERE
+					`uuid`='".$therecord["clientid"]."'";
 
 			$queryresult = $this->db->query($querystatement);
 
 			$therecord = array_merge($this->db->fetchArray($queryresult), $therecord);
 
+			//if the client has AR, we need to grab the creditlimit
 			if($therecord["hascredit"]){
-				$querystatement = "SELECT SUM(`amount` - `paid`) AS amtopen FROM aritems WHERE `status` = 'open' AND clientid=".$therecord["clientid"]." AND posted=1";
+
+				$querystatement = "
+					SELECT
+						SUM(`amount` - `paid`) AS amtopen
+					FROM
+						aritems
+					WHERE
+						`status` = 'open'
+					AND
+						clientid = '".$therecord["clientid"]."'
+						AND posted = 1";
+
 				$queryresult = $this->db->query($querystatement);
 
 				$arrecord = $this->db->fetchArray($queryresult);
 
 				$therecord["creditleft"] = $therecord["creditlimit"] - $arrecord["amtopen"];
+
 			} else
 				$therecord["creditleft"] =0;
 
 			return $therecord;
-		}
+
+		}//end function getRecord
 
 
 		function verifyVariables($variables){
@@ -571,8 +603,10 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["assignedtoid"])){
 
 				if($this->_availableUserUUIDs === NULL){
+
 					$this->_availableUserUUIDs = $this->_loadUUIDList("users");
-					$this->_availableUserUUIDs[] = "''";//for none
+					$this->_availableUserUUIDs[] = "";//for none
+
 				}//end if
 
 				if(!in_array(((string)$variables["assignedtoid"]),$this->_availableUserUUIDs))
@@ -611,7 +645,7 @@ if(class_exists("phpbmsTable")){
 
 			return parent::verifyVariables($variables);
 
-		}//end method
+		}//end method verifyVariables
 
 
 		function prepareVariables($variables){
@@ -639,7 +673,9 @@ if(class_exists("phpbmsTable")){
 			}
 
 			return $variables;
-		}
+
+		}//end function prepareVariables
+
 
 		function addressUpdate($variables, $invoiceid, $modifiedby, $method){
 		// Updates/Inserts address records (billing or shipping )for the sales order's corresponding client
@@ -731,17 +767,13 @@ if(class_exists("phpbmsTable")){
 		}//end method - addressUpdate
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-			//if($modifiedby === NULL)
-			//	$modifiedby = $_SESSION["userinfo"]["id"];
-
-
-			if($variables["oldType"]=="Invoice")
+			//can't modify an invoice
+			if($variables["oldType"] == "Invoice")
 				return false;
 
-			//$variables = $this->prepareVariables($variables);
-
+			//can't modify payment information if you do not have sales rights
 			if(!hasRights("role:de7e6679-8bb2-29ee-4883-2fcd756fb120")){
 
 				unset($this->fields["paymentmethodid"]);
@@ -755,7 +787,7 @@ if(class_exists("phpbmsTable")){
 
 			}//endif
 
-			if(parent::updateRecord($variables, $modifiedby)){
+			if(parent::updateRecord($variables, $modifiedby, $useUuid)){
 
 				if($variables["lineitemschanged"]==1){
 
@@ -786,7 +818,8 @@ if(class_exists("phpbmsTable")){
 
 			//reset field after updating (if unset by rights management)
 			$this->getTableInfo();
-		}
+
+		}//end function updateRecord
 
 
 
@@ -853,6 +886,7 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
+					products.id AS pid,
 					products.partname,
 					products.partnumber,
 
@@ -887,7 +921,7 @@ if(class_exists("phpbmsTable")){
 				?><tr id="li<?php echo $count?>" class="lineitems">
 
 					<td colspan="2" class="lineitemsLeft" <?php if($this->invoicetype == "Void" || $this->invoicetype == "Invoice") echo 'nowrap="nowrap"'?>>
-						<input type="hidden" id="li<?php echo $count?>ProductID" value="<?php echo $therecord["productid"]?>"/>
+						<input type="hidden" id="li<?php echo $count?>ProductID" value="<?php echo $therecord["pid"]?>"/>
 						<input type="hidden" id="li<?php echo $count?>Taxable" value="<?php echo $therecord["taxable"]?>"/>
 						<input type="hidden" id="li<?php echo $count?>UnitWeight" class="lineitemWeights" value="<?php echo $therecord["unitweight"]?>"/>
 						<input type="hidden" id="li<?php echo $count?>UnitCost" class="lineitemCosts" value="<?php echo $therecord["unitcost"]?>"/>
@@ -965,7 +999,7 @@ if(class_exists("phpbmsTable")){
 							)
 						VALUES (
 							".$this->invoiceid.",
-							".((int) $itemRecord[0]).",
+							'".getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0])."',
 							'".mysql_real_escape_string($itemRecord[1])."',
 							".((int) $itemRecord[2]).",
 							".((real) $itemRecord[3]).",

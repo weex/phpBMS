@@ -72,11 +72,11 @@ class clientInfo{
 	function _getClient($uuid){
 
 		$returnArray = array(
+                        "id" => 0,
 			"hascredit" => 0,
 			"creditlimit" => 0,
 			"creditleft" => 0,
 			"type" => "client",
-
 			"paymentmethodid" => "",
 			"shippingmethodid" => "",
 			"discountid" => "",
