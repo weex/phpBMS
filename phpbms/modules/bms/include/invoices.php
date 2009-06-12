@@ -180,7 +180,7 @@ if(class_exists("phpbmsTable")){
 
 				$thereturn[] = $therecord;
 
-				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+				$uuid = $therecord["uuid"];
 
 				$phpbms->topJS[] = 'statuses["'.$uuid.'"]=Array();';
 				$phpbms->topJS[] = 'statuses["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
@@ -242,7 +242,7 @@ if(class_exists("phpbmsTable")){
 			while($therecord = $this->db->fetchArray($queryresult)) {
 				$thereturn[$therecord["uuid"]]=$therecord;
 
-				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+				$uuid = $therecord["uuid"];
 
 				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]=Array();';
 				$phpbms->topJS[] = 'paymentMethods["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
@@ -302,7 +302,7 @@ if(class_exists("phpbmsTable")){
 			while($therecord = $this->db->fetchArray($queryresult)) {
 				$thereturn[$therecord["uuid"]]=$therecord;
 
-				$uuid = preg_replace("/[\-\:]/", "", $therecord["uuid"]);
+				$uuid = $therecord["uuid"];
 
 				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]=Array();';
 				$phpbms->topJS[] = 'shippingMethods["'.$uuid.'"]["name"]="'.htmlQuotes($therecord["name"]).'";';
@@ -1118,7 +1118,7 @@ if(class_exists("searchFunctions")){
 			$querystatement = "
 				SELECT
 					`defaultassignedtoid`,
-					`setreadytopost
+					`setreadytopost`
 				FROM
 					`invoicestatuses`
 				WHERE
@@ -1495,11 +1495,13 @@ function defineInvoicesPost(){
 					$arrecord["itemdate"] = dateToString(stringToDate($therecord["invoicedate"],"SQL") );
 					$arrecord["clientid"] = $therecord["clientid"];
 					$arrecord["relatedid"] = $therecord["id"];
+					$arrecord["uuid"] = "";
 
 					if(!class_exists("phpbmsTable"))
 						include("include/tables.php");
 
 					$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
+					$arrecord = $aritems->prepareVariables($arrecord);
 
 					$aritems->insertRecord($arrecord,$this->modifiedby);
 

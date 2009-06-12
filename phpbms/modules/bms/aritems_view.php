@@ -47,7 +47,9 @@
 	$payments = new aritemPayments($db, $therecord);
 
 	$client = new relatedClient($db, $therecord["clientid"]);
-	$clientName = $client->getName();
+	$clientInfo = $client->getClientInfo();
+
+    $clientName = $clientInfo["name"];
 
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
@@ -111,7 +113,7 @@
 	<input type="hidden" id="invoiceEdit" value="<?php echo getAddEditFile($db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883") ?>" />
 	<input type="hidden" id="receiptEdit" value="<?php echo getAddEditFile($db, "tbld:43678406-be25-909b-c715-7e2afc7db601") ?>" />
 	<input type="hidden" id="clientEdit" value="<?php echo getAddEditFile($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083") ?>" />
-	<input type="hidden" id="clientid" value="<?php echo $therecord["clientid"] ?>" />
+	<input type="hidden" id="clientid" value="<?php echo $clientInfo["id"] ?>" />
 	<div id="rightSideDiv">
 		<fieldset id="fsAttributes">
 			<legend>attribues</legend>

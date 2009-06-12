@@ -210,21 +210,20 @@ theStatus = {
 	statusChosen: function(e){
 
 		var status = getObjectFromID("statusid");
-		var statusVal = status.value.replace(/[\-\:]/g, "");
 		var assignedto = getObjectFromID("ds-assignedtoid");
 		var assignedtoid = getObjectFromID("assignedtoid");
 
 		//update assignedto
-		if(statuses[statusVal]["firstname"] || statuses[statusVal]["lastname"]){
+		if(statuses[status.value]["firstname"] || statuses[status.value]["lastname"]){
 
-			assignedto.value = (statuses[statusVal]["firstname"]+" "+statuses[statusVal]["lastname"]).replace(/^\s+|\s+$/g,"");
-			assignedtoid.value = statuses[statusVal]["userid"]
+			assignedto.value = (statuses[status.value]["firstname"]+" "+statuses[status.value]["lastname"]).replace(/^\s+|\s+$/g,"");
+			assignedtoid.value = statuses[status.value]["userid"]
 
 		}//endif
 
 		var readytopost = getObjectFromID("readytopost");
 
-		if(statuses[statusVal]["setreadytopost"] == 1){
+		if(statuses[status.value]["setreadytopost"] == 1){
 
 			var invoicedate = getObjectFromID("invoicedate");
 			if(!invoicedate.value)
@@ -830,7 +829,7 @@ lineitems = {
 
 		trs = getElementsByClassName("lineitems");
 		for(var i = 0; i< trs.length; i++)
-			if(parseInt(trs[i].id.substr(2)) > theid)
+			if(paymentmethodid.value(trs[i].id.substr(2)) > theid)
 				theid = parseInt(trs[i].id.substr(2));
 
 		theid++;
@@ -1106,15 +1105,14 @@ function changeTaxAmount(){
 
 function changeShipping(){
 	var theselect = getObjectFromID("shippingmethodid");
-	shippingId = theselect.value.replace(/[\-\:]/g,"");
 	var estimateShippingButton=getObjectFromID("estimateShippingButton");
 
 	var newClass="graphicButtons buttonShipDisabled";
 	var parenShipping=getObjectFromID("parenShipping");
 
-	if(shippingId!=''){
+	if(theselect.value!=''){
 		parenShipping.innerHTML="("+theselect.options[theselect.selectedIndex].text+")";
-		if(shippingMethods[shippingId]["canestimate"]==1){
+		if(shippingMethods[theselect.value]["canestimate"]==1){
 			newClass="graphicButtons buttonShip";
 		}
 	} else
@@ -1152,7 +1150,6 @@ function performShippingEstimate(base){
 	var resultsArea = getObjectFromID("shippingNoticeResults");
 
 	var currentShipping = getObjectFromID("shippingmethodid").value;
-	currentShipping = currentShipping.replace(/[\-\:]/g, "")
 	var theURL = base+shippingMethods[currentShipping]["estimationscript"];
 
 	var shiptozip = getObjectFromID("postalcode");
@@ -1326,7 +1323,6 @@ function calculateTotal(){
 
 function showPaymentOptions(){
 	var paymentmethodid = getObjectFromID("paymentmethodid");
-	paymentIdVal = paymentmethodid.value.replace(/[\-\:]/g, "");
 
 	var checkinfo=getObjectFromID("checkpaymentinfo");
 	var ccinfo=getObjectFromID("ccpaymentinfo");
@@ -1338,10 +1334,10 @@ function showPaymentOptions(){
 	var totalti = getObjectFromID("totalti");
 
 	var theType;
-	if(paymentIdVal == "")
+	if(paymentmethodid.value == "")
 		theType="";
 	else
-		theType=paymentMethods[paymentIdVal]["type"];
+		theType=paymentMethods[paymentmethodid.value]["type"];
 
 	//display appropriate payment details
 	switch(theType){
@@ -1418,26 +1414,26 @@ function showPaymentOptions(){
 
 	//update parentesis display
 	var parenPayment=getObjectFromID("parenPayment");
-	if(paymentIdVal == "")
+	if(paymentmethodid.value == "")
 		parenPayment.innerHTML="&nbsp;";
 	else
-		parenPayment.innerHTML="("+paymentMethods[paymentIdVal]["name"]+")";
+		parenPayment.innerHTML="("+paymentMethods[paymentmethodid.value]["name"]+")";
 
 	//next onlinceprocessing
 	var online;
 	var transactionid=getObjectFromID("pTransactionid");
 	var paymentButton=getObjectFromID("paymentProcessButton");
 
-	if(paymentIdVal == "")
+	if(paymentmethodid.value == "")
 		online = 0;
 	else
-		online = paymentMethods[paymentIdVal]["onlineprocess"];
+		online = paymentMethods[paymentmethodid.value]["onlineprocess"];
 
 	var processscript = getObjectFromID("processscript");
 
 	if(online==1){
 
-		processscript.value = paymentMethods[parseInt(paymentIdVal)]["processscript"];
+		processscript.value = paymentMethods[paymentmethodid.value]["processscript"];
 		transactionid.style.display="block";
 		paymentButton.className="graphicButtons buttonMoney";
 

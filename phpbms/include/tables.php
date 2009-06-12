@@ -620,6 +620,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
             foreach($this->fields as $fieldname => $thefield){
 
                 if(!isset($thefield["select"])){
+
                     switch($fieldname){
                         case "id":
                             if($overrideID && $variables["id"]){

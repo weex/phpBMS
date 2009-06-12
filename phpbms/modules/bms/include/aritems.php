@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 285 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-08-27 14:05:27 -0600 (Mon, 27 Aug 2007) $
@@ -37,35 +37,37 @@
  +-------------------------------------------------------------------------+
 */
 class relatedClient{
-	
-	var $clientid = 0;
-	
+
+	var $clientid = "";
+
 	function relatedClient($db, $clientid){
-	
+
 		$this->db = $db;
-		
-		$this->clientid = ((int) $clientid);
-	
+
+		$this->clientid = $clientid;
+
 	}//end method
-	
-	function getName(){
-	
+
+	function getClientInfo(){
+
 		$querystatement = "
 			SELECT
-				firstname,
-				lastname,
-				company
+				`id`,
+				`firstname`,
+				`lastname`,
+				`company`
 			FROM
-				clients
+				`clients`
 			WHERE
-				id=".$this->clientid;
-		
+				`uuid`='".$this->clientid."'
+		";
+
 		$queryresult = $this->db->query($querystatement);
 		$therecord = $this->db->fetchArray($queryresult);
-	
+
 		$thename = "";
 		if($therecord["lastname"]){
-		
+
 			$thename = $therecord["lastname"];
 
 			if($therecord["firstname"])
@@ -75,9 +77,12 @@ class relatedClient{
 				$thename .= " (".$therecord["company"].")";
 		} else
 			$thename = $therecord["company"];
-		
-		return $thename;
-	
+
+		$thereturn["name"] = $thename;
+		$thereturn["id"] = $therecord["id"];
+
+		return $thereturn;
+
 	}//end method
 
 }//end class
@@ -85,17 +90,17 @@ class relatedClient{
 class aritemPayments{
 
 	function aritemPayments($db, $aritem){
-		
+
 		$this->db = $db;
 		$this->aritem = $aritem;
-		
+
 		$this->_get();
-		
+
 	}//end method
 
 
 	function _get(){
-	
+
 		$querystatement = "
 			SELECT
 				receiptitems.applied,
@@ -107,14 +112,14 @@ class aritemPayments{
 				paymentmethods.name,
 				receipts.status
 			FROM
-				(receiptitems INNER JOIN receipts ON receiptitems.receiptid = receipts.id)
-				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.id
+				(receiptitems INNER JOIN receipts ON receiptitems.receiptid = receipts.uuid)
+				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid
 			WHERE
-				receiptitems.aritemid = ".((int) $this->aritem["id"]);
-			
+				receiptitems.aritemid = ".mysql_real_escape_string($this->aritem["uuid"]);
+
 			if($this->aritem["type"] == "deposit")
 				$querystatement.="
-					AND receipts.id != ".((int) $this->aritem["relatedid"]);			
+					AND receipts.uuid != ".mysql_real_escape_string($this->aritem["relatedid"]);
 
 			$querystatement.=
 				"
@@ -122,9 +127,9 @@ class aritemPayments{
 				receipts.posted,
 				receipts.receiptdate,
 				receipts.id";
-		
+
 		$this->queryresult = $this->db->query($querystatement);
-		
+
 		$querystatement = "
 			SELECT
 				SUM(receiptitems.applied) AS applied,
@@ -133,20 +138,20 @@ class aritemPayments{
 			FROM
 				receiptitems
 			WHERE
-				receiptitems.aritemid = ".((int) $this->aritem["id"]);
-		
+				receiptitems.aritemid = ".mysql_real_escape_string($this->aritem["uuid"]);
+
 		$totalresult = $this->db->query($querystatement);
 
 		$this->totals = $this->db->fetchArray($totalresult);
-		
+
 		if($this->aritem["type"] == "deposit")
 			$this->totals["applied"] = $this->totals["applied"] + $this->aritem["amount"];
-		
+
 	}//end method
-	
-	
+
+
 	function show(){
-	
+
 		?><table border="0" cellpadding="0" cellspacing="0" class="querytable" id="paymentTable">
 
 			<thead>
@@ -160,7 +165,7 @@ class aritemPayments{
 					<th align="right" nowrap="nowrap">tax adj.</th>
 				</tr>
 			</thead>
-			
+
 			<tfoot>
 				<tr class="queryfooter">
 					<td colspan="4" align="right">total: <strong><?php echo formatVariable($this->totals["applied"] + $this->totals["discount"] + $this->totals["taxadjustment"], "currency")?></strong> </td>
@@ -169,35 +174,35 @@ class aritemPayments{
 					<td align="right"><?php echo formatVariable($this->totals["taxadjustment"],"currency")?></td>
 				</tr>
 			</tfoot>
-			
+
 			<tbody>
 				<?php
 					if($this->db->numRows($this->queryresult)){
-						
+
 						$postedGroup = "";
 						$row = 1;
 						while($therecord = $this->db->fetchArray($this->queryresult)) {
-							
+
 							$row = ($row ==1)?2:1;
-							
+
 							if($postedGroup != $therecord["posted"]){
 
 								$postedGroup = $therecord["posted"];
-								
-								$title = ($therecord["posted"] == 1)? "Posted Payments" : "Pending Payments (non-posted)";																
-								
+
+								$title = ($therecord["posted"] == 1)? "Posted Payments" : "Pending Payments (non-posted)";
+
 								?><tr class="queryGroup">
 									<td colspan="7"><?php echo $title?></td>
 								</tr><?php
-								
+
 							}//end if
-							
+
 							if(!$therecord["name"])
 								$therecord["name"] = "other";
-							
+
 							if($therecord["id"] == $this->aritem["relatedid"] && $this->aritem["type"] == "deposit")
 								$therecord["applied"] = -1 * $therecord["applied"];
-						
+
 							?><tr class="row<?php echo $row?>">
 								<td><?php echo $therecord["status"]?></td>
 								<td><?php echo $therecord["id"]?></td>
@@ -206,32 +211,32 @@ class aritemPayments{
 								<td align="right"><?php echo formatVariable($therecord["applied"],"currency")?></td>
 								<td align="right"><?php echo formatVariable($therecord["discount"],"currency")?></td>
 								<td align="right"><?php echo formatVariable($therecord["taxadjustment"],"currency")?></td>
-							</tr><?php 
-						}//end while 
-						
+							</tr><?php
+						}//end while
+
 					} else {
 						?><tr class="norecords"><td colspan="7" >No payments recorded</td></tr><?php
 					}//endif
 				?>
 			</tbody>
 		</table><?php
-	
+
 	}//end method
-	
+
 }//end class
 
 
 if(class_exists("searchFunctions")){
 
 	class aritemsSearchFunctions extends searchFunctions{
-	
+
 		function run_aging(){
-			
+
 			goURL("modules/bms/aritems_aging.php");
-		
+
 		}//end method
-		
+
 	}//end class
-	
+
 }//end if
 ?>
