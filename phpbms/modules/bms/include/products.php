@@ -42,27 +42,44 @@ if(class_exists("phpbmsTable")){
 
 		var $availableProducts = NULL;
 
+                /**
+                 * Overriden phpbmstable function
+                 */
 		function getDefaults(){
+
 			$therecord = parent::getDefaults();
 
-			$therecord["type"]="Inventory";
-			$therecord["status"]="In Stock";
-			$therecord["taxable"]=1;
-			$therecord["categoryid"]="";
+			$therecord["type"] = "Inventory";
+			$therecord["status"] = "In Stock";
+			$therecord["taxable"] = 1;
+			$therecord["categoryid"] = "";
 
 			return $therecord;
-		}
 
-		function getPicture($name){
-			if (function_exists('file_get_contents')) {
+		}//end function getDefaults
+
+
+		/**
+                 * retruns the file contents uploaded by the form
+                 *
+                 * @param string $name name of the post field that was used to upload
+                 *
+                 * @retrun mixed the data from the post $name or FALSE on failure.
+                 */
+                function getPicture($name){
+
+                	if (function_exists('file_get_contents'))
 				$file = addslashes(file_get_contents($_FILES[$name]['tmp_name']));
-			} else {
+			else {
+
 				// If using PHP < 4.3.0 use the following:
 				$file = addslashes(fread(fopen($_FILES[$name]['tmp_name'], 'r'), filesize($_FILES[$name]['tmp_name'])));
-			}
+
+			}//endif
 
 			return $file;
-		}
+
+		}//end function getPicture
 
 
 		function populateProductArray(){
@@ -85,13 +102,15 @@ if(class_exists("phpbmsTable")){
 			if($this->db->numRows($queryresult)){
 
 				while($therecord = $this->db->fetchArray($queryresult)){
+
 					$partnumber = $therecord["partnumber"];
 					$id = $therecord["id"];
 
 					$this->availableProducts[$partnumber]["id"] = $id;
+
 				}//end while
 
-			}
+			}//wndif
 
 		}//end method --populateProductArray--
 
@@ -287,12 +306,14 @@ if(class_exists("phpbmsTable")){
 
 			return $variables;
 
-		}//end function
+		}//end function prepareVariables
 
+                /**
+                 * Overriden phpbmstable function
+                 */
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-		function updateRecord($variables, $modifiedby = NULL){
-
-			parent::updateRecord($variables, $modifiedby);
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			if(isset($variables["addcats"]))
 				$this->updateCategories($variables["uuid"], $variables["addcats"]);
@@ -304,25 +325,37 @@ if(class_exists("phpbmsTable")){
 		}//end function updateRecord
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+                /**
+                 * Overriden phpbmstable function
+                 */
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			if($createdby === NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
+
+                        if(is_array($newid))
+                                $uuid = $newid["uuid"];
+                        else
+                                $uuid = $variables["uuid"];
 
 			if(isset($variables["addcats"]))
-				$this->updateCategories($newid, $variables["addcats"]);
+				$this->updateCategories($uuid, $variables["addcats"]);
 
 			return $newid;
 
 		}//end function insertRecord
 
 
-		//retrieves and displays a list of possible product categories
+		/**
+                 * Retrieves and displays a list of possible product categories
+                 *
+                 * @param string $categoryid product category uuid
+                 */
 		function displayProductCategories($categoryid){
 
-            $categoryid = mysql_real_escape_string($categoryid);
+                        $categoryid = mysql_real_escape_string($categoryid);
 
 			$querystatement = "
 				SELECT
@@ -338,19 +371,30 @@ if(class_exists("phpbmsTable")){
 
 			$queryresult = $this->db->query($querystatement);
 
-			?><select name="categoryid" id="categoryid">
-                   <option value="" <?php if($categoryid=="") echo 'selected="selected"'?>>No Master Category</option>
+			?>
+                        <select name="categoryid" id="categoryid">
+                                <option value="" <?php if($categoryid=="") echo 'selected="selected"'?>>No Master Category</option>
 				<?php
 					while($therecord = $this->db->fetchArray($queryresult)){
-						?><option value="<?php echo $therecord["uuid"]?>" <?php if($categoryid==$therecord["uuid"]) echo "selected=\"selected\""?>><?php echo $therecord["name"];?></option>
+
+                                                ?>
+                                                <option value="<?php echo $therecord["uuid"]?>" <?php if($categoryid==$therecord["uuid"]) echo 'selected="selected"' ?>><?php echo $therecord["name"];?></option>
 						<?php
-					}
+
+					}//endwhile
 				?>
-			</select><?php
+			</select>
+                        <?php
 
 		}//end function displayProductCategories
 
 
+                /**
+                 * displays a list of additional categories associated with the product.
+                 *
+                 * @param string $uuid products uuid
+                 *
+                 */
 		function displayAdditionalCategories($uuid){
 
 			?>
@@ -398,6 +442,13 @@ if(class_exists("phpbmsTable")){
 		}//end function displayAdditionalCategories
 
 
+                /**
+                 * updates additional categories for product (by wiping current list and adding new ones)
+                 *
+                 * @param string $recorduuid product's uuid
+                 * @param string $categoryList comma separated list of product category uuids
+                 *
+                 */
 		function updateCategories($recorduuid, $categoryList){
 
 			if($categoryList){
@@ -432,8 +483,9 @@ if(class_exists("phpbmsTable")){
 
 			}//endif
 
-		}//end updateCategories
+		}//end function updateCategories
 
-	}//end products class
+	}//end class products
+
 }//end if
 ?>

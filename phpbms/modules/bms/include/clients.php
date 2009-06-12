@@ -370,11 +370,16 @@ if(class_exists("phpbmsTable")){
 		}//end method - updateRecord
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			//$variables = $this->prepareVariables($variables);
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
+
+			if(is_array($newid))
+				$newUuid = $newid["uuid"];
+			else
+				$newUuid = $variables["uuid"];
 
 			//need to create the address and addresstorecord id
 			// make sure we are not setting extra info
@@ -382,22 +387,30 @@ if(class_exists("phpbmsTable")){
 			unset($this->address->fields["phone"]);
 			unset($this->address->fields["notes"]);
 			unset($variables["id"]);// This breaks the import otherwise...needs further testing and possibly a better solution
+
 			$variables["title"] = "Main Addresss";
 			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
-			$variables["recordid"] = $variables["uuid"];
+			$variables["recordid"] = $newUuid;
 			$variables["uuid"] = "";
 			$variables["defaultshipto"] = 1;
 			$variables["primary"] = 1;
 
-			if($newid){// temporary fix... may need to verify client id before hand... dunno
+			if($newUuid){ // temporary fix... may need to verify client id before hand... dunno
+
 				$variables = $this->address->prepareVariables($variables);
 				$errorArray = $this->address->verifyVariables($variables);
+
 				if(!count($errorArray)){
+
 					$this->address->insertRecord($variables, $createdby);
-				}else{
+
+				} else {
+
 					foreach($errorArray as $error)
 						$logError = new appError(-910, $error, "Address Verification Error");
+
 				}//end if
+
 			}//end if
 
 			//restore the fields

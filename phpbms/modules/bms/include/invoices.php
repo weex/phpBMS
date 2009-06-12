@@ -959,7 +959,7 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function set($itemlist, $userid = NULL){
+		function set($itemlist, $userid = NULL, $useUuid = false){
 
 			if(!$userid)
 				$userid = $_SESSION["userinfo"]["id"];
@@ -981,6 +981,8 @@ if(class_exists("phpbmsTable")){
 				$itemRecord = explode("::", $item);
 				if(count($itemRecord) > 1){
 
+					$theid = ($useUuid)? mysql_real_escape_string($itemRecord[0]): getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0]);
+
 					$insertstatement ="
 						INSERT INTO
 							lineitems(
@@ -1000,7 +1002,7 @@ if(class_exists("phpbmsTable")){
 							)
 						VALUES (
 							".$this->invoiceid.",
-							'".getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0])."',
+							'".$theid."',
 							'".mysql_real_escape_string($itemRecord[1])."',
 							".((int) $itemRecord[2]).",
 							".((real) $itemRecord[3]).",

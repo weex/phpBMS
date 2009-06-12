@@ -85,9 +85,19 @@ if(class_exists("addresses")){
 
 		// CLASS OVERRIDES ===============================================
 		// ===============================================================
-		function getRecord($id){
+		function getRecord($id, $useUuid = false){
 
-			$id = (int) $id;
+                        if($useUuid){
+
+                            $id = mysql_real_escape_string($id);
+                            $whereField = "uuid";
+
+                        } else {
+
+                            $id = (int) $id;
+                            $whereField = "id";
+
+                        }//endif
 
 			$querystatement = "
 				SELECT
@@ -95,9 +105,10 @@ if(class_exists("addresses")){
 				FROM
 					addresstorecord
 				WHERE
-					id = ".$id;
+					`".$whereField."` = ".$id;
 
 			$queryresult = $this->db->query($querystatement);
+
 			if($this->db->numRows($queryresult)) {
 
 				$therecord = $this->db->fetchArray($queryresult);
@@ -112,7 +123,8 @@ if(class_exists("addresses")){
 				";
 
 				$queryresult = $this->db->query($querystatement);
-				if($this->db->numRows($queryresult)){
+
+                        	if($this->db->numRows($queryresult)){
 
 					$addressID = $this->db->fetchArray($queryresult);
 					$therecord["addressuuid"] = $therecord["addressid"]; //artificial uuid field... maybe bad
@@ -124,7 +136,7 @@ if(class_exists("addresses")){
 
 					$therecord = array_merge($addressrecord, $therecord);
 
-				}else
+				} else
 					$therecord = $this->getDefaults();
 
 			} else
