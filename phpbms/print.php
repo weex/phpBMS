@@ -76,10 +76,10 @@ if (isset($_POST["command"])){
 					$whereclause="where ".substr($whereclause,3);
 					$dataprint="Selected Records";
 				break;
-			}			
+			}
 			$_SESSION["printing"]["whereclause"]=$whereclause;
 			$_SESSION["printing"]["dataprint"]=$dataprint;
-			
+
 			//next let's do the sort
 			$sortorder="";
 			switch($_POST["thesort"]){
@@ -97,24 +97,24 @@ if (isset($_POST["command"])){
 				break;
 			}
 			$_SESSION["printing"]["sortorder"]=$sortorder;
-			
+
 			if(isset($_POST["choosereport"])){
 				$tablePrinter->openwindows="";
 				for($i=0;$i<count($_POST["choosereport"]);$i++){
 					if($_POST["choosereport"][$i]){
 						$querystatement="SELECT reportfile,type from reports where id=".$_POST["choosereport"][$i].";";
 						$queryresult=$db->query($querystatement);
-						if(!$queryresult) $error = new appError(100,"Could not Retreive Report Information");				
-						$reportrecord=$db->fetchArray($queryresult);	
+						if(!$queryresult) $error = new appError(100,"Could not Retreive Report Information");
+						$reportrecord=$db->fetchArray($queryresult);
 						$fakeExtForIE="";
 						if($reportrecord["type"]=="PDF Report")
-							$fakeExtForIE="&ext=.pdf";
-						$dateTimeStamp="&ts=".mktime(); // make the url unique to avoid using browser cache
+							$fakeExtForIE="&amp;ext=.pdf";
+						$dateTimeStamp="&amp;ts=".mktime(); // make the url unique to avoid using browser cache
 						//javascript open each report in new window
 						$tablePrinter->openwindows.="window.open('".APP_PATH.$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
 					}
 				}
-			}			
+			}
 		break;
 	}
 }
@@ -136,15 +136,15 @@ include("header.php");
 <div >
 <div class="bodyline" id="mainbody">
 	<h1><?php echo $pageTitle ?><a name="top"></a></h1>
-	
+
 <form action="print.php" method="post" name="print">
 	<input type="hidden" name="backurl" value="<?php echo $_GET["backurl"]?>" />
 
 	<fieldset id="fsReportInformation" >
 		<legend>report information</legend>
-		<?php 
+		<?php
 			if ($db->numRows($tablePrinter->reports)){
-				$db->seek($tablePrinter->reports,0); 
+				$db->seek($tablePrinter->reports,0);
 				$therecord=$db->fetchArray($tablePrinter->reports);
 			} else {
 				$therecord["id"]=0;
@@ -158,9 +158,9 @@ include("header.php");
 			name<br />
 			<input name="reportid" type="hidden" value="<?php echo $therecord["id"] ?>" />
 			<input name="reportfile" type="hidden" value="<?php echo htmlQuotes($therecord["reportfile"]) ?>" />
-			<input name="name" type="text" class="uneditable important" id="name" value="<?php echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="readonly" />		
+			<input name="name" type="text" class="uneditable important" id="name" value="<?php echo htmlQuotes($therecord["name"]) ?>" size="32" maxlength="64" readonly="readonly" />
 		</p>
-		
+
 		<p>
 			type<br />
 			<input name="type" type="text" class="uneditable" id="type" value="<?php echo $therecord["type"] ?>" size="20" maxlength="64" readonly="readonly" />
@@ -181,7 +181,7 @@ include("header.php");
 	</div>
 
 	<p><button id="showoptions" class="graphicButtons buttonDown" type="button"><span>more options</span></button></p>
-	
+
 	<div id="moreoptions">
 		<fieldset>
 			<legend>data</legend>
@@ -199,22 +199,22 @@ include("header.php");
 				</select>
 			</p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>sort</legend>
-			
+
 			<p id="savedsortdiv">
 				<label for="savedsorts">saved sort...</label><br />
 				<?php $tablePrinter->showSaved($tablePrinter->savedSorts,"savedsorts");?>
 			</p>
-			
+
 			<p id="singlesortdiv">
 				<label for="singlefield">field</label><br />
 				<?php $tablePrinter->showFieldSort()?>
 				<select name="order">
 					<option value="ASC" selected="selected">Ascending</option>
 					<option value="DESC">Descending</option>
-				</select>			
+				</select>
 			</p>
 			<p class="important">
 				<label for="thesort">by</label><br />
@@ -236,7 +236,7 @@ include("header.php");
 			<a href="http://www.phpbms.org">phpBMS project site</a>, or visit <a href="http://kreotek.com">Kreotek's website</a> for more information.
 			</p>
 		</fieldset>
-	</div>	
+	</div>
 	<fieldset class="small">
 		<legend>Pop-Up Windows</legend>
 		<p class="notes">
@@ -247,7 +247,7 @@ include("header.php");
 
 	<p id="printFooter">
 		<input name="command" type="submit" class="Buttons" id="printButton" value="print" accesskey="p" title="print (alt+p)" />
-		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)" />	 
+		<input name="command" type="submit" class="Buttons" id="cancel" value="done" accesskey="d" title="done (alt+d)" />
 	</p>
    </form>
 </div>

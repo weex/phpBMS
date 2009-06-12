@@ -172,6 +172,8 @@ class purchaseHistoryReport{
 
 	function showReport(){
 	?>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
 <head>
 <title>Client Purchase History</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -182,12 +184,12 @@ BODY,TH,TD,H1,H2,h3{
 	font-family : sans-serif;
 	color : Black;
 }
-H1,H2{
+H1,H2, LI{
 	font-size:18px;
 	border-bottom:4px solid black;
 	margin:0px;
 }
-H2{ font-size:11px; border-bottom-width:2px; margin-bottom:10px;}
+H2, LI{ font-size:11px; border-bottom-width:2px; margin-bottom:10px;}
 H3{ font-size:14px; margin-bottom:2px;}
 div {padding:5px;}
 
@@ -210,30 +212,40 @@ TH {
 </head>
 <body>
 <h1>Client Purchase History</h1>
-<h2>
+
 	<ul>
 		<li>
+			<strong>
 			source:<br />
 			<?php echo $_SESSION["printing"]["dataprint"]?>
+			</strong>
 		</li>
 		<li>
+			<strong>
 			date generated:<br />
 			<?php echo dateToString(mktime())." ".timeToString(mktime());?>
+			</strong>
 		</li>
 		<li style="padding-left:30px;padding-right:20px;">
+			<strong>
 			view:<br />
 			<?php echo $this->view?>
+			</strong>
 		</li>
 		<li>
+			<strong>
 			from:<br />
 			<?php echo $this->fromdate?>
+			</strong>
 		</li>
 		<li>
+			<strong>
 			to:<br />
 			<?php echo $this->todate?>
+			</strong>
 		</li>
 	</ul><br /><br />
-</h2>
+
 <?php while($therecord=$this->db->fetchArray($this->clientQuery)){?>
 	<h3><?php echo $therecord["thename"]?></h3>
 <?php $this->showPurchaseHistory($therecord["id"]);}//end while?>
