@@ -55,10 +55,12 @@
 	if(!isset($_POST["command"])) $_POST["command"]="show";
 
 	if($_POST["command"]=="print")	{
-			$_SESSION["printing"]["whereclause"]="WHERE clients.id=".$_GET["id"];
-			$_SESSION["printing"]["dataprint"]="Single Record";
-			$fromClient=true;
-			require("report/clients_purchasehistory.php");
+
+	    	$_SESSION["printing"]["whereclause"]="WHERE clients.id=".$_GET["id"];
+    		$_SESSION["printing"]["dataprint"]="Single Record";
+                $fromClient=true;
+                require("report/clients_purchasehistory.php");
+
 	} else {
 
 	$pageTitle="Client Purchase History: ";
@@ -84,24 +86,30 @@
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
 
 	//get history
-	$querystatement="SELECT
+	$querystatement="
+            SELECT
 		invoices.id,
-		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
+		IF(invoices.type = 'Invoice', invoices.invoicedate, invoices.orderdate) AS thedate,
 		invoices.type,
-		products.partname as partname,
-		products.partnumber as partnumber,
-		lineitems.quantity as qty,
-		lineitems.unitprice*lineitems.quantity as extended,
-		lineitems.unitprice as price
-		FROM ((clients inner join invoices on clients.id=invoices.clientid)
-				inner join lineitems on invoices.id=lineitems.invoiceid)
-					inner join products on lineitems.productid=products.id
-		WHERE clients.id=".$_GET["id"]."
-		and ".$thestatus."
-		HAVING
-		thedate >=\"".$mysqlfromdate."\"
-		and thedate <=\"".$mysqltodate."\"
-		ORDER BY thedate,invoices.id;";
+		products.partname AS partname,
+		products.partnumber AS partnumber,
+		lineitems.quantity AS qty,
+		lineitems.unitprice * lineitems.quantity AS extended,
+		lineitems.unitprice AS price
+	    FROM
+                ((clients INNER JOIN invoices ON clients.uuid = invoices.clientid)
+		    INNER JOIN lineitems ON invoices.id = lineitems.invoiceid)
+			LEFT JOIN products ON lineitems.productid = products.uuid
+	    WHERE
+                clients.id=".$_GET["id"]."
+		AND ".$thestatus."
+	    HAVING
+		thedate >='".$mysqlfromdate."'
+		AND thedate <= '".$mysqltodate."'
+	    ORDER BY
+                thedate,
+                invoices.id";
+                
 	$queryresult=$db->query($querystatement);
 
 	$numrows=$db->numRows($queryresult);

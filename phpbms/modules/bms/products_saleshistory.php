@@ -78,30 +78,31 @@
 	$refrecord=$db->fetchArray($refquery);
 
 	$querystatement="
-		SELECT
-				invoices.id AS id,
-				IF(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) AS thedate,
-				CONCAT(\"<strong>\",IF(clients.lastname!=\"\",CONCAT(clients.lastname,\", \",clients.firstname,IF(clients.company!=\"\",CONCAT(\" (\",clients.company,\")\"),\"\")),clients.company),\"</strong>\") AS client,
-				lineitems.quantity AS qty,
-				lineitems.unitprice*lineitems.quantity AS extended,
-				lineitems.unitprice AS price,
-				lineitems.unitcost AS cost,
-				lineitems.unitcost*lineitems.quantity AS extendedcost
-		FROM
-				((products INNER JOIN lineitems ON products.id=lineitems.productid)
-				INNER JOIN invoices ON lineitems.invoiceid=invoices.id)
-					INNER JOIN clients ON invoices.clientid=clients.id
-		WHERE
-				products.id=".((int)$_GET["id"])."
-				AND ".$thestatus."
-		HAVING
-				thedate >=\"".$mysqlfromdate."\"
-				AND thedate <=\"".$mysqltodate."\"
-		ORDER BY
-				thedate " .$dateOrder;
+            SELECT
+                invoices.id AS id,
+                IF(invoices.type = 'Invoice', invoices.invoicedate, invoices.orderdate) AS thedate,
+                CONCAT('<strong>',IF(clients.lastname != '', CONCAT(clients.lastname,', ', clients.firstname, IF(clients.company != '', CONCAT(' (', clients.company, ')'),'')), clients.company), '</strong>') AS client,
+                lineitems.quantity AS qty,
+                lineitems.unitprice * lineitems.quantity AS extended,
+                lineitems.unitprice AS price,
+                lineitems.unitcost AS cost,
+                lineitems.unitcost * lineitems.quantity AS extendedcost
+            FROM
+                ((products INNER JOIN lineitems ON products.uuid = lineitems.productid)
+                    INNER JOIN invoices ON lineitems.invoiceid=invoices.id)
+                        INNER JOIN clients ON invoices.clientid = clients.uuid
+            WHERE
+                products.id=".((int)$_GET["id"])."
+                AND ".$thestatus."
+            HAVING
+                thedate >= '".$mysqlfromdate."'
+                AND thedate <= '".$mysqltodate."'
+            ORDER BY
+                thedate " .$dateOrder;
+
 	$queryresult=$db->query($querystatement);
 
-	$queryresult? $numrows=$db->numRows($queryresult): $numrows=0;
+	$numrows = ($queryresult)? $db->numRows($queryresult) : 0;
 
 	$pageTitle="Product Sales History: ".$refrecord["partname"];
 
