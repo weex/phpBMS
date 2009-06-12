@@ -472,6 +472,7 @@ if(class_exists("phpbmsTable")){
 			else
 				$therecord["clientid"]="";
 
+			$therecord["clientrealid"] = 0;
 			$therecord["type"] = "Order";
 			$therecord["statusid"] = $this->getDefaultStatus();
 			$therecord["orderdate"] = dateToString(mktime(),"SQL");

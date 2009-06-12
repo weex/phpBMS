@@ -49,19 +49,19 @@
 	//top_start
 	//left_start
 	//border debug
-	//reportquerystatement	
+	//reportquerystatement
 	if(!isset($border_debug)) $border_debug=0;
-	
-	//Also, it requires the definition of the function printLabel($pdf,$therecord,$thex,$they,$border_debug) which prints the actual 
+
+	//Also, it requires the definition of the function printLabel($pdf,$therecord,$thex,$they,$border_debug) which prints the actual
 	//contectens of the label
-	
+
 	if(isset($_POST["command"])) {
-	
+
 		if(!is_numeric($_POST["skiplabels"])) $_POST["skiplabels"]=0;
 		if ($_POST["skiplabels"]>$maxrows*$maxcolumns) $_POST["skiplabels"]=0;
-			
-		
-	
+
+
+
 		//Generate the invoice Query
 		$reportquerystatement.=$_SESSION["printing"]["whereclause"].$sortorder;
 		$thequery=$db->query($reportquerystatement);
@@ -69,14 +69,14 @@
 		//===================================================================================================
 		// Generating PDF File.
 		//===================================================================================================
-		
+
 		//define the documents and margins
 		$pdf=new FPDF("P","in","Letter");
 		$pdf->Open();
 		$pdf->SetMargins(0,0);
-	
-		$pdf->AddPage();	
-		
+
+		$pdf->AddPage();
+
 		$thex=$leftstart;
 		$they=$topstart;
 		$rowcount=1;
@@ -95,8 +95,9 @@
 			$rowcount++;
 			$totalcount++;
 		}
-		
-		while($therecord=$db->fetchArray($thequery)) {	
+
+		while($therecord=$db->fetchArray($thequery)) {
+
 			if($rowcount>$maxrows) {
 			   $column++;
 			   $they=$topstart;
@@ -104,33 +105,33 @@
 			   $rowcount=1;
 			}
 			if($column>$maxcolumns){
-				$pdf->AddPage();				
+				$pdf->AddPage();
 				$thex=$leftstart;
 				$they=$topstart;
 				$rowcount=1;
 				$column=1;
 			}
 			$pdf=printLabel($pdf,$therecord,$thex,$they,$border_debug);
-			
+
 			$they+=$labelheight;
 			$rowcount++;
 		}// end fetch_array while loop
-			
+
 		$pdf->Output();
 		exit();
 	} else {
-	
+
 	$pageTitle = "Label Options";
 	$phpbms->showMenu = false;
 	$phpbms->cssIncludes[] = "pages/historyreports.css";
 	include("header.php");
-	
+
 ?>
 
 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="print_form">
 <div class="bodyline" id="reportOptions">
 	<h1 id="topTitle"><span>Label Options</span></h1>
-	
+
 		<p>
 			skip first labels<br />
 			<input name="skiplabels" value="0" size="3" maxlength="3" />

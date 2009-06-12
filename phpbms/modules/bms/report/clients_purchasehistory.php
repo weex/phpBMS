@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -40,40 +40,45 @@
 if(!isset($fromClient)) {
 	require_once("../../../include/session.php");
 }
-	
+
 class purchaseHistoryReport{
-	
+
 	var $whereclause="";
-	var $sortorder=" ORDER BY if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) ";
+	var $sortorder=" ORDER BY IF(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) ";
 	var $fromdate;
 	var $todate;
 	var $view;
 
 	var $clientQuery;
-	
+
 	function initialize($variables,$db){
 
-		$this->db = $db;		
+		$this->db = $db;
 		$this->fromdate=$variables["fromdate"];
 		$this->todate=$variables["todate"];
 		$this->view=$variables["status"];
-		
+
 		$this->whereclause=$_SESSION["printing"]["whereclause"];
 		if(isset($_SESSION["printing"]["sortorder"]))
 			if ($_SESSION["printing"]["sortorder"])
 				$this->sortorder=$_SESSION["printing"]["sortorder"];
 
-		if($this->whereclause=="") $this->whereclause="WHERE clients.id!=-1";		
+		if($this->whereclause=="") $this->whereclause="WHERE clients.id!=-1";
 		$this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
 
-		$querystatement="SELECT clients.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
-					     FROM clients ".$this->whereclause.$this->sortorder;
+		$querystatement = "
+			SELECT
+				`clients`.`id`,
+				IF(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename
+		     FROM
+				`clients` ".$this->whereclause.$this->sortorder;
+
 		$queryresult=$this->db->query($querystatement);
 
 		$this->clientQuery=$queryresult;
 	}
-	
-		
+
+
 	function showPurchaseHistory($id){
 
 		$thestatus="(invoices.type =\"";
@@ -91,23 +96,28 @@ class purchaseHistoryReport{
 				$searchdate="orderdate";
 			break;
 		}
-	
+
 	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
 	$mysqltodate=sqlDateFromString($_POST["todate"]);
-			
-	$querystatement="SELECT invoices.id,
-		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate, 
-		if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as formateddate, 
-		invoices.type,
-		products.partname as partname, products.partnumber as partnumber,
-		lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
-		lineitems.unitprice as price
-		FROM ((clients inner join invoices on clients.id=invoices.clientid) 
-				inner join lineitems on invoices.id=lineitems.invoiceid) 
-					inner join products on lineitems.productid=products.id
-		WHERE clients.id=".$id."   
-		and ".$thestatus."		
-		HAVING 
+
+	$querystatement = "
+		SELECT
+			invoices.id,
+			if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as thedate,
+			if(invoices.type=\"Invoice\",invoices.invoicedate,invoices.orderdate) as formateddate,
+			invoices.type,
+			products.partname as partname,
+			products.partnumber as partnumber,
+			lineitems.quantity as qty,
+			lineitems.unitprice*lineitems.quantity as extended,
+			lineitems.unitprice as price
+		FROM
+			((`clients` INNER JOIN `invoices` ON `clients`.`uuid`=`invoices`.`clientid`)
+				INNER JOIN `lineitems` ON `invoices`.`id`=`lineitems`.`invoiceid`)
+					INNER JOIN `products` ON `lineitems`.`productid`=`products`.`uuid`
+		WHERE `clients`.`id`='".$id."'
+		AND ".$thestatus."
+		HAVING
 		thedate >=\"".$mysqlfromdate."\"
 		and thedate <=\"".$mysqltodate."\"
 		ORDER BY thedate,invoices.id;";
@@ -118,7 +128,7 @@ class purchaseHistoryReport{
 	<table border="0" cellpadding="0" cellspacing="0" >
 		<tr>
 			<th align="left" nowrap="nowrap" colspan="3">invoice</th>
-			<th align="left" nowrap="nowrap" colspan="3">product</th>		
+			<th align="left" nowrap="nowrap" colspan="3">product</th>
 			<th align="left" nowrap="nowrap" colspan="2">line item</th>
 		</tr>
 		<tr>
@@ -131,8 +141,8 @@ class purchaseHistoryReport{
 			<th align="center" nowrap="nowrap" >qty.</th>
 			<th align="right" nowrap="nowrap" >ext.</th>
 		</tr>
-    <?php 
-	$totalextended=0;		
+    <?php
+	$totalextended=0;
 	while ($therecord=$this->db->fetchArray($thequery)){
 		$totalextended=$totalextended+$therecord["extended"];
 	?>
@@ -170,12 +180,12 @@ class purchaseHistoryReport{
 BODY,TH,TD,H1,H2,h3{
 	font-size : 11px;
 	font-family : sans-serif;
-	color : Black; 
+	color : Black;
 }
 H1,H2{
 	font-size:18px;
 	border-bottom:4px solid black;
-	margin:0px;	
+	margin:0px;
 }
 H2{ font-size:11px; border-bottom-width:2px; margin-bottom:10px;}
 H3{ font-size:14px; margin-bottom:2px;}
@@ -229,31 +239,31 @@ TH {
 <?php $this->showPurchaseHistory($therecord["id"]);}//end while?>
 </body>
 </html>
-	<?php	
+	<?php
 	}
 }//end class
 
 if(isset($_POST["command"])){
 	$myreport= new purchaseHistoryReport();
 	$myreport->initialize($_POST,$db);
-	
+
 	$myreport->showReport();
 } else {
 		require("include/fields.php");
-		
+
 		$pageTitle = "Client Purchase History";
 		$phpbms->cssIncludes[] = "pages/historyreports.css";
 		$phpbms->showMenu = false;
-	
+
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
-		
+
+
 		$thedate = dateToString( mktime(0,0,0,date("m"),1),"SQL" );
 		$theinput = new inputDatePicker("fromdate", $thedate, "from",true);
 		$theform->addField($theinput);
-		
+
 		$thedate = dateToString( mktime(0,0,0,date("m")+1,0,date("Y")), "SQL" );
 		$theinput = new inputDatePicker("todate", $thedate, "to",true);
 		$theform->addField($theinput);
@@ -266,7 +276,7 @@ if(isset($_POST["command"])){
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return validateForm(this)">
 <div class="bodyline" id="reportOptions">
-	<h1 id="topTitle"><span>Product Sales History Options</span></h1>	
+	<h1 id="topTitle"><span>Product Sales History Options</span></h1>
 		<fieldset>
 			<legend>time frame</legend>
 
@@ -281,7 +291,7 @@ if(isset($_POST["command"])){
 				<option value="Orders/Invoices" selected="selected">Orders/Invoices</option>
 				<option value="Invoices">Invoices</option>
 				<option value="Orders">Orders</option>
-		   </select>					
+		   </select>
 		</p>
 
 		<div align="right">
@@ -290,6 +300,6 @@ if(isset($_POST["command"])){
 		</div>
 </div>
 </form>
-<?php 
+<?php
 include("footer.php");
 }?>

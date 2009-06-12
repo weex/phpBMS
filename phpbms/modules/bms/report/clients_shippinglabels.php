@@ -52,44 +52,48 @@
 	$columnmargin=1/8;
 	$labelheight=1;
 	$labelwidth=2+(5/8);
-	
+
 	$reportquerystatement="
 		SELECT
 			clients.firstname,
 			clients.lastname,
 			clients.company,
+			addresses.shiptoname,
 			addresses.address1,
 			addresses.address2,
 			addresses.city,
 			addresses.state,
 			addresses.postalcode,
 			addresses.country
-		FROM 
-			((clients INNER JOIN addresstorecord on clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.defaultshipto=1) 
-			INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)";
-						
+		FROM
+			((clients INNER JOIN addresstorecord on clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND addresstorecord.defaultshipto=1)
+			INNER JOIN addresses ON  addresstorecord.addressid = addresses.uuid)";
+
 	$border_debug=0;
 
 	function printLabel($pdf,$therecord,$thex,$they,$border_debug){
 		//offset lef tby 1/8" and top by 1/16th
 		$pdf->SetXY($thex+(1/8),$they+1/16);
 		$pdf->SetFont("Arial","B",9);
-		
+
 		$thename = $therecord["company"];
 		if($thename)
 			$thename .= "\n";
-		$thename .= trim($therecord["firstname"]." ".$therecord["lastname"]);
-					
+		if(!$therecord["shiptoname"])
+			$thename .= trim($therecord["firstname"]." ".$therecord["lastname"]);
+		else
+			$thename .= trim($therecord["shiptoname"]);
+
 		$pdf->MultiCell(2.25,.135,$thename,$border_debug,2,"L");
 		$pdf->SetFont("Arial","",8);
 		$pdf->SetX($thex+(1/8));
 		$pdf->Cell(2.25,.12,$therecord["address1"],$border_debug,2,"L");
-		if($therecord["address2"]) 
+		if($therecord["address2"])
 			$pdf->Cell(2.25,.12,$therecord["address2"],$border_debug,2,"L");
 		$pdf->Cell(2.25,.12,$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"],$border_debug,2,"L");
-		if($therecord["country"]) 
-			$pdf->Cell(2.25,.12,$therecord["country"],$border_debug,2,"L");	
-		
+		if($therecord["country"])
+			$pdf->Cell(2.25,.12,$therecord["country"],$border_debug,2,"L");
+
 		return $pdf;
 	}
 

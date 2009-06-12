@@ -341,7 +341,8 @@ if(class_exists("phpbmsTable")){
 			$variables["recordid"] = $variables["uuid"];//here to pass addresstorecord validation
 			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";//here to pass addresstorecord validation
 			//need to update the address
-			$variables["uuid"] = $variables["addressid"];
+
+			$variables["id"] = $variables["addressid"];
 			// don't want to blank out extra address information
 			// if it was added later.
 			unset($this->address->fields["email"]);
@@ -350,11 +351,12 @@ if(class_exists("phpbmsTable")){
 			unset($this->address->fields["title"]);
 			unset($this->address->fields["createdby"]);
 			unset($this->address->fields["creationdate"]);
+			unset($this->address->fields["uuid"]);
 
 			$variables = $this->address->prepareVariables($variables);
 			$errorArray = $this->address->verifyVariables($variables);
 			if(!count($errorArray)){
-				$this->address->updateRecord($variables, $modifiedby, true);
+				$this->address->updateRecord($variables, $modifiedby);
 			}else{
 				foreach($errorArray as $error)
 					$logError = new appError(-910, $error, "Address Verification Error");

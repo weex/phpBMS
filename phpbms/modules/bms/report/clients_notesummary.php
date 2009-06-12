@@ -50,8 +50,13 @@
 		$sortorder=" ORDER BY concat(clients.lastname,clients.firstname,clients.company)";
 
 	//Generate the Query
-	$querystatement="SELECT if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,clients.id
-						FROM clients ".$_SESSION["printing"]["whereclause"].$sortorder;
+	$querystatement="
+		SELECT
+			if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) AS thename,
+			clients.id,
+			`clients`.`uuid`
+		FROM
+			`clients` ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$clientquery=$db->query($querystatement);
 	if(!$clientquery) $error = new appError(100,"Client Query Could not be executed");
 
@@ -87,15 +92,20 @@
 	$pdf->SetY($topmargin+.43+.1);
 
 	while($clientrecord=$db->fetchArray($clientquery)) {
-		$querystatement="SELECT invoices.id FROM invoices INNER JOIN clients ON invoices.clientid=clients.id WHERE clients.id=".$clientrecord["id"];
+		$querystatement = "
+			SELECT
+				`invoices`.`id`,
+				`invoices`.`uuid`
+			FROM
+				`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid` WHERE `clients`.`id`='".$clientrecord["id"]."'";
 		$invoicequery=$db->query($querystatement);
 		if(!$invoicequery) $error = new appError(100,"Invoice query could not be executed");
 
-		$notewhereclause="( notes.attachedtabledefid=2 AND notes.attachedid=".$clientrecord["id"].")";
+		$notewhereclause="( notes.attachedtabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND notes.attachedid='".$clientrecord["uuid"]."')";
 		if($db->numRows($invoicequery)){
-			$notewhereclause.="OR (notes.attachedtabledefid=3 AND (";
+			$notewhereclause.="OR (notes.attachedtabledefid='tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883' AND (";
 			while($invoicerecord=$db->fetchArray($invoicequery))
-				$notewhereclause.="notes.attachedid=".$invoicerecord["id"]." OR ";
+				$notewhereclause.="notes.attachedid='".$invoicerecord["uuid"]."' OR ";
 			$notewhereclause=substr($notewhereclause,0,strlen($notewhereclause)-4)."))";
 		}
 		$pdf->SetLineWidth(.01);
@@ -107,11 +117,24 @@
 		$pdf->SetY($pdf->GetY()+.05);
 		$pdf->SetLineWidth(.01);
 
-		$querystatement="SELECT users.firstname, users.lastname, notes.id, notes.creationdate,
-							notes.modifieddate, users2.firstname as mfirstname ,users2.lastname as mlastname,
-							notes.attachedtabledefid,notes.attachedid , notes.subject, notes.content
-							FROM (notes INNER JOIN users on notes.createdby=users.id) LEFT JOIN users as users2 on notes.modifiedby=users2.id
-							WHERE ".$notewhereclause." ORDER BY  notes.modifieddate DESC";
+		$querystatement = "
+			SELECT
+				`users`.`firstname`,
+				`users`.`lastname`,
+				`notes`.`id`,
+				`notes`.`creationdate`,
+				`notes`.`modifieddate`,
+				`users2`.`firstname` AS `mfirstname`,
+				`users2`.`lastname` AS `mlastname`,
+				`notes`.`attachedtabledefid`,
+				`notes`.`attachedid`,
+				`notes`.`subject`,
+				`notes`.`content`
+			FROM
+				(`notes` INNER JOIN `users` ON `notes`.`createdby`=`users`.`id`) LEFT JOIN `users` AS `users2` ON `notes`.`modifiedby`=`users2`.`id`
+			WHERE
+				".$notewhereclause." ORDER BY  notes.modifieddate DESC";
+
 		$notequery=$db->query($querystatement);
 		if(!$notequery) $error = new appError(100,"Note query could not be executed.".$querystatement);
 		while($therecord=$db->fetchArray($notequery)) {
@@ -129,7 +152,7 @@
 			$pdf->SetX($leftmargin+.125);
 			$pdf->Cell($tempwidth-.375,.17,"Modified: ".$therecord["mfirstname"]." ".$therecord["mlastname"]." ".formatFromSQLDatetime($therecord["modifieddate"]),$border_debug,1,"L");
 
-			if($therecord["attachedtabledefid"]==3)	{
+			if($therecord["attachedtabledefid"]=='tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883')	{
 				$pdf->SetX($leftmargin+.125);
 				$pdf->Cell($tempwidth-.375,.17,"Attached to Invoice: ".$therecord["attachedid"],$border_debug,1,"L");
 			}
