@@ -8,7 +8,8 @@ CREATE TABLE `clientemailprojects` (
   subject varchar(128) default '',
   body text,
   lastrun timestamp(14) NOT NULL,
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `clients` (
@@ -59,6 +60,7 @@ CREATE TABLE `clients` (
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
   PRIMARY KEY (`id`),
+  UNIQUE KEY (`uuid`),
   KEY `notin` (`inactive`),
   KEY `thefirstname` (`firstname`),
   KEY `created` (`creationdate`),
@@ -87,7 +89,8 @@ CREATE TABLE discounts (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `invoices` (
@@ -161,6 +164,7 @@ CREATE TABLE `invoices` (
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
   PRIMARY KEY `theid` (`id`),
+  UNIQUE KEY (`uuid`),
   KEY `client` (`clientid`)
 )  ENGINE=INNODB AUTO_INCREMENT=1000 PACK_KEYS=0;
 
@@ -188,6 +192,7 @@ CREATE TABLE lineitems (
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
   PRIMARY KEY (id),
+  UNIQUE KEY (`uuid`),
   KEY invoice (invoiceid),
   KEY product (productid)
 ) ENGINE=INNODB;
@@ -232,7 +237,8 @@ CREATE TABLE productcategories (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE products (
@@ -274,7 +280,8 @@ CREATE TABLE products (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  UNIQUE KEY theid (id),
+  PRIMARY KEY (id),
+  UNIQUE KEY (`uuid`),
   UNIQUE KEY thpartnum (partnumber),
   KEY status (status)
 ) ENGINE=INNODB;
@@ -297,7 +304,8 @@ CREATE TABLE tax (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  UNIQUE KEY theid (id)
+  PRIMARY KEY theid (id),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `shippingmethods` (
@@ -320,7 +328,8 @@ CREATE TABLE `shippingmethods` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `paymentmethods` (
@@ -344,7 +353,8 @@ CREATE TABLE `paymentmethods` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `invoicestatuses` (
@@ -368,7 +378,8 @@ CREATE TABLE `invoicestatuses` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `invoicestatushistory` (
@@ -400,7 +411,8 @@ CREATE TABLE `aritems` (
   `creationdate` datetime NOT NULL,
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `receipts` (
@@ -436,7 +448,8 @@ CREATE TABLE `receipts` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `receiptitems` (
@@ -446,7 +459,8 @@ CREATE TABLE `receiptitems` (
   `applied` double NOT NULL default '0',
   `discount` double NOT NULL default '0',
   `taxadjustment` double NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `addresses` (
@@ -475,7 +489,8 @@ CREATE TABLE `addresses` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `addresstorecord` (
@@ -489,12 +504,17 @@ CREATE TABLE `addresstorecord` (
   `creationdate` DATETIME NOT NULL,
   `modifiedby` INTEGER UNSIGNED,
   `modifieddate` TIMESTAMP,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  KEY(`recordid`),
+  KEY(`tabledefid`),
+  KEY(`addressid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `productstoproductcategories` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENTREMENT,
   `productuuid` varchar(64) NOT NULL,
   `productcategoryuuid` varchar(64) NOT NULL,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  KEY(`productuuid`),
+  KEY(`productcategoryuuid`)
 ) ENGINE=INNODB;

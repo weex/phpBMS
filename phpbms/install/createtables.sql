@@ -38,7 +38,8 @@ CREATE TABLE menu (
   creationdate datetime NOT NULL default '0000-00-00 00:00:00',
   modifieddate timestamp(14) NOT NULL,
   `roleid` VARCHAR(64),
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB ;
 
 CREATE TABLE modules (
@@ -48,7 +49,8 @@ CREATE TABLE modules (
   name varchar(64) NOT NULL default '',
   description text,
   version varchar(32) default '',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB ;
 
 CREATE TABLE `notes` (
@@ -99,7 +101,8 @@ CREATE TABLE `notes` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE relationships (
@@ -116,8 +119,9 @@ CREATE TABLE relationships (
   modifieddate timestamp(14) NOT NULL,
   inherint tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (id),
-  KEY fromtable (fromtableid)
-) ENGINE=INNODB  PACK_KEYS=0;
+  UNIQUE KEY (`uuid`)
+  KEY(`fromtableid`)
+) ENGINE=INNODB;
 
 CREATE TABLE `reports` (
   `id` int(11) NOT NULL auto_increment,
@@ -133,12 +137,13 @@ CREATE TABLE `reports` (
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp,
-  PRIMARY KEY  (`id`)
-) ENGINE=INNODB ;
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
+) ENGINE=INNODB;
 
 CREATE TABLE `tablecolumns` (
   `id` int(11) NOT NULL auto_increment,
-  `tabledefid` int(11) NOT NULL default '0',
+  `tabledefid` varchar(64) NOT NULL,
   `name` varchar(64) NOT NULL default '',
   `column` text,
   `align` varchar(16) NOT NULL default '',
@@ -152,7 +157,7 @@ CREATE TABLE `tablecolumns` (
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
   KEY `displayorder` (`displayorder`)
-) ENGINE=INNODB AUTO_INCREMENT=5000;
+) ENGINE=INNODB;
 
 CREATE TABLE `tabledefs` (
   `id` int(11) NOT NULL auto_increment,
@@ -184,8 +189,9 @@ CREATE TABLE `tabledefs` (
   `creationdate` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifiedby` int(11) default NULL,
   `modifieddate` timestamp NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=INNODB  AUTO_INCREMENT=1000;
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
+) ENGINE=INNODB;
 
 CREATE TABLE tablefindoptions (
   id int(11) NOT NULL auto_increment,
@@ -196,7 +202,7 @@ CREATE TABLE tablefindoptions (
   roleid varchar(64),
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) ENGINE=INNODB  AUTO_INCREMENT=2000;
+) ENGINE=INNODB;
 
 CREATE TABLE tableoptions (
   id int(11) NOT NULL auto_increment,
@@ -209,7 +215,7 @@ CREATE TABLE tableoptions (
   `displayorder` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY  (id),
   KEY tabledef (tabledefid)
-) ENGINE=INNODB  AUTO_INCREMENT=2000;
+) ENGINE=INNODB;
 
 CREATE TABLE tablesearchablefields (
   id int(11) NOT NULL auto_increment,
@@ -219,7 +225,7 @@ CREATE TABLE tablesearchablefields (
   displayorder int(11) NOT NULL default '0',
   type varchar(16) NOT NULL default 'field',
   PRIMARY KEY  (id)
-) ENGINE=INNODB  AUTO_INCREMENT=2000;
+) ENGINE=INNODB ;
 
 CREATE TABLE tablecustomfields (
   `id` int(11) NOT NULL auto_increment,
@@ -263,8 +269,9 @@ CREATE TABLE users (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY (`id`)
-) ENGINE=INNODB  AUTO_INCREMENT=100;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`uuid`)
+) ENGINE=INNODB;
 
 CREATE TABLE usersearches (
   id int(11) NOT NULL auto_increment,
@@ -307,8 +314,9 @@ CREATE TABLE `files` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY  (`id`)
-) ENGINE=INNODB  AUTO_INCREMENT=100;
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
+) ENGINE=INNODB;
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL auto_increment,
@@ -323,7 +331,7 @@ CREATE TABLE `attachments` (
   KEY `therecord` (`recordid`),
   KEY `thetable` (`tabledefid`),
   KEY `thefile` (`fileid`)
-) ENGINE=INNODB ;
+) ENGINE=INNODB;
 
 CREATE TABLE `roles` (
   `id` INTEGER UNSIGNED DEFAULT NULL AUTO_INCREMENT,
@@ -343,7 +351,8 @@ CREATE TABLE `roles` (
   `custom6` VARCHAR(255),
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `rolestousers` (
@@ -351,7 +360,8 @@ CREATE TABLE `rolestousers` (
   `userid` VARCHAR(64) NOT NULL,
   `roleid` VARCHAR(64) NOT NULL,
   PRIMARY KEY(`id`),
-  KEY `theuser` (`userid`)
+  KEY (`userid`)
+  KEY (`roleid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `scheduler` (
@@ -370,6 +380,7 @@ CREATE TABLE `scheduler` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
   KEY `inactivated` (`inactive`),
   KEY `startdate` (`startdatetime`),
   KEY `enddate` (`enddatetime`)
@@ -390,7 +401,8 @@ CREATE TABLE `tabs` (
   `creationdate` datetime default NULL,
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `smartsearches` (
@@ -411,7 +423,8 @@ CREATE TABLE `smartsearches` (
   `creationdate` datetime NOT NULL,
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY (`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `widgets` (
@@ -427,8 +440,8 @@ CREATE TABLE `widgets` (
   `creationdate` datetime default NULL,
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` timestamp,
-  PRIMARY KEY  (`id`),
-  KEY `uniqueid` (`uuid`)
+  PRIMARY KEY(`id`),
+  UNIQUE KEY(`uuid`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `userpreferences` (
@@ -437,5 +450,6 @@ CREATE TABLE `userpreferences` (
   `name` varchar(64) NOT NULL,
   `value` TEXT,
   PRIMARY KEY  (`id`),
-  KEY `thename` (`name`)
+  KEY(`userid`)
+  KEY(`name`)
 ) ENGINE=INNODB;
