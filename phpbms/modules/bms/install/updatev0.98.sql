@@ -28,7 +28,10 @@ ALTER TABLE `addresstorecord` ENGINE=INNODB;
 ALTER TABLE `addresstorecord`
     MODIFY `tabledefid` VARCHAR(64) NOT NULL,
     MODIFY `recordid` VARCHAR(64) NOT NULL,
-    MODIFY `addressid` VARCHAR(64) NOT NULL;
+    MODIFY `addressid` VARCHAR(64) NOT NULL,
+    ADD INDEX (`tabledefid`),
+    ADD INDEX (`recordid`),
+    ADD INDEX (`addressid`);
 --end addresstorecord ALTER--
 --aritems ALTER--
 ALTER TABLE `aritems` ENGINE=INNODB;
@@ -388,7 +391,14 @@ SET
 WHERE
     `id`='3';
 
-UPDATE `smartsearches` SET `uuid`='smrt:5634f7fb-a0c8-7e10-4c96-8bb043e7f478' WHERE `id`='4';
+UPDATE
+    `smartsearches`
+SET
+    `uuid`='smrt:5634f7fb-a0c8-7e10-4c96-8bb043e7f478',
+    `valuefield` = '`products`.`id`'
+WHERE
+    `id`='4';
+
 UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WHERE `id`='6';
 
 UPDATE
@@ -429,6 +439,7 @@ INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maint
 UPDATE `tabledefs` SET
     `uuid`='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083',
     `importfile` = 'modules/bms/clients_import.php',
+    `querytable` = '((clients INNER JOIN addresstorecord on clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.uuid)'
     `hascustomfields` = '1',
     `prefix` = 'cli'
 WHERE

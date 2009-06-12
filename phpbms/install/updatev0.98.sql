@@ -319,82 +319,98 @@ INSERT INTO `tabledefs` (`id`, `uuid`, `displayname`, `type`, `moduleid`, `maint
 --end tabledefs INSERT--
 --tabledefs UPDATE--
 UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(12, 9, 26, 200);
+
 UPDATE `tabledefs` SET
     `uuid` = 'tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb',
     `prefix` = 'usr'
 WHERE
     `id`='9';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9',
     `prefix` = 'rln',
     `querytable` = '(`relationships` INNER JOIN `tabledefs` AS `fromtable` ON `relationships`.`fromtableid`=`fromtable`.`uuid`) INNER JOIN `tabledefs` AS `totable` ON `relationships`.`totableid`=`totable`.`uuid`'
 WHERE
     `id`='10';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3',
     `prefix` = 'tbld',
     `querytable` = '`tabledefs` LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`'
 WHERE
     `id`='11';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1',
     `prefix` = 'note'
 WHERE
     `id`='12';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb',
     `prefix` = 'rpt',
     `querytable` = '`reports` LEFT JOIN `tabledefs` ON `reports`.`tabledefid` = `tabledefs`.`uuid`'
 WHERE
     `id`='16';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a',
     `prefix` = 'sss',
     `querytable` = '(`usersearches` LEFT JOIN `users` ON `usersearches`.`userid` = `users`.`uuid`) INNER JOIN `tabledefs` ON `usersearches`.`tabledefid`=`tabledefs`.`uuid`'
 WHERE
     `id`='17';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:ea159d67-5e89-5b7f-f5a0-c740e147cd73',
     `prefix` = 'mod'
 WHERE
     `id`='21';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:2bc3e683-81f9-694a-9550-a0c7263057de',
     `querytable` = '((`notes` LEFT JOIN `users` AS `assignedto` ON `assignedto`.`uuid` = `notes`.`assignedtoid`)  LEFT JOIN `users` as `assignedby` ON `assignedby`.`uuid`=`notes`.`assignedbyid`)'
 WHERE
     `id`='23';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:0fcca651-6c34-c74d-ac04-2d88f602dd71',
     `querytable` = '((`notes` LEFT JOIN `users` AS `assignedto` ON `assignedto`.`uuid` = `notes`.`assignedtoid`)  LEFT JOIN `users` as `assignedby` ON `assignedby`.`uuid`=`notes`.`assignedbyid`)'
 WHERE
     `id`='24';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475',
     `prefix` = 'file'
 WHERE
     `id`='26';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:edb8c896-7ce3-cafe-1d58-5aefbcd5f3d7',
     `querytable` = '(`attachments` INNER JOIN `files` ON `attachments`.`fileid`=`files`.`uuid`)'
 WHERE
     `id`='27';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a',
     `prefix` = 'role'
 WHERE
     `id`='200';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:83de284b-ef79-3567-145c-30ca38b40796',
     `prefix` = 'schd'
 WHERE
     `id`='201';
+
 UPDATE `tabledefs` SET `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667' WHERE `id`='202';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:7e75af48-6f70-d157-f440-69a8e7f59d38',
     `prefix` = 'tab',
     `querytable` = '`tabs` LEFT JOIN `roles` ON `tabs`.`roleid`=`roles`.`uuid`'
 WHERE
     `id`='203';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:29925e0a-c825-0067-8882-db4b57866a96',
     `prefix` = 'smsr',

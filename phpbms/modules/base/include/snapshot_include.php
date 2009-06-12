@@ -71,6 +71,9 @@ class snapshot{
             else
                 $preference->bigArea[] = $therecord["uuid"];
 
+        $preference->littleArea = array_reverse($preference->littleArea);
+        $preference->bigArea = array_reverse($preference->bigArea);
+
         $this->preferences = $preference;
 
         $json = json_encode($preference);

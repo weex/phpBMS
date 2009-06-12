@@ -112,6 +112,7 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:27b99bda-7bec-b152-8397-a3b09c74cb23"); //addresses
 
             $this->productsList = $this->generateUUIDList("products");
+            $this->addressList = $this->generateUUIDList("addresses");
             $this->productcatList = $this->generateUUIDList("productcategories");
             $this->clientList = $this->generateUUIDList("clients");
             $this->statusList = $this->generateUUIDList("invoicestatuses");
@@ -182,10 +183,13 @@ class generateUUIDS extends installUpdateBase{
                                   );
             $this->updateFields("invoices", $invoiceArray);
 
+            $this->updateFields("lineitems", array("productid"=>$this->productsList));
             $this->updateFields("invoicestatuses", array("defaultassignedtoid"=>$this->userList));
             $this->updateFields("invoicestatushistory", array("invoiceid"=>$this->invoiceList, "invoicestatusid"=>$this->invoiceStatsList, "assignedtoid"=>$this->userList));
+            $this->updateFields("addresstorecord", array("tabledefid"=>$this->tabledefList, "recordid"=>$this->clientList, "addressid"=>$this->addressList));
 
-            $this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
+            //we would have to run this if their were addresses associated with other records
+            //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
 
             $this->updateBMSSettings();
 
@@ -202,6 +206,10 @@ class generateUUIDS extends installUpdateBase{
         // This stuff probably won't be needed as they will be done during the update
         $this->updateVariableUUIDs("notes", "attachedtabledefid", "attachedid");
         $this->updateVariableUUIDs("attachments", "tabledefid", "recordid");
+
+
+        //Finally add unique indexes to all uuid fields
+        $this->addUUIDIndexes();
 
         return $this->returnJSON(true, "UUID's Generated");
 
@@ -480,6 +488,46 @@ class generateUUIDS extends installUpdateBase{
         }//endwhile
 
     }//end function updateVariableUUIDs
+
+
+    function addUUIDIndexes(){
+
+        $querystatement = "SHOW TABLES";
+
+        $queryresult = $this->db->query($querystatement);
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $tablename = array_pop($therecord);
+
+            $querystatement = "DESCRIBE `".$tablename."`";
+
+            $columnsresult = $this->db->query($querystatement);
+
+            $hasUUID = false;
+
+            while($columnrecord = $this->db->fetchArray($columnsresult)){
+
+                if($columnrecord["Field"] == "uuid"){
+
+                    $hasUUID = true;
+                    break;
+
+                }//endif
+
+            }//endwhile
+
+            if($hasUUID){
+
+                $alterstatement = "ALTER TABLE `".$tablename."` ADD UNIQUE (`uuid`)";
+
+                $this->db->query($alterstatement);
+
+            }//endif
+
+        }//endwhile
+
+    }// end function addUUIDIndexes
 
 
 }//end class updateAjax

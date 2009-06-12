@@ -835,6 +835,9 @@ if(class_exists("phpbmsTable")){
 	// ==============================================================================================
 	class lineitems{
 
+		var $db;
+		var $invoiceid;
+		var $invoicetype;
 		var $queryresult = NULL;
 
 		function lineitems($db, $invoiceid, $invoicetype = "Order"){
@@ -862,7 +865,7 @@ if(class_exists("phpbmsTable")){
 					lineitems.unitweight,
 					lineitems.memo
 				FROM
-					lineitems LEFT JOIN products ON lineitems.productid = products.id
+					lineitems LEFT JOIN products ON lineitems.productid = products.uuid
 				WHERE
 					invoiceid = ".$this->invoiceid."
 				ORDER BY
