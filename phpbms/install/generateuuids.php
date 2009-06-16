@@ -110,7 +110,11 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34"); //products
             $this->createUUIDs("tbld:3342a3d4-c6a2-3a38-6576-419299859561"); //product categories
             $this->createUUIDs("tbld:27b99bda-7bec-b152-8397-a3b09c74cb23"); //addresses
+            $this->createUUIDs("tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c"); //aritems
+            $this->createUUIDs("tbld:43678406-be25-909b-c715-7e2afc7db601"); //receipts
 
+            $this->aritemList = $this->generateUUIDList("aritems");
+            $this->recieptList = $this->generateUUIDList("reciepts");
             $this->productsList = $this->generateUUIDList("products");
             $this->addressList = $this->generateUUIDList("addresses");
             $this->productcatList = $this->generateUUIDList("productcategories");
@@ -187,10 +191,14 @@ class generateUUIDS extends installUpdateBase{
             $this->updateFields("invoicestatuses", array("defaultassignedtoid"=>$this->userList));
             $this->updateFields("invoicestatushistory", array("invoiceid"=>$this->invoiceList, "invoicestatusid"=>$this->invoiceStatsList, "assignedtoid"=>$this->userList));
             $this->updateFields("addresstorecord", array("tabledefid"=>$this->tabledefList, "recordid"=>$this->clientList, "addressid"=>$this->addressList));
+            $this->updateFields("receiptitems", array("receiptid"=>$this->recieptList, "aritemid"=>$this->aritemList));
+            $this->updateFields("receipts", array("clientid"=>$this->clientList, "payementmethodid"=>$this->paymentList));
+            $this->updateFields("aritems", array("clientid"=>$this->clientList));
 
             //we would have to run this if their were addresses associated with other records
             //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
 
+            $this->updateAritems(); // need receipt list to work
             $this->updateBMSSettings();
 
         }//endif
@@ -367,6 +375,70 @@ class generateUUIDS extends installUpdateBase{
 
 
     }//end function updateMenuLinks
+
+
+    /**
+     * function updateAritems
+     */
+
+    function updateAritems() {
+
+        $querystatment = "
+            SELECT
+                `type`,
+                `relatedid`
+            FROM
+                `aritems`
+            GROUP BY
+                `type`,
+                `relatedid`
+        ";
+
+        $queryresult = $this->db->query($querystatment);
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            switch($therecord["type"]){
+
+                case "credit":
+
+                    $oldRelatedid = $therecord["relatedid"];
+                    $updatestatement = "
+                        UPDATE
+                            `aritems`
+                        SET
+                            `relatedid`='".$this->recieptList[$oldRelatedid]."'
+                        WHERE
+                            `relatedid` = '".$oldRelatedid."'
+                            AND
+                            `type`='credit'
+                    ";
+
+                    $this->db->query($updatestatement);
+                    break;
+
+                default:
+                    $oldRelatedid = $therecord["relatedid"];
+
+                    $updatestatement = "
+                        UPDATE
+                            `aritems`
+                        SET
+                            `relatedid`='".$this->recieptList[$oldRelatedid]."'
+                        WHERE
+                            `relatedid` = '".$oldRelatedid."'
+                            AND
+                            `type`!='credit'
+                    ";
+
+                    $this->db->query($updatestatement);
+                    break;
+
+            }//end switch
+
+        }//end if
+
+    }//end method
 
     /**
      * Updates specific settings that reference ids

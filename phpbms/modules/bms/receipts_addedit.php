@@ -51,7 +51,7 @@
 
 	if($therecord["id"]){
 		$items = new receiptitems($db);
-		$itemsresult = $items->get($therecord["id"]);
+		$itemsresult = $items->get($therecord["uuid"]);
 	}//end if
 
 	$pageTitle = "Receipt";
@@ -260,7 +260,7 @@
 			<tbody id="itemsTbody">
 				<?php
 					if($therecord["id"]){
-						$items->show($itemsresult, $therecord["posted"], $therecord["id"]);
+						$items->show($itemsresult, $therecord["posted"], $therecord["uuid"]);
 					}//end if
 				?>
 			</tbody>

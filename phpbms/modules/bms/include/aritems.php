@@ -115,7 +115,8 @@ class aritemPayments{
 				(receiptitems INNER JOIN receipts ON receiptitems.receiptid = receipts.uuid)
 				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid
 			WHERE
-				receiptitems.aritemid = ".mysql_real_escape_string($this->aritem["uuid"]);
+				receiptitems.aritemid = '".mysql_real_escape_string($this->aritem["uuid"])."'
+		";
 
 			if($this->aritem["type"] == "deposit")
 				$querystatement.="
@@ -138,7 +139,8 @@ class aritemPayments{
 			FROM
 				receiptitems
 			WHERE
-				receiptitems.aritemid = ".mysql_real_escape_string($this->aritem["uuid"]);
+				receiptitems.aritemid = '".mysql_real_escape_string($this->aritem["uuid"])."'
+		";
 
 		$totalresult = $this->db->query($querystatement);
 

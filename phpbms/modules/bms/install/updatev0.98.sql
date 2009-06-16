@@ -399,7 +399,12 @@ SET
 WHERE
     `id`='4';
 
-UPDATE `smartsearches` SET `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4' WHERE `id`='6';
+UPDATE `smartsearches` SET
+    `uuid`='smrt:32f76377-1822-17f5-674c-118b678378d4',
+    `valuefield` = 'clients.uuid',
+    `fromclause` = '((`clients` INNER JOIN `addresstorecord` ON `clients`.`uuid` = `addresstorecord`.`recordid` AND `addresstorecord`.`tabledefid`=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND `addresstorecord`.`primary`='1') INNER JOIN `addresses` ON  `addresstorecord`.`addressid` = `addresses`.`uuid`)'
+WHERE
+    `id`='6';
 
 UPDATE
     `smartsearches`
@@ -514,7 +519,8 @@ WHERE
     `id`='302';
 UPDATE `tabledefs` SET
     `uuid`='tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c',
-    `prefix` = 'arit'
+    `prefix` = 'arit',
+    `querytable` = '(`aritems` INNER JOIN `clients` ON `aritems`.`clientid` = `clients`.`uuid`)'
 WHERE
     `id`='303';
 UPDATE `tabledefs` SET

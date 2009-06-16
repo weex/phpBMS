@@ -50,22 +50,23 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					receiptitems.aritemid,
-					receiptitems.applied,
-					receiptitems.discount,
-					receiptitems.taxadjustment,
-					aritems.type,
-					aritems.relatedid,
-					aritems.itemdate,
-					aritems.amount,
-					aritems.paid
+					`receiptitems`.`aritemid`,
+					`receiptitems`.`applied`,
+					`receiptitems`.`discount`,
+					`receiptitems`.`taxadjustment`,
+					IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`,
+					`aritems`.`relatedid`,
+					`aritems`.`itemdate`,
+					`aritems`.`amount`,
+					`aritems`.`paid`,
+					IF(`aritems`.`type` = 'invoice', `invoices`.`id`, '') AS `invoiceid`
 				FROM
-					receiptitems INNER JOIN aritems ON receiptitems.aritemid = aritems.id
+					(`receiptitems` INNER JOIN `aritems` ON `receiptitems`.`aritemid` = `aritems`.`uuid`) LEFT JOIN `invoices` ON `aritems`.`relatedid`=`invoices`.`uuid`
 				WHERE
-					receiptitems.receiptid = ".((int) $receiptid)."
+					`receiptitems`.`receiptid` = '".mysql_real_escape_string($receiptid)."'
 				ORDER BY
-					aritems.type,
-					aritems.itemdate";
+					`aritems`.`type`,
+					`aritems`.`itemdate`";
 
 				return $this->db->query($querystatement);
 
@@ -91,7 +92,8 @@ if(class_exists("phpbmsTable")){
 				if($therecord["type"] == "deposit" && $therecord["relatedid"] == $receiptid){
 					$therecord["relatedid"] = "";
 					$therecord["amount"] = 0;
-					$therecord["aritemid"] = 0;
+					$therecord["aritemid"] = "";
+					$therecord["invoiceid"] = "";
 				}
 
 				if($receiptPosted)
@@ -107,7 +109,8 @@ if(class_exists("phpbmsTable")){
 				<tr id="<?php echo $recID?>">
 					<td>
 						<input type="hidden" id="<?php echo $recID?>ARID" value="<?php echo $therecord["aritemid"]?>" />
-						<input id="<?php echo $recID?>DocRef" class="invisibleTextField" readonly="readonly" value="<?php echo $therecord["relatedid"]?>" size="4" />
+						<input type="hidden" id="<?php echo $recID?>RecD" value="<?php echo $therecord["relatedid"]?>" />
+						<input id="<?php echo $recID?>DocRef" class="invisibleTextField" readonly="readonly" value="<?php echo $therecord["invoiceid"]?>" size="4"/>
 					</td>
 					<td><input id="<?php echo $recID?>Type" class="invisibleTextField" readonly="readonly" value="<?php echo $therecord["type"]?>" size="12" /></td>
 					<td><input id="<?php echo $recID?>DocDate" class="invisibleTextField" readonly="readonly" value="<?php echo formatFromSQLDate($therecord["itemdate"])?>" size="9" /></td>
@@ -135,11 +138,11 @@ if(class_exists("phpbmsTable")){
 		function set($itemlist, $receiptid, $clientid, $userid){
 
 			//remove any exisiting items
-			$deletestatement = "DELETE FROM receiptitems WHERE receiptid =".((int) $receiptid);
+			$deletestatement = "DELETE FROM receiptitems WHERE receiptid = '".mysql_real_escape_string($receiptid)."'";
 			$this->db->query($deletestatement);
 
 			//remove any ar deposits created by ths receipt
-			$deletestatement = "DELETE FROM aritems WHERE relatedid = ".((int) $receiptid)." AND `type` = 'deposit'";
+			$deletestatement = "DELETE FROM aritems WHERE relatedid = '".mysql_real_escape_string($receiptid)."' AND `type` = 'deposit'";
 			$this->db->query($deletestatement);
 
 			$itemsArray = explode(";;", $itemlist);
@@ -150,25 +153,29 @@ if(class_exists("phpbmsTable")){
 
 				if(count($itemRecord) > 1){
 
-					//if no ar id, or the deposit is from this record, we need to create the ar item
-					if(!$itemRecord[0] || ($itemRecord[1] == $receiptid && $itemRecord[2] == "deposit") ){
+					//if no ar uuid, or the deposit is from this record, we need to create the ar item
+					if(!$itemRecord[0] || ($itemRecord[1] == $receiptid && $itemRecord[4] == "deposit") ){
 
 						$arrecord = array();
-						$arrecord["type"] = "deposit";
+						$arrecord["type"] = "credit";
 						$arrecord["status"] = "open";
 						$arrecord["posted"] = 0;
-						$arrecord["amount"] = -1 * currencyToNumber($itemRecord[8]);
-						$arrecord["itemdate"] = $itemRecord[3];
+						$arrecord["amount"] = -1 * currencyToNumber($itemRecord[9]);
+						$arrecord["itemdate"] = $itemRecord[4];
 						$arrecord["clientid"] = $clientid;
 						$arrecord["relatedid"] = $receiptid;
 
 
+
 						if(!isset($aritems))
-							$aritems = new phpbmsTable($this->db, 303);
+							$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
+
+						if(!isset($arrecord["uuid"]))
+							$arrecord["uuid"] = uuid($aritems->prefix.":");
 
 						$aritems->insertRecord($arrecord, $userid);
 
-						$itemRecord[0] = $this->db->insertId();
+						$itemRecord[0] = $arrecord["uuid"];
 
 					}//end if
 
@@ -177,11 +184,11 @@ if(class_exists("phpbmsTable")){
 						receiptitems
 						(aritemid, receiptid, applied, discount, taxadjustment)
 					VALUES (
-						".((int) $itemRecord[0]).",
-						".((int) $receiptid).",
-						".currencyToNumber($itemRecord[8]).",
+						'".mysql_real_escape_string($itemRecord[0])."',
+						'".mysql_real_escape_string($receiptid)."',
 						".currencyToNumber($itemRecord[9]).",
-						".currencyToNumber($itemRecord[10])."
+						".currencyToNumber($itemRecord[10]).",
+						".currencyToNumber($itemRecord[11])."
 					)";
 
 					$this->db->query($insertstatement);
@@ -199,16 +206,19 @@ if(class_exists("phpbmsTable")){
 	//======================================================================
 	class receipts extends phpbmsTable{
 
-		var $availableClientIDs = array();
-		var $availablePaymentMethodIDs = array();
+		var $_availableClientUUIDs = NULL;
+		var $_availablePaymentMethodUUIDs = NULL;
 
 		function showPaymentOptions($selectedid){
 
 			global $phpbms;
 
+			$selectedid = mysql_real_escape_string($selectedid);
+
 			$querystatement = "
 				SELECT
 					id,
+					uuid,
 					name,
 					type,
 					onlineprocess,
@@ -217,7 +227,7 @@ if(class_exists("phpbmsTable")){
 					paymentmethods
 				WHERE
 					(inactive = 0
-					OR id=".((int) $selectedid).")
+					OR id='".$selectedid."')
 					AND type != 'receivable'
 				ORDER BY
 					priority,
@@ -237,18 +247,18 @@ if(class_exists("phpbmsTable")){
 
 					while($therecord = $this->db->fetchArray($queryresult)){
 
-						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["id"].'"] = Array();';
-						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["id"].'"]["type"] = "'.$therecord["type"].'";';
-						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["id"].'"]["onlineprocess"] = "'.$therecord["onlineprocess"].'";';
-						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["id"].'"]["processscript"] = "'.$therecord["processscript"].'";';
+						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["uuid"].'"] = Array();';
+						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["uuid"].'"]["type"] = "'.$therecord["type"].'";';
+						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["uuid"].'"]["onlineprocess"] = "'.$therecord["onlineprocess"].'";';
+						$phpbms->bottomJS[] = 'paymentTypes["s'.$therecord["uuid"].'"]["processscript"] = "'.$therecord["processscript"].'";';
 
-						?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"] == $selectedid) echo 'selected="selected"'?>><?php echo $therecord["name"]?></option><?php
+						?><option value="<?php echo $therecord["uuid"]?>" <?php if($therecord["uuid"] == $selectedid) echo 'selected="selected"'?>><?php echo $therecord["name"]?></option><?php
 						echo "\n";
 
 					}//endwhile
 
 				?>
-				<option value="-1" <?php if($selectedid == -1) echo 'selected="selected"'?>>Other...</option>
+				<option value="-1" <?php if($selectedid == -1 || $selectedid == "-1") echo 'selected="selected"'?>>Other...</option>
 			</select><?php
 
 
@@ -267,64 +277,16 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function populateClientArray(){
-
-			$this->availableClientIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`clients`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if($this->db->numRows($queryresult)){
-				while($therecord = $this->db->fetchArray($queryresult))
-					$this->availableClientIDs[] = $therecord["id"];
-			}else
-				$this->availableClientIDs[] = "none";
-
-		}//end method --populateClientArray--
-
-
-		function populatePaymentArray(){
-
-			$this->availablePaymentMethodIDs = array();
-
-			$querystatement = "
-				SELECT
-					`id`
-				FROM
-					`paymentmethods`;
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			//for the "other" choice on receipts
-			$this->availablePaymentMethodIDs[] = -1;
-
-			while($therecord = $this->db->fetchArray($queryresult))
-				$this->availablePaymentMethodIDs[] = $therecord["id"];
-
-		}//end method --populatePaymentArray--
-
-
 		function verifyVariables($variables){
 
 			//default not sufficient
 			if(isset($variables["clientid"])){
 
-				if(((int) $variables["clientid"]) > 0){
+				if($this->_availableClientUUIDs === NULL)
+					$this->_availableClientUUIDs = $this->_loadUUIDList("clients");
 
-					if(!count($this->availableClientIDs))
-						$this->populateClientArray();
-
-					if(!in_array(((int)$variables["clientid"]),$this->availableClientIDs))
-						$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client id number.";
-				}else
-					$this->verifyErrors[] = "The `clientid` field must be a positive number.";
+				if(!in_array(((string)$variables["clientid"]),$this->_availableClientUUIDs))
+					$this->verifyErrors[] = "The `clientid` field does not give an existing/acceptable client uuid.";
 
 			}else
 				$this->verifyErrors[] = "The `clientid` field must be set.";
@@ -349,15 +311,13 @@ if(class_exists("phpbmsTable")){
 			// Default is not sufficient
 			if(isset($variables["paymentmethodid"])){
 
-				if(is_numeric($variables["paymentmethodid"])){
+				if($this->_availablePaymentMethodUUIDs === NULL){
+					$this->_availablePaymentMethodUUIDs = $this->_loadUUIDList("paymentmethods");
+					$this->_availablePaymentMethodUUIDs[] = -1;
+				}//end if
 
-					if(!count($this->availablePaymentMethodIDs))
-						$this->populatePaymentArray();
-
-					if(!in_array(((int)$variables["paymentmethodid"]),$this->availablePaymentMethodIDs))
-						$this->verifyErrors[] = "The `paymentmethod` field does not give an existing/accpetable payment method id number.";
-				}else
-					$this->verifyErrors[] = "The `paymentmethodid` field must be numeric.";
+				if(!in_array(((string)$variables["paymentmethodid"]),$this->_availablePaymentMethodUUIDs))
+					$this->verifyErrors[] = "The `paymentmethod` field does not give an existing/accpetable payment method uuid.";
 
 			}else
 				$this->verifyErrors[] = "The `paymentmethodid` field must be set.";
@@ -392,7 +352,7 @@ if(class_exists("phpbmsTable")){
 
 					$items = new receiptitems($this->db);
 
-					$items->set($variables["itemslist"], $variables["id"], $variables["clientid"], $modifiedby);
+					$items->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $modifiedby);
 
 				}//end if
 
@@ -410,7 +370,7 @@ if(class_exists("phpbmsTable")){
 
 				$items = new receiptitems($this->db);
 
-				$items->set($variables["itemslist"], $newid, $variables["clientid"], $createdby);
+				$items->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $createdby);
 
 			}//end if
 

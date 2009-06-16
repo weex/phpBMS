@@ -1422,6 +1422,7 @@ function defineInvoicesPost(){
 			$querystatement = "
 				SELECT
 					invoices.id,
+					invoices.uuid,
 					invoices.clientid,
 					invoices.totalti,
 					invoices.invoicedate,
@@ -1494,7 +1495,7 @@ function defineInvoicesPost(){
 					$arrecord["amount"] = $therecord["totalti"];
 					$arrecord["itemdate"] = dateToString(stringToDate($therecord["invoicedate"],"SQL") );
 					$arrecord["clientid"] = $therecord["clientid"];
-					$arrecord["relatedid"] = $therecord["id"];
+					$arrecord["relatedid"] = $therecord["uuid"];
 					$arrecord["uuid"] = "";
 
 					if(!class_exists("phpbmsTable"))

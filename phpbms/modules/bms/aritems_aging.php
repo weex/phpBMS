@@ -38,32 +38,32 @@
 */
 
 class arAging{
-	
+
 	var $agingDate;
 	var $printClientStatements = false;
 	var $printSummary = false;
 	var $serviceCharges = 0;
-	
+
 	function arAging($db, $userid = NULL){
-		
+
 		$this->db = $db;
-		
+
 		if($userid)
 			$this->userid = $userid;
 		else
 			$this->userid = $_SESSION["userinfo"]["id"];
-		
+
 	}//end method
-	
+
 	function run($agingDate = NULL){
-	
+
 		if($agingDate)
 			$this->agingDate = stringToDate($agingDate);
 		else
 			$this->agingDate = mktime(0,0,0);
 
 		$querystatement = "
-			SELECT 
+			SELECT
 				*
 			FROM
 				aritems
@@ -73,33 +73,33 @@ class arAging{
 				AND `type` = 'invoice'";
 
 		$queryresult = $this->db->query($querystatement);
-		
+
 		while($therecord = $this->db->fetchArray($queryresult)){
 
 			$itemdate = stringToDate($therecord["itemdate"], "SQL");
 			$termDate[1] = strtotime(TERM1_DAYS." days", $itemdate);
 			$termDate[2] = strtotime(TERM2_DAYS." days", $itemdate);
 			$termDate[3] = strtotime(TERM3_DAYS." days", $itemdate);
-			
+
 			for($i = 1; $i < 4; $i++){
-			
+
 				if($this->agingDate > $termDate[$i] && $therecord["aged".$i] == 0){
 					if( $this->_createServiceCharge($therecord, constant("TERM".$i."_PERCENTAGE")) )
 						$this->serviceCharges++;
-						
+
 					$this->_markCharged($therecord["id"], "aged".$i);
 
 				}//endif
-				
+
 			}//endfor
-				
-		}//endwhile		
-	
+
+		}//endwhile
+
 	}//end method
 
 
 	function _markCharged($aritemid, $termField){
-	
+
 		$updatestatement = "
 			UPDATE
 				aritems
@@ -107,63 +107,62 @@ class arAging{
 				".$termField." = 1
 			WHERE
 				id = ".((int) $aritemid);
-				
+
 		$this->db->query($updatestatement);
-	
+
 	}//end method
-	
+
 
 	function _createServiceCharge($arrecord, $percentage){
-	
+
 		if($arrecord["amount"] - $arrecord["paid"] <= 0)
 			return false;
-			
+
 		$newAmount = round( ($arrecord["amount"] - $arrecord["paid"]) * ($percentage/100), CURRENCY_ACCURACY);
-		
+
 		if($newAmount <=0)
 			return false;
-			
+
 		if(!class_exists("phpbmsTable"))
 			include("include/tables.php");
 
-		$aritems = new phpbmsTable($this->db, 303);
+		$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
 
 		$newarrecord = array();
+		$newarrecord["uuid"] = uuid($aritems->prefix.":");
 		$newarrecord["type"] = "service charge";
 		$newarrecord["status"] = "open";
 		$newarrecord["posted"] = 1;
 		$newarrecord["amount"] = $newAmount;
 		$newarrecord["itemdate"] = dateToString($this->agingDate);
 		$newarrecord["clientid"] = $arrecord["clientid"];
-		$newarrecord["relatedid"] = $arrecord["relatedid"];		
-
-		$aritems = new phpbmsTable($this->db, 303);
+		$newarrecord["relatedid"] = $arrecord["relatedid"];
 
 		$aritems->insertRecord($newarrecord, $this->userid);
-			
+
 		return true;
-		
+
 	}//end method
-	
-	
+
+
 	function showResults(){
 
 		include_once("include/fields.php");
 		global $phpbms;
 		$db = &$this->db;
-		
+
 		$phpbms->cssIncludes[] = "pages/aging.css";
 		$phpbms->jsIncludes[] = "modules/bms/javascript/aritem_aging.js";
 		$phpbms->showMenu = false;
 
-		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);		
+		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);
 
 		include("header.php");
 		?>
 		<div class="bodyline" id="dialog">
 			<h1><span>AR Aging Results</span></h1>
 			<form action="<?php echo $formSubmit ?>" id="record" method="post">
-			
+
 				<fieldset>
 					<legend>details</legend>
 					<p>
@@ -176,43 +175,43 @@ class arAging{
 						<input id="serviceCharges" class="uneditable" readonly="readonly" value="<?php echo $this->serviceCharges?>"/>
 					</p>
 				</fieldset>
-				
+
 				<p class="notes">Any reports checked to be run should open in separate windows.</p>
-				
+
 				<p align="right">
 					<input type="hidden" id="printClientStatements" value="<?php echo ((int) $this->printClientStatements)?>"/>
 					<input type="hidden" id="printSummary" value="<?php echo ((int) $this->printSummary)?>"/>
 					<input type="hidden" id="command" name="command" />
 					<button type="button" class="Buttons" id="cancelButton">Done</button>
 				</p>
-			</form>			
+			</form>
 		</div>
-		<?php 
-		include("footer.php");	
-		
+		<?php
+		include("footer.php");
+
 	}//end method
-	
+
 
 	function showDialog(){
-	
+
 		include_once("include/fields.php");
 		global $phpbms;
 		$db = &$this->db;
-		
+
 		$phpbms->cssIncludes[] = "pages/aging.css";
 		$phpbms->jsIncludes[] = "modules/bms/javascript/aritem_aging.js";
 		$phpbms->showMenu = false;
 
-		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);		
-		
+		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);
+
 		$theform = new phpbmsForm();
-		
+
 		$theinput = new inputDatePicker("agingdate", dateToString(mktime(0,0,0), "SQL"), "aging date", true);
 		$theform->addField($theinput);
-		
+
 		$theform->jsMerge();
-		
-		include("header.php");	
+
+		include("header.php");
 
 		?>
 		<div class="bodyline" id="dialog">
@@ -227,9 +226,9 @@ class arAging{
 				<fieldset>
 					<legend>Current Items Needing Aging</legend>
 					<?php $this->_showNeedingAgingTotals()?>
-					
+
 				</fieldset>
-				
+
 				<fieldset>
 					<legend>Report Options</legend>
 
@@ -249,33 +248,33 @@ class arAging{
 					running again will not result in duplicate service charges
 					for an invoice in the same aging period, not running
 					the aging on the same specified date may result in client
-					statements showing the service charges too early or too late.						
+					statements showing the service charges too early or too late.
 				</p>
-				
+
 				<p align="right">
 					<input type="hidden" name="command" id="command" />
 					<button type="button" class="Buttons" id="runButton">run aging</button>
 					<button type="button" class="Buttons" id="cancelButton">cancel</button>
 				</p>
 			</form>
-		</div>		
+		</div>
 		<?php
 
-		include("footer.php");		
-	
+		include("footer.php");
+
 	}//end method
 
-	
+
 	function _showNeedingAgingTotals(){
-		
+
 		$totals = array(
 			"term1" => 0,
 			"term2" => 0,
 			"term3" => 0
 		);
-		
+
 		$querystatement = "
-			SELECT 
+			SELECT
 				itemdate,
 				aged1,
 				aged2,
@@ -288,7 +287,7 @@ class arAging{
 				AND `type` = 'invoice'";
 
 		$queryresult = $this->db->query($querystatement);
-		
+
 		while($therecord = $this->db->fetchArray($queryresult)){
 
 			$itemdate = stringToDate($therecord["itemdate"], "SQL");
@@ -296,14 +295,14 @@ class arAging{
 			$term2Date = strtotime(TERM2_DAYS." days", $itemdate);
 			$term3Date = strtotime(TERM3_DAYS." days", $itemdate);
 			$today = mktime(0,0,0);
-			
+
 			if($today > $term1Date && $therecord["aged1"] == 0)
 				$totals["term1"]++;
 			elseif($today > $term2Date && $therecord["aged2"] == 0)
 				$totals["term2"]++;
 			elseif($today > $term2Date && $therecord["aged2"] == 0)
 				$totals["term3"]++;
-				
+
 		}//endwhile
 		?>
 			<p>
@@ -320,11 +319,11 @@ class arAging{
 				<label for="term3"><?php echo (TERM1_DAYS+1)."+ days" ?></label><br />
 				<input id="term3" class="uneditable" readonly="readonly" value="<?php echo $totals["term3"] ?>"/>
 			</p>
-			
+
 		<?php
-		
+
 	}//end method
-	
+
 }//end class
 
 
@@ -339,29 +338,29 @@ if(!isset($bypass)){
 	$aging = new arAging($db);
 
 	if(isset($_POST["command"])){
-	
+
 		switch($_POST["command"]){
-		
-			case "run":			
+
+			case "run":
 				$aging->run($_POST["agingdate"]);
-				
+
 				if(isset($_POST["printStatements"]))
 					$aging->printClientStatements = true;
 
 				if(isset($_POST["printSummary"]))
 					$aging->printSummary = true;
-				
+
 				$aging->showResults();
-				
+
 				break;
-				
+
 			case "cancel":
-				goURL(APP_PATH."search.php?id=303");
-			
+				goURL(APP_PATH."search.php?id=tbld%3Ac595dbe7-6c77-1e02-5e81-c2e215736e9c");
+
 		}//endswitch
-			
+
 	} else
 		$aging->showDialog();
-	
+
 }//end if
 ?>
