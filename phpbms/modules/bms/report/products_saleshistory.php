@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -40,9 +40,9 @@
 if(!isset($fromProduct)) {
 	require_once("../../../include/session.php");
 }
-	
+
 class salesHistoryReport{
-	
+
 	var $whereclause="";
 	var $sortorder=" ORDER BY products.partnumber ";
 	var $fromdate;
@@ -50,30 +50,36 @@ class salesHistoryReport{
 	var $view;
 
 	var $productQuery;
-	
+
 	function initialize($variables,$db){
-		
+
 		$this->db = $db;
 
 		$this->fromdate=$variables["fromdate"];
 		$this->todate=$variables["todate"];
 		$this->view=$variables["status"];
-		
+
 		$this->whereclause=$_SESSION["printing"]["whereclause"];
 		if(isset($_SESSION["printing"]["sortorder"]))
 			if($_SESSION["printing"]["sortorder"])
 				$this->sortorder=$_SESSION["printing"]["sortorder"];
 
-		if($this->whereclause=="") $this->whereclause="WHERE products.id!=-1";		
+		if($this->whereclause=="") $this->whereclause="WHERE products.id!=-1";
 		$this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
 
-		$querystatement="SELECT products.id,products.partnumber, products.partname FROM products ".$this->whereclause.$this->sortorder;
+		$querystatement = "
+			SELECT
+				products.id,
+				products.partnumber,
+				products.partname
+			FROM
+				products ".$this->whereclause.$this->sortorder;
 		$queryresult = $this->db->query($querystatement);
 
 		$this->productQuery=$queryresult;
 	}
-	
-		
+
+
 	function showSalesHistory($id){
 
 		$thestatus="(invoices.type =\"";
@@ -91,23 +97,37 @@ class salesHistoryReport{
 				$searchdate="orderdate";
 			break;
 		}
-	
+
 		$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
 		$mysqltodate=sqlDateFromString($_POST["todate"]);
-			
-		$querystatement="select invoices.id as id, invoices.orderdate,
-			invoices.invoicedate,
-			if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as client,
-			lineitems.quantity as qty, lineitems.unitprice*lineitems.quantity as extended,
-			lineitems.unitprice as price, lineitems.unitcost as cost, lineitems.unitcost*lineitems.quantity as extendedcost
-			from ((products inner join lineitems on products.id=lineitems.productid) 
-					inner join invoices on lineitems.invoiceid=invoices.id) 
-						inner join clients on invoices.clientid=clients.id
-			where products.id=".$id."
-			and invoices.".$searchdate.">=\"".$mysqlfromdate."\"
-			and invoices.".$searchdate."<=\"".$mysqltodate."\"
-			and ".$thestatus."
-			order by invoices.invoicedate, invoices.orderdate;";
+
+		$querystatement = "
+			SELECT
+				`invoices`.`id`,
+				`invoices`.`orderdate`,
+				`invoices`.`invoicedate`,
+				IF(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) AS `client`,
+				`lineitems`.`quantity` AS `qty`,
+				`lineitems`.`unitprice`*`lineitems`.`quantity` AS `extended`,
+				`lineitems`.`unitprice` AS `price`,
+				`lineitems`.`unitcost` AS `cost`,
+				`lineitems`.`unitcost`*`lineitems`.`quantity` AS extendedcost
+			FROM
+				((products INNER JOIN lineitems on products.uuid=lineitems.productid)
+					INNER JOIN `invoices` ON lineitems.invoiceid=invoices.id)
+						INNER JOIN `clients` on `invoices`.`clientid`=`clients`.`uuid`
+			WHERE
+				`products`.`id`=".$id."
+				AND
+				`invoices`.".$searchdate.">=\"".$mysqlfromdate."\"
+				AND
+				`invoices`.".$searchdate."<=\"".$mysqltodate."\"
+				AND
+				".$thestatus."
+			ORDER BY
+				`invoices`.`invoicedate`,
+				`invoices`.`orderdate`
+		";
 
 		$thequery=$this->db->query($querystatement);
 
@@ -125,7 +145,7 @@ class salesHistoryReport{
 	 <th align="right" nowrap="nowrap" >Unit Price</th>
 	 <th align="right" nowrap="nowrap">Price Ext.</th>
 	</tr>
-    <?php 	
+    <?php
 	$totalextended=0;
 	$totalcostextended=0;
 	$totalquantity=0;
@@ -166,6 +186,7 @@ class salesHistoryReport{
 	}//end fucntion showSalesHistory($id)
 
 	function showReport(){
+		
 	?>
 <head>
 <title>Product Sales History</title>
@@ -175,12 +196,12 @@ class salesHistoryReport{
 BODY,TH,TD,H1,H2,h3{
 	font-size : 11px;
 	font-family : sans-serif;
-	color : Black; 
+	color : Black;
 }
 H1,H2{
 	font-size:18px;
 	border-bottom:4px solid black;
-	margin:0px;	
+	margin:0px;
 }
 H2{ font-size:11px; border-bottom-width:2px; margin-bottom:10px;}
 H3{ font-size:14px; margin-bottom:2px;}
@@ -236,32 +257,32 @@ TH {
 <?php $this->showSalesHistory($therecord["id"]);}//end while?>
 </body>
 </html>
-	<?php	
-	}
+	<?php
+	}//end method
 }//end class
 
 if(isset($_POST["command"])){
 	$myreport= new salesHistoryReport();
 	$myreport->initialize($_POST,$db);
-	
+
 	$myreport->showReport();
 } else {
-	
+
 		require("include/fields.php");
-		
+
 		$pageTitle = "Product Sales History";
 		$phpbms->cssIncludes[] = "pages/historyreports.css";
 		$phpbms->showMenu = false;
-	
+
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
-		
+
+
 		$thedate = dateToString( mktime(0,0,0,date("m"),1),"SQL" );
 		$theinput = new inputDatePicker("fromdate", $thedate, "from",true);
 		$theform->addField($theinput);
-		
+
 		$thedate = dateToString( mktime(0,0,0,date("m")+1,0,date("Y")), "SQL" );
 		$theinput = new inputDatePicker("todate", $thedate, "to",true);
 		$theform->addField($theinput);
@@ -274,7 +295,7 @@ if(isset($_POST["command"])){
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="totals" onsubmit="return validateForm(this)">
 <div class="bodyline" id="reportOptions">
-	<h1 id="topTitle"><span>Product Sales History Options</span></h1>	
+	<h1 id="topTitle"><span>Product Sales History Options</span></h1>
 		<fieldset>
 			<legend>time frame</legend>
 
@@ -289,7 +310,7 @@ if(isset($_POST["command"])){
 				<option value="Orders/Invoices" selected="selected">Orders/Invoices</option>
 				<option value="Invoices">Invoices</option>
 				<option value="Orders">Orders</option>
-		   </select>					
+		   </select>
 		</p>
 
 		<div align="right">
@@ -298,6 +319,6 @@ if(isset($_POST["command"])){
 		</div>
 </div>
 </form>
-<?php 
+<?php
 include("footer.php");
 }?>

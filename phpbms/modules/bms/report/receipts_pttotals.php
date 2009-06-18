@@ -41,16 +41,16 @@ if(!class_exists("phpbmsReport"))
 	include("../../../report/report_class.php");
 
 class receiptsPTTotals extends phpbmsReport{
-	
+
 	function receiptsPTTotals($db){
 
 		parent::phpbmsReport($db);
 
 	}//end method
-	
-	
+
+
 	function generate() {
-	
+
 		$querystatement = "
 			SELECT
 				receipts.id,
@@ -63,38 +63,38 @@ class receiptsPTTotals extends phpbmsReport{
 				paymentmethods.id AS pid,
 				paymentmethods.name
 			FROM
-				((receipts INNER JOIN clients ON receipts.clientid = clients.id) 
-				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.id)";
+				((receipts INNER JOIN clients ON receipts.clientid = clients.uuid)
+				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid)";
 
 		if($this->sortorder)
 			$this->sortorder = "paymentmethods.id DESC, ".$this->sortorder;
 		else
 			$this->sortorder = "paymentmethods.id DESC, receipts.receiptdate";
-		
+
 		$querystatement = $this->assembleSQL($querystatement);
-				
+
 		$this->queryresult = $this->db->query($querystatement);
-	
+
 	}//end method
-	
-		
+
+
 	function show()	{
-	
+
 		global $phpbms;
 		$db = &$this->db;
-	
+
 		$phpbms->cssIncludes[] = "reports.css";
 		$phpbms->showMenu = false;
 		$phpbms->showFooter = false;
-		
+
 		include("header.php");
 
 		?>
-		
+
 		<div id="container">
 			<h1>Receipt Payment Totals</h1>
 			<table border="0" cellpadding="0" cellspacing="0" id="results">
-			
+
 				<thead>
 					<tr>
 						<th align="left">id</th>
@@ -106,15 +106,15 @@ class receiptsPTTotals extends phpbmsReport{
 						<th align="right" id="lastHeader">amount</th>
 					</tr>
 				</thead>
-			
+
 				<tbody>
-				<?php 
-					
+				<?php
+
 					$grandTotals = array(
 						"total" => 0,
 						"count" => 0
 					);
-					
+
 					$payment = array(
 						"type" => "",
 						"total" => 0,
@@ -122,54 +122,54 @@ class receiptsPTTotals extends phpbmsReport{
 					);
 
 					while($therecord = $this->db->fetchArray($this->queryresult)){
-					
+
 						if($therecord["pid"] != $payment["type"]){
-						
+
 							if($payment["type"] != ""){
-							
+
 								?>
-								
+
 									<tr class="groupTotals">
 										<td colspan="6" align="right">count: <?php echo $payment["count"]?></td>
 										<td align="right"><?php echo formatVariable($payment["total"], "currency")?></td>
 									</tr>
-								
-								<?php 
-							
-							
+
+								<?php
+
+
 							}//endif
-						
+
 							?>
-							
+
 							<tr class="groupHeaders">
 								<td colspan="7">
-									<p class="name"><?php 
+									<p class="name"><?php
 
 										if($therecord["pid"] > 0 )
 											echo formatVariable($therecord["name"]);
 										else
 											echo "Other";
-											
+
 									?></p></td>
 							</tr>
-							
+
 							<?php
-							
+
 							$grandTotals["count"] += $payment["count"];
 							$grandTotals["total"] += $payment["total"];
-							
+
 							$payment = array(
 								"type" => $therecord["pid"],
 								"total" => 0,
 								"count" => 0
 							);
-							
+
 						}//end if
-						
+
 						$payment["total"] += $therecord["amount"];
-					
+
 						?>
-						
+
 						<tr>
 							<td><?php echo $therecord["id"]?></td>
 							<td><?php echo formatVariable($therecord["receiptdate"], "date")?></td>
@@ -178,60 +178,60 @@ class receiptsPTTotals extends phpbmsReport{
 							<td nowrap="nowrap"><?php echo formatVariable($therecord["status"])?></td>
 							<td><?php echo formatVariable($therecord["client"])?></td>
 							<td align="right"><?php echo formatVariable($therecord["amount"], "currency")?></td>
-						</tr>						
-						
+						</tr>
+
 						<?php
-					
+
 						$payment["count"] ++;
-						
+
 					}//end while
-					
+
 					$grandTotals["count"] += $payment["count"];
 					$grandTotals["total"] += $payment["total"];
-					
+
 					?>
-								
+
 					<tr class="groupTotals">
 						<td colspan="6" align="right">count: <?php echo $payment["count"]?></td>
 						<td align="right"><?php echo formatVariable($payment["total"], "currency")?></td>
 					</tr>
-								
+
 					<tr class="grandTotals">
-					
+
 						<td colspan="6" align="right">count: <?php echo $grandTotals["count"]?></td>
-						<td align="right"><?php echo formatVariable($grandTotals["total"], "currency")?></td>					
-						
+						<td align="right"><?php echo formatVariable($grandTotals["total"], "currency")?></td>
+
 					</tr>
-				
+
 				</tbody>
-			
+
 			</table>
-		
+
 		</div>
-		
+
 		<?php
-		
-		include("footer.php");		
-	
+
+		include("footer.php");
+
 	}//end method
 
 }//end method
 
 
-	//PROCESSING 
+	//PROCESSING
 	//========================================================================
-	
+
 	if(!isset($noOutput)){
 
 		session_cache_limiter('private');
-	
+
 		require("../../../include/session.php");
-	
+
 		$report = new receiptsPTTotals($db);
 		$report->setupFromPrintScreen();
-		$report->generate();	
-		$report->show();	
-		
+		$report->generate();
+		$report->show();
+
 	}//end if
 
 ?>

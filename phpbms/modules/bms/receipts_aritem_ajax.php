@@ -113,7 +113,7 @@
 		function _showOpenARSelect($clientid, $type){
 
 			if($type == "deposit")
-				$type = "credit";
+				$queryType = "credit";
 
 			$querystatement = "
 				SELECT
@@ -131,13 +131,13 @@
 					AND
 					`aritems`.`clientid` = '".mysql_real_escape_string($clientid)."'
 					AND
-					`aritems`.`type` = '".$type."'
+					`aritems`.`type` = '".$queryType."'
 					AND
 					`aritems`.`posted` = '1'
 				ORDER BY
 			";
 
-				if($type == "credit")
+				if($type == "deposit")
 					$querystatement .= "itemdate";
 				else
 					$querystatement .= "relatedid";

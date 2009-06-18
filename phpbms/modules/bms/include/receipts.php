@@ -227,7 +227,7 @@ if(class_exists("phpbmsTable")){
 					paymentmethods
 				WHERE
 					(inactive = 0
-					OR id='".$selectedid."')
+					OR uuid='".$selectedid."')
 					AND type != 'receivable'
 				ORDER BY
 					priority,
@@ -468,11 +468,12 @@ if(class_exists("searchFunctions")){
 			$querystatement = "
 				SELECT
 					id,
+					`uuid`,
 					amount
 				FROM
 					receipts
 				WHERE
-					posted = 0
+					posted = '0'
 					AND (".$whereclause.")";
 
 			$queryresult = $this->db->query($querystatement);
@@ -487,7 +488,8 @@ if(class_exists("searchFunctions")){
 					FROM
 						receiptitems
 					WHERE
-						receiptid = ".$therecord["id"];
+						receiptid = '".$therecord["uuid"]."'
+				";
 
 				$checkresult = $this->db->query($querystatement);
 
@@ -576,12 +578,12 @@ function defineReceiptsPost(){
 			if($whereclause)
 				$this->whereclause = "(".$whereclause.") AND ";
 
-			$this->whereclause .= "receipts.posted = 0 AND receipts.readytopost = 1";
+			$this->whereclause .= "receipts.posted = '0' AND receipts.readytopost = '1'";
 
 		}//end method
 
 
-		function post($whereclause = NULL, $postsessionid){
+		function post($whereclause = NULL, $postsessionid = 0){
 
 			if($whereclause)
 				$this->prepareWhere($whereclause);
@@ -591,7 +593,7 @@ function defineReceiptsPost(){
 
 			$querystatement = "
 				SELECT
-					id
+					uuid
 				FROM
 					receipts
 				WHERE
@@ -613,17 +615,18 @@ function defineReceiptsPost(){
 						aritems.paid,
 						aritems.status,
 						aritems.relatedid,
-						aritems.type
+						IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`
 					FROM
-						receiptitems INNER JOIN aritems ON receiptitems.aritemid = aritems.id
+						`receiptitems` INNER JOIN `aritems` ON `receiptitems`.`aritemid` = `aritems`.`uuid`
 					WHERE
-						receiptitems.receiptid = ".$therecord["id"];
+						receiptitems.receiptid = '".$therecord["uuid"]."'
+				";
 
 				$itemsresult = $this->db->query($querystatement);
 
 				while($itemrecord = $this->db->fetchArray($itemsresult)){
 
-					if($itemrecord["relatedid"] == $therecord["id"] && $itemrecord["type"] == "deposit")
+					if($itemrecord["relatedid"] == $therecord["uuid"] && $itemrecord["type"] == "deposit")
 						$paid = $itemrecord["paid"];
 					else
 						$paid = $itemrecord["paid"] + $itemrecord["applied"] + $itemrecord["discount"] + $itemrecord["taxadjustment"];
@@ -637,13 +640,14 @@ function defineReceiptsPost(){
 						UPDATE
 							aritems
 						SET
-							posted = 1,
+							posted = '1',
 							paid = ".$paid.",
 							`status` = '".$status."',
 							modifiedby = ".$_SESSION["userinfo"]["id"].",
 							modifieddate = NOW()
 						WHERE
-							id = ".$itemrecord["aritemid"];
+							uuid = '".$itemrecord["aritemid"]."'
+					";
 
 					$this->db->query($updatestatement);
 
@@ -657,7 +661,8 @@ function defineReceiptsPost(){
 								modifiedby = ".$_SESSION["userinfo"]["id"].",
 								modifieddate = NOW()
 							WHERE
-								id =".$itemrecord["relatedid"];
+								uuid = '".$itemrecord["relatedid"]."'
+						";
 
 							$this->db->query($updatestatement);
 
@@ -665,7 +670,7 @@ function defineReceiptsPost(){
 
 				}//endwhile
 
-				$newWhere .= " OR id = ".$therecord["id"];
+				$newWhere .= " OR uuid = '".$therecord["uuid"]."'";
 			}//endwhile
 
 			if(strlen($newWhere))
@@ -677,8 +682,8 @@ function defineReceiptsPost(){
 					UPDATE
 						receipts
 					SET
-						posted = 1,
-						postingsessionid = ".$postsessionid.",";
+						posted = '1',
+						postingsessionid = '".$postsessionid."',";
 
 				if(CLEAR_PAYMENT_ON_INVOICE){
 					$updatestatement .="

@@ -74,8 +74,8 @@ class totalReport{
                         $this->fromDate = $variables["fromdate"];
                         $this->toDate = $variables["todate"];
 
-                        $this->tableClause["invoices"] = "(invoices INNER JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.id)";
-                        $this->tableClause["receipts"] = "(receipts INNER JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.id)";
+                        $this->tableClause["invoices"] = "(invoices INNER JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid)";
+                        $this->tableClause["receipts"] = "(receipts INNER JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid)";
 
 			if($variables["groupings"] !== ""){
 
@@ -419,7 +419,7 @@ class totalReport{
                         if(clients.lastname!='', concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company) AS `thename`,
                         invoices.invoicedate AS `docdate`
                     FROM
-                        (".$this->tableClause["invoices"].") INNER JOIN clients ON invoices.clientid = clients.id
+                        (".$this->tableClause["invoices"].") INNER JOIN clients ON invoices.clientid = clients.uuid
                         ".$this->whereClause["invoices"].$this->typeSubstitute($where, "invoices")."
                     GROUP BY `theid`)
                     UNION
@@ -429,7 +429,7 @@ class totalReport{
                         if(clients.lastname!='', concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company) AS `thename`,
                         receipts.receiptdate AS `docdate`
                     FROM
-                        (".$this->tableClause["receipts"].") INNER JOIN clients ON receipts.clientid = clients.id
+                        (".$this->tableClause["receipts"].") INNER JOIN clients ON receipts.clientid = clients.uuid
                         ".$this->whereClause["receipts"].$this->typeSubstitute($where, "receipts")."
                     GROUP BY `theid`)
                     ORDER BY `docdate`";

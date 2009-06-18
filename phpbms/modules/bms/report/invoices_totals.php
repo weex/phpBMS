@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,9 +38,9 @@
 */
 
 require("../../../include/session.php");
-	
+
 class totalReport{
-	
+
 	var $selectcolumns;
 	var $selecttable;
 	var $whereclause="";
@@ -67,17 +67,17 @@ class totalReport{
 		$this->addGroup("Required Date - Quarter","QUARTER(invoices.requireddate)");//9
 		$this->addGroup("Required Date - Month","MONTH(invoices.requireddate)");//10
 		$this->addGroup("Required Date","invoices.requireddate","date");//11
-		
+
 		$this->addGroup("Client","if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company)");//12
 
-		$this->addGroup("Client Sales Person","concat(salesPerson.firstname,' ',salesPerson.lastname)",NULL, "LEFT JOIN users AS salesPerson ON clients.salesmanagerid = salesPerson.id");//13
-		
+		$this->addGroup("Client Sales Person","concat(salesPerson.firstname,' ',salesPerson.lastname)",NULL, "LEFT JOIN users AS salesPerson ON clients.salesmanagerid = salesPerson.uuid");//13
+
 		$this->addGroup("Client Lead Source","clients.leadsource");//14
 
 		$this->addGroup("Invoice Lead Source","invoices.leadsource");//15
-		
+
 		$this->addGroup("Payment Method","paymentmethods.name");//16
-		
+
 		$this->addGroup("Shipping Method","shippingmethods.name");//17
 		$this->addGroup("Invoice Shipping Country","invoices.shiptocountry");//18
 		$this->addGroup("Invoice Shipping State / Province","invoices.shiptostate");//19
@@ -92,7 +92,7 @@ class totalReport{
 		$this->addGroup("Invoice Billing City","invoices.city");//26
 
 
-		//next we do the columns		
+		//next we do the columns
 		$this->addColumn("Record Count","count(invoices.id)");//0
 		$this->addColumn("Invoice Total","sum(invoices.totalti)","currency");//1
 		$this->addColumn("Average Invoice Total","avg(invoices.totalti)","currency");//2
@@ -102,7 +102,7 @@ class totalReport{
 
 		$this->addColumn("Tax","sum(invoices.tax)","currency");//5
 		$this->addColumn("Average Tax","avg(invoices.tax)","currency");//6
-			
+
 		$this->addColumn("Shipping","sum(invoices.shipping)","currency");//7
 		$this->addColumn("Average Shipping","avg(invoices.shipping)","currency");//8
 
@@ -117,69 +117,69 @@ class totalReport{
 
 		$this->addColumn("Total Weight","sum(invoices.totalweight)","real");//15
 		$this->addColumn("Average Total Weight","avg(invoices.totalweight)","real");//16
-		
-						
+
+
 		if($variables){
 			$tempArray = explode("::", $variables["columns"]);
 
 			foreach($tempArray as $id)
-				$this->selectcolumns[] = $this->columns[$id];				
+				$this->selectcolumns[] = $this->columns[$id];
 			$this->selectcolumns = array_reverse($this->selectcolumns);
-						
-			$this->selecttable="((invoices inner join clients on invoices.clientid=clients.id) LEFT JOIN shippingmethods ON shippingmethods.id = invoices.shippingmethodid) LEFT JOIN paymentmethods ON paymentmethods.id=invoices.paymentmethodid";
-	
+
+			$this->selecttable="((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`) LEFT JOIN `shippingmethods` ON `shippingmethods`.`uuid` = `invoices`.`shippingmethodid`) LEFT JOIN `paymentmethods` ON `paymentmethods`.`id`=`invoices`.`paymentmethodid`";
+
 			if($variables["groupings"] !== ""){
 				$this->group = explode("::",$variables["groupings"]);
 				$this->group = array_reverse($this->group);
 			} else
 				$this->group = array();
-			
+
 			foreach($this->group as $grp){
 				if($this->groupings[$grp]["table"])
 					$this->selecttable="(".$this->selecttable." ".$this->groupings[$grp]["table"].")";
 			}
-	
+
 			$this->whereclause=$_SESSION["printing"]["whereclause"];
 			if($this->whereclause=="") $this->whereclause="WHERE invoices.id!=-1";
-			
+
 			switch($variables["showwhat"]){
 				case "invoices":
 					$this->showinvoices = true;
 					$this->showlineitems = false;
 					break;
-					
+
 				case "lineitems":
 					$this->showinvoices = true;
 					$this->showlineitems = true;
 					break;
-					
+
 				default:
 					$this->showinvoices = false;
 					$this->showlineitems = false;
 			}// endswitch
-						
+
 			if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
 		}// endif
 	}//end method
-	
-		
+
+
 	function addGroup($name, $field, $format = NULL, $tableAddition = NULL){
 		$temp = array();
 		$temp["name"] = $name;
 		$temp["field"] = $field;
 		$temp["format"] = $format;
 		$temp["table"] = $tableAddition;
-		
+
 		$this->groupings[] = $temp;
 	}//end method
-	
-	
+
+
 	function addColumn($name, $field, $format = NULL){
 		$temp = array();
 		$temp["name"] = $name;
 		$temp["field"] = $field;
 		$temp["format"] = $format;
-		
+
 		$this->columns[] = $temp;
 	}//end method
 
@@ -195,18 +195,18 @@ class totalReport{
 		?>
 		</tr>
 		<?php $this->showGroup($this->group,"",10);?>
-		<?php $this->showGrandTotals();?>		
+		<?php $this->showGrandTotals();?>
 		</table>
 		<?php
 	}
-	
+
 	function showGrandTotals(){
 
 		$querystatement="SELECT ";
 		foreach($this->selectcolumns as $thecolumn)
 			$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 		$querystatement.=" count(invoices.id) as thecount ";
-		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;		
+		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;
 		$queryresult=$this->db->query($querystatement);
 
 		$therecord=$this->db->fetchArray($queryresult);
@@ -221,7 +221,7 @@ class totalReport{
 		</tr>
 		<?php
 	}
-	
+
 	function showGroup($group,$where,$indent){
 
 		if(!$group){
@@ -229,8 +229,8 @@ class totalReport{
 				$this->showInvoices($where,$indent+$this->padamount);
 		} else {
 			$groupby = array_pop($group);
-			
-				
+
+
 			$querystatement="SELECT ";
 			foreach($this->selectcolumns as $thecolumn)
 				$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
@@ -239,17 +239,17 @@ class totalReport{
 			$queryresult=$this->db->query($querystatement);
 
 			while($therecord=$this->db->fetchArray($queryresult)){
-				
+
 				$showbottom=true;
 				if($group or $this->showinvoices) {
 					$showbottom=false;
 					?>
 					<tr><td colspan="<?php echo (count($this->selectcolumns)+1)?>" class="group" style="padding-left:<?php echo ($indent+2)?>px;"><?php echo $this->groupings[$groupby]["name"].": <strong>".formatVariable($therecord["thegroup"],$this->groupings[$groupby]["format"])."</strong>"?>&nbsp;</td></tr>
-					<?php 
+					<?php
 				}//endif
-					
+
 				if($group) {
-					$whereadd = $where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\"";					
+					$whereadd = $where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\"";
 					if(!$therecord["thegroup"])
 						$whereadd .= " OR ISNULL(".$this->groupings[$groupby]["field"].")";
 					$whereadd .= ")";
@@ -260,14 +260,14 @@ class totalReport{
 					else
 						$this->showInvoices($where." AND (".$this->groupings[$groupby]["field"]."= \"".$therecord["thegroup"]."\" or isnull(".$this->groupings[$groupby]["field"].") )",$indent+$this->padamount);
 				}//endif
-				
+
 				?>
 				<tr>
-					<td width="100%" style=" <?php 
+					<td width="100%" style=" <?php
 						echo "padding-left:".($indent+2)."px";
 					?>" class="groupFooter">
 						<?php echo $this->groupings[$groupby]["name"].": <strong>".formatVariable($therecord["thegroup"],$this->groupings[$groupby]["format"])."</strong>&nbsp;";?>
-					</td>					
+					</td>
 					<?php
 						foreach($this->selectcolumns as $thecolumn){
 							?><td align="right" class="groupFooter"><?php echo formatVariable($therecord[$thecolumn["name"]],$thecolumn["format"])?></td><?php
@@ -276,31 +276,31 @@ class totalReport{
 				</tr>
 				<?php
 			}//end while
-		}//endif		
+		}//endif
 	}//end function
 
-	
+
 	function showInvoices($where,$indent){
-		
+
 		$querystatement="SELECT ";
 		foreach($this->selectcolumns as $thecolumn)
 			$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
-		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename, 
+		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
 							invoices.orderdate,invoices.invoicedate";
-		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";		
+		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";
 		$queryresult=$this->db->query($querystatement);
 
-		while($therecord=$this->db->fetchArray($queryresult)){			
-			
+		while($therecord=$this->db->fetchArray($queryresult)){
+
 			?>
 			<tr>
 				<td width="100%" style="padding-left:<?php echo ($indent+2)?>px;" class="invoices">
-				<?php 
+				<?php
 					echo $therecord["theid"].": ";
 					if($therecord["invoicedate"])
 						echo "(".formatFromSQLDate($therecord["invoicedate"]).") ";
 					else
-						echo "<strong>(".formatFromSQLDate($therecord["orderdate"]).")</strong> ";						
+						echo "<strong>(".formatFromSQLDate($therecord["orderdate"]).")</strong> ";
 					echo $therecord["thename"]?>
 				</td>
 				<?php
@@ -317,12 +317,20 @@ class totalReport{
 
 	}//end function
 
-	
+
 	function showLineItems($invoiceid,$indent){
-		
-		$querystatement="SELECT products.partnumber,products.partname,quantity,lineitems.unitprice,quantity*lineitems.unitprice as extended
-							FROM (lineitems left join products on lineitems.productid=products.id)
-						WHERE lineitems.invoiceid=".$invoiceid;
+
+		$querystatement = "
+			SELECT
+				`products`.`partnumber`,
+				`products`.`partname`,
+				`quantity`,
+				`lineitems`.`unitprice`,
+				`quantity`*`lineitems`.`unitprice` AS `extended`
+			FROM
+				(`lineitems` LEFT JOIN `products` ON `lineitems`.`productid`=`products`.`uuid`)
+			WHERE
+				`lineitems`.`invoiceid`='".$invoiceid."'";
 		$queryresult=$this->db->query($querystatement);
 
 		if($this->db->numRows($queryresult)){
@@ -335,11 +343,11 @@ class totalReport{
 							<th width="12%" align="right" nowrap="nowrap">qty.</th>
 							<th width="24%" align="right" nowrap="nowrap">ext.</th>
 						</tr>
-			<?php 
-			
-			while($therecord=$this->db->fetchArray($queryresult)){			
+			<?php
+
+			while($therecord=$this->db->fetchArray($queryresult)){
 				?>
-				<tr>			
+				<tr>
 					<td><?php echo $therecord["partnumber"]?>&nbsp;&nbsp;<?php echo $therecord["partname"]?></td>
 					<td align="right" nowrap="nowrap"><?php echo numberToCurrency($therecord["unitprice"])?></td>
 					<td align="right" nowrap="nowrap"><?php echo formatVariable($therecord["quantity"],"real")?></td>
@@ -347,26 +355,26 @@ class totalReport{
 				</tr>
 				<?php
 			}// endwhile
-			
+
 			?></table></td>
-			<?php 
+			<?php
 				for($i=1;$i < count($this->selectcolumns); $i++)
 					echo "<td>&nbsp;</td>"
 			?>
-			</tr><?php 
+			</tr><?php
 		}// endif
-	
+
 	}//end method
 
 
 	function showReport(){
-		
+
 		if($_POST["reporttitle"])
 			$pageTitle = $_POST["reporttitle"];
-		else			
+		else
 			$pageTitle = "Invoice Totals";
-			
-		
+
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -380,11 +388,11 @@ class totalReport{
 		<h1><span><?php echo $pageTitle?></span></h1>
 		<h2>Source: <?php echo $_SESSION["printing"]["dataprint"]?></h2>
 		<h2>Date: <?php echo dateToString(mktime())." ".timeToString(mktime())?></h2>
-	
+
 		<?php $this->showReportTable();?>
 	</div>
 </body>
-</html><?php	
+</html><?php
 
 	}// end method
 
@@ -393,25 +401,25 @@ class totalReport{
 		?><option value="0">----- Choose One -----</option>
 		<?php
 		$i=0;
-		
+
 		foreach($this->$what as $value){
 			?><option value="<?php echo $i+1; ?>"><?php echo $value["name"];?></option>
 			<?php
 			$i++;
 		}// endforeach
-		
+
 	}//end mothd
 
-	
+
 	function showSelectScreen(){
-    
+
         global  $phpbms;
 
         $pageTitle="Invoice Total";
-        $phpbms->showMenu = false;		
-        $phpbms->cssIncludes[] = "pages/totalreports.css";		
+        $phpbms->showMenu = false;
+        $phpbms->cssIncludes[] = "pages/totalreports.css";
         $phpbms->jsIncludes[] = "modules/bms/javascript/totalreports.js";
-        
+
         include("header.php");
 
         ?>
@@ -419,19 +427,19 @@ class totalReport{
         <div class="bodyline">
             <h1>Invoice Total Options</h1>
             <form id="GroupForm" action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="GroupForm">
-            
+
                 <fieldset>
-                    
+
                     <legend>report</legend>
-                    <p>	
-                        <label for="reporttitle">report title</label><br />			
+                    <p>
+                        <label for="reporttitle">report title</label><br />
                         <input type="text" name="reporttitle" id="reporttitle" size="45"/>
                     </p>
-                
+
 		</fieldset>
-                
+
                 <fieldset>
-                    
+
                     <legend>groupings</legend>
                     <input id="groupings" type="hidden" name="groupings"/>
                     <div id="theGroups">
@@ -443,11 +451,11 @@ class totalReport{
                             <button type="button" id="Group1Plus" class="graphicButtons buttonPlus"><span>+</span></button>
                         </div>
                     </div>
-                    
+
                 </fieldset>
-		
+
 		<fieldset>
-			
+
 			<legend>columns</legend>
 			<input id="columns" type="hidden" name="columns"/>
 			<div id="theColumns">
@@ -460,7 +468,7 @@ class totalReport{
 				</div>
 			</div>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend>Options</legend>
 			<p>
@@ -472,17 +480,17 @@ class totalReport{
 			</select>
 			</p>
 		</fieldset>
-                
+
                 <p align="right">
                     <button id="print" type="button" class="Buttons">Print</button>
                     <button id="cancel" type="button" class="Buttons">Cancel</button>
                 </p>
-                
+
             </form>
         </div>
 
         <?php
-        
+
         include("footer.php");
     }//end method
 
@@ -491,10 +499,10 @@ class totalReport{
 // Processing ===================================================================================================================
 if(!isset($dontProcess)){
 	if(isset($_POST["columns"])){
-		$myreport= new totalReport($db,$_POST);	
+		$myreport= new totalReport($db,$_POST);
 		$myreport->showReport();
 	} else {
-		$myreport = new totalReport($db);	
+		$myreport = new totalReport($db);
 		$myreport->showSelectScreen();
 	}
 }?>

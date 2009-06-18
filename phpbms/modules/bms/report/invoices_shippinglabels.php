@@ -49,7 +49,7 @@
 	$columnmargin=1/8;
 	$labelheight=1;
 	$labelwidth=2+(5/8);
-	
+
 	$reportquerystatement="
 		SELECT
 			clients.firstname,
@@ -69,10 +69,10 @@
 			invoices.shiptostate,
 			invoices.shiptopostalcode,
 			invoices.shiptocountry
-		FROM 
-			invoices INNER JOIN clients on invoices.clientid=clients.id 
+		FROM
+			invoices INNER JOIN clients ON invoices.clientid=clients.uuid
 		";
-						
+
 	$border_debug=0;
 
 	function printLabel($pdf,$therecord,$thex,$they,$border_debug){
@@ -84,35 +84,35 @@
 		if($thename)
 			$thename .= "\n";
 		$thename .= trim($therecord["firstname"]." ".$therecord["lastname"]);
-		
+
 		if(!$therecord["shiptosameasbilling"] && !!$therecord["shiptoname"])
 			$thename = $therecord["shiptoname"];
 
 		$pdf->MultiCell(2.25,.135,$thename,$border_debug,2,"L");
 		$pdf->SetFont("Arial","",8);
 		$pdf->SetX($thex+(1/8));
-		
+
 		if(!$therecord["shiptosameasbilling"]){
-			
+
 			$therecord["address1"] = $therecord["shiptoaddress1"];
 			$therecord["address2"] = $therecord["shiptoaddress2"];
 			$therecord["city"] = $therecord["shiptocity"];
 			$therecord["state"] = $therecord["shiptostate"];
 			$therecord["postalcode"] = $therecord["shiptopostalcode"];
 			$therecord["country"] = $therecord["shiptocountry"];
-			
+
 		}//endif - shiptosameasbilling
-		
+
 		$pdf->Cell(2.25,.12,$therecord["address1"],$border_debug,2,"L");
 		if($therecord["address2"]) $pdf->Cell(2.25,.12,$therecord["address2"],$border_debug,2,"L");
 		$pdf->Cell(2.25,.12,$therecord["city"].", ".$therecord["state"]." ".$therecord["postalcode"],$border_debug,2,"L");
 		if($therecord["country"]) $pdf->Cell(2.25,.12,$therecord["country"],$border_debug,2,"L");
-		
+
 		return $pdf;
 	}
 
-	session_cache_limiter('private');	
-	require_once("../../../include/session.php");		
+	session_cache_limiter('private');
+	require_once("../../../include/session.php");
 	require_once("../../../fpdf/fpdf.php");
-	require("../../../report/general_labels.php");	
+	require("../../../report/general_labels.php");
 ?>

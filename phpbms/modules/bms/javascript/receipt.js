@@ -704,6 +704,7 @@ newItemDialog = {
 			];
 
 		var depositSelect = getObjectFromID("newItemDepositARID");
+		console.log(depositSelect);
 		if(!depositSelect){
 
 			var depositP = getObjectFromID("newItemDepositExistingP");
