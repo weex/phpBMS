@@ -194,6 +194,7 @@ class generateUUIDS extends installUpdateBase{
             $this->updateFields("receiptitems", array("receiptid"=>$this->recieptList, "aritemid"=>$this->aritemList));
             $this->updateFields("receipts", array("clientid"=>$this->clientList, "payementmethodid"=>$this->paymentList));
             $this->updateFields("aritems", array("clientid"=>$this->clientList));
+            $this->updateFields("prerequisites", array("parentid"=>$this->productList, "childid"=>$this->productList));
 
             //we would have to run this if their were addresses associated with other records
             //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
