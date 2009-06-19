@@ -532,8 +532,8 @@ lineitems = {
 
 		if(productid.value){
 
-			var theurl = "invoices_lineitem_ajax.php?id=" + productid.value + "&cid=" + clientid.value;
-
+			var theurl = "invoices_lineitem_ajax.php?id=" + encodeURIComponent(productid.value) + "&cid=" + encodeURIComponent(clientid.value);
+console.log(theurl);
 			loadXMLDoc(theurl,null,false);
 
 			try{

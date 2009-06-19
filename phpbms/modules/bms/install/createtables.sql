@@ -192,7 +192,6 @@ CREATE TABLE lineitems (
   `custom7` TINYINT(1),
   `custom8` TINYINT(1),
   PRIMARY KEY (id),
-  UNIQUE KEY (`uuid`),
   KEY invoice (invoiceid),
   KEY product (productid)
 ) ENGINE=INNODB;
@@ -459,8 +458,7 @@ CREATE TABLE `receiptitems` (
   `applied` double NOT NULL default '0',
   `discount` double NOT NULL default '0',
   `taxadjustment` double NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY (`uuid`)
+  PRIMARY KEY  (`id`)
 ) ENGINE=INNODB;
 
 CREATE TABLE `addresses` (
@@ -511,7 +509,7 @@ CREATE TABLE `addresstorecord` (
 ) ENGINE=INNODB;
 
 CREATE TABLE `productstoproductcategories` (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENTREMENT,
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `productuuid` varchar(64) NOT NULL,
   `productcategoryuuid` varchar(64) NOT NULL,
   PRIMARY KEY(`id`),

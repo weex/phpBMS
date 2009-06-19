@@ -119,7 +119,7 @@ CREATE TABLE relationships (
   modifieddate timestamp(14) NOT NULL,
   inherint tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (id),
-  UNIQUE KEY (`uuid`)
+  UNIQUE KEY (`uuid`),
   KEY(`fromtableid`)
 ) ENGINE=INNODB;
 
@@ -275,6 +275,7 @@ CREATE TABLE users (
 
 CREATE TABLE usersearches (
   id int(11) NOT NULL auto_increment,
+  `uuid` varchar(64) NOT NULL,
   userid varchar(64) NOT NULL,
   tabledefid varchar(64) NOT NULL,
   name varchar(128) default '',
@@ -360,7 +361,7 @@ CREATE TABLE `rolestousers` (
   `userid` VARCHAR(64) NOT NULL,
   `roleid` VARCHAR(64) NOT NULL,
   PRIMARY KEY(`id`),
-  KEY (`userid`)
+  KEY (`userid`),
   KEY (`roleid`)
 ) ENGINE=INNODB;
 
@@ -380,7 +381,7 @@ CREATE TABLE `scheduler` (
   `modifiedby` int(10) unsigned default NULL,
   `modifieddate` TIMESTAMP,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY (`uuid`)
+  UNIQUE KEY (`uuid`),
   KEY `inactivated` (`inactive`),
   KEY `startdate` (`startdatetime`),
   KEY `enddate` (`enddatetime`)
@@ -450,6 +451,6 @@ CREATE TABLE `userpreferences` (
   `name` varchar(64) NOT NULL,
   `value` TEXT,
   PRIMARY KEY  (`id`),
-  KEY(`userid`)
+  KEY(`userid`),
   KEY(`name`)
 ) ENGINE=INNODB;

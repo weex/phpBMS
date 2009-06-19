@@ -829,8 +829,6 @@ if(class_exists("phpbmsTable")){
 			if($createdby === NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
 
-			//$variables = $this->prepareVariables($variables);
-
 			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
 
 			if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
@@ -887,7 +885,8 @@ if(class_exists("phpbmsTable")){
 
 			$querystatement = "
 				SELECT
-					products.id AS pid,
+					products.id,
+					products.uuid AS pid,
 					products.partname,
 					products.partnumber,
 
@@ -981,7 +980,7 @@ if(class_exists("phpbmsTable")){
 				$itemRecord = explode("::", $item);
 				if(count($itemRecord) > 1){
 
-					$theid = ($useUuid)? mysql_real_escape_string($itemRecord[0]): getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0]);
+					//$theid = ($useUuid)? mysql_real_escape_string($itemRecord[0]): getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0]);
 
 					$insertstatement ="
 						INSERT INTO
@@ -1002,7 +1001,7 @@ if(class_exists("phpbmsTable")){
 							)
 						VALUES (
 							".$this->invoiceid.",
-							'".$theid."',
+							'".mysql_real_escape_string($itemRecord[0])."',
 							'".mysql_real_escape_string($itemRecord[1])."',
 							".((int) $itemRecord[2]).",
 							".((real) $itemRecord[3]).",

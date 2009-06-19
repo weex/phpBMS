@@ -43,44 +43,45 @@ include("../../include/session.php");
 class productLookup{
 
 	function productLookup($db){
-	
+
 		$this->db = $db;
-	
+
 	}//end method - init
 
-	
+
 	function meetsPrereq($productid, $clientid){
 
 		// This method return true if the client/product
-		// combination return no prerequisites or 
-		// if all prerequisites products have been 
+		// combination return no prerequisites or
+		// if all prerequisites products have been
 		// at least ordered by the client.
-				
+
 		$querystatement = "
 			SELECT
 				childid
 			FROM
 				prerequisites
 			WHERE
-				parentid = ".((int) $productid);
-				
+				parentid = '".mysql_real_escape_string($productid)."'
+		";
+
 		$queryresult = $this->db->query($querystatement);
-		
+
 		if($this->db->numRows($queryresult)){
-		
+
 			$whereclause = "";
 			while($therecord = $this->db->fetchArray($queryresult))
-				$whereclause .= " OR lineitems.productid = ".$therecord["childid"];
+				$whereclause .= " OR lineitems.productid = '".$therecord["childid"]."'";
 
 			$whereclause = substr($whereclause, 4);
-			
+
 			$checkstatement = "
 				SELECT
 					invoices.id
 				FROM
 					invoices INNER JOIN lineitems ON lineitems.invoiceid = invoices.id
 				WHERE
-					invoices.clientid = ".((int) $clientid)."
+					invoices.clientid = '".mysql_real_escape_string($clientid)."'
 					AND invoices.type != 'Void'
 					AND invoices.type != 'Quote'
 					AND (".$whereclause.")
@@ -88,53 +89,54 @@ class productLookup{
 
 			if($this->db->numRows($this->db->query($checkstatement)) > 0 || $clientid == "");
 				return false;
-				
+
 		}//endif - numRows
-		
+
 		return true;
-	
+
 	}//end method - checkPrereq
-	
-	
+
+
 	function getInfo($productid){
-	
+
 		$querystatement = "
-			SELECT 
+			SELECT
 				*
 			FROM
 				products
 			WHERE
-				id = ".((int) $productid);
-		
+				uuid = '".mysql_real_escape_string($productid)."'
+		";
+
 		return $this->db->fetchArray($this->db->query($querystatement));
-	
+
 	}//end method - getInfo
-	
-	
+
+
 	function display($record){
-		
+
 		$output = "{ prereqMet: ";
 		if($record){
-			
+
 			$record["memo"] = str_replace("\r", "", str_replace("\n", " ", $record["memo"]));
 			$output .= "true, record: {";
-			
+
 			foreach($record as $key=>$value)
 				$output .= $key.": '".str_replace("'","\\'",htmlQuotes($value))."',";
-			
+
 			$output = substr($output,0,-1)."}";
-		
+
 		} else {
-		
+
 			$output .= "false";
-		
+
 		}//endif - record
-	
+
 		$output .= "}";
-		
+
 		header("Content-type: text/plain");
-		echo $output;		
-	
+		echo $output;
+
 	}//end method display
 
 }//end class - productLookup
@@ -143,14 +145,14 @@ class productLookup{
 //processing
 //=========================================================================
 if(isset($_GET["cid"]) && isset($_GET["id"])){
-	
+
 	$lookup = new productLookup($db);
-	
-	if($lookup->meetsPrereq($_GET["id"], $_GET["cid"]))	
+
+	if($lookup->meetsPrereq($_GET["id"], $_GET["cid"]))
 		$therecord = $lookup->getInfo($_GET["id"]);
 	else
-		$therecord = false;		
+		$therecord = false;
 
 	$lookup->display($therecord);
-	
+
 }//end if

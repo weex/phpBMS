@@ -40,7 +40,16 @@
 
 	include("../../include/fields.php");
 
-	$refquery="select partname from products where id=".((int) $_GET["id"]);
+	$refquery = "
+		SELECT
+			`partname`,
+			`uuid`
+		FROM
+			`products`
+		WHERE
+			`id`='".((int) $_GET["id"])."'
+	";
+
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
 
@@ -61,7 +70,7 @@ if(isset($_POST["command"])){
 			break;
 
 		case"add":
-			if($_POST["productid"]!=$_GET["id"] && $_POST["productid"]!=""){
+			if($_POST["productid"]!=$refrecord["uuid"] && $_POST["productid"]!=""){
 
 				$insertstatement = "
 					INSERT INTO
@@ -69,8 +78,8 @@ if(isset($_POST["command"])){
 						(parentid,
 						childid)
 					VALUES
-						(".((int) $_GET["id"]).",
-						".((int)$_POST["productid"]).")";
+						('".mysql_real_escape_string($refrecord["uuid"])."',
+						'".mysql_real_escape_string($_POST["productid"])."')";
 
 				$db->query($insertstatement);
 
@@ -86,11 +95,20 @@ if(isset($_POST["command"])){
 
 }//endif - command
 
-	$prerequstatement="SELECT DISTINCT prerequisites.id,partnumber,partname,description
-						FROM prerequisites INNER JOIN products ON prerequisites.childid=products.id
-						WHERE prerequisites.parentid=\"".$_GET["id"]."\"";
-	$prereqresult=$db->query($prerequstatement);
-	$prereqresult? $numrows=$db->numRows($prereqresult): $numrows=0;
+	$prerequstatement = "
+		SELECT DISTINCT
+			`prerequisites`.`id`,
+			`partnumber`,
+			`partname`,
+			`description`
+		FROM
+			`prerequisites` INNER JOIN `products` ON `prerequisites`.`childid`=`products`.`uuid`
+		WHERE
+			`prerequisites`.`parentid`='".$refrecord["uuid"]."'
+	";
+
+	$prereqresult = $db->query($prerequstatement);
+	$prereqresult? $numrows = $db->numRows($prereqresult): $numrows=0;
 
 	$pageTitle="Product Prerequisites: ".$refrecord["partname"];
 

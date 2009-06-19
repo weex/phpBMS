@@ -1,1 +1,1 @@
-INSERT INTO modules (`id`, `uuid`, `displayname`, `name`, `description`, `version`) VALUES (1, 'mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7', 'Base','base','The basic phpBMS framkework.  This is the minimum module required in order for the web applicatoin to work.','0.98');
+INSERT INTO modules (`uuid`, `displayname`, `name`, `description`, `version`) VALUES ('mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7', 'Base','base','The basic phpBMS framkework.  This is the minimum module required in order for the web applicatoin to work.','0.98');

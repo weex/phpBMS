@@ -474,6 +474,8 @@ if(class_exists("searchFunctions")){
 					receipts
 				WHERE
 					posted = '0'
+					AND
+					collected = '0'
 					AND (".$whereclause.")";
 
 			$queryresult = $this->db->query($querystatement);
@@ -526,6 +528,8 @@ if(class_exists("searchFunctions")){
 					modifiedby = ".$_SESSION["userinfo"]["id"].",
 					modifieddate = NOW()
 				WHERE
+					readytopost='0'
+					AND
 					".$where["clause"];
 
 			$this->db->query($updatestatement);
