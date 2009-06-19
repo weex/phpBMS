@@ -83,11 +83,15 @@
 				";
 
 			$queryresult = $this->db->query($querystatement);
-			$therecord = $this->db->fetchArray($queryresult);
 
-			$whereclause = "`tabledefid` = '".mysql_real_escape_string($therecord["uuid"])."'";
+			$whereclause = "";
+			while($therecord = $this->db->fetchArray($queryresult)){
 
-			//$whereclause = str_replace("tabledefs.id", $tablename.".tabledefid", $this->whereclause);
+				$whereclause .= " OR `tabledefid` = '".mysql_real_escape_string($therecord["uuid"])."'";
+
+			}//end while
+
+			$whereclause = substr($whereclause, 4);
 
 			$output = 	"/* Begin ".$tablename." */\n".
 						"/* ====================================================================== */\n";
