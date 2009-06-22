@@ -323,36 +323,36 @@ INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtablei
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:c003c109-b79b-eded-9acd-b251af8d92ec', 'postingsessionid', 'receipts', 'id', 'tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'tbld:43678406-be25-909b-c715-7e2afc7db601', 1, NOW(), 1, NOW(), '0');
 --end relationships INSERT--
 --reports INSERT--
-INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('reports:0df82ecf-5f05-56bd-18c3-e7cb27c0cf8a', 'Client Statements', 'PDF Report', 'tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/aritems_clientstatement.php', 'Client AR statement balances and activity.', 1, NOW(), 1, NOW());
-INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('reports:e25bdb7a-93be-b1d6-a292-cdec89c0c9fc', 'Summary', 'report', 'tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/aritems_summary.php', 'Items grouped and totaled by clients, with grand totals.', 1, NOW(), 1, NOW());
-INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('reports:916f34d8-0997-162c-4350-d93c3d283241', 'Payment Type Totals', 'report', 'tbld:43678406-be25-909b-c715-7e2afc7db601', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/receipts_pttotals.php', 'Totals grouped by payment method.', 1, NOW(), 1, NOW());
-INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('reports:4851c350-4343-4dc3-4b7b-74c287de011b', 'Incoming Cash Flow', 'report', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', '55', 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520', 'modules/bms/report/incoming_cashflow.php', 'This report shows total incoming monies for a time period from both posted sales orders AND posted receipts. It can be grouped by week, month, quarter and year.\r\n\r\nThis report runs is unaffected by selected records, search or sort parameters.  It requires input of its own start and end dates.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:0df82ecf-5f05-56bd-18c3-e7cb27c0cf8a', 'Client Statements', 'PDF Report', 'tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/aritems_clientstatement.php', 'Client AR statement balances and activity.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:e25bdb7a-93be-b1d6-a292-cdec89c0c9fc', 'Summary', 'report', 'tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/aritems_summary.php', 'Items grouped and totaled by clients, with grand totals.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:916f34d8-0997-162c-4350-d93c3d283241', 'Payment Type Totals', 'report', 'tbld:43678406-be25-909b-c715-7e2afc7db601', '10', 'role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2', 'modules/bms/report/receipts_pttotals.php', 'Totals grouped by payment method.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:4851c350-4343-4dc3-4b7b-74c287de011b', 'Incoming Cash Flow', 'report', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', '55', 'role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520', 'modules/bms/report/incoming_cashflow.php', 'This report shows total incoming monies for a time period from both posted sales orders AND posted receipts. It can be grouped by week, month, quarter and year.\r\n\r\nThis report runs is unaffected by selected records, search or sort parameters.  It requires input of its own start and end dates.', 1, NOW(), 1, NOW());
 --end reports INSERT--
 --reports UPDATE--
-UPDATE `reports` SET `uuid`='reports:bac1d6eb-b2bb-9aa0-77c0-ff7f9046ca75' WHERE `name`='Invoice';
-UPDATE `reports` SET `uuid`='reports:a34dd4b5-6942-2b14-4a58-74345dce48de' WHERE `name`='Work Order';
-UPDATE `reports` SET `uuid`='reports:34a69580-6fbc-d04c-ed3e-f0e497a9a9b2' WHERE `name`='Packing List';
-UPDATE `reports` SET `uuid`='reports:07f58303-d6e9-a032-01ad-0097d59b3c04' WHERE `name`='Labels - Folder';
-UPDATE `reports` SET `uuid`='reports:030e7d95-4542-b37c-3cac-a18ff5f4b8ff' WHERE `name`='Labels - Mailing';
-UPDATE `reports` SET `uuid`='reports:c4a34fa0-16b5-dd85-cf63-5c8b543bb9c3' WHERE `name`='Labels - Shipping' AND `tabledefid`='2';
-UPDATE `reports` SET `uuid`='reports:a502aa38-4ae8-9aa7-2795-4a05a4814637' WHERE `name`='Labels - Shipping' AND `tabledefid`='3';
-UPDATE `reports` SET `uuid`='reports:e3ef15d4-1bf5-36a1-cc05-ee44025ad619' WHERE `name`='Totals - Custom' AND `tabledefid`='3';
-UPDATE `reports` SET `uuid`='reports:5ec9b1fb-f3c6-26c7-f1bc-bec4ac8448fd' WHERE `name`='Totals - Amt. w/  Invoices';
-UPDATE `reports` SET `uuid`='reports:960ec744-4955-81d1-8170-e56251603e4b' WHERE `name`='Totals - Amt. w/ Invoices + Line Items';
-UPDATE `reports` SET `uuid`='reports:47407854-cb7f-f1e3-bc44-1b3979eae9b0' WHERE `name`='Totals - Grouped by Acct. Manager';
-UPDATE `reports` SET `uuid`='reports:05de9afc-c82c-ed66-9403-184aa3f07a1c' WHERE `name`='Totals - Grouped by Shipping Method';
-UPDATE `reports` SET `uuid`='reports:60c71b67-5cf1-6d1b-6d96-a4dfe9bbd651' WHERE `name`='Totals - Grouped by Payment Method';
-UPDATE `reports` SET `uuid`='reports:7a7672ef-f11c-9a6a-5640-708c50cadd29' WHERE `name`='Totals - Grouped by Invoice Lead Source';
-UPDATE `reports` SET `uuid`='reports:49c0907c-9253-4fcb-0717-37952dd0ef4e' WHERE `name`='Quote';
-UPDATE `reports` SET `uuid`='reports:a278af28-9c34-da2e-d81b-4caa36dfa29f' WHERE `name`='Sales History';
-UPDATE `reports` SET `uuid`='reports:1908b03c-cacc-f03a-6d22-21fdef123f65' WHERE `name`='Purchase History';
-UPDATE `reports` SET `uuid`='reports:858702da-1b85-3a62-c20f-6b1593140a64' WHERE `name`='Totals - Custom' AND `tabledefid`='5';
-UPDATE `reports` SET `uuid`='reports:28cf69cb-60de-bbed-df15-ea98842b6924' WHERE `name`='Totals - Product Categories';
-UPDATE `reports` SET `uuid`='reports:274d3dfa-ec52-74d2-630f-0c432a6e1ea5' WHERE `name`='Totals - Product';
-UPDATE `reports` SET `uuid`='reports:68b6258a-6902-f705-19f5-d2707bd78b35' WHERE `name`='Totals - Lead Source';
-UPDATE `reports` SET `uuid`='reports:b552c34f-64b9-5a89-15b3-c5d717644b81' WHERE `name`='Client Notes Summary';
-UPDATE `reports` SET `uuid`='reports:aca42dbe-68c9-e966-c174-ed938e9b880a' WHERE `name`='Totals - Tax';
-UPDATE `reports` SET `uuid`='reports:e54cee32-b3c9-82cc-50c8-14848ece8e90' WHERE `name`='Receipt';
+UPDATE `reports` SET `uuid`='rpt:bac1d6eb-b2bb-9aa0-77c0-ff7f9046ca75' WHERE `name`='Invoice';
+UPDATE `reports` SET `uuid`='rpt:a34dd4b5-6942-2b14-4a58-74345dce48de' WHERE `name`='Work Order';
+UPDATE `reports` SET `uuid`='rpt:34a69580-6fbc-d04c-ed3e-f0e497a9a9b2' WHERE `name`='Packing List';
+UPDATE `reports` SET `uuid`='rpt:07f58303-d6e9-a032-01ad-0097d59b3c04' WHERE `name`='Labels - Folder';
+UPDATE `reports` SET `uuid`='rpt:030e7d95-4542-b37c-3cac-a18ff5f4b8ff' WHERE `name`='Labels - Mailing';
+UPDATE `reports` SET `uuid`='rpt:c4a34fa0-16b5-dd85-cf63-5c8b543bb9c3' WHERE `name`='Labels - Shipping' AND `tabledefid`='2';
+UPDATE `reports` SET `uuid`='rpt:a502aa38-4ae8-9aa7-2795-4a05a4814637' WHERE `name`='Labels - Shipping' AND `tabledefid`='3';
+UPDATE `reports` SET `uuid`='rpt:e3ef15d4-1bf5-36a1-cc05-ee44025ad619' WHERE `name`='Totals - Custom' AND `tabledefid`='3';
+UPDATE `reports` SET `uuid`='rpt:5ec9b1fb-f3c6-26c7-f1bc-bec4ac8448fd' WHERE `name`='Totals - Amt. w/  Invoices';
+UPDATE `reports` SET `uuid`='rpt:960ec744-4955-81d1-8170-e56251603e4b' WHERE `name`='Totals - Amt. w/ Invoices + Line Items';
+UPDATE `reports` SET `uuid`='rpt:47407854-cb7f-f1e3-bc44-1b3979eae9b0' WHERE `name`='Totals - Grouped by Acct. Manager';
+UPDATE `reports` SET `uuid`='rpt:05de9afc-c82c-ed66-9403-184aa3f07a1c' WHERE `name`='Totals - Grouped by Shipping Method';
+UPDATE `reports` SET `uuid`='rpt:60c71b67-5cf1-6d1b-6d96-a4dfe9bbd651' WHERE `name`='Totals - Grouped by Payment Method';
+UPDATE `reports` SET `uuid`='rpt:7a7672ef-f11c-9a6a-5640-708c50cadd29' WHERE `name`='Totals - Grouped by Invoice Lead Source';
+UPDATE `reports` SET `uuid`='rpt:49c0907c-9253-4fcb-0717-37952dd0ef4e' WHERE `name`='Quote';
+UPDATE `reports` SET `uuid`='rpt:a278af28-9c34-da2e-d81b-4caa36dfa29f' WHERE `name`='Sales History';
+UPDATE `reports` SET `uuid`='rpt:1908b03c-cacc-f03a-6d22-21fdef123f65' WHERE `name`='Purchase History';
+UPDATE `reports` SET `uuid`='rpt:858702da-1b85-3a62-c20f-6b1593140a64' WHERE `name`='Totals - Custom' AND `tabledefid`='5';
+UPDATE `reports` SET `uuid`='rpt:28cf69cb-60de-bbed-df15-ea98842b6924' WHERE `name`='Totals - Product Categories';
+UPDATE `reports` SET `uuid`='rpt:274d3dfa-ec52-74d2-630f-0c432a6e1ea5' WHERE `name`='Totals - Product';
+UPDATE `reports` SET `uuid`='rpt:68b6258a-6902-f705-19f5-d2707bd78b35' WHERE `name`='Totals - Lead Source';
+UPDATE `reports` SET `uuid`='rpt:b552c34f-64b9-5a89-15b3-c5d717644b81' WHERE `name`='Client Notes Summary';
+UPDATE `reports` SET `uuid`='rpt:aca42dbe-68c9-e966-c174-ed938e9b880a' WHERE `name`='Totals - Tax';
+UPDATE `reports` SET `uuid`='rpt:e54cee32-b3c9-82cc-50c8-14848ece8e90' WHERE `name`='Receipt';
 --end reports UPDATE--
 --role UPDATE--
 UPDATE `roles` SET `uuid`='role:3403a7e0-adb1-4d0b-3c6e-6d6bbe177d52' WHERE `id`='10';
