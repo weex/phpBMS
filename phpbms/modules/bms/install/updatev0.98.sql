@@ -620,7 +620,11 @@ UPDATE `usersearches` SET `uuid`='sss:3661c9eb-3018-9a68-f697-de35b10cbc50' WHER
 UPDATE `usersearches` SET `uuid`='sss:0f622991-46b7-c197-5c3c-abe668638d50' WHERE `id`='47';
 UPDATE `usersearches` SET `uuid`='sss:3b58e5b3-6015-9214-4f74-8f4a4b3ca906' WHERE `id`='48';
 UPDATE `usersearches` SET `uuid`='sss:464bd15b-a5ce-25f5-4178-ff7ef02a5ed2' WHERE `id`='49';
-UPDATE `usersearches` SET `uuid`='sss:5b591200-0b48-dc0e-d88d-f165e32c490a' WHERE `id`='70';
+UPDATE `usersearches` SET
+    `uuid`='sss:5b591200-0b48-dc0e-d88d-f165e32c490a',
+    `userid`=''
+WHERE
+    `id`='70';
 --end usersearches UPDATE--
 --widgets INSERT--
 INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `default`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('wdgt:c0a56726-d855-7443-66a2-7b84f443a84c', 'big', 'New Sales Orders', '../bms/widgets/recentsalesorders/class.php', 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120', 'mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc', '1', 1, NOW(), 1, NOW());
