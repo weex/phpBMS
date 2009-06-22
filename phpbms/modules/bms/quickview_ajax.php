@@ -215,6 +215,7 @@ class quickView{
 
                                     <h1>
                                         <input type="hidden" id="theid" value="<?php echo $clientInfo["id"] ?>" />
+										<input type="hidden" id="theuuid" value="<?php echo $clientInfo["uuid"] ?>" />
                                     <?php
                                             if($clientInfo["company"])
                                                     echo htmlQuotes($clientInfo["company"]);

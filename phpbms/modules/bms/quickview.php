@@ -51,7 +51,8 @@
 
 		if(isset($_GET["cid"])) {
 
-                    $passedValue = getUuid($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", (int) $_GET["cid"]);
+					//$passedValue = getUuid($db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", (int) $_GET["cid"]);
+					$passedValue = $_GET["cid"];
 
 		} else
 			$passedValue = NULL;

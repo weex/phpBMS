@@ -44,7 +44,7 @@ function addClient(){
 
 function addEditRecord(newedit, what, addeditfile){
 
-    var clientid = getObjectFromID("theid");
+    var clientid = getObjectFromID("theuuid");
     var theURL = addeditfile;
 
     var currentURL = "" + document.location;
@@ -76,6 +76,8 @@ function addEditRecord(newedit, what, addeditfile){
     else
         theURL += "&cid=" + encodeURIComponent(clientid.value);
 
+//console.log(theURL);
+//return false;
     document.location = theURL;
 
 }//end function addEditRecord
