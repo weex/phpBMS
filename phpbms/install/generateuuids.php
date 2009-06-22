@@ -360,17 +360,21 @@ class generateUUIDS extends installUpdateBase{
 
         while($therecord = $this->db->fetchArray($queryresult)){
 
-            $id = substr($therecord["link"], 14);
+            if(preg_match("/search.php\?id\=\d+/", $therecord["link"])){
 
-            $updatestatement = "
-                UPDATE
-                    `menu`
-                SET
-                    `link` = 'search.php?id=".urlencode($this->tabledefList[$id])."'
-                WHERE
-                    `id` = ".$therecord["id"];
+                $id = substr($therecord["link"], 14);
 
-            $this->db->query($updatestatement);
+                $updatestatement = "
+                    UPDATE
+                        `menu`
+                    SET
+                        `link` = 'search.php?id=".urlencode($this->tabledefList[$id])."'
+                    WHERE
+                        `id` = ".$therecord["id"];
+
+                $this->db->query($updatestatement);
+
+            }//end if
 
         }//endwhile
 

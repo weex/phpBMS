@@ -524,7 +524,11 @@ UPDATE `tabledefs` SET
     `querytable` = '((`receipts` INNER JOIN `clients` ON `receipts`.`clientid` = `clients`.`uuid`) LEFT JOIN `paymentmethods` ON `receipts`.`paymentmethodid` = `paymentmethods`.`uuid`)'
 WHERE
     `id`='304';
-UPDATE `tabledefs` SET `uuid`='tbld:e3ce122f-7c43-cfca-fd32-11c663567a2a' WHERE `id`='305';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:e3ce122f-7c43-cfca-fd32-11c663567a2a',
+    `querytable`='((addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid) INNER JOIN clients ON addresstorecord.recordid = clients.uuid)'
+WHERE
+    `id`='305';
 UPDATE `tabledefs` SET
     `uuid`='tbld:27b99bda-7bec-b152-8397-a3b09c74cb23',
     `hascustomfields` = '1',
