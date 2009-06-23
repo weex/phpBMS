@@ -1,6 +1,6 @@
 CREATE TABLE recurringinvoices(
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `invoiceid` INTEGER UNSIGNED NOT NULL,
+  `invoiceid` VARCHAR(64) NOT NULL,
   `type` VARCHAR(45) NOT NULL,
   `until` DATE,
   `every` INTEGER UNSIGNED NOT NULL DEFAULT 1,
@@ -10,8 +10,8 @@ CREATE TABLE recurringinvoices(
   `ontheweek` INTEGER UNSIGNED,
   `includepaymenttype` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `includepaymentdetails` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `statusid` INTEGER UNSIGNED NOT NULL,
-  `assignedtoid` INTEGER UNSIGNED,
+  `statusid` VARCHAR(64) NOT NULL,
+  `assignedtoid` VARCHAR(64),
   `name` VARCHAR(255),
   `firstrepeat` DATE,
   `lastrepeat` DATE,

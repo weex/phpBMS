@@ -112,6 +112,7 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:27b99bda-7bec-b152-8397-a3b09c74cb23"); //addresses
             $this->createUUIDs("tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c"); //aritems
             $this->createUUIDs("tbld:43678406-be25-909b-c715-7e2afc7db601"); //receipts
+            $this->createUUIDs("tbld:157b7707-5503-4161-4dcf-6811f8b0322f"); //client email projects
 
             $this->aritemList = $this->generateUUIDList("aritems");
             $this->recieptList = $this->generateUUIDList("reciepts");
@@ -195,6 +196,7 @@ class generateUUIDS extends installUpdateBase{
             $this->updateFields("receipts", array("clientid"=>$this->clientList, "payementmethodid"=>$this->paymentList));
             $this->updateFields("aritems", array("clientid"=>$this->clientList));
             $this->updateFields("prerequisites", array("parentid"=>$this->productList, "childid"=>$this->productList));
+            $this->updateAritems("clientemailprojects", array("userid"=>$this->userList));
 
             //we would have to run this if their were addresses associated with other records
             //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");

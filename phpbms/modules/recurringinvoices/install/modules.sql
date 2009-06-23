@@ -1,1 +1,1 @@
-INSERT INTO modules (`id`, `uuid`, `displayname`, `name`, `description`, `version`) VALUES (200, 'mod:a243321f-9095-e25b-2750-f7e8328e3d4c', 'Recurring Invoices','recurringinvoices','This module adds the ability to repeat invoices on a scheduled basis.','1.02');
+INSERT INTO modules (`uuid`, `displayname`, `name`, `description`, `version`) VALUES ('mod:a243321f-9095-e25b-2750-f7e8328e3d4c', 'Recurring Invoices','recurringinvoices','This module adds the ability to repeat invoices on a scheduled basis.','1.03');

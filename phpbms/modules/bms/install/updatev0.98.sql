@@ -464,6 +464,7 @@ WHERE
 UPDATE `tabledefs` SET
     `uuid`='tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c',
     `hascustomfields` = '1'
+    `querytable` = '((lineitems left join products on lineitems.productid=products.uuid) inner join invoices on lineitems.invoiceid=invoices.id)'
 WHERE
     `id`='5';
 UPDATE `tabledefs` SET
@@ -478,7 +479,11 @@ UPDATE `tabledefs` SET
     `querytable` = '(prerequisites LEFT JOIN `products` ON prerequisites.parentid=products.uuid) LEFT JOiN products AS childproducts on prerequisites.childid=childproducts.uuid'
 WHERE
     `id`='8';
-UPDATE `tabledefs` SET `uuid`='tbld:f993cf23-ad4a-047b-e920-d45fee1dc08e' WHERE `id`='18';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:f993cf23-ad4a-047b-e920-d45fee1dc08e',
+    `querytable` = '((clients INNER JOIN addresstorecord on clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND addresstorecord.primary=1) INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid),((clients AS dclients INNER JOIN addresstorecord as daddresstorecord on dclients.uuid = daddresstorecord.recordid AND daddresstorecord.tabledefid=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND daddresstorecord.primary=1) INNER JOIN addresses AS daddresses ON daddresstorecord.addressid = daddresses.uuid)'
+WHERE
+    `id`='18';
 UPDATE `tabledefs` SET
     `uuid`='tbld:157b7707-5503-4161-4dcf-6811f8b0322f',
     `querytable` = '`clientemailprojects` LEFT JOIN `users` ON `clientemailprojects`.`userid`=`users`.`uuid`'

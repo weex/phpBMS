@@ -220,7 +220,7 @@
 					<button type="button" class="Buttons nextButtons">next</button>
 				</p>
 
-				<h1>Udate Modules</h1>
+				<h1>Update Modules</h1>
 
 				<?php $updater->showModulesUpdate(); ?>
 
