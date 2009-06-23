@@ -1,7 +1,8 @@
 <?php
-//uncomment for debug purposes
+//uncomment if need debug
 //if(!class_exists("appError"))
 //	include_once("../../include/session.php");
+
 
 class recurr{
 
@@ -16,12 +17,23 @@ class recurr{
 
 		$invoiceList = array();
 
-		$querystatement = "SELECT invoiceid,invoices.invoicedate, firstrepeat, lastrepeat,
-							recurringinvoices.`type`,`eachlist`,`every`,`ontheday`,`ontheweek`
-							FROM recurringinvoices INNER JOIN invoices ON recurringinvoices.invoiceid = invoices.id
-							WHERE invoices.invoicedate <= '".dateToString($dateToCheck,"SQL")."'
-							AND (recurringinvoices.until IS NULL OR recurringinvoices.until >= '".dateToString($dateToCheck,"SQL")."')
-							AND (recurringinvoices.times IS NULL OR recurringinvoices.times > recurringinvoices.timesrepeated)";
+		$querystatement = "
+			SELECT
+				`invoiceid`,
+				`invoices`.`invoicedate`,
+				`firstrepeat`,
+				`lastrepeat`,
+				`recurringinvoices`.`type`,
+				`eachlist`,`every`,
+				`ontheday`,`ontheweek`
+			FROM
+				`recurringinvoices` INNER JOIN `invoices` ON `recurringinvoices`.`invoiceid` = `invoices`.`uuid`
+			WHERE
+				`invoices`.`invoicedate` <= '".dateToString($dateToCheck,"SQL")."'
+				AND
+				(`recurringinvoices`.`until` IS NULL OR `recurringinvoices`.`until` >= '".dateToString($dateToCheck,"SQL")."')
+				AND
+				(`recurringinvoices`.`times` IS NULL OR `recurringinvoices`.`times` > `recurringinvoices`.`timesrepeated`)";
 
 		$queryresult = $this->db->query($querystatement);
 
@@ -187,9 +199,10 @@ class recurr{
 				recurringinvoices.assignedtoid AS newassignedtoid,
 				notificationroleid
 			FROM
-				invoices INNER JOIN recurringinvoices ON invoices.id = recurringinvoices.invoiceid
+				invoices INNER JOIN recurringinvoices ON invoices.uuid = recurringinvoices.invoiceid
 			WHERE
-				invoices.id = ".$invoiceid;
+				invoices.uuid = '".$invoiceid."'
+		";
 
 		$queryresult = $this->db->query($querystatement);
 
@@ -212,9 +225,9 @@ class recurr{
 				case "recurrid":
 					break;
 
-				case uuid:
+				case "uuid":
 					$fieldlist[] = "uuid";
-					$thereord["uuid"] = uuid(getUuidPrefix($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883").":");
+					$therecord["uuid"] = uuid(getUuidPrefix($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883").":");
 					break;
 
 				case "checkno":
@@ -286,7 +299,7 @@ class recurr{
 
 		$theid = $this->db->insertId();
 
-		$this->copyLineItems($therecord["id"],$theid);
+		$this->copyLineItems($therecord["uuid"],$theid);
 		$this->insertHistory($theid,$therecord["statusid"],$therecord["statusdate"],$therecord["assignedtoid"]);
 
 		$this->updateReccurence($therecord["recurrid"],$therecord["firstrepeat"]);
@@ -299,7 +312,7 @@ class recurr{
 
 	function copyLineItems($oldInvoiceID, $newInvoiceID){
 
-		$querystatement = "SELECT * FROM lineitems WHERE invoiceid = ".$oldInvoiceID;
+		$querystatement = "SELECT * FROM lineitems WHERE invoiceid = '".$oldInvoiceID."'";
 		$queryresult = $this->db->query($querystatement);
 
 		while($therecord = $this->db->fetchArray($queryresult)){
@@ -316,7 +329,7 @@ class recurr{
 						break;
 
 					case "invoiceid":
-						$therecord[$name] = $newInvoiceID;
+						$therecord[$name] = "'".$newInvoiceID."'";
 						$fieldlist[] = $name;
 						break;
 
@@ -356,10 +369,10 @@ class recurr{
 
 	function insertHistory($invoiceid, $statusid, $statusdate, $assignedtoid){
 		$insertstatement = "INSERT INTO invoicestatushistory (invoiceid, invoicestatusid, statusdate, assignedtoid) VALUES (";
-		$insertstatement .= $invoiceid.", ";
-		$insertstatement .= $statusid.", ";
+		$insertstatement .= "'".$invoiceid."', ";
+		$insertstatement .= "'".$statusid."', ";
 		$insertstatement .= "'".$statusdate."', ";
-		$insertstatement .= $assignedtoid.")";
+		$insertstatement .= "'".$assignedtoid."')";
 
 		$this->db->query($insertstatement);
 
@@ -382,9 +395,9 @@ class recurr{
 		if($roleid == -100)
 			$whereclause = "users.admin = 1";
 		else
-			$whereclause = "rolestousers.roleid = ".$roleid;
+			$whereclause = "rolestousers.roleid = '".$roleid."'";
 
-		$querystatement = "SELECT email FROM rolestousers INNER JOIN users ON rolestousers.userid = users.id
+		$querystatement = "SELECT email FROM rolestousers INNER JOIN users ON rolestousers.userid = users.uuid
 							WHERE email != '' AND ".$whereclause;
 
 		$queryresult = $this->db->query($querystatement);

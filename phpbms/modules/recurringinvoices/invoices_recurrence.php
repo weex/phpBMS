@@ -49,12 +49,17 @@
 	$therecord = $thetable->process();
 
 	//set the page title
-	$refquery="SELECT
-			   invoices.id, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
-			   invoices.type,
-			   invoices.invoicedate
-			   FROM invoices INNER JOIN clients ON invoices.clientid=clients.id
-			   WHERE invoices.id=".$_GET["id"];
+	$refquery="
+		SELECT
+			`invoices`.`id`,
+			if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as name,
+			`invoices`.`type`,
+			`invoices`.`invoicedate`
+		FROM
+			`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=clients.uuid
+		WHERE
+			`invoices`.`id`=".$_GET["id"];
+
 	$refquery=$db->query($refquery);
 	$refrecord=$db->fetchArray($refquery);
 
@@ -143,8 +148,8 @@
 		$theinput->setAttribute("size","30");
 		$theform->addField($theinput);
 
-		$thetable->getCustomFieldInfo();
-		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
+		//$thetable->getCustomFieldInfo();
+		//$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
 		$theform->jsMerge();
 		//==============================================================
 
