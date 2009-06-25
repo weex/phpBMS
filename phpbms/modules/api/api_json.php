@@ -38,16 +38,37 @@
 */
 
 //Test Information
-//$_POST["phpbmsusername"] = "api";
-//$_POST["phpbmspassword"] = "spiderman";
+$_POST["phpbmsusername"] = "api";
+$_POST["phpbmspassword"] = "spiderman";
 //$_POST["request"] = '[
 //    {
-//        "tabledefid": 2,
-//        "command" : "api_get",
-//        "data" : 1
+//        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
+//        "command" : "insert",
+//        "data" : {"name":"FOObar","percentage":"3","inactive":"0","createdby":"2","creationdate":"2009-06-25 14:38:02","modifiedby":"2","modifieddate":"2009-06-25 14:38:02","custom1":null,"custom2":null,"custom3":null,"custom4":null,"custom5":null,"custom6":null,"custom7":null,"custom8":null}
 //    }
 //]';
-
+//$_POST["request"] = '[
+//    {
+//        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
+//        "command" : "update",
+//        "data" : {"useUuid":false, "id":2, "name":"JOOOOO","percentage":"3","inactive":"0","createdby":"2","creationdate":"2009-06-25 14:38:02","modifiedby":"2","modifieddate":"2009-06-25 14:38:02","custom1":null,"custom2":null,"custom3":null,"custom4":null,"custom5":null,"custom6":null,"custom7":null,"custom8":null}
+//    }
+//]';
+//$_POST["request"] = '[
+//    {
+//        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
+//        "command" : "get",
+//        "data" : {"uuid":"tax:66dd77f5-c68e-74f4-5ce6-64768282b232"}
+//    }
+//]';
+$_POST["request"] = '[
+    {
+        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
+        "command" : "inactivate",
+        "data" : [4],
+        "options" : {"useUuid" : false}
+    }
+]';
 
 require("../../include/session.php");
 require("include/apiclass.php");

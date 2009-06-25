@@ -122,7 +122,7 @@ if(class_exists("phpbmsTable")){
 		}//end method --verifyVariables--
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
 			if($variables["password"])
 				$this->fields["password"]["type"] = "password";
@@ -131,7 +131,7 @@ if(class_exists("phpbmsTable")){
 
 			unset($this->fields["lastlogin"]);
 
-			parent::updateRecord($variables, $modifiedby);
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			if($variables["roleschanged"]==1)
 				$this->assignRoles($variables["uuid"],$variables["newroles"]);
@@ -141,12 +141,12 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			$this->fields["password"]["type"] = "password";
 			unset($this->fields["lastlogin"]);
 
-			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			//reset field information
 			$this->fields = $this->db->tableInfo($this->maintable);
@@ -154,92 +154,92 @@ if(class_exists("phpbmsTable")){
 			return $theid;
 		}
 
-                /**
-                 * assigns roles to a user
-                 * @param string $id uuid of user
-                 * @param string $roles comma separated list of roles to insert.
-                 */
+		/**
+		 * assigns roles to a user
+		 * @param string $id uuid of user
+		 * @param string $roles comma separated list of roles to insert.
+		 */
 		function assignRoles($id,$roles){
 
 		    $deletestatement = "
-                        DELETE FROM
-                            rolestousers
-                        WHERE
-                            userid = '".$id."'";
+				DELETE FROM
+					rolestousers
+				WHERE
+					userid = '".$id."'";
 
-                    $queryresult = $this->db->query($deletestatement);
+			$queryresult = $this->db->query($deletestatement);
 
-                    $newroles = explode(",", $roles);
+			$newroles = explode(",", $roles);
 
-                    foreach($newroles as $therole)
-                        if($therole != ""){
+			foreach($newroles as $therole)
+				if($therole != ""){
 
-                            $insertstatement = "
-                                INSERT INTO
-                                    rolestousers
-                                    (userid,roleid)
-                                VALUES
-                                    ('".$id."', '".$therole."')";
+					$insertstatement = "
+						INSERT INTO
+							rolestousers
+							(userid,roleid)
+						VALUES
+							('".$id."', '".$therole."')";
 
-                            $this->db->query($insertstatement );
+					$this->db->query($insertstatement );
 
-                        }//endif
+				}//endif
 
 		}//end function assignRoles
 
 
-                /**
-                 * displays the add roles select boxes
-                 *
-                 * @param string $id user's uuid
-                 * @param strng $type available/selected
-                 */
+		/**
+		 * displays the add roles select boxes
+		 *
+		 * @param string $id user's uuid
+		 * @param strng $type available/selected
+		 */
 		function displayRoles($id, $type){
 
-                    $querystatement="
-                        SELECT
-                            roles.uuid,
-                            roles.name
-                        FROM
-                            roles INNER JOIN rolestousers ON rolestousers.roleid = roles.uuid
-                        WHERE
-                            rolestousers.userid= '".mysql_real_escape_string($id)."'";
+			$querystatement="
+				SELECT
+					roles.uuid,
+					roles.name
+				FROM
+					roles INNER JOIN rolestousers ON rolestousers.roleid = roles.uuid
+				WHERE
+					rolestousers.userid= '".mysql_real_escape_string($id)."'";
 
-                    $assignedquery = $this->db->query($querystatement);
+			$assignedquery = $this->db->query($querystatement);
 
-                    $thelist = array();
+			$thelist = array();
 
-                    if($type == "available"){
+			if($type == "available"){
 
-                            $excludelist = array();
+					$excludelist = array();
 
-                            while($therecord = $this->db->fetchArray($assignedquery))
-                                $excludelist[] = $therecord["uuid"];
+					while($therecord = $this->db->fetchArray($assignedquery))
+						$excludelist[] = $therecord["uuid"];
 
-                            $querystatement = "
-                                SELECT
-                                    uuid,
-                                    name
-                                FROM
-                                    roles
-                                WHERE
-                                    inactive = 0";
+					$querystatement = "
+						SELECT
+							uuid,
+							name
+						FROM
+							roles
+						WHERE
+							inactive = 0";
 
-                            $availablequery = $this->db->query($querystatement);
+					$availablequery = $this->db->query($querystatement);
 
-                            while($therecord = $this->db->fetchArray($availablequery))
-                                if(!in_array($therecord["uuid"], $excludelist))
-                                    $thelist[] = $therecord;
+					while($therecord = $this->db->fetchArray($availablequery))
+						if(!in_array($therecord["uuid"], $excludelist))
+							$thelist[] = $therecord;
 
-                    } else
-                        while($therecord = $this->db->fetchArray($assignedquery))
-                            $thelist[] = $therecord;
+			} else
+				while($therecord = $this->db->fetchArray($assignedquery))
+					$thelist[] = $therecord;
 
-                    foreach($thelist as $theoption){
-                        ?>
-                        <option value="<?php echo $theoption["uuid"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
-                        <?php
-                    }//endif
+			foreach($thelist as $theoption){
+				?>
+				<option value="<?php echo $theoption["uuid"]?>"><?php echo htmlQuotes($theoption["name"])?></option>
+				<?php
+			}//endif
 
 		}//end function displayRoles
 
@@ -250,12 +250,14 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class usersSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
-			$querystatement = "UPDATE users SET revoked=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE ".$whereclause.";";
+			$querystatement = "UPDATE users SET revoked=1,modifiedby='".$_SESSION["userinfo"]["id"]."' WHERE ".$whereclause.";";
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

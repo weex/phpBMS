@@ -333,10 +333,9 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function updateRecord($variables, $modifiedby = NULL){
-			//$variables = $this->prepareVariables($variables);
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-			$thereturn = parent::updateRecord($variables, $modifiedby);
+			$thereturn = parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			$variables["recordid"] = $variables["uuid"];//here to pass addresstorecord validation
 			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";//here to pass addresstorecord validation

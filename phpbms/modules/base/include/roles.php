@@ -39,16 +39,16 @@
 if(class_exists("phpbmsTable")){
 	class roles extends phpbmsTable{
 
-		function updateRecord($variables, $modifiedby = NULL){
-			parent::updateRecord($variables, $modifiedby);
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			if($variables["userschanged"]==1)
 				$this->assignUsers($variables["uuid"],$variables["newusers"]);
 		}
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
-			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
+			$theid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			if(isset($variables["userschanged"]))
 				if($variables["userschanged"]==1)

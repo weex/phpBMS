@@ -216,10 +216,13 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class menuSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+			
 			$verifywhereclause = $this->buildWhereClause("menu.parentid");
 
 			$querystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;

@@ -147,12 +147,12 @@ if(class_exists("phpbmsTable")){
 		}//end function showTableSelect
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
 			if(isset($variables["makeglobal"]))
 				$variables["userid"] = '';
 
-			parent::updateRecord($variables, $modifiedby);
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 
 		}//end function updateRecord
 

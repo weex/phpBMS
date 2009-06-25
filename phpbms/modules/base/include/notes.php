@@ -913,9 +913,9 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-			$thereturn = parent::updateRecord($variables, $modifiedby);
+			$thereturn = parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			$this->getTableInfo();
 
@@ -938,9 +938,9 @@ if(class_exists("phpbmsTable")){
 		}//end endmethod
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			if(isset($variables["completed"]) && isset($variables["repeating"]))
 				$this->repeatTask($newid);
@@ -989,10 +989,12 @@ if(class_exists("searchFunctions")){
 
 
 		//delete notes
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause("notes.id");
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause("notes.id");
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			//we need to check for incomplete repeatable child tasks
 			$querystatement="SELECT notes.id, notes.parentid, notes.repeating, notes.completed

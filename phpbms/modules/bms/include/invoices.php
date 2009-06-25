@@ -824,12 +824,12 @@ if(class_exists("phpbmsTable")){
 
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			if($createdby === NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
 
@@ -1338,10 +1338,12 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			$querystatement = "
 				UPDATE

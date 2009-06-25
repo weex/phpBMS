@@ -42,7 +42,7 @@
 
 	include("include/invoicestatuses.php");
 
-	$thetable = new invoiceStatus($db,"tbld:d6e4e1fb-4bfa-cb53-ab9c-1b3e7f907ae2");
+	$thetable = new invoicestatuses($db,"tbld:d6e4e1fb-4bfa-cb53-ab9c-1b3e7f907ae2");
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))

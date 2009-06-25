@@ -43,7 +43,6 @@
  * The api class handles processing and format conversion for API calls to the
  * system.
  * @author Brian Rieb <brieb@kreotek.com>
- *
  */
 class api{
 
@@ -73,8 +72,14 @@ class api{
     var $response = array();
 
     /**
+     * function api
+     *
      * Constructor sets up {@link $db}, decodes {@link $data} using the passed
      * format from {@link $format}
+     *
+     * @param db object $db database object
+     * @param array $data data that is to be decoded
+     * @param string $format format of the data
      */
     function api($db, $data, $format="json"){
 
@@ -89,6 +94,7 @@ class api{
 
 
     /**
+     * function decode
      * decodes data (usually the passed post data) depending on the {@link $format}
      *
      * Currently, this function can only decode JSON data, but support for SOAP,
@@ -115,6 +121,7 @@ class api{
 
 
     /**
+     * function encode
      * encodes data (usually {@link $request}) depending on the {@link $format}
      *
      * Currently, this function can only decode JSON data, but support for SOAP,
@@ -138,6 +145,7 @@ class api{
 
 
     /**
+    * function process
     * Process request array posted to api
     *
     * The method process() loops through the request array, and attempts to
@@ -152,6 +160,12 @@ class api{
         $i = 1;
         $tabledefid = null;
 
+        /**
+          *  @var bool $useUuid Whether or not to update/get/delete a record using the
+          *  uuid instead of the id. Default is true.
+          */
+        $useUuid = true;
+
         if(!is_array($this->data) && !is_object($this->data))
             $this->sendError("Passed data malformed.  Was expecting an array or object", $this->data, true);
 
@@ -163,9 +177,13 @@ class api{
             if(!isset($request->tabledefid) || !isset($request->command) || !isset($request->data))
                 $this->sendError("Malformed request number ".$i, $request);
 
+            $useUuid = true;
+            if(isset($request->options->useUuid))
+                $useUuid = (bool)$request->options->useUuid;
+
             if((int) $request->tabledefid !== $tabledefid){
 
-                $tabledefid = (int) $request->tabledefid;
+                $tabledefid = mysql_real_escape_string($request->tabledefid);
 
                 //First let's get the table information from the tabledef
                 $querystatement = "
@@ -173,11 +191,12 @@ class api{
                         `maintable`,
                         `deletebutton`,
                         `querytable`,
-                        modules.name
+                        `modules`.`name`
                     FROM
-                        `tabledefs` INNER JOIN `modules` ON tabledefs.moduleid = modules.id
+                        `tabledefs` INNER JOIN `modules` ON tabledefs.moduleid = modules.uuid
                     WHERE
-                        tabledefs.id = ".$tabledefid;
+                        tabledefs.uuid = '".$tabledefid."'
+                ";
 
                 $queryresult = $this->db->query($querystatement);
 
@@ -334,14 +353,34 @@ class api{
                         else {
 
                             $overrideID = false;
-                            if(is_array($request->data))
-                                if(isset($request->data["id"]))
-                                    if(((int) $request->data["id"]) !== 0)
+                            if(is_object($request->data))
+                                if(isset($request->data->id))
+                                    if(((int)$request->data->id) !== 0)
                                         $overrideID = true;
 
-                            $newid = $processor->insertRecord((array) $request->data, null, $overrideID, true);
+                            $createUuid = true;
+                            if(is_object($request->data))
+                                if(isset($request->data->uuid))
+                                    if((string)$request->data->uuid !== ""){
+                                        $overrideID = true;
+                                        $createUuid = false;
+                                    }
 
-                            $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid);
+                            if(!isset($processor->fields["uuid"]))
+                                $createUuid = false;
+
+                            $newid = $processor->insertRecord((array) $request->data, null, $overrideID, true, $createUuid);
+
+                            if($newid){
+                                if($createUuid){
+                                    $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid["uuid"]);
+                                }elseif(isset($this->fields["uuid"])){
+                                    $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $request->data["uuid"]);
+                                }else{
+                                    $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid);
+                                }//end if
+                            }else
+                                $this->sendError("Insert failed from request number ".$i);
 
                         }//endif
 
@@ -365,11 +404,20 @@ class api{
 
                         $errorArray = $processor->verifyVariables((array) $request->data);
 
+                        if($useUuid){
+                            if(!isset($request->data->uuid))
+                                $errorArray[] = "The `uuid` field must be set.";
+                        }else{
+                            if(!isset($request->data->id))
+                                $errorArray[] = "The `id` field must be set.";
+                        }//end if
+
+
                         if(count($errorArray))
                             $this->sendError("Update failed from request number ".$i, $errorArray);
                         else {
 
-                            $processor->updateRecord((array) $request->data);
+                            $processor->updateRecord((array) $request->data, NULL, (bool)$useUuid);
 
                             $this->_addToResponse("updated", "record updated in tabledef ".$tabledefid);
 
@@ -394,12 +442,21 @@ class api{
                         } else
                             $processor = new phpbmsTable($this->db, $tabledefid);
 
-                        $therecord  = $processor->getRecord((int) $request->data);
+                        if(!$useUuid){
+                            $therecord = $processor->getRecord((int) $request->data, $useUuid);
+                            $thereturn = $therecord["id"];
+                            $thevalue = (int)$request->data->id;
+                        }else{
+                            $therecord = $processor->getRecord(mysql_real_escape_string($request->data), $useUuid);
+                            $thereturn = $therecord["uuid"];
+                            $thevalue = $request->data->uuid;
+                        }
 
-                        if($therecord["id"] == ((int) $request->data))
-                            $this->_addToResponse("retrieved", "record (".((int) $request->data).") retrieved in tabledef ".$tabledefid, $therecord);
+
+                        if($thereturn == $thevalue)
+                            $this->_addToResponse("retrieved", "record (".htmlQuotes($thevalue).") retrieved in tabledef ".$tabledefid, $therecord);
                         else
-                            $this->_addToResponse("retrieved", "no record found (".((int) $request->data).") in tabledef ".$tabledefid);
+                            $this->_addToResponse("retrieved", "no record found (".htmlQuotes($thevalue).") in tabledef ".$tabledefid);
 
                         break;
 
@@ -407,10 +464,23 @@ class api{
                     case $deletebutton:
                         //======================================================
                         if(!is_array($request->data))
-                                $this->sendError("Passaed data is not array in request number ".$i, $request->data);
+                                $this->sendError("Passed data is not array in request number ".$i, $request->data);
                         else {
 
                             include_once("include/search_class.php");
+
+                           //if($useUuid){
+                           //     if(!isset($request->data->uuid))
+                           //         $this->sendError("The `uuid` field must be set in request number ".$i, $request->data, true);
+                           //     else
+                           //         $id = $request->data->uuid;
+                           //
+                           // }else{
+                           //     if(!isset($request->data->id))
+                           //         $this->sendError("The `id` field must be set in request number ".$i, $request->data, true);
+                           //     else
+                           //         $id = $request->data->uuid;
+                           // }//end if
 
                             if($hasTableClassOveride){
 
@@ -427,7 +497,7 @@ class api{
                                 $processor = new searchFunctions($this->db, $tabledefid, $request->data);
 
 
-                            $result = $processor->delete_record();
+                            $result = $processor->delete_record($useUuid);
 
                             $this->_addToResponse($request->command, $result);
 
@@ -572,6 +642,7 @@ class api{
 
 
     /**
+     * function sendError
      * Logs error to response message and optionally exits
      *
      * Adds an entry of type error to the response array. Can also optionally
@@ -597,6 +668,7 @@ class api{
 
 
     /**
+     * function _addToResponse
      * adds an entry to the response array
      *
      * Adds a detailed entry to the response array.
@@ -618,6 +690,7 @@ class api{
 
 
     /**
+     * function displayResult
      * outputs formated response array
      *
      * Formats the response array for out put and then echos the result

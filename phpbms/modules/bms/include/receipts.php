@@ -344,9 +344,9 @@ if(class_exists("phpbmsTable")){
 		}
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-			if(parent::updateRecord($variables, $modifiedby)){
+			if(parent::updateRecord($variables, $modifiedby, $useUuid)){
 
 				if($variables["itemschanged"]==1){
 
@@ -362,9 +362,9 @@ if(class_exists("phpbmsTable")){
 
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			if($variables["itemschanged"]==1){
 
@@ -401,14 +401,17 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			$querystatement ="
 				SELECT
-					id
+					id,
+					`uuid`
 				FROM
 					receipts
 				WHERE
@@ -422,7 +425,7 @@ if(class_exists("searchFunctions")){
 
 			$newWhere = "";
 			while($therecord = $this->db->fetchArray($queryresult))
-				$newWhere .= " OR id = ".$therecord["id"];
+				$newWhere .= " OR `uuid` = '".$therecord["uuid"]."'";
 
 			if(strlen($newWhere))
 				$newWhere = substr($newWhere, 4);
@@ -434,7 +437,7 @@ if(class_exists("searchFunctions")){
 					aritems
 				WHERE
 					`type` = 'deposit'
-					AND (".str_replace("id =", "relatedid =", $newWhere).")";
+					AND (".str_replace("uuid =", "relatedid =", $newWhere).")";
 
 			$this->db->query($deletestatement);
 
@@ -442,7 +445,7 @@ if(class_exists("searchFunctions")){
 				DELETE FROM
 					receiptitems
 				WHERE
-					".str_replace("id =", "receiptid =", $newWhere);
+					".str_replace("uuid =", "receiptid =", $newWhere);
 
 			$this->db->query($deletestatement);
 

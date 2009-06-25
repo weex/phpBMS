@@ -40,8 +40,19 @@ if(class_exists("files")){
 	class attachments extends files{
 
 
-		function getRecord($id){
-			$id = (int) $id;
+		function getRecord($id, $useUuid = false){
+
+			if(!$useUuid){
+
+				$id = (int) $id;
+				$whereField = "id";
+
+			}else{
+
+				$id = mysql_real_escape_string($id);
+				$whereField = "uuid";
+
+			}//end if
 
 			$querystatement = "
 				SELECT
@@ -60,7 +71,7 @@ if(class_exists("files")){
 				FROM
 					`attachments`INNER JOIN `files` ON `attachments`.`fileid`=`files`.`uuid`
 				WHERE
-					`attachments`.`id`='".$id."'
+					`attachments`.`".$whereField."`='".$id."'
 				";
 
 			$queryresult = $this->db->query($querystatement);
@@ -95,15 +106,15 @@ if(class_exists("files")){
 		}//end method
 
 
-		function updateRecord($variables, $modifiedby = NULL){
-			parent::updateRecord($variables, $modifiedby);
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			$_POST["id"] = $variables["attachmentid"];
 
 		}
 
 
-		function insertRecord($variables, $createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			if($createdby == NULL)
 				$createdby = $_SESSION["userinfo"]["id"];
@@ -111,7 +122,7 @@ if(class_exists("files")){
 			if($variables["newexisting"]=="new"){
 				//we need to add a new file record before adding a new
 				//attachment record
-				$variables["fileid"] = parent::insertRecord($variables, $createdby);
+				$variables["fileid"] = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 			}
 
 			//next we create the attachment record
@@ -182,17 +193,23 @@ if(class_exists("files")){
 if(class_exists("searchFunctions")){
 	class attachmentsSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID){
+				$whereclause=$this->buildWhereClause();
+				$fieldname = "`id`";
+			}else{
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+				$fieldname = "`uuid`";
+			}
 
 			$rowsdeleted=0;
 			foreach($this->idsArray as $id){
-				$querystatement = "SELECT fileid FROM attachments WHERE id=".$id;
+				$querystatement = "SELECT fileid FROM attachments WHERE ".$fieldname."='".$id."'";
 				$queryresult = $this->db->query($querystatement);
 				$therecord=$this->db->fetchArray($queryresult);
 
-				$querystatement = "DELETE FROM attachments WHERE id=".$id.";";
+				$querystatement = "DELETE FROM attachments WHERE ".$fieldname."='".$id."'";
 				$queryresult = $this->db->query($querystatement);
 				$rowsdeleted++;
 
@@ -200,13 +217,13 @@ if(class_exists("searchFunctions")){
 				$queryresult = $this->db->query($querystatement);
 
 				if(!$this->db->numRows($queryresult)){
-					$querystatement = "DELETE FROM files WHERE id='".$therecord["fileid"]."'";
+					$querystatement = "DELETE FROM files WHERE `uuid`='".$therecord["fileid"]."'";
 					$queryresult = $this->db->query($querystatement);
 				}
 
 			}
 
-			$querystatement = "DELETE FROM attachments WHERE ".$whereclause.";";
+			$querystatement = "DELETE FROM attachments WHERE ".$whereclause;
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage($rowsdeleted);

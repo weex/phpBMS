@@ -41,7 +41,7 @@ if(class_exists("phpbmsTable")){
 	class addresses extends phpbmsTable{
 
 		function getName($tabledefid, $recordid){
-			
+
 			switch($tabledefid){
 
 				case "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083":
@@ -136,12 +136,16 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class filesSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
 
-			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!=1;";
+			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!='file:ad761197-e5a2-3fdf-f330-d1508f10813e';";
 			$queryresult = $this->db->query($querystatement);
 
 			$querystatement = "DELETE FROM files WHERE ".$whereclause." AND files.id!=1;";

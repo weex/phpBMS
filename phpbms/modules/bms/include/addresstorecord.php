@@ -267,7 +267,7 @@ if(class_exists("addresses")){
 		}//end function
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			if($variables["existingaddressid"]){
 
@@ -277,7 +277,7 @@ if(class_exists("addresses")){
 
 			} else {
 
-				$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+				$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 				//create the addresstorecord
 				if(!isset($variables["uuid"]))
@@ -298,9 +298,12 @@ if(class_exists("addresses")){
 if(class_exists("searchFunctions")){
 	class addresstorecordSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			//We need to itterate trhough each record
 			// to check for cross-record addresses

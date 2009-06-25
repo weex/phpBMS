@@ -109,11 +109,12 @@ class groupings{
 	}//end method processFrom
 
 	/**
+	 * function getRecord
 	 * get grouping record (or records)
 	 *
 	 * @param integer $id
 	 */
-	function getRecords($id = NULL){
+	function getRecord($id){
 
 		$querystatement = "
 			SELECT

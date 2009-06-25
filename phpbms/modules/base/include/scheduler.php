@@ -38,7 +38,7 @@
 */
 if(class_exists("phpbmsTable")){
 	class schedulers extends phpbmsTable{
-		
+
 		function getDefaults(){
 			$therecord = parent::getDefaults();
 
@@ -61,8 +61,8 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function getRecord($id = 0){
-			$therecord = parent::getRecord($id);
+		function getRecord($id = 0, $useUuid = false){
+			$therecord = parent::getRecord($id, $useUuid);
 
 			$datearray=explode(" ",$therecord["startdatetime"]);
 			$therecord["startdate"]=$datearray[0];

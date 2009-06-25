@@ -503,13 +503,15 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
 
         /**
+         * function updateRecord
+         *
          * updates a record
          *
          * @param array $variables associative array with the record information
          * @param int|NULL $modifiedby The user's id that modiied the record.
          *                             If the modified is not passed or is NULL the function will use
          *                             the currently logged in user.
-         * @param bool $useUuid specifies whther the $id is a uuid (true) or not.  Default is false.
+         * @param bool $useUuid specifies whther to use the id or the uuid (true) in the whereclause.  Default is false.
          *
          * @return bool true or false depending upon update success
          */
@@ -581,7 +583,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                 $updatestatement .= "
                     WHERE
-                        `uuid` = '".mysql_real_escape_string($variables["id"])."'";
+                        `uuid` = '".mysql_real_escape_string($variables["uuid"])."'";
 
             }//endif
 
@@ -599,7 +601,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
          * @param int $createdby id of the user creating the record.  If NULL (default) it will use the currently logged in user
          * @param bool $overrideID
          * @param bool $replace use the SQL replace statement (true) instead of insert (false, deault)
-         * @param bool $useUuid generates a uuid and specifies the function to retrn the an array with uuid and id instead of just the id
+         * @param bool $useUuid generates a uuid and specifies the function to retrn an array with uuid and id instead of just the id
          *
          * @return int|array|bool retruns the id of the newly created record of false on error.  If $useUuid is set to true, it will
          *                        return an associaive array with both the new uuid and new id.
@@ -623,10 +625,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                     switch($fieldname){
                         case "id":
-                            if($overrideID && $variables["id"]){
+                            if($overrideID && isset($variables["id"])){
 
-                                $fieldlist .= "id, ";
-                                $insertvalues .= ((int) $variables["id"]).", ";
+                                if($variables["id"]){
+                                    $fieldlist .= "id, ";
+                                    $insertvalues .= ((int) $variables["id"]).", ";
+                                }//end if
 
                             }//endif
 
@@ -677,7 +681,8 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
             if($useUuid){
 
                 $fieldlist .= "`uuid`, ";
-                $insertvalues .= "'".uuid($this->prefix.":")."', ";
+                $variables["uuid"] = uuid($this->prefix.":");
+                $insertvalues .= "'".$variables["uuid"]."', ";
 
             }//endif
 

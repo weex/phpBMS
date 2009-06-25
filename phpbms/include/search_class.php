@@ -293,9 +293,7 @@
 
 			$this->db->logError=false;
 			$this->db->stopOnError=false;
-//echo "<pre>";
-//var_dump($_SESSION["thequerystatement"]);
-//exit;
+
 			$this->queryresult = $this->db->query($_SESSION["thequerystatement"]);
 
 			$this->db->logError=true;
@@ -1220,9 +1218,12 @@
 		}//end method
 
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause=$this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			$endmessage="";
 			switch($this->deletebutton){
@@ -1235,6 +1236,7 @@
 					$querystatement = "DELETE FROM `".$this->maintable."` WHERE ".$whereclause;
 					$endmessage=" deleted";
 			}
+			
 			$queryresult = $this->db->query($querystatement);
 			$message = $this->buildStatusMessage().$endmessage;
 
@@ -1251,7 +1253,7 @@
 
 			$whereclause="";
 			foreach($idsArray as $theid){
-				$whereclause.=" OR ".$fieldphrase."=".$theid;
+				$whereclause.=" OR ".$fieldphrase."='".$theid."'";
 			}
 			$whereclause=substr($whereclause,3);
 

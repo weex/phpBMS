@@ -96,9 +96,9 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
-			$thereturn = parent::updateRecord($variables, $modifiedby);
+			$thereturn = parent::updateRecord($variables, $modifiedby, $useUuid);
 
 			//restore the fields
 			$this->getTableInfo();
@@ -107,9 +107,9 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
-			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			//restore the fields
 			$this->getTableInfo();
@@ -125,9 +125,13 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class filesSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
 
 			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!='file:c1818692-cfaa-8536-7f62-e385c0f6920d';";

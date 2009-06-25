@@ -38,7 +38,7 @@
 */
 
 if(class_exists("phpbmsTable")){
-	class invoiceStatus extends phpbmsTable {
+	class invoicestatuses extends phpbmsTable {
 
 		var $_availableUserUUIDs = NULL;
 
@@ -70,11 +70,11 @@ if(class_exists("phpbmsTable")){
 		}//end method --verifyVariables--
 
 
-		function updateRecord($variables, $modifiedby = NULL){
+		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 			if(isset($variables["invoicedefault"]))
 				$this->updateInvoiceDefault();
 
-			parent::updateRecord($variables, $modifiedby = NULL);
+			parent::updateRecord($variables, $modifiedby, $useUuid);
 		}
 
 		function updateInvoiceDefault(){
@@ -85,17 +85,33 @@ if(class_exists("phpbmsTable")){
 }
 
 if(class_exists("searchFunctions")){
-	class clientsSearchFunctions extends searchFunctions{
+	class invoicestatusesSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
 
-			$whereclause = $this->buildWhereClause($theids,"invoicestatuses.id");
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
-			$querystatement = "UPDATE invoicestatuses SET inactive=1,modifiedby=".$_SESSION["userinfo"]["id"]." WHERE (".$whereclause.") AND invoicedefault=0;";
+			//$whereclause = $this->buildWhereClause($theids,"invoicestatuses.id");
+
+			$querystatement = "
+				UPDATE
+					`invoicestatuses`
+				SET
+					`inactive`='1',
+					`modifiedby`='".$_SESSION["userinfo"]["id"]."'
+				WHERE
+					(".$whereclause.")
+				AND
+					`invoicedefault`='0'
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();
-			$message.=" marked inactive.";
+			$message .= " marked inactive.";
 			return $message;
 		}
 

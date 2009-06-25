@@ -55,54 +55,54 @@
 		}
 
 
-                /**
-                 * saves current search
-                 *
-                 * @param string $name name to save search as
-                 * @param integer $tabledefid table definition's id
-                 * @param string $userid uuid of user
-                 */
+		/**
+		 * saves current search
+		 *
+		 * @param string $name name to save search as
+		 * @param integer $tabledefid table definition's id
+		 * @param string $userid uuid of user
+		 */
 		function save($name,$tabledefid,$userid){
 
-                    $uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
 
-                    $insertstatement = "
-                        INSERT INTO
-                            usersearches
-                        (
-                            userid,
-                            tabledefid,
-                            name,
-                            `type`,
-                            sqlclause
-                        ) VALUES (
-                            '".mysql_real_escape_string($userid)."',
-                            '".mysql_real_escape_string($uuid)."',
-                            '".mysql_real_escape_string($name)."',
-                            'SCH',
-                            '".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."'
-                        )";
+			$insertstatement = "
+				INSERT INTO
+					usersearches
+				(
+					userid,
+					tabledefid,
+					name,
+					`type`,
+					sqlclause
+				) VALUES (
+					'".mysql_real_escape_string($userid)."',
+					'".mysql_real_escape_string($uuid)."',
+					'".mysql_real_escape_string($name)."',
+					'SCH',
+					'".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."'
+				)";
 
-                    $this->db->query($insertstatement);
+			$this->db->query($insertstatement);
 
-                    echo "search saved";
+			echo "search saved";
 
 		}//endfunction save
 
 
-                /**
-                 * displays sql clause for saved search
-                 *
-                 * @param integer $id savedsearch id
-                 */
+		/**
+		 * displays sql clause for saved search
+		 *
+		 * @param integer $id savedsearch id
+		 */
 		function get($id){
 
 		    $querystatement="
-                        SELECT
-                            sqlclause
-                        FROM
-                            usersearches
-                        WHERE id=".((int) $id);
+				SELECT
+					sqlclause
+				FROM
+					usersearches
+				WHERE id=".((int) $id);
 
 		    $queryresult = $this->db->query($querystatement);
 
@@ -113,141 +113,137 @@
 		}//end function
 
 
-                /**
-                 * generates the select input of saved searches
-                 *
-                 * @param mysql query result $queryresult
-                 */
+		/**
+		 * generates the select input of saved searches
+		 *
+		 * @param mysql query result $queryresult
+		 */
 		function showSavedSearchList($queryresult){
 
-                    $numrows = $this->db->numRows($queryresult);
+			$numrows = $this->db->numRows($queryresult);
 
-                    ?>
-                    <select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo APP_PATH ?>')">
-                        <?php if($numrows<1) {?>
+			?>
+			<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo APP_PATH ?>')">
+				<?php if($numrows<1) {?>
 
-                            <option value="NA">No Saved Searches</option>
+					<option value="NA">No Saved Searches</option>
 
-                        <?php
-                            } else {
+				<?php
+					} else {
 
-                                $numglobal=0;
+						$numglobal=0;
 
-                                while($therecord=$this->db->fetchArray($queryresult))
-                                    if($therecord["userid"]<1) $numglobal++;
+						while($therecord=$this->db->fetchArray($queryresult))
+							if($therecord["userid"]<1) $numglobal++;
 
-                                $this->db->seek($queryresult,0);
+						$this->db->seek($queryresult,0);
 
-                                 if($numglobal>0){ ?>
-                                    <option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
-                                <?php
-                                }//end if
+						 if($numglobal>0){ ?>
+							<option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
+						<?php
+						}//end if
 
-                                $userqueryline = true;
+						$userqueryline = true;
 
-                                while($therecord=$this->db->fetchArray($queryresult)){
+						while($therecord=$this->db->fetchArray($queryresult)){
 
-                                    if ($therecord["userid"] != '' and $userqueryline) {
+							if ($therecord["userid"] != '' and $userqueryline) {
 
-                                        $userqueryline = false;
+								$userqueryline = false;
 
-                                        ?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php
+								?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php
 
-                                    }//endif
+							}//endif
 
-                                    ?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php
+							?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php
 
-                                }// end while
+						}// end while
 
-                            }//end if
-                        ?>
-                    </select>
-                    <?php
+					}//end if
+				?>
+			</select>
+			<?php
 
 		}//end function showSavedSearchList
 
 
-                /**
-                 * displays the load box for saved searches
-                 *
-                 * @param integer $tabledefid id of tabledef
-                 * @param string $userid uuid of user
-                 * @param string $securitywhere additional security based where clause to pass
-                 */
+		/**
+		 * displays the load box for saved searches
+		 *
+		 * @param integer $tabledefid id of tabledef
+		 * @param string $userid uuid of user
+		 * @param string $securitywhere additional security based where clause to pass
+		 */
 		function showLoad($tabledefid,$userid,$securitywhere){
 
-                    $uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
 
-                    $querystatement = "
-                        SELECT
-                            id,
-                            name,
-                            userid
-                        FROM
-                            usersearches
-                        WHERE
-                            tabledefid = '".$uuid."'
-                            AND type='SCH'
-                            AND (
-                                (userid = '' ".$securitywhere.")
-                                OR userid = '".$userid."')
-                        ORDER BY
-                            userid,
-                            name";
+			$querystatement = "
+				SELECT
+					id,
+					name,
+					userid
+				FROM
+					usersearches
+				WHERE
+					tabledefid = '".$uuid."'
+					AND type='SCH'
+					AND (
+						(userid = '' ".$securitywhere.")
+						OR userid = '".$userid."')
+				ORDER BY
+					userid,
+					name";
 
-                    $queryresult = $this->db->query($querystatement);
+			$queryresult = $this->db->query($querystatement);
 
-                    if(!$queryresult)
-                        $error = new appError(500,"Cannot retrieve saved search infromation");
+			if(!$queryresult)
+				$error = new appError(500,"Cannot retrieve saved search infromation");
 
-                    $querystatement="
-                        SELECT
-                            advsearchroleid
-                        FROM
-                            tabledefs
-                        WHERE id= '".$tabledefid."'";
+			$querystatement="
+				SELECT
+					advsearchroleid
+				FROM
+					tabledefs
+				WHERE id= '".$tabledefid."'";
 
-                    $tabledefresult = $this->db->query($querystatement);
+			$tabledefresult = $this->db->query($querystatement);
 
-                    if(!$tabledefresult)
-                        $error = new appError(500,"Cannot retrieve table definition information.");
+			if(!$tabledefresult)
+				$error = new appError(500,"Cannot retrieve table definition information.");
 
-                    $tableinfo=$this->db->fetchArray($tabledefresult);
+			$tableinfo=$this->db->fetchArray($tabledefresult);
 
-                    ?>
-                    <table border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td valign="top">
-                                <p>
-                                    <label for="LSList">saved searches</label><br />
-                                    <?php $this->showSavedSearchList($queryresult)?>
-                                </p>
-                            </td>
-                            <td valign="top" width="100%">
-                                <p>
-                                    <label for="LSSelectedSearch">name</label><br />
-                                    <input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />
-                                </p>
-                                <p>
-                                    <textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
-                                </p>
-                            </td>
-                            <td valign="top">
-                                <p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
-                                <p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo APP_PATH ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
-                                <div id="LSResults">&nbsp;</div>
-                            </td>
-                        </tr>
-                    </table>
-                    <?php
+			?>
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top">
+						<p>
+							<label for="LSList">saved searches</label><br />
+							<?php $this->showSavedSearchList($queryresult)?>
+						</p>
+					</td>
+					<td valign="top" width="100%">
+						<p>
+							<label for="LSSelectedSearch">name</label><br />
+							<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />
+						</p>
+						<p>
+							<textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
+						</p>
+					</td>
+					<td valign="top">
+						<p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
+						<p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo APP_PATH ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
+						<div id="LSResults">&nbsp;</div>
+					</td>
+				</tr>
+			</table>
+			<?php
 
 		}//end function showLoad
 
 	}//end class
-
-
-
-
 
 
 
@@ -258,21 +254,21 @@
 
 		switch($_GET["cmd"]){
 			case "show":
-                            $securitywhere = "";
+				$securitywhere = "";
 
-                            if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
+				if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
 
-                                $securitywhere = "";
+					$securitywhere = "";
 
-                                foreach($_SESSION["userinfo"]["roles"] as $role)
-                                    $securitywhere .= ", '".$role."'";
+					foreach($_SESSION["userinfo"]["roles"] as $role)
+						$securitywhere .= ", '".$role."'";
 
-                                $securitywhere = " AND (`roleid` IN (''".$securitywhere.") OR `roleid` IS NULL)";
+					$securitywhere = " AND (`roleid` IN (''".$securitywhere.") OR `roleid` IS NULL)";
 
-                            }//endif
+				}//endif
 
-                            $thesearch->showLoad($_GET["tid"], $_SESSION["userinfo"]["uuid"], $securitywhere);
-                            break;
+				$thesearch->showLoad($_GET["tid"], $_SESSION["userinfo"]["uuid"], $securitywhere);
+				break;
 
 			case "getsearch":
 				$thesearch->get($_GET["id"]);

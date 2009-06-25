@@ -222,9 +222,9 @@ if(class_exists("phpbmsTable")){
 
 		}//end method --verifyVariables--
 
-		function insertRecord($variables,$createdby = NULL){
+		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
-			$newid = parent::insertRecord($variables,$createdby);
+			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			//we need to create the some default supporting records
 			//first a single column.
@@ -273,15 +273,20 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class tabledefsSearchFunctions extends searchFunctions{
 
-		function delete_record(){
+		function delete_record($useUUID = false){
+
+			if(!$useUUID)
+				$whereclause=$this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			//passed variable is array of user ids to be revoked
-			$whereclause="";
+			//$whereclause="";
 			$linkedwhereclause="";
 			$relationshipswhereclause="";
-			$whereclause = $this->buildWhereClause();
+			//$whereclause = $this->buildWhereClause();
 			$linkedwhereclause = $this->buildWhereClause("tabledefid");
-			$relationshipswhereclause = $this->buildWhereClause("fromtableid")." or ".$this->buildWhereClause("totableid");
+			$relationshipswhereclause = $this->buildWhereClause("fromtableid")." OR ".$this->buildWhereClause("totableid");
 
 			$querystatement = "DELETE FROM tablecolumns WHERE ".$linkedwhereclause.";";
 			$queryresult = $this->db->query($querystatement);
