@@ -93,13 +93,13 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("ccnumber", $therecord["ccnumber"], "card number", false, false, 28,40);
+		$theinput = new inputComparisonField("ccnumber", $therecord["ccnumber"], "card number", false, false, 28,40);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("ccexpiration", $therecord["ccexpiration"], "expiration", false, false, 8,10);
+		$theinput = new inputComparisonField("ccexpiration", $therecord["ccexpiration"], "expiration", false, false, 8,10);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("ccverification", $therecord["ccverification"], "verification/pin", false, false, 8,7);
+		$theinput = new inputComparisonField("ccverification", $therecord["ccverification"], "verification/pin", false, false, 8,7);
 		$theform->addField($theinput);
 
 		$theinput = new inputField("bankname", $therecord["bankname"], "bank name", false, false, 30, 64);
@@ -108,10 +108,10 @@
 		$theinput = new inputField("checkno", $therecord["checkno"], "check number", false, false, 20 , 32);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("accountnumber", $therecord["accountnumber"], "account number", false, "integer", 20, 64);
+		$theinput = new inputComparisonField("accountnumber", $therecord["accountnumber"], "account number", false, "integer", 20, 64);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("routingnumber", $therecord["routingnumber"], "routing number", false, "integer", 30, 64);
+		$theinput = new inputComparisonField("routingnumber", $therecord["routingnumber"], "routing number", false, "integer", 30, 64);
 		$theform->addField($theinput);
 
 		$theinput = new inputField("transactionid", $therecord["transactionid"], "transaction id", false, false, 32, 64);

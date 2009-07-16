@@ -15,5 +15,7 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('term2_percentage','15');
 INSERT INTO `settings` (`name`, `value`) VALUES ('term3_days','90');
 INSERT INTO `settings` (`name`, `value`) VALUES ('term3_percentage','20');
 INSERT INTO `settings` (`name`, `value`) VALUES ('prospects_on_orders','1');
-INSERT INTO `settings` (`name`, `value`) VALUES ('clear_payment_on_invoice','1');
+--INSERT INTO `settings` (`name`, `value`) VALUES ('clear_payment_on_invoice','1');
+INSERT INTO `settings` (`name`, `value`) VALUES ('encrypt_payment_fields', '0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('encryption_key_path', '');
 INSERT INTO `settings` (`name`, `value`) VALUES ('company_taxid', '');

@@ -171,13 +171,6 @@
 		$theinput->setAttribute("onchange","clearTaxareaid()");
 		$theform->addField($theinput);
 
-
-		$theinput = new inputField("accountnumber",$therecord["accountnumber"],  "account number" ,false, "integer", 20, 64);
-		$theform->addField($theinput);
-
-		$theinput = new inputField("routingnumber",$therecord["routingnumber"],  "routing number" ,false, "integer", 30, 64);
-		$theform->addField($theinput);
-
 		$theinput = new inputCurrency("creditlimit", $therecord["creditlimit"], "credit limit" );
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
@@ -185,6 +178,26 @@
 		$theinput = new inputCurrency("creditleft", $therecord["creditleft"], "credit left (before order)" );
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
+
+		//=====Payment Info====================
+
+
+		$theinput = new inputComparisonField("accountnumber",$therecord["accountnumber"],  "account number" ,false, "integer", 20, 64);
+		$theform->addField($theinput);
+
+		$theinput = new inputComparisonField("routingnumber",$therecord["routingnumber"],  "routing number" ,false, "integer", 30, 64);
+		$theform->addField($theinput);
+
+		$theinput = new inputComparisonField("ccnumber", $therecord["ccnumber"], "card number", false, NULL, 28, 40);
+		$theform->addField($theinput);
+
+		$theinput = new inputComparisonField("ccexpiration", $therecord["ccexpiration"], "expiration", false, NULL, 8, 10);
+		$theform->addField($theinput);
+
+		$theinput = new inputComparisonField("ccverification", $therecord["ccverification"], "verification", false, NULL, 8, 7);
+		$theform->addField($theinput);
+
+		//======================================
 
 		$thetable->getCustomFieldInfo();
 		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
@@ -523,25 +536,22 @@
 							<input id="bankname" name="bankname" type="text" value="<?php echo htmlQuotes($therecord["bankname"]) ?>" size="30" maxlength="64" />
 						</p>
 						<p id="pAccountNumber">
-							<?php $theform->fields["accountnumber"]->display();?>
+							<?php $theform->showfield("accountnumber"); ?>
 						</p>
 						<p>
-							<?php $theform->fields["routingnumber"]->display();?>
+							<?php $theform->showfield("routingnumber"); ?>
 						</p>
 					</div>
 
 					<div id="ccpaymentinfo">
 						<p id="fieldCCNumber">
-							<label for="ccnumber">card number</label><br />
-							<input name="ccnumber" type="text" id="ccnumber" value="<?php echo htmlQuotes($therecord["ccnumber"]) ?>" size="28" maxlength="40" />
+							<?php $theform->showfield("ccnumber"); ?>
 						</p>
 						<p id="fieldCCExpiration">
-							<label for="ccexpiration">expiration</label><br />
-							<input name="ccexpiration" id="ccexpiration" type="text"  value="<?php echo htmlQuotes($therecord["ccexpiration"]) ?>" size="8" maxlength="10" />
+							<?php $theform->showfield("ccexpiration"); ?>
 						</p>
 						<p>
-							<label for="ccverification">verification/pin</label><br />
-							<input id="ccverification" name="ccverification" type="text"  value="<?php echo htmlQuotes($therecord["ccverification"]) ?>" size="8" maxlength="7" />
+							<?php $theform->showfield("ccverification"); ?>
 						</p>
 					</div>
 

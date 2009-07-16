@@ -371,8 +371,6 @@ if(class_exists("phpbmsTable")){
 
 		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
-			//$variables = $this->prepareVariables($variables);
-
 			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
 
 			if(is_array($newid))

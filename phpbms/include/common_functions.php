@@ -118,12 +118,12 @@ class phpbms{
 					if(!$rolename){
 
 						$querystatement = "
-                                                        SELECT
-                                                                name
-                                                        FROM
-                                                                roles
-                                                        WHERE
-                                                                uuid = '".mysql_real_escape_string($roleid)."'";
+							SELECT
+									name
+							FROM
+									roles
+							WHERE
+									uuid = '".mysql_real_escape_string($roleid)."'";
 
 						$queryresult = $this->db->query($querystatement);
 
@@ -431,7 +431,34 @@ function hasRights($roleid, $fullAccessAdmin = true){
 
 }//end function hasRights
 
+/**
+ * function getPathToAppRoot
+ * @return string path (up) to application root
+ */
 
+function getPathToAppRoot() {
+
+		$currdirectory = getcwd();
+		$count = 0;
+		$path = "";
+
+		//We need to find the applications root
+		while(!file_exists("phpbmsversion.php") && $count < 9){
+
+			$path.="../";
+			@ chdir("../");
+			$count++;
+
+		}//end while
+
+		chdir($currdirectory);
+
+		if($count < 9)
+			return $path;
+		else
+			return NULL;
+
+}//end function --getPathToAppRoot()--
 
 // date/time functions
 //=====================================================================

@@ -38,8 +38,8 @@
 */
 
 //Test Information
-$_POST["phpbmsusername"] = "api";
-$_POST["phpbmspassword"] = "spiderman";
+//$_POST["phpbmsusername"] = "api";
+//$_POST["phpbmspassword"] = "spiderman";
 //$_POST["request"] = '[
 //    {
 //        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
@@ -61,14 +61,14 @@ $_POST["phpbmspassword"] = "spiderman";
 //        "data" : {"uuid":"tax:66dd77f5-c68e-74f4-5ce6-64768282b232"}
 //    }
 //]';
-$_POST["request"] = '[
-    {
-        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
-        "command" : "inactivate",
-        "data" : [4],
-        "options" : {"useUuid" : false}
-    }
-]';
+//$_POST["request"] = '[
+//    {
+//        "tabledefid": "tbld:c9ff2c8c-ce1f-659a-9c55-31bca7cce70e",
+//        "command" : "inactivate",
+//        "data" : [4],
+//        "options" : {"useUuid" : false}
+//    }
+//]';
 
 require("../../include/session.php");
 require("include/apiclass.php");

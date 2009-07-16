@@ -254,6 +254,84 @@ class db{
     }//end function numRows
 
 
+    /**
+     * function encrypt
+     *
+     * construct a database command with a stored key to encrypt the
+     * parameter. (string values should be enclosed in single quotes ('))
+     *
+     * @param string $value value/fieldname to be encrypted
+     * @param string $encryptionKey An overriding encryptionKey
+     * @return string Database command to encrypt $value or $value itself if no
+     * non-null encryptionkey was given and the ENCRYPTION_KEY constant is not
+     * defined
+     */
+
+    function encrypt($value, $encryptionKey = NULL) {
+
+        if($encryptionKey === NULL && defined("ENCRYPTION_KEY"))
+            $encryptionKey = ENCRYPTION_KEY;
+
+        if($value == "")
+            $value = "''";
+
+        switch($this->type){
+
+            case "mysql":
+
+                $return = "AES_ENCRYPT(".$value.",'".mysql_real_escape_string($encryptionKey)."')";
+
+                break;
+
+        }//end switch
+
+        if($encryptionKey)
+            return $return;
+        else
+            return $value;
+
+    }//end method --encrypt--
+
+
+    /**
+     * function decrypt
+     *
+     * construct a database command with a stored key to decrypt the
+     * parameter. (string values should be enclosed in single quotes ('))
+     *
+     * @param string $value value/fieldname to be decrypted
+     * @param string $encryptionKey An overriding encryptionKey
+     * @return string Database command to decrypt $value or $value if no
+     * non-null encryptionkey was given and the ENCRYPTION_KEY constant is not
+     * defined
+     */
+
+    function decrypt($value, $encryptionKey = NULL) {
+
+        if($encryptionKey === NULL && defined("ENCRYPTION_KEY"))
+            $encryptionKey = ENCRYPTION_KEY;
+
+        if($value == "")
+            $value = "''";
+
+        switch($this->type){
+
+            case "mysql":
+
+                $return = "AES_DECRYPT(".$value.",'".mysql_real_escape_string($encryptionKey)."')";
+
+                break;
+
+        }//end switch
+
+        if($encryptionKey)
+            return $return;
+        else
+            return $value;
+
+    }//end method --decrypt--
+
+
     function fetchArray($queryresult){
         //Fetches associative array of current row from query result
 

@@ -466,6 +466,23 @@ class phpbmsSession{
 					define(strtoupper($therecord["name"]),$therecord["value"]);
 			}//end while
 
+
+			/**
+			  *  Need to load the ENCRYPTION_KEY if it is called for.
+			  */
+
+			if(defined("ENCRYPTION_KEY_PATH"))
+				if(is_file(ENCRYPTION_KEY_PATH)){
+					$res = fopen(ENCRYPTION_KEY_PATH, "r");
+					if($res !== false){
+						define("ENCRYPTION_KEY",trim(fread($res, filesize(ENCRYPTION_KEY_PATH))));
+					}else{
+						new appError(-229, "encryption key path setting is not a valid path");
+					}
+				}else{
+					new appError(-228, "encryption key path setting is not a valid path");
+				}//end if
+
 			// This following code is for windows boxen, because they lack some server varables as well
 			// formating options for the strftime function
 			if(!isset($_SERVER['REQUEST_URI'])) {

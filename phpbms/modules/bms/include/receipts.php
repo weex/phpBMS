@@ -209,6 +209,20 @@ if(class_exists("phpbmsTable")){
 		var $_availableClientUUIDs = NULL;
 		var $_availablePaymentMethodUUIDs = NULL;
 
+		function receipts($db, $tabldefid, $backurl = NULL){
+
+			if(ENCRYPT_PAYMENT_FIELDS){
+				$this->encryptedFields[] = "ccnumber";
+				$this->encryptedFields[] = "ccverification";
+				$this->encryptedFields[] = "routingnumber";
+				$this->encryptedFields[] = "accountnumber";
+				$this->encryptedFields[] = "ccexpiration";
+			}//end if
+
+			parent::phpbmsTable($db, $tabldefid, $backurl);
+
+		}//end method --receipts--
+
 		function showPaymentOptions($selectedid){
 
 			global $phpbms;
@@ -277,6 +291,65 @@ if(class_exists("phpbmsTable")){
 		}
 
 
+		/**
+		 *
+		 * function getRecord
+		 * retrieves sales order record
+		 *
+		 * @param int|string $id the id or uuid of the sales order record
+		 * @param bool $useUuid is the passed $id is referenceing an id (false/default) or a uuid (true)
+		 *
+		 * @return array associateive array with the record information
+		 */
+		function getRecord($id, $useUuid = false){
+
+			$therecord = parent::getRecord($id, $useUuid);
+
+			if((int)$therecord["posted"] != 0 && ENCRYPT_PAYMENT_FIELDS){
+
+				$querystatement = "
+					SELECT
+						`ccnumber`,
+						`ccverification`,
+						`ccexpiration`,
+						`accountnumber`,
+						`routingnumber`
+					FROM
+						`receipts`
+					WHERE
+						`uuid` = '".$therecord["uuid"]."'
+				";
+
+				$queryresult = $this->db->query($querystatement);
+
+				$unEncryptedRecord = $this->db->fetchArray($queryresult);
+
+				$therecord["ccnumber"] = $unEncryptedRecord["ccnumber"];
+				$therecord["ccverification"] = $unEncryptedRecord["ccverification"];
+				$therecord["ccexpiration"] = $unEncryptedRecord["ccexpiration"];
+				$therecord["accountnumber"] = $unEncryptedRecord["accountnumber"];
+				$therecord["routingnumber"] = $unEncryptedRecord["routingnumber"];
+
+			}//end if
+
+			if(ENCRYPT_PAYMENT_FIELDS && (int)$therecord["posted"] == 0){
+
+				if($therecord["ccverification"])
+					$therecord["ccverification"] = str_repeat("*",strlen($therecord["ccverification"]));
+				if($therecord["ccnumber"])
+					$therecord["ccnumber"] = str_repeat("*",strlen($therecord["ccnumber"] -4 )).substr($therecord["ccnumber"], -4);
+				if($therecord["routingnumber"])
+					$therecord["routingnumber"] = str_repeat("*",strlen($therecord["routingnumber"] -4 )).substr($therecord["routingnumber"], -4);
+				if($therecord["accountnumber"])
+					$therecord["accountnumber"] = str_repeat("*",strlen($therecord["accountnumber"] -4 )).substr($therecord["accountnumber"], -4);
+
+			}//end if
+
+			return $therecord;
+
+		}//end method
+
+
 		function verifyVariables($variables){
 
 			//default not sufficient
@@ -340,6 +413,21 @@ if(class_exists("phpbmsTable")){
 
 			$variables["amount"] = currencyToNumber($variables["amount"]);
 
+			if($variables["ccnumber_old"] == $variables["ccnumber"])
+				unset($variables["ccnumber"]);
+
+			if($variables["ccexpiration_old"] == $variables["ccexpiration"])
+				unset($variables["ccexpiration"]);
+
+			if($variables["ccverification_old"] == $variables["ccverification"])
+				unset($variables["ccverification"]);
+
+			if($variables["accountnumber_old"] == $variables["accountnumber"])
+				unset($variables["accountnumber"]);
+
+			if($variables["routingnumber_old"] == $variables["routingnumber"])
+				unset($variables["routingnumber"]);
+
 			return $variables;
 		}
 
@@ -347,6 +435,38 @@ if(class_exists("phpbmsTable")){
 		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
 			if(parent::updateRecord($variables, $modifiedby, $useUuid)){
+
+				if(ENCRYPT_PAYMENT_FIELDS && (isset($variables["ccnumber"]) || isset($variables["ccexpiration"]) || isset($variables["ccverification"]) || isset($variables["accountnumber"]) || isset($variables["routingnumber"])) ){
+
+					if($useUuid)
+						$whereclause = "`uuid` = '".mysql_real_escape_string($variables["uuid"])."'";
+					else
+						$whereclause = "`id` = '".(int)$variables["id"]."'";
+
+					$querystatement = "
+					UPDATE
+						`receipts`
+					SET ";
+
+					$fieldlist = "";
+					if(isset($variables["ccnumber"]))
+						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccnumber"]));
+					if(isset($variables["ccexpiration"]))
+						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccexpiration"]));
+					if(isset($variables["ccverification"]))
+						$fieldlist .= ", `ccverification` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccverification"]));
+					if(isset($variables["accountnumber"]))
+						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["accountnumber"]));
+					if(isset($variables["routingnumber"]))
+						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["routingnumber"]));
+
+					$fieldlist = substr($fieldlist, 1);
+
+					$querystatement .= $fieldlist." WHERE `posted` = '0' AND ".$whereclause;
+
+					$this->db->query($querystatement);
+
+				}//end if
 
 				if($variables["itemschanged"]==1){
 
@@ -365,6 +485,38 @@ if(class_exists("phpbmsTable")){
 		function insertRecord($variables, $createdby = NULL, $overrideID = false, $replace = false, $useUuid = false){
 
 			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
+
+			if(ENCRYPT_PAYMENT_FIELDS && (isset($variables["ccnumber"]) || isset($variables["ccexpiration"]) || isset($variables["ccverification"]) || isset($variables["accountnumber"]) || isset($variables["routingnumber"])) ){
+
+				if($useUuid)
+					$whereclause = "`uuid` = '".$newid["uuid"]."'";
+				else
+					$whereclause = "`id` = '".$newid."'";
+
+				$querystatement = "
+					UPDATE
+						`receipts`
+					SET ";
+
+					$fieldlist = "";
+					if(isset($variables["ccnumber"]))
+						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccnumber"]));
+					if(isset($variables["ccexpiration"]))
+						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccexpiration"]));
+					if(isset($variables["ccverification"]))
+						$fieldlist .= ", `ccverification` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccverification"]));
+					if(isset($variables["accountnumber"]))
+						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["accountnumber"]));
+					if(isset($variables["routingnumber"]))
+						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["routingnumber"]));
+
+					$fieldlist = substr($fieldlist, 1);
+
+					$querystatement .= $fieldlist." WHERE `posted` = '0' AND ".$whereclause;
+
+				$this->db->query($querystatement);
+
+			}//end if
 
 			if($variables["itemschanged"]==1){
 
@@ -437,7 +589,7 @@ if(class_exists("searchFunctions")){
 					aritems
 				WHERE
 					`type` = 'deposit'
-					AND (".str_replace("uuid =", "relatedid =", $newWhere).")";
+					AND (".str_replace("uuid", "relatedid", $newWhere).")";
 
 			$this->db->query($deletestatement);
 
@@ -445,7 +597,7 @@ if(class_exists("searchFunctions")){
 				DELETE FROM
 					receiptitems
 				WHERE
-					".str_replace("uuid =", "receiptid =", $newWhere);
+					".str_replace("uuid", "receiptid", $newWhere);
 
 			$this->db->query($deletestatement);
 
@@ -692,13 +844,13 @@ function defineReceiptsPost(){
 						posted = '1',
 						postingsessionid = '".$postsessionid."',";
 
-				if(CLEAR_PAYMENT_ON_INVOICE){
-					$updatestatement .="
-						ccverification = REPEAT('*',LENGTH(ccverification)),
-						ccexpiration =  REPEAT('*',LENGTH(ccexpiration)),
+				if(ENCRYPT_PAYMENT_FIELDS){
+					$querystatement .="
+						ccverification = REPEAT('*',LENGTH(".$this->db->decrypt('`ccverification`').")),
+						ccexpiration =  REPEAT('*',LENGTH(".$this->db->decrypt('`ccexpiration`').")),
 						routingnumber =  NULL,
 						accountnumber =  NULL,
-						ccnumber = LPAD(SUBSTRING(ccnumber,-4),LENGTH(ccnumber),'*'),
+						ccnumber = LPAD(SUBSTRING(".$this->db->decrypt('`ccnumber`').",-4),LENGTH(".$this->db->decrypt('`ccnumber`')."),'*'),
 					";
 				}//endif
 

@@ -361,8 +361,13 @@ UPDATE `roles` SET `uuid`='role:259ead9f-100b-55b5-508a-27e33a6216bf' WHERE `id`
 UPDATE `roles` SET `uuid`='role:8f5fb368-e7d9-5010-d8f6-b4a78adc0520' WHERE `id`='50';
 UPDATE `roles` SET `uuid`='role:c9439c3c-499b-7bcc-ee14-fec5bfcf5fc2' WHERE `id`='80';
 --end role UPDATE--
+--settings DELETE--
+DELETE FROM `settings` WHERE `name`='clear_payment_on_invoice';
+--end settings DELTE--
 --settings INSERT--
 INSERT INTO `settings` (`name`, `value`) VALUES ('company_taxid', '');
+INSERT INTO `settings` (`name`, `value`) VALUES ('encrypt_payment_fields', '0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('encryption_key_path', '');
 --end settings INSERT--
 --shippingmethods UPDATE--
 UPDATE `shippingmethods` SET `uuid`='shp:f34a3e10-e782-2675-f041-71f5c88f5aa9' WHERE `id`='1';

@@ -42,15 +42,22 @@
  *
  * Processes and retrieves settings from the settings table.
  * @author Brian Rieb <brieb@kreotek.com>
- *
  */
 class settings{
 
     /**
-     * phpBMS DB object
-     * @var object
+	 * $db
+     *
+     * @var object phpBMS database object
      */
     var $db;
+
+	/**
+	 * $updateErrors
+	 *
+	 * @var string Error message to be displayed upon errored update.
+	 */
+	var $updateErrorMessage = "";
 
 
     /**
@@ -303,7 +310,10 @@ class settings{
 
 			case "save":
 			if($this->updateSettings($variables))
-				$statusmessage="Settings Updated";
+				if(!$this->updateErrorMessage)
+					$statusmessage="Settings Updated";
+				else
+					$statusmessage = "ERROR: ".$this->updateErrorMessage;
 			break;
 
 			case "encryption seed":

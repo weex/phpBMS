@@ -47,6 +47,16 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         var $uuid;
         var $fields = array();
 
+        var $payemnts;
+
+        /**
+          *  $encryptedFields
+          *
+          *  @var array A list of field names that are encrypted.  This affects
+          *  the getRecord, insertRecord, and updateRecord.
+          */
+        var $encryptedFields = array();
+
 
         /**
          * Initializes phpBMS Table object
@@ -99,6 +109,9 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                 $this->fields = $this->db->tableInfo($this->maintable);
 
+                foreach($this->encryptedFields as $encryptFieldname)
+                    $this->fields[$encryptFieldname]["select"] = $this->db->decrypt("`".$encryptFieldname."`");
+
                 return true;
 
             } else
@@ -149,9 +162,18 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end function getDefaultsByType
 
 
-        // Given a value, and field type, prepare the
-        // value for SQL insertion (replacing nul with the SQL string NULL,
-        // and typeing variables)
+
+        /**
+          *  function prepareFieldForSQL
+          *
+          *  Given a value, and field type, prepare the
+          *  value for SQL insertion (replacing nul with the SQL string NULL,
+          *  and typeing variables)
+          *
+          *  @param string/int $value to be prepared.
+          *  @param string $type mysql field type
+          *  @param string $flags A list of flags seperated by spaces (" ").
+          */
         function prepareFieldForSQL($value,$type,$flags){
 
             switch ($type){
@@ -364,6 +386,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             // iterate through all possible fields and comprise a list
             // of columns to retrieve
+
             $fieldlist = "";
             foreach($this->fields as $fieldname => $thefield){
 
@@ -695,6 +718,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 $insertstatement = "INSERT";
 
             $insertstatement .= " INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
+
 
             $insertresult = $this->db->query($insertstatement);
 

@@ -53,6 +53,7 @@ class phpbmsForm{
                 "realArray= new Array();",
                 "dateArray= new Array();",
                 "timeArray= new Array();",
+                "onchangeArray = new Array();"
                 );
 
     var $bottomJS = array();
@@ -1062,4 +1063,56 @@ class inputSmartSearch extends inputField{
 	}//end method -display
 
 }//end class - inputSmartSearch
+//=====================================================================================
+class inputOnChangeField extends inputField{
+
+	function inputOnChangeField($id, $value, $displayName = NULL ,$required = false, $type = NULL, $size = 32, $maxlength = 128, $displayLabel = true){
+
+		parent::inputField($id, $value, $displayName,$required, $type, $size, $maxlength, $displayLabel);
+
+	}
+
+    function getJSMods(){
+
+        $thereturn = parent::getJSMods();
+
+        $thereturn["jsIncludes"][] = "common/javascript/onchange.js";
+        $thereturn["topJS"][] = "onchangeArray[onchangeArray.length]=new Array(\"".$this->name."\");";
+
+        return $thereturn;
+
+    }//end method --getJSMods--
+
+	function display(){
+
+		if($this->displayLabel)
+			$this->showLabel();
+
+
+        ?>
+        <input type="hidden" name="<?php echo $this->name.'_changed';?>" id="<?php echo $this->id.'_changed';?>" value="0" />
+        <input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $this->value?>" <?php
+			$this->displayAttributes();
+		?>/><?php
+
+	}//end method
+
+}//end class
+//=====================================================================================
+class inputComparisonField extends inputField{
+
+    function display(){
+
+        if($this->displayLabel)
+            $this->showLabel();
+
+        ?>
+        <input type="hidden" name="<?php echo $this->name.'_old';?>" id="<?php echo $this->id.'_old';?>" value="<?php echo $this->value?>" />
+        <input name="<?php echo $this->name?>" id="<?php echo $this->id?>" type="text" value="<?php echo $this->value?>" <?php
+			$this->displayAttributes();
+		?>/><?php
+
+    }//end method
+
+}//end class
 ?>
