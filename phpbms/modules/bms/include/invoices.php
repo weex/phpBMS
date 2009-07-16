@@ -873,16 +873,26 @@ if(class_exists("phpbmsTable")){
 					SET ";
 
 					$fieldlist = "";
-					if(isset($variables["ccnumber"]))
-						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccnumber"]));
-					if(isset($variables["ccexpiration"]))
-						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccexpiration"]));
-					if(isset($variables["ccverification"]))
-						$fieldlist .= ", `ccverification` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccverification"]));
-					if(isset($variables["accountnumber"]))
-						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["accountnumber"]));
-					if(isset($variables["routingnumber"]))
-						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["routingnumber"]));
+					if(isset($variables["ccnumber"])){
+						$variables["ccnumber"] = mysql_real_escape_string($variables["ccnumber"]);
+						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt("'".$variables["ccnumber"]."'");
+					}//end if
+					if(isset($variables["ccexpiration"])){
+						$variables["ccexpiration"] = mysql_real_escape_string($variables["ccexpiration"]);
+						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt("'".$variables["ccexpiration"]."'");
+					}//end if
+					if(isset($variables["ccverification"])){
+						$variables["ccverification"] = mysql_real_escape_string($variables["ccverification"]);
+						$fieldlist .= ", `ccverification` = ".$this->db->encrypt("'".$variables["ccverification"]."'");
+					}//end if
+					if(isset($variables["accountnumber"])){
+						$variables["accountnumber"] = mysql_real_escape_string($variables["accountnumber"]);
+						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt("'".$variables["accountnumber"]."'");
+					}//end if
+					if(isset($variables["routingnumber"])){
+						$variables["routingnumber"] = mysql_real_escape_string($variables["routingnumber"]);
+						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt("'".$variables["routingnumber"]."'");
+					}//end if
 
 					$fieldlist = substr($fieldlist, 1);
 
@@ -950,16 +960,26 @@ if(class_exists("phpbmsTable")){
 					SET ";
 
 					$fieldlist = "";
-					if(isset($variables["ccnumber"]))
-						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccnumber"]));
-					if(isset($variables["ccexpiration"]))
-						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccexpiration"]));
-					if(isset($variables["ccverification"]))
-						$fieldlist .= ", `ccverification` = ".$this->db->encrypt(mysql_real_escape_string($variables["ccverification"]));
-					if(isset($variables["accountnumber"]))
-						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["accountnumber"]));
-					if(isset($variables["routingnumber"]))
-						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt(mysql_real_escape_string($variables["routingnumber"]));
+					if(isset($variables["ccnumber"])){
+						$variables["ccnumber"] = mysql_real_escape_string($variables["ccnumber"]);
+						$fieldlist .= ", `ccnumber` = ".$this->db->encrypt("'".$variables["ccnumber"]."'");
+					}//end if
+					if(isset($variables["ccexpiration"])){
+						$variables["ccexpiration"] = mysql_real_escape_string($variables["ccexpiration"]);
+						$fieldlist .= ", `ccexpiration` = ".$this->db->encrypt("'".$variables["ccexpiration"]."'");
+					}//end if
+					if(isset($variables["ccverification"])){
+						$variables["ccverification"] = mysql_real_escape_string($variables["ccverification"]);
+						$fieldlist .= ", `ccverification` = ".$this->db->encrypt("'".$variables["ccverification"]."'");
+					}//end if
+					if(isset($variables["accountnumber"])){
+						$variables["accountnumber"] = mysql_real_escape_string($variables["accountnumber"]);
+						$fieldlist .= ", `accountnumber` = ".$this->db->encrypt("'".$variables["accountnumber"]."'");
+					}//end if
+					if(isset($variables["routingnumber"])){
+						$variables["routingnumber"] = mysql_real_escape_string($variables["routingnumber"]);
+						$fieldlist .= ", `routingnumber` = ".$this->db->encrypt("'".$variables["routingnumber"]."'");
+					}//end if
 
 					$fieldlist = substr($fieldlist, 1);
 

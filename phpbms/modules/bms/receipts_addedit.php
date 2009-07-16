@@ -108,10 +108,10 @@
 		$theinput = new inputField("checkno", $therecord["checkno"], "check number", false, false, 20 , 32);
 		$theform->addField($theinput);
 
-		$theinput = new inputComparisonField("accountnumber", $therecord["accountnumber"], "account number", false, "integer", 20, 64);
+		$theinput = new inputComparisonField("accountnumber", $therecord["accountnumber"], "account number", false, NULL, 20, 64);
 		$theform->addField($theinput);
 
-		$theinput = new inputComparisonField("routingnumber", $therecord["routingnumber"], "routing number", false, "integer", 30, 64);
+		$theinput = new inputComparisonField("routingnumber", $therecord["routingnumber"], "routing number", false, NULL, 30, 64);
 		$theform->addField($theinput);
 
 		$theinput = new inputField("transactionid", $therecord["transactionid"], "transaction id", false, false, 32, 64);
