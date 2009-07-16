@@ -102,7 +102,12 @@ ALTER TABLE `invoices`
     MODIFY `shippingmethodid` VARCHAR(64),
     MODIFY `paymentmethodid` VARCHAR(64),
     MODIFY `billingaddressid` VARCHAR(64),
-    MODIFY `shiptoaddressid` VARCHAR(64);
+    MODIFY `shiptoaddressid` VARCHAR(64),
+    MODIFY `ccnumber` blob default NULL,
+    MODIFY `ccexpiration` blob default NULL,
+    MODIFY `ccverification` blob default NULL,
+    MODIFY `accountnumber` blob default NULL,
+    MODIFY `routingnumber` blob default NULL;
 --end invoices ALTER--
 --invoicestatuses ALTER--
 ALTER TABLE `invoicestatuses` ENGINE=INNODB;
@@ -206,7 +211,12 @@ ALTER TABLE `receipts`
     ADD COLUMN `custom7` TINYINT(1) DEFAULT 0,
     ADD COLUMN `custom8` TINYINT(1) DEFAULT 0,
     MODIFY `clientid` VARCHAR(64) NOT NULL,
-    MODIFY `paymentmethodid` VARCHAR(64) NOT NULL;
+    MODIFY `paymentmethodid` VARCHAR(64) NOT NULL,
+    MODIFY `ccnumber` blob default NULL,
+    MODIFY `ccexpiration` blob default NULL,
+    MODIFY `ccverification` blob default NULL,
+    MODIFY `accountnumber` blob default NULL,
+    MODIFY `routingnumber` blob default NULL;
 --end recipts ALTER--
 --shippinmethods ALTER--
 ALTER TABLE `shippingmethods` ENGINE=INNODB;
