@@ -119,6 +119,10 @@ class settings{
 					$extraUpdate = new $class($this->db);
 					$variables = $extraUpdate->updateSettings($variables);
 
+					if(isset($extraUpdate->updateErrorMessage))
+						if($extraUpdate->updateErrorMessage)
+							$this->updateErrorMessage = $extraUpdate->updateErrorMessage;
+
 				}//end if
 			}//end if
 		}//end foreach
@@ -311,7 +315,7 @@ class settings{
 			case "save":
 			if($this->updateSettings($variables))
 				if(!$this->updateErrorMessage)
-					$statusmessage="Settings Updated";
+					$statusmessage = "Settings Updated";
 				else
 					$statusmessage = "ERROR: ".$this->updateErrorMessage;
 			break;

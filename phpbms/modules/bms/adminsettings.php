@@ -3,6 +3,12 @@
 	//called [module]Update with a method called updateSettings($variables)
 	class bmsUpdate{
 
+		/**
+		  *  $updateErrorMessage
+		  *  @var string An error message that will be displayed.
+		  */
+		var $updateErrorMessage = "";
+
 		function bmsUpdate($db){
 
 			$this->db = $db;

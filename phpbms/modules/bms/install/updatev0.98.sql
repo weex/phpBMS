@@ -478,7 +478,7 @@ WHERE
     `id`='4';
 UPDATE `tabledefs` SET
     `uuid`='tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c',
-    `hascustomfields` = '1'
+    `hascustomfields` = '1',
     `querytable` = '((lineitems left join products on lineitems.productid=products.uuid) inner join invoices on lineitems.invoiceid=invoices.id)'
 WHERE
     `id`='5';

@@ -476,11 +476,15 @@ class phpbmsSession{
 					$res = fopen(ENCRYPTION_KEY_PATH, "r");
 					if($res !== false){
 						define("ENCRYPTION_KEY",trim(fread($res, filesize(ENCRYPTION_KEY_PATH))));
-					}else{
+					}elseif(ENCRYPT_PAYMENT_FIELDS){
 						new appError(-229, "encryption key path setting is not a valid path");
-					}
+					}else{
+						define("ENCRYPTION_KEY", "");
+					}//end if
+				}elseif(ENCRYPT_PAYMENT_FIELDS){
+						new appError(-228, "encryption key path setting is not a valid path");
 				}else{
-					new appError(-228, "encryption key path setting is not a valid path");
+					define("ENCRYPTION_KEY", "");
 				}//end if
 
 			// This following code is for windows boxen, because they lack some server varables as well
