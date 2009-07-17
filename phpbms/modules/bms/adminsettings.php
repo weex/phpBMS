@@ -192,8 +192,11 @@
 			if($variables["encryptionStatusChanged"]){
 
 				if($variables["encrypt_payment_fields"] == 0){
-
-					if(defined("ENCRYPTION_KEY")){
+					/**
+					  *  There has to be a valid encryption key path if the new
+					  *  encryption status is 0
+					  */
+					//if($this->isValidPath(ENCRYPTION_KEY_PATH)){
 
 						$this->decryptPaymentInformation();
 
@@ -211,17 +214,17 @@
 
 						}//end if --path changed--
 
-					}else{
-
-						unset($variables["encrypt_payment_fields"]);
-						$this->updateErrorMessage = "ENCRYPTION_KEY undefined";
-						if($variables["encryptionPathChanged"])
-							if(!$this->isValidPath($variables["encryption_key_path"])){
-								unset($variables["encryption_key_path"]);
-								$this->updateErrorMessage .= " and the encryption key path is invalid";
-							}//end if
-
-					}//end if --existing key?--
+					//}else{
+					//
+					//	unset($variables["encrypt_payment_fields"]);
+					//	$this->updateErrorMessage = "ENCRYPTION_KEY_PATH is not a valid path";
+					//	if($variables["encryptionPathChanged"])
+					//		if(!$this->isValidPath($variables["encryption_key_path"])){
+					//			unset($variables["encryption_key_path"]);
+					//			$this->updateErrorMessage .= " and the encryption key path is invalid";
+					//		}//end if
+					//
+					//}//end if --existing key?--
 
 				}else{
 
@@ -246,11 +249,11 @@
 
 					}else{
 
-						if(defined("ENCRYPTION_KEY")){
+						if($this->isValidPath(ENCRYPTION_KEY_PATH)){
 							$this->encyptPaymentInformation();
 							$this->obfuscatePaymentInformation();
 						}else{
-							$this->updateErrorMessage = "ENCRYPTION_KEY undefined";
+							$this->updateErrorMessage = "No valid encryption key path";
 							unset($variables["encrypt_payment_fields"]);
 						}//end if --encryption key defined--
 
@@ -266,7 +269,7 @@
 
 						if($variables["encrypt_payment_fields"]){
 
-							if(defined("ENCRYPTION_KEY")){
+							//if(defined("ENCRYPTION_KEY")){
 
 								$this->decryptPaymentInformation();
 
@@ -276,10 +279,10 @@
 
 								$this->encyptPaymentInformation($key);
 								$this->obfuscatePaymentInformation();
-							}else{
-								//new appError(-500, "No existing ENCRYPTION_KEY", "error");
-								$this->updateErrorMessage = "ENCRYPTION_KEY undefined";
-							}//end if --ENCRYPTION KEY defined--
+							//}else{
+							//	//new appError(-500, "No existing ENCRYPTION_KEY", "error");
+							//	$this->updateErrorMessage = "ENCRYPTION_KEY undefined";
+							//}//end if --ENCRYPTION KEY defined--
 
 						}//end if --encrypt fields?--
 
