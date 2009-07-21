@@ -193,7 +193,6 @@ class recurr{
 				invoices.*,
 				firstrepeat,
 				includepaymenttype,
-				includepaymentdetails,
 				recurringinvoices.id AS recurrid,
 				recurringinvoices.statusid AS newstatusid,
 				recurringinvoices.assignedtoid AS newassignedtoid,
@@ -214,7 +213,6 @@ class recurr{
 				case "id":
 				case "notificationroleid":
 				case "includepaymenttype":
-				case "includepaymentdetails":
 				case "modifiedby":
 				case "modifieddate":
 				case "createdby":
@@ -223,6 +221,12 @@ class recurr{
 				case "newassignedtoid":
 				case "firstrepeat":
 				case "recurrid":
+				case "bankname":
+				case "ccnumber":
+				case "routingnumber":
+				case "ccexpiration":
+				case "ccverification":
+				case "accountnumber":
 					break;
 
 				case "uuid":
@@ -244,17 +248,6 @@ class recurr{
 				case "orderdate":
 					$fieldlist[] = $name;
 					$therecord[$name] = dateToString(mktime(),"SQL");
-					break;
-
-				case "bankname":
-				case "ccnumber":
-				case "routingnumber":
-				case "ccexpiration":
-				case "ccverification":
-				case "accountnumber":
-					$fieldlist[] = $name;
-					if(!$therecord["includepaymentdetails"])
-						$therecord[$name] = NULL;
 					break;
 
 				case "paymenttypeid":

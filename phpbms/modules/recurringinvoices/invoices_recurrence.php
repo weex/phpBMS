@@ -133,14 +133,6 @@
 		$theform->addField($theinput);
 
 		$theinput = new inputCheckbox("includepaymenttype",$therecord["includepaymenttype"], "include payment type from original invoice");
-		$theinput->setAttribute("onchange","switchInclude();");
-		$theform->addField($theinput);
-
-		if($therecord["includepaymenttype"])
-			$tempdisabled = false;
-		else
-			$tempdisabled = true;
-		$theinput = new inputCheckbox("includepaymentdetails",$therecord["includepaymentdetails"], "include payment details from original invoice",$tempdisabled);
 		$theform->addField($theinput);
 
 
@@ -260,8 +252,6 @@
 				<legend>New Order Options</legend>
 
 				<p><?php $theform->showfield("includepaymenttype");?></p>
-
-				<p><?php $theform->showfield("includepaymentdetails");?></p>
 
 				<p><?php $thetable->showStatusDropDown($therecord["statusid"]);?></p>
 

@@ -9,7 +9,6 @@ CREATE TABLE recurringinvoices(
   `ontheday` INTEGER UNSIGNED,
   `ontheweek` INTEGER UNSIGNED,
   `includepaymenttype` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `includepaymentdetails` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `statusid` VARCHAR(64) NOT NULL,
   `assignedtoid` VARCHAR(64),
   `name` VARCHAR(255),

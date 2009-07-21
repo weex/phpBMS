@@ -1,19 +1,19 @@
 window.onload = function(){
 
 	var reccurcheck = getObjectFromID("recurr");
-	
+
 	if(reccurcheck){
 		var recurrDivs = new Array();
 		recurrDivs[recurrDivs.length]=getObjectFromID("recurrDetails");
-	
+
 		var checkLinks = new Array();
 		checkLinks[checkLinks.length] = reccurcheck;
-	
+
 		var sqlAccordion = new fx.Accordion(checkLinks, recurrDivs, {opacity: true, duration:250, onComplete:function(){/* function goes here */}});
 
 		var theid = getObjectFromID("id");
 		if(theid.value)
-		
+
 		reccurcheck.click();
 		changeType();
 		changeEnd();
@@ -24,8 +24,8 @@ window.onload = function(){
 
 function changeType(){
 	var dropDown = getObjectFromID("type");
-	var i;	
-	
+	var i;
+
 	for(i=0;i<dropDown.options.length;i++){
 		var theDiv = getObjectFromID(dropDown.options[i].value+"Div");
 		if(dropDown.options[i].selected)
@@ -33,7 +33,7 @@ function changeType(){
 		else
 			theDiv.style.display = "none";
 	}
-	
+
 	var typetext = getObjectFromID("typeText");
 	switch(dropDown.value){
 		case "Daily":
@@ -48,9 +48,9 @@ function changeType(){
 		case "Yearly":
 			typetext.innerHTML = "year(s) in:";
 		break;
-		
+
 	}
-	
+
 }//end function
 
 
@@ -69,7 +69,7 @@ function daySelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons";
 	}
@@ -91,7 +91,7 @@ function monthDaySelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons monthDays";
 	}
@@ -102,9 +102,9 @@ function monthlyChange(){
 	var firstRadio = getObjectFromID("monthlyEach");
 	var dayButton;
 	var ontheday = getObjectFromID("monthlyontheday");
-	var ontheweek = getObjectFromID("monthlyontheweek");	
+	var ontheweek = getObjectFromID("monthlyontheweek");
 	var i;
-	
+
 	if(firstRadio.checked){
 		//enable each day button
 		for(i=1; i<32; i++){
@@ -113,7 +113,7 @@ function monthlyChange(){
 		}
 		//disable onthe buttons.
 		ontheday.disabled = true;
-		ontheweek.disabled = true;		
+		ontheweek.disabled = true;
 	} else {
 		//disable each day button
 		for(i=1; i<32; i++){
@@ -123,9 +123,9 @@ function monthlyChange(){
 
 		//enable onthe buttons.
 		ontheday.disabled = false;
-		ontheweek.disabled = false;		
+		ontheweek.disabled = false;
 	}
-		
+
 }
 
 
@@ -144,7 +144,7 @@ function yearlyMonthSelect(thebutton){
 				break;
 			}
 		}//end for
-		
+
 		if(!noneSelected)
 			thebutton.className = "Buttons yearlyMonths";
 	}
@@ -154,8 +154,8 @@ function yearlyMonthSelect(thebutton){
 function yearlyOnTheChecked(){
 	var thecheck = getObjectFromID("yearlyOnThe");
 	var ontheday = getObjectFromID("yearlyontheday");
-	var ontheweek = getObjectFromID("yearlyontheweek");		
-	
+	var ontheweek = getObjectFromID("yearlyontheweek");
+
 	ontheday.disabled = !thecheck.checked;
 	ontheweek.disabled = !thecheck.checked;
 }
@@ -165,7 +165,7 @@ function changeEnd(){
 	var theselect = getObjectFromID("end");
 	var afterSpan = getObjectFromID("afterSpan");
 	var ondatespan = getObjectFromID("ondateSpan");
-	
+
 	switch(theselect.value){
 		case "never":
 			afterSpan.style.display = "none";
@@ -183,30 +183,14 @@ function changeEnd(){
 }
 
 
-function switchInclude(){
-	var typeCheck = getObjectFromID("includepaymenttype");
-	var detailsCheck = getObjectFromID("includepaymentdetails");
-	var detailsCheckLabel = getObjectFromID("includepaymentdetailsLabel");
-	
-	if(typeCheck.checked){
-		detailsCheck.disabled = false;
-		detailsCheckLabel.className = "";
-	} else {
-		detailsCheck.checked = false;
-		detailsCheck.disabled = true;		
-		detailsCheckLabel.className = "disabledtext";
-	}
-}
-
-
 function submitForm(command){
-	
+
 	var thecommand = getObjectFromID("command");
 	if(!command)
 		command = "cancel";
 
 	thecommand.value = command;
-	
+
 	if(command == "cancel"){
 		var referrer = getObjectFromID("referrer");
 		document.location = referrer.value;
@@ -214,14 +198,14 @@ function submitForm(command){
 	}
 
 	var theform = getObjectFromID("record");
-	if(!validateForm(theform)) 
+	if(!validateForm(theform))
 		return false;
 
 	var typeSelect = getObjectFromID("type");
 	var tempButton;
 	var eachlistArray = Array();
 	var i;
-	
+
 	//first let's set the eachlist if necassary
 	switch(typeSelect.value){
 		case "Weekly":
@@ -231,7 +215,7 @@ function submitForm(command){
 					eachlistArray[eachlistArray.length] = tempButton.value;
 			}
 		break;
-		
+
 		case "Monthly":
 			var monthlyEach = getObjectFromID("monthlyEach");
 			if(monthlyEach.checked){
@@ -242,7 +226,7 @@ function submitForm(command){
 				}
 			}
 		break;
-		
+
 		case "Yearly":
 			for(i=1; i<=12; i++){
 				tempButton = getObjectFromID("yearlyMonthOption"+i);
@@ -251,17 +235,17 @@ function submitForm(command){
 			}
 		break;
 	}//end switch
-	
+
 	if(eachlistArray.length > 0){
 		var tempeachlist = "";
 		for(i=0; i < eachlistArray.length; i++)
 			tempeachlist += eachlistArray[i]+"::";
 		tempeachlist = tempeachlist.substr(0,tempeachlist.length-2);
-		
+
 		var eachlist = getObjectFromID("eachlist");
 		eachlist.value = tempeachlist
 	}
-	
+
 	thecommand.form.submit();
-	
+
 }

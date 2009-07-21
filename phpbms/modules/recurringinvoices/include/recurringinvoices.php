@@ -59,7 +59,6 @@ class recurringinvoice{
 		$therecord["ontheday"] = NULL;
 
 		$therecord["includepaymenttype"] = 0;
-		$therecord["includepaymentdetails"] = 0;
 		$therecord["statusid"] = $this->getDefaultStatus();
 		$therecord["assignedtoid"] = "";
 
@@ -90,7 +89,6 @@ class recurringinvoice{
 					`until`,
 					`name`,
 					`includepaymenttype`,
-					`includepaymentdetails`,
 					`statusid`,
 					`assignedtoid`,
 					`notificationroleid`
@@ -217,9 +215,6 @@ class recurringinvoice{
 
 		if(!isset($variables["includepaymenttype"])) $variables["includepaymenttype"] = 0;
 		$querystatement .= ((int) $variables["includepaymenttype"]).", ";
-
-		if(!isset($variables["includepaymentdetails"])) $variables["includepaymentdetails"] = 0;
-		$querystatement .= ((int) $variables["includepaymentdetails"]).", ";
 
 		$querystatement .= "'".$variables["statusid"]."', ";
 
