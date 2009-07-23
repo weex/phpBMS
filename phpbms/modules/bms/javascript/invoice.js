@@ -144,7 +144,10 @@ invoice = {
 
 		}//endfor
 
-		totalWt.value = newWt;
+		if(newWt > 0)
+			totalWt.value = newWt;
+		else
+			totalWt.value = - newWt;
 
 	},//end function
 
@@ -270,7 +273,22 @@ theStatus = {
 		statusdate.value=dateToString(today);
 
 		theStatus.statusChange();
-	}//end method
+
+	},//end method
+
+	toggleTitleByCMStatus: function(){
+
+		var isCreditMemo = getObjectFromID("iscreditmemo");
+		var title = getObjectFromID("h1WithPrint");
+		if(!title)
+			title = getObjectFromID("h1WithoutPrint");
+
+		if(isCreditMemo.checked)
+			title.innerHTML = "Credit Memo";
+		else
+			title.innerHTML = "Sales Order";
+
+	}//end if
 
 }//end class
 
@@ -533,7 +551,7 @@ lineitems = {
 		if(productid.value){
 
 			var theurl = "invoices_lineitem_ajax.php?id=" + encodeURIComponent(productid.value) + "&cid=" + encodeURIComponent(clientid.value);
-console.log(theurl);
+
 			loadXMLDoc(theurl,null,false);
 
 			try{
@@ -829,7 +847,7 @@ console.log(theurl);
 
 		trs = getElementsByClassName("lineitems");
 		for(var i = 0; i< trs.length; i++)
-			if(paymentmethodid.value(trs[i].id.substr(2)) > theid)
+			if(parseInt(trs[i].id.substr(2)) > theid)
 				theid = parseInt(trs[i].id.substr(2));
 
 		theid++;
@@ -1297,7 +1315,7 @@ function calculateTotal(){
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
 	if (taxpercentagevalue!=0){
 		var numtax=numTotalTaxable*(taxpercentagevalue/100);
-		if(numtax<0) numtax=0;
+		//if(numtax<0) numtax=0;
 	}
 	else {
 		var numtax=currencyToNumber(tax.value);
@@ -1760,5 +1778,8 @@ connect(window,"onload",function() {
 
 	}//end if
 
+	var isCreditMemo = getObjectFromID("iscreditmemo");
+	connect(isCreditMemo, "onchange", theStatus.toggleTitleByCMStatus);
 
-})
+
+});

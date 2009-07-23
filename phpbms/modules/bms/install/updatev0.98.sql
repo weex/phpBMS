@@ -86,6 +86,8 @@ ALTER TABLE `invoices` ENGINE=INNODB;
 ALTER TABLE `invoices`
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
     ADD COLUMN `postingsessionid` int(11) default NULL,
+    ADD COLUMN `iscreditmemo` tinyint(3) unsigned NOT NULL default '0' AFTER `type`,
+    ADD COLUMN `cmuuid` varchar(64) default NULL AFTER `iscreditmemo`,
     ADD COLUMN `custom1` DOUBLE,
     ADD COLUMN `custom2` DOUBLE,
     ADD COLUMN `custom3` DATETIME,
@@ -562,12 +564,33 @@ INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, 
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'All Records', 'postingsessions.id!=-1', '2', '');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'This Month\'s Sessions', 'YEAR(postingsessions.sessiondate) = YEAR(NOW()) AND MONTH(postingsessions.sessiondate) = MONTH(NOW())', '0', '');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:97760a4f-1c1a-a108-d05f-5fc4ec59583c', 'Last Month\'s Sessions', 'YEAR(postingsessions.sessiondate) = YEAR(DATE_SUB(NOW(),INTERVAL 1 MONTH)) AND MONTH(postingsessions.sessiondate) = MONTH(DATE_SUB(NOW(),INTERVAL 1 MONTH))', '1', '');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'Orders - Credit Memo', '`invoices`.`iscreditmemo` != \'0\' AND `invoices`.`type` = \'Order\'', '6', 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'Invoices - Credit Memo', '`invoices`.`iscreditmemo` != \'0\' AND `invoices`.`type` = \'Invoice\' ', '14', 'role:de7e6679-8bb2-29ee-4883-2fcd756fb120');
+INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'All Credit Memos', '`invoices`.`iscreditmemo` != \'0\'', '17', 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
 --end tablefindoptions INSERT--
 --tablefindoptions UPDATE--
 UPDATE `tablefindoptions` SET `displayorder` = 0 WHERE `tabledefid` = 25 AND `name` = 'all records';
 UPDATE `tablefindoptions` SET `search`= 'clients.firstname=dclients.firstname AND clients.lastname=dclients.lastname AND addresses.postalcode = daddresses.postalcode AND clients.lastname != \'\' AND clients.firstname != \'\' AND addresses.postalcode != \'\' AND clients.id<>dclients.ID' WHERE `name` = 'match names and postal code' AND `tabledefid` = '18';
 UPDATE `tablefindoptions` SET `search`= 'addresses.address1=daddresses.address1 AND clients.id<>dclients.id' WHERE `name` = 'match addresses' AND `tabledefid` = '18';
+UPDATE `tablefindoptions` SET `displayorder` = '1' WHERE `tabledefid` = '2' AND `name` = 'Orders';
+UPDATE `tablefindoptions` SET `displayorder` = '2' WHERE `tabledefid` = '2' AND `name` = 'Orders - Today';
+UPDATE `tablefindoptions` SET `displayorder` = '3' WHERE `tabledefid` = '2' AND `name` = 'Orders/Invoices - Unpaid';
+UPDATE `tablefindoptions` SET `displayorder` = '4' WHERE `tabledefid` = '2' AND `name` = 'Orders - Ready To Post';
+UPDATE `tablefindoptions` SET `displayorder` = '5' WHERE `tabledefid` = '2' AND `name` = 'Orders - No Payment';
+UPDATE `tablefindoptions` SET `displayorder` = '7' WHERE `tabledefid` = '2' AND `name` = 'Invoices';
+UPDATE `tablefindoptions` SET `displayorder` = '8' WHERE `tabledefid` = '2' AND `name` = 'Invoices - Today';
+UPDATE `tablefindoptions` SET `displayorder` = '9' WHERE `tabledefid` = '2' AND `name` = 'Invoices - Yesterday';
+UPDATE `tablefindoptions` SET `displayorder` = '10' WHERE `tabledefid` = '2' AND `name` = 'Invoices - This Week';
+UPDATE `tablefindoptions` SET `displayorder` = '11' WHERE `tabledefid` = '2' AND `name` = 'Invoices - Last Week';
+UPDATE `tablefindoptions` SET `displayorder` = '12' WHERE `tabledefid` = '2' AND `name` = 'Invoices - This Month';
+UPDATE `tablefindoptions` SET `displayorder` = '13' WHERE `tabledefid` = '2' AND `name` = 'Invoices - Last Month';
+UPDATE `tablefindoptions` SET `displayorder` = '15' WHERE `tabledefid` = '2' AND `name` = 'Quotes';
+UPDATE `tablefindoptions` SET `displayorder` = '16' WHERE `tabledefid` = '2' AND `name` = 'Voided Records';
+UPDATE `tablefindoptions` SET `displayorder` = '18' WHERE `tabledefid` = '2' AND `name` = 'All Records';
 --end tablefindoptions UPDATE--
+--tablegroupings UPDATE--
+UPDATE `tablegroupings` SET `name` = 'concat(invoices.type ,\"s\",IF(`invoices`.`iscreditmemo`, \" - Credit Memo\", \"\"))' WHERE `name` = 'concat(invoices.type,"s")';
+--end tablegroupings UPDATE--
 --tableoptions INSERT--
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'import', '0', '0', '0', 'Admin', '0');
@@ -577,6 +600,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:43678406-be25-909b-c715-7e2afc7db601', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:455b8839-162b-3fcb-64b6-eeb946f873e1', 'import', '1', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'import', '0', '0', '0', 'Admin', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'create_credit_memo', 'create credit memo(s)', '1', '1', 'role:259ead9f-100b-55b5-508a-27e33a6216bf', '60');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 'import', '1', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34', 'import', '1', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:8179e105-5487-5173-d835-d9d510cc7f1b', 'import', '0', '0', '0', 'Admin', '0');

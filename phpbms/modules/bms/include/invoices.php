@@ -618,6 +618,9 @@ if(class_exists("phpbmsTable")){
 			} else
 				$therecord["creditleft"] =0;
 
+			if($therecord["cmuuid"])
+				$therecord["cmuuid"] = getId($this->db, $this->uuid, $therecord["cmuuid"]);
+
 			return $therecord;
 
 		}//end function getRecord
@@ -699,6 +702,11 @@ if(class_exists("phpbmsTable")){
 				if(isset($variables["shiptosameasbilling"]))
 					if($variables["shiptosameasbilling"] && $variables["shiptosameasbilling"] != 1)
 						$this->verifyErrors[] = "The `shiptosameasbilling` field must be a boolean (equivalent to 0 or exactly 1).";
+
+				//iscreditmemo
+				if(isset($variables["iscreditmemo"]))
+					if($variables["iscreditmemo"] && $variables["iscreditmemo"] != 1)
+						$this->verifyErrors[] = "The `iscreditmemo` field must be a boolean (equivalent to 0 or exactly 1).";
 			//check addresss ids
 			//check secondary line item ids
 
@@ -730,6 +738,9 @@ if(class_exists("phpbmsTable")){
 				$variables["totalti"]=0;
 				$variables["amountpaid"]=0;
 			}
+
+			if(!isset($therecord["iscreditmemo"]))
+				$therecord["iscreditmemo"] = 0;
 
 			if($variables["ccnumber_old"] == $variables["ccnumber"])
 				unset($variables["ccnumber"]);
@@ -1531,7 +1542,254 @@ if(class_exists("searchFunctions")){
 			$message.=" voided.";
 
 			return $message;
-		}
+		}//end method
+
+
+
+		/**
+		  *  function create_credit_memo
+		  *
+		  *
+		  *  @param bool $useUUID Whether the ids in $this->idsArray are
+		  *  uuids or ids.
+		  */
+		function create_credit_memo($useUUID = false){
+
+			if(!$useUUID)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+
+			if(isset($_SESSION["userinfo"]["id"]))
+				$createdby = $_SESSION["userinfo"]["id"];
+			else
+				$error = new appError(-841,"Session Timed Out.","Creating New Record");
+
+			$invoicestatusQuery = "
+				SELECT
+					`uuid`
+				FROM
+					`invoicestatuses`
+				WHERE
+					`invoicedefault` != '0'
+			";
+
+			$queryresult = $this->db->query($invoicestatusQuery);
+
+			$statusRecord = $this->db->fetchArray($queryresult);
+
+
+			if(!class_exists("phpbmsTable"))
+				include_once("include/tables.php");
+
+			$invoices = new phpbmsTable($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883");
+			$count = 0;
+			if(count($this->idsArray))
+				foreach($this->idsArray as $id){
+
+					$invoiceRecord = $invoices->getRecord($id, $useUUID);
+
+					if($invoiceRecord["type"] == "Invoice" && !$invoiceRecord["iscreditmemo"]){
+
+						$count++;
+
+						$fieldsList = "";
+						$insertValues = "";
+						foreach($invoiceRecord as $name => $value){
+
+							switch($name){
+
+								case "id":
+								case "ccexpiration":
+								case "bankname":
+								case "checkno":
+								case "routingnumber":
+								case "accountnumber":
+								case "transactionid":
+								case "postingsessionid":
+								case "readytopost":
+								case "assignedtoid":
+								case "invoicedate":
+								case "requireddate":
+								case "amountpaid":
+								case "cmuuid":
+								break;
+
+								case "type":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'Order'";
+								break;
+
+								case "iscreditmemo":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'1'";
+								break;
+
+								case "createdby":
+								case "modifiedby":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'".((int) $createdby)."'";
+								break;
+
+								case "uuid":
+									$fieldsList .= ",`cmuuid`";
+									$insertValues .= ",'".$value."'";
+									$fieldsList .= ",`uuid`";
+									$newUuid = uuid($invoices->prefix.":");
+									$insertValues .= ",'".$newUuid."'";
+								break;
+
+								case "creationdate":
+								case "modifieddate":
+								case "statusdate":
+								case "orderdate":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",NOW()";
+								break;
+
+								case "statusid":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'".$statusRecord["uuid"]."'";
+								break;
+
+								case "discountamount":
+								case "totaltni":
+								case "totaltaxable":
+								case "tax":
+								case "shipping":
+								case "totalcost":
+								case "totalti":
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'".(-(real)$value)."'";
+								break;
+
+								default:
+									$fieldsList .= ",`".$name."`";
+									$insertValues .= ",'".$value."'";
+								break;
+
+							}//end switch
+
+						}//end foreach
+
+						$fieldsList = substr($fieldsList, 1);
+						$insertValues = substr($insertValues, 1);
+
+						$insertstatement = "
+							INSERT INTO
+								`invoices`
+							(".$fieldsList.")
+							VALUES
+							(".$insertValues.")
+						";
+
+						$queryresult = $this->db->query($insertstatement);
+
+						$newid = $this->db->insertId();
+
+						//invoice status history
+						$statushistoryquery = "
+							INSERT INTO
+								`invoicestatushistory`
+								(
+									invoiceid,
+									invoicestatusid,
+									statusdate,
+									assignedtoid
+								)
+								VALUES
+								(
+									'".$newid."',
+									'".$statusRecord["uuid"]."',
+									NOW(),
+									''
+								)
+						";
+
+						$this->db->query($statushistoryquery);
+
+						// Line items
+						$lineitemstatement = "
+							SELECT
+								lineitems.productid,
+								lineitems.taxable,
+								-(`lineitems`.`quantity`) AS `quantity`,
+								lineitems.unitprice,
+								lineitems.unitcost,
+								lineitems.unitweight,
+								lineitems.memo,
+								lineitems.displayorder,
+								lineitems.custom1,
+								lineitems.custom2,
+								lineitems.custom3,
+								lineitems.custom4,
+								lineitems.custom5,
+								lineitems.custom6,
+								lineitems.custom7,
+								lineitems.custom8,
+								lineitems.createdby,
+								lineitems.modifiedby,
+								lineitems.creationdate,
+								lineitems.modifieddate
+							FROM
+								lineitems
+							WHERE
+								invoiceid = '".$id."'";
+
+						$lineitemresult = $this->db->query($lineitemstatement);
+
+						while($lineitemrecord = $this->db->fetchArray($lineitemresult)){
+
+							$fieldsList = "";
+							$insertValues = "";
+
+							$fieldsList .= "`invoiceid`";
+							$insertValues .= "'".$newid."'";
+
+							foreach($lineitemrecord as $name => $value){
+
+								switch($name){
+
+									case "createdby":
+									case "modifiedby":
+										$fieldsList .= ",`".$name."`";
+										$insertValues .= ",'".((int) $createdby)."'";
+									break;
+
+									case "creationdate":
+									case "modifieddate":
+										$fieldsList .= ",`".$name."`";
+										$insertValues .= ",NOW()";
+									break;
+
+									default:
+										$fieldsList .= ",`".$name."`";
+										$insertValues .= ",'".$value."'";
+									break;
+
+								}//end switch
+
+							}//end foreach
+
+							$lineinsertstatement = "
+								INSERT INTO
+									`lineitems`
+								(".$fieldsList.")
+								VALUES
+								(".$insertValues.")
+							";
+
+							$this->db->query($lineinsertstatement);
+
+						}//end while
+
+					}//end if
+
+				}//end foreach
+
+				$this->buildStatusMessage($count);
+
+		}//end method
 
 	}//end class
 }//end if
@@ -1588,11 +1846,11 @@ function defineInvoicesPost(){
 					paymentmethods.type,";
 			if(ENCRYPT_PAYMENT_FIELDS){
 				$paymentfields = "
-					".$this->db->decrypt("`invoices`.`ccnumber`").",
-					".$this->db->decrypt("`invoices`.`ccexpiration`").",
-					".$this->db->decrypt("`invoices`.`ccverification`").",
-					".$this->db->decrypt("`invoices`.`routingnumber`").",
-					".$this->db->decrypt("`invoices`.`accountnumber`");
+					".$this->db->decrypt("`invoices`.`ccnumber`")." AS `ccnumber`,
+					".$this->db->decrypt("`invoices`.`ccexpiration`")." AS `ccexpiration`,
+					".$this->db->decrypt("`invoices`.`ccverification`")." AS `ccverification`,
+					".$this->db->decrypt("`invoices`.`routingnumber`")." AS `routingnumber`,
+					".$this->db->decrypt("`invoices`.`accountnumber`")." AS `accountnumber`";
 			}else{
 				$paymentfields = "
 					invoices.ccnumber,
@@ -1607,6 +1865,7 @@ function defineInvoicesPost(){
 					invoices LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
 				WHERE
 					".$this->whereclause;
+
 			$queryresult = $this->db->query($querystatement);
 
 			$count = 0;

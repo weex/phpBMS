@@ -98,6 +98,8 @@ CREATE TABLE `invoices` (
   `uuid` varchar(64) NOT NULL,
   `clientid` VARCHAR(64),
   `type` enum('Quote','Order','Invoice','VOID') default NULL,
+  `iscreditmemo` tinyint(3) unsigned NOT NULL default '0',
+  `cmuuid` varchar(64) default NULL,
   `postingsessionid` int(11) default NULL,
   `statusid` VARCHAR(64),
   `statusdate` date default NULL,

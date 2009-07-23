@@ -230,7 +230,7 @@ class quickSearches{
 
 		$queryresult = $this->db->query($querystatement);
 
-		$maxrecord = $this->db->fetchArray($thequery);
+		$maxrecord = $this->db->fetchArray($queryresult);
 
 		if(!(($direction=="down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction == "up" && $therecord["displayorder"] == "0"))){
 
@@ -241,7 +241,7 @@ class quickSearches{
 					displayorder=".$therecord["displayorder"]."
 				WHERE
 					displayorder = ".($increment + $therecord["displayorder"])."
-					AND tabledefid = '".$tabledefid."'";
+					AND tabledefid = '".$this->uuid."'";
 
 			$thequery = $this->db->query($querystatement);
 
@@ -252,7 +252,7 @@ class quickSearches{
 					displayorder = displayorder + ".$increment."
 				WHERE
 					id =".((int) $id);
-			if($db->query($querystatement))
+			if($this->db->query($querystatement))
 				return "Position Moved";
 
 		}//endif

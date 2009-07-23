@@ -89,6 +89,18 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
+		$checkDisabled = false;
+		if($therecord["type"] == "VOID" || $therecord["type"] == "Invoice")
+			$checkDisabled = true;
+
+		$theinput = new inputCheckbox("iscreditmemo", $therecord["iscreditmemo"], "credit memo", $checkDisabled);
+		$theform->addField($theinput);
+
+		$theinput = new inputField("cmuuid", $therecord["cmuuid"], "related invoice id", false, NULL, 11);
+		        $theinput->setAttribute("readonly", "readonly");
+                $theinput->setAttribute("class", "uneditable");
+		$theform->addField($theinput);
+
 		$theinput = new inputDatePicker("statusdate", $therecord["statusdate"], "status date");
 		$theform->addField($theinput);
 
@@ -105,7 +117,6 @@
 		$theform->addField($theinput);
 
 		if($therecord["type"]!="VOID" && $therecord["type"]!="Invoice"){
-
 
 			$theinput = new inputSmartSearch($db, "productid", "Pick Product", "", NULL, false, 36, 255, false);
 			$theform->addField($theinput);
@@ -207,6 +218,8 @@
 
 
 	$pageTitle = "Sales Order";
+	if($therecord["iscreditmemo"])
+		$pageTitle = "Credit Memo";
 
 	$_SESSION["printing"]["tableid"]="tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
 	$_SESSION["printing"]["theids"]=array($therecord["id"]);
@@ -262,6 +275,14 @@
 					<br />
 					<input name="ponumber" id="ponumber" type="text" value="<?php echo htmlQuotes($therecord["ponumber"])?>" size="11" maxlength="64"/>
 				</p>
+
+				<p><?php $theform->showfield("iscreditmemo"); ?></p>
+
+				<?php if($therecord["iscreditmemo"] && $therecord["cmuuid"]){ ?>
+
+					<p><?php $theform->showfield("cmuuid"); ?></p>
+
+				<?php }//end if ?>
 			</div>
 
 			<p>
@@ -593,7 +614,15 @@
 							} else echo "&nbsp;";
 						?>
 					</td></tr>
-					<tr><td id="parenShipping"><?php if($therecord["shippingmethodid"]!="" && $therecord["shippingmethodid"] != 0) echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
+					<tr><td id="parenShipping">
+						<?php
+							if($therecord["shippingmethodid"]){
+								echo "(".htmlQuotes($shippingMethods[$therecord["shippingmethodid"]]["name"]).")";
+							}else{
+								echo "&nbsp;";
+							}
+							?>
+					</td></tr>
 					<tr><td class="blanks">&nbsp;</td></tr>
 					<tr><td id="parenSpacer" class="blanks">&nbsp;</td></tr>
 					<tr><td id="parenPayment"><?php if($therecord["paymentmethodid"]!="") echo "(".htmlQuotes($paymentMethods[$therecord["paymentmethodid"]]["name"]).")"; else echo "&nbsp;"?></td></tr>
