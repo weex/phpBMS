@@ -231,18 +231,6 @@ invoice = {
 		invoice.confirmConnects[1] = connect(continueButton, "onclick", invoice.goRelatedRecord);
 
 	},//end method
-	//
-	//
-	//goRelatedRecord: function(){
-	//
-	//	var recordId = getObjectFromID("cmuuid").value;
-	//	var theURL = location.pathname;
-	//
-	//	theURL += "?id=" + recordId;
-	//
-	//	location.href = theURL;
-	//
-	//},//end method
 
 	goRelatedRecord: function(e){
 
@@ -1843,15 +1831,6 @@ connect(window,"onload",function() {
 	//credit memo stuff
 	var isCreditMemo = getObjectFromID("iscreditmemo");
 	connect(isCreditMemo, "onchange", theStatus.toggleTitleByCMStatus);
-	//
-	//var gotorelatedrecord = getObjectFromID("gotorelatedrecord");
-	//if(gotorelatedrecord){
-	//
-	//	var relatedrecord = getObjectFromID("cmuuid");
-	//	if(relatedrecord.value)
-	//		connect(gotorelatedrecord, "onclick", invoice.confirmInvoice);
-	//
-	//}//end if
 
 	var cmButtons = getElementsByClassName("CMButtons");
 	for(i = 0; i < cmButtons.length; i++)
