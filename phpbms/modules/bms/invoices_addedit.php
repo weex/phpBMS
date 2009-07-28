@@ -227,6 +227,10 @@
 	$shippingMethods = $thetable->getShipping($therecord["shippingmethodid"]);
 	$paymentMethods = $thetable->getPayments($therecord["paymentmethodid"]);
 	$statuses = $thetable->getStatuses($therecord["statusid"]);
+	$cmrecords = $thetable->getCreditMemos($therecord["uuid"]);
+	if(count($cmrecords)){
+		$pageTitle = $pageTitle."*";
+	}
 
 	if($therecord["type"]=="VOID" || $therecord["type"]=="Invoice")
 		$phpbms->bottomJS[] = 'disableSaves(document.forms["record"]);';
@@ -246,6 +250,11 @@
 			showSaveCancel(1); ?>
 	</div>
 	<h1 id="h1With<?php if(!$therecord["id"]) echo "out"?>Print"><?php echo $pageTitle ?></h1>
+	<?php if(count($cmrecords)){ ?>
+		<p class="notes">
+			*this record has associated credit memos
+		</p>
+	<?php }//end if ?>
 	<div id="fsAttributes">
 		<fieldset >
 			<legend>attributes</legend>
@@ -278,11 +287,17 @@
 
 				<p><?php $theform->showfield("iscreditmemo"); ?></p>
 
-				<?php if($therecord["iscreditmemo"] && $therecord["cmuuid"]){ ?>
-
-					<p><?php $theform->showfield("cmuuid"); ?></p>
-
-				<?php }//end if ?>
+				<?php
+				$style = "display:none;";
+				if($therecord["iscreditmemo"] && $therecord["cmuuid"])
+					$style = "display:block;";
+				?>
+				<p id="cmuuidP" style="<?php echo $style; ?>">
+					<?php $theform->showfield("cmuuid"); ?>
+					<button class="graphicButtons buttonInfo CMButtons" title="view record" type="button" id="cmb-<?php echo $therecord["cmuuid"];?>">
+						<span>view record</span>
+					</button>
+				</p>
 			</div>
 
 			<p>
@@ -687,6 +702,15 @@
 	</p>
 
 </fieldset>
+
+<?php if(count($cmrecords)){ ?>
+	<fieldset>
+		<legend>Associated Credit Memos</legend>
+
+		<?php $thetable->showCreditMemos($cmrecords); ?>
+
+	</fieldset>
+<?php }//end if ?>
 
 <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 

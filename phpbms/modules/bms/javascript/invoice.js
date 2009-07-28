@@ -202,7 +202,62 @@ invoice = {
 
 		calculateTotal();
 
-	}//end function
+	},//end function
+
+	confirmConnects: Array(false,false),
+
+	confirmInvoice: function(e){
+
+		if(invoice.confirmConnects[0])
+			disconnect(invoice.confirmConnects[0])
+
+		if(invoice.confirmConnects[1])
+			disconnect(invoice.confirmConnects[1])
+
+		var theButton = e.src();
+
+		var continueId = "cont-"+theButton.id.substr(4);
+
+		var content='\
+			<p>You are about to navigate away from the sales order screen.  If you have not saved your changes, they will be lost.</p>\
+			<p align="right"><button type="button" class="Buttons" id="'+continueId+'">continue</button> <button type="button" class="Buttons" id="invoiceCancelButton">cancel</button></p>';
+
+		showModal(content,"Confirm",350);
+
+		var continueButton = getObjectFromID(continueId);
+		var cancelButton = getObjectFromID("invoiceCancelButton");
+
+		invoice.confirmConnects[0] = connect(cancelButton, "onclick", closeModal);
+		invoice.confirmConnects[1] = connect(continueButton, "onclick", invoice.goRelatedRecord);
+
+	},//end method
+	//
+	//
+	//goRelatedRecord: function(){
+	//
+	//	var recordId = getObjectFromID("cmuuid").value;
+	//	var theURL = location.pathname;
+	//
+	//	theURL += "?id=" + recordId;
+	//
+	//	location.href = theURL;
+	//
+	//},//end method
+
+	goRelatedRecord: function(e){
+
+		var theButton = e.src();
+
+		var recordId = theButton.id.substr(5);
+		var theURL = location.pathname;
+
+
+		if(recordId){
+			theURL += "?id=" + recordId;
+			location.href = theURL;
+		}//end if
+
+	}//end method
 
 }//end class
 
@@ -279,14 +334,21 @@ theStatus = {
 	toggleTitleByCMStatus: function(){
 
 		var isCreditMemo = getObjectFromID("iscreditmemo");
+		var cmuuidP = getObjectFromID("cmuuidP");
+		var cmuuid = getObjectFromID("cmuuid");
 		var title = getObjectFromID("h1WithPrint");
 		if(!title)
 			title = getObjectFromID("h1WithoutPrint");
 
-		if(isCreditMemo.checked)
+		if(isCreditMemo.checked){
 			title.innerHTML = "Credit Memo";
-		else
+			if(cmuuid.value)
+				cmuuidP.style.display = "block";
+		}else{
 			title.innerHTML = "Sales Order";
+			if(cmuuid.value)
+				cmuuidP.style.display = "none";
+		}//end if
 
 	}//end if
 
@@ -312,7 +374,7 @@ client = {
 		var theButton = e.src();
 
 		var content='\
-			<p>You are about to navigate away from the sales order screen.  If you have not saved will be lost</p>\
+			<p>You are about to navigate away from the sales order screen.  If you have not saved your changes, they will be lost.</p>\
 			<p align="right"><button type="button" class="Buttons" id="clientContinueButton">continue</button> <button type="button" class="Buttons" id="clientCancelButton">cancel</button></p>';
 
 		showModal(content,"Confirm",350);
@@ -1778,8 +1840,22 @@ connect(window,"onload",function() {
 
 	}//end if
 
+	//credit memo stuff
 	var isCreditMemo = getObjectFromID("iscreditmemo");
 	connect(isCreditMemo, "onchange", theStatus.toggleTitleByCMStatus);
+	//
+	//var gotorelatedrecord = getObjectFromID("gotorelatedrecord");
+	//if(gotorelatedrecord){
+	//
+	//	var relatedrecord = getObjectFromID("cmuuid");
+	//	if(relatedrecord.value)
+	//		connect(gotorelatedrecord, "onclick", invoice.confirmInvoice);
+	//
+	//}//end if
+
+	var cmButtons = getElementsByClassName("CMButtons");
+	for(i = 0; i < cmButtons.length; i++)
+		connect(cmButtons[i], "onclick", invoice.confirmInvoice);
 
 
 });

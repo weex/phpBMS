@@ -329,6 +329,124 @@ if(class_exists("phpbmsTable")){
 		}//end function
 
 
+		/**
+		 * function getCreditMemos
+		 *
+		 * @param string $uuid The uuid of the invoice record whose credit
+		 * memos you wish to receive.
+		 */
+
+		function getCreditMemos($uuid) {
+
+			$querystatement = "
+				SELECT
+					`id`,
+					`orderdate`,
+					`invoicedate`,
+					`totalti`
+				FROM
+					`invoices`
+				WHERE
+					`cmuuid` = '".$uuid."'
+					AND
+					`iscreditmemo` != '0'
+			";
+
+			$queryresult = $this->db->query($querystatement);
+
+
+			$thereturn = array();
+			while($therecord = $this->db->fetchArray($queryresult)){
+
+				$thereturn[$therecord["id"]] = $therecord;
+
+			}//end while
+
+			return $thereturn;
+
+		}//end method --getCreditMemos--
+
+
+		/**
+		 * function showCreditMemos
+		 * @param array $records array of records
+		 */
+
+		function showCreditMemos($records) {
+
+			if(count($records)){
+
+				?><table class="querytable simple" cellspacing="0" cellpadding="0" border="0">
+					<thead>
+						<tr>
+							<th nowrap="nowrap" align="left">
+								Credit Memo ID
+							</th>
+							<th nowrap="nowrap" align="left">
+								Order Date
+							</th>
+							<th nowrap="nowrap" align="left">
+								Invoice Date
+							</th>
+							<th width="90%" nowrap="nowrap" align="right">
+								Total
+							</th>
+							<th>
+								&nbsp;
+							</th>
+						</tr>
+					</thead>
+					<tbody id="resultTbody">
+				<?php
+
+				$count = 1;
+				$classMod = 1;
+				foreach($records as $record){
+
+					$trid = "cm".$count;
+					if($classMod === 1)
+						$classMod = 2;
+					else
+						$classMod = 1;
+					?>
+						<tr class="qr<?php echo $classMod; ?>" id="<?php echo $trid; ?>">
+							<td>
+								<?php echo $record["id"]; ?>
+							</td>
+							<td>
+								<?php echo formatVariable($record["orderdate"], "date"); ?>
+							</td>
+							<td>
+								<?php echo formatVariable($record["invoicedate"], "date"); ?>
+							</td>
+							<td align="right">
+								<?php echo formatVariable($record["totalti"], "currency"); ?>
+							</td>
+							<td>
+								<button type="button" class="graphicButtons buttonInfo CMButtons" title="view record" id="cmb-<?php echo $record["id"]; ?>">
+									<span>
+										view record
+									</span>
+								</button>
+							</td>
+						</tr>
+					<?php
+
+					$count++;
+				}//end foreach
+
+				?>
+
+						</tbody>
+					</table>
+
+				<?php
+
+			}
+
+		}//end if
+
+
 		function showTaxSelect($uuid){
 
 			$uuid = mysql_real_escape_string($uuid);
