@@ -394,6 +394,26 @@ class updateAjax extends installUpdateBase{
 
         }//end function
 
+
+		/**
+		 * function v098UpdateAppUUID
+		 */
+
+		function v098UpdateAppUUID() {
+
+			$updatestatement = "
+				UPDATE
+					`settings`
+				SET
+					`value` = '".mysql_real_escape_string(uuid("sys:"))."'
+				WHERE
+					`name` = 'application_uuid'
+			";
+
+			$this->query($updatestatement);
+
+		}//end method
+
 }//end class updateAjax
 
 

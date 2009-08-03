@@ -294,6 +294,12 @@ UPDATE `reports` SET `uuid`='rpt:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `na
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:fb52e7fb-bb49-7f5f-89e1-002b2785f085', 'Clean Import Files', './scheduler_delete_tempimport.php', '30::*::*::*::*', '2009-05-28 12:30:02', '2009-05-07 17:27:13', NULL, 'This will delete any temporary import files that are present (for whatever reason) after 30 minutes of their creation.', '0', 1, NOW(), 1, NOW());
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:d1c247de-9811-d37f-ad94-a8472dc1bc9c', 'Remove Excess System Log Records', './scheduler_delete_logs.php', '*::24::*::*::*', NULL, '2009-03-31 12:00:00', NULL, 'This script will trim the system log when there are more than 2000 records present at the time of its calling (default will be every 24 hours).', '0', 1, NOW(), 1, NOW());
 --end scheduler INSERT--
+--settings INSERT--
+INSERT INTO `settings` (`name`, `value`) VALUES ('application_uuid','');
+INSERT INTO `settings` (`name`, `value`) VALUES ('auto_check_update','1');
+INSERT INTO `settings` (`name`, `value`) VALUES ('send_metrics','0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('last_update_check','');
+--end settings INSERT--
 --smartsearches UPDATE--
 UPDATE `smartsearches` SET `uuid`='smrt:ccc73fa4-6176-fad4-fbb1-5186d0edbdd1',`valuefield`='`users`.`uuid`' WHERE `id`='2';
 UPDATE `smartsearches` SET `uuid`='smrt:855406d5-659d-c907-74a1-acfd3802fd73' WHERE `id`='5';

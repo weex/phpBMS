@@ -38,8 +38,26 @@
 */
 
 	function showSavedSearches($db,$selected){
-		
-		$querystatment="SELECT id,name,userid FROM usersearches WHERE tabledefid=2 and type=\"SCH\" and(userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\") order by userid";
+
+		$querystatment = "
+			SELECT
+				`id`,
+				`uuid`,
+				`name`,
+				`userid`
+			FROM
+				`usersearches`
+			WHERE
+				`tabledefid`='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+				AND
+				`type`='SCH'
+				AND
+				(
+					`userid`=''
+					OR
+					`userid`='".$_SESSION["userinfo"]["uuid"]."')
+			ORDER BY
+				`userid`";
 		$thequery = $db->query($querystatment);
 
 		$numrows=$db->numRows($thequery);
@@ -47,48 +65,62 @@
 		<select id="savedsearches" name="savedsearches" <?php if ($numrows<1) echo 'disabled="disabled"' ?> >
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
-			<?php 
+			<?php
 				} else {
 					$numglobal=0;
 					while($therecord=$db->fetchArray($thequery))
-						if($therecord["userid"]<1) $numglobal++;
-					$db->seek($thequery,0);				
-			?>			
+						if($therecord["userid"] == "") $numglobal++;
+					$db->seek($thequery,0);
+			?>
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
 				<?php
 					}//end if
 					$userqueryline=true;
 					while($therecord=$db->fetchArray($thequery)){
-						if ($therecord["userid"]> 0 and $userqueryline) {
-							$userqueryline=false;						
-							?><option value="NA">----- user ------</option><?php 
+						if ($therecord["userid"] != "" and $userqueryline) {
+							$userqueryline=false;
+							?><option value="NA">----- user ------</option><?php
 						}
-						?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"]==$selected) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php 
+						?><option value="<?php echo $therecord["id"]?>" <?php if($therecord["id"]==$selected) echo "selected=\"selected\""?>><?php echo $therecord["name"]?></option><?php
 					}// end while
 				}//end if
 			?>
 		</select>
 		<?php
 	}
-	
-	
+
+
 	function showClientFields($db){
-		
-		$querystatement="describe clients";		
+
+		$querystatement="describe clients";
 		$queryresult=$db->query($querystatement);
 		?><select name="choosefield" id="choosefield">
-		<?php 
+		<?php
 			while($therecord=$db->fetchArray($queryresult))
 				echo "<option value=\"".$therecord["Field"]."\">".$therecord["Field"]."</option>";
 		?>
 		</select><?php
 	}
-	
-	
+
+
 	function showSavedProjects($db){
-		
-		$querystatement="SELECT id,name,userid FROM clientemailprojects WHERE userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\" order by userid";
+
+		$querystatement = "
+			SELECT
+				`id`,
+				`name`,
+				`userid`
+			FROM
+				`clientemailprojects`
+			WHERE
+				userid=''
+				OR
+				userid='".$_SESSION["userinfo"]["uuid"]."'
+			ORDER BY
+				`userid`
+		";
+
 		$thequery = $db->query($querystatement);
 		if(!$thequery) $error = new appError(300,$querystatement);
 
@@ -97,13 +129,13 @@
 		<select name="savedprojects" id="savedprojects" <?php if ($numrows<1) echo "disabled" ?> style="width:99%;" size="9" onclick="updateSavedProjects(this)">
 			<?php if($numrows<1) {?>
 				<option value="NA">None Saved</option>
-			<?php 
+			<?php
 				} else {
 					$numglobal=0;
 					while($therecord=$db->fetchArray($thequery))
-						if($therecord["userid"]<1) $numglobal++;
-					$db->seek($thequery,0);				
-			?>			
+						if($therecord["userid"] == "") $numglobal++;
+					$db->seek($thequery,0);
+			?>
 				<?php if($numglobal>0){ ?>
 				<option value="NA">----- global -----</option>
 				<?php
@@ -111,50 +143,79 @@
 					$userqueryline=true;
 					while($therecord=$db->fetchArray($thequery)){
 						if ($therecord["userid"]> 0 and $userqueryline) {
-							$userqueryline=false;						
-							?><option value="NA">----- user ------</option><?php 
+							$userqueryline=false;
+							?><option value="NA">----- user ------</option><?php
 						}
-						?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php 
+						?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php
 					}// end while
 				}//end if
 			?>
 		</select>
 		<?php
 	}
-	
-	
+
+
 	function saveProject($db,$variables){
-		
-		$sqlstatement=	"INSERT INTO clientemailprojects (name,userid,emailto,emailfrom,subject,body) VALUES (";
-		$sqlstatement.=	"\"".$variables["savename"]."\", ";
+
+		$sqlstatement = "
+			INSERT INTO
+				`clientemailprojects`
+				(
+					`name`,
+					`userid`,
+					`emailto`,
+					`emailfrom`,
+					`subject`,
+					`body`
+				) VALUES (";
+		$sqlstatement.=	"'".$variables["savename"]."', ";
 		$sqlstatement.=	$_SESSION["userinfo"]["id"].", ";
 		if($variables["therecords"]=="savedsearch")
-			$sqlstatement.=	"\"".$variables["savedsearches"]."\", ";
-		else	
-			$sqlstatement.=	"\"".$variables["therecords"]."\", ";
-		if(!$variables["email"])
-			$sqlstatement.=	"\"".$variables["ds-email"]."\", ";
+			$sqlstatement.=	"'".$variables["savedsearches"]."', ";
 		else
-			$sqlstatement.=	"\"".$variables["email"]."\", ";
-		$sqlstatement.=	"\"".$variables["subject"]."\", ";
-		$sqlstatement.=	"\"".$variables["body"]."\") ";
+			$sqlstatement.=	"'".$variables["therecords"]."', ";
+		if(!$variables["email"])
+			$sqlstatement.=	"'".$variables["ds-email"]."', ";
+		else
+			$sqlstatement.=	"'".$variables["email"]."', ";
+		$sqlstatement.=	"'".$variables["subject"]."', ";
+		$sqlstatement.=	"'".$variables["body"]."') ";
 
 		$db->query($sqlstatement);
 		return $db->insertId();
 	}
-	
+
 	function loadProject($db,$id){
-		
-		$sqlstatement="SELECT id,name,emailto,emailfrom,subject,body FROM clientemailprojects WHERE id=".((int) $id);
+
+		$sqlstatement = "
+			SELECT
+				`id`,
+				`name`,
+				`emailto`,
+				`emailfrom`,
+				`subject`,
+				`body`
+			FROM
+				`clientemailprojects`
+			WHERE `id='".((int) $id)."'
+		";
+
 		$queryresult=$db->query($sqlstatement);
 		return $db->fetchArray($queryresult);
-		
+
 	}
 
 	function deleteProject($db,$id){
-		
-		$sqlstatement="DELETE FROM clientemailprojects WHERE id=".((int) $id)." and userid=".$_SESSION["userinfo"]["id"];
+
+		$sqlstatement = "
+			DELETE FROM
+				`clientemailprojects`
+			WHERE
+				`id`='".((int) $id)."'
+				AND
+				`userid`='".$_SESSION["userinfo"]["uuid"]."'";
+
 		$queryresult=$db->query($sqlstatement);
-		
+
 	}
 ?>

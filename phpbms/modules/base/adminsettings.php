@@ -73,13 +73,29 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	$theinput = new inputField("application_name",$therecord["application_name"],"application name",true);
 	$theform->addField($theinput);
 
+    $theinput = new inputField("application_uuid", $therecord["application_uuid"], "application uuid", false, NULL, 40);
+    $theinput->setAttribute("readonly","readonly");
+	$theinput->setAttribute("class","uneditable");
+    $theform->addField($theinput);
+
+    $theinput = new inputCheckbox("auto_check_update", $therecord["auto_check_update"], "automatically check for updates");
+    $theform->addField($theinput);
+
+    $theinput = new inputCheckbox("send_metrics", $therecord["send_metrics"], "send additional metrics");
+    $theform->addField($theinput);
+
+    $theinput = new inputField("last_update_check", $therecord["last_update_check"], "last update check");
+    $theinput->setAttribute("readonly","readonly");
+	$theinput->setAttribute("class","uneditable");
+    $theform->addField($theinput);
+
 	$theinput = new inputField("record_limit",$therecord["record_limit"],"record display limit",true,"integer",5,3);
 	$theform->addField($theinput);
 
 	$theinput = new inputField("default_load_page",$therecord["default_load_page"],"default page",true);
 	$theform->addField($theinput);
 
-	$theinput = new inputField("encryption_seed",$therecord["encryption_seed"],"encryption_seed",true);
+	$theinput = new inputField("encryption_seed",$therecord["encryption_seed"],"user password encryption seed",true);
 	$theinput->setAttribute("readonly","readonly");
 	$theinput->setAttribute("class","uneditable");
 	$theform->addField($theinput);
@@ -182,6 +198,28 @@ foreach($phpbms->modules as $module => $moduleinfo)
                     <p class="notes">
                         <strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS").  Replacing
                         the application name will reset the session cookie, and require you to log in again.
+                    </p>
+
+                    <p><?php $theform->showfield("application_uuid"); ?></p>
+                    <p><?php $theform->showfield("auto_check_update"); ?></p>
+                    <p><?php $theform->showfield("send_metrics"); ?>
+                        <br/>
+                        <span class="notes">
+                            These metrics are general metrics about your bms.
+                        </span>
+                    </p>
+                    <p><?php $theform->showfield("last_update_check"); ?></p>
+                    <p>
+                        <button class="Buttons" type="button" id="updateCheck">
+                            check for updates
+                        </button>
+                        <span id="processSpan" style="display:none">
+                            <img src="../../common/image/spinner.gif" id="spinner" alt="processing..." />
+                            Processing...
+                        </span>
+                    </p>
+                    <p id="responseP" style="display:none">
+                        &nbsp;
                     </p>
 
 

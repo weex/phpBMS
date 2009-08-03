@@ -172,7 +172,21 @@ class installAjax extends installUpdateBase{
 
 		$this->db->query($updatestatement);
 		if($this->db->error)
-			return $this->returnJSON(false, "Error Updating Admin Password: ".$this->db->error);
+			return $this->returnJSON(false, "Error Updating Application Name Setting: ".$this->db->error);
+
+
+		//Update Application Uuid
+		$updatestatement = "
+			UPDATE
+				`settings`
+			SET
+				`value` = '".mysql_real_escape_string(uuid("sys:"))."'
+			WHERE
+				`name` = 'application_uuid'";
+
+		$this->db->query($updatestatement);
+		if($this->db->error)
+			return $this->returnJSON(false, "Error Updating Application Uuid Setting: ".$this->db->error);
 
 		if($thereturn)
 			return $this->returnJSON(false, $thereturn);
@@ -240,7 +254,7 @@ If you need further assistance, please use the community forum at http://www.php
 
 			echo $this->returnJSON(false, "Could not open session.php file");
                         exit;
-                        
+
 		}
 
 		switch($command){

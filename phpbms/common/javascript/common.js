@@ -65,13 +65,13 @@ phpBMS.base.update = function (self, obj/*, ... */) {
 phpBMS.base.update(phpBMS.base, {
 
 	loadXMLDoc: function(url,readyStateFunction,async) {
-	
+
 		if(!readyStateFunction)
 			readyStateFunction= null;
-	
+
 		if(!async)
 			async = false;
-		
+
 		// branch for native XMLHttpRequest object
 		if (window.XMLHttpRequest) {
 			req = new XMLHttpRequest();
@@ -89,7 +89,7 @@ phpBMS.base.update(phpBMS.base, {
 			}
 		}
 	},//end function loadXMLDoc
-	
+
     nameFunctions: function (namespace) {
         var base = namespace.NAME;
         if (typeof(base) == 'undefined') {
@@ -108,8 +108,8 @@ phpBMS.base.update(phpBMS.base, {
             }
         }
     },//endfunction
-	
-	
+
+
 	htmlDecode: function(string){
 
 			var ret, tarea = document.createElement('textarea');
@@ -121,13 +121,13 @@ phpBMS.base.update(phpBMS.base, {
 
 
 	reportError: function(error){
-		
+
 		if(console){
 			if(console.log)
 				console.log(error);
 		} else
 			alert(error);
-		
+
 	}//end method - reportError
 
 
@@ -144,7 +144,7 @@ phpBMS.base.EXPORT = [
 phpBMS.base._exportFunctions = function (globals, module) {
 
 	var all = module.EXPORT;
-	
+
     for (var i = 0; i < all.length; i++) {
         globals[all[i]] = module[all[i]];
     }
@@ -152,7 +152,7 @@ phpBMS.base._exportFunctions = function (globals, module) {
 
 phpBMS.base.__new__ = function () {
 	var m = this;
-	
+
 	m.nameFunctions(this);
 }
 
@@ -166,18 +166,18 @@ if (typeof(phpBMS.dom) == 'undefined') {
 }
 
 phpBMS.base.update(phpBMS.dom, {
-	
+
 	getObjectFromID: function(id){
 		var theObject;
-		
+
 		if(document.getElementById)
 			theObject=document.getElementById(id);
 		else
 			theObject=document.all[id];
 		return theObject;
 	},//end method
-	
-	
+
+
 	getElementsByClassName: function(clsName){
 		var retVal = new Array();
 		var elements = document.getElementsByTagName("*");
@@ -193,8 +193,8 @@ phpBMS.base.update(phpBMS.dom, {
 				retVal.push(elements[i]);
 		}
 		return retVal;
-	}//endMethod	
-	
+	}//endMethod
+
 })//end update
 
 phpBMS.dom.EXPORT = [
@@ -205,7 +205,7 @@ phpBMS.dom.__new__ = function (win) {
 	var m = phpBMS.base;
     this._document = document;
     this._window = win;
-	
+
 	m.nameFunctions(this);
 }
 
@@ -227,7 +227,7 @@ phpBMS.signal.e = function (src, e) {
 };
 
 phpBMS.base.update(phpBMS.signal.e.prototype,{
-	
+
 	    src: function () {
         return this._src;
     },
@@ -254,7 +254,7 @@ phpBMS.base.update(phpBMS.signal.e.prototype,{
         }
         return undefined;
     },
-	
+
     stop: function () {
         this.stopPropagation();
         this.preventDefault();
@@ -275,7 +275,7 @@ phpBMS.base.update(phpBMS.signal.e.prototype,{
             this._event.returnValue = false;
         }
     }
-	
+
 })//end subclass
 
 phpBMS.base.update(phpBMS.signal, {
@@ -287,22 +287,22 @@ phpBMS.base.update(phpBMS.signal, {
 		for(var i = 0; i<observers.length;i++)
 			if(observers[i][0] == obj && observers[i][1] == eventName)
 				return observers[i];
-			
+
 		return false;
-		
+
 	},//end method
 
 	_unloadCache: function(){
 
 		var self = phpBMS.signal;
         var observers = self._observers;
-        
+
         for (var i = 0; i < observers.length; i++) {
             self._disconnect(observers[i]);
         }
-        
+
         delete self._observers;
-        
+
         try {
             window.onload = undefined;
         } catch(e) {
@@ -314,20 +314,20 @@ phpBMS.base.update(phpBMS.signal, {
         } catch(e) {
             // pass
         }
-		
+
 	},//end method
 
 
 	_listener: function(srcObj, func){
         var E = phpBMS.signal.e;
-		
+
 		if(!srcObj || !func){
-			
+
 			reportError("ListnerError srcObj:" + srcObj + " func:" + func);
 			return false;
-			
+
 		}//endif
-			
+
 		return function (nativeEvent) {
 			return func.apply(srcObj, [new E(srcObj, nativeEvent)]);
 		};
@@ -335,30 +335,30 @@ phpBMS.base.update(phpBMS.signal, {
 
 
 	connect: function(srcObj, eventName, func){
-		
+
 		if(!srcObj || !eventName || !func){
-			
+
 			var err = "Invalid Entry for connect: srcObj:" + srcObj + " eventName:" + eventName + " func:" + func
-			reportError(err);			
-			
+			reportError(err);
+
 			return false;
-			
-		}//endif 
-		
+
+		}//endif
+
         var self = phpBMS.signal;
-		
+
 		var listener = self._listener(srcObj, func);
-		
+
 		if (srcObj.addEventListener) {
 			srcObj.addEventListener(eventName.substr(2), listener, false);
 		}else if (srcObj.attachEvent) {
 			srcObj.attachEvent(eventName, listener); // useCapture unsupported
 		}//end if
-		
+
         var ident = [srcObj, eventName, listener];
         self._observers.push(ident);
         return ident;
-		
+
 	},
 
 
@@ -372,14 +372,14 @@ phpBMS.base.update(phpBMS.signal, {
             src.removeEventListener(sig.substr(2), listener, false);
         } else if (src.detachEvent) {
             src.detachEvent(sig, listener); // useCapture unsupported
-        } 	
+        }
 	},
 
 
 	disconnect: function(ident){
         var self = phpBMS.signal;
         var observers = self._observers;
-		
+
         for (var i = 0; i < observers.length; i++) {
             var pident = observers[i];
 			if(pident == ident){
@@ -394,7 +394,7 @@ phpBMS.base.update(phpBMS.signal, {
 	},
 
 	trigger: function(src, sig){
-		
+
         var self = phpBMS.signal;
         var observers = self._observers;
 
@@ -409,9 +409,9 @@ phpBMS.base.update(phpBMS.signal, {
                 }
             }//endif
         }//endfor
-		
+
 	}//end method - signal
-	
+
 })//end class
 
 phpBMS.signal.EXPORT = [
@@ -445,7 +445,7 @@ phpBMS.base._exportFunctions(this,phpBMS.signal);
 
 // php equivilant to htmlEntitties
 String.prototype.htmlEntities = function()
-{	
+{
 	newString = this;
 	var chars = new Array();
 	var charCode
@@ -460,10 +460,10 @@ String.prototype.htmlEntities = function()
 		for (var i = 0; i < chars.length; i++){
 			myRegExp = new RegExp();
 			myRegExp.compile(chars[i],'g');
-	
+
 			newString = newString.replace (myRegExp, '&#' + chars[i].charCodeAt(0) + ';');
 		}
-	
+
 	return newString;
 }
 
@@ -476,7 +476,7 @@ function getTop(theitem){
 		offsetTop += offsetTrail.offsetTop;
 		offsetTrail = offsetTrail.offsetParent;
 	}
-	if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined") 
+	if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined")
 		offsetLeft += document.body.TopMargin;
 	return offsetTop;
 }
@@ -489,7 +489,7 @@ function getLeft(theitem){
 		offsetLeft += offsetTrail.offsetLeft;
 		offsetTrail = offsetTrail.offsetParent;
 	}
-	if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined") 
+	if (navigator.userAgent.indexOf("Mac") != -1 && typeof document.body.leftMargin != "undefined")
 		offsetLeft += document.body.leftMargin;
 	return offsetLeft;
 }
@@ -501,7 +501,7 @@ function getChildHeights(theObj){
 	for(i=0;i<theObj.childNodes.length;i++)
 		if(theObj.childNodes[i].offsetHeight)
 			totalHeight+=theObj.childNodes[i].offsetHeight;
-	return totalHeight;	
+	return totalHeight;
 }
 
 function getViewportHeight() {
@@ -511,8 +511,8 @@ function getViewportHeight() {
 		//return i;
 	}
 	if (document.compatMode=='CSS1Compat') return document.documentElement.clientHeight;
-	if (document.body) return document.body.clientHeight; 
-	return window.undefined; 
+	if (document.body) return document.body.clientHeight;
+	return window.undefined;
 }
 function getViewportWidth() {
 	if (window.innerWidth!=window.undefined) {
@@ -520,9 +520,9 @@ function getViewportWidth() {
 		//var i=document.body.offsetWidth;
 		//return i;
 	}
-	if (document.compatMode=='CSS1Compat') return document.documentElement.clientWidth; 
-	if (document.body) return document.body.clientWidth; 
-	return window.undefined; 
+	if (document.compatMode=='CSS1Compat') return document.documentElement.clientWidth;
+	if (document.body) return document.body.clientWidth;
+	return window.undefined;
 }
 
 
@@ -532,11 +532,11 @@ function disableSave(){
 		tempButton.disabled=true;
 	tempButton=getObjectFromID("saveButton2");
 	if(tempButton)
-		tempButton.disabled=true;		
+		tempButton.disabled=true;
 }
 
 
-function setLoginRefresh(){	
+function setLoginRefresh(){
 	window.setInterval(doRefresh,(LOGIN_REFRESH*60*1000));
 }
 
@@ -622,45 +622,45 @@ function stringToDate(sDate,format){
 function dateToString(thedate,format){
 	if(!format) format=DATE_FORMAT;
 	var sdate="";
-	
+
 	if(thedate){
 		var sep;
 		var month;
 		var day;
 		switch(format){
 			case "SQL":
-				sep="-";			
+				sep="-";
 				month=thedate.getMonth()+1;
 				if(month<10) month="0"+month;
 				day=thedate.getDate();
-				if(day<10) day="0"+day;					
+				if(day<10) day="0"+day;
 				sdate= thedate.getFullYear()+sep+month+sep+day;
 			break;
-			
+
 			case "English, US":
 				sep="/";
 				month=thedate.getMonth()+1;
 				if(month<10) month="0"+month;
 				day=thedate.getDate();
-				if(day<10) day="0"+day;					
+				if(day<10) day="0"+day;
 				sdate= month+sep+day+sep+thedate.getFullYear();
 			break;
-			
+
 			case "English, UK":
 				sep="/";
 				month=thedate.getMonth()+1;
 				if(month<10) month="0"+month;
 				day=thedate.getDate();
-				if(day<10) day="0"+day;					
+				if(day<10) day="0"+day;
 				sdate= day+sep+month+sep+thedate.getFullYear();
 			break;
-			
+
 			case "Dutch, NL":
 				sep="-";
 				month=thedate.getMonth()+1;
 				if(month<10) month="0"+month;
 				day=thedate.getDate();
-				if(day<10) day="0"+day;					
+				if(day<10) day="0"+day;
 				sdate= day+sep+month+sep+thedate.getFullYear();
 			break;
 		}
@@ -679,7 +679,7 @@ function stringToTime(sTime,format){
 				if(timeArray.length == 3)
 					thetime=new Date(0,0,0,parseInt(timeArray[0],10),parseInt(timeArray[1],10),parseInt(timeArray[2],10));
 			break;
-			
+
 			case "12 Hour":
 				timeadd=0;
 				if(sTime.indexOf(" PM")!=-1)
@@ -689,10 +689,10 @@ function stringToTime(sTime,format){
 				timeArray=sTime.split(":");
 				if(timeArray.length==2){
 					var hour=parseInt(timeArray[0],10);
-					if(hour==12) hour=0;					
+					if(hour==12) hour=0;
 					hour=hour+timeadd;
-							
-					thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));						
+
+					thetime=new Date(0,0,0,hour,parseInt(timeArray[1],10));
 				}
 			break;
 		}
@@ -715,7 +715,7 @@ function timeToString(thetime,format){
 				if(seconds<10) seconds="0"+seconds;
 				sTime=hours+sep+minutes+sep+seconds;
 			break;
-			
+
 			case "12 Hour":
 				var ampm=" AM";
 				if(hours>11)
@@ -723,7 +723,7 @@ function timeToString(thetime,format){
 				if(hours>12)
 					hours=hours-12;
 				if (hours==0) hours=12;
-				if(minutes<10) minutes="0"+minutes;				
+				if(minutes<10) minutes="0"+minutes;
 				sTime=""+hours+sep+minutes+ampm;
 			break;
 		}
@@ -733,16 +733,16 @@ function timeToString(thetime,format){
 /* CURRENCY -------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- */
 function roundForCurrency(number){
-	
+
 	return Math.round( number * Math.pow(10,CURRENCY_ACCURACY) ) /	Math.pow(10,CURRENCY_ACCURACY);
-	
+
 }
 
 
 function numberToCurrency(number){
-	
+
 	var currency="";
-	
+
 	if(isNaN(parseFloat(number))) number=0;
 
 	if(number<0)
@@ -750,39 +750,39 @@ function numberToCurrency(number){
 
 	number = Math.abs(number);
 	currency += CURRENCY_SYM;
-	
+
 	if(number>0 && number <0)
 		currency+="0";
 
 	var lessthanone = Math.round( (number-parseInt(number)) * (Math.pow(10,CURRENCY_ACCURACY)) );
 	number = parseInt(number);
-	
+
 	if(lessthanone >= Math.pow(10,CURRENCY_ACCURACY)){
 
 		number++;
-			
+
 		lessthanone -= Math.pow(10,CURRENCY_ACCURACY);
-		
+
 	}//end if
-	
+
 	lessthanone = lessthanone.toString()
-	
+
 	while(lessthanone.length<CURRENCY_ACCURACY)
-		lessthanone = "0" + lessthanone;		
+		lessthanone = "0" + lessthanone;
 
 	var withThousands = parseInt(number).toString();
   	var objRegExp  = new RegExp('(-?[0-9]+)([0-9]{3})');
 
 	while(objRegExp.test(withThousands))
        withThousands = withThousands.replace(objRegExp, '$1'+THOUSANDS_SEPARATOR+'$2');
-		
+
 	currency+=withThousands;
 
 	if(CURRENCY_ACCURACY!=0)
 		currency+=DECIMAL_SYMBOL+lessthanone;
-		
+
 	return currency;
-	
+
 }
 
 function currencyToNumber(currency){
@@ -819,7 +819,7 @@ function showModal(content,title,thewidth,thetop){
 		showModal.box.style.width=thewidth+"px";
 	}
 	showModal.box.width="400px";
-	
+
 	var tempDiv=document.createElement("div");
 	tempDiv.id="modalTitle";
 	tempDiv.innerHTML=title;
@@ -839,17 +839,17 @@ function showModal(content,title,thewidth,thetop){
 
 	showModal.maskFade.setOpacity(0);
 	document.body.appendChild(showModal.mask);
-	
+
 	showModal.boxFade.setOpacity(0);
 	document.body.appendChild(showModal.box);
-	
+
 	showModal.maskFade.custom(0,0.7);
-			
+
 	centerModal();
-	
+
 	showModal.listeners =[
 		connect(window,"onresize",centerModal),
-		connect(window,"onscroll",centerModal)		  
+		connect(window,"onscroll",centerModal)
 	]
 }
 
@@ -862,14 +862,14 @@ function cleanupModal(){
 
 	for(var i=0; i<showModal.listeners.length; i++)
 		disconnect(showModal.listeners[i])
-		
+
 	document.body.removeChild(showModal.mask);
 	document.body.removeChild(showModal.box);
 
 	displaySelectBoxes();
 
 	delete showModal.mask;
-	delete showModal.box;	
+	delete showModal.box;
 }
 
 function centerModal(){
@@ -877,19 +877,19 @@ function centerModal(){
 
 		var fullHeight = getViewportHeight();
 		var fullWidth = getViewportWidth();
-	
+
 		var theBody = document.documentElement;
-	
+
 		var scTop = parseInt(theBody.scrollTop,10);
 		var scLeft = parseInt(theBody.scrollLeft,10);
-	
+
 		showModal.mask.style.height = fullHeight + "px";
 		showModal.mask.style.width = fullWidth + "px";
 		showModal.mask.style.top = scTop + "px";
 		showModal.mask.style.left = scLeft + "px";
 		if(window.innerHeight!=window.undefined){
 		if(showModal.mask.scrollWidth>fullWidth)
-			showModal.mask.style.height=(fullHeight-20)+"px";	
+			showModal.mask.style.height=(fullHeight-20)+"px";
 		if(document.body.scrollHeight>fullHeight)
 			showModal.mask.style.width=(fullWidth-20)+"px";
 		}
@@ -898,14 +898,14 @@ function centerModal(){
 	} ;
 }
 
-function hideSelectBoxes() {	
+function hideSelectBoxes() {
 	if (typeof document.body.style.maxHeight == "undefined") {
 		for(var i = 0; i < document.all.length; i++) {
 			if(document.all[i].tagName)
-				if(document.all[i].tagName == "SELECT") 
+				if(document.all[i].tagName == "SELECT")
 					document.all[i].style.visibility="hidden";
 		}
-	}	
+	}
 }
 function displaySelectBoxes() {
 	if (typeof document.body.style.maxHeight == "undefined") {
@@ -918,12 +918,12 @@ function displaySelectBoxes() {
 }
 
 function modalAlert(text){
-	
+
 	text=""+text;
 	text.replace("\n","<br />");
 	text+="<DIV align=\"right\"><button id=\"modalOK\" accesskey=\"o\" type=\"button\" class=\"Buttons\" onclick=\"closeModal()\" style=\"width:75px\"> ok </button></DIV>";
 	showModal(text,"Alert",250);
-	
+
 	var okButton = getObjectFromID("modalOK");
 	try{
 	    okButton.focus();
@@ -931,6 +931,46 @@ function modalAlert(text){
 	    // stupid IE
 	}//end try
 }
+
+/* JS Equivalents to PHP Functions --------------------- */
+/* ----------------------------------------------------- */
+function dirname(path) {
+    // Returns the directory name component of the path
+    //
+    // version: 810.114
+    // discuss at: http://phpjs.org/functions/dirname
+    // +   original by: Ozh
+    // +   improved by: XoraX (http://www.xorax.info)
+    // *     example 1: dirname('/etc/passwd');
+    // *     returns 1: '/etc'
+    // *     example 2: dirname('c:/Temp/x');
+    // *     returns 2: 'c:/Temp'
+    // *     example 3: dirname('/dir/test/');
+    // *     returns 3: '/dir'
+
+    return path.replace(/\\/g,'/').replace(/\/[^\/]*\/?$/, '');
+}
+
+function basename(path, suffix) {
+    // Returns the filename component of the path
+    //
+    // version: 812.316
+    // discuss at: http://phpjs.org/functions/basename
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   improved by: Ash Searle (http://hexmen.com/blog/)
+    // +   improved by: Lincoln Ramsay
+    // +   improved by: djmix
+    // *     example 1: basename('/www/site/home.htm', '.htm');
+    // *     returns 1: 'home'
+    var b = path.replace(/^.*[\/\\]/g, '');
+
+    if (typeof(suffix) == 'string' && b.substr(b.length-suffix.length) == suffix) {
+        b = b.substr(0, b.length-suffix.length);
+    }
+
+    return b;
+}
+
 
 /* Function Overloads and Extensions --------------------- */
 /* ------------------------------------------------------- */
@@ -949,11 +989,11 @@ connect(window,"onload",function() {
 if(typeof(APP_PATH) != "undefined"){
 
 	spinner = new Image;
-	spinner.src = APP_PATH+"common/image/spinner.gif";		
+	spinner.src = APP_PATH+"common/image/spinner.gif";
 
 }
 
-	
-	
-	
+
+
+
 })//end listner

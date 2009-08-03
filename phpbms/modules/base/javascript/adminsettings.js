@@ -134,7 +134,7 @@ baseAdminSettings = {
         var warning = getObjectFromID(warningID);
         warning.style.display = "list-item";
 
-    },//end _showWarningStatus
+    }//end _showWarningStatus
 
 }//end class baseAdminSettings
 
@@ -292,6 +292,88 @@ settingsTabs = {
 
 }//end class settingsTabs
 
+updateObj = {
+
+
+    /**
+     * checkForUpdate
+     * @param {bool} manual whether checked manually (true) or automatically
+     * (false)
+     */
+    checkForUpdate : function(manual){
+
+        var url;
+        if(manual)
+            url = "adminsettings_ajax.php?m=1";
+        else
+            url = "adminsettings_ajax.php?m=0";
+
+        loadXMLDoc(url, null, false);
+
+        try {
+
+            var updateResponse = eval( "(" +req.responseText + ")" );
+
+        } catch(err) {
+
+            alert(err);
+
+        }//end try/catch
+
+        return updateResponse;
+
+    },//end method checkForUpdate
+
+    /**
+      *  buttonProcess
+      */
+
+    buttonProcess : function(){
+        updateObj.processUpdate(true);
+    },//end method
+
+    /**
+      *  autoProcess
+      */
+
+    autoProcess : function(){
+        updateObj.processUpdate(false);
+    },//end method
+
+    /**
+     * processUpdate
+     * @param {bool} manual whether checked manually (true) or automatically
+     * (false)
+     */
+
+    processUpdate : function(manual){
+
+        var processSpan = getObjectFromID("processSpan");
+        var date = getObjectFromID("last_update_check");
+        var responseP = getObjectFromID("responseP");
+
+        processSpan.style.display = "block";
+
+        var updateResponse = updateObj.checkForUpdate(manual);
+
+
+        processSpan.style.display = "none";
+console.log(updateResponse.checked);
+        if(updateResponse.checked == true){
+            date.value = updateResponse.date;
+
+            if(updateResponse.current)
+                responseP.innerHTML = "Application is up to date.";
+            else
+                responseP.innerHTML = "Application is not up to date, and the current version is v"+updateResponse.version;
+
+            responseP.style.display = "block";
+        }//end if
+
+    }//end method processUpdate
+
+}//end object updateObj
+
 /* OnLoad Listner ---------------------------------------- */
 /* ------------------------------------------------------- */
 connect(window,"onload",function() {
@@ -320,5 +402,13 @@ connect(window,"onload",function() {
 
     if(cronRun)
         baseAdminSettings._showWarningStatus("cronRun");
+
+    var updateButton = getObjectFromID("updateCheck")
+    connect(updateButton, "onclick", updateObj.buttonProcess);
+
+    var auto_check_update = getObjectFromID("auto_check_update");
+    if(auto_check_update.checked){
+        updateObj.autoProcess();
+    }//end if
 
 });

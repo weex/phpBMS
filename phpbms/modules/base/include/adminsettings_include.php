@@ -110,6 +110,12 @@ class settings{
 		if(!isset($variables["persistent_login"]))
 			$variables["persistent_login"] = 0;
 
+		if(!isset($variables["auto_check_update"]))
+			$variables["auto_check_update"] = 0;
+
+		if(!isset($variables["send_metrics"]))
+			$variables["send_metrics"] = 0;
+
 		//include any procesing that needs to be done by modules
 		foreach($phpbms->modules as $module => $moduleinfo){
 			if($module != "base"){
@@ -346,7 +352,7 @@ class settings{
 
 		while($entry = @ readdir($thedir_stream)){
 
-			if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry)) {
+			if ($entry!="." and  $entry!=".." and is_dir($thedir."/".$entry) && $entry != ".svn") {
 
 			?><option value="<?php echo $entry?>" <?php if($entry = $stylesheet) echo 'selected="selected"'; ?>><?php echo $entry?></option><?php
 

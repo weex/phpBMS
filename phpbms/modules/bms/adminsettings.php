@@ -234,6 +234,7 @@
 
 							$res = fopen($variables["encryption_key_path"], "r");
 							$key = fread($res, filesize($variables["encryption_key_path"]));
+							fclose($res);
 							$key = trim($key);
 
 							$this->encyptPaymentInformation($key);
@@ -275,6 +276,7 @@
 
 								$res = fopen($variables["encryption_key_path"], "r");
 								$key = fread($res, filesize($variables["encryption_key_path"]));
+								fclose($res);
 								$key = trim($key);
 
 								$this->encyptPaymentInformation($key);

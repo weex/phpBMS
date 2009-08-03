@@ -17,3 +17,8 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('currency_accuracy','2');
 INSERT INTO `settings` (`name`, `value`) VALUES ('demo_enabled','false');
 INSERT INTO `settings` (`name`, `value`) VALUES ('persistent_login','0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('login_refresh','2');
+--
+INSERT INTO `settings` (`name`, `value`) VALUES ('application_uuid','');
+INSERT INTO `settings` (`name`, `value`) VALUES ('auto_check_update','1');
+INSERT INTO `settings` (`name`, `value`) VALUES ('send_metrics','0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('last_update_check','');
