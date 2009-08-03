@@ -39,25 +39,7 @@
 
 	function showSavedSearches($db,$selected){
 
-		$querystatment = "
-			SELECT
-				`id`,
-				`uuid`,
-				`name`,
-				`userid`
-			FROM
-				`usersearches`
-			WHERE
-				`tabledefid`='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
-				AND
-				`type`='SCH'
-				AND
-				(
-					`userid`=''
-					OR
-					`userid`='".$_SESSION["userinfo"]["uuid"]."')
-			ORDER BY
-				`userid`";
+		$querystatment="SELECT id,name,userid FROM usersearches WHERE tabledefid=2 and type=\"SCH\" and(userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\") order by userid";
 		$thequery = $db->query($querystatment);
 
 		$numrows=$db->numRows($thequery);
@@ -69,7 +51,7 @@
 				} else {
 					$numglobal=0;
 					while($therecord=$db->fetchArray($thequery))
-						if($therecord["userid"] == "") $numglobal++;
+						if($therecord["userid"]<1) $numglobal++;
 					$db->seek($thequery,0);
 			?>
 				<?php if($numglobal>0){ ?>
@@ -78,7 +60,7 @@
 					}//end if
 					$userqueryline=true;
 					while($therecord=$db->fetchArray($thequery)){
-						if ($therecord["userid"] != "" and $userqueryline) {
+						if ($therecord["userid"]> 0 and $userqueryline) {
 							$userqueryline=false;
 							?><option value="NA">----- user ------</option><?php
 						}
@@ -106,21 +88,7 @@
 
 	function showSavedProjects($db){
 
-		$querystatement = "
-			SELECT
-				`id`,
-				`name`,
-				`userid`
-			FROM
-				`clientemailprojects`
-			WHERE
-				userid=''
-				OR
-				userid='".$_SESSION["userinfo"]["uuid"]."'
-			ORDER BY
-				`userid`
-		";
-
+		$querystatement="SELECT id,name,userid FROM clientemailprojects WHERE userid=0 or userid=\"".$_SESSION["userinfo"]["id"]."\" order by userid";
 		$thequery = $db->query($querystatement);
 		if(!$thequery) $error = new appError(300,$querystatement);
 
@@ -133,7 +101,7 @@
 				} else {
 					$numglobal=0;
 					while($therecord=$db->fetchArray($thequery))
-						if($therecord["userid"] == "") $numglobal++;
+						if($therecord["userid"]<1) $numglobal++;
 					$db->seek($thequery,0);
 			?>
 				<?php if($numglobal>0){ ?>
@@ -157,29 +125,19 @@
 
 	function saveProject($db,$variables){
 
-		$sqlstatement = "
-			INSERT INTO
-				`clientemailprojects`
-				(
-					`name`,
-					`userid`,
-					`emailto`,
-					`emailfrom`,
-					`subject`,
-					`body`
-				) VALUES (";
-		$sqlstatement.=	"'".$variables["savename"]."', ";
+		$sqlstatement=	"INSERT INTO clientemailprojects (name,userid,emailto,emailfrom,subject,body) VALUES (";
+		$sqlstatement.=	"\"".$variables["savename"]."\", ";
 		$sqlstatement.=	$_SESSION["userinfo"]["id"].", ";
 		if($variables["therecords"]=="savedsearch")
-			$sqlstatement.=	"'".$variables["savedsearches"]."', ";
+			$sqlstatement.=	"\"".$variables["savedsearches"]."\", ";
 		else
-			$sqlstatement.=	"'".$variables["therecords"]."', ";
+			$sqlstatement.=	"\"".$variables["therecords"]."\", ";
 		if(!$variables["email"])
-			$sqlstatement.=	"'".$variables["ds-email"]."', ";
+			$sqlstatement.=	"\"".$variables["ds-email"]."\", ";
 		else
-			$sqlstatement.=	"'".$variables["email"]."', ";
-		$sqlstatement.=	"'".$variables["subject"]."', ";
-		$sqlstatement.=	"'".$variables["body"]."') ";
+			$sqlstatement.=	"\"".$variables["email"]."\", ";
+		$sqlstatement.=	"\"".$variables["subject"]."\", ";
+		$sqlstatement.=	"\"".$variables["body"]."\") ";
 
 		$db->query($sqlstatement);
 		return $db->insertId();
@@ -187,19 +145,7 @@
 
 	function loadProject($db,$id){
 
-		$sqlstatement = "
-			SELECT
-				`id`,
-				`name`,
-				`emailto`,
-				`emailfrom`,
-				`subject`,
-				`body`
-			FROM
-				`clientemailprojects`
-			WHERE `id='".((int) $id)."'
-		";
-
+		$sqlstatement="SELECT id,name,emailto,emailfrom,subject,body FROM clientemailprojects WHERE id=".((int) $id);
 		$queryresult=$db->query($sqlstatement);
 		return $db->fetchArray($queryresult);
 
@@ -207,14 +153,7 @@
 
 	function deleteProject($db,$id){
 
-		$sqlstatement = "
-			DELETE FROM
-				`clientemailprojects`
-			WHERE
-				`id`='".((int) $id)."'
-				AND
-				`userid`='".$_SESSION["userinfo"]["uuid"]."'";
-
+		$sqlstatement="DELETE FROM clientemailprojects WHERE id=".((int) $id)." and userid=".$_SESSION["userinfo"]["id"];
 		$queryresult=$db->query($sqlstatement);
 
 	}
