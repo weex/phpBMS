@@ -123,9 +123,23 @@
 			elseif(!$this->sortorder)
 				$this->sortorder = "invoices.id";
 
+			$paymentFields = "";
+			if(ENCRYPT_PAYMENT_FIELDS){
+
+				$paymentFields = "
+					".$this->db->decrypt("`ccnumber`")." AS `ccnumber`,
+					".$this->db->decrypt("`ccverification`")." AS `ccverification`,
+					".$this->db->decrypt("`ccexpiration`")." AS `ccexpiration`,
+					".$this->db->decrypt("`routingnumber`")." AS `routingnumber`,
+					".$this->db->decrypt("`accountnumber`")." AS `accountnumber`,
+				";
+
+			}//end if
+
 			$querystatement = "
 				SELECT
 					invoices.*,
+					".$paymentFields."
 
 					invoices.totalti - invoices.amountpaid AS amountdue,
 
@@ -162,6 +176,7 @@
 				exit;
 
 			}//end if
+
 
 			$pdf->hasComapnyHeader = true;
 			$pdf->SetMargins();

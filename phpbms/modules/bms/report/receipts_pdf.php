@@ -128,9 +128,23 @@
 			elseif(!$this->sortorder)
 				$this->sortorder = "receipts.id";
 
+			$paymentFields = "";
+			if(ENCRYPT_PAYMENT_FIELDS){
+
+				$paymentFields = "
+					".$this->db->decrypt("`ccnumber`")." AS `ccnumber`,
+					".$this->db->decrypt("`ccverification`")." AS `ccverification`,
+					".$this->db->decrypt("`ccexpiration`")." AS `ccexpiration`,
+					".$this->db->decrypt("`routingnumber`")." AS `routingnumber`,
+					".$this->db->decrypt("`accountnumber`")." AS `accountnumber`,
+				";
+
+			}//end if
+
 			$querystatement = "
 				SELECT
 					receipts.*,
+					".$paymentFields."
 
 					clients.firstname,
 					clients.lastname,

@@ -523,7 +523,7 @@ class aritemsSummary extends phpbmsReport{
 
 
 	function processDialog($variables){
-var_dump($variables);
+
 		if(isset($variables["statementdate"]))
 			$this->statementDate = stringToDate($variables["statementdate"]);
 
