@@ -298,14 +298,13 @@ if(class_exists("addresses")){
 if(class_exists("searchFunctions")){
 	class addresstorecordSearchFunctions extends searchFunctions{
 
-		function delete_record($useUUID = false){
+		function delete_record(){
 
-			if(!$useUUID)
-				$whereclause=$this->buildWhereClause();
-			else
-				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
-			//We need to itterate trhough each record
+			$whereclause=$this->buildWhereClause();
+
+
+			//We need to iterate through each record
 			// to check for cross-record addresses
 			$querystatement = "
 				SELECT

@@ -218,11 +218,17 @@ if(class_exists("searchFunctions")){
 
 		function delete_record($useUUID = false){
 
-			if(!$useUUID)
+			if(!$useUUID){
+				
 				$whereclause=$this->buildWhereClause();
-			else
+				//menu.parentid must be a uuid and not an id.
+				//so, we adjust the verify where clause to always be
+				//uuids.
+				$this->idsArray = getUuidArray($this->db, "tbld:83187e3d-101e-a8a5-037f-31e9800fed2d", $this->idsArray);
+
+			}else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
-			
+
 			$verifywhereclause = $this->buildWhereClause("menu.parentid");
 
 			$querystatement = "SELECT id FROM menu WHERE ".$verifywhereclause;

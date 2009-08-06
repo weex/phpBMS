@@ -275,16 +275,17 @@ if(class_exists("searchFunctions")){
 
 		function delete_record($useUUID = false){
 
-			if(!$useUUID)
-				$whereclause=$this->buildWhereClause();
-			else
+			if(!$useUUID){
+				$whereclause = $this->buildWhereClause();
+				//support tables link to tabledefs using uuids not ids, so we must make sure that they are uuids.
+				$this->idsArray = getUuidArray($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $this->idsArray);
+			}else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			//passed variable is array of user ids to be revoked
-			//$whereclause="";
 			$linkedwhereclause="";
 			$relationshipswhereclause="";
-			//$whereclause = $this->buildWhereClause();
+
 			$linkedwhereclause = $this->buildWhereClause("tabledefid");
 			$relationshipswhereclause = $this->buildWhereClause("fromtableid")." OR ".$this->buildWhereClause("totableid");
 

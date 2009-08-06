@@ -193,27 +193,22 @@ if(class_exists("files")){
 if(class_exists("searchFunctions")){
 	class attachmentsSearchFunctions extends searchFunctions{
 
-		function delete_record($useUUID = false){
+		function delete_record(){
 
-			if(!$useUUID){
-				$whereclause=$this->buildWhereClause();
-				$fieldname = "`id`";
-			}else{
-				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
-				$fieldname = "`uuid`";
-			}
 
-			$rowsdeleted=0;
+			$whereclause = $this->buildWhereClause();
+
+			$rowsdeleted = 0;
 			foreach($this->idsArray as $id){
-				$querystatement = "SELECT fileid FROM attachments WHERE ".$fieldname."='".$id."'";
+				$querystatement = "SELECT fileid FROM attachments WHERE `id` = '".$id."'";
 				$queryresult = $this->db->query($querystatement);
-				$therecord=$this->db->fetchArray($queryresult);
+				$therecord = $this->db->fetchArray($queryresult);
 
-				$querystatement = "DELETE FROM attachments WHERE ".$fieldname."='".$id."'";
+				$querystatement = "DELETE FROM attachments WHERE `id` = '".$id."'";
 				$queryresult = $this->db->query($querystatement);
 				$rowsdeleted++;
 
-				$querystatement = "SELECT id FROM attachments WHERE fileid='".$therecord["fileid"]."'";
+				$querystatement = "SELECT id FROM attachments WHERE `fileid` = '".$therecord["fileid"]."'";
 				$queryresult = $this->db->query($querystatement);
 
 				if(!$this->db->numRows($queryresult)){

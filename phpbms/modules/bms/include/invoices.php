@@ -1320,7 +1320,7 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class invoicesSearchFunctions extends searchFunctions{
 
-		function email_invoice(){
+		function email_invoice($useUuid = false){
 
 				if(DEMO_ENABLED == "true")
 					return "Functionality disabled in demo.";
@@ -1335,7 +1335,10 @@ if(class_exists("searchFunctions")){
 
 					$report = new invoicePDF($this->db, 'P', 'in', 'Letter');
 
-					$report->generate("invoices.id = ".$id);
+					if(!$useUuid)
+						$report->generate("invoices.id = ".$id);
+					else
+						$report->generate("invoices.uuid = ".$id);
 
 					if($report->output("email"))
 						$processed++;
@@ -1358,7 +1361,7 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function email_quote(){
+		function email_quote($useUuid){
 
 				if(DEMO_ENABLED == "true")
 					return "Functionality disabled in demo.";
@@ -1375,7 +1378,10 @@ if(class_exists("searchFunctions")){
 
 					$report = new quotePDF($this->db, 'P', 'in', 'Letter');
 
-					$report->generate("invoices.id = ".$id);
+					if(!$useUuid)
+						$report->generate("invoices.id = ".$id);
+					else
+						$report->generate("invoices.uuid = ".$id);
 
 					if($report->output("email"))
 						$processed++;
@@ -1398,7 +1404,7 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function _mark_as_status($statusid){
+		function _mark_as_status($statusid, $useUuid = false){
 
 			//Look up shippings defaults
 			$querystatement = "
@@ -1425,8 +1431,12 @@ if(class_exists("searchFunctions")){
 				return "No status with uuid ".$statusid." found.";
 			}
 
-			$whereclause=$this->buildWhereClause();
-			$whereclause="(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID' AND invoices.statusid !='".$statusid."'";
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
+
+			$whereclause = "(".$whereclause.") AND invoices.type!='Invoice' AND invoices.type!='VOID' AND invoices.statusid !='".$statusid."'";
 
 			// since marking RTP is dependent on the payment method type,
 			// items must be updated individually
@@ -1472,7 +1482,7 @@ if(class_exists("searchFunctions")){
 						invoices.statusid='".$statusid."',
 						modifieddate=NOW()
 					WHERE
-						id =".$therecord["id"];
+						id = ".$therecord["id"];
 
 				$updateresult = $this->db->query($updatestatement);
 
@@ -1498,21 +1508,25 @@ if(class_exists("searchFunctions")){
 		}//end private method
 
 
-		function mark_ashipped(){
+		function mark_ashipped($useUuid = false){
 
 			$statusid = "inst:e8b5e6a7-5797-7901-6266-6adeedd15ec9"; //The default id for "shipped";
 
-			$message = $this->_mark_as_status($statusid);
+			$message = $this->_mark_as_status($statusid, $useUuid);
 
 			return $message." marked as shipped.";
 
 		}//end method
 
 
-		function mark_rtp(){
+		function mark_rtp($useUuid = false){
 
-			$whereclause=$this->buildWhereClause();
-			$whereclause="(".$whereclause.") AND invoices.type='Order'";
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
+
+			$whereclause = "(".$whereclause.") AND invoices.type='Order'";
 
 			// since marking RTP is dependent on the payment method type,
 			// items must be updated individually
@@ -1528,13 +1542,13 @@ if(class_exists("searchFunctions")){
 
 			$queryresult = $this->db->query($querystatement);
 
-			$count=0;
+			$count = 0;
 			while($therecord = $this->db->fetchArray($queryresult)){
 				$updatestatement ="
 					UPDATE
-						invoices
+						`invoices`
 					SET
-						modifiedby=".$_SESSION["userinfo"]["id"].", ";
+						`modifiedby` = '".$_SESSION["userinfo"]["id"]."', ";
 
 				if(!$therecord["invoicedate"] || $therecord["invoicedate"] == "0000-00-00")
 					$updatestatement.="invoicedate = NOW(), ";
@@ -1562,9 +1576,13 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_aspaid(){
+		function mark_aspaid($useUuids = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
+
 			$whereclause = trim("
 				invoices.type='Order'
 				AND paymentmethods.type != 'receivable'
@@ -1607,9 +1625,12 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_asinvoice(){
+		function mark_asinvoice($useUuids = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
 
 			include_once("include/post_class.php");
 			defineInvoicesPost();
@@ -1817,7 +1838,7 @@ if(class_exists("searchFunctions")){
 								)
 								VALUES
 								(
-									'".$newid."',
+									'".mysql_real_escape_string($newUuid)."',
 									'".$statusRecord["uuid"]."',
 									NOW(),
 									''

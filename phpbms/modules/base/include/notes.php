@@ -954,26 +954,59 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class notesSearchFunctions extends searchFunctions{
 
-		function mark_asread(){
+		function mark_asread($useUUID = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUUID)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause("`notes`.`uuid`");
 
-			$querystatement = "UPDATE notes SET notes.completed=1,modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.") AND type!=\"SM\";";
+			$querystatement = "
+				UPDATE
+					`notes`
+				SET
+					`notes`.`completed` = '1',
+					`modifiedby`='".$_SESSION["userinfo"]["id"]."'
+				WHERE
+					(".$whereclause.")
+					AND
+					`type`! = 'SM'
+			";
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();
 
-			$message.=" marked as completed/read.";
+			$message .=" marked as completed/read.";
 
 			//for repeatable tasks, need to repeat dem!
-			$querystatement="SELECT id,parentid FROM notes WHERE type='TS' AND ((parentid IS NOT NULL AND parentid!=0 ) OR `repeating`=1) AND (".$whereclause.")";
+			$querystatement = "
+				SELECT
+					`id`,
+					`parentid`
+				FROM
+					`notes`
+				WHERE
+					`type`='TS'
+					AND
+					(
+						(
+							`parentid` IS NOT NULL
+							AND
+							`parentid`!='0'
+						)
+						OR
+						`repeating`='1'
+					)
+					AND
+					(".$whereclause.")
+			";
+
 			$queryresult = $this->db->query($querystatement);
-			if ($this->db->numRows($queryresult)){
+			if($this->db->numRows($queryresult)){
 
 				$thetable = new notes($this->db,12);
 
-				while($therecord=$db->fetchArray($queryresult)){
+				while($therecord = $db->fetchArray($queryresult)){
 					if($variables["parentid"])
 						if(!$thetable->newerRepeats($therecord["parentid"],$therecord["id"]))
 							$thetable->repeatTask($therecord["parentid"]);
@@ -997,9 +1030,29 @@ if(class_exists("searchFunctions")){
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			//we need to check for incomplete repeatable child tasks
-			$querystatement="SELECT notes.id, notes.parentid, notes.repeating, notes.completed
-			FROM notes WHERE (".$whereclause.") AND ((notes.createdby=".$_SESSION["userinfo"]["id"]." OR notes.assignedtoid=".$_SESSION["userinfo"]["id"].")
-								 OR (".$_SESSION["userinfo"]["admin"]." =1))";
+			$querystatement = "
+				SELECT
+					`notes`.`id`,
+					`notes`.`parentid`,
+					`notes`.`repeating`,
+					`notes`.`completed`
+				FROM
+					`notes`
+				WHERE
+					(".$whereclause.")
+					AND
+					(
+						(
+							`notes`.`createdby = '".$_SESSION["userinfo"]["id"]."'
+							OR
+							`notes`.`assignedtoid` = '".$_SESSION["userinfo"]["uuid"]."'
+						)
+						OR
+						(
+							'".$_SESSION["userinfo"]["admin"]."' = '1'
+						)
+					)
+			";
 
 			$repeatqueryresult = $this->db->query($querystatement);
 
@@ -1032,10 +1085,25 @@ if(class_exists("searchFunctions")){
 
 			}//end if
 
-			$querystatement = "DELETE FROM notes WHERE
-								((notes.createdby=".$_SESSION["userinfo"]["id"]." OR notes.assignedtoid=".$_SESSION["userinfo"]["id"].")
-								 OR (".$_SESSION["userinfo"]["admin"]." =1))
-								 AND (".$whereclause.")";
+			$querystatement = "
+				DELETE FROM
+					`notes`
+				WHERE
+					(
+						(
+							`notes`.`createdby` = '".$_SESSION["userinfo"]["id"]."'
+							OR
+							`notes`.`assignedtoid` = '".$_SESSION["userinfo"]["uuid"]."'
+						)
+						OR
+						(
+							'".$_SESSION["userinfo"]["admin"]."' ='1'
+						)
+					)
+					AND
+					(".$whereclause.")
+			";
+			
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

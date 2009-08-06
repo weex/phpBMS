@@ -145,10 +145,26 @@ if(class_exists("searchFunctions")){
 
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
 
-			$querystatement = "DELETE FROM attachments WHERE ".$attachmentwhereclause." AND attachments.fileid!='file:ad761197-e5a2-3fdf-f330-d1508f10813e';";
+			$querystatement = "
+				DELETE FROM
+					`attachments`
+				WHERE
+					".$attachmentwhereclause."
+					AND
+					`attachments`.`fileid`!='file:ad761197-e5a2-3fdf-f330-d1508f10813e'
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
-			$querystatement = "DELETE FROM files WHERE ".$whereclause." AND files.id!=1;";
+			$querystatement = "
+				DELETE FROM
+					`files`
+				WHERE
+					".$whereclause."
+					AND
+					`files`.`id`!='1'
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

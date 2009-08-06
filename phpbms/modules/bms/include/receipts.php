@@ -555,9 +555,12 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class receiptsSearchFunctions extends searchFunctions{
 
-		function post(){
+		function post($useUuid = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
 
 			include_once("include/post_class.php");
 			defineReceiptsPost();
@@ -636,9 +639,12 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function _getFullyDistributed(){
+		function _getFullyDistributed($useUuid = false){
 
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($thies->maintable.".`uuid`");
 
 			$querystatement = "
 				SELECT
@@ -690,9 +696,9 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_rtp(){
+		function mark_rtp($useUuid = false){
 
-			$where = $this->_getFullyDistributed();
+			$where = $this->_getFullyDistributed($useUuid);
 
 			$updatestatement="
 				UPDATE
@@ -716,9 +722,9 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_collected(){
+		function mark_collected($useUuid = false){
 
-			$where = $this->_getFullyDistributed();
+			$where = $this->_getFullyDistributed($useUuid);
 
 			$updatestatement="
 				UPDATE

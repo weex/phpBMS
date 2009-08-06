@@ -318,6 +318,64 @@ function getUuid($db, $tabledefuuid, $id){
 
 
 /**
+ * function getUuidArray
+ * Gets an array of uuids for a given tabledefuuid and list of ids.  Will not
+ * give a uuid more than once and may not return an array of the same count
+ * as the count of the $ids array.
+ *
+ * @param object $db
+ * @param string $tabledefuuid
+ * @param array $ids
+ *
+ * @return array Array of Uuids for the $ids in no particular order.  Count
+ * (length) of this array is less than or equal to the $ids array.  Returns false
+ * if $ids is of length 0.
+ */
+
+function getUuidArray($db, $tabledefuuid, $ids){
+
+	if(!count($ids))
+		return false;
+
+	$querystatement = "
+			SELECT
+					`maintable`
+			FROM
+					`tabledefs`
+			WHERE
+					`uuid` = '".$tabledefuuid."'";
+
+	$queryresult = $db->query($querystatement);
+
+	$tablerecord = $db->fetchArray($queryresult);
+
+	$whereclause = "";
+	foreach($ids as $id)
+		$whereclause .= " OR `id` = '".(int)$id."'";
+
+	$whereclause = substr($whereclause, 4);
+
+	$querystatement = "
+			SELECT
+					`uuid`
+			FROM
+					`".$tablerecord["maintable"]."`
+			WHERE
+					".$whereclause;
+
+	$queryresult = $db->query($querystatement);
+
+	$thereturn = array();
+	if($db->numRows($queryresult))
+		while($therecord = $db->fetchArray($queryresult))
+			$thereturn[] = $therecord["uuid"];
+
+	return $thereturn;
+
+}//end function --getUuidArray--
+
+
+/**
   * retrieves an id given a uuid and a table definition's uuid
   *
   * @param object $db the database object

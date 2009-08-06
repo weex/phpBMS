@@ -127,10 +127,18 @@ if(class_exists("searchFunctions")){
 
 		function delete_record($useUUID = false){
 
-			if(!$useUUID)
-				$whereclause=$this->buildWhereClause();
-			else
+			if(!$useUUID){
+				$whereclause = $this->buildWhereClause();
+
+				//attachments.fileid must be a uuid and not an id.
+				//so, we adjust the attachment where clause to always be
+				//uuids.
+
+				$this->idsArray = getUuidArray($this->db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475", $this-idsArray);
+
+			}else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+
 
 			$attachmentwhereclause = $this->buildWhereClause("attachments.fileid");
 

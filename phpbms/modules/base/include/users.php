@@ -257,7 +257,15 @@ if(class_exists("searchFunctions")){
 			else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
-			$querystatement = "UPDATE users SET revoked=1,modifiedby='".$_SESSION["userinfo"]["id"]."' WHERE ".$whereclause.";";
+			$querystatement = "
+				UPDATE
+					`users`
+				SET
+					`revoked` = '1',
+					`modifiedby` = '".$_SESSION["userinfo"]["id"]."'
+				WHERE
+					".$whereclause;
+					
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();
