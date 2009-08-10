@@ -1065,7 +1065,7 @@ lineitems = {
 
 	prepareForPost: function(){
 
-		var thelist = "";
+		var thelist = "[";
 
 		lineitemsArray = getElementsByClassName("lineitems");
 
@@ -1082,21 +1082,26 @@ lineitems = {
 			qty = getObjectFromID(theid + "Quantity");
 			memo = getObjectFromID(theid + "Memo")
 
-			thelist += 	productid.value + "::" +
-						memo.value.replace(/::|;;/g,"-") + "::" +
-						taxable.value + "::" +
-						unitweight.value + "::" +
-						unitcost.value + "::" +
-						currencyToNumber(unitprice.value) + "::" +
-						qty.value + ";;";
+			thelist +=  '{' +
+						'"productid" : "' + productid.value + '",' +
+						'"memo" : "' + memo.value.replace(/([\\"])/g,'\\\"')  + '",' +
+						'"taxable" : ' + taxable.value + ',' +
+						'"unitweight" : ' + unitweight.value + ',' +
+						'"unitcost" : ' + unitcost.value + ',' +
+						'"unitprice" : ' + currencyToNumber(unitprice.value) + ',' +
+						'"quantity" : ' + qty.value +
+						'}';
+
+			if(i < (lineitemsArray.length - 1))
+				thelist += ",";
 
 		}//end for
 
-		if(thelist.length > 1)
-			thelist = thelist.substr(0, thelist.length-2);
+		thelist += "]";
 
 		var itemslist = getObjectFromID("thelineitems");
-		itemslist.value = thelist
+		itemslist.value = thelist;
+		console.log(thelist);
 
 	}//end function
 

@@ -971,6 +971,51 @@ function basename(path, suffix) {
     return b;
 }
 
+function addslashes (str) {
+    // Escapes single quote, double quotes and backslash characters in a string with backslashes
+    //
+    // version: 908.406
+    // discuss at: http://phpjs.org/functions/addslashes
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   improved by: Ates Goral (http://magnetiq.com)
+    // +   improved by: marrtins
+    // +   improved by: Nate
+    // +   improved by: Onno Marsman
+    // +   input by: Denny Wardhana
+    // +   improved by: Brett Zamir (http://brett-zamir.me)
+    // *     example 1: addslashes("kevin's birthday");
+    // *     returns 1: 'kevin\'s birthday'
+
+    return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\u0000/g, "\\0");
+}
+
+function stripslashes (str) {
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   improved by: Ates Goral (http://magnetiq.com)
+    // +      fixed by: Mick@el
+    // +   improved by: marrtins
+    // +   bugfixed by: Onno Marsman
+    // +   improved by: rezna
+    // +   input by: Rick Waldron
+    // +   reimplemented by: Brett Zamir (http://brett-zamir.me)
+    // *     example 1: stripslashes('Kevin\'s code');
+    // *     returns 1: "Kevin's code"
+    // *     example 2: stripslashes('Kevin\\\'s code');
+    // *     returns 2: "Kevin\'s code"
+    return (str+'').replace(/\\(.?)/g, function (s, n1) {
+        switch (n1) {
+            case '\\':
+                return '\\';
+            case '0':
+                return '\0';
+            case '':
+                return '';
+            default:
+                return n1;
+        }
+    });
+}
+
 
 /* Function Overloads and Extensions --------------------- */
 /* ------------------------------------------------------- */

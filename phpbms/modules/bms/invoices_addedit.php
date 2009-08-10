@@ -53,7 +53,10 @@
 	$thetable = new invoices($db,"tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883",$backurl);
 	$therecord = $thetable->processAddEditPage();
 
-	$lineitems = new lineitems($db, $therecord["id"], $therecord["type"]);
+	if($thetable->lineitems === NULL)
+		$thetable->lineitems = new lineitems($db, $therecord["id"], $therecord["type"]);
+	else
+		$thetable->lineitems->invoicetype = $therecord["type"];
 
 	$phpbms->cssIncludes[] = "pages/invoice.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/invoice.js";
@@ -471,7 +474,7 @@
 			<td nowrap="nowrap" align="left"><button type="button" id="lineitemAddButton" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
 
-		$lineitems->show();
+		$thetable->lineitems->show($therecord["lineitems"]);
 
 		?><tr id="LITotals">
 		<td colspan="3" rowspan="8" align="right" valign="top">

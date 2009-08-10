@@ -42,6 +42,7 @@ if(class_exists("phpbmsTable")){
 		var $_availableClientUUIDs = NULL;
 		var $_availableUserUUIDs = NULL;
 		var $_availableStatusUUIDs = NULL;
+		var $lineitems = NULL;
 
 		function invoices($db, $tabledefid, $backUrl = NULL){
 
@@ -696,7 +697,7 @@ if(class_exists("phpbmsTable")){
 			$taxinfo = $this->getTax($therecord["taxareaid"]);
 			$therecord["taxname"] = $taxinfo["name"];
 
-			//need to clculate the amount due
+			//need to calculate the amount due
 			$therecord["amountdue"] = $therecord["totalti"] - $therecord["amountpaid"];
 
 			$querystatement = "
@@ -712,6 +713,15 @@ if(class_exists("phpbmsTable")){
 			$queryresult = $this->db->query($querystatement);
 
 			$therecord = array_merge($this->db->fetchArray($queryresult), $therecord);
+
+			/**
+			  *  Need to get the lineitems as well
+			  */
+			if($this->lineitems === NULL)
+				$this->lineitems = new lineitems($this->db, $therecord["id"]);
+			$lineitems["lineitems"] = $this->lineitems->get();
+
+			$therecord = array_merge($lineitems, $therecord);
 
 			//if the client has AR, we need to grab the creditlimit
 			if($therecord["hascredit"]){
@@ -875,6 +885,17 @@ if(class_exists("phpbmsTable")){
 			if($variables["routingnumber_old"] == $variables["routingnumber"])
 				unset($variables["routingnumber"]);
 
+			/**
+			  *  Lineitems are formated in JSON format, and need to be converted
+			  *  to a php array.
+			  */
+			if($variables["lineitemschanged"]==1){
+
+				$variables["thelineitems"] = stripslashes($variables["thelineitems"]);
+				$variables["thelineitems"] = json_decode($variables["thelineitems"], true);
+
+			}//endif
+
 			return $variables;
 
 		}//end function prepareVariables
@@ -1037,8 +1058,11 @@ if(class_exists("phpbmsTable")){
 
 				if($variables["lineitemschanged"]==1){
 
-					$lineitems = new lineitems($this->db, $variables["id"]);
-					$lineitems->set($variables["thelineitems"], $modifiedby);
+					if($this->lineitems === NULL)
+						$this->lineitems = new lineitems($this->db, $variables["id"]);
+					else
+						$this->lineitems->invoiceid = $variables["id"];
+					$this->lineitems->set($variables["thelineitems"], $modifiedby);
 
 				}//endif
 
@@ -1132,8 +1156,11 @@ if(class_exists("phpbmsTable")){
 
 			if($variables["lineitemschanged"]==1){
 
-				$lineitems = new lineitems($this->db, $newid);
-				$lineitems->set($variables["thelineitems"],$createdby);
+				if($this->lineitems === NULL)
+					$this->lineitems = new lineitems($this->db, $newid);
+				else
+					$this->lineitems->invoiceid = $newid;
+				$lineitems->set($variables["thelineitems"], $createdby);
 
 			}//end if
 
@@ -1157,7 +1184,6 @@ if(class_exists("phpbmsTable")){
 		var $db;
 		var $invoiceid;
 		var $invoicetype;
-		var $queryresult = NULL;
 
 		function lineitems($db, $invoiceid, $invoicetype = "Order"){
 
@@ -1192,18 +1218,21 @@ if(class_exists("phpbmsTable")){
 				ORDER BY
 					lineitems.displayorder";
 
-			$this->queryresult = $this->db->query($querystatement);
+			$queryresult = $this->db->query($querystatement);
+
+			$thereturn = array();
+			while($therecord = $this->db->fetchArray($queryresult))
+				$thereturn[] = $therecord;
+
+			return $thereturn;
 
 		}//end method
 
 
-		function show(){
-
-			if($this->queryresult === NULL)
-				$this->get();
+		function show($lineitemArray){
 
 			$count = 1;
-			while($therecord = $this->db->fetchArray($this->queryresult)){
+			foreach($lineitemArray as $therecord){
 
 				?><tr id="li<?php echo $count?>" class="lineitems">
 
@@ -1240,7 +1269,7 @@ if(class_exists("phpbmsTable")){
 
 				$count++;
 
-			}//endwhile
+			}//end foreach
 
 		}//end method
 
@@ -1258,55 +1287,48 @@ if(class_exists("phpbmsTable")){
 
 			$this->db->query($deletestatement);
 
-			$itemsArray = explode(";;", $itemlist);
-
 			$count = 0;
 
-			foreach($itemsArray as $item){
+			foreach($itemlist as $item){
 
-				$itemRecord = explode("::", $item);
-				if(count($itemRecord) > 1){
+				//$theid = ($useUuid)? mysql_real_escape_string($itemRecord[0]): getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0]);
 
-					//$theid = ($useUuid)? mysql_real_escape_string($itemRecord[0]): getUuid($this->db, "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", (int) $itemRecord[0]);
+				$insertstatement ="
+					INSERT INTO
+						lineitems(
+							invoiceid,
+							productid,
+							memo,
+							taxable,
+							unitweight,
+							unitcost,
+							unitprice,
+							quantity,
+							displayorder,
+							createdby,
+							creationdate,
+							modifiedby,
+							modifieddate
+						)
+					VALUES (
+						".$this->invoiceid.",
+						'".mysql_real_escape_string($item["productid"])."',
+						'".mysql_real_escape_string($item["memo"])."',
+						".((int) $item["taxable"]).",
+						".((real) $item["unitweight"]).",
+						".((real) $item["unitcost"]).",
+						".((real) $item["unitprice"]).",
+						".((real) $item["quantity"]).",
+						".$count.",
+						".$userid.",
+						NOW(),
+						".$userid.",
+						NOW()
+					)";
 
-					$insertstatement ="
-						INSERT INTO
-							lineitems(
-								invoiceid,
-								productid,
-								memo,
-								taxable,
-								unitweight,
-								unitcost,
-								unitprice,
-								quantity,
-								displayorder,
-								createdby,
-								creationdate,
-								modifiedby,
-								modifieddate
-							)
-						VALUES (
-							".$this->invoiceid.",
-							'".mysql_real_escape_string($itemRecord[0])."',
-							'".mysql_real_escape_string($itemRecord[1])."',
-							".((int) $itemRecord[2]).",
-							".((real) $itemRecord[3]).",
-							".((real) $itemRecord[4]).",
-							".((real) $itemRecord[5]).",
-							".((real) $itemRecord[6]).",
-							".$count.",
-							".$userid.",
-							NOW(),
-							".$userid.",
-							NOW()
-						)";
+				$this->db->query($insertstatement);
 
-					$this->db->query($insertstatement);
-
-					$count++;
-
-				}//end if
+				$count++;
 
 			}//endforeach
 
