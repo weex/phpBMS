@@ -112,6 +112,7 @@
 
 		function _showOpenARSelect($clientid, $type){
 
+			$queryType = $type;
 			if($type == "deposit")
 				$queryType = "credit";
 

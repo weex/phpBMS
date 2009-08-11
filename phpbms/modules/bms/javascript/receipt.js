@@ -140,45 +140,89 @@ aritems = {
 	LoadOpenListners: Array(),
 
 	prepareForPost: function(){
+/**
+  *  List of fields I need:
+  *  ARID
+  *  RecID
+  *  Type
+  *  DocDate
+  *  Applied
+  *  Discount
+  *  TaxAdj
+  */
+		var thelist = "[";
 
-		var thelist = "";
+		var receiptTRs = getElementsByClassName("receiptTR");
 
-		appliedFields = getElementsByClassName("appliedFields");
-		var j,k, tempObj;
-		for(var i=0; i<appliedFields.length; i++){
+		var theID, ARID, RecID, Type, DocDate, Applied, Discount, TaxAdj;
 
-			var theID = appliedFields[i].id.substr(0,2);
+		for(var i = 0; i < receiptTRs.length; i++){
 
-			var theTR = getObjectFromID(theID);
+			theID = receiptTRs[i].id;
+			ARID = getObjectFromID(theID+"ARID");
+			RecID = getObjectFromID(theID+"RecID");
+			Type = getObjectFromID(theID+"Type");
+			DocDate = getObjectFromID(theID+"DocDate");
+			Applied = getObjectFromID(theID+"Applied");
+			Discount = getObjectFromID(theID+"Discount");
+			TaxAdj = getObjectFromID(theID+"TaxAdj");
+			/**
+			  *  memo.value.replace(/([\\"])/g,'\\\"')
+			  */
+			thelist +=  '{' +
+						'"ARID" : "' + ARID.value + '",' +
+						'"RecID" : "' + RecID.value  + '",' +
+						'"Type" : "' + Type.value + '",' +
+						'"DocDate" : "' + DocDate.value + '",' +
+						'"Applied" : ' + currencyToNumber(Applied.value) + ',' +
+						'"Discount" : ' + currencyToNumber(Discount.value) + ',' +
+						'"TaxAdj" : ' + currencyToNumber(TaxAdj.value) +
+						'}';
 
-			for(j=0; j < theTR.childNodes.length; j++){
-
-				tempObj = theTR.childNodes[j];
-
-				if(tempObj.childNodes){
-
-					for(k=0; k < tempObj.childNodes.length; k++){
-
-						if(tempObj.childNodes[k].tagName)
-							if (tempObj.childNodes[k].tagName == "INPUT")
-								thelist += tempObj.childNodes[k].value + "::";
-
-					}//end for
-
-				}//end if
-
-			}//end for
-
-			thelist = thelist.substr(0, thelist.length-2);
-			thelist += ";;";
+			if(i < (receiptTRs.length - 1))
+				thelist += ",";
 
 		}//end for
 
-		if(thelist.length > 1)
-			thelist = thelist.substr(0, thelist.length-2);
+		thelist += "]";
+console.log(thelist);
+		//appliedFields = getElementsByClassName("appliedFields");
+		//var j,k, tempObj;
+		//for(var i=0; i<appliedFields.length; i++){
+		//
+		//	var theID = appliedFields[i].id.substr(0,2);
+		//
+		//	var theTR = getObjectFromID(theID);
+		//
+		//	for(j=0; j < theTR.childNodes.length; j++){
+		//
+		//		tempObj = theTR.childNodes[j];
+		//
+		//		if(tempObj.childNodes){
+		//
+		//			for(k=0; k < tempObj.childNodes.length; k++){
+		//
+		//				if(tempObj.childNodes[k].tagName)
+		//					if (tempObj.childNodes[k].tagName == "INPUT")
+		//						thelist += tempObj.childNodes[k].value + "::";
+		//
+		//			}//end for
+		//
+		//		}//end if
+		//
+		//	}//end for
+		//
+		//	thelist = thelist.substr(0, thelist.length-2);
+		//	thelist += ";;";
+		//
+		//}//end for
+		//
+		//if(thelist.length > 1)
+		//	thelist = thelist.substr(0, thelist.length-2);
 
 		var itemslist = getObjectFromID("itemslist");
-		itemslist.value = thelist
+		itemslist.value = thelist;
+
 	}, // end method
 
 
@@ -370,6 +414,7 @@ aritems = {
 		var tempTD, tempINPUT, tempBUTTON;
 		var theTR = document.createElement("tr");
 		theTR.id = "i" + nextID;
+		theTR.className = "receiptTR";
 
 		tempTD = document.createElement("td");
 

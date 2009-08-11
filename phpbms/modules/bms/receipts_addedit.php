@@ -50,8 +50,8 @@
 	$therecord = $thetable->processAddEditPage();
 
 	if($therecord["id"]){
-		$items = new receiptitems($db);
-		$itemsresult = $items->get($therecord["uuid"]);
+		if($thetable->receiptitems === NULL)
+			$thetable->receiptitems = new receiptitems($db);
 	}//end if
 
 	$pageTitle = "Receipt";
@@ -260,7 +260,7 @@
 			<tbody id="itemsTbody">
 				<?php
 					if($therecord["id"]){
-						$items->show($itemsresult, $therecord["posted"], $therecord["uuid"]);
+						$thetable->receiptitems->show($therecord["itemslist"], $therecord["posted"], $therecord["uuid"]);
 					}//end if
 				?>
 			</tbody>

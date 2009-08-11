@@ -1101,7 +1101,6 @@ lineitems = {
 
 		var itemslist = getObjectFromID("thelineitems");
 		itemslist.value = thelist;
-		console.log(thelist);
 
 	}//end function
 

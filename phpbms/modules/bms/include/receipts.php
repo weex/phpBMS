@@ -68,16 +68,24 @@ if(class_exists("phpbmsTable")){
 					`aritems`.`type`,
 					`aritems`.`itemdate`";
 
-				return $this->db->query($querystatement);
+				//return $this->db->query($querystatement);
+
+				$queryresult =  $this->db->query($querystatement);
+
+				$thereturn = array();
+				while($therecord = $this->db->fetchArray($queryresult))
+					$thereturn[] = $therecord;
+
+				return $thereturn;
 
 		}//end function
 
 
-		function show($queryresult, $receiptPosted, $receiptid){
+		function show($itemslist, $receiptPosted, $receiptid){
 
 			$count = 1;
 
-			while($therecord = $this->db->fetchArray($queryresult)){
+			foreach($itemslist as $therecord){
 
 				$recID = "i".$count;
 
@@ -106,10 +114,10 @@ if(class_exists("phpbmsTable")){
 
 				?>
 
-				<tr id="<?php echo $recID?>">
+				<tr id="<?php echo $recID?>" class="receiptTR">
 					<td>
 						<input type="hidden" id="<?php echo $recID?>ARID" value="<?php echo $therecord["aritemid"]?>" />
-						<input type="hidden" id="<?php echo $recID?>RecD" value="<?php echo $therecord["relatedid"]?>" />
+						<input type="hidden" id="<?php echo $recID?>RecID" value="<?php echo $therecord["relatedid"]?>" />
 						<input id="<?php echo $recID?>DocRef" class="invisibleTextField" readonly="readonly" value="<?php echo $therecord["invoiceid"]?>" size="4"/>
 					</td>
 					<td><input id="<?php echo $recID?>Type" class="invisibleTextField" readonly="readonly" value="<?php echo $therecord["type"]?>" size="12" /></td>
@@ -129,8 +137,7 @@ if(class_exists("phpbmsTable")){
 				<?php
 
 				$count++;
-			}//endwhile
-
+			}//end foreach
 
 		}//end method
 
@@ -145,55 +152,47 @@ if(class_exists("phpbmsTable")){
 			$deletestatement = "DELETE FROM aritems WHERE relatedid = '".mysql_real_escape_string($receiptid)."' AND `type` = 'deposit'";
 			$this->db->query($deletestatement);
 
-			$itemsArray = explode(";;", $itemlist);
+			foreach($itemlist as $itemRecord){
 
-			foreach($itemsArray as $item){
+				//if no ar uuid, or the deposit is from this record, we need to create the ar item
+				if(!$itemRecord["ARID"] || ($itemRecord["RecID"] == $receiptid && $itemRecord["Type"] == "deposit") ){
 
-				$itemRecord = explode("::", $item);
-
-				if(count($itemRecord) > 1){
-
-					//if no ar uuid, or the deposit is from this record, we need to create the ar item
-					if(!$itemRecord[0] || ($itemRecord[1] == $receiptid && $itemRecord[4] == "deposit") ){
-
-						$arrecord = array();
-						$arrecord["type"] = "credit";
-						$arrecord["status"] = "open";
-						$arrecord["posted"] = 0;
-						$arrecord["amount"] = -1 * currencyToNumber($itemRecord[9]);
-						$arrecord["itemdate"] = $itemRecord[4];
-						$arrecord["clientid"] = $clientid;
-						$arrecord["relatedid"] = $receiptid;
+					$arrecord = array();
+					$arrecord["type"] = "credit";
+					$arrecord["status"] = "open";
+					$arrecord["posted"] = 0;
+					$arrecord["amount"] = -1 * currencyToNumber($itemRecord["Applied"]);
+					$arrecord["itemdate"] = $itemRecord["DocDate"];
+					$arrecord["clientid"] = $clientid;
+					$arrecord["relatedid"] = $receiptid;
 
 
 
-						if(!isset($aritems))
-							$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
+					if(!isset($aritems))
+						$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
 
-						if(!isset($arrecord["uuid"]))
-							$arrecord["uuid"] = uuid($aritems->prefix.":");
+					if(!isset($arrecord["uuid"]))
+						$arrecord["uuid"] = uuid($aritems->prefix.":");
 
-						$aritems->insertRecord($arrecord, $userid);
+					$aritems->insertRecord($arrecord, $userid);
 
-						$itemRecord[0] = $arrecord["uuid"];
+					$itemRecord["ARID"] = $arrecord["uuid"];
 
-					}//end if
+				}//end if
 
-					$insertstatement ="
-					INSERT INTO
-						receiptitems
-						(aritemid, receiptid, applied, discount, taxadjustment)
-					VALUES (
-						'".mysql_real_escape_string($itemRecord[0])."',
-						'".mysql_real_escape_string($receiptid)."',
-						".currencyToNumber($itemRecord[9]).",
-						".currencyToNumber($itemRecord[10]).",
-						".currencyToNumber($itemRecord[11])."
-					)";
+				$insertstatement ="
+				INSERT INTO
+					receiptitems
+					(aritemid, receiptid, applied, discount, taxadjustment)
+				VALUES (
+					'".mysql_real_escape_string($itemRecord["ARID"])."',
+					'".mysql_real_escape_string($receiptid)."',
+					".currencyToNumber($itemRecord["Applied"]).",
+					".currencyToNumber($itemRecord["Discount"]).",
+					".currencyToNumber($itemRecord["TaxAdj"])."
+				)";
 
-					$this->db->query($insertstatement);
-
-				}//endif
+				$this->db->query($insertstatement);
 
 			}//endforeach
 
@@ -208,6 +207,7 @@ if(class_exists("phpbmsTable")){
 
 		var $_availableClientUUIDs = NULL;
 		var $_availablePaymentMethodUUIDs = NULL;
+		var $receiptitems = NULL;
 
 		function receipts($db, $tabldefid, $backurl = NULL){
 
@@ -287,6 +287,8 @@ if(class_exists("phpbmsTable")){
 			$therecord["status"] = "open";
 			$therecord["receiptdate"] = dateToString(mktime(),"SQL");
 
+			$therecord["itemslist"] = array();
+
 			return $therecord;
 		}
 
@@ -344,6 +346,15 @@ if(class_exists("phpbmsTable")){
 					$therecord["accountnumber"] = str_repeat("*",strlen($therecord["accountnumber"] -4 )).substr($therecord["accountnumber"], -4);
 
 			}//end if
+
+			/**
+			  *  Now, need to get receiptitems.
+			  */
+
+			if($this->receiptitems === NULL)
+				$this->receiptitems = new receiptitems($this->db);
+
+			$therecord["itemslist"] = $this->receiptitems->get($therecord["uuid"]);
 
 			return $therecord;
 
@@ -428,6 +439,13 @@ if(class_exists("phpbmsTable")){
 			if($variables["routingnumber_old"] == $variables["routingnumber"])
 				unset($variables["routingnumber"]);
 
+			if($variables["itemschanged"]){
+
+				$variables["itemslist"] = stripslashes($variables["itemslist"]);
+				$variables["itemslist"] = json_decode($variables["itemslist"], true);
+
+			}//end if
+
 			return $variables;
 		}
 
@@ -480,9 +498,10 @@ if(class_exists("phpbmsTable")){
 
 				if($variables["itemschanged"]==1){
 
-					$items = new receiptitems($this->db);
+					if($this->receiptitems === NULL)
+						$this->receiptitems = new receiptitems($this->db);
 
-					$items->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $modifiedby);
+					$this->receiptitems->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $modifiedby);
 
 				}//end if
 
@@ -540,9 +559,10 @@ if(class_exists("phpbmsTable")){
 
 			if($variables["itemschanged"]==1){
 
-				$items = new receiptitems($this->db);
+				if($this->receiptitems === NULL)
+					$this->receiptitems = new receiptitems($this->db);
 
-				$items->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $createdby);
+				$this->receiptitems->set($variables["itemslist"], $variables["uuid"], $variables["clientid"], $createdby);
 
 			}//end if
 

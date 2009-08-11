@@ -629,6 +629,8 @@ if(class_exists("phpbmsTable")){
 			$therecord["hascredit"]=0;
 			$therecord["creditlimit"]=0;
 			$therecord["creditleft"]=0;
+
+			$therecord["lineitems"] = array();
 			return $therecord;
 		}
 
@@ -1160,7 +1162,8 @@ if(class_exists("phpbmsTable")){
 					$this->lineitems = new lineitems($this->db, $newid);
 				else
 					$this->lineitems->invoiceid = $newid;
-				$lineitems->set($variables["thelineitems"], $createdby);
+
+				$this->lineitems->set($variables["thelineitems"], $createdby);
 
 			}//end if
 
@@ -1509,7 +1512,7 @@ if(class_exists("searchFunctions")){
 				$updateresult = $this->db->query($updatestatement);
 
 				//delete conlflicting history
-				$querystatement="DELETE FROM invoicestatushistory WHERE invoiceid='".$therecord["uuid"]."' AND invoicestatusid='".$statusid."'";
+				$querystatement = "DELETE FROM invoicestatushistory WHERE invoiceid='".$therecord["uuid"]."' AND invoicestatusid='".$statusid."'";
 				$deleteresult = $this->db->query($querystatement);
 
 				//insert new history
@@ -1598,7 +1601,7 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_aspaid($useUuids = false){
+		function mark_aspaid($useUuid = false){
 
 			if(!$useUuid)
 				$whereclause = $this->buildWhereClause();
@@ -1647,7 +1650,7 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function mark_asinvoice($useUuids = false){
+		function mark_asinvoice($useUuid = false){
 
 			if(!$useUuid)
 				$whereclause = $this->buildWhereClause();
@@ -1668,9 +1671,9 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function delete_record($useUUID = false){
+		function delete_record($useUuid = false){
 
-			if(!$useUUID)
+			if(!$useUuid)
 				$whereclause=$this->buildWhereClause();
 			else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
@@ -1711,12 +1714,12 @@ if(class_exists("searchFunctions")){
 		  *  function create_credit_memo
 		  *
 		  *
-		  *  @param bool $useUUID Whether the ids in $this->idsArray are
+		  *  @param bool $useUuid Whether the ids in $this->idsArray are
 		  *  uuids or ids.
 		  */
-		function create_credit_memo($useUUID = false){
+		function create_credit_memo($useUuid = false){
 
-			if(!$useUUID)
+			if(!$useUuid)
 				$whereclause = $this->buildWhereClause();
 			else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
@@ -1748,7 +1751,7 @@ if(class_exists("searchFunctions")){
 			if(count($this->idsArray))
 				foreach($this->idsArray as $id){
 
-					$invoiceRecord = $invoices->getRecord($id, $useUUID);
+					$invoiceRecord = $invoices->getRecord($id, $useUuid);
 
 					if($invoiceRecord["type"] == "Invoice" && !$invoiceRecord["iscreditmemo"]){
 
