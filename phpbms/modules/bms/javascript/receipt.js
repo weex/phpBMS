@@ -140,16 +140,7 @@ aritems = {
 	LoadOpenListners: Array(),
 
 	prepareForPost: function(){
-/**
-  *  List of fields I need:
-  *  ARID
-  *  RecID
-  *  Type
-  *  DocDate
-  *  Applied
-  *  Discount
-  *  TaxAdj
-  */
+
 		var thelist = "[";
 
 		var receiptTRs = getElementsByClassName("receiptTR");
@@ -185,40 +176,6 @@ aritems = {
 		}//end for
 
 		thelist += "]";
-console.log(thelist);
-		//appliedFields = getElementsByClassName("appliedFields");
-		//var j,k, tempObj;
-		//for(var i=0; i<appliedFields.length; i++){
-		//
-		//	var theID = appliedFields[i].id.substr(0,2);
-		//
-		//	var theTR = getObjectFromID(theID);
-		//
-		//	for(j=0; j < theTR.childNodes.length; j++){
-		//
-		//		tempObj = theTR.childNodes[j];
-		//
-		//		if(tempObj.childNodes){
-		//
-		//			for(k=0; k < tempObj.childNodes.length; k++){
-		//
-		//				if(tempObj.childNodes[k].tagName)
-		//					if (tempObj.childNodes[k].tagName == "INPUT")
-		//						thelist += tempObj.childNodes[k].value + "::";
-		//
-		//			}//end for
-		//
-		//		}//end if
-		//
-		//	}//end for
-		//
-		//	thelist = thelist.substr(0, thelist.length-2);
-		//	thelist += ";;";
-		//
-		//}//end for
-		//
-		//if(thelist.length > 1)
-		//	thelist = thelist.substr(0, thelist.length-2);
 
 		var itemslist = getObjectFromID("itemslist");
 		itemslist.value = thelist;
