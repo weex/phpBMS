@@ -50,6 +50,20 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         var $payemnts;
 
         /**
+          *  $dateFormat
+          *
+          *  @var The format of dates being passed to the insert/updates
+          */
+        var $dateFormat = "";
+
+        /**
+          *  $timeFormat
+          *
+          *  @var The format of times being passed to the insert/updates
+          */
+        var $timeFormat = "";
+
+        /**
           *  $encryptedFields
           *
           *  @var array A list of field names that are encrypted.  This affects
@@ -83,6 +97,12 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 $this->backurl = APP_PATH."search.php?id=".urlencode($this->uuid);
             else
                 $this->backurl = $backurl;
+
+            if(defined("DATE_FORMAT"))
+                $this->dateFormat = DATE_FORMAT;
+
+            if(defined("TIME_FORMAT"))
+                $this->timeFormat = TIME_FORMAT;
 
         }//end function init
 
@@ -223,7 +243,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         else
                             $value = "'".dateToString(mktime(),"SQL")."'";
                     } else
-                        $value = "'".sqlDateFromString($value)."'";
+                        $value = "'".sqlDateFromString($value, $this->dateFormat)."'";
                     break;
 
                 case "time":
@@ -235,7 +255,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                             $value = "'".timeToString(mktime(),"SQL")."'";
 
                     } else
-                        $value = "'".sqlTimeFromString($value)."'";
+                        $value = "'".sqlTimeFromString($value, $this->timeFormat)."'";
                     break;
 
                 case "year":
@@ -265,21 +285,21 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         // are looking at a "date time"
                         if(count($datetimearray) > 1){
 
-                            $date = sqlDateFromString($datetimearray[0]);
+                            $date = sqlDateFromString($datetimearray[0], $this->dateFormat);
 
                             //times can have spaces... so we need
                             //to resemble in some cases.
                             if(count($datetimearray) > 2)
                                 $datetimearray[1] = $datetimearray[1]." ".$datetimearray[2];
 
-                            $time = sqlTimeFromString($datetimearray[1]);
+                            $time = sqlTimeFromString($datetimearray[1], $this->timeFormat);
 
                         }//endif
 
                         //If we don't have a date, perhaps only a date was passed
                         if(!$date){
 
-                            $date = sqlDateFromString($value);
+                            $date = sqlDateFromString($value, $this->dateFormat);
 
                             //still no date?, then assume only a time was passed,
                             // so we need to set the time to the deafult
@@ -292,7 +312,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         //if we don't have a time, let's try the getting the
                         //time from the full value.
                         if(!$time)
-                            $time = sqlTimeFromString($value);
+                            $time = sqlTimeFromString($value, $this->timeFormat);
 
                         $value = "'".trim($date." ".$time)."'";
 

@@ -147,6 +147,64 @@ class api{
 
 
     /**
+     * function isValidDateFormat
+     *
+     * @param $format Format to be checked.
+     *
+     * @return bool True if it is valid, false if not.
+     */
+
+    function isValidDateFormat($format) {
+
+        switch($format){
+
+            case "SQL":
+            case "English, US":
+            case "English, UK":
+            case "Dutch, NL":
+                $valid = true;
+            break;
+
+            default:
+                $valid = false;
+            break;
+
+        }//end switch
+
+        return $valid;
+
+    }//end function isValidTimeFormat
+
+
+    /**
+     * function isValidTimeFormat
+     *
+     * @param $format Format to be checked.
+     *
+     * @return bool True if it is valid, false if not.
+     */
+
+    function isValidTimeFormat($format) {
+
+        switch($format){
+
+            case "24 Hour":
+            case "12 Hour":
+                $valid = true;
+            break;
+
+            default:
+                $valid = false;
+            break;
+
+        }//end switch
+
+        return $valid;
+
+    }//end function isValidTimeFormat
+
+
+    /**
     * function process
     * Process request array posted to api
     *
@@ -182,6 +240,30 @@ class api{
             $useUuid = true;
             if(isset($request["options"]["useUuid"]))
                 $useUuid = (bool)$request["options"]["useUuid"];
+
+            /**
+              *   date format options
+              */
+
+            $dateFormat = "SQL";
+            if(defined("DATE_FORMAT"))
+                $dateFormat = DATE_FORMAT;
+
+            if(isset($request["options"]["dateFormat"]))
+                if($this->isValidDateFormat($request["options"]["dateFormat"]))
+                    $dateFormat = $request["options"]["dateFormat"];
+
+            /**
+              *  Time format options
+              */
+
+            $timeFormat = "24 Hour";
+            if(defined("TIME_FORMAT"))
+                $timeFormat = TIME_FORMAT;
+
+            if(isset($request["options"]["dateFormat"]))
+                if($this->isValidTimeFormat($request["options"]["dateFormat"]))
+                    $timeFormat = $request["options"]["timeFormat"];
 
             if((int) $request["tabledefid"] !== $tabledefid){
 
@@ -264,6 +346,8 @@ class api{
                 if(class_exists($className)) {
 
                     $processor = new $className($this->db);
+                    $processor->dateFormat =  $dateFormat;
+                    $processor->timeFormat =  $timeFormat;
 
                     if(!method_exists($processor, $request["command"])) {
 
@@ -286,10 +370,15 @@ class api{
                 include_once("include/tables.php");
                 @ include_once("modules/".$modulename."/include/".$maintable.".php");
 
-                if(class_exists($maintable))
+                if(class_exists($maintable)){
                     $processor = new $maintable($this->db, $tabledefid);
-                else
+                    $processor->dateFormat =  $dateFormat;
+                    $processor->timeFormat =  $timeFormat;
+                }else{
                     $processor = new phpbmsTable($this->db, $tabledefid);
+                    $processor->dateFormat =  $dateFormat;
+                    $processor->timeFormat =  $timeFormat;
+                }
 
                 if(method_exists($processor, $request["command"])){
 
@@ -340,13 +429,21 @@ class api{
 
                             @ include_once("modules/".$modulename."/include/".$maintable.".php");
 
-                            if(class_exists($maintable))
+                            if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                            else
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }//end if
 
-                        } else
+                        } else{
                             $processor = new phpbmsTable($this->db, $tabledefid);
+                            $processor->dateFormat =  $dateFormat;
+                            $processor->timeFormat =  $timeFormat;
+                        }//end if
 
                         $errorArray = $processor->verifyVariables((array) $request["data"]);
 
@@ -396,13 +493,21 @@ class api{
 
                             @ include_once("modules/".$modulename."/include/".$maintable.".php");
 
-                            if(class_exists($maintable))
+                            if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                            else
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }//end if
 
-                        } else
+                        } else {
                             $processor = new phpbmsTable($this->db, $tabledefid);
+                            $processor->dateFormat =  $dateFormat;
+                            $processor->timeFormat =  $timeFormat;
+                        }//end if
 
                         $errorArray = $processor->verifyVariables($request["data"]);
 
@@ -436,13 +541,21 @@ class api{
 
                             @ include_once("modules/".$modulename."/include/".$maintable.".php");
 
-                            if(class_exists($maintable))
+                            if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                            else
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
+                                $processor->dateFormat =  $dateFormat;
+                                $processor->timeFormat =  $timeFormat;
+                            }//end if
 
-                        } else
+                        } else {
                             $processor = new phpbmsTable($this->db, $tabledefid);
+                            $processor->dateFormat =  $dateFormat;
+                            $processor->timeFormat =  $timeFormat;
+                        }//end if
 
                         if(!$useUuid){
                             $therecord = $processor->getRecord((int) $request["data"]["id"], $useUuid);
@@ -612,6 +725,8 @@ class api{
                                 else{
 
                                     $processor = new $className($this->db, $tabledefid, $request["data"]);
+                                    $processor->dateFormat =  $dateFormat;
+                                    $processor->timeFormat =  $timeFormat;
 
                                     $methodName = $request["command"];
 
