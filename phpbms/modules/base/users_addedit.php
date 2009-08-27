@@ -58,7 +58,11 @@
 		$theform = new phpbmsForm();
 		$theform->onsubmit="return submitForm(this);";
 
-		$theinput = new inputCheckbox("admin",$therecord["admin"],"administrator");
+		$disabled = false;
+        if($therecord["portalaccess"])
+            $disabled = true;
+
+        $theinput = new inputCheckbox("adminBox",$therecord["admin"],"administrator", $disabled);
 		$theform->addField($theinput);
 
 		$theinput = new inputCheckbox("revoked",$therecord["revoked"],"access revoked");
@@ -107,7 +111,10 @@
 	<fieldset id="fsAttributes">
 		<legend>attributes</legend>
 
-		<p><?php $theform->showField("admin");?></p>
+		<p>
+            <input type="hidden" id="admin" name="admin" value="<?php echo $therecord["admin"]?>" />
+            <?php $theform->showField("adminBox");?>
+        </p>
 
 		<p><?php $theform->showField("revoked");?></p>
 

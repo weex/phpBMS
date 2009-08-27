@@ -155,6 +155,7 @@ class updateAjax extends installUpdateBase{
                                         $this->v098UpdateUUIDS("smartsearches", "smrt:");
 
                                         $this->v098UpdateNotesUUID();
+										$this->v098UpdateApiUsers();
 
 					//Updating Module Table
 					$thereturn = $this->updateModuleVersion("base", $version);
@@ -408,6 +409,28 @@ class updateAjax extends installUpdateBase{
 					`value` = '".mysql_real_escape_string(uuid("sys:"))."'
 				WHERE
 					`name` = 'application_uuid'
+			";
+
+			$this->query($updatestatement);
+
+		}//end method
+
+
+		/**
+		  *  function v098UpdateApiUsers
+		  *
+		  *  Gives admin access to all users with portal access.
+		  */
+
+		function v098UpdateApiUsers(){
+
+			$updatestatement = "
+				UPDATE
+					`users`
+				SET
+					`admin` = '1'
+				WHERE
+					`portalaccess` != '0'
 			";
 
 			$this->query($updatestatement);

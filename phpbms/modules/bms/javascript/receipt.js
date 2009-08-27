@@ -161,13 +161,13 @@ aritems = {
 			  *  memo.value.replace(/([\\"])/g,'\\\"')
 			  */
 			thelist +=  '{' +
-						'"ARID" : "' + ARID.value + '",' +
-						'"RecID" : "' + RecID.value  + '",' +
-						'"Type" : "' + Type.value + '",' +
-						'"DocDate" : "' + DocDate.value + '",' +
-						'"Applied" : ' + currencyToNumber(Applied.value) + ',' +
-						'"Discount" : ' + currencyToNumber(Discount.value) + ',' +
-						'"TaxAdj" : ' + currencyToNumber(TaxAdj.value) +
+						'"aritemid" : "' + ARID.value + '",' +
+						'"relatedid" : "' + RecID.value  + '",' +
+						'"type" : "' + Type.value + '",' +
+						'"itemdate" : "' + DocDate.value + '",' +
+						'"applied" : ' + currencyToNumber(Applied.value) + ',' +
+						'"discount" : ' + currencyToNumber(Discount.value) + ',' +
+						'"taxadjustment" : ' + currencyToNumber(TaxAdj.value) +
 						'}';
 
 			if(i < (receiptTRs.length - 1))

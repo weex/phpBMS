@@ -101,6 +101,8 @@ class api{
      * generic XML, or some other format may be added
      *
      * @param string $data Information to be decoded
+     *
+     * @return array
      */
     function decode($data){
 
@@ -110,7 +112,7 @@ class api{
         switch($this->format){
 
             case "json":
-                $data = json_decode($data);
+                $data = json_decode($data, true);
                 break;
 
         }//endswitch
@@ -166,24 +168,24 @@ class api{
           */
         $useUuid = true;
 
-        if(!is_array($this->data) && !is_object($this->data))
-            $this->sendError("Passed data malformed.  Was expecting an array or object", $this->data, true);
+        if(!is_array($this->data))
+            $this->sendError("Passed data malformed.  Was expecting an array.", $this->data, true);
 
         foreach($this->data as $request){
 
-            if(!is_object($request))
+            if(!is_array($request))
                 $this->sendError("Malformed request number ".$i, $request);
 
-            if(!isset($request->tabledefid) || !isset($request->command) || !isset($request->data))
+            if(!isset($request["tabledefid"]) || !isset($request["command"]) || !isset($request["data"]))
                 $this->sendError("Malformed request number ".$i, $request);
 
             $useUuid = true;
-            if(isset($request->options->useUuid))
-                $useUuid = (bool)$request->options->useUuid;
+            if(isset($request["options"]["useUuid"]))
+                $useUuid = (bool)$request["options"]["useUuid"];
 
-            if((int) $request->tabledefid !== $tabledefid){
+            if((int) $request["tabledefid"] !== $tabledefid){
 
-                $tabledefid = mysql_real_escape_string($request->tabledefid);
+                $tabledefid = mysql_real_escape_string($request["tabledefid"]);
 
                 //First let's get the table information from the tabledef
                 $querystatement = "
@@ -202,7 +204,7 @@ class api{
 
                 if($this->db->numRows($queryresult) == 0){
 
-                    if (!(in_array($request->command, array("procedure", "getsetting")))){
+                    if (!(in_array($request["command"], array("procedure", "getsetting")))){
 
                         $this->sendError("Invalid tabledefid (".$tabledefid.") from request number ".$i);
                         continue;
@@ -263,11 +265,11 @@ class api{
 
                     $processor = new $className($this->db);
 
-                    if(!method_exists($processor, $request->command)) {
+                    if(!method_exists($processor, $request["command"])) {
 
-                        $methodName = $request->command;
+                        $methodName = $request["command"];
 
-                        $this->response[] = $processor->$methodName($request->data);
+                        $this->response[] = $processor->$methodName($request["data"]);
 
                     }//endif
 
@@ -279,7 +281,7 @@ class api{
             /* If the command starts with api_, and there is a request overload, let's assume they
                are trying to call a homeade function in the ovveriden phpBMS table that they created.
             */
-            if(!$methodName && substr($request->command, 0, 4) == "api_" && $hasTableClassOveride){
+            if(!$methodName && substr($request["command"], 0, 4) == "api_" && $hasTableClassOveride){
 
                 include_once("include/tables.php");
                 @ include_once("modules/".$modulename."/include/".$maintable.".php");
@@ -289,11 +291,11 @@ class api{
                 else
                     $processor = new phpbmsTable($this->db, $tabledefid);
 
-                if(method_exists($processor, $request->command)){
+                if(method_exists($processor, $request["command"])){
 
-                    $methodName = $request->command;
+                    $methodName = $request["command"];
 
-                    $this->response[] = $processor->$methodName($request->data);
+                    $this->response[] = $processor->$methodName($request["data"]);
 
                 }//endif
 
@@ -328,7 +330,7 @@ class api{
                     the request data passed should contain an array of ids
                 */
 
-                switch($request->command){
+                switch($request["command"]){
 
                     case "insert":
                         //======================================================
@@ -346,22 +348,22 @@ class api{
                         } else
                             $processor = new phpbmsTable($this->db, $tabledefid);
 
-                        $errorArray = $processor->verifyVariables((array) $request->data);
+                        $errorArray = $processor->verifyVariables((array) $request["data"]);
 
                         if(count($errorArray))
                             $this->sendError("Insert failed from request number ".$i, $errorArray);
                         else {
 
                             $overrideID = false;
-                            if(is_object($request->data))
-                                if(isset($request->data->id))
-                                    if(((int)$request->data->id) !== 0)
+                            if(is_array($request["data"]))
+                                if(isset($request["data"]["id"]))
+                                    if(((int)$request["data"]["id"]) !== 0)
                                         $overrideID = true;
 
                             $createUuid = true;
-                            if(is_object($request->data))
-                                if(isset($request->data->uuid))
-                                    if((string)$request->data->uuid !== ""){
+                            if(is_array($request["data"]))
+                                if(isset($request["data"]["uuid"]))
+                                    if((string)$request["data"]["uuid"] !== ""){
                                         $overrideID = true;
                                         $createUuid = false;
                                     }
@@ -369,13 +371,13 @@ class api{
                             if(!isset($processor->fields["uuid"]))
                                 $createUuid = false;
 
-                            $newid = $processor->insertRecord((array) $request->data, null, $overrideID, true, $createUuid);
+                            $newid = $processor->insertRecord($request["data"], null, $overrideID, true, $createUuid);
 
                             if($newid){
                                 if($createUuid){
                                     $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid["uuid"]);
-                                }elseif(isset($this->fields["uuid"])){
-                                    $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $request->data["uuid"]);
+                                }elseif(isset($processor->fields["uuid"])){
+                                    $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $request["data"]["uuid"]);
                                 }else{
                                     $this->_addToResponse("added", "record added to tabledef ".$tabledefid, $newid);
                                 }//end if
@@ -402,13 +404,13 @@ class api{
                         } else
                             $processor = new phpbmsTable($this->db, $tabledefid);
 
-                        $errorArray = $processor->verifyVariables((array) $request->data);
+                        $errorArray = $processor->verifyVariables($request["data"]);
 
                         if($useUuid){
-                            if(!isset($request->data->uuid))
+                            if(!isset($request["data"]["uuid"]))
                                 $errorArray[] = "The `uuid` field must be set.";
                         }else{
-                            if(!isset($request->data->id))
+                            if(!isset($request["data"]["id"]))
                                 $errorArray[] = "The `id` field must be set.";
                         }//end if
 
@@ -417,7 +419,7 @@ class api{
                             $this->sendError("Update failed from request number ".$i, $errorArray);
                         else {
 
-                            $processor->updateRecord((array) $request->data, NULL, (bool)$useUuid);
+                            $processor->updateRecord($request["data"], NULL, (bool)$useUuid);
 
                             $this->_addToResponse("updated", "record updated in tabledef ".$tabledefid);
 
@@ -443,13 +445,13 @@ class api{
                             $processor = new phpbmsTable($this->db, $tabledefid);
 
                         if(!$useUuid){
-                            $therecord = $processor->getRecord((int) $request->data, $useUuid);
+                            $therecord = $processor->getRecord((int) $request["data"]["id"], $useUuid);
                             $thereturn = $therecord["id"];
-                            $thevalue = (int)$request->data->id;
+                            $thevalue = (int)$request["data"]["id"];
                         }else{
-                            $therecord = $processor->getRecord(mysql_real_escape_string($request->data), $useUuid);
+                            $therecord = $processor->getRecord(mysql_real_escape_string($request["data"]["uuid"]), $useUuid);
                             $thereturn = $therecord["uuid"];
-                            $thevalue = $request->data->uuid;
+                            $thevalue = $request["data"]["uuid"];
                         }
 
 
@@ -463,23 +465,23 @@ class api{
                     case "delete":
                     case $deletebutton:
                         //======================================================
-                        if(!is_array($request->data))
-                                $this->sendError("Passed data is not array in request number ".$i, $request->data);
+                        if(!is_array($request["data"]))
+                                $this->sendError("Passed data is not array in request number ".$i, $request["data"]);
                         else {
 
                             include_once("include/search_class.php");
 
                            //if($useUuid){
-                           //     if(!isset($request->data->uuid))
-                           //         $this->sendError("The `uuid` field must be set in request number ".$i, $request->data, true);
+                           //     if(!isset($request["data"]->uuid))
+                           //         $this->sendError("The `uuid` field must be set in request number ".$i, $request["data"], true);
                            //     else
-                           //         $id = $request->data->uuid;
+                           //         $id = $request["data"]->uuid;
                            //
                            // }else{
-                           //     if(!isset($request->data->id))
-                           //         $this->sendError("The `id` field must be set in request number ".$i, $request->data, true);
+                           //     if(!isset($request["data"]->id))
+                           //         $this->sendError("The `id` field must be set in request number ".$i, $request["data"], true);
                            //     else
-                           //         $id = $request->data->uuid;
+                           //         $id = $request["data"]->uuid;
                            // }//end if
 
                             if($hasTableClassOveride){
@@ -489,17 +491,17 @@ class api{
                                 $className = $maintable."SearchFunctions";
 
                                 if(class_exists($className))
-                                    $processor = new $className($this->db, $tabledefid, $request->data);
+                                    $processor = new $className($this->db, $tabledefid, $request["data"]);
                                 else
-                                    $processor = new searchFunctions($this->db, $tabledefid, $request->data);
+                                    $processor = new searchFunctions($this->db, $tabledefid, $request["data"]);
 
                             } else
-                                $processor = new searchFunctions($this->db, $tabledefid, $request->data);
+                                $processor = new searchFunctions($this->db, $tabledefid, $request["data"]);
 
 
                             $result = $processor->delete_record($useUuid);
 
-                            $this->_addToResponse($request->command, $result);
+                            $this->_addToResponse($request["command"], $result);
 
                         }//endif
 
@@ -507,36 +509,36 @@ class api{
 
                     case "procedure":
                         //======================================================
-                        if(!is_object($request->data))
-                            $this->sendError("Wrong passed procedure format, expected object in request number ".$i, $request->data);
+                        if(!is_array($request["data"]))
+                            $this->sendError("Wrong passed procedure format, expected object in request number ".$i, $request["data"]);
                         else{
 
-                            if(!isset($request->data->name))
-                                $this->sendError("Wrong passed procedure format, name missing in request number ".$i, $request->data);
+                            if(!isset($request["data"]["name"]))
+                                $this->sendError("Wrong passed procedure format, name missing in request number ".$i, $request["data"]);
                             else {
 
                                 //check to see if stored procedure exists
                                 $querystatement = "
-                                    SHOW PROCEDURE STATUS LIKE '".mysql_real_escape_string($request->data->name)."'
+                                    SHOW PROCEDURE STATUS LIKE '".mysql_real_escape_string($request["data"]["name"])."'
                                 ";
 
                                 $queryresult = $this->db->query($querystatement);
 
                                 if($this->db->numRows($queryresult) === 0)
-                                    $this->sendError("Procedure '".$request->data->name."' does not exist in request number ".$i, $request->data);
+                                    $this->sendError("Procedure '".$request["data"]["name"]."' does not exist in request number ".$i, $request["data"]);
                                 else{
 
                                     $parameterList = "";
 
-                                    if(isset($request->data->parameters))
-                                        foreach($request->data->parameters as $parameter)
+                                    if(isset($request["data"]["parameters"]))
+                                        foreach($request["data"]["parameters"] as $parameter)
                                             $parameterList .= ", '".mysql_real_escape_string($parameter)."'";
 
                                     if($parameterList)
                                         $parameterList = substr(1, $parameterList);
 
                                     $procedurestatement = "
-                                        CALL ".$request->data->name."(".$parameterList.")";
+                                        CALL ".$request["data"]["name"]."(".$parameterList.")";
 
                                     $queryresult = $this->db->query($procedurestatement);
 
@@ -545,7 +547,7 @@ class api{
                                         $result[] = $therecord;
 
                                     $this->_addToResponse("result",
-                                                          "Procedure '".$request->data->name."' returned (".$this->db->numRows($queryresult).") in request number ".$i,
+                                                          "Procedure '".$request["data"]["name"]."' returned (".$this->db->numRows($queryresult).") in request number ".$i,
                                                           $result);
 
                                 }//endif
@@ -558,12 +560,12 @@ class api{
 
                     case "getsetting":
                         //======================================================
-                        if(!is_array($request->data))
-                            $this->sendError("Wrong passed data format, expected array in request number ".$i, $request->data);
+                        if(!is_array($request["data"]))
+                            $this->sendError("Wrong passed data format, expected array in request number ".$i, $request["data"]);
                         else{
 
                             $whereclause = "";
-                            foreach($request->data as $settingName)
+                            foreach($request["data"] as $settingName)
                                 $whereclause = "OR `name` = '".mysql_real_escape_string($settingName)."' ";
 
                             if($whereclause)
@@ -597,8 +599,8 @@ class api{
                         // a catch all for other requests.  This should correspond
                         // to an ovrriden search class function only. Calling
                         // some commands can cause response errors so be careful
-                        if(!is_array($request->data) && !$hasTableClassOveride)
-                                $this->sendError("Passaed data is not array or function (".$request->command.") does not exist in request number ".$i, $request->data);
+                        if(!is_array($request["data"]) && !$hasTableClassOveride)
+                                $this->sendError("Passaed data is not array or function (".$request["command"].") does not exist in request number ".$i, $request["data"]);
                         else {
 
                                 @ include_once("modules/".$modulename."/include/".$maintable.".php");
@@ -606,19 +608,19 @@ class api{
                                 $className = $maintable."SearchFunctions";
 
                                 if(!class_exists($className))
-                                    $this->sendError("Function (".$request->command.") does not exist in request number ".$i, $request->data);
+                                    $this->sendError("Function (".$request["command"].") does not exist in request number ".$i, $request["data"]);
                                 else{
 
-                                    $processor = new $className($this->db, $tabledefid, $request->data);
+                                    $processor = new $className($this->db, $tabledefid, $request["data"]);
 
-                                    $methodName = $request->command;
+                                    $methodName = $request["command"];
 
                                     if(!method_exists($processor, $methodName))
-                                        $this->sendError("Function (".$request->command.") does not exist in request number ".$i, $request->data);
+                                        $this->sendError("Function (".$request["command"].") does not exist in request number ".$i, $request["data"]);
                                     else {
 
                                         $result = $processor->$methodName();
-                                        $this->_addToResponse($request->command, $result);
+                                        $this->_addToResponse($request["command"], $result);
 
                                     }//endif method_exists
 
@@ -628,7 +630,7 @@ class api{
 
                         break;
 
-                }//endswitch $request->command
+                }//endswitch $request["command"]
 
             }//endif $modulename
 

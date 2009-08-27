@@ -701,7 +701,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
             }//end foreach
 
             //generate uuid
-            if($useUuid){
+            if($useUuid && isset($this->fields["uuid"])){
 
                 $fieldlist .= "`uuid`, ";
                 $variables["uuid"] = uuid($this->prefix.":");
@@ -718,7 +718,6 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                 $insertstatement = "INSERT";
 
             $insertstatement .= " INTO ".$this->maintable." (".$fieldlist.") VALUES (".$insertvalues.")";
-
 
             $insertresult = $this->db->query($insertstatement);
 

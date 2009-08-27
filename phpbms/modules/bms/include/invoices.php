@@ -84,37 +84,36 @@ if(class_exists("phpbmsTable")){
 		}//end method
 
 
-		function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid){
+		function updateStatus($invoiceid,$statusid,$statusdate,$assignedtoid, $replace = false){
 
-			$invoiceid = mysql_real_escape_string($invoiceid);
-
-			$querystatement = "
-				SELECT
-					`uuid`
-				FROM
-					`invoices`
-				WHERE
-					`id`='".(int)$invoiceid."'
-			";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$therecord = $this->db->fetchArray($queryresult);
-			$invoiceuuid = mysql_real_escape_string($therecord["uuid"]);
+			$invoiceuuid = getUuid($this->db, $this->uuid, (int) $invoiceid);
 
 			$statusid = mysql_real_escape_string($statusid);
 			$assignedtoid = mysql_real_escape_string($assignedtoid);
 
-			$querystatement = "
-				DELETE FROM
-					`invoicestatushistory`
-				WHERE
-					`invoiceid`='".$invoiceid."'
-					AND
-					`invoicestatusid`='".$statusid."'
-			";
+			if(!$replace){
 
-			$queryresult=$this->db->query($querystatement);
+				$querystatement = "
+					DELETE FROM
+						`invoicestatushistory`
+					WHERE
+						`invoiceid`='".$invoiceuuid."'
+						AND
+						`invoicestatusid`='".$statusid."'
+				";
+
+			}else{
+
+				$querystatement = "
+					DELETE FROM
+						`invoicestatushistory`
+					WHERE
+						`invoiceid` = '".$invoiceuuid."'
+				";
+
+			}//end if
+
+			$queryresult = $this->db->query($querystatement);
 
 			$querystatement = "
 				INSERT INTO
@@ -529,9 +528,9 @@ if(class_exists("phpbmsTable")){
 						`uuid`='".$uuid."'
 				";
 
-				$queryresult=$this->db->query($querystatement);
+				$queryresult = $this->db->query($querystatement);
 
-				$therecord=$this->db->fetchArray($queryresult);
+				$therecord = $this->db->fetchArray($queryresult);
 				if($therecord["type"]!="amount"){
 					$therecord["value"].="%";
 					$therecord["name"].=": ".$therecord["value"];
@@ -630,7 +629,9 @@ if(class_exists("phpbmsTable")){
 			$therecord["creditlimit"]=0;
 			$therecord["creditleft"]=0;
 
-			$therecord["lineitems"] = array();
+			$therecord["thelineitems"] = array();
+			$therecord["cmid"] = "";
+
 			return $therecord;
 		}
 
@@ -706,7 +707,8 @@ if(class_exists("phpbmsTable")){
 				SELECT
 					id AS clientrealid,
 					hascredit,
-					creditlimit
+					creditlimit,
+					`type` AS `clienttype`
 				FROM
 					clients
 				WHERE
@@ -721,7 +723,7 @@ if(class_exists("phpbmsTable")){
 			  */
 			if($this->lineitems === NULL)
 				$this->lineitems = new lineitems($this->db, $therecord["id"]);
-			$lineitems["lineitems"] = $this->lineitems->get();
+			$lineitems["thelineitems"] = $this->lineitems->get();
 
 			$therecord = array_merge($lineitems, $therecord);
 
@@ -746,10 +748,22 @@ if(class_exists("phpbmsTable")){
 				$therecord["creditleft"] = $therecord["creditlimit"] - $arrecord["amtopen"];
 
 			} else
-				$therecord["creditleft"] =0;
+				$therecord["creditleft"] = 0;
 
+			$therecord["cmid"] = "";
 			if($therecord["cmuuid"])
-				$therecord["cmuuid"] = getId($this->db, $this->uuid, $therecord["cmuuid"]);
+				$therecord["cmid"] = getId($this->db, $this->uuid, $therecord["cmuuid"]);
+
+			/**
+			  * processing variables
+			  * (used as guides for the api)
+			  */
+			$therecord["statuschanged"] = true;
+			$therecord["lineitemschanged"] = true;
+			$therecord["billingsaveoptions"] = NULL;
+			$therecord["shippingsaveoptions"] = NULL;
+			$therecord["oldType"] = $therecord["type"];
+
 
 			return $therecord;
 
@@ -996,8 +1010,9 @@ if(class_exists("phpbmsTable")){
 		function updateRecord($variables, $modifiedby = NULL, $useUuid = false){
 
 			//can't modify an invoice
-			if($variables["oldType"] == "Invoice")
-				return false;
+			if(isset($variables["oldType"]))
+				if($variables["oldType"] == "Invoice")
+					return false;
 
 			//can't modify payment information if you do not have sales rights
 			if(!hasRights("role:de7e6679-8bb2-29ee-4883-2fcd756fb120")){
@@ -1058,6 +1073,9 @@ if(class_exists("phpbmsTable")){
 
 			if(parent::updateRecord($variables, $modifiedby, $useUuid)){
 
+				if(!isset($variables["id"]))
+					$variables["id"] = getId($this->db, $this->uuid, $variables["uuid"]);
+
 				if($variables["lineitemschanged"]==1){
 
 					if($this->lineitems === NULL)
@@ -1073,6 +1091,13 @@ if(class_exists("phpbmsTable")){
 
 				// Check to see if we need to update/create the client addresses from the
 				// billing address
+
+				if(!isset($variables["billingsaveoptions"]))
+					$variables["billingsaveoptions"] = NULL;
+
+				if(!isset($variables["shiptosaveoptions"]))
+					$variables["shiptosaveoptions"] = NULL;
+
 				if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
 
 					require_once("addresses.php");
@@ -1101,6 +1126,9 @@ if(class_exists("phpbmsTable")){
 				$createdby = $_SESSION["userinfo"]["id"];
 
 			$newid = parent::insertRecord($variables, $createdby, $overrideID, $replace, $useUuid);
+			$id = $newid;
+			if(isset($newid["uuid"]))
+				$id = $newid["id"];
 
 			if(ENCRYPT_PAYMENT_FIELDS && (isset($variables["ccnumber"]) || isset($variables["ccexpiration"]) || isset($variables["ccverification"]) || isset($variables["accountnumber"]) || isset($variables["routingnumber"])) ){
 
@@ -1144,6 +1172,12 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
+			if(!isset($variables["billingsaveoptions"]))
+				$variables["billingsaveoptions"] = NULL;
+
+			if(!isset($variables["shiptosaveoptions"]))
+				$variables["shiptosaveoptions"] = NULL;
+
 			if($variables["billingsaveoptions"] != "orderOnly" || $variables["shiptosaveoptions"] != "orderOnly"){
 
 				require_once("addresses.php");
@@ -1156,19 +1190,20 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
+
 			if($variables["lineitemschanged"]==1){
 
 				if($this->lineitems === NULL)
-					$this->lineitems = new lineitems($this->db, $newid);
+					$this->lineitems = new lineitems($this->db, $id);
 				else
-					$this->lineitems->invoiceid = $newid;
+					$this->lineitems->invoiceid = $id;
 
 				$this->lineitems->set($variables["thelineitems"], $createdby);
 
 			}//end if
 
 			//if($variables["statuschanged"]==1)
-				$this->updateStatus($newid,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"]);
+				$this->updateStatus($id,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"], $replace);
 
 			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")
 				$this->prospectToClient($variables["clientid"]);

@@ -109,9 +109,19 @@ if(class_exists("phpbmsTable")){
 				if($variables["revoked"] && $variables["revoked"] != 1)
 					$this->verifyErrors[] = "The `revoked` field must be a boolean (equivalent to 0 or exactly 1).";
 
-			if(isset($variables["portalaccess"]))
+			if(isset($variables["portalaccess"])){
 				if($variables["portalaccess"] && $variables["portalaccess"] != 1)
 					$this->verifyErrors[] = "The `portalaccess` field must be a boolean (equivalent to 0 or exactly 1).";
+
+				if($variables["portalaccess"]){
+
+					if(isset($variables["admin"]))
+						if(!$variables["admin"])
+							$this->verifyErrors[] = "The `admin` field must be '1' if `portalaccess` is '1'.";
+
+				}//end if
+
+			}//end if
 
 			if(isset($variables["admin"]))
 				if($variables["admin"] && $variables["admin"] != 1)
@@ -265,7 +275,7 @@ if(class_exists("searchFunctions")){
 					`modifiedby` = '".$_SESSION["userinfo"]["id"]."'
 				WHERE
 					".$whereclause;
-					
+
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

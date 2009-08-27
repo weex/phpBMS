@@ -99,7 +99,7 @@
 		$theinput = new inputCheckbox("iscreditmemo", $therecord["iscreditmemo"], "credit memo", $checkDisabled);
 		$theform->addField($theinput);
 
-		$theinput = new inputField("cmuuid", $therecord["cmuuid"], "related invoice id", false, NULL, 11);
+		$theinput = new inputField("cmid", $therecord["cmid"], "related invoice id", false, NULL, 11);
 		        $theinput->setAttribute("readonly", "readonly");
                 $theinput->setAttribute("class", "uneditable");
 		$theform->addField($theinput);
@@ -295,8 +295,8 @@
 				if($therecord["iscreditmemo"] && $therecord["cmuuid"])
 					$style = "display:block;";
 				?>
-				<p id="cmuuidP" style="<?php echo $style; ?>">
-					<?php $theform->showfield("cmuuid"); ?>
+				<p id="cmidP" style="<?php echo $style; ?>">
+					<?php $theform->showfield("cmid"); ?>
 					<button class="graphicButtons buttonInfo CMButtons" title="view record" type="button" id="cmb-<?php echo $therecord["cmuuid"];?>">
 						<span>view record</span>
 					</button>
@@ -474,7 +474,7 @@
 			<td nowrap="nowrap" align="left"><button type="button" id="lineitemAddButton" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
 
-		$thetable->lineitems->show($therecord["lineitems"]);
+		$thetable->lineitems->show($therecord["thelineitems"]);
 
 		?><tr id="LITotals">
 		<td colspan="3" rowspan="8" align="right" valign="top">

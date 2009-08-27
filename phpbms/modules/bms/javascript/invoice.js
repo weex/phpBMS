@@ -322,20 +322,20 @@ theStatus = {
 	toggleTitleByCMStatus: function(){
 
 		var isCreditMemo = getObjectFromID("iscreditmemo");
-		var cmuuidP = getObjectFromID("cmuuidP");
-		var cmuuid = getObjectFromID("cmuuid");
+		var cmidP = getObjectFromID("cmidP");
+		var cmid = getObjectFromID("cmid");
 		var title = getObjectFromID("h1WithPrint");
 		if(!title)
 			title = getObjectFromID("h1WithoutPrint");
 
 		if(isCreditMemo.checked){
 			title.innerHTML = "Credit Memo";
-			if(cmuuid.value)
-				cmuuidP.style.display = "block";
+			if(cmid.value)
+				cmidP.style.display = "block";
 		}else{
 			title.innerHTML = "Sales Order";
-			if(cmuuid.value)
-				cmuuidP.style.display = "none";
+			if(cmid.value)
+				cmidP.style.display = "none";
 		}//end if
 
 	}//end if

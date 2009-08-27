@@ -70,6 +70,11 @@
 //    }
 //]';
 
+//if(isset($_POST["foo"])){
+//    var_dump(stripslashes($_POST["request"]));
+//    exit;
+//}
+
 require("../../include/session.php");
 require("include/apiclass.php");
 

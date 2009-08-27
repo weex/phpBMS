@@ -149,24 +149,22 @@ if(class_exists("phpbmsTable")){
 			$this->db->query($deletestatement);
 
 			//remove any ar deposits created by ths receipt
-			$deletestatement = "DELETE FROM aritems WHERE relatedid = '".mysql_real_escape_string($receiptid)."' AND `type` = 'deposit'";
+			$deletestatement = "DELETE FROM aritems WHERE relatedid = '".mysql_real_escape_string($receiptid)."' AND `type` = 'credit'";
 			$this->db->query($deletestatement);
 
 			foreach($itemlist as $itemRecord){
 
 				//if no ar uuid, or the deposit is from this record, we need to create the ar item
-				if(!$itemRecord["ARID"] || ($itemRecord["RecID"] == $receiptid && $itemRecord["Type"] == "deposit") ){
+				if(!$itemRecord["aritemid"] || ($itemRecord["relatedid"] == $receiptid && $itemRecord["type"] == "deposit") ){
 
 					$arrecord = array();
 					$arrecord["type"] = "credit";
 					$arrecord["status"] = "open";
 					$arrecord["posted"] = 0;
-					$arrecord["amount"] = -1 * currencyToNumber($itemRecord["Applied"]);
-					$arrecord["itemdate"] = $itemRecord["DocDate"];
+					$arrecord["amount"] = -1 * currencyToNumber($itemRecord["applied"]);
+					$arrecord["itemdate"] = $itemRecord["itemdate"];
 					$arrecord["clientid"] = $clientid;
 					$arrecord["relatedid"] = $receiptid;
-
-
 
 					if(!isset($aritems))
 						$aritems = new phpbmsTable($this->db, "tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
@@ -176,7 +174,7 @@ if(class_exists("phpbmsTable")){
 
 					$aritems->insertRecord($arrecord, $userid);
 
-					$itemRecord["ARID"] = $arrecord["uuid"];
+					$itemRecord["aritemid"] = $arrecord["uuid"];
 
 				}//end if
 
@@ -185,11 +183,11 @@ if(class_exists("phpbmsTable")){
 					receiptitems
 					(aritemid, receiptid, applied, discount, taxadjustment)
 				VALUES (
-					'".mysql_real_escape_string($itemRecord["ARID"])."',
+					'".mysql_real_escape_string($itemRecord["aritemid"])."',
 					'".mysql_real_escape_string($receiptid)."',
-					".currencyToNumber($itemRecord["Applied"]).",
-					".currencyToNumber($itemRecord["Discount"]).",
-					".currencyToNumber($itemRecord["TaxAdj"])."
+					".currencyToNumber($itemRecord["applied"]).",
+					".currencyToNumber($itemRecord["discount"]).",
+					".currencyToNumber($itemRecord["taxadjustment"])."
 				)";
 
 				$this->db->query($insertstatement);
@@ -356,6 +354,8 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["itemslist"] = $this->receiptitems->get($therecord["uuid"]);
 
+			$therecord["itemschanged"] = 1;
+
 			return $therecord;
 
 		}//end method
@@ -380,6 +380,11 @@ if(class_exists("phpbmsTable")){
 				switch($variables["status"]){
 
 					case "open":
+						if(isset($variables["readytopost"]))
+							if($variables["readytopost"])
+								$this->verifyErrors[] = "If the `status` is 'open', the `readytopost` field must be not be '1'";
+						break;
+
 					case "collected":
 						break;
 
@@ -517,9 +522,10 @@ if(class_exists("phpbmsTable")){
 
 			if(ENCRYPT_PAYMENT_FIELDS && (isset($variables["ccnumber"]) || isset($variables["ccexpiration"]) || isset($variables["ccverification"]) || isset($variables["accountnumber"]) || isset($variables["routingnumber"])) ){
 
-				if($useUuid)
+				if($useUuid){
 					$whereclause = "`uuid` = '".$newid["uuid"]."'";
-				else
+					$variables["uuid"] = $newid["uuid"];
+				}else
 					$whereclause = "`id` = '".$newid."'";
 
 				$querystatement = "

@@ -399,6 +399,23 @@ if(class_exists("phpbmsTable")){
 
 				if(!count($errorArray)){
 
+					/**
+					  *  If we are replacing the record, we need to cut the links
+					  *  from the client to the old address record.
+					  */
+					if($replace){
+
+						$querystatement = "
+							DELETE FROM
+								`addresstorecord`
+							WHERE
+								`recordid` = '".$newUuid."'
+						";
+
+						$queryresult = $this->db->query($querystatement);
+
+					}//end if
+
 					$this->address->insertRecord($variables, $createdby);
 
 				} else {
@@ -425,91 +442,123 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{
 
-		function mark_asclient(){
+		function mark_asclient($useUuid = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
-			$querystatement = "UPDATE clients SET clients.type=\"client\",modifiedby=\"".$_SESSION["userinfo"]["id"]."\" WHERE (".$whereclause.");";
+			$querystatement = "
+				UPDATE
+					`clients`
+				SET
+					`clients`.`type`='client',
+					`modifiedby`='".$_SESSION["userinfo"]["id"]."'
+				WHERE
+					(".$whereclause.")
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();
 			$message.=" converted to client.";
 			return $message;
-		}
+		}//end function --mark_asclient--
 
 
 		//Stamp Comments Field with info packet sent
-		function stamp_infosent(){
+		function stamp_infosent($useUuid = false){
 
-			//passed variable is array of user ids to be revoked
-			$whereclause = $this->buildWhereClause();
+			if(!$useUuid)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
 
 			$querystatement = "
 				UPDATE
-					clients
+					`clients`
 				SET
-					clients.comments = concat('Information Packet Sent', char(10), clients.comments),
-					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
-					clients.modifieddate = NOW()
-				WHERE (".$whereclause.") AND clients.comments IS NOT NULL";
+					`clients`.`comments` = concat('Information Packet Sent', char(10), `clients`.`comments`),
+					`clients`.`modifiedby` = '".$_SESSION["userinfo"]["id"]."',
+					`clients`.`modifieddate` = NOW()
+				WHERE
+					(".$whereclause.")
+					AND
+					`clients`.`comments` IS NOT NULL
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$affected = $this->db->affectedRows();
 
 			$querystatement = "
 				UPDATE
-					clients
+					`clients`
 				SET
-					clients.comments = 'Information Packet Sent',
-					clients.modifiedby=".$_SESSION["userinfo"]["id"].",
-					clients.modifieddate = NOW()
-				WHERE (".$whereclause.") AND clients.comments IS NULL";
+					`clients`.`comments` = 'Information Packet Sent',
+					`clients`.`modifiedby` = '".$_SESSION["userinfo"]["id"]."',
+					`clients`.`modifieddate` = NOW()
+				WHERE
+					(".$whereclause.")
+					AND
+					`clients`.`comments` IS NULL
+			";
+
 			$queryresult = $this->db->query($querystatement);
 
 			$affected += $this->db->affectedRows();
 
 			$message = $this->buildStatusMessage($affected);
-			$message.=" marked as info packet sent.";
+			$message .= " marked as info packet sent.";
 			return $message;
-		}
+
+		}//end function --stamp_infosent
 
 
 		//remove prospects
-		function delete_prospects(){
+		function delete_prospects($useUuid = false){
 
-			//passed variable is array of user ids to be revoked
-			$clientWhereClause = $this->buildWhereClause();
+			if(!$useUuid)
+				$clientWhereClause = $this->buildWhereClause();
+			else
+				$clientWhereClause = $this->buildWhereClause($this->maintable.".uuid");
 
 			$querystatement = "
 				SELECT
-					id
+					`id`,
+					`uuid`
 				FROM
-					clients
+					`clients`
 				WHERE
 					(".$clientWhereClause.")
-					AND clients.type = 'prospect'";
+					AND
+					`clients`.`type` = 'prospect'";
 
 			$queryresult = $this->db->query($querystatement);
 
 			//build array of ids to be removed
 			$deleteIDs = array();
-			while($therecord = $this->db->fetchArray($queryresult))
+			$deleteUuids = array();
+			while($therecord = $this->db->fetchArray($queryresult)){
 				array_push($deleteIDs, $therecord["id"]);
+				array_push($deleteUuids, $therecord["uuid"]);
+			}//end while
 
 			if(count($deleteIDs)){
 
-				$a2rWhere = $this->buildWhereClause("recordid", $deleteIDs);
+				$a2rWhere = $this->buildWhereClause("recordid", $deleteUuids);
 
 				//First we get a list of all the addresses for the prospect
 				$querystatement = "
 					SELECT DISTINCT
-						addressid
+						`addressid`
 					FROM
-						addresstorecord
+						`addresstorecord`
 					WHERE
-						tabledefid = 2
-						AND (".$a2rWhere.")";
+						`tabledefid` = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+						AND
+						(".$a2rWhere.")";
 
 				$a2rResult = $this->db->query($querystatement);
 
@@ -520,50 +569,52 @@ if(class_exists("searchFunctions")){
 				// delete all a2r records for prospect
 				$deletestatement = "
 					DELETE FROM
-						addresstorecord
+						`addresstorecord`
 					WHERE
-						tabledefid = 2
-						AND (".$a2rWhere.")";
+						`tabledefid` = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
+						AND (".$a2rWhere.")
+				";
 
 				$this->db->query($deletestatement);
 
 				//now go get a list of orphaned addresses
 				$querystatement = "
 					SELECT
-						addresses.id,
-						addresstorecord.id as a2rid
+						`addresses`.`uuid`,
+						`addresstorecord`.`id` AS `a2rid`
 					FROM
-						addresses LEFT JOIN addresstorecord ON addresstorecord.addressid = addresses.id
+						`addresses` LEFT JOIN `addresstorecord` ON `addresstorecord`.`addressid` = `addresses`.`uuid`
 					WHERE
-						".$this->buildWhereClause("addresses.id", $addressIDs);
+						".$this->buildWhereClause("`addresses`.`uuid`", $addressIDs);
 
 				$addressResult = $this->db->query($querystatement);
 
 				$addressIDs = array();
 				while($address = $this->db->fetchArray($addressResult))
 					if(!$address["a2rid"])
-						array_push($addressIDs, $address["id"]);
+						array_push($addressIDs, $address["uuid"]);
 
 				if(count($addressIDs)){
 
 					//delete orphaned addresses
 					$deletestatement = "
 						DELETE FROM
-							addresses
+							`addresses`
 						WHERE
-							".$this->buildWhereClause("addresses.id", $addressIDs);
+							".$this->buildWhereClause("`addresses`.`uuid`", $addressIDs);
 
 					$this->db->query($deletestatement);
 
 				}//endif - addressids
 
 				//next get any quotes that we may have to delete
-				$invoiceWhereClause = $this->buildWhereClause("clientid", $deleteIDs);
+				$invoiceWhereClause = $this->buildWhereClause("clientid", $deleteUuids);
 				$invoicestatement = "
 					SELECT
-						invoices.id
+						`invoices`.`id`,
+						`invoices`.`uuid`
 					FROM
-						invoices
+						`invoices`
 					WHERE
 						".$invoiceWhereClause;
 
@@ -571,17 +622,22 @@ if(class_exists("searchFunctions")){
 
 				//build invoice id array
 				$invoiceids = array();
-				while($therecord = $this->db->fetchArray($invoiceresult))
+				$invoiceuuids = array();
+				while($therecord = $this->db->fetchArray($invoiceresult)){
 					array_push($invoiceids, $therecord["id"]);
+					array_push($invoiceuuids, $therecord["uuid"]);
+				}//end while
 
 				if(count($invoiceids)) {
 					$invoiceWhereClause = $this->buildWhereClause("invoices.id", $invoiceids);
 
 					$lineitemWhereClause = $this->buildWhereClause("invoiceid", $invoiceids);
 
+					$statushistoryWhereClause = $this->buildWhereClause("invoiceid", $invoiceuuids);
+
 					$lineItemDeleteStatement = "
 						DELETE FROM
-							lineitems
+							`lineitems`
 						WHERE
 							".$lineitemWhereClause;
 
@@ -589,15 +645,15 @@ if(class_exists("searchFunctions")){
 
 					$statushistoryDeleteStatement = "
 						DELETE FROM
-							invoicestatushistory
+							`invoicestatushistory`
 						WHERE
-							".$lineitemWhereClause;
+							".$statushistoryWhereClause;
 
 					$queryresult = $this->db->query($statushistoryDeleteStatement);
 
 					$invoiceDeleteStatement = "
 						DELETE FROM
-							invoices
+							`invoices`
 						WHERE
 							".$invoiceWhereClause;
 
