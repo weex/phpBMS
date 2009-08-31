@@ -42,7 +42,15 @@
 	include("include/fields.php");
 	include("include/products.php");
 
-	$thetable = new products($db,"tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34");
+    if(!isset($_GET["backurl"]))
+		$backurl = NULL;
+	else{
+		$backurl = $_GET["backurl"];
+		if(isset($_GET["refid"]))
+			$backurl .= "?refid=".$_GET["refid"];
+	}
+
+	$thetable = new products($db,"tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34", $backurl);
 	$therecord = $thetable->processAddEditPage();
 
 	if(isset($therecord["phpbmsStatus"]))
@@ -136,7 +144,7 @@
 
 	include("header.php");
 ?>
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" name="record" id="record" onsubmit="return false;">
+<form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" id="record" onsubmit="return false;">
 <?php $phpbms->showTabs("products entry","tab:17346362-261b-4d1d-fa77-99e84cfd9b8a",$therecord["id"]);?><div class="bodyline">
         <input type="hidden" value="" name="command" id="hiddenCommand"/>
 

@@ -179,6 +179,7 @@ CREATE TABLE `tabledefs` (
   `viewsqlroleid` varchar(64) default 'Admin',
   `deletebutton` varchar(32) default '',
   `canpost` tinyint(4) NOT NULL default '0',
+  `apiaccessible` tinyint(4) NOT NULL default '0',
   `hascustomfields` tinyint(4) NOT NULL default '0',
   `defaultwhereclause` text,
   `defaultsortorder` text,

@@ -42,6 +42,10 @@ if(class_exists("phpbmsTable")){
 
 		var $availableProducts = NULL;
 
+		function products($db, $tabledefid, $backurl = NULL){
+			parent::phpbmsTable($db, $tabledefid, $backurl);
+		}//end function
+
 		/**
 		 * Overriden phpbmstable function
 		 */
@@ -53,6 +57,7 @@ if(class_exists("phpbmsTable")){
 			$therecord["status"] = "In Stock";
 			$therecord["taxable"] = 1;
 			$therecord["categoryid"] = "";
+			$therecord["addcats"] = array();
 
 			return $therecord;
 
@@ -434,7 +439,8 @@ if(class_exists("phpbmsTable")){
 			$querystatement = "
 				SELECT
 					productcategories.uuid AS catid,
-					productcategories.name
+					productcategories.name,
+					productcategories.uuid AS `productcategoryuuid`
 				FROM
 					(products INNER JOIN productstoproductcategories ON products.uuid = productstoproductcategories.productuuid)
 					INNER JOIN productcategories ON productstoproductcategories.productcategoryuuid = productcategories.uuid

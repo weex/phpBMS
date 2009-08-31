@@ -619,6 +619,8 @@ if(class_exists("phpbmsTable")){
 			else
 				$therecord["type"]="NT";
 
+			$therecord["typeCheck"] = $therecord["type"];
+
 			$therecord["private"]=true;
 
 			$therecord["attachedtabledefid"]=(isset($_GET["tabledefid"]))?$_GET["tabledefid"]:NULL;
@@ -635,6 +637,17 @@ if(class_exists("phpbmsTable")){
 
 			return $therecord;
 		}
+
+
+		function getRecord($id, $useUuid = false){
+
+			$therecord = parent::getRecord($id, $useUuid);
+
+			$therecord["typeCheck"] = $therecord["type"];
+
+			return $therecord;
+
+		}//end method
 
 
 		function verifyVariables($variables){
@@ -1103,7 +1116,7 @@ if(class_exists("searchFunctions")){
 					AND
 					(".$whereclause.")
 			";
-			
+
 			$queryresult = $this->db->query($querystatement);
 
 			$message = $this->buildStatusMessage();

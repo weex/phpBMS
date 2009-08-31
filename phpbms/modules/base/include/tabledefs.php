@@ -56,7 +56,6 @@ if(class_exists("phpbmsTable")){
 			return $therecord;
 		}
 
-
 		function verifyVariables($variables){
 
 			//the following ifs are constructed in such a way as to allow
@@ -217,6 +216,14 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["canpost"]))
 				if($variables["canpost"] && $variables["canpost"] != 1)
 					$this->verifyErrors[] = "The `canpost` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["apiaccessible"]))
+				if($variables["apiaccessible"] && $variables["apiaccessible"] != 1)
+					$this->verifyErrors[] = "The `apiaccessible` field must be a boolean (equivalent to 0 or exactly 1).";
+
+			if(isset($variables["hascustomfields"]))
+				if($variables["hascustomfields"] && $variables["hascustomfields"] != 1)
+					$this->verifyErrors[] = "The `hascustomfields` field must be a boolean (equivalent to 0 or exactly 1).";
 
 			return parent::verifyVariables($variables);
 

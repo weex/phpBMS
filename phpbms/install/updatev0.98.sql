@@ -172,6 +172,7 @@ ALTER TABLE `tabledefs`
     ADD COLUMN `importfile` VARCHAR(128) DEFAULT NULL AFTER `addroleid`,
     ADD COLUMN `importroleid` VARCHAR(64) NOT NULL DEFAULT 'Admin' AFTER `importfile`,
     ADD COLUMN `canpost` tinyint(4) NOT NULL default '0' AFTER `deletebutton`,
+    ADD COLUMN `apiaccessible` tinyint(4) NOT NULL default '0' AFTER `deletebutton`,
     ADD COLUMN `hascustomfields` tinyint(4) NOT NULL default '0' AFTER `canpost`,
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
     ADD COLUMN `prefix` VARCHAR(4) AFTER `displayname`;

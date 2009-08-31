@@ -275,7 +275,8 @@ class api{
                         `maintable`,
                         `deletebutton`,
                         `querytable`,
-                        `modules`.`name`
+                        `modules`.`name`,
+                        `apiaccessible`
                     FROM
                         `tabledefs` INNER JOIN `modules` ON tabledefs.moduleid = modules.uuid
                     WHERE
@@ -305,6 +306,12 @@ class api{
                 } else {
 
                     $therecord = $this->db->fetchArray($queryresult);
+
+                    if(!$therecord["apiaccessible"]){
+                        $this->sendError("Invalid tabledefid (".$tabledefid.") from request number ".$i.": This table definition is inaccessible via api.");
+                        continue;
+                    }//endif
+
 
                     $deletebutton = $therecord["deletebutton"];
 
