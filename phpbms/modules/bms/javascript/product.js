@@ -50,7 +50,8 @@ var product = {
 
         //check to see if there has been changes to the additional categories
         var addcats = getObjectFromID("addcats");
-        if(addcats.value)
+        var catschanged = getObjectFromID("catschanged");
+        if(catschanged.value)
             addcats.value = product.prepCategories();
 
         theform.submit();
@@ -245,8 +246,8 @@ var product = {
                 connect(newMinusButton, "onclick", product.removeCategory);
 
                 //flag a change for processing
-                var addcats = getObjectFromID("addcats");
-                addcats.value = "changed";
+                var catschanged = getObjectFromID("catschanged");
+                catschanged.value = "1";
 
             }//endif
 
@@ -265,8 +266,8 @@ var product = {
 
         parentDiv.removeChild(theDiv);
 
-        var addcats = getObjectFromID("addcats");
-        addcats.value = "changed";
+        var catschanged = getObjectFromID("catschanged");
+        catschanged.value = "1"
 
     },//end function deleteCategory
 
@@ -304,14 +305,21 @@ var product = {
 
     prepCategories: function(){
 
-        var catList = "";
+        var catList = "[";
 
         var catIDs = getElementsByClassName("catIDs");
-        for(var i=0; i<catIDs.length; i++)
-            catList += "," + catIDs[i].value
+        for(var i=0; i<catIDs.length; i++){
 
-        if(catList)
-            catList = catList.substring(1);
+            catList += '{' +
+                        '"productcategoryuuid" : "' +catIDs[i].value + '"' +
+                        '}';
+
+            if(i < ( catIDs.length - 1))
+                catList += ",";
+
+        }//end for
+
+        catList += "]";
 
         return catList;
 

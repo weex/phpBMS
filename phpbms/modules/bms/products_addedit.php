@@ -151,8 +151,8 @@
 			<p><?php $theform->showField("inactive")?></p>
 
 			<p>
-                            <label for="categoryid">master category</label><br />
-                            <?php $thetable->displayProductCategories($therecord["categoryid"]) ?>
+                <label for="categoryid">master category</label><br />
+                <?php $thetable->displayProductCategories($therecord["categoryid"]) ?>
 			</p>
 
 			<p><?php $theform->showField("type")?></p>
@@ -170,7 +170,7 @@
                         <button type="button" id="addCatButton" class="graphicButtons buttonPlus" title="Add Category"><span>+</span></button>
                     </p>
 
-                    <?php $thetable->displayAdditionalCategories($therecord["uuid"]) ?>
+                    <?php $thetable->displayAdditionalCategories($therecord["addcats"]) ?>
 
                 </fieldset>
 
@@ -203,7 +203,7 @@
 
 			<p>
 			    <br />
-                            <button type="button" id="updatePrice" class="Buttons">calculate price</button>
+                <button type="button" id="updatePrice" class="Buttons">calculate price</button>
 			</p>
 
 		</fieldset>
@@ -233,7 +233,7 @@
 		<fieldset>
 			<legend><label for="memo">memo</label></legend>
 
-                        <p><?php $theform->showField("memo");?></p>
+            <p><?php $theform->showField("memo");?></p>
 
 		</fieldset>
 
