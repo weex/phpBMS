@@ -243,7 +243,7 @@
                                 <p>
                                     Version 0.98 represents a fundamental shift in data record recognition.  By utilizing
                                     Universal Unique IDs (UUID), phpBMS now becomes easier to share data with other applications,
-                                    program and update custom modules, and insure referential integrity.  To do this, te program
+                                    program and update custom modules, and insure referential integrity.  To do this, the program
                                     needs to transfer from the reliance on MySQL's auto increment ID system, and generate it's
                                     own UUID's for all records and relationship records in your database.
                                 </p>

@@ -411,7 +411,7 @@ class updateAjax extends installUpdateBase{
 					`name` = 'application_uuid'
 			";
 
-			$this->query($updatestatement);
+			$this->db->query($updatestatement);
 
 		}//end method
 
@@ -433,7 +433,7 @@ class updateAjax extends installUpdateBase{
 					`portalaccess` != '0'
 			";
 
-			$this->query($updatestatement);
+			$this->db->query($updatestatement);
 
 		}//end method
 

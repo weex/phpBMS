@@ -41,6 +41,7 @@ define("noStartup",true);
 
 require("install_include.php");
 require("../include/session.php");
+require("../include/common_functions.php");
 
 
 
