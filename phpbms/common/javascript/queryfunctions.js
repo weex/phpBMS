@@ -321,7 +321,7 @@ function selectRecords(allornone){
 	setButtonStatus(allornone);
 }
 
-// Pass the Sort Parameters and subit the form
+// Pass the Sort Parameters and submit the form
 function doSort(i){
 	var theform=document.forms["search"];
 	theform["newsort"].value=theform["sortit"+i].value;
@@ -329,7 +329,7 @@ function doSort(i){
 	return false;
 }
 
-// Pass the Sort Parameters and subit the form
+// Pass the Sort Parameters and submit the form
 function doDescSort(){
 	theform=document.forms["search"];
 	theform["desc"].value="desc";
@@ -363,7 +363,7 @@ function showDropDown(whatDD){
 }
 
 
-function perfromToSelection(option){
+function performToSelection(option){
 
 	var thereset=getObjectFromID("reset");
 	var thediv = getObjectFromID("searchSelectionDropDown");
@@ -581,14 +581,14 @@ function LSsearchSelect(theselect,base){
 	var deletebutton= getObjectFromID("LSDelete");
 	var searchname=getObjectFromID("LSSelectedSearch");
 	var sqlbox=getObjectFromID("LSSQL");
-	var reultbox=getObjectFromID("LSResults");
+	var resultbox=getObjectFromID("LSResults");
 	if (theselect.value=="NA"){
 		loadbutton.disabled=true;
 		deletebutton.disabled=true;
 		searchname.value="";
 		sqlbox.value="";
 	} else {
-		reultbox.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
+		resultbox.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 		var theURL=base+"loadsearch.php?cmd=getsearch&id="+theselect.value;
 		loadXMLDoc(theURL,null,false);
 		sqlbox.value=req.responseText;
@@ -602,7 +602,7 @@ function LSsearchSelect(theselect,base){
 			deletebutton.disabled=false;
 		else
 			deletebutton.disabled=true;
-		reultbox.innerHTML="";
+		resultbox.innerHTML="";
 	}
 }
 
@@ -614,13 +614,13 @@ function LSRunSearch(){
 }
 function LSDeleteSearch(base){
 	var theselect=getObjectFromID("LSList");
-	var reultbox=getObjectFromID("LSResults");
+	var resultbox=getObjectFromID("LSResults");
 
-	reultbox.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
+	resultbox.innerHTML="<img src=\""+base+"common/image/spinner.gif\" alt=\"0\" width=\"16\" height=\"16\" align=\"absmiddle\"> <strong>Loading...</strong>";
 	var theURL=base+"loadsearch.php?cmd=deletesearch&id="+theselect.value;
 	loadXMLDoc(theURL,null,false);
 	if(req.responseText=="success"){
-		reultbox.innerHTML="";
+		resultbox.innerHTML="";
 		theselect.options[theselect.selectedIndex]=null;
 		if(theselect.options.length==1){
 			theselect.options[0].text="No Saved Searches";

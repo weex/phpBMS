@@ -196,7 +196,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
                     <p class="big"><?php $theform->showField("application_name");?></p>
 
                     <p class="notes">
-                        <strong>Example:</strong> Replace this with your comapny name + BMS (e.g. "Kreotek BMS").  Replacing
+                        <strong>Example:</strong> Replace this with your company name + BMS (e.g. "Kreotek BMS").  Replacing
                         the application name will reset the session cookie, and require you to log in again.
                     </p>
 

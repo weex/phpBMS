@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -38,16 +38,16 @@
 */
 	session_cache_limiter('private');
 	require_once("include/session.php");
-	
-	if(!isset($_GET["t"]) or !isset($_GET["r"]) or !isset($_GET["f"]) or !isset($_GET["mf"])) die("Invlaid Paramateers Set");
-	
+
+	if(!isset($_GET["t"]) or !isset($_GET["r"]) or !isset($_GET["f"]) or !isset($_GET["mf"])) die("Invalid Parameters Set");
+
 	$querystatement="SELECT ".$_GET["f"].",".$_GET["mf"]." FROM ".$_GET["t"]." WHERE id=".$_GET["r"];
 	$queryresult=$db->query($querystatement);
 	if(!$queryresult) die("bad query".$querystatement);
 	if($db->numRows($queryresult)){
 		$therecord=$db->fetchArray($queryresult);
 		header('Content-type: '.$therecord[$_GET["mf"]]);
-	
+
 		echo $therecord[$_GET["f"]];
 	}
 ?>

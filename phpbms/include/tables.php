@@ -525,7 +525,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
             if(isset($variables["id"]))
                 if(!is_numeric($variables["id"]) && $variables["id"])
-                    $this->verifyErrors[] = "The `id` field must be numeric or equivalent to zero (although positive is reccomended).";
+                    $this->verifyErrors[] = "The `id` field must be numeric or equivalent to zero (although positive is recommended).";
 
             if(isset($variables["uuid"]))
                 if(!$variables["uuid"])

@@ -87,7 +87,7 @@
 	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
-		<legend>attribues</legend>
+		<legend>attributes</legend>
 
 		<p><br /><?php $theform->showField("inactive")?></p>
 

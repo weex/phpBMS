@@ -116,7 +116,7 @@
 	<input type="hidden" id="clientid" value="<?php echo $clientInfo["id"] ?>" />
 	<div id="rightSideDiv">
 		<fieldset id="fsAttributes">
-			<legend>attribues</legend>
+			<legend>attributes</legend>
 
 			<p><?php $theform->showField("theid")?></p>
 

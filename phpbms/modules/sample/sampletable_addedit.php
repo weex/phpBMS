@@ -152,7 +152,7 @@
 	<?php $theform->startForm($pageTitle)?>
 
 	<fieldset id="fsAttributes">
-		<legend>attribues</legend>
+		<legend>attributes</legend>
 		<p>
 			<label for="id">id</label><br />
 			<input name="id" id="id" type="text" value="<?php echo $therecord["id"]; ?>" size="5" maxlength="5" readonly="readonly" class="uneditable" />

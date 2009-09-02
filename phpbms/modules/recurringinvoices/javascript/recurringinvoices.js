@@ -206,7 +206,7 @@ function submitForm(command){
 	var eachlistArray = Array();
 	var i;
 
-	//first let's set the eachlist if necassary
+	//first let us set the eachlist if necessary
 	switch(typeSelect.value){
 		case "Weekly":
 			for(i=1; i<=7; i++){

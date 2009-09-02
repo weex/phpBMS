@@ -881,10 +881,10 @@
 							<a href="#" id="searchSelection" class="searchSelection" onclick="showDropDown('searchSelectionDropDown');return false" title="selection"><span>selection</span></a>
 							<div id="searchSelectionDropDown" class="toolbarDropDowns" style="display:none">
 							<ul>
-								<li><a href="#" onclick="perfromToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
-								<li><a href="#" onclick="perfromToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
-								<li class="menuSep"><a href="#" onclick="perfromToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
-								<li><a href="#" onclick="perfromToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected records from view</a></li>
+								<li><a href="#" onclick="performToSelection('selectall');return false;" accesskey="a" title="select all (alt + a)">select all</a></li>
+								<li><a href="#" onclick="performToSelection('selectnone');return false;" accesskey="x" title="select none (alt + x)">select none</a></li>
+								<li class="menuSep"><a href="#" onclick="performToSelection('keepselected');return false;" accesskey="k" title="keep selected (alt + k)">show only selected records</a></li>
+								<li><a href="#" onclick="performToSelection('omitselected');return false;" accesskey="o" title="omit selected (alt + o)">remove selected records from view</a></li>
 							</ul>
 							</div>
 						</li>
@@ -1098,7 +1098,7 @@
 
 		function resetQuery(){
 			// reset query... this requires a call to the function that should be
-			// defined in the same place the table paramaters are.
+			// defined in the same place the table parameters are.
 			//=====================================================================================================
 			$this->querytype="search";
 			$this->savedselection="";
@@ -1236,7 +1236,7 @@
 					$querystatement = "DELETE FROM `".$this->maintable."` WHERE ".$whereclause;
 					$endmessage=" deleted";
 			}
-			
+
 			$queryresult = $this->db->query($querystatement);
 			$message = $this->buildStatusMessage().$endmessage;
 

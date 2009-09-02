@@ -101,7 +101,7 @@
                     modules.name,
                     tabledefs.maintable
                 FROM
-                    tabledefs INNER JOIN modules ON tabledefs.moduleid = modules.id
+                    tabledefs INNER JOIN modules ON tabledefs.moduleid = modules.uuid
                 WHERE
                     tabledefs.canpost = 1";
 

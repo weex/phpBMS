@@ -104,7 +104,7 @@ if (isset($_POST["command"])){
 					if($_POST["choosereport"][$i]){
 						$querystatement="SELECT reportfile,type from reports where id=".$_POST["choosereport"][$i].";";
 						$queryresult=$db->query($querystatement);
-						if(!$queryresult) $error = new appError(100,"Could not Retreive Report Information");
+						if(!$queryresult) $error = new appError(100,"Could not Retrieve Report Information");
 						$reportrecord=$db->fetchArray($queryresult);
 						$fakeExtForIE="";
 						if($reportrecord["type"]=="PDF Report")
@@ -226,12 +226,12 @@ include("header.php");
 			</p>
 		</fieldset>
 		<fieldset>
-			<legend>customizng reports</legend>
+			<legend>customizing reports</legend>
 			<p class="notes">
-			Many reports feature a logo and your company infromation.  This information can be set administratively in the configuration area
+			Many reports feature a logo and your company information.  This information can be set administratively in the configuration area
 			</p>
 			<p class="notes">
-			Need more reports, or want to cuztomize an existing report to meet your specific needs? <br />
+			Need more reports, or want to customize an existing report to meet your specific needs? <br />
 			if you are unfamiliar with PHP, or programming phpBMS, you can try visiting the
 			<a href="http://www.phpbms.org">phpBMS project site</a>, or visit <a href="http://kreotek.com">Kreotek's website</a> for more information.
 			</p>

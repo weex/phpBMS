@@ -170,10 +170,10 @@ class phpbmsForm{
                 if(method_exists($this->fields[$fieldname],"display"))
                     $this->fields[$fieldname]->display();
                 else
-                    echo "Error in form contruction (wrong object): ".$fieldname;
+                    echo "Error in form construction (wrong object): ".$fieldname;
 
             } else
-                echo "Error in form contruction: ".$fieldname;
+                echo "Error in form construction: ".$fieldname;
 
         }else
             echo "Field Not Defined: ".$fieldname;

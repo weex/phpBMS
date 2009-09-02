@@ -109,7 +109,7 @@
 
 	<div id="rightSideDiv">
 		<fieldset>
-			<legend>attribues</legend>
+			<legend>attributes</legend>
 			<p><?php $theform->showField("moduleid");?></p>
 			<p><?php $theform->showField("tabledefid");?></p>
 		</fieldset>

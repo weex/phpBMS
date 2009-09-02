@@ -48,7 +48,7 @@ function validateForm(theform){
 
 
 	//need to itterate though all fields... if you find
-	// --not found-- anywhere.... invlaidate the form
+	// --not found-- anywhere.... invalidate the form
 	for(i=0;i<theform.length;i++){
 		if(theform[i].value && theform[i].value=="--not found--"){
 			errorMessage+="<LI>One or more fields have an invalid input.</LI>";

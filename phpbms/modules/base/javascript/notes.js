@@ -269,7 +269,7 @@ function submitForm(theform,bypass){
 		var eachlistArray = Array();
 		var i;
 
-		//first let's set the eachlist if necassary
+		//first let us set the eachlist if necessary
 		switch(typeSelect.value){
 			case "Weekly":
 				for(i=1; i<=7; i++){
@@ -321,7 +321,7 @@ function submitForm(theform,bypass){
 		content +='<p>You may want to adjust the start date to compensate.</p>';
 		content +='<p align="right"><input type="button" class="Buttons" value="continue save" onclick="continueSubmit()" > <input type="button" class="Buttons" value="cancel" onclick="closeModal()" style="width:70px"></p>';
 
-		showModal(content,"Confrim Change of Repeatable Task",400);
+		showModal(content,"Confirm Change of Repeatable Task",400);
 		return false;
 	}else
 		return true;

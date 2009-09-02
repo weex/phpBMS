@@ -88,7 +88,7 @@ snapshot = {
 
         var widget = getObjectFromID(uuid);
 
-        //need to get widget's name
+        //need to get the name of the widget
         var widgetTitle = "";
 
         for(var i=0; i<widget.childNodes.length; i++)

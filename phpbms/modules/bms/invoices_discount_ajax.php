@@ -39,7 +39,7 @@
 
 	require("../../include/session.php");
 
-	if(!isset($_GET["id"])) $error = new appError(300,"Passed veriable not set (id)");
+	if(!isset($_GET["id"])) $error = new appError(300,"Passed variable not set (id)");
 
 	$querystatement = "
         SELECT

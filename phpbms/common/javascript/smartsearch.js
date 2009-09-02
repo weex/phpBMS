@@ -67,7 +67,7 @@ smartSearch = {
 			smartSearch.triggerLookup[ssID] = window.setTimeout("smartSearch.lookup('"+ssID+"')",250);
 
 		} else {
-			//it's possible they hit the down, up arrow, or the return button
+			//it is possible they hit the down, up arrow, or the return button
 
 			var key = e.event().keyCode;
 

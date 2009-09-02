@@ -40,9 +40,9 @@
 	require("../../../include/session.php");
 	//turn debug borders on to troubleshoot PDF creation (1 or 0)
 	$border_debug=0;
-	
+
 	require("../../../fpdf/fpdf.php");
-	
+
 	if($_SESSION["printing"]["sortorder"])
 		$sortorder=$_SESSION["printing"]["sortorder"];
 	else
@@ -50,31 +50,31 @@
 
 	//Generate the notes Query
 	$querystatement="SELECT users.firstname, users.lastname, notes.id, notes.creationdate,
-						notes.subject,notes.content 
+						notes.subject,notes.content
 						FROM notes INNER JOIN users on notes.createdby=users.id ".$_SESSION["printing"]["whereclause"].$sortorder;
 	$thequery=$db->query($querystatement);
-	if(!$thequery) die("No records, or invlaid SQL statement:<br />".$querystatement);
+	if(!$thequery) die("No records, or invalid SQL statement:<br />".$querystatement);
 	//===================================================================================================
 	// Generating PDF File.
 	//===================================================================================================
-	
+
 	$leftmargin=.5;
 	$rightmargin=.5;
 	$topmargin=.75;
 	$paperwidth=8.5;
 	$paperlength=11;
-	
+
 	//define the documents and margins
 	$pdf=new FPDF("P","in","Letter");
 	$pdf->SetMargins($leftmargin,$topmargin,$rightmargin);
 	$pdf->Open();
-	
+
 	$pdf->AddPage();
-	
+
 	$tempwidth=$paperwidth-$leftmargin-$rightmargin;
 	$tempheight=.25;
 	$pdf->SetXY($leftmargin,$topmargin);
-	
+
 	//Report Title
 	$pdf->SetFont("Arial","B",16);
 	$pdf->Cell($tempwidth,.25,"Notes Summary",$border_debug,1,"L");
@@ -82,7 +82,7 @@
 	$pdf->Cell($tempwidth,.18,"Date Created: ".dateToString(mktime()),$border_debug,1,"L");
 	$pdf->SetLineWidth(.04);
 	$pdf->Line($leftmargin,$pdf->GetY(),$paperwidth-$rightmargin,$pdf->GetY());
-	
+
 	$pdf->SetY($topmargin+.43+.1);
 	$pdf->SetLineWidth(.01);
 	while($therecord=$db->fetchArray($thequery)) {

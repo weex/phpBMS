@@ -62,7 +62,7 @@
 					`uuid` = '".$this->tableid."'
 				";
 			$queryresult = $this->db->query($querystatement);
-			if(!$queryresult) $error = new appError(500,"Error retreving table info.");
+			if(!$queryresult) $error = new appError(500,"Error retrieving table info.");
 			$therecord = $this->db->fetchArray($queryresult);
 			$this->maintable = $therecord["maintable"];
 
@@ -98,7 +98,7 @@
 				";
 
 			$queryresult = $this->db->query($querystatement);
-			if(!$queryresult) $error = new appError(500,"Error retreving reports.");
+			if(!$queryresult) $error = new appError(500,"Error retrieving reports.");
 			$this->reports = $queryresult;
 
 			$this->savedSearches = $this->getSaved($_SESSION["userinfo"]["id"],"SCH");

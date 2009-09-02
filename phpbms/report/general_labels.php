@@ -65,7 +65,7 @@
 		//Generate the invoice Query
 		$reportquerystatement.=$_SESSION["printing"]["whereclause"].$sortorder;
 		$thequery=$db->query($reportquerystatement);
-		if(!$thequery) die("No records, or invlaid SQL statement:<br />".$reportquerystatement);
+		if(!$thequery) die("No records, or invalid SQL statement:<br />".$reportquerystatement);
 		//===================================================================================================
 		// Generating PDF File.
 		//===================================================================================================

@@ -1433,7 +1433,7 @@ function showPaymentOptions(){
 			break;
 
 		case "receivable":
-			//first let's check to make sure they can charge to AR
+			//first let us check to make sure they can charge to AR
 			var hascredit = getObjectFromID("hascredit");
 			var creditleft = getObjectFromID("creditleft");
 			var totalti = getObjectFromID("totalti");
@@ -1445,7 +1445,7 @@ function showPaymentOptions(){
 				error = "Receivable payment method cannot be set until a client is chosen";
 
 			if(hascredit.value == 0 && error == "" && type.value != "Invoice" && type.value != "VOID")
-				error = "This client is not currenlty set up with a line of credit.";
+				error = "This client is not currently set up with a line of credit.";
 
 			if(currencyToNumber(creditleft.value) < currencyToNumber(totalti.value) && error == "" && type.value != "Invoice" && type.value != "VOID")
 				error = "Order amount is greater than client's credit limit ("+creditleft.value+" left)";
