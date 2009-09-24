@@ -1056,7 +1056,7 @@ if(class_exists("searchFunctions")){
 					AND
 					(
 						(
-							`notes`.`createdby = '".$_SESSION["userinfo"]["id"]."'
+							`notes`.`createdby` = '".$_SESSION["userinfo"]["id"]."'
 							OR
 							`notes`.`assignedtoid` = '".$_SESSION["userinfo"]["uuid"]."'
 						)
