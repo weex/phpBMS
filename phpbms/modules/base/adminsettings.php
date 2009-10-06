@@ -175,9 +175,9 @@ foreach($phpbms->modules as $module => $moduleinfo)
             <?php if(!$settings->checkForSchedulerRunning()) {?>
             <li id="cronRun">
                 <strong>cron script not running</strong><br />
-                Many features of phpBMS (such as importing, triggers, and recrring invoices)
-                will not work if the scheduler has not bee configured. Check the scheduler
-                section of the system menum for instructions on how to activate the scheduler.
+                Many features of phpBMS (such as importing, triggers, and recurring invoices)
+                will not work if the scheduler has not been configured. Check the scheduler
+                section of the system menu for instructions on how to activate the scheduler.
             </li>
             <?php }//endif ?>
         </ul>

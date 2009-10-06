@@ -235,7 +235,7 @@
 			<label for="sortorder">sorting</label><br />
 			<textarea id="sortorder" name="sortorder" cols="64" rows="2"><?php echo $thecolumn["sortorder"] ?></textarea><br />
 			<span class="notes">
-				sorting affects how phpBMS will sort when you click on the cloumn header.  Leave blank if you want the sort to reflect the field exactly.<br />
+				sorting affects how phpBMS will sort when you click on the column header.  Leave blank if you want the sort to reflect the field exactly.<br />
 				This can be a simple SQL field name (e.g notes.title) or a complex SQL field clause (e.g. concat(clients.firstname," ",clients.lastname).
 			</span>
 		</p>
@@ -243,7 +243,7 @@
 		<p>
 			<label for="footerquery">footer</label><br />
 			<textarea id="footerquery" name="footerquery" cols="32" rows="2"><?php echo $thecolumn["footerquery"] ?></textarea><br />
-			<span class="notes">SQL Group by function (e.g avg(invoices.totalti) whill display the average invoice total at the bottom of the table)</span>		</p>
+			<span class="notes">SQL Group by function (e.g avg(invoices.totalti) will display the average invoice total at the bottom of the table)</span>		</p>
 	</fieldset>
 		<p align="right">
 			<input name="command" id="save" type="submit" value="<?php echo $action?>" class="Buttons" />

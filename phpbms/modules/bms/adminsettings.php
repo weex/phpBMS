@@ -182,9 +182,6 @@
 
 			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
 
-			//if($variables["encrypt_payment_fields"] && !defined("ENCRYPTION_KEY") && !$variables["encryption_key_path"])
-			//	$variables["encrypt_payemnt_fields"] = 0;
-
 			/**
 			  *  Need to encrypt/obfuscate if changing from no encryption and
 			  *  decrypt if changing from encryption.
@@ -196,35 +193,22 @@
 					  *  There has to be a valid encryption key path if the new
 					  *  encryption status is 0
 					  */
-					//if($this->isValidPath(ENCRYPTION_KEY_PATH)){
 
-						$this->decryptPaymentInformation();
+					$this->decryptPaymentInformation();
 
-						if($variables["encryptionPathChanged"]){
+					if($variables["encryptionPathChanged"]){
 
-							/**
-							  *  If the path has changed, we need to make sure
-							  *  that it is a valid one.
-							  */
+						/**
+						  *  If the path has changed, we need to make sure
+						  *  that it is a valid one.
+						  */
 
-							if(!$this->isValidPath($variables["encryption_key_path"])){
-								unset($variables["encryption_key_path"]);
-								$this->updateErrorMessage = "Invalid encryption key path";
-							}//end if --not valid path?--
+						if(!$this->isValidPath($variables["encryption_key_path"])){
+							unset($variables["encryption_key_path"]);
+							$this->updateErrorMessage = "Invalid encryption key path";
+						}//end if --not valid path?--
 
-						}//end if --path changed--
-
-					//}else{
-					//
-					//	unset($variables["encrypt_payment_fields"]);
-					//	$this->updateErrorMessage = "ENCRYPTION_KEY_PATH is not a valid path";
-					//	if($variables["encryptionPathChanged"])
-					//		if(!$this->isValidPath($variables["encryption_key_path"])){
-					//			unset($variables["encryption_key_path"]);
-					//			$this->updateErrorMessage .= " and the encryption key path is invalid";
-					//		}//end if
-					//
-					//}//end if --existing key?--
+					}//end if --path changed--
 
 				}else{
 
@@ -270,21 +254,15 @@
 
 						if($variables["encrypt_payment_fields"]){
 
-							//if(defined("ENCRYPTION_KEY")){
+							$this->decryptPaymentInformation();
 
-								$this->decryptPaymentInformation();
+							$res = fopen($variables["encryption_key_path"], "r");
+							$key = fread($res, filesize($variables["encryption_key_path"]));
+							fclose($res);
+							$key = trim($key);
 
-								$res = fopen($variables["encryption_key_path"], "r");
-								$key = fread($res, filesize($variables["encryption_key_path"]));
-								fclose($res);
-								$key = trim($key);
-
-								$this->encyptPaymentInformation($key);
-								$this->obfuscatePaymentInformation();
-							//}else{
-							//	//new appError(-500, "No existing ENCRYPTION_KEY", "error");
-							//	$this->updateErrorMessage = "ENCRYPTION_KEY undefined";
-							//}//end if --ENCRYPTION KEY defined--
+							$this->encyptPaymentInformation($key);
+							$this->obfuscatePaymentInformation();
 
 						}//end if --encrypt fields?--
 
@@ -313,7 +291,7 @@
 			$theinput = new inputField("shipping_markup",$therecord["shipping_markup"],"shipping markup",false,"real",4,4);
 			$fields[] = $theinput;
 
-			$theinput = new inputField("shipping_postalcode",$therecord["shipping_postalcode"],"shipping orginiation zip/postal code",false,NULL,32,128);
+			$theinput = new inputField("shipping_postalcode",$therecord["shipping_postalcode"],"shipping origination zip/postal code",false,NULL,32,128);
 			$fields[] = $theinput;
 
 			$theinput = new inputDataTableList($db, "default_payment",$therecord["default_payment"],"paymentmethods","uuid","name",

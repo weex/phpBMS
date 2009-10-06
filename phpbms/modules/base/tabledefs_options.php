@@ -171,7 +171,7 @@
                     <p class="notes">
                         Additional command allows you to add items to the
                         other commands drop down on the search screen.
-                        The PHP method name should refrence a function
+                        The PHP method name should reference a function
                         in the tables extended searchFunctions class
                         in the [tablename].php located in the modules
                         include folder.

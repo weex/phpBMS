@@ -164,7 +164,7 @@
 
 					case "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083": //clients
 					default:
-						$smartSearch = "Pick Exisiting Client Address";
+						$smartSearch = "Pick Existing Client Address";
 						break;
 
 				}//endswitch tabledefid

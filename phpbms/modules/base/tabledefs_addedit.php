@@ -168,7 +168,7 @@
 
 			<p class="notes">
 				<strong>Note:</strong> For simple tables, entering the same information as the primary table name is sufficient.
-				For complex data views that invlolve multiple tables, you will want to enter the SQL's FROM clause.
+				For complex data views that involve multiple tables, you will want to enter the SQL's FROM clause.
 			</p>
 			<p class="notes">
 				For example, for invoices, you want to show both the invoice information and the client's name, so you would enter:<br /><br />

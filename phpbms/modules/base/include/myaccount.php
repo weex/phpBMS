@@ -30,7 +30,7 @@ function changePassword($variables,$id,$db){
 			} else
 				return "Current Password Incorrect";
 	} else
-		return "Changing password is disbabled in demonstration mode.";
+		return "Changing password is disabled in demonstration mode.";
 }
 
 function updateContact($variables,$id,$db){

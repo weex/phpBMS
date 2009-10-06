@@ -104,7 +104,7 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 			$calltag=2;
 		break;
 	}
-	
+
 	$response=strtolower($response);
 	switch($response){
 		case "none":
@@ -123,8 +123,8 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 			$response=4;
 		break;
 	}
-	
-	
+
+
 	$shipnot1=strtolower($shipnot1);
 	switch($shipnot1){
 		case "none":
@@ -137,7 +137,7 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 			$shipnot1=2;
 		break;
 	}
-	
+
 	$shipnot2=strtolower($shipnot2);
 	switch($shipnot2){
 		case "none":
@@ -151,7 +151,7 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 		break;
 	}
 
-	// build passed post paramaters
+	// build passed post parameters
 	$passedparams="accept_UPS_license_agreement=yes";
 	$passedparams.="&10_action=3";
 	$passedparams.="&13_product=".$service;
@@ -175,12 +175,12 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 	$passedparams.="&43_vcd=".$verbconf;
 	$passedparams.="&44_firstshipnotify=".$shipnot1;
 	$passedparams.="&45_secondshipnotify=".$shipnot2;
-			
+
 	$request = "POST /using/services/rave/qcostcgi.cgi HTTP/1.0\nContent-type: application/x-www-form-urlencoded\nContent-length: " .
 		strlen($passedparams) . "\n\n" . $passedparams;
-				
+
 	$socket = fsockopen("www.ups.com", 80);
-	fputs($socket, $request);	
+	fputs($socket, $request);
 	$output=fread ($socket, 8192);
 	fclose($socket);
 
@@ -201,7 +201,7 @@ WIDTH     - (optional) Width (in inches) of oversized package.
 	} else {
 		$thereturn["success"]=false;
 		$thereturn["error"]=strtok("%");
-		$thereturn["errorcode"]=strtok("%");		
+		$thereturn["errorcode"]=strtok("%");
 	}
 
 	return($thereturn);

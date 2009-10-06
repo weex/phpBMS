@@ -198,7 +198,7 @@
 			$queryresult = $this->db->query($querystatement);
 
 			if(!$queryresult)
-				$error = new appError(500,"Cannot retrieve saved search infromation");
+				$error = new appError(500,"Cannot retrieve saved search information");
 
 			$querystatement="
 				SELECT
