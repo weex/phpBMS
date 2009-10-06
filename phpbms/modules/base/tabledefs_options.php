@@ -69,10 +69,21 @@
 			"Integrated Feature" => 0,
 			"Additional Commands" => 1,
 		);
-		$theinput = new inputBasicList("type", $therecord["othercommand"], $temparray);
+
+
+        if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){
+            $temparray["Api Commands"] = 2;
+
+            $theinput = new inputDataTableList($db, "pushrecordid", $therecord["pushrecordid"], "pushrecords", "pushrecords.uuid",
+                                               "pushrecords.name", "pushrecords.originuuid = '".$options->tabledefuuid."'",
+                                               "pushrecords.name ASC", true, "Push Record Commands");
+            $theform->addField($theinput);
+        }
+
+		$theinput = new inputBasicList("type", $therecord["type"], $temparray);
 		$theform->addField($theinput);
 
-		$temparray =array(
+		$temparray = array(
 			"new" => "new",
 			"edit" => "edit",
 			"select" => "select",
@@ -156,18 +167,27 @@
 
 			<div id="acDiv">
 
-				<p class="notes">
-					Additional command allows you to add items to the
-					other commands drop down on the search screen.
-					The PHP method name should refrence a function
-					in the tables extended searchFunctions class
-					in the [tablename].php located in the modules
-					include folder.
-				</p>
+				<div id="acNote">
+                    <p class="notes">
+                        Additional command allows you to add items to the
+                        other commands drop down on the search screen.
+                        The PHP method name should refrence a function
+                        in the tables extended searchFunctions class
+                        in the [tablename].php located in the modules
+                        include folder.
+                    </p>
+                    <p><?php $theform->showField("acName") ?></p>
+                </div>
+                <?php if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){ ?>
+                    <div id="apiNote">
+                        <p class="notes">
+                            API stuff.
+                        </p>
+                        <p><?php $theform->showfield("pushrecordid"); ?></p>
+                    </div>
+                <?php }//end if ?>
 
 				<p><?php $theform->showField("acOption") ?></p>
-
-				<p><?php $theform->showField("acName") ?></p>
 
 				<p><?php $theform->showField("needselect") ?></p>
 

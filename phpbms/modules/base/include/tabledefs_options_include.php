@@ -43,6 +43,7 @@
         var $tabledefid;
         var $tabledefuuid;
         var $tablename;
+        var $hasRelatedPushRecord = false;
 
         function tableOptions($db, $tabledefid){
 
@@ -63,6 +64,28 @@
             $therecord = $this->db->fetchArray($queryresult);
 
             $this->tabledefuuid = $therecord["uuid"];
+
+            /**
+              *  Check for push records
+              */
+            //if(isset($phpbms)){
+            //    if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){
+            //        $querystatement = "
+            //            SELECT
+            //                `id`
+            //            FROM
+            //                `pushrecords`
+            //            WHERE
+            //                `originuuid` = '".$this->tabledefuuid."'
+            //        ";
+            //
+            //        $queryresult = $this->db->query($querystatement);
+            //        if($this->db-numRows($queryresult))
+            //            $this->hasRelatedPushRecord = true;
+            //
+            //    }
+            //}
+
             $this->tablename = formatVariable($therecord["displayname"]);
 
         }//end function init
@@ -70,15 +93,19 @@
 
         function getDefaults(){
 
-            return array(
+            $thereturn = array(
                 "id" => NULL,
                 "name" => "",
                 "option" => "",
                 "needselect" => 0,
                 "othercommand" => 0,
                 "roleid" => 0,
-                "displayorder" => 0
+                "displayorder" => 0,
+                "pushrecordid" => "",
+                "type" => 0,
             );
+            
+            return $thereturn;
 
         }//end function getDefaults
 
@@ -89,8 +116,11 @@
                 SELECT
                     tableoptions.id,
                     tableoptions.name,
+                    tableoptions.name AS `displayname`,
+                    IF(`tableoptions`.`othercommand`='0','1',IF(`tableoptions`.`name` LIKE '%:%','3','2')) AS `commandtype`,
                     tableoptions.option,
                     tableoptions.othercommand,
+                    tableoptions.othercommand AS `type`,
                     tableoptions.displayorder,
                     tableoptions.roleid,
                     tableoptions.needselect,
@@ -108,16 +138,64 @@
 
             $querystatement .= "
                 ORDER BY
-                    tableoptions.othercommand,
+                    `commandtype`,
                     tableoptions.displayorder,
                     tableoptions.name";
 
-            return $this->db->query($querystatement);
+            $queryresult = $this->db->query($querystatement);
+                
+            $thereturn = array();
+            while($therecord = $this->db->fetchArray($queryresult)){
+                
+                $therecord["pushrecordid"] = "";
+                
+                /**
+                  *  Here, we check to see if the 'name' field is a pushrecord
+                  *  uuid. If so, we need to set the pushrecordid.
+                  */
+                if($therecord["commandtype"] == 3){
+                        
+                    $therecord["pushrecordid"] = $therecord["name"];
+                    
+                    /**
+                      *  Need name of the push record 
+                      */                        
+                    $pushquery = "
+                        SELECT
+                            `name`
+                        FROM
+                            `pushrecords`
+                        WHERE
+                            `uuid` = '".$therecord["name"]."'
+                    ";
+
+                    $pushresult = $this->db->query($pushquery);
+                    
+                    if($this->db->numRows($pushresult)){
+                        $pushrecord = $this->db->fetchArray($pushresult);
+                        $therecord["displayname"] = $pushrecord["name"];
+                    }//end if
+                        
+                    $therecord["type"] = 2;
+                    
+                }//end if
+
+                $thereturn[] = $therecord;
+
+            }//end while
+
+            return $thereturn;
+            //return $this->db->query($querystatement);
 
         }//end method
 
 
-        function showRecords($queryresult){
+        /**
+          *  function showRecords
+          *  @param array $recordArray
+          */
+
+        function showRecords($recordArray){
 
             global $phpbms;
 
@@ -142,21 +220,37 @@
 
                 <tbody>
                     <?php
-                        if($this->db->numRows($queryresult)){
+                        if(count($recordArray)){
 
                             $row = 1;
 
-                            $other = 3;
+                            $other = 4;
 
-                            while($therecord = $this->db->fetchArray($queryresult)){
+                            foreach($recordArray as $therecord){
 
                                 $row = ($row == 1) ? 2 : 1;
 
-                                    if($therecord["othercommand"] !== $other){
+                                    if($therecord["commandtype"] !== $other){
+                                        
+                                        switch($therecord["commandtype"]){
+                                            
+                                            case 1:
+                                                $title = "Integrated Features";
+                                                break;
+                                            
+                                            case 2:
+                                                $title = "Additional Commands";
+                                                break;
+                                            
+                                            case 3:
+                                                $title = "Api Commands";
+                                                break;
+                                            
+                                        }//end if
 
-                                        ?><tr class="queryGroup"><td colspan="7"><?php echo ($therecord["othercommand"] == 1)? "Additional Commands" : "Integrated Features";?></td></tr><?php
+                                        ?><tr class="queryGroup"><td colspan="7"><?php echo $title;?></td></tr><?php
 
-                                        $other = $therecord["othercommand"];
+                                        $other = $therecord["commandtype"];
 
                                     }//end if ?>
 
@@ -199,7 +293,7 @@
                                         <?php
 
                                             if($therecord["othercommand"])
-                                                echo formatVariable($therecord["name"]);
+                                                echo formatVariable($therecord["displayname"]);
                                             else
                                                 echo "&nbsp;";
 
@@ -248,17 +342,24 @@
             if(!isset($variables["needselect"]))
                 $variables["needselect"] = 0;
 
-            if($variables["type"]){
+            switch($variables["type"]){
 
-                $name = $variables["acName"];
-                $option = $variables["acOption"];
+                case 0:
+                    $name = $variables["ifName"];
+                    $option = $variables["ifOption"];
+                    break;
 
-            } else {
+                case 1:
+                    $name = $variables["acName"];
+                    $option = $variables["acOption"];
+                    break;
 
-                $name = $variables["ifName"];
-                $option = $variables["ifOption"];
+                case 2:
+                    $name = $variables["productid"];
+                    $option = $variables["acOption"];
+                    break;
 
-            } //end if
+            }//end switch
 
             $insertstatement = "
                 INSERT INTO
@@ -295,25 +396,44 @@
             if(!isset($variables["needselect"]))
                 $variables["needselect"] = 0;
 
+            if($variables["type"])
+                $variables["othercommand"] = 1;
+            else
+                $variables["othercommand"] = 0;
+
             $updatestatement = "
                 UPDATE
                     tableoptions
                 SET
                     roleid = '".$variables["roleid"]."',
                     displayorder = ".((int) $variables["displayorder"]).",
-                    othercommand = ".((int) $variables["type"]).",
+                    othercommand = ".((int) $variables["othercommand"]).",
                     needselect = ".((int) $variables["needselect"]).",";
 
-            if(!$variables["type"])
-                $updatestatement .= "
-                    name = '".$variables["ifName"]."',
-                    `option` = '".$variables["ifOption"]."'
-                ";
-            else
-                $updatestatement .= "
-                    name = '".$variables["acName"]."',
-                    `option` = '".$variables["acOption"]."'
-                ";
+            switch($variables["type"]){
+
+                case 0:
+                    $updatestatement .= "
+                        name = '".$variables["ifName"]."',
+                        `option` = '".$variables["ifOption"]."'
+                    ";
+                    break;
+
+                case 1:
+                    $updatestatement .= "
+                        name = '".$variables["acName"]."',
+                        `option` = '".$variables["acOption"]."'
+                    ";
+                    break;
+
+                case 2:
+                    $updatestatement .= "
+                        `name` = '".$variables["pushrecordid"]."',
+                        `option` = '".$variables["acOption"]."'
+                    ";
+                    break;
+
+            }//end switch
 
             $updatestatement .= "
                 WHERE id =".((int) $variables["id"]);
@@ -347,8 +467,8 @@
                     break;
 
                 case "edit":
-                    $queryresult = $this->get($variables["id"]);
-                    $therecord = $this->db->fetchArray($queryresult);
+                    $therecord = $this->get($variables["id"]);
+                    $therecord = $therecord[0];
                     break;
 
                 case "update":

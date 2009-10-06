@@ -45,13 +45,13 @@ if(class_exists("phpbmsTable")){
 		function getDefaults(){
 			$therecord = parent::getDefaults();
 
-			$therecord["moduleid"]=1;
+			$therecord["moduleid"]="mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7";
 			$therecord["deletebutton"]="delete";
 			$therecord["type"]="table";
-			$therecord["searchroleid"]=0;
-			$therecord["importroleid"]=-100;
-			$therecord["advsearchroleid"]=-100;
-			$therecord["viewsqlroleid"]=-100;
+			$therecord["searchroleid"] = "";
+			$therecord["importroleid"] = "Admin";
+			$therecord["advsearchroleid"] = "Admin";
+			$therecord["viewsqlroleid"] = "Admin";
 
 			return $therecord;
 		}
@@ -268,7 +268,7 @@ if(class_exists("phpbmsTable")){
 
 			//and last findfields
 			$querystatement = "INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`)
-			VALUES ('".$variables["uuid"]."','".$variables["maintable"].".uuid','uuid',1,'field');";
+			VALUES ('".$variables["uuid"]."','".$variables["maintable"].".id','id',1,'field');";
 			$this->db->query($querystatement);
 
 			return $newid;

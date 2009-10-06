@@ -140,7 +140,8 @@ ALTER TABLE `rolestousers`
 --scheduler ALTER--
 ALTER TABLE `scheduler` ENGINE=INNODB;
 ALTER TABLE `scheduler`
-    ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
+    ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
+    ADD COLUMN `pushrecordid` varchar(64) default '' AFTER `job`;
 --end scheduler ALTER--
 --settings ALTER--
 ALTER TABLE `settings` ENGINE=INNODB;

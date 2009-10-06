@@ -40,6 +40,7 @@
 	include("include/fields.php");
 	include("include/tables.php");
 
+
 	$thetable = new phpbmstable($db,"tbld:29925e0a-c825-0067-8882-db4b57866a96");
 	$therecord = $thetable->processAddEditPage();
 

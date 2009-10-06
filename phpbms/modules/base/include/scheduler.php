@@ -55,6 +55,8 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["enddate"]="";
 			$therecord["endtime"]="";
+			
+			$therecord["scripttype"] = "job";
 
 			return $therecord;
 
@@ -64,6 +66,13 @@ if(class_exists("phpbmsTable")){
 		function getRecord($id = 0, $useUuid = false){
 			$therecord = parent::getRecord($id, $useUuid);
 
+			if($therecord["job"])
+				$therecord["scripttype"] = "job";
+			else
+				$therecord["scripttype"] = "pushrecord";
+			
+			
+			
 			$datearray=explode(" ",$therecord["startdatetime"]);
 			$therecord["startdate"]=$datearray[0];
 			if(isset($datearray[1])) $therecord["starttime"]=$datearray[1]; else $therecord["starttime"]="";
@@ -87,14 +96,23 @@ if(class_exists("phpbmsTable")){
 
 
 		function verifyVariables($variables){
-
-			//must have the file that has the job that will
-			//be run.
+			
+			$validJob = true;
 			if(isset($variables["job"])){
-				if(!$variables["job"] === "" || $variables["job"] === NULL)
-					$this->verifyErrors[] = "The `job` field must not be blank.";
+				if($variables["job"] === "" || $variables["job"] === NULL)
+					$validJob = false;
 			}else
-				$this->verifyErrors[] = "The `job` field must be set.";
+				$validJob = false;
+				
+			$validPush = true;
+			if(isset($variables["pushrecordid"])){
+				if($variables["pushrecordid"] === "" || $variables["pushrecordid"] === NULL)
+					$validPush = false;
+			}else
+				$validPush = false;
+			
+			if(!$validPush && !$validJob)
+				$this->verifyErrors[] = "The `job` or the `pushrecordid` must be set and not blank.";
 
 			//checks to see if crontab is in the (somewhat) right format
 			if(isset($variables["crontab"])){
@@ -102,7 +120,7 @@ if(class_exists("phpbmsTable")){
 				if(count($explode) != 5)
 					$this->verifyErrors[] = "The `crontab` field is not of the proper form.  There must be four pairs of '::' in the field's value.";
 			}//end if
-
+			
 			return parent::verifyVariables($variables);
 
 		}//end method
@@ -132,9 +150,21 @@ if(class_exists("phpbmsTable")){
 			}else
 				$variables["enddatetime"] = NULL;
 
-
+			switch($variables["scripttype"]){
+				
+				case "job":
+					$variables["pushrecordid"] = "";
+					break;
+					
+				case "pushrecord":
+					$variables["job"] = "";
+					break;
+				
+			}//end switch
+			
 			return $variables;
-		}
+		
+		}//end function
 
 	}//end class
 }//end if

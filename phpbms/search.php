@@ -134,10 +134,19 @@
 
 			}//endif
 
-			if(method_exists($searchFunctions,$functionname))
-				$statusmessage = $searchFunctions->$functionname();
-			else
-				$statusmessage = "Function ".$functionname." not defined";
+			if(!preg_match("/\:/", $functionname)){
+				
+				if(method_exists($searchFunctions,$functionname))
+					$statusmessage = $searchFunctions->$functionname();
+				else
+					$statusmessage = "Function ".$functionname." not defined";
+					
+			}else{
+				
+				if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules))
+					$statusmessage = $searchFunctions->runPush($therecord["name"]);
+				
+			}//end if
 			break;
 
 		case "search":

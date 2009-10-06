@@ -17,6 +17,11 @@ $theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/
 // that should also be located in the module's install folder.
 $theModule->tables = array(
 			"modules",
+            "tablecolumns",
+            "tabledefs",
+            "tablefindoptions",
+            "tableoptions",
+            "tablesearchablefields"
 			);
 
 ?>

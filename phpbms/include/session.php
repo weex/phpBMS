@@ -637,8 +637,8 @@ if(!defined("noStartup")){
 	//Testing for API login
 	if(strpos($scriptname,"api_")!==false){
 
-                if(!isset($_POST["phpbmsformat"]))
-                    $_POST["phpbmsformat"] = "json";
+		if(!isset($_POST["phpbmsformat"]))
+			$_POST["phpbmsformat"] = "json";
 
 		if(isset($_POST["phpbmsusername"]) && isset($_POST["phpbmspassword"])){
 

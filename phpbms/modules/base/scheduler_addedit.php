@@ -53,10 +53,12 @@
 	$currentpath=getcwd();
 
 	$phpbms->cssIncludes[] = "pages/scheduler.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/scheduler.js";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
+		$theform->id = $theform->name;
 
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
@@ -65,14 +67,27 @@
 		$theinput->setAttribute("class","important");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("job",$therecord["job"],"script",true,NULL,32,128,false);
+		if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){
+			
+			$list = array(
+				"file" => "job",
+				"push record"=>"pushrecord"
+			);
+			$theinput = new inputBasicList("scripttype", $therecord["scripttype"], $list, "script type");
+			$theform->addField($theinput);
+			
+			$theinput = new inputSmartSearch($db, "pushrecordid", "Pick Push Record For Cron", $therecord["pushrecordid"]);
+			$theform->addField($theinput);
+		
+		}//end if
+		
+		$theinput = new inputField("job",$therecord["job"],"script",false,NULL,32,128,false);
 		$theform->addField($theinput);
-
+		
 		$theinput = new inputDatePicker("startdate",$therecord["startdate"], "start date" ,true, 11, 15, false);
 		$theform->addField($theinput);
 
 		$theinput = new inputTimePicker("starttime",$therecord["starttime"], "start time" ,true,11, 15, false);
-		//$theinput->setAttribute("onchange","checkEndDate();");
 		$theform->addField($theinput);
 
 		$theinput = new inputDatePicker("enddate",$therecord["enddate"], "end date" ,false, 11, 15, false);
@@ -114,9 +129,15 @@
 
 			<p><?php $theform->showField("name");?></p>
 
-			<p>
-				<label for="job">script</label> <span class="notes">(path relative to <?php echo $currentpath?>)</span><br />
-				<?php $theform->showField("job");?>
+			<?php if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){ ?>
+				<p><?php $theform->showField("scripttype"); ?></p>
+				<p id="pushrecordidp">
+						<?php $theform->showField("pushrecordid"); ?>
+				</p>
+			<?php }//end if ?>	
+			<p id="jobp">
+					<label for="job">script</label> <span class="notes">(path relative to <?php echo $currentpath?>)</span><br />
+					<?php $theform->showField("job");?>
 			</p>
 			<p>
 				<label for="description">description</label><br />

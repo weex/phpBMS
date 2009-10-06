@@ -371,6 +371,7 @@ CREATE TABLE `scheduler` (
   `uuid` varchar(64) NOT NULL,
   `name` varchar(45) default NULL,
   `job` varchar(128) default NULL,
+  `pushrecordid` varchar(64) default '',
   `crontab` varchar(64) default NULL,
   `lastrun` datetime default NULL,
   `startdatetime` datetime NOT NULL,

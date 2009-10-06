@@ -15,12 +15,14 @@
 
 	$now = gmdate('Y-m-d H:i', strtotime('now'));
 
-	$querystatment = "
+	$querystatement = "
 		SELECT
 			id,
 			name,
 			crontab,
+			IF(`pushrecordid` != '', 'pushrecord', 'job') AS `type`,
 			job,
+			`pushrecordid`,
 			startdatetime,
 			enddatetime
 		FROM
@@ -30,7 +32,7 @@
 			AND startdatetime < NOW()
 			AND (enddatetime > NOW() OR enddatetime IS NULL)";
 
-	$queryresult=$db->query($querystatment);
+	$queryresult=$db->query($querystatement);
 
 	while($schedule_record=$db->fetchArray($queryresult)){
 
@@ -50,7 +52,19 @@
 
 		if(is_array($validTimes) && in_array($now, $validTimes)){
 
-			$success = @ include($schedule_record["job"]);
+			switch($schedule_record["type"]){
+				
+				case "job":
+					$success = @ include($schedule_record["job"]);
+					break;
+			
+				case "pushrecord":	
+					include_once("modules/api/include/push.php");
+					$push = new push($db, $schedule_record["pushrecordid"]);
+					$success = $push->process();
+					break;
+				
+			}//end switch
 
 			if($success){
 

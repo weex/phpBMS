@@ -1272,16 +1272,42 @@
 					$message="No records";
 				break;
 				case "1":
-					$message="1 record";
+					$message = "1 record";
 				break;
 				default:
-					$message=$affected." records";
+					$message = $affected." records";
 				break;
 			}
-			if($affected!=$selected)
+			if($affected != $selected)
 				$message.=" (of ".$selected." selected)";
 			return $message;
 		}
+		
+		/*
+		 * function runPush
+		 * @param string $pushRecordUuid
+		 */
+		
+		function runPush($pushRecordUuid) {
+			
+			include_once("modules/api/include/push.php");
+			
+			$uuidArray = getUuidArray($this->db, $this->tabledefuuid, $this->idsArray);
+			
+			if($uuidArray === false)
+				$uuidArray = array();
+			
+			$push = new push($this->db, $pushRecordUuid, $uuidArray);
+			$thereturn = $push->process();
+			
+			if($thereturn !== false)
+				$message = count($push->uuidArray)." record(s) pushed.";
+			else
+				$message = "An error has occured.";
+			
+			return $message;
+			
+		}//end function
 
 
 	}//end class

@@ -72,6 +72,12 @@ class api{
     var $response = array();
 
     /**
+      *  $options
+      *  @var object Object containing the current request's options
+      */
+    var $options;
+
+    /**
      * function api
      *
      * Constructor sets up {@link $db}, decodes {@link $data} using the passed
@@ -126,7 +132,7 @@ class api{
      * function encode
      * encodes data (usually {@link $request}) depending on the {@link $format}
      *
-     * Currently, this function can only decode JSON data, but support for SOAP,
+     * Currently, this function can only encode JSON data, but support for SOAP,
      * generic XML, or some other format may be added
      *
      * @param string $data Information to be encoded
@@ -205,6 +211,54 @@ class api{
 
 
     /**
+     * function processOptions
+     * @param array $options
+     */
+
+    function processOptions($options) {
+
+        $this->options->useUuid = true;
+            if(isset($options["useUuid"]))
+                $this->options->useUuid = (bool)$options["useUuid"];
+
+        /**
+          *   date format options
+          */
+
+        $this->options->dateFormat = "SQL";
+        if(defined("DATE_FORMAT"))
+            $this->options->dateFormat = DATE_FORMAT;
+
+        if(isset($options["dateFormat"]))
+            if($this->isValidDateFormat($options["dateFormat"]))
+                $this->options->dateFormat = $options["dateFormat"];
+
+        /**
+          *  Time format options
+          */
+
+        $this->options->timeFormat = "24 Hour";
+        if(defined("TIME_FORMAT"))
+            $this->options->timeFormat = TIME_FORMAT;
+
+        if(isset($options["timeFormat"]))
+            if($this->isValidTimeFormat($options["timeFormat"]))
+                $this->options->timeFormat = $options["timeFormat"];
+
+        /**
+          *  Id field options
+          *
+          *  This option dictates whether or not to keep the destination's
+          *  id field if "replacing" (via the mysql replace) when there is
+          *  no id field set.
+          */
+        $this->options->keepDestId = true;
+        if(isset($options["keepDestId"]))
+            $this->options->keepDestId = (bool)$options["keepDestId"];
+
+    }//end method --processOptions--
+
+    /**
     * function process
     * Process request array posted to api
     *
@@ -220,12 +274,6 @@ class api{
         $i = 1;
         $tabledefid = null;
 
-        /**
-          *  @var bool $useUuid Whether or not to update/get/delete a record using the
-          *  uuid instead of the id. Default is true.
-          */
-        $useUuid = true;
-
         if(!is_array($this->data))
             $this->sendError("Passed data malformed.  Was expecting an array.", $this->data, true);
 
@@ -237,33 +285,13 @@ class api{
             if(!isset($request["tabledefid"]) || !isset($request["command"]) || !isset($request["data"]))
                 $this->sendError("Malformed request number ".$i, $request);
 
-            $useUuid = true;
-            if(isset($request["options"]["useUuid"]))
-                $useUuid = (bool)$request["options"]["useUuid"];
-
             /**
-              *   date format options
+              *  Process the options and populate the options object.
               */
+            if(!isset($request["options"]))
+                $request["options"] = NULL;
 
-            $dateFormat = "SQL";
-            if(defined("DATE_FORMAT"))
-                $dateFormat = DATE_FORMAT;
-
-            if(isset($request["options"]["dateFormat"]))
-                if($this->isValidDateFormat($request["options"]["dateFormat"]))
-                    $dateFormat = $request["options"]["dateFormat"];
-
-            /**
-              *  Time format options
-              */
-
-            $timeFormat = "24 Hour";
-            if(defined("TIME_FORMAT"))
-                $timeFormat = TIME_FORMAT;
-
-            if(isset($request["options"]["dateFormat"]))
-                if($this->isValidTimeFormat($request["options"]["dateFormat"]))
-                    $timeFormat = $request["options"]["timeFormat"];
+            $this->processOptions($request["options"]);
 
             if((int) $request["tabledefid"] !== $tabledefid){
 
@@ -353,8 +381,8 @@ class api{
                 if(class_exists($className)) {
 
                     $processor = new $className($this->db);
-                    $processor->dateFormat =  $dateFormat;
-                    $processor->timeFormat =  $timeFormat;
+                    $processor->dateFormat =  $this->options->dateFormat;
+                    $processor->timeFormat =  $this->options->timeFormat;
 
                     if(!method_exists($processor, $request["command"])) {
 
@@ -379,12 +407,12 @@ class api{
 
                 if(class_exists($maintable)){
                     $processor = new $maintable($this->db, $tabledefid);
-                    $processor->dateFormat =  $dateFormat;
-                    $processor->timeFormat =  $timeFormat;
+                    $processor->dateFormat =  $this->options->dateFormat;
+                    $processor->timeFormat =  $this->options->timeFormat;
                 }else{
                     $processor = new phpbmsTable($this->db, $tabledefid);
-                    $processor->dateFormat =  $dateFormat;
-                    $processor->timeFormat =  $timeFormat;
+                    $processor->dateFormat =  $this->options->dateFormat;
+                    $processor->timeFormat =  $this->options->timeFormat;
                 }
 
                 if(method_exists($processor, $request["command"])){
@@ -438,18 +466,18 @@ class api{
 
                             if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }//end if
 
                         } else{
                             $processor = new phpbmsTable($this->db, $tabledefid);
-                            $processor->dateFormat =  $dateFormat;
-                            $processor->timeFormat =  $timeFormat;
+                            $processor->dateFormat =  $this->options->dateFormat;
+                            $processor->timeFormat =  $this->options->timeFormat;
                         }//end if
 
                         $errorArray = $processor->verifyVariables((array) $request["data"]);
@@ -460,9 +488,15 @@ class api{
 
                             $overrideID = false;
                             if(is_array($request["data"]))
-                                if(isset($request["data"]["id"]))
+                                if(isset($request["data"]["id"])){
+
                                     if(((int)$request["data"]["id"]) !== 0)
                                         $overrideID = true;
+                                    if($this->options->keepDestId && isset($request["data"]["uuid"]) && $this->options->useUuid)
+                                        $request["data"]["id"] = getId($this->db, $processor->uuid, $request["data"]["uuid"]);
+
+                                }elseif($this->options->keepDestId && isset($request["data"]["uuid"]) && $this->options->useUuid)
+                                    $request["data"]["id"] = getId($this->db, $processor->uuid, $request["data"]["uuid"]);
 
                             $createUuid = true;
                             if(is_array($request["data"]))
@@ -470,12 +504,12 @@ class api{
                                     if((string)$request["data"]["uuid"] !== ""){
                                         $overrideID = true;
                                         $createUuid = false;
-                                    }
+                                    }//end if
 
                             if(!isset($processor->fields["uuid"]))
                                 $createUuid = false;
 
-                            $newid = $processor->insertRecord($request["data"], null, $overrideID, true, $createUuid);
+                            $newid = $processor->insertRecord($request["data"], NULL, $overrideID, true, $createUuid);
 
                             if($newid){
                                 if($createUuid){
@@ -502,23 +536,23 @@ class api{
 
                             if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }//end if
 
                         } else {
                             $processor = new phpbmsTable($this->db, $tabledefid);
-                            $processor->dateFormat =  $dateFormat;
-                            $processor->timeFormat =  $timeFormat;
+                            $processor->dateFormat =  $this->options->dateFormat;
+                            $processor->timeFormat =  $this->options->timeFormat;
                         }//end if
 
                         $errorArray = $processor->verifyVariables($request["data"]);
 
-                        if($useUuid){
+                        if($this->options->useUuid){
                             if(!isset($request["data"]["uuid"]))
                                 $errorArray[] = "The `uuid` field must be set.";
                         }else{
@@ -531,7 +565,7 @@ class api{
                             $this->sendError("Update failed from request number ".$i, $errorArray);
                         else {
 
-                            $processor->updateRecord($request["data"], NULL, (bool)$useUuid);
+                            $processor->updateRecord($request["data"], NULL, (bool)$this->options->useUuid);
 
                             $this->_addToResponse("updated", "record updated in tabledef ".$tabledefid);
 
@@ -550,26 +584,26 @@ class api{
 
                             if(class_exists($maintable)){
                                 $processor = new $maintable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }else{
                                 $processor = new phpbmsTable($this->db, $tabledefid);
-                                $processor->dateFormat =  $dateFormat;
-                                $processor->timeFormat =  $timeFormat;
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
                             }//end if
 
                         } else {
                             $processor = new phpbmsTable($this->db, $tabledefid);
-                            $processor->dateFormat =  $dateFormat;
-                            $processor->timeFormat =  $timeFormat;
+                            $processor->dateFormat =  $this->options->dateFormat;
+                            $processor->timeFormat =  $this->options->timeFormat;
                         }//end if
 
-                        if(!$useUuid){
-                            $therecord = $processor->getRecord((int) $request["data"]["id"], $useUuid);
+                        if(!$this->options->useUuid){
+                            $therecord = $processor->getRecord((int) $request["data"]["id"], $this->options->useUuid);
                             $thereturn = $therecord["id"];
                             $thevalue = (int)$request["data"]["id"];
                         }else{
-                            $therecord = $processor->getRecord(mysql_real_escape_string($request["data"]["uuid"]), $useUuid);
+                            $therecord = $processor->getRecord(mysql_real_escape_string($request["data"]["uuid"]), $this->options->useUuid);
                             $thereturn = $therecord["uuid"];
                             $thevalue = $request["data"]["uuid"];
                         }
@@ -619,7 +653,7 @@ class api{
                                 $processor = new searchFunctions($this->db, $tabledefid, $request["data"]);
 
 
-                            $result = $processor->delete_record($useUuid);
+                            $result = $processor->delete_record($this->options->useUuid);
 
                             $this->_addToResponse($request["command"], $result);
 
@@ -732,8 +766,8 @@ class api{
                                 else{
 
                                     $processor = new $className($this->db, $tabledefid, $request["data"]);
-                                    $processor->dateFormat =  $dateFormat;
-                                    $processor->timeFormat =  $timeFormat;
+                                    $processor->dateFormat =  $this->options->dateFormat;
+                                    $processor->timeFormat =  $this->options->timeFormat;
 
                                     $methodName = $request["command"];
 

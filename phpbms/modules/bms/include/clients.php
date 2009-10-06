@@ -227,11 +227,11 @@ if(class_exists("phpbmsTable")){
 			if(isset($variables["otherphone"]))
 				if( $variables["otherphone"] !== NULL && $variables["otherphone"] !== "" && !validatePhone($variables["otherphone"]))
 					$this->verifyErrors[] = "The `otherphone` field must have a valid phone number (as set in configuration) or must be left blank.";
-
+			*/
 			//check bool on has credit
 			if(isset($variables["hascredit"]))
 				if($variables["hascredit"] && $variables["hascredit"] != 1)
-					$this->verifyErrors[] = "The `hascredit` field must be a boolean (equivalent to 0 or exactly 1).";*/
+					$this->verifyErrors[] = "The `hascredit` field must be a boolean (equivalent to 0 or exactly 1).";
 
 
 			//----------------[ Order Defaults]------------------------------------------------------

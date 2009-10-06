@@ -443,6 +443,33 @@ function getUuidPrefix($db, $tabledefuuid){
 }//end function getUuidPrefix
 
 
+/**
+ * function moduleExists
+ * @param string $moduleUuid A potential module uuid
+ * @param array $moduleArray array of module information from $phpbms->modules
+ * @return bool Whether or not the module corrisponding to the $moduleUuid exists
+ * in the $moduleArray
+ */
+
+function moduleExists($moduleUuid, $moduleArray) {
+
+	if(count($moduleArray)){
+
+		foreach($moduleArray as $moduleRecord){
+
+			if(isset($moduleRecord["uuid"]))
+				if($moduleRecord["uuid"] == $moduleUuid)
+					return true;
+
+		}//end foreach
+
+	}//end if
+
+	return false;
+
+}//end function
+
+
 function xmlEncode($str){
 	$str=str_replace("&","&amp;",$str);
 	$str=str_replace("<","&lt;",$str);

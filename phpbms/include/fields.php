@@ -622,7 +622,7 @@ class inputDataTableList extends inputField{
 
 	   whereclause = 	SQL WHERE clause (minus the WHERE)
 	   orderclasue = 	SQL ORDER BY clause (minus the ORDER BY)
-	   hasblank =		boolean, wehterh <none> (0) can be an option
+	   hasblank =		boolean, whether <none> (0) can be an option
 	*/
 
 	function inputDataTableList($db, $id, $value, $table, $valuefield, $displayfield,

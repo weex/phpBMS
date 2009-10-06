@@ -1325,15 +1325,15 @@ function calculatePaidDue(){
 //this function adds all the tax,shipping,subtotal, and totaling stuff
 function calculateTotal(){
 
-	var thetotalBD=getObjectFromID("totalBD");
-	var subtotal=getObjectFromID("totaltni");
-	var thediscount=getObjectFromID("discountamount");
-	var shipping=getObjectFromID("shipping");
-	var taxpercentage=getObjectFromID("taxpercentage");
-	var tax=getObjectFromID("tax");
-	var totalti=getObjectFromID("totalti");
-	var totaltaxable=getObjectFromID("totaltaxable");
-	var discountFromID=getObjectFromID("discount");
+	var thetotalBD = getObjectFromID("totalBD");
+	var subtotal = getObjectFromID("totaltni");
+	var thediscount = getObjectFromID("discountamount");
+	var shipping = getObjectFromID("shipping");
+	var taxpercentage = getObjectFromID("taxpercentage");
+	var tax = getObjectFromID("tax");
+	var totalti = getObjectFromID("totalti");
+	var totaltaxable = getObjectFromID("totaltaxable");
+	var discountFromID = getObjectFromID("discount");
 
 	//calculate and reformat discount
 	var numDiscount;
@@ -1342,13 +1342,13 @@ function calculateTotal(){
 	} else {
 		// compute discount from discount id
 		if(discountFromID.value.indexOf("%")!=-1){
-			numDiscount=parseFloat(thetotalBD.value)*parseFloat(discountFromID.value.substring(0,discountFromID.value.length-1))/100
+			numDiscount=parseFloat(thetotalBD.value)*parseFloat(discountFromID.value.substring(0,discountFromID.value.length-1))/100;
 		} else {
 			numDiscount=parseFloat(discountFromID.value);
 		}
 	}
 
-	thediscount.value= numberToCurrency(numDiscount);
+	thediscount.value = numberToCurrency(numDiscount);
 
 	//calculate totaltaxable
 	if(totaltaxable.value == "")
@@ -1361,9 +1361,9 @@ function calculateTotal(){
 	subtotal.value=subtotalValue;
 
 	//next calculate and reformat shipping
-	var numshipping=currencyToNumber(shipping.value);
-	shippingValue=numberToCurrency(numshipping);
-	shipping.value=shippingValue;
+	var numshipping = currencyToNumber(shipping.value);
+	shippingValue = numberToCurrency(numshipping);
+	shipping.value = shippingValue;
 
 	//next calculate and reformat tax
 	var taxpercentagevalue=getNumberFromPercentage(taxpercentage.value)
@@ -1385,7 +1385,7 @@ function calculateTotal(){
 	tax.value=taxValue;
 
 	//last calculate and format the grand total
-	var thetotal=numsubtotal+numshipping+numtax;
+	var thetotal = roundForCurrency(numsubtotal + numshipping + numtax);
 	thetotal=numberToCurrency(thetotal);
 	totalti.value=thetotal;
 

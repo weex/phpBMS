@@ -642,7 +642,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
          *
          * @param array $variables associaive array with the record information
          * @param int $createdby id of the user creating the record.  If NULL (default) it will use the currently logged in user
-         * @param bool $overrideID
+         * @param bool $overrideID Whether to override the `id` field with the new given value (if it exists)
          * @param bool $replace use the SQL replace statement (true) instead of insert (false, deault)
          * @param bool $useUuid generates a uuid and specifies the function to retrn an array with uuid and id instead of just the id
          *
