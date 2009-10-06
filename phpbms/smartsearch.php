@@ -146,8 +146,6 @@ class smartSearch{
 				".$this->searchParams["displayfield"]."
 			LIMIT ".((int) $offset).", 8";
 
-//echo $querystatement;
-//exit;
 		//need to retireve count of all records so
 		// the JS can know wheher to put the show more results on.
 		$totalCountStatement = "

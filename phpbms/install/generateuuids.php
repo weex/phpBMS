@@ -168,6 +168,7 @@ class generateUUIDS extends installUpdateBase{
         $this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         $this->updateFields("tabs", array("roleid"=>$this->roleList));
         $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
+        $this->updateFields("log", array("userid"=>$this->userList));
 
         //custom stuff
         $this->updateMenuLinks();
@@ -292,7 +293,6 @@ class generateUUIDS extends installUpdateBase{
                         `id` = ".$therecord["id"]."
                 ";
 
-//echo $updatestatement."<br />";
                 $this->db->query($updatestatement);
 
             }//endif
@@ -302,6 +302,15 @@ class generateUUIDS extends installUpdateBase{
     }//end function updateField
 
 
+    /**
+      *  function creatUUIDs
+      *  
+      *  Gives randomly created uuids to a table with $tabledefuuid (keeping
+      *  the prefix in the tabledef consistent).
+      *  
+      *  @param string $tabledefuuid
+      */
+    
     function createUUIDs($tabledefuuid){
 
         $querystatement  = "
@@ -615,6 +624,8 @@ class generateUUIDS extends installUpdateBase{
 // START PROCESSING
 //==============================================================================
 
-$genUUIDS = new generateUUIDS();
+if(!isset($noProcess)){
+    $genUUIDS = new generateUUIDS();
 
-echo $genUUIDS->process();
+    echo $genUUIDS->process();
+}//end if

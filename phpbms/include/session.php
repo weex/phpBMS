@@ -238,7 +238,12 @@ class phpbmsLog{
 	var $db = NULL;
 	var $type = "ERROR";
 	var $value = "";
-	var $userid = 2;
+	
+	/**	
+	  *   $userid
+	  *   @var string user's uuid
+	  */
+	var $userid = "usr:cb67a60b-a264-735c-6189-49a7c883af0b";
 
 	function phpbmsLog($value=NULL,$type=NULL,$userid=NULL,$db=NULL,$sendLog=true){
 
@@ -280,7 +285,7 @@ class phpbmsLog{
 			$this->type = $type;
 
 		if($userid)
-			$this->userid = ((int) $userid);
+			$this->userid = $userid;
 
 		if($sendLog)
 			return $this->sendLog();
@@ -301,7 +306,7 @@ class phpbmsLog{
 			(`type`, `value`, `userid`, `ip`) VALUES (
 				'".mysql_real_escape_string($this->type)."',
 				'".mysql_real_escape_string($this->value)."',
-				".$this->userid.",
+				".mysql_real_escape_string($this->userid).",
 				'".$ip."'
 			)";
 

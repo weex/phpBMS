@@ -70,11 +70,11 @@
 
 				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
 				$db->query($updatestatement);
-				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER",-2);
+				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER","usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75");
 
 			} else {
 
-				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors","SCHEDULER",-2);
+				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") returned errors","SCHEDULER","usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75");
 
 			}//endif success
 

@@ -410,7 +410,11 @@ UPDATE `tabledefs` SET
 WHERE
     `id`='201';
 
-UPDATE `tabledefs` SET `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667' WHERE `id`='202';
+UPDATE `tabledefs` SET
+    `uuid`='tbld:3f71ab66-1f84-d68b-e2a3-3ee3bb0ec667',
+    `querytable` = 'log LEFT JOIN users ON log.userid=users.uuid'
+WHERE
+    `id`='202';
 
 UPDATE `tabledefs` SET
     `uuid`='tbld:7e75af48-6f70-d157-f440-69a8e7f59d38',
@@ -425,6 +429,7 @@ UPDATE `tabledefs` SET
     `querytable` = '(`smartsearches` INNER JOIN `tabledefs` ON `smartsearches`.`tabledefid` = `tabledefs`.`uuid`) INNER JOIN `modules` ON `smartsearches`.`moduleid` = `modules`.`uuid`'
 WHERE
     `id`='204';
+
 --end tabledefs UPDATE--
 --tablefindoptions INSERST--
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:2ad5146c-d4c0-db8e-592a-c0cc2f3c2c21', 'All Records', 'widgets.id!=-1', '0', '');
