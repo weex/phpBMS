@@ -306,7 +306,7 @@ class phpbmsLog{
 			(`type`, `value`, `userid`, `ip`) VALUES (
 				'".mysql_real_escape_string($this->type)."',
 				'".mysql_real_escape_string($this->value)."',
-				".mysql_real_escape_string($this->userid).",
+				'".mysql_real_escape_string($this->userid)."',
 				'".$ip."'
 			)";
 
