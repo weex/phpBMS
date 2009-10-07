@@ -271,15 +271,40 @@ class generateUUIDS extends installUpdateBase{
             FROM
                 `".$table."`";
         $queryresult = $this->db->query($querystatement);
+        
+        $initialClause = "";
+        
+        $tablestatement = "
+            SHOW FIELDS FROM
+                `".$table."`
+            WHERE
+                `field` = 'stamp'
+            OR
+                `field` = 'modifieddate'
+        ";
+        
+        $tableresult = $this->db->query($tablestatement);
+        
+        while($tablerecord = $this->db->fetchArray($tableresult))
+            switch($tablerecord["Field"]){
+                
+                case "modifieddate":
+                case "stamp":
+                    $initialClause .= ", `".$tablerecord["Field"]."` = `".$tablerecord["Field"]."`";
+                    break;
+                
+                default:
+                    break;
+            }//end switch
 
         while($therecord = $this->db->fetchArray($queryresult)){
 
-            $updateClause = "";
+            $updateClause = $initialClause;
 
             foreach($fields as $key=>$value)
                 if(strpos($therecord[$key],":") === false)
-                    $updateClause .= ", `$key` = '".$value[$therecord[$key]]."'";
-
+                    $updateClause .= ", `".$key."` = '".$value[$therecord[$key]]."'";
+            
             if($updateClause){
 
                 $updateClause = substr($updateClause, 1);

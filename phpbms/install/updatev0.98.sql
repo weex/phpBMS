@@ -494,7 +494,7 @@ UPDATE `tabs` SET `uuid`='tab:c111eaf5-692b-9c7d-1d46-1bacb6703361' WHERE `id`='
 --users UPDATE--
 UPDATE `users` SET `uuid`='usr:5c196e01-193a-8952-fee7-29b4e5e6a0b0' WHERE `id`='1';
 UPDATE `users` SET `uuid`='usr:cb67a60b-a264-735c-6189-49a7c883af0b' WHERE `id`='2';
-UPDATE `users` SET `uuid`='usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75' WHERE `id`='3';
+UPDATE `users` SET `uuid`='usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75' WHERE `id`='-2';
 --end users UPDATE--
 --widgets INSERT--
 INSERT INTO `widgets` (`uuid`, `type`, `title`, `file`, `roleid`, `moduleid`, `default`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('wdgt:a1aec114-954b-37c1-0474-7d4e851c728c', 'little', 'Workload', 'widgets/workload/class.php', '', 'mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7', '1', 1, NOW(), 1, NOW());

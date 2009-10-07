@@ -1,0 +1,32 @@
+#topButtons{float:right;width:160px;}
+#h1Title{margin-right:160px;}
+#fsAttributes{clear:both;float:right;width:240px;margin:0;}
+#nameDiv{margin-right:249px;}
+
+#customwherespan,
+#customdestuuidspan,
+#customcommandspan{
+    display:none;
+}
+
+#httpformat{
+    float:left;
+    margin-right: 15px;
+}
+#portP{
+    clear:both;
+    margin-top:3px;
+}
+
+#showoptions{
+    width:125px;
+}
+
+#showoptions span{
+	display:inline;
+	padding-left:15px;
+	color : #455372; 
+	font-weight:bold;
+}
+
+#showoptions:hover span{text-decoration:underline;}

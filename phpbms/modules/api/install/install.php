@@ -16,6 +16,7 @@ $theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/
 // SQL files that match table name entries in the tables array (defined below)
 // that should also be located in the module's install folder.
 $theModule->tables = array(
+            "menu",
 			"modules",
             "tablecolumns",
             "tabledefs",

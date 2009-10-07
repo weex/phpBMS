@@ -1,0 +1,1 @@
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.id', 'id', '1', 'field');
