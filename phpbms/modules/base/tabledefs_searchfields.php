@@ -101,8 +101,8 @@
 		$theinput = new  inputBasicList("type",$thesearchfield["type"],array("field"=>"field","SQL where clause"=>"whereclause"));
 		$theform->addField($theinput);
 
-//		$theinput = new inputField("field",$thesearchfield["field"],"field name / SQL where clause",true,NULL,32,255);
-//		$theform->addField($theinput);
+		$theinput = new inputTextarea("field", $thesearchfield["field"], NULL, true, 2, 64, false);
+		$theform->addField($theinput);
 
 		$theform->jsMerge();
 		//==============================================================
@@ -164,7 +164,7 @@
 			<p><?php $theform->showField("type")?></p>
 
 			<p>
-				<textarea id="field" name="field" cols="64" rows="2" style="width: 99%"><?php echo $thesearchfield["field"] ?></textarea><br />
+				<?php $theform->showField("field"); ?><br />
 				<span class="notes">This can be a simple SQL field name (e.g notes.title) or a complex SQL clause where the value is passed
 				(e.g. assignedto.firstname like "{{value}}%"or assignedto.lastname like "{{value}}%") depending on the type drop down (above) chosen.</span>
 			</p>

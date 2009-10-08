@@ -247,7 +247,7 @@
                 <p>
                     <span class="notes">
                         Extra options can be added in a json object format of
-                        option:value. Example: { var0:value0, var1:value1,...}
+                        option:value. Example: { "var0":"value0", "var1":"value1",...}
                     </span>
                     <br/>
                     <?php $theform->showField("extraoptions"); ?>

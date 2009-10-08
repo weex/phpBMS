@@ -198,8 +198,9 @@ class tableSearchFields{
 
         $maxrecord = $this->db->fetchArray($queryresult);
 
-        if(!(($direction == "down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction=="up" && $therecord["displayorder"]=="0"))){
-
+        //if(!(($direction == "down" && $therecord["displayorder"] == $maxrecord["themax"]) || ($direction=="up" && $therecord["displayorder"]=="0"))){
+        if(($direction != "down" || $therecord["displayorder"] != $maxrecord["themax"]) && ($direction != "up" || $therecord["displayorder"] != "0")){
+            
             $updatestatement = "
                 UPDATE
                     `tablesearchablefields`
@@ -219,13 +220,13 @@ class tableSearchFields{
                 WHERE
                     id=".((int) $id);
 
-            $this->db->query($querystatement);
-
+            $this->db->query($updatestatement);
+            
             return "Position Moved";
 
         }//endif
 
-        return false;
+        return "Invalid Move";
 
     }//end function move
 

@@ -1,1 +1,4 @@
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.id', 'id', '1', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.id', 'id', '4', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.name', 'name', '1', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.server', 'server', '2', 'field');
+INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:73adc80f-7f0e-e340-937e-41194c5bda29', 'pushrecords.apicommand', 'command', '3', 'field');

@@ -2,4 +2,4 @@
 /* $LastChangedDate$ */
 #topTitle{}
 .noselects{cursor:auto}
-#search{width:99%}
+#search, #field{width:99%}
