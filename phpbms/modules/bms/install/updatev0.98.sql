@@ -492,6 +492,11 @@ UPDATE `tabledefs` SET
 WHERE
     `id`='6';
 UPDATE `tabledefs` SET
+    `uuid` = 'tbld:3342a3d4-c6a2-3a38-6576-419299859561',
+    `prefix` = 'pcat'
+WHERE
+    `id`='7';
+UPDATE `tabledefs` SET
     `uuid`='tbld:8179e105-5487-5173-d835-d9d510cc7f1b',
     `querytable` = '(prerequisites LEFT JOIN `products` ON prerequisites.parentid=products.uuid) LEFT JOiN products AS childproducts on prerequisites.childid=childproducts.uuid'
 WHERE
