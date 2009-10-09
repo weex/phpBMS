@@ -355,7 +355,7 @@
                     break;
 
                 case 2:
-                    $name = $variables["productid"];
+                    $name = $variables["pushrecordid"];
                     $option = $variables["acOption"];
                     break;
 
