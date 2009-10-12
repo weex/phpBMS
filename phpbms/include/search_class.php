@@ -1279,7 +1279,7 @@
 				break;
 			}
 			if($affected != $selected)
-				$message.=" (of ".$selected." selected)";
+				$message .= " (of ".$selected." selected)";
 			return $message;
 		}
 		
