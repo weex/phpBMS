@@ -122,9 +122,13 @@ class generateUUIDS extends installUpdateBase{
             $this->clientList = $this->generateUUIDList("clients");
             $this->statusList = $this->generateUUIDList("invoicestatuses");
             $this->discountList = $this->generateUUIDList("discounts");
+            $this->discountList[0] = "";
             $this->taxList = $this->generateUUIDList("tax");
+            $this->taxList[0] = "";
             $this->shippingList = $this->generateUUIDList("shippingmethods");
+            $this->shippingList[0] = "";
             $this->paymentList = $this->generateUUIDList("paymentmethods");
+            $this->paymentList[0] = "";
             $this->invoiceList = $this->generateUUIDList("invoices");
             $this->invoiceStatusList = $this->generateUUIDList("invoicestatuses");
 
@@ -188,6 +192,15 @@ class generateUUIDS extends installUpdateBase{
                                   "paymentmethodid" =>$this->paymentList
                                   );
             $this->updateFields("invoices", $invoiceArray);
+            
+            $clientArray = array(
+                                "taxareaid"         =>$this->taxList,
+                                "shippingmethodid"  =>$this->shippingList,
+                                "paymentmethodid"   =>$this->paymentList,
+                                "discountid"        =>$this->discountList,
+                                "salesmanegerid"    =>$this->userList
+                                );
+            $this->updateFields("clients", $clientArray);
 
             $this->updateFields("lineitems", array("productid"=>$this->productsList));
             $this->updateFields("invoicestatuses", array("defaultassignedtoid"=>$this->userList));
