@@ -282,18 +282,18 @@ INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `created
 UPDATE `modules` SET `uuid`='mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc' WHERE `id`='2';
 --end module UPDATE--
 --paymentmethods UPDATE--
-UPDATE `paymentmethods` SET `uuid`='paym:5efd94ea-8e71-f5a2-d30a-b23e1ef54b26' WHERE `id`='1';
-UPDATE `paymentmethods` SET `uuid`='paym:1e3fb0cd-7a39-cbc5-6a46-3ff95c07f94d' WHERE `id`='2';
-UPDATE `paymentmethods` SET `uuid`='paym:d1aabcd6-0999-03b8-20e1-1b940b58346e' WHERE `id`='3';
-UPDATE `paymentmethods` SET `uuid`='paym:f193f243-29e6-ee37-e73b-d0808d1d22d2' WHERE `id`='4';
-UPDATE `paymentmethods` SET `uuid`='paym:c9a4e2f4-2f46-761c-6bb0-6b01de0d0470' WHERE `id`='5';
-UPDATE `paymentmethods` SET `uuid`='paym:085963a3-a30b-a4ee-887d-d199a0e1ec65' WHERE `id`='6';
-UPDATE `paymentmethods` SET `uuid`='paym:9fd45f33-ba56-e9a9-e167-00c0ea2200ad' WHERE `id`='7';
-UPDATE `paymentmethods` SET `uuid`='paym:c4d76cc7-9368-16a1-7cc9-443fe5479fb4' WHERE `id`='8';
-UPDATE `paymentmethods` SET `uuid`='paym:a911dad0-d393-e86d-b238-24aea7f6f797' WHERE `id`='9';
-UPDATE `paymentmethods` SET `uuid`='paym:77411629-5911-f318-cadd-e6e8b14203e2' WHERE `id`='10';
-UPDATE `paymentmethods` SET `uuid`='paym:aa837c8a-8878-5339-bc5c-0004cd6e091c' WHERE `id`='11';
-UPDATE `paymentmethods` SET `uuid`='paym:d2909465-4a20-9e88-5e2a-d4f85a57a547' WHERE `id`='12';
+UPDATE `pamentmethods` SET `uuid`='paym:5efd94ea-8e71-f5a2-d30a-b23e1ef54b26' WHERE `name`='Business Check';
+UPDATE `pamentmethods` SET `uuid`='paym:1e3fb0cd-7a39-cbc5-6a46-3ff95c07f94d' WHERE `name`='Personal Check';
+UPDATE `pamentmethods` SET `uuid`='paym:d1aabcd6-0999-03b8-20e1-1b940b58346e' WHERE `name`='Cashiers Check';
+UPDATE `pamentmethods` SET `uuid`='paym:f193f243-29e6-ee37-e73b-d0808d1d22d2' WHERE `name`='VISA';
+UPDATE `pamentmethods` SET `uuid`='paym:c9a4e2f4-2f46-761c-6bb0-6b01de0d0470' WHERE `name`='Mastercard';
+UPDATE `pamentmethods` SET `uuid`='paym:085963a3-a30b-a4ee-887d-d199a0e1ec65' WHERE `name`='American Express';
+UPDATE `pamentmethods` SET `uuid`='paym:9fd45f33-ba56-e9a9-e167-00c0ea2200ad' WHERE `name`='Cash';
+UPDATE `pamentmethods` SET `uuid`='paym:c4d76cc7-9368-16a1-7cc9-443fe5479fb4' WHERE `name`='Net 30';
+UPDATE `pamentmethods` SET `uuid`='paym:a911dad0-d393-e86d-b238-24aea7f6f797' WHERE `name`='Wire Transfer';
+UPDATE `pamentmethods` SET `uuid`='paym:77411629-5911-f318-cadd-e6e8b14203e2' WHERE `name`='Money Order';
+UPDATE `pamentmethods` SET `uuid`='paym:aa837c8a-8878-5339-bc5c-0004cd6e091c' WHERE `name`='VISA - Debit';
+UPDATE `pamentmethods` SET `uuid`='paym:d2909465-4a20-9e88-5e2a-d4f85a57a547' WHERE `name`='Discover Card';
 --end paymentmethods UPDATE--
 --relationships INSERT--
 DELETE FROM `relationships` WHERE `id`<= '32';
@@ -382,13 +382,13 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('encrypt_payment_fields', '0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('encryption_key_path', '');
 --end settings INSERT--
 --shippingmethods UPDATE--
-UPDATE `shippingmethods` SET `uuid`='shp:f34a3e10-e782-2675-f041-71f5c88f5aa9' WHERE `id`='1';
-UPDATE `shippingmethods` SET `uuid`='shp:e2e43816-667a-fdf3-6bec-4456bcf8bef0' WHERE `id`='2';
-UPDATE `shippingmethods` SET `uuid`='shp:0f07f7fd-0352-8df7-8294-a57e5e375808' WHERE `id`='3';
-UPDATE `shippingmethods` SET `uuid`='shp:6ef11711-7335-3e90-cf27-df5ea23c1480' WHERE `id`='4';
-UPDATE `shippingmethods` SET `uuid`='shp:1a0c53bd-6754-7d9f-4bea-bad57628187a' WHERE `id`='5';
-UPDATE `shippingmethods` SET `uuid`='shp:9e0bad1f-0545-6b09-3900-4e5943629037' WHERE `id`='6';
-UPDATE `shippingmethods` SET `uuid`='shp:ba131229-fb3d-d328-91c8-323480831b03' WHERE `id`='7';
+UPDATE `shippingmethods` SET `uuid`='shp:f34a3e10-e782-2675-f041-71f5c88f5aa9' WHERE `name`='FedEx Priority Overnight AM';
+UPDATE `shippingmethods` SET `uuid`='shp:e2e43816-667a-fdf3-6bec-4456bcf8bef0' WHERE `name`='FedEx Standard Overnight';
+UPDATE `shippingmethods` SET `uuid`='shp:0f07f7fd-0352-8df7-8294-a57e5e375808' WHERE `name`='UPS 2nd Day Air'; 
+UPDATE `shippingmethods` SET `uuid`='shp:6ef11711-7335-3e90-cf27-df5ea23c1480' WHERE `name`='UPS 3 Day Select';
+UPDATE `shippingmethods` SET `uuid`='shp:1a0c53bd-6754-7d9f-4bea-bad57628187a' WHERE `name`='UPS Ground (Com)';
+UPDATE `shippingmethods` SET `uuid`='shp:9e0bad1f-0545-6b09-3900-4e5943629037' WHERE `name`='UPS Ground (Res)';
+UPDATE `shippingmethods` SET `uuid`='shp:ba131229-fb3d-d328-91c8-323480831b03' WHERE `name`='UPS Next Day Air';
 --end shippingmethods UPDATE--
 --smartsearches INSERT--
 INSERT INTO `smartsearches` (`uuid`, `name`, `fromclause`, `valuefield`, `displayfield`, `secondaryfield`, `classfield`, `searchfields`, `filterclause`, `rolefield`, `tabledefid`, `moduleid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('smrt:eed8c810-f9c8-077b-4b3e-9aef451f8057', 'Pick Product Category For Product', 'productcategories', 'productcategories.uuid', 'productcategories.name', '\'\'', '\'\'', 'productcategories.name', 'productcategories.inactive = 0', '\'\'', 'tbld:3342a3d4-c6a2-3a38-6576-419299859561', 'mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc', 1, NOW(), 1, NOW());

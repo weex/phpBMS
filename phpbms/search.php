@@ -101,19 +101,6 @@
 			$displayTable->recordoffset=0;
 			$theids=explode(",",$_POST["theids"]);
 
-			//try to include table specific functions
-			if(file_exists("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php"))
-				include("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php");
-
-			//next, see if the searchclass exists
-			if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
-
-				$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
-				$searchFunctions = new $classname($db,$displayTable->thetabledef["uuid"],$theids);
-
-			} else
-				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
-
 			//grab the method name
 			if(((int) $_POST["othercommands"]) === -1)
 				$functionname = "delete_record";
@@ -133,6 +120,25 @@
 				$functionname = $therecord["name"];
 
 			}//endif
+			
+			/**
+			  *  If the command is a push command, include tables.php 
+			  */
+			if(strpos($functionname, ":") !== false)
+				include("include/tables.php");
+			
+			//try to include table specific functions
+			if(file_exists("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php"))
+				include("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php");
+
+			//next, see if the searchclass exists
+			if(class_exists($displayTable->thetabledef["maintable"]."SearchFunctions")){
+
+				$classname = $displayTable->thetabledef["maintable"]."SearchFunctions";
+				$searchFunctions = new $classname($db,$displayTable->thetabledef["uuid"],$theids);
+
+			} else
+				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
 
 			if(!preg_match("/\:/", $functionname)){
 				

@@ -117,12 +117,12 @@ class push{
     
         $thereturn = $this->db->fetchArray($queryresult);
     
-        //try to include table specific functions
-            $tableFile = "../../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php";
-    
-        include_once("include/tables.php");
-        if(file_exists($tableFile))
-            include_once($tableFile);
+        ////try to include table specific functions
+        //    $tableFile = "../../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php";
+        //
+        //include_once("include/tables.php");
+        //if(file_exists($tableFile))
+        //    include_once($tableFile);
     
         //next, see if the table class exists
         if(class_exists($thereturn["maintable"])){
@@ -132,6 +132,7 @@ class push{
     
         } else 
                 $thetable = new phpbmsTable($this->db, $tabledefid);
+        
         
         
         $this->processor = $thetable;
@@ -308,7 +309,7 @@ class push{
         if(!$apiOptions["timeFormat"])
             $this->apiOptions["timeFormat"] = "24 Hour";
         elseif($this->_isValidTimeFormat($apiOptions["timeFormat"]))
-            $this->apiOptions["timeFormat"] = (bool)$apiOptions["timeFormat"];
+            $this->apiOptions["timeFormat"] = (string)$apiOptions["timeFormat"];
         else
             $this->apiOptions["timeFormat"] = "24 Hour";
 
@@ -433,8 +434,7 @@ class push{
       */
 
     function construct(){
-
-
+        
         $query = array();
         $query["phpbmsusername"] = $this->apiUsername;
         $query["phpbmspassword"] = $this->apiPassword;
@@ -450,7 +450,7 @@ class push{
             $i++;
 
         }//end foreach
-
+        
         return $query;
 
     }//end function --construct--

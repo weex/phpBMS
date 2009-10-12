@@ -123,7 +123,7 @@ if(class_exists("phpbmsTable")){
 
 				$addressinfo = $this->db->fetchArray($queryresult);
 
-				if($addressinfo) {
+				if(count($addressinfo)) {
 
 					$addressinfo = $this->address->getRecord($addressinfo["id"]);
 
