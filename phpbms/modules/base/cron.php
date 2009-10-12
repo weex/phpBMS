@@ -4,6 +4,10 @@
 	$loginNoDisplayError=true;
 
  	include("../../include/session.php");
+	/**
+	  *  tables.php for push records 
+	  */
+	include_once("include/tables.php");
 
 	//testing cron access
 	if(isset($_GET["t"]) && !APP_DEBUG){
@@ -17,16 +21,18 @@
 
 	$querystatement = "
 		SELECT
-			id,
-			name,
-			crontab,
-			IF(`pushrecordid` != '', 'pushrecord', 'job') AS `type`,
-			job,
-			`pushrecordid`,
-			startdatetime,
-			enddatetime
+			`scheduler`.id,
+			`scheduler`.name,
+			`scheduler`.crontab,
+			`scheduler`.IF(`pushrecordid` != '', 'pushrecord', 'job') AS `type`,
+			`scheduler`.job,
+			`scheduler`.`pushrecordid`,
+			`scheduler`.startdatetime,
+			`scheduler`.enddatetime,
+			`tabledefs`.`maintable`
+			`modules`.`name` AS `modulename`
 		FROM
-			scheduler
+			((scheduler LEFT JOIN `tabledefs` ON `scheduler`.`pushrecordid` = `tabledefs`.`uuid`) LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`)
 		WHERE
 			inactive = 0
 			AND startdatetime < NOW()
@@ -58,8 +64,15 @@
 					$success = @ include($schedule_record["job"]);
 					break;
 			
-				case "pushrecord":	
+				case "pushrecord":
 					include_once("modules/api/include/push.php");
+					        
+					//try to include table specific functions
+					$tableFile = "modules/".$schedule_record["modulename"]."/include/".$schedule_record["maintable"].".php";
+					
+					if(file_exists($tableFile))
+						include_once($tableFile);
+									
 					$push = new push($db, $schedule_record["pushrecordid"]);
 					$success = $push->process();
 					break;
@@ -68,7 +81,7 @@
 
 			if($success){
 
-				$updatestatement="UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
+				$updatestatement = "UPDATE scheduler SET lastrun=NOW() WHERE id=".$schedule_record["id"];
 				$db->query($updatestatement);
 				$log = new phpbmsLog("Scheduled Job ".$schedule_record["name"]." (".$schedule_record["id"].") completed","SCHEDULER","usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75");
 
