@@ -144,7 +144,7 @@ if(class_exists("phpbmsTable")){
 
 		function set($itemlist, $receiptid, $clientid, $userid){
 
-			//remove any exisiting items
+			//remove any existing items
 			$deletestatement = "DELETE FROM receiptitems WHERE receiptid = '".mysql_real_escape_string($receiptid)."'";
 			$this->db->query($deletestatement);
 

@@ -316,7 +316,7 @@ class arAging{
 			</p>
 
 			<p>
-				<label for="term3"><?php echo (TERM1_DAYS+1)."+ days" ?></label><br />
+				<label for="term3"><?php echo (TERM3_DAYS+1)."+ days" ?></label><br />
 				<input id="term3" class="uneditable" readonly="readonly" value="<?php echo $totals["term3"] ?>"/>
 			</p>
 

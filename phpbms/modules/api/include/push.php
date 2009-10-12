@@ -99,8 +99,12 @@ class push{
 
     /*
      * function _getProcessor
+     *
+     * Note: The file with the processor must be already included before running this
+     * function.
+     * 
      * @param $tabledefid
-     */
+     */ 
     
     function _getProcessor($tabledefid) {
 
@@ -116,13 +120,6 @@ class push{
         $queryresult = $this->db->query($querystatement);
     
         $thereturn = $this->db->fetchArray($queryresult);
-    
-        ////try to include table specific functions
-        //    $tableFile = "../../".$thereturn["modulename"]."/include/".$thereturn["maintable"].".php";
-        //
-        //include_once("include/tables.php");
-        //if(file_exists($tableFile))
-        //    include_once($tableFile);
     
         //next, see if the table class exists
         if(class_exists($thereturn["maintable"])){

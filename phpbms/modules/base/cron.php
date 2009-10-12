@@ -59,11 +59,11 @@
 		if(is_array($validTimes) && in_array($now, $validTimes)){
 
 			switch($schedule_record["type"]){
-				
+
 				case "job":
 					$success = @ include($schedule_record["job"]);
 					break;
-			
+
 				case "pushrecord":
 					include_once("modules/api/include/push.php");
 					        
@@ -99,9 +99,9 @@
 	function getTimes($recordarray){
 
 		$dayInt = array('*',1,2,3,4,5,6,7);
-		$dayLabel = array('*',"Monday","Tuesday","Wedensday","Thursday","Friday","Saturday","Sunday");
+		$dayLabel = array('*',"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday");
 		$monthsInt = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
-		$monthsLabel = array(0,"Janurary","Februrary","March","April","May","June","July","August","September","October","November","December");
+		$monthsLabel = array(0,"January","February","March","April","May","June","July","August","September","October","November","December");
 		$metricsVar = array("*", "/", "-", ",");
 		$metricsVal = array(' every ','',' thru ',' and ');
 

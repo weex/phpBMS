@@ -24,11 +24,11 @@ receipt = {
 
 			var statusSelect = getObjectFromID("status")
 			if(statusSelect.value != "collected")
-				errorArray[errorArray.length] = "Reciepts marked ready to post must also have a status of 'collected'.";
+				errorArray[errorArray.length] = "Receipts marked ready to post must also have a status of 'collected'.";
 
 			var distributionRemaining = getObjectFromID("distributionRemaining");
 			if(currencyToNumber(distributionRemaining.value) != 0)
-				errorArray[errorArray.length] = "Reciepts marked ready to post must be fully distributed";
+				errorArray[errorArray.length] = "Receipts marked ready to post must be fully distributed";
 
 		}//end if
 

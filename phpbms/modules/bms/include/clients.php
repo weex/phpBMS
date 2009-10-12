@@ -385,7 +385,7 @@ if(class_exists("phpbmsTable")){
 			unset($this->address->fields["notes"]);
 			unset($variables["id"]);// This breaks the import otherwise...needs further testing and possibly a better solution
 
-			$variables["title"] = "Main Addresss";
+			$variables["title"] = "Main Address";
 			$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
 			$variables["recordid"] = $newUuid;
 			$variables["uuid"] = "";
@@ -1032,7 +1032,7 @@ if(class_exists("phpbmsImport")){
 
 									$this->table->db->query($querystatement);
 
-									$variables["title"] = "Main Shipping Addresss";
+									$variables["title"] = "Main Shipping Address";
 									$variables["tabledefid"] = 2;
 									$variables["recordid"] = $theid;
 									$variables["defaultshipto"] = 1;
