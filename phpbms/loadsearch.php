@@ -88,7 +88,7 @@
 					tabledefid,
 					name,
 					`type`,
-					sqlclause
+					sqlclause,
 					`uuid`
 				) VALUES (
 					'".mysql_real_escape_string($userid)."',
