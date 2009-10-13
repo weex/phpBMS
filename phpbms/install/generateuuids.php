@@ -91,7 +91,7 @@ class generateUUIDS extends installUpdateBase{
 
 
         //generate lists used elsewhere
-        $this->moduleList= $this->generateUUIDList("modules");
+        $this->moduleList = $this->generateUUIDList("modules");
 
         $bmsModulePresent = false;
         if(in_array("mod:0aa9cca0-7388-0eae-81b9-9935f9d127cc", $this->moduleList))
@@ -198,7 +198,7 @@ class generateUUIDS extends installUpdateBase{
                                 "shippingmethodid"  =>$this->shippingList,
                                 "paymentmethodid"   =>$this->paymentList,
                                 "discountid"        =>$this->discountList,
-                                "salesmanegerid"    =>$this->userList
+                                "salesmanagerid"    =>$this->userList
                                 );
             $this->updateFields("clients", $clientArray);
 
@@ -283,6 +283,7 @@ class generateUUIDS extends installUpdateBase{
                 ".$fieldClause."
             FROM
                 `".$table."`";
+
         $queryresult = $this->db->query($querystatement);
         
         $initialClause = "";
@@ -297,7 +298,8 @@ class generateUUIDS extends installUpdateBase{
         ";
         
         $tableresult = $this->db->query($tablestatement);
-        
+
+
         while($tablerecord = $this->db->fetchArray($tableresult))
             switch($tablerecord["Field"]){
                 
@@ -309,8 +311,9 @@ class generateUUIDS extends installUpdateBase{
                 default:
                     break;
             }//end switch
-
+            
         while($therecord = $this->db->fetchArray($queryresult)){
+
 
             $updateClause = $initialClause;
 
@@ -330,7 +333,7 @@ class generateUUIDS extends installUpdateBase{
                     WHERE
                         `id` = ".$therecord["id"]."
                 ";
-
+                
                 $this->db->query($updatestatement);
 
             }//endif
@@ -586,7 +589,7 @@ class generateUUIDS extends installUpdateBase{
                         break;
 
                     case "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34": //products:
-                        $theList = $this->clientList;
+                        $theList = $this->productsList;
                         break;
 
                     case "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883": //invoices:
@@ -664,6 +667,5 @@ class generateUUIDS extends installUpdateBase{
 
 if(!isset($noProcess)){
     $genUUIDS = new generateUUIDS();
-
     echo $genUUIDS->process();
 }//end if
