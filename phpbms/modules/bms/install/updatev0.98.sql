@@ -493,6 +493,7 @@ WHERE
     `id`='6';
 UPDATE `tabledefs` SET
     `uuid` = 'tbld:3342a3d4-c6a2-3a38-6576-419299859561',
+    `querytable` = '(productcategories LEFT JOIN productcategories AS `parents` ON productcategories.parentid = parents.uuid)',
     `prefix` = 'pcat'
 WHERE
     `id`='7';

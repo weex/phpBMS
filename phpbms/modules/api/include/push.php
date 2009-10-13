@@ -503,6 +503,7 @@ class push{
         if(isset($query["request"])){
             $query["request"] = $this->encode($query["request"]);
             $return = $this->send($query);
+            $return = $this->decode($return);
         }else
             return true;
         
