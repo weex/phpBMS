@@ -49,6 +49,20 @@
             $this->db = $db;
             $this->tabledefid = $tabledefid;
             $this->tabledefuuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", ((int) $tabledefid));
+            
+            $querystatement = "
+                SELECT
+                    `prefix`
+                FROM
+                    `tabledefs`
+                WHERE
+                    `uuid` = '".$this->tabledefuuid."'
+            ";
+            
+            $queryresult = $this->db->query($querystatement);
+            
+            $therecord = $this->db->fetchArray($queryresult);
+            $this->prefix = $therecord["prefix"];
 
         }//end function init
 
@@ -186,13 +200,15 @@
                     tabledefid,
                     `name`,
                     `type`,
-                    `sqlclause`
+                    `sqlclause`,
+                    `uuid`
                 ) VALUES (
                     '".mysql_real_escape_string($userid)."',
                     '".mysql_real_escape_string($this->tabledefuuid)."',
                     '".mysql_real_escape_string($name)."',
                     'SRT',
-                    '".mysql_real_escape_string($sqlclause)."'
+                    '".mysql_real_escape_string($sqlclause)."',
+                    '".uuid($this->prefix.":")."'
                 )";
 
             $this->db->query($insertstatement);

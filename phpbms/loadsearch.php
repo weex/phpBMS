@@ -65,6 +65,20 @@
 		function save($name,$tabledefid,$userid){
 
 			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+			
+			$querystatement = "
+                SELECT
+                    `prefix`
+                FROM
+                    `tabledefs`
+                WHERE
+                    `uuid` = '".$uuid."'
+            ";
+            
+            $queryresult = $this->db->query($querystatement);
+            
+            $therecord = $this->db->fetchArray($queryresult);
+            $prefix = $therecord["prefix"];
 
 			$insertstatement = "
 				INSERT INTO
@@ -75,12 +89,14 @@
 					name,
 					`type`,
 					sqlclause
+					`uuid`
 				) VALUES (
 					'".mysql_real_escape_string($userid)."',
 					'".mysql_real_escape_string($uuid)."',
 					'".mysql_real_escape_string($name)."',
 					'SCH',
-					'".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."'
+					'".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."',
+					'".uuid($prefix.":")."'
 				)";
 
 			$this->db->query($insertstatement);
