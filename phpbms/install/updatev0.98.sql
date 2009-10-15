@@ -450,6 +450,9 @@ INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`
 DELETE FROM `tablegroupings` WHERE `tabledefid` = '19';
 INSERT INTO `tablegroupings` (`tabledefid`, `field`, `displayorder`, `ascending`, `name`, `roleid`) VALUES ('tbld:83187e3d-101e-a8a5-037f-31e9800fed2d', 'if(menu.parentid=\'\' OR menu.parentid IS NULL,concat( lpad(menu.displayorder,3,\"0\"), \" - \" ,menu.name ) , concat( lpad(parentmenu.displayorder,3,\"0\") , \" - \",parentmenu.name))', '1', '1', '', '');
 --end tablegroupings INSERT--
+--tableoptions DELETE--
+DELETE FROM `tableoptions` WHERE `name` = 'runSelected' AND `tabledefid` = '201' AND `option` = 'run job(s)';
+--end tableoptions DELETE--
 --tableoptions INSERT--
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:0fcca651-6c34-c74d-ac04-2d88f602dd71', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:29925e0a-c825-0067-8882-db4b57866a96', 'import', '0', '0', '0', 'Admin', '0');

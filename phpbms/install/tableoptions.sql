@@ -48,7 +48,6 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:83de284b-ef79-3567-145c-30ca38b40796', 'select', '1', '0', '0', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:83de284b-ef79-3567-145c-30ca38b40796', 'edit', '1', '1', '0', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:83de284b-ef79-3567-145c-30ca38b40796', 'inactivate', 'inactivate', '1', '1', '', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:83de284b-ef79-3567-145c-30ca38b40796', 'runSelected', 'run job(s)', '1', '1', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:83de284b-ef79-3567-145c-30ca38b40796', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a', 'new', '1', '0', '0', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:87b9fe06-afe5-d9c6-0fa0-4a0f2ec4ee8a', 'select', '1', '0', '0', '', '0');

@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 if(class_exists("phpbmsTable")){
-	class schedulers extends phpbmsTable{
+	class scheduler extends phpbmsTable{
 
 		function getDefaults(){
 			$therecord = parent::getDefaults();
@@ -166,6 +166,36 @@ if(class_exists("phpbmsTable")){
 		
 		}//end function
 
+	}//end class
+}//end if
+
+if(class_exists("searchFunctions")){
+	class schedulerSearchFunctions extends searchFunctions{
+		
+		function inactivate($useUUID = false){
+			
+			if(!$useUUID)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+				
+			$updatestatement = "
+				UPDATE
+					`scheduler`
+				SET
+					`inactive` = '1'
+				WHERE
+					".$whereclause."
+			";
+			
+			$updateresult = $this->db->query($updatestatement);
+			
+			$message = $this->buildStatusMessage();
+			$message.=" inactivated";
+			return $message;
+			
+		}//end function
+		
 	}//end class
 }//end if
 ?>
