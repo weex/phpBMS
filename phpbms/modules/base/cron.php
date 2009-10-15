@@ -24,12 +24,12 @@
 			`scheduler`.id,
 			`scheduler`.name,
 			`scheduler`.crontab,
-			`scheduler`.IF(`pushrecordid` != '', 'pushrecord', 'job') AS `type`,
+			IF(`scheduler`.`pushrecordid` != '', 'pushrecord', 'job') AS `type`,
 			`scheduler`.job,
 			`scheduler`.`pushrecordid`,
 			`scheduler`.startdatetime,
 			`scheduler`.enddatetime,
-			`tabledefs`.`maintable`
+			`tabledefs`.`maintable`,
 			`modules`.`name` AS `modulename`
 		FROM
 			((scheduler LEFT JOIN `tabledefs` ON `scheduler`.`pushrecordid` = `tabledefs`.`uuid`) LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`)
