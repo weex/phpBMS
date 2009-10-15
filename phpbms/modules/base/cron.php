@@ -7,7 +7,8 @@
 	/**
 	  *  tables.php for push records 
 	  */
-	include_once("include/tables.php");
+	include_once("../../include/tables.php");
+
 
 	//testing cron access
 	if(isset($_GET["t"]) && !APP_DEBUG){
@@ -32,11 +33,12 @@
 			`tabledefs`.`maintable`,
 			`modules`.`name` AS `modulename`
 		FROM
-			((scheduler LEFT JOIN `tabledefs` ON `scheduler`.`pushrecordid` = `tabledefs`.`uuid`) LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`)
+			(((scheduler LEFT JOIN `pushrecords` ON `scheduler`.`pushrecordid` = `pushrecords`.`uuid`) LEFT JOIN `tabledefs` ON `pushrecords`.`originuuid` = `tabledefs`.`uuid`) LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`)
 		WHERE
 			inactive = 0
 			AND startdatetime < NOW()
-			AND (enddatetime > NOW() OR enddatetime IS NULL)";
+			AND (enddatetime > NOW() OR enddatetime IS NULL)
+	";
 
 	$queryresult=$db->query($querystatement);
 
@@ -65,14 +67,14 @@
 					break;
 
 				case "pushrecord":
-					include_once("modules/api/include/push.php");
-					        
+					include_once("../../modules/api/include/push.php");
+				
 					//try to include table specific functions
-					$tableFile = "modules/".$schedule_record["modulename"]."/include/".$schedule_record["maintable"].".php";
+					$tableFile = "../../modules/".$schedule_record["modulename"]."/include/".$schedule_record["maintable"].".php";
 					
 					if(file_exists($tableFile))
 						include_once($tableFile);
-									
+					
 					$push = new push($db, $schedule_record["pushrecordid"]);
 					$success = $push->process();
 					break;
