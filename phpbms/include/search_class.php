@@ -303,7 +303,11 @@
 				 $this->numrows=$this->db->numRows($this->queryresult);
 				 if($this->numrows==RECORD_LIMIT or $this->recordoffset!=0){
 				    //if you max the record limit or are already offsetiing get the true count
-					$truecountstatement="SELECT count(distinct ".$this->thetabledef["maintable"].".id) as thecount".strstr(substr($this->querystatement,0,strpos($this->querystatement," ORDER BY"))," FROM ");
+					
+					$truecountstatement = "
+						SELECT
+							count(distinct ".$this->thetabledef["maintable"].".id) as thecount
+							".getSearchFrom($this->querystatement);
 					$truequeryresult=$this->db->query($truecountstatement);
 
 					$truerecord=$this->db->fetchArray($truequeryresult);

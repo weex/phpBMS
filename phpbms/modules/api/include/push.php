@@ -216,6 +216,8 @@ class push{
         $this->httpFormat = $therecord["httpformat"];
         $this->destTabledefid = $therecord["destuuid"];
         
+        $this->pushRecordName = $therecord["name"];
+        
         /**
           *  Need to get correct uuids (all, select, or a savedsearch) 
           */
@@ -508,8 +510,23 @@ class push{
             return true;
         
         if(isset($return["type"]))
-            if($return["type"] == "error")
+            if($return["type"] == "error"){
                 $return = false;
+                
+                if(!isset($return["message"]))
+                    $return["message"] = "none";
+                    
+                $message = "Push Record ".$this->pushRecordName." has encountered an error. Details: (".$return["message"].")";
+                $log = new phpbmsLog($message, "PUSH", "usr:cb67a60b-a264-735c-6189-49a7c883af0b");
+            }//end if
+                
+        if(isset($return["id"]))
+            if($return["id"] == -700){
+                $return = false;
+                
+                $message = "Push Record ".$this->pushRecordName." has encountered an error. Details: (Login Credientials Incorrect)";
+                $log = new phpbmsLog($message, "PUSH", "usr:cb67a60b-a264-735c-6189-49a7c883af0b");
+            }//end if
 
         if($this->error)
             $return = false;

@@ -545,6 +545,200 @@ function getPathToAppRoot() {
 
 }//end function --getPathToAppRoot()--
 
+
+/**
+  *  function makeDelimeterString
+  *  
+  *  Creates a string with the same length as $string, with a delimeter where
+  *  the corresponding part of the string is on or within that delimeter, and
+  *  zeroes everywhere else.
+  *
+  *  @param string $string
+  *  @param array $delimeters Array of delimeters.  The delimeters are assumed
+  *  to be symmetric [i.e. "`" works because it is used symmetrically, but
+  *  parenthesis ( "(" and ")" ) do not].
+  *  @param char $escapeCharacter An escape character escaping delimeters.
+  *  @return string The delimeter string the same length as $string,
+  *  with a delimeter where the corresponding part of the string is
+  *  on or within that delimeter, and zeroes everywhere else. Returns false if
+  *  an error has occurred
+  */
+function makeDelimeterString($string, $delimeters, $escapeCharacter = "\\"){
+	
+	if(!$escapeCharacter)
+		$escapeCharacter = NULL;
+	
+	if(strlen($escapeCharacter) > 1)
+		return false;
+	
+	$returnString = "";
+	$stringArray = str_split($string);
+	$inside = false;
+	$prevChar = "";
+	foreach($stringArray as $char){
+		
+		if(!$inside){
+			if(in_array($char, $delimeters) && $prevChar != $escapeChar){
+				$inside = true;
+				$delimeter = $char;
+				$returnString .= $delimeter;
+			}else
+				$returnString .= "0";
+		}else{
+			
+			if($char == $delimeter && $prevChar != $escapeChar){
+				$inside = false;
+				$returnString .= "0";
+			}else
+				$returnString .= $delimeter;
+			
+		}//end if
+		
+		$prevChar = $char;
+		
+	}//end foreach
+	
+	return $returnString;
+
+}//end function
+
+/*
+ * function getSearchFrom
+ * Returns the part of $querystatement from the general FROM to its ORDER BY or
+ * the end of the querystatement if no ORDER BY exists.
+ * 
+ * @param $querystatement
+ * @return string The part of $querystatement from the general FROM to its
+ * ORDER BY.
+ */
+
+function getSearchFrom($querystatement) {
+	
+	$modstatement = $querystatement;
+	$insideString = makeDelimeterString($querystatement, array("'", "\"", "`"));
+	$insideArray = str_split($insideString);
+	
+	
+	/**
+	  *  Check for SELECTs that are not inside quotes or tics.
+	  *  Put the positions of them in the string inside an ordered array,
+	  *  with the first ones in the string with the lowest array indices.
+	  */
+	$selectArray = array();
+	$offset = 0;
+	do{
+		
+		$pos = stripos($querystatement, "select", $offset);
+		
+		if($pos !== false)
+			if(!$insideArray[$pos])
+				$selectArray[] = $pos;
+		$offset = $pos+1;
+	
+	}while($pos !== false);
+	
+	/**
+	  *  Check for FROMSs that are not inside quotes or tics.
+	  *  Put the positions of them in the string inside an ordered array,
+	  *  with the first ones in the string with the lowest array indices.
+	  */
+	$fromArray = array();
+	$offset = 0;
+	do{
+		
+		$pos = stripos($querystatement, "from", $offset);
+		
+		if($pos !== false)
+			if(!$insideArray[$pos])
+				$fromArray[] = $pos;
+		$offset = $pos+1;
+	
+	}while($pos !== false);
+	
+	/**
+	  *  Check for ORDER BYs that are not inside quotes or tics.
+	  *  Put the positions of them in the string inside an ordered array,
+	  *  with the first ones in the string with the lowest array indices.
+	  */
+	$orderArray = array();
+	$offset = 0;
+	do{
+		
+		$pos = stripos($querystatement, "order by", $offset);
+		
+		if($pos !== false)
+			if(!$insideArray[$pos])
+				$orderArray[] = $pos;
+		$offset = $pos+1;
+	
+	}while($pos !== false);
+	
+	
+	/**
+	  *  Pair the SELECTs with their appropriate FROMs 
+	  */
+	$godArray = array();
+	$tempSelectArray = $selectArray;
+	$j = 0;
+	foreach($fromArray as $fromPos){
+		
+		$closest = 0;
+		$index = 0;
+		for($i=0; $i < count($tempSelectArray); $i++)
+			if($fromPos > $tempSelectArray[$i]){
+				$closest = $tempSelectArray[$i];
+				$index = $i;
+			}//end if
+			
+		unset($tempSelectArray[$index]);
+		$godArray[$j]["select"] = $closest;
+		$godArray[$j]["from"] = $fromPos;
+		$j++;
+		
+	}//end foreach
+	
+	
+	/**
+	  *  Pair the ORDER BYs with their approriate FROMs (and thus their
+	  *  appropriate SELECTs).
+	  */
+	$tempFromArray = $fromArray;
+	$j = 0;
+	foreach($orderArray as $orderPos){
+		
+		$closest = 0;
+		$index = 0;
+		for($i=0; $i < count($tempFromArray); $i++)
+			if($orderPos > $tempFromArray[$i]){
+				$closest = $tempFromArray[$i];
+				$index = $i;
+			}//end if
+			
+		unset($tempFromArray[$index]);
+		for($k=0; $k < count($godArray); $k++)
+			if($godArray[$k]["from"] == $closest)
+				$godArray[$k]["order"] = $orderPos;
+		
+		$j++;
+		
+	}//end foreach
+	
+	
+	/**
+	  *  The last entry in the $godArray should be the outermost / first
+	  *  SQL statement.
+	  */
+	$l = count($godArray) - 1;
+	if(!isset($godArray[$l]["order"]))
+		$godArray[$l]["order"] = strlen($querystatement);
+	
+	if(!($godArray[$l]["order"]))
+		$godArray[$l]["order"] = strlen($querystatement);
+	
+	return substr($querystatement, $godArray[$l]["from"], $godArray[$l]["order"] - $godArray[$l]["from"]);
+	
+}//end function
+
 // date/time functions
 //=====================================================================
 function stringToDate($datestring,$format=DATE_FORMAT){
