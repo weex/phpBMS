@@ -18,6 +18,7 @@ $theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/
 $theModule->tables = array(
             "menu",
 			"modules",
+            "smartsearches",
             "tablecolumns",
             "tabledefs",
             "tablefindoptions",
