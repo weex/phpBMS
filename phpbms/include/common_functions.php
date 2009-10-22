@@ -755,7 +755,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "English, US":
-				$datestring="/".ereg_replace(",.","/",$datestring);
+				$datestring="/".preg_replace(",.","/",$datestring);
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
@@ -764,7 +764,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "English, UK":
-				$datestring="/".ereg_replace(",.","/",$datestring);
+				$datestring="/".preg_replace(",.","/",$datestring);
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
@@ -773,7 +773,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "Dutch, NL":
-				$datestring="-".ereg_replace(",.","-",$datestring);
+				$datestring="-".preg_replace(",.","-",$datestring);
 				$temparray=explode("-",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
@@ -929,7 +929,7 @@ function formatFromSQLTimestamp ($datetime,$dateformat=DATE_FORMAT,$timeformat=T
 	$day=1;
 	$year=1974;
 	settype($datetime, 'string');
-	eregi('(....)(..)(..)(..)(..)(..)',$datetime,$matches);
+	preg_match('/(....)(..)(..)(..)(..)(..)/i',$datetime,$matches);
 	array_shift ($matches);
 	foreach (array('year','month','day','hour','minute','second') as $var) {
 		$$var = (int) array_shift($matches);
