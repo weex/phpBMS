@@ -555,8 +555,8 @@ class db{
 	while($line = @ fgets($filePointer, 65536)){
 
 	    // need to convert DOS or Mac line breaks
-	    $line = preg_replace("\r\n$", "\n", $line);
-	    $line = preg_replace("\r$", "\n", $line);
+	    $line = preg_replace("/\r\n$/", "\n", $line);
+	    $line = preg_replace("/\r$/", "\n", $line);
 
 	    // ignore comment lines, but only if they are not in quotes
 	    if(!$inParents){

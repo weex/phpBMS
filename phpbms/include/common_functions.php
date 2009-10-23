@@ -755,7 +755,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "English, US":
-				$datestring="/".preg_replace(",.","/",$datestring);
+				$datestring="/".preg_replace("/,./","/",$datestring);
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[1],(int) $temparray[2],(int) $temparray[3]);
@@ -764,7 +764,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "English, UK":
-				$datestring="/".preg_replace(",.","/",$datestring);
+				$datestring="/".preg_replace("/,./","/",$datestring);
 				$temparray=explode("/",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
@@ -773,7 +773,7 @@ function stringToDate($datestring,$format=DATE_FORMAT){
 			break;
 
 			case "Dutch, NL":
-				$datestring="-".preg_replace(",.","-",$datestring);
+				$datestring="-".preg_replace("/,./","-",$datestring);
 				$temparray=explode("-",$datestring);
 				if(count($temparray)==4)
 					$thedate=mktime(0,0,0,(int) $temparray[2],(int) $temparray[1],(int) $temparray[3]);
