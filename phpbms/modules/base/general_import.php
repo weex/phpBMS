@@ -153,7 +153,7 @@
 						For any file that is a comma seperated value (csv) file:
 					</p>
 					<p>
-						Delimeters are commas (,) and enclosures are double-quotes (").  If you
+						Delimiters are commas (,) and enclosures are double-quotes (").  If you
 						wish to escape a double-quote character inside of an enclosure, add another
 						double-quote character (e.g ...,"Benny ""The Jet"" Rodriguez",...), or with
 						a backslash character (\) (e.g ...,"Benny \"The Jet\" Rodriguez",...).

@@ -77,13 +77,13 @@ if(class_exists("phpbmsTable")){
 
 			if(isset($variables["title"])){
 				if($variables["title"] === "" || $variables["title"] === NULL)
-					$this->verifyErrors[] = "The `title` field must be not be blank.";
+					$this->verifyErrors[] = "The `title` field must not be blank.";
 			}else
 				$this->verifyErrors[] = "The `title` field must be set.";
 
 			if(isset($variables["file"])){
 				if($variables["file"] === "" || $variables["file"] === NULL)
-					$this->verifyErrors[] = "The `file` field must be not be blank.";
+					$this->verifyErrors[] = "The `file` field must not be blank.";
 			}else
 				$this->verifyErrors[] = "The `file` field must be set.";
 

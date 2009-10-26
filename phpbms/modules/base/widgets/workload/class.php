@@ -252,7 +252,7 @@
 
 							<p><?php echo $bottomInfo ?></p>
 
-						<? }//endif ?>
+						<?php }//endif ?>
 					</div>
 
 				<?php }//endwhile

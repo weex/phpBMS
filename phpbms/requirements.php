@@ -74,13 +74,13 @@
 		<li>
 			<h3>Cookie support</h3>
 			<p>
-				phpBMS sets a single cookie to track your login.  Cookie suport for this site
+				phpBMS sets a single cookie to track your login.  Cookie support for this site
 				must be enabled in order for the application to allow you to log in
 			</p>
 		</li>
 
 		<li>
-			<h3>Full Casscading Style Sheet (CSS) v1.2 support</h3>
+			<h3>Full Cascading Style Sheet (CSS) v1.2 support</h3>
 			<p>
 				phpBMS takes advantage of CSS v1.2 to render pages.  Without this
 				support, the application may not look correct, and can even break some

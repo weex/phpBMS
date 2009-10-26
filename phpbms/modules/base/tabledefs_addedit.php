@@ -202,7 +202,7 @@
 			<p>
 				<?php $theform->showField("importfile") ?><br />
 				<span class="notes">file name, including path from application root, that is used for importing records. If none
-				is specfied, the general import for the table def will be used.  This may not always result in accurate imports for
+				is specified, the general import for the table def will be used.  This may not always result in accurate imports for
 				the more complicated table definitions.</span>
 			</p>
 
@@ -240,7 +240,7 @@
 			</p>
 			<div id="defaultQuickSearch" <?php if($therecord["defaultsearchtype"]=="") echo "style=\"display:none;\""?>>
 				<p>
-					<label for="defaultcriteriafindoptions">critera: selected find option</label> <span class="notes">(quick search)</span><br/>
+					<label for="defaultcriteriafindoptions">criteria: selected find option</label> <span class="notes">(quick search)</span><br/>
 					<textarea id="defaultcriteriafindoptions" name="defaultcriteriafindoptions" cols="32" rows="2"><?php echo htmlQuotes($therecord["defaultcriteriafindoptions"])?></textarea>
 
 				</p>

@@ -406,7 +406,7 @@ if(class_exists("phpbmsTable")){
 				}//end if
 
 				if(!in_array(((string)$variables["paymentmethodid"]),$this->_availablePaymentMethodUUIDs))
-					$this->verifyErrors[] = "The `paymentmethod` field does not give an existing/accpetable payment method uuid.";
+					$this->verifyErrors[] = "The `paymentmethod` field does not give an existing/acceptable payment method uuid.";
 
 			}else
 				$this->verifyErrors[] = "The `paymentmethodid` field must be set.";

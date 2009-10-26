@@ -6,8 +6,8 @@
 	You can also use this class to define any other functions
 	that helps in the above functions, or with display.
 
-	This sample will show you how to do some basic overides.
-	Remember to instantiate the overrided class on the add/edit page.
+	This sample will show you how to do some basic overrides.
+	Remember to instantiate the overridden class on the add/edit page.
 
 
 */

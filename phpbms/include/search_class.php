@@ -1012,7 +1012,7 @@
 			$this->searchablefields=$this->getTableSearchableFields($this->uuid);
 
 
-			//check to see if critera has been saved to Session
+			//check to see if criteria has been saved to Session
 			if(isset($_SESSION["tableparams"][$this->ref]))
 				//grab the session
 				$this->loadQueryParameters($_SESSION["tableparams"][$this->ref]);
@@ -1286,31 +1286,31 @@
 				$message .= " (of ".$selected." selected)";
 			return $message;
 		}
-		
+
 		/*
 		 * function runPush
 		 * @param string $pushRecordUuid
 		 */
-		
+
 		function runPush($pushRecordUuid) {
-			
+
 			include_once("modules/api/include/push.php");
-			
+
 			$uuidArray = getUuidArray($this->db, $this->tabledefuuid, $this->idsArray);
-			
+
 			if($uuidArray === false)
 				$uuidArray = array();
-			
+
 			$push = new push($this->db, $pushRecordUuid, $uuidArray);
 			$thereturn = $push->process();
-			
+
 			if($thereturn !== false)
 				$message = count($push->uuidArray)." record(s) pushed.";
 			else
 				$message = "An error has occured.";
-			
+
 			return $message;
-			
+
 		}//end function
 
 

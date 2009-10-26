@@ -37,116 +37,116 @@
  +-------------------------------------------------------------------------+
 */
 	class pdfColumn{
-		
+
 		var $title;
 		var $fieldname;
 		var $size = 1;
 		var $format;
 		var $align = "L";
-	
+
 		function pdfColumn($title, $fieldname, $size = 1, $format = "", $align = "L"){
-		
+
 			$this->title = $title;
 			$this->fieldname = $fieldname;
 			$this->size = ((real) $size);
 			$this->format = $format;
 			$this->align = $align;
-		
+
 		}//end method
-	
+
 	}//end class
 
 	class pdfColor{
-		
+
 		var $r = 0;
 		var $g = 0;
 		var $b = 0;
 
 		function pdfColor($r = 0,$g = 0,$b = 0){
-		
+
 			$this->r = $r;
 			$this->g = $g;
 			$this->b = $b;
-		
+
 		}//end method
-				
+
 	}//end class
 
-	
+
 	class pdfFont {
-	
+
 		var $family = "Arial";
 		var $style = "";
 		var $size = 8;
-		
+
 		function pdfFont($family = "Arial", $style ="", $size = 8){
-			
+
 			$this->family = $family;
 			$this->style = $style;
-			$this->size = $size;			
-		
+			$this->size = $size;
+
 		}//end method
-	
+
 	}//end class
-	
-	
+
+
 	class pdfStyle{
-	
+
 		var $font = NULL;
 		var $textColor = NULL;
 		var $backgroundColor = NULL;
-		
+
 		function pdfStyle($font = NULL, $textColor = NULL, $backgroundColor = NULL){
-			
+
 			if($font) $this->font = $font;
 			if($textColor) $this->textColor = $textColor;
 			if($backgroundColor) $this->backgroundColor = $backgroundColor;
-		
+
 		}//end method
-		
+
 	}//end class
-	
+
 
 	if(!class_exists("MEM_IMAGE")){
-	
+
 		include("fpdf/fpdf.php");
 		include("fpdf/mem_image.php");
-	
+
 	}//end if
 
 	class phpbmsPDFReport extends MEM_IMAGE {
-	
+
 		var $borderDebug = 0;
-	
+
 		var $leftmargin = 0.5;
 		var $rightmargin = 0.5;
 		var $topmargin = 0.75;
 		var $paperwidth = 8.5;
 		var $paperlength = 11;
-		
+
 		var $hasComapnyHeader = false;
 		var $companyImageWidth = 1;
-		
+
 		var $styles = array();
-		
-	
+
+
 		function phpbmsPDFReport($db, $orientation='P', $unit='mm', $format='Letter'){
-		
+
 			$this->db = $db;
-			
+
 			parent::MEM_IMAGE($orientation, $unit, $format);
-			
+
 			$this->initStyles();
 			$this->SetLineWidth(0.01);
-			
+
 		}//end method
-		
-		
+
+
 		function initStyles(){
-			
+
 			//here we set the standard styles
 
-			// NORMAL			
+			// NORMAL
 			$font = new pdfFont("Arial", "", 8);
 			$style = new pdfStyle($font);
 
@@ -167,93 +167,93 @@
 			$style = new pdfStyle($font, $txtC, $bgC);
 
 			$this->styles["header"] = $style;
-		
+
 		}//end method
 
 
 		function defineStyle($name, $pdfStyleObj){
-		
+
 			if(get_class($pdfStyleObj) != "pdfStyle")
-				$error = new appError(1400,"defineStyle Method needs pdfStyle obeject as paramater 2","PDF Error",true,true,false);
-			
+				$error = new appError(1400,"defineStyle Method needs pdfStyle object as parameter 2","PDF Error",true,true,false);
+
 			$this->styles[$name] = $pdfStyleObj;
-		
+
 		}//end if
 
 
 		function setStyle($name){
-		
+
 			if(!isset($this->styles[$name]))
 				$name = "normal";
-				
+
 			$newStyle = $this->styles[$name];
 
 			if(isset($newStyle->font))
 				$this->SetFont($newStyle->font->family, $newStyle->font->style, $newStyle->font->size);
 			else
 				$this->SetFont("Arial", "", 8);
-				
+
 			if(isset($newStyle->textColor))
 				$this->SetTextColor($newStyle->textColor->r, $newStyle->textColor->g, $newStyle->textColor->b);
 			else
 				$this->SetTextColor(0,0,0);
-		
+
 			if(isset($newStyle->backgroundColor))
 				$this->SetFillColor($newStyle->backgroundColor->r, $newStyle->backgroundColor->g, $newStyle->backgroundColor->b);
 			else
 				$this->SetFillColor(255,255,255);
-		
+
 		}//end if
 
 
 		function SetMargins(){
-						
+
 			parent::SetMargins($this->leftmargin, $this->topmargin, $this->rightmargin);
-			
+
 		}//end method
-		
-		
-		function Header(){			
+
+
+		function Header(){
 			if($this->hasComapnyHeader){
-			
+
 				$cname = COMPANY_NAME;
-				$caddress = COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;			
-				
+				$caddress = COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
+
 				$querystatement = "
-					SELECT 
+					SELECT
 						`file`,
 						UPPER(`type`) AS `type`
-					FROM 
-						files 
-					WHERE 
+					FROM
+						files
+					WHERE
 						id=1";
-						
+
 				$pictureresult = $this->db->query($querystatement);
-				
+
 				$thepicture = $this->db->fetchArray($pictureresult);
-				
+
 				if($thepicture["type"]=="IMAGE/JPEG"){
-				
+
 					global $image;
 					$image = $thepicture["file"];
-					$this->Image('var://image', $this->leftmargin,$this->topmargin, $this->companyImageWidth, 0, "JPEG");	
-					
+					$this->Image('var://image', $this->leftmargin,$this->topmargin, $this->companyImageWidth, 0, "JPEG");
+
 				} elseif($thepicture["type"]=="IMAGE/PNG")
-					$this->MemImage($thepicture["file"], $this->leftmargin, $this->topmargin, $this->companyImageWidth);	
-				
+					$this->MemImage($thepicture["file"], $this->leftmargin, $this->topmargin, $this->companyImageWidth);
+
 				//company name
 				$this->SetXY($this->companyImageWidth + $this->leftmargin, $this->topmargin);
 				$this->SetFont("Times","B",12);
 				$this->Cell(4, 0.25, $cname, $this->borderDebug, 2, "L");
-			
+
 				//and last, company address
 				$this->SetFont("Times","",8);
 				$this->MultiCell(4, .125 , $caddress, $this->borderDebug);
-								
+
 			}//end if
-			
-		}//end method	
-		
+
+		}//end method
+
 	}//end class
-	
+
 ?>

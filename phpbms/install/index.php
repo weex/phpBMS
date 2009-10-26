@@ -334,7 +334,7 @@
 					installing it.
 				</p>
 
-				<h2>Availale Modules</h2>
+				<h2>Available Modules</h2>
 
 				<?php $moduleClass->displayInstallTable() ?>
 
@@ -376,7 +376,7 @@
 						<p>
                                                     phpBMS has a scheduler function that runs items on a timed basis using cron
                                                     or another scheduler program to run php via command line.  Check the
-                                                    Scheduler under the system menu after loggin in for details on configuring this
+                                                    Scheduler under the system menu after logging in for details on configuring this
                                                     in your crontab file.  Once configured, you will want to disable your web server from
                                                     allowing this file to be called from your web server (the outside).
 						</p>

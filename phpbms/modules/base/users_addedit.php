@@ -122,7 +122,7 @@
 
 		<p class="notes">
 			user accounts marked as portal access cannot login to phpBMS, but are used by external applications
-			when creating/modifiying information from outside the application for recording purposes.
+			when creating/modifying information from outside the application for recording purposes.
 		</p>
 	</fieldset>
 
