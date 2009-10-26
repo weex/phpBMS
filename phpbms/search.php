@@ -49,8 +49,8 @@
 	//initialize the object
 	$displayTable->initialize($_GET["id"]);
 	
-	if (!isset($passedjoinclause)) $_SESSION["passedjoinclause"] = $passedjoinclause; 
- 	if (!isset($passedjoinwhere)) $_SESSION["passedjoinwhere"] = $passedjoinwhere; 
+	if (isset($passedjoinclause)) $_SESSION["passedjoinclause"] = $passedjoinclause; 
+ 	if (isset($passedjoinwhere)) $_SESSION["passedjoinwhere"] = $passedjoinwhere; 
 
 
 	//process commands...
