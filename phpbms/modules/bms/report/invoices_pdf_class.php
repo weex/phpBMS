@@ -45,6 +45,12 @@
 		var $title = "Invoice";
 		var $showShipNameInShipTo = true;
 		var $lineitemBoxHeight = 4.25;
+		
+		/**
+		  * $count
+		  * @var int The number of invoice records being displayed
+		  */
+		var $count;
 
 		function invoicePDF($db, $orientation='P', $unit='mm', $format='Letter'){
 
@@ -170,8 +176,9 @@
 			$querystatement = $this->assembleSQL($querystatement);
 			$queryresult = $this->db->query($querystatement);
 
-			if($this->db->numRows($queryresult) == 0){
-
+			$this->count = $this->db->numRows($queryresult);
+			if($this->count == 0){
+				
 				$this->_showNoRecords();
 				exit;
 
@@ -504,7 +511,7 @@
 				products.partname,
 				products.partnumber
 			FROM
-				lineitems LEFT JOIN products ON lineitems.productid = products.id
+				lineitems LEFT JOIN products ON lineitems.productid = products.uuid
 			WHERE
 				lineitems.invoiceid ='".((int) $this->invoicerecord["id"])."'
 			ORDER BY
@@ -608,7 +615,8 @@
 			switch($destination){
 
 				case "screen":
-					$this->pdf->Output();
+					$userinfo = cleanFilename((string)$userinfo);
+					$this->pdf->Output($userinfo, 'D');
 					break;
 
 				case "email":

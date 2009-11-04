@@ -96,6 +96,7 @@
 			$totalcount++;
 		}
 
+		$thisCount = $db->numRows($thequery);
 		while($therecord=$db->fetchArray($thequery)) {
 
 			if($rowcount>$maxrows) {
@@ -115,9 +116,21 @@
 
 			$they+=$labelheight;
 			$rowcount++;
+			
+			$company = $therecord["company"];
+			
 		}// end fetch_array while loop
 
-		$pdf->Output();
+		if($thisCount === 1){
+			if($company)
+				$filename .= "_".$company;
+		}elseif((int)$thisCount)
+			$filename .= "_Multiple";
+				
+				
+		$filename = cleanFilename($filename);
+		$filename .= ".pdf";
+		$pdf->Output($filename, 'D');
 		exit();
 	} else {
 
@@ -138,7 +151,7 @@
 		</p>
 		<p align="right">
 			<input name="command" type="submit" class="Buttons" id="print" value="print" />
-			<input name="cancel" type="button" class="Buttons" id="cancel" value="canel" onclick="window.close();" />
+			<input name="cancel" type="button" class="Buttons" id="cancel" value="cancel" onclick="window.close();" />
 		</p>
 </div>
 </form>

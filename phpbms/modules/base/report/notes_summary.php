@@ -85,7 +85,12 @@
 
 	$pdf->SetY($topmargin+.43+.1);
 	$pdf->SetLineWidth(.01);
+	
+	$filename = "Notes_Summary";
+	
+	$thisCount = $db->numRows($thequery);
 	while($therecord=$db->fetchArray($thequery)) {
+		
 		$pdf->SetFont("Arial","",9);
 		$pdf->SetX($leftmargin+.125);
 		$pdf->Cell($tempwidth-.5,.17,"ID: ".$therecord["id"],$border_debug,1,"L");
@@ -103,8 +108,19 @@
 		$pdf->MultiCell($tempwidth-.5,.14,$therecord["content"],$border_debug,1,"L");
 		$pdf->Line($leftmargin+.25,$pdf->GetY(),$paperwidth-$rightmargin-.25,$pdf->GetY());
 		$pdf->SetY($pdf->GetY()+.25);
+		
+		$thisId = $therecord["id"];
+		
 	}// end fetch_array while loop
+	
+	if($thisCount === 1)
+		$filename .= "_".$thisId;
+	elseif((int)$thisCount)
+		$filename .= "_Multiple";
 
-	$pdf->Output();
+	$filename = cleanFilename($filename);
+	$filename .= ".pdf";
+	
+	$pdf->Output($filename, 'D');
 	exit();
 ?>

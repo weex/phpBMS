@@ -480,7 +480,9 @@ class aritemsClientStatements extends phpbmsReport{
 
 	function output($to = "screen"){
 
-		$this->pdf->Output();
+		$filename = 'Client_Statement_'.date('Ymd').'.pdf';
+		$filename = cleanFilename($filename);
+		$this->pdf->output($filename, 'D');
 
 	}//end method
 

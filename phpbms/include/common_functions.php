@@ -1123,6 +1123,23 @@ function htmlQuotes($string){
 }
 
 
+/*
+ * function cleanFilename	
+ * @param $string
+ * @return string $string with only alpha-numeric characters, periods (.),
+ * dashes (-), and underscores (_)
+ */
+
+function cleanFilename($string) {
+	
+	$pattern = "/[^\w\d\.\-\_]/";
+	$string = preg_replace($pattern, "", $string);
+	
+	return $string;
+	
+}//end function --cleanFilename--
+
+
 
 function htmlFormat($string,$quotes=false){
 	$trans = get_html_translation_table(HTML_ENTITIES);

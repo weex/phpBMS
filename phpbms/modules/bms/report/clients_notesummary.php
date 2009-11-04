@@ -90,8 +90,13 @@
 	$pdf->Line($leftmargin,$pdf->GetY(),$paperwidth-$rightmargin,$pdf->GetY());
 
 	$pdf->SetY($topmargin+.43+.1);
+	$filename = "Client_Notes";
 
+	$thisCount = $db->numRows($clientquery);
 	while($clientrecord=$db->fetchArray($clientquery)) {
+		
+		$theName = $clientRecord["thename"];
+		
 		$querystatement = "
 			SELECT
 				`invoices`.`id`,
@@ -164,6 +169,16 @@
 		}// end fetch_array while loop
 	}
 
-	$pdf->Output();
+	if($thisCount == 1){
+		if($thename)
+			$filename .= '_'.$thename;
+	}elseif($thisCount)
+		$filename .= "_Multiple";
+	
+	$filename = str_replace(" ", "_", $filename);
+	$filename = cleanFilename($filename);
+	$filename .= ".pdf";
+	
+	$pdf->Output($filename, "D");
 	exit();
 ?>

@@ -52,6 +52,11 @@
 
 		var $title = "Receipt";
 		var $lineitemBoxHeight = 4.25;
+		/**
+		  * $count
+		  * @var int The number of invoice records being displayed
+		  */
+		var $count;
 
 		function receiptPDF($db, $orientation='P', $unit='mm', $format='Letter'){
 
@@ -176,7 +181,9 @@
 			$querystatement = $this->assembleSQL($querystatement);
 			$queryresult = $this->db->query($querystatement);
 
-			if($this->db->numRows($queryresult) == 0){
+			
+			$this->count = $this->db->numRows($queryresult);
+			if($this->count == 0){
 
 				$this->_showNoRecords();
 				exit;
@@ -631,7 +638,8 @@
 			switch($destination){
 
 				case "screen":
-					$this->pdf->Output();
+					$userinfo = cleanFilename((string)$userinfo);
+					$this->pdf->Output($userinfo, 'D');
 					break;
 
 				case "email":
@@ -702,7 +710,20 @@ if(!isset($noOutput)){
 	$report = new receiptPDF($db, 'P', 'in', 'Letter');
 	$report->setupFromPrintScreen();
 	$report->generate();
-	$report->output();
+	
+	$filename = 'Receipts_';
+	if($report->count === 1){
+		
+		if($report->invoicerecord["company"])
+			$filename .= "_".$report->invoicerecord["company"];
+		
+		$filename .= "_".$report->invoicerecord["id"];
+		
+	}elseif((int)$report->count)
+		$filename .= "_Multiple";
+	
+	$filename .= ".pdf";
+	$report->output('screen', $filename);
 
 }//end if
 

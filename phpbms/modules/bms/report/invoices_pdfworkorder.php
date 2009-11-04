@@ -37,50 +37,50 @@
  +-------------------------------------------------------------------------+
 */
 	if(!isset($_SESSION["userinfo"]["id"])){
-	
+
 		//IE needs caching to be set to private in order to display PDFS
 		session_cache_limiter('private');
 
 		//set encoding to latin1 (fpdf doesnt like utf8)
-		$sqlEncoding = "latin1";	
+		$sqlEncoding = "latin1";
 		require_once("../../../include/session.php");
-	
+
 	}//end if
-	
+
 	if(!class_exists("invoicePDF"))
 		include("invoices_pdf_class.php");
-	
+
 	class  workorderPDF extends invoicePDF{
-	
+
 		var $title = "Work Order";
 		var $lineitemBoxHeight = 3.75;
-		
+
 		function workorderPDF($db, $orientation='P', $unit='mm', $format='Letter'){
-	
+
 			$this->invoicePDF($db, $orientation, $unit, $format);
-			
+
 		}//end method
-	
-	
+
+
 		function _addNotes(){
-		
+
 			$pdf = &$this->pdf;
-		
+
 			$height = 1;
 			$nextPos = $pdf->GetY() + $height + 0.125;
-		
+
 			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
 			$pdf->setStyle("header");
 			$pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Special Instructions", 1, 2, "L", 1);
-						
+
 			$pdf->setStyle("normal");
 			$pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
 			$pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
-			
+
 			$pdf->SetXY($pdf->leftmargin, $nextPos);
-		
+
 		}//end method
-		
+
 		function _addPaymentDetails(){
 
 			$pdf = &$this->pdf;
@@ -89,7 +89,7 @@
 			$columns[] = new pdfColumn("Payment Method", "paymentname", 0);
 
 			switch($this->invoicerecord["paymenttype"]){
-			
+
 				case "draft":
 					$columns[0]->size = 1.5;
 					$columns[] = new pdfColumn("Check Number", "checkno", 1);
@@ -101,50 +101,62 @@
 					$columns[] = new pdfColumn("Number", "ccnumber", 1.5);
 					$columns[] = new pdfColumn("Exp.", "ccexpiration", 1);
 					$columns[] = new pdfColumn("Verification/Pin", "ccverification", 1);
-					break;					
-			
+					break;
+
 			}//end switch
-						
+
 			$size = 0;
 			foreach($columns as $column)
 				$size += $column->size;
-							
+
 			$i = count($columns) -1;
-				
+
 			$columns[$i]->size += $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
-			
+
 			$height = 0.5;
 			$nextPos = $pdf->GetY() + $height + 0.125;
-		
+
 			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
-			
+
 			$pdf->setStyle("header");
 
 			foreach($columns as $column)
 				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
-				
+
 			$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
-			
+
 			$pdf->setStyle("normal");
 			$pdf->SetFont("Arial", "B", 10);
 			foreach($columns as $column)
 				$pdf->Cell($column->size, 0.18, $this->invoicerecord[$column->fieldname], $pdf->borderDebug, 0, $column->align);
 
 		}//end method
-		
+
 	}//end class
 
 
 //PROCESSING
 //=============================================================================
 if(!isset($noOutput)){
-		
+
 	$report = new workorderPDF($db, 'P', 'in', 'Letter');
-	
+
 	$report->setupFromPrintScreen();
 	$report->generate();
-	$report->output();
+	$filename = 'Work_Order';
+	if($report->count === 1){
+		
+		if($report->invoicerecord["company"])
+			$filename .= "_".$report->invoicerecord["company"];
+		
+		$filename .= "_".$report->invoicerecord["id"];
+		
+	}elseif((int)$report->count)
+		$filename .= "_Multiple";
 	
+	$filename .= ".pdf";
+	$report->output('screen', $filename);
+
 }//end if
 
 ?>

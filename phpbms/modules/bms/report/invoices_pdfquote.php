@@ -42,7 +42,7 @@ if(!isset($_SESSION["userinfo"]["id"])){
 	session_cache_limiter('private');
 
 	//set encoding to latin1 (fpdf doesnt like utf8)
-	$sqlEncoding = "latin1";	
+	$sqlEncoding = "latin1";
 	require_once("../../../include/session.php");
 
 }//end if
@@ -57,14 +57,14 @@ class  quotePDF extends invoicePDF{
 	function quotePDF($db, $orientation='P', $unit='mm', $format='Letter'){
 
 		$this->invoicePDF($db, $orientation, $unit, $format);
-		
+
 	}//end method
-	
+
 	function initialize(){
 		parent::initialize();
-		
+
 		unset($this->totalsinfo[5]);
-				
+
 	}//end method
 
 }//end class
@@ -72,14 +72,28 @@ class  quotePDF extends invoicePDF{
 //PROCESSING
 //=============================================================================
 if(!isset($noOutput)){
-		
+
 	$report = new quotePDF($db, 'P', 'in', 'Letter');
 	$report->showShipNameInShipTo = false;
-	
+
 	$report->setupFromPrintScreen();
 	$report->generate();
-	$report->output();
 	
+	$filename = "Quote";
+	if($report->count === 1){
+		
+		if($report->invoicerecord["company"])
+			$filename .= "_".$report->invoicerecord["company"];
+		
+		$filename .= "_".$report->invoicerecord["id"];
+		
+	}elseif((int)$report->count)
+		$filename .= "_Multiple";
+	
+	$filename .= ".pdf";
+	
+	$report->output('screen', $filename);
+
 }//end if
 
 

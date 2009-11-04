@@ -92,6 +92,7 @@
 
 		return $pdf;
 	}
+	$filename = 'Mailinglabels_Clients';
 
 	require("../../../report/general_labels.php");
 ?>

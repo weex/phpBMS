@@ -86,6 +86,7 @@
 
 		return $pdf;
 	}
+	$filename = 'Folderlabels_Clients';
 
 	require("report/general_labels.php");
 ?>

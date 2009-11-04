@@ -38,49 +38,49 @@
 */
 
 	if(!isset($_SESSION["userinfo"]["id"])){
-	
+
 		//IE needs caching to be set to private in order to display PDFS
 		session_cache_limiter('private');
-	
+
 		//set encoding to latin1 (fpdf doesnt like utf8)
-		$sqlEncoding = "latin1";	
+		$sqlEncoding = "latin1";
 		require_once("../../../include/session.php");
-	
+
 	}//end if
-	
+
 	if(!class_exists("invoicePDF"))
 		include("invoices_pdf_class.php");
-	
+
 	class  packinglistPDF extends invoicePDF{
-	
+
 		var $title = "Packing List";
 		var $showShipNameInShipTo = false;
-				
+
 		function packinglistPDF($db, $orientation='P', $unit='mm', $format='Letter'){
-	
+
 			$this->invoicePDF($db, $orientation, $unit, $format);
-			
+
 		}//end method
-	
+
 
 		function initialize(){
 			//This function will set column headings, sizes and formatting
 
 			$pdf = &$this->pdf;
-			
+
 			$topinfo = array();
 			$topinfo[] = new pdfColumn("Order ID", "id", 0.75);
 			$topinfo[] = new pdfColumn("Order Date", "orderdate", 1, "date");
 			$topinfo[] = new pdfColumn("Client PO", "ponumber", 0);
-			
+
 			$size = 0;
 			foreach($topinfo as $column)
 				$size += $column->size;
-				
+
 			$topinfo[2]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-			$this->topinfo = $topinfo;			
-			
+			$this->topinfo = $topinfo;
+
 			$lineitems = array();
 			$lineitems[] = new pdfColumn("Product / (Part Number)", "parts", 0);
 			$lineitems[] = new pdfColumn("Prepackaged", "isprepackaged", 0.75, "boolean", "C");
@@ -88,54 +88,54 @@
 			$lineitems[] = new pdfColumn("Unit Weight", "unitweight", 0.75, "real", "R");
 			$lineitems[] = new pdfColumn("Qty", "quantity", 0.5, "real","R");
 			$lineitems[] = new pdfColumn("Weight Ext.", "extended", 0.75, "real", "R");
-						
+
 			$size = 0;
 			foreach($lineitems as $column)
 				$size += $column->size;
-				
+
 			$lineitems[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
-			
+
 			$this->lineitems = $lineitems;
-			
+
 			$totalsinfo = array();
 			$totalsinfo[] = new pdfColumn("Shipping Method", "shippingname", 0);
 			$totalsinfo[] = new pdfColumn("Estimated Boxes", "estimatedboxes", 1, NULL, "C");
 			$totalsinfo[] = new pdfColumn("Total Weight", "totalweight", 1, "real", "R");
 			$totalsinfo[] = new pdfColumn("Shipping", "shipping", 1, "currency", "R");
-									
+
 			$size = 0;
 			foreach($totalsinfo as $column)
 				$size += $column->size;
-				
+
 			$totalsinfo[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
 			$this->totalsinfo = $totalsinfo;
 
 		}//end method
 
-			
+
 		function _addNotes(){
-		
+
 			$pdf = &$this->pdf;
-		
+
 			$height = 1;
 			$nextPos = $pdf->GetY() + $height + 0.125;
-		
+
 			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
 			$pdf->setStyle("header");
 			$pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Special Instructions", 1, 2, "L", 1);
-						
+
 			$pdf->setStyle("normal");
 			$pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
 			$pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
-			
+
 			$pdf->SetXY($pdf->leftmargin, $nextPos);
-		
+
 		}//end method
-		
-		
+
+
 		function _getLineItems(){
-		
+
 			$querystatement = "
 			SELECT
 				lineitems.*,
@@ -153,52 +153,52 @@
 				displayorder";
 
 			$queryresult = $this->db->query($querystatement);
-			
+
 			//determine estimated total boxes
 			$this->invoicerecord["estimatedboxes"] = 0;
 			while($therecord = $this->db->fetchArray($queryresult)){
-			
+
 				if($therecord["isprepackaged"])
 					$this->invoicerecord["estimatedboxes"] += $therecord["quantity"];
 				else
 					$this->invoicerecord["estimatedboxes"] += $therecord["quantity"] * $therecord["packagesperitem"];
-				
+
 			}//endwhile
-			
+
 			$this->db->seek($queryresult, 0);
-			
+
 			return $queryresult;
-		
+
 		}//end method
-		
+
 		function _addTotals(){
 
 			$pdf = &$this->pdf;
-							
+
 			$height = .5;
 			$nextPos = $pdf->GetY() + $height + 0.125;
-		
+
 			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
-			
+
 			$pdf->setStyle("header");
 			foreach($this->totalsinfo as $column)
 				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
-			
+
 			$pdf->setStyle("normal");
 			$pdf->SetFont("Arial", "B", 10);
 			$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
-			
+
 			foreach($this->totalsinfo as $column){
-			
+
 				if($column->format != "")
 					$value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
 				else
-					$value = $this->invoicerecord[$column->fieldname];				
-			
+					$value = $this->invoicerecord[$column->fieldname];
+
 				$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
 
 			}//end foreach
-					
+
 		}//end method
 
 	}//end class
@@ -207,12 +207,24 @@
 	//PROCESSING
 	//=============================================================================
 	if(!isset($noOutput)){
-			
+
 		$report = new packinglistPDF($db, 'P', 'in', 'Letter');
-		
+
 		$report->setupFromPrintScreen();
 		$report->generate();
-		$report->output();
+		$filename = "Packing_List";
 		
+		if($report->count === 1){
+			
+			if($report->invoicerecord["company"])
+				$filename .= "_".$report->invoicerecord["company"];
+			
+			$filename .= "_".$report->invoicerecord["id"];
+			
+		}elseif((int)$report->count)
+			$filename .= "_Multiple";
+		
+		$report->output('screen', $filename);
+
 	}//end if
 ?>

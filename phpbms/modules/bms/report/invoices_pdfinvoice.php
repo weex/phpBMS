@@ -45,16 +45,29 @@ if(!isset($noOutput)){
 	session_cache_limiter('private');
 
 	//set encoding to latin1 (fpdf doesnt like utf8)
-	$sqlEncoding = "latin1";	
+	$sqlEncoding = "latin1";
 	require_once("../../../include/session.php");
-	
+
 	include("modules/bms/report/invoices_pdf_class.php");
-	
+
 	$report = new invoicePDF($db, 'P', 'in', 'Letter');
 	$report->setupFromPrintScreen();
 	$report->generate();
-	$report->output();
 	
+	$filename = "Invoice";
+	if($report->count === 1){
+		
+		if($report->invoicerecord["company"])
+			$filename .= "_".$report->invoicerecord["company"];
+		
+		$filename .= "_".$report->invoicerecord["id"];
+		
+	}elseif((int)$report->count)
+		$filename .= "_Multiple";
+	
+	$filename .= ".pdf";
+	$report->output('screen', $filename);
+
 }//end if
 
 ?>

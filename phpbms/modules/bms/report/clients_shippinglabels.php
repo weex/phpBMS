@@ -97,5 +97,6 @@
 		return $pdf;
 	}
 
+	$filename = 'Shippinglabels_Clients';
 	require("../../../report/general_labels.php");
 ?>
