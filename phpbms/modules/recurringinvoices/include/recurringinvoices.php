@@ -260,7 +260,7 @@ class recurringinvoice{
 		if($therecord["type"] == "Weekly")
 			$daysSelected = explode("::",$therecord["eachlist"]);
 		else
-			$daysSelected = array(strftime("%u",$invoiceDate));
+			$daysSelected = array(@strftime("%u",$invoiceDate));
 
 		$daysAvailable = array(7,1,2,3,4,5,6);
 
@@ -285,7 +285,7 @@ class recurringinvoice{
 		if($therecord["type"] == "Monthly" && $therecord["eachlist"])
 			$daysSelected = explode("::",$therecord["eachlist"]);
 		else
-			$daysSelected = array(strftime("%e",$invoiceDate));
+			$daysSelected = array(@strftime("%e",$invoiceDate));
 
 
 		for($dayNum = 1; $dayNum <= 31; $dayNum++){

@@ -61,7 +61,7 @@ if(class_exists("phpbmsTable")){
 		if($therecord["repeattype"] == "Weekly")
 			$daysSelected = explode("::",$therecord["repeateachlist"]);
 		else
-			$daysSelected = array(strftime("%u",$repeatbase));
+			$daysSelected = array(@strftime("%u",$repeatbase));
 
 		$daysAvailable = array(7,1,2,3,4,5,6);
 
@@ -86,7 +86,7 @@ if(class_exists("phpbmsTable")){
 		if($therecord["repeattype"] == "Monthly" && $therecord["repeateachlist"])
 			$daysSelected = explode("::",$therecord["repeateachlist"]);
 		else
-			$daysSelected = array(strftime("%e",$repeatbase));
+			$daysSelected = array(@strftime("%e",$repeatbase));
 
 
 		for($dayNum = 1; $dayNum <= 31; $dayNum++){
@@ -350,7 +350,7 @@ if(class_exists("phpbmsTable")){
 							$tempDate = mktime(0,0,0,$dateArray["tm_mon"]+1,1,$dateArray["tm_year"]+1900);
 							$weekday = $therecord["repeatontheday"];
 							$weekday = ($weekday == 7)? 1: ($weekday+1);
-							if($therecord["repeatontheday"] != strftime("%u",$tempDate));
+							if($therecord["repeatontheday"] != @strftime("%u",$tempDate));
 								$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
 
 							while(date("n",$tempDate) == ($dateArray["tm_mon"]+1)){
@@ -391,7 +391,7 @@ if(class_exists("phpbmsTable")){
 
 								$weekday = $therecord["repeatontheday"];
 								$weekday = ($weekday == 7)? 1: ($weekday+1);
-								if($therecord["repeatontheday"] != strftime("%u",$tempDate));
+								if($therecord["repeatontheday"] != @strftime("%u",$tempDate));
 									$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
 
 

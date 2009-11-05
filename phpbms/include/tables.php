@@ -164,7 +164,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         break;
 
                     case "year":
-                        $default = strftime("%Y");
+                        $default = @strftime("%Y");
                         break;
 
                     case "datetime":
@@ -263,7 +263,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
                         if(strpos($flags,"not_null") === false)
                             $value = NULL;
                         else
-                            $value = strftime("%Y");
+                            $value = @strftime("%Y");
                     break;
 
                 case "datetime":

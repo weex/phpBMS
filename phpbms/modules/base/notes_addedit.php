@@ -171,8 +171,8 @@
 		if(!$therecord["repeatontheday"]){
 			 $theinput->setAttribute("disabled","disabled");
 			 $theinput2->setAttribute("disabled","disabled");
-			 $theinput->value = strftime("%u",$repeatBase);
-			 $theinput2->value = strftime("%u",$repeatBase);
+			 $theinput->value = @strftime("%u",$repeatBase);
+			 $theinput2->value = @strftime("%u",$repeatBase);
 		}
 		$theform->addField($theinput);
 		$theform->addField($theinput2);

@@ -830,19 +830,19 @@ function dateToString($thedate,$format=DATE_FORMAT){
 		switch($format){
 
 			case "SQL":
-				$datestring=strftime("%Y-%m-%d",$thedate);
+				$datestring=@strftime("%Y-%m-%d",$thedate);
 			break;
 
 			case "English, US":
-				$datestring=strftime("%m/%d/%Y",$thedate);
+				$datestring=@strftime("%m/%d/%Y",$thedate);
 			break;
 
 			case "English, UK":
-				$datestring=strftime("%d/%m/%Y",$thedate);
+				$datestring=@strftime("%d/%m/%Y",$thedate);
 			break;
 
 			case "Dutch, NL":
-				$datestring=strftime("%d-%m-%Y",$thedate);
+				$datestring=@strftime("%d-%m-%Y",$thedate);
 			break;
 		}
 	}
@@ -854,10 +854,10 @@ function timeToString($thetime,$format=TIME_FORMAT){
 	if($thetime){
 		switch($format){
 			case "24 Hour":
-				$timestring=strftime("%H:%M:%S",$thetime);
+				$timestring=@strftime("%H:%M:%S",$thetime);
 			break;
 			case "12 Hour":
-				$timestring=trim(strftime(HOUR_FORMAT.":%M %p",$thetime));
+				$timestring=trim(@strftime(HOUR_FORMAT.":%M %p",$thetime));
 			break;
 		}
 	}

@@ -110,7 +110,7 @@ class recurr{
 						$tempDate = mktime(0,0,0,$dateArray["tm_mon"]+1,1,$dateArray["tm_year"]+1900);
 						$weekday = $therecord["ontheday"];
 						$weekday = ($weekday == 7)? 1: ($weekday+1);
-						if($therecord["ontheday"] != strftime("%u",$tempDate));
+						if($therecord["ontheday"] != @strftime("%u",$tempDate));
 							$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
 
 						while(date("n",$tempDate) == ($dateArray["tm_mon"]+1)){
@@ -151,7 +151,7 @@ class recurr{
 
 							$weekday = $therecord["ontheday"];
 							$weekday = ($weekday == 7)? 1: ($weekday+1);
-							if($therecord["ontheday"] != strftime("%u",$tempDate));
+							if($therecord["ontheday"] != @strftime("%u",$tempDate));
 								$tempDate = strtotime(nl_langinfo( constant("DAY_".$weekday) ),$tempDate);
 
 

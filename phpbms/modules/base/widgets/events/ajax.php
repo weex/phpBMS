@@ -198,8 +198,8 @@ class eventCalendar{
         foreach($events as $date => $times){
 
                 ?><tr class="eventDayName" <?php if(mktime(0,0,0) === ((int) str_replace("d","",$date)) ) echo 'id="today"'?>>
-                        <td nowrap="nowrap"><?php echo strftime("%A",((int) str_replace("d","",$date)) ); ?></td>
-                        <td width="100%" align="right"><?php echo strftime("%b %e %Y",((int) str_replace("d","",$date)) ); ?></td>
+                        <td nowrap="nowrap"><?php echo @strftime("%A",((int) str_replace("d","",$date)) ); ?></td>
+                        <td width="100%" align="right"><?php echo @strftime("%b %e %Y",((int) str_replace("d","",$date)) ); ?></td>
                 </tr><?php
 
                 if(count($times)){
