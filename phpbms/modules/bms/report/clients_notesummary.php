@@ -95,7 +95,7 @@
 	$thisCount = $db->numRows($clientquery);
 	while($clientrecord=$db->fetchArray($clientquery)) {
 		
-		$theName = $clientRecord["thename"];
+		$theName = $clientrecord["thename"];
 		
 		$querystatement = "
 			SELECT
@@ -170,8 +170,8 @@
 	}
 
 	if($thisCount == 1){
-		if($thename)
-			$filename .= '_'.$thename;
+		if($theName)
+			$filename .= '_'.$theName;
 	}elseif($thisCount)
 		$filename .= "_Multiple";
 	

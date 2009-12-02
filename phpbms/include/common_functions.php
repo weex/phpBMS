@@ -578,7 +578,7 @@ function makeDelimeterString($string, $delimeters, $escapeCharacter = "\\"){
 	foreach($stringArray as $char){
 		
 		if(!$inside){
-			if(in_array($char, $delimeters) && $prevChar != $escapeChar){
+			if(in_array($char, $delimeters) && $prevChar != $escapeCharacter){
 				$inside = true;
 				$delimeter = $char;
 				$returnString .= $delimeter;
@@ -586,7 +586,7 @@ function makeDelimeterString($string, $delimeters, $escapeCharacter = "\\"){
 				$returnString .= "0";
 		}else{
 			
-			if($char == $delimeter && $prevChar != $escapeChar){
+			if($char == $delimeter && $prevChar != $escapeCharacter){
 				$inside = false;
 				$returnString .= "0";
 			}else
