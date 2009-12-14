@@ -221,7 +221,7 @@ class tableColumns{
                 tabledefid = '".$this->tabledefuuid."'
                 AND displayorder > ".$therecord["displayorder"];
 
-        if($this->db->query($queryresult)){
+        if($this->db->query($updatestatement)){
 
             $deletestatement = "
                 DELETE FROM
