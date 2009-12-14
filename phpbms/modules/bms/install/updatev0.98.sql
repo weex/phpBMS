@@ -53,6 +53,7 @@ ALTER TABLE `clientemailprojects`
 ALTER TABLE `clients` ENGINE=INNODB;
 ALTER TABLE `clients`
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
+    ADD COLUMN `canemail` tinyint(1) NOT NULL default '0' AFTER `email`,
     ADD COLUMN `taxid` VARCHAR(64) default NULL AFTER `webaddress`,
     ADD COLUMN `custom1` DOUBLE,
     ADD COLUMN `custom2` DOUBLE,

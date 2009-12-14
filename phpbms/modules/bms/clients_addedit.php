@@ -73,6 +73,12 @@
 
 		$theinput = new inputCheckbox("inactive",$therecord["inactive"]);
 		$theform->addField($theinput);
+		
+		
+		if(moduleExists("mod:58c60122-9d08-af17-e95b-765d74c7c422", $phpbms->modules))
+			$name = "subscribed to mailchimp";
+		$theinput = new inputCheckbox("canemail", $therecord["canemail"], "can email");
+		$theform->addField($theinput);
 
 		$theinput = new inputBasicList("type",$therecord["type"],array("prospect"=>"prospect","client"=>"client"), "type");
 		$theinput->setAttribute("class","important");
@@ -254,6 +260,8 @@
 			<p><?php $theform->showField("otherphone")?></p>
 
 			<p><?php $theform->showField("email")?></p>
+			
+			<p><?php $theform->showField("canemail"); ?></p>
 
 			<p><?php $theform->showField("webaddress")?></p>
 

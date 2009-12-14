@@ -28,6 +28,7 @@ CREATE TABLE `clients` (
   `fax` varchar(25) default NULL,
   `otherphone` varchar(25) default NULL,
   `email` varchar(128) default NULL,
+  `canemail` tinyint(1) NOT NULL default '0',
   `webaddress` varchar(128) default NULL,
   `taxid` VARCHAR(64) default NULL,
   `salesmanagerid` VARCHAR(64),
