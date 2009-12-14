@@ -45,8 +45,7 @@ if(class_exists("phpbmsTable")){
 	var $weekArray = array("First"=>"1", "Second"=>"2", "Third"=>"3", "Fourth"=>"4", "Last"=>"5");
 	var $dayOfWeekArray = array();
 
-
-	function notes($db,$tabledefid = 0,$backurl = NULL){
+	function notes($db, $tabledefid = 0, $backurl = NULL){
 
 		$this->dayOfWeekArray[nl_langinfo(constant("DAY_1"))] = 7;
 		for($i=1; $i<=6; $i++)
@@ -1072,7 +1071,7 @@ if(class_exists("searchFunctions")){
 			//repeat where applicable
 			if ($this->db->numRows($repeatqueryresult)){
 
-				$thetable = new notes($this->db,12);
+				$thetable = new notes($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1");
 
 				$repeatArray=array();
 				$orphanArray= array();
