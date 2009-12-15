@@ -220,7 +220,7 @@ If you need further assistance, please use the community forum at http://www.php
 
 
 	function moduleInstall($module){
-
+		
 		if(!$this->db->connect())
 			return $this->returnJSON(false, "Could not connect to database ".$this->db->getError());
 
@@ -327,7 +327,7 @@ class installModuleAjax extends installUpdateBase{
 
 
 	function install(){
-
+		
 		if(!$this->db->connect())
 			return $this->returnJSON(false, "Could not connect to database ".$this->db->getError());
 
@@ -337,10 +337,13 @@ class installModuleAjax extends installUpdateBase{
 		$installer = new installer($this->db);
 
 		//Run create table sql file ocreate the tables
-		$tempReturn = $installer->processSQLfile($this->pathToModule.$this->createTablesSQL);
-
-		if($tempReturn !== true)
-			return $this->returnJSON(false, $tempReturn);
+		if(file_exists($this->pathToModule.$this->createTablesSQL)){
+			$tempReturn = $installer->processSQLfile($this->pathToModule.$this->createTablesSQL);
+		
+			if($tempReturn !== true)
+				return $this->returnJSON(false, $tempReturn);
+				
+		}//end if
 
 		$thereturn = "";
 

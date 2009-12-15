@@ -19,7 +19,7 @@
 			if(count($fileReturn->errors)){
 
 				foreach($fileReturn->errors as $error)
-					$return = "\n\n".$error;
+					$return .= "\n\n".$error;
 
 				$return = substr($return, 2);
 

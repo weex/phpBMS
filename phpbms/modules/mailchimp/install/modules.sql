@@ -1,1 +1,1 @@
-INSERT INTO modules (`uuid`, `displayname`, `name`, `description`, `version`) VALUES ('mod:58c60122-9d08-af17-e95b-765d74c7c422', 'MailChimp Module','mailchimp','Send email addresses from your clients and prospects to a MailChimp account.','1.0');
+INSERT INTO modules (`uuid`, `displayname`, `name`, `description`, `version`) VALUES ('mod:58c60122-9d08-af17-e95b-765d74c7c422', 'MailChimp Module','mailchimp','Send email addresses from your clients and prospects to a MailChimp account.','0.98');
