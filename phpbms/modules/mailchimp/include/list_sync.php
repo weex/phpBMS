@@ -114,8 +114,7 @@ class listSync{
     function _addError($message, $errorCode = NULL, $stopScript = false){
         
         $tempArray["message"] = $message;
-        if($errorCode !== NULL)
-            $tempArray["code"] = $errorCode;
+        $tempArray["code"] = $errorCode;
         
         $this->errors[] = $tempArray;
         
@@ -275,10 +274,11 @@ class listSync{
         /**
           *  pull all the subscribed 
           */
+        $i = 0;
         do{    
             $valuesClause = "";
             
-            $members = $this->api->listMembers($this->listId, 'subscribed', NULL, 0, $this->batchLimit);
+            $members = $this->api->listMembers($this->listId, 'subscribed', NULL, $i*$this->batchLimit, $this->batchLimit*($i+1));
 
             if($this->api->errorCode){
                 $this->_addError("Unable to load listMemberInfo():".$this->api->errorMessage, $this->api->errorCode, true);
@@ -293,15 +293,18 @@ class listSync{
             /**
               *  Put the subscribed into a temporary table 
               */
-            $insertStatement = "
-                INSERT INTO
-                    `tempEmail`
-                (`email`)
-                    VALUES
-                ".$valuesClause;
+            if($valuesClause){
+                $insertStatement = "
+                    INSERT INTO
+                        `tempEmail`
+                    (`email`)
+                        VALUES
+                    ".$valuesClause;
+                
+                $this->db->query($insertStatement);
+            }//end if
             
-            $this->db->query($insertStatement);
-            
+            $i++;
         }while(count($members) == $this->batchLimit);
 
         
