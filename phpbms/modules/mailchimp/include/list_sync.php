@@ -260,6 +260,15 @@ class listSync{
     function unsubscribeInvalid(){
         
         /**
+          *   Get rid of the temorary table.
+          */
+        $dropTableStatement = "
+            DROP TABLE IF EXISTS
+                `tempEmail`
+        ";
+        $this->db->query($dropTableStatement);
+        
+        /**
           *  Create a temporary table 
           */
         $createTableStatement = "
@@ -274,11 +283,11 @@ class listSync{
         /**
           *  pull all the subscribed 
           */
-        $i = 0;
+        $start = 0;
         do{    
             $valuesClause = "";
-            
-            $members = $this->api->listMembers($this->listId, 'subscribed', NULL, $i*$this->batchLimit, $this->batchLimit*($i+1));
+                        
+            $members = $this->api->listMembers($this->listId, 'subscribed', NULL, $start, $this->batchLimit);
 
             if($this->api->errorCode){
                 $this->_addError("Unable to load listMemberInfo():".$this->api->errorMessage, $this->api->errorCode, true);
@@ -289,6 +298,7 @@ class listSync{
                 $valuesClause .= ",('".$member["email"]."')";
             
             $valuesClause = substr($valuesClause, 1);
+            
             
             /**
               *  Put the subscribed into a temporary table 
@@ -304,7 +314,7 @@ class listSync{
                 $this->db->query($insertStatement);
             }//end if
             
-            $i++;
+            $start++;
         }while(count($members) == $this->batchLimit);
 
         
@@ -331,10 +341,9 @@ class listSync{
         $unsubscribeList = array();
         while($therecord = $this->db->fetchArray($selectresult))
             $unsubscribeList[] = $therecord["email"];
-            
         
         /**
-          *  If there are records to unsubscribe, do so. 
+          *  If there are records to unsubscribe (deleted), do so. 
           */
         if(count($unsubscribeList)){
             
@@ -352,7 +361,7 @@ class listSync{
           *   Get rid of the temorary table.
           */
         $dropTableStatement = "
-            DROP TABLE
+            DROP TABLE IF EXISTS
                 `tempEmail`
         ";
         $this->db->query($dropTableStatement);

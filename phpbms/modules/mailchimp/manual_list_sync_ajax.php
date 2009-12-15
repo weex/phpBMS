@@ -1,7 +1,5 @@
 <?php
-//uncomment if need debug
-if(!class_exists("appError"))
-	include_once("../../include/session.php");
+require("../../include/session.php");
 include("include/MCAPI.class.php");//for MCAPI CLASS (listSync class uses it)
 include("include/list_sync.php");//for listSync class
 
@@ -16,18 +14,14 @@ $listSync = new listSync(
                          );
 
 $response = $listSync->process();
-var_dump($response);
-exit;
 
-if(isset($response["type"])){
-    
-    if($response["type"] == "error")
-       foreach($response["details"] AS $errorArray){
-            
-            $message = "MailChimp sync failure: ".$errorArray["message"]." (".$errorArray["code"].")";
-            $log = new phpbmsLog($message, "SCHEDULER", NULL, $db);
-            
-       }//end if
-    
+if(!isset($response["type"])){
+    $response = array();
+    $response["type"] = "error";
+    $response["details"] = array("message"=>"Fatal error: no valid response from script.", "code"=>NULL);
 }//end if
+
+$response = json_encode($response);
+echo($response);
+exit;
 ?>

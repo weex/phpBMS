@@ -1,0 +1,25 @@
+.success{
+    color: green;
+    line-height: 16px;
+    background: url("../../../../../install/success.gif") no-repeat left;
+    padding:2px 0 2px 20px;
+}
+
+.error {
+    color: red;
+    line-height: 16px;
+    background: url("../../../../../install/fail.gif") no-repeat left;
+    padding:2px 0 2px 20px;
+}
+
+.warning {
+    line-height: 16px;
+    background: url("../../../../../install/warning.gif") no-repeat left;
+    padding:2px 0 2px 20px;
+}
+
+.running {
+    line-height: 16px;
+    background: url("../../../../image/spinner.gif") no-repeat left;
+    padding:2px 0 2px 20px;
+}
