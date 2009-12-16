@@ -117,7 +117,7 @@ class listSync{
         $tempArray["message"] = $message;
         $tempArray["code"] = $errorCode;
         
-        if($stopScript){
+        if($fatal){
             $this->stopScript = true;
             $tempArray["errorType"] = "error";
         }else{
@@ -417,6 +417,7 @@ class listSync{
           */
         if($this->lastSyncDate)
             $querystatement .= " AND `modifieddate` > '".$this->lastSyncDate."'";
+            
         
         $queryresult = $this->db->query($querystatement);
         
@@ -451,7 +452,7 @@ class listSync{
                 
                 foreach($return['errors'] as $val){
                     
-                    $this->_addError("Subscribing or updating email '".$val["row"]["EMAIL"]."' failed: ".$val["message"], $val["code"]);
+                    $this->_addError("Subscribing or updating uuid '".$val["row"]["UUID"]."' failed: ".$val["message"], $val["code"]);
                     
                     $memberInfo = $this->api->listMemberInfo($this->listId, $val["row"]["EMAIL"]);
                     

@@ -39,10 +39,11 @@ list = {
                 resultText.innerHTML = "Success";
             }else{
                 resultText.innerHTML = "The following errors were found:";
-                for(var error in response.details){
-                    
-                    result.innerHTML += "\n";
-                    result.innerHTML += capitalize(error.type)+": "+error.message+"( "+error.code+" )"
+				
+                for(var i = 0; i < response.details.length; i++){
+                
+					resultText.innerHTML += "\n";
+                    resultText.innerHTML += capitalize(response.details[i].errorType)+": "+response.details[i].message+"( "+response.details[i].code+" )"
                     
                 }//end for
                 
@@ -87,10 +88,10 @@ list = {
 	}//end function
     
 }
-function capitalize(string){
+function capitalize(theString){
 	
-	var theReturn = string.substring(0,1).toUpperCase();
-	theReturn += string.substring(1, string.length);
+	var theReturn = theString.substring(0,1).toUpperCase();
+	theReturn += theString.substring(1, theString.length);
 	return theReturn;
 	
 }//end function

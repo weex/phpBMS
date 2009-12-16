@@ -358,7 +358,6 @@ updateObj = {
 
 
         processSpan.style.display = "none";
-console.log(updateResponse.checked);
         if(updateResponse.checked == true){
             date.value = updateResponse.date;
 
