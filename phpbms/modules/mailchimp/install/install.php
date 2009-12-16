@@ -40,4 +40,5 @@ $theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/
 $theModule->tables = array(
 			"modules",
 			"settings",
+            "tableoptions"
 			);

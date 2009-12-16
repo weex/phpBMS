@@ -1,20 +1,44 @@
+#sync{
+    width:75px;
+}
+
+#showResults{
+    width:100px;
+}
+
+#showResults span{
+	display:inline;
+	padding-left:15px;
+	color : #455372; 
+	font-weight:bold;
+}
+
+#showResults:hover span{text-decoration:underline;}
+
+#cancelP{
+    text-align:right;
+}
+#cancelButton{
+    width:75px;
+}
+
 .success{
     color: green;
     line-height: 16px;
-    background: url("../../../../../install/success.gif") no-repeat left;
+    background: url("../../../../image/success.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 
-.error {
+.fail {
     color: red;
     line-height: 16px;
-    background: url("../../../../../install/fail.gif") no-repeat left;
+    background: url("../../../../image/fail.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 
 .warning {
     line-height: 16px;
-    background: url("../../../../../install/warning.gif") no-repeat left;
+    background: url("../../../../image/warning.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 

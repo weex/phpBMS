@@ -685,7 +685,7 @@ if(class_exists("searchFunctions")){
 		function massEmail(){
 			if(DEMO_ENABLED != "true"){
 				$_SESSION["emailids"]= $this->idsArray;
-				goURL("modules/bms/clients_email.php");
+				goURL("modules/mailchimp/manual_list_sync.php");
 			} else {
 				return "mass e-mail feature disabled in demo";
 			}

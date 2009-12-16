@@ -37,29 +37,6 @@
  +-------------------------------------------------------------------------+
 */
 
-//CREATE TABLE `pushrecords`(
-//  `id` int(11) NOT NULL auto_increment,
-//  `uuid` varchar(64) NOT NULL,
-//  `originuuid` varchar(64) NOT NULL default '',
-//  `destuuid` varchar(64) NOT NULL default '',
-//  `command` varchar(128) NOT NULL default 'insert',
-//  `whereclause` varchar(256) NOT NULL default '',
-//  `name` varchar(128) NOT NULL default '',
-//  `server` varchar(256) NOT NULL DEFAULT ''
-//  `destscript` varchar(256) NOT NULL default '',
-//  `port` int(11) DEFAULT NULL,
-//  `apiusername` varchar(128) NOT NULL default '',
-//  `apipassword` varchar(128) NOT NULL default '',
-//  `ssl` tinyint(4) NOT NULL DEFAULT '0',
-//  `httpformat` varchar(64) NOT NULL default 'POST',
-//  `dataformat` varchar(64) NOT NULL default 'json',
-//  createdby int(11) NOT NULL default '0',
-//  creationdate datetime NOT NULL default '0000-00-00 00:00:00',
-//  modifiedby int(11) default '0',
-//  modifieddate timestamp NOT NULL,
-//  PRIMARY KEY  (id),
-//  UNIQUE KEY (`uuid`)
-//) ENGINE=INNODB;
 	include("../../include/session.php");
 	include("include/fields.php");
 	include("include/tables.php");

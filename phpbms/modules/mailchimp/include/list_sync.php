@@ -108,18 +108,23 @@ class listSync{
       *   
       *   @param string $message Text of error message
       *   @param int $errorCode Error number
-      *   @param bool $stopScript Whether or not to stop the process function
+      *   @param bool $fatal Whether or not the error is fatal, and if the process
+      *   function needs to be stopped.
       */
     
-    function _addError($message, $errorCode = NULL, $stopScript = false){
+    function _addError($message, $errorCode = NULL, $fatal = false){
         
         $tempArray["message"] = $message;
         $tempArray["code"] = $errorCode;
         
-        $this->errors[] = $tempArray;
-        
-        if($stopScript)
+        if($stopScript){
             $this->stopScript = true;
+            $tempArray["errorType"] = "error";
+        }else{
+            $tempArray["errorType"] = "warning";
+        }//end if
+        
+        $this->errors[] = $tempArray;
         
     }//end function
     
@@ -141,7 +146,11 @@ class listSync{
         
         if(count($this->errors)){
             
-            $return["type"] = "error";
+            if($this->stopScript)
+                $return["type"] = "error";
+            else
+                $return["type"] = "warning";
+            
             $return["details"] = $this->errors;
             
         }else{
@@ -170,9 +179,10 @@ class listSync{
           *  pull all the unsubscribed 
           */
         $unsubscribed = array();
+        $start = 0;
         do{
             
-            $members = $this->api->listMembers($this->listId, 'unsubscribed', $this->lastSyncDate, 0, $this->batchLimit);
+            $members = $this->api->listMembers($this->listId, 'unsubscribed', $this->lastSyncDate, $start, $this->batchLimit);
             if($this->api->errorCode){
                 $this->_addError("Unable to load listMembers(): ".$this->api->errorMessage, $this->api->errorCode, true);
                 return false;
@@ -190,14 +200,16 @@ class listSync{
                 
             }//end foreach
             
+            $start++;
         }while(count($members) == $this->batchLimit);
         
         /**
           *  pull all the cleaned 
           */
+        $start = 0;
         do{
             
-            $members = $this->api->listMembers($this->listId, 'cleaned', $this->lastSyncDate, 0, $this->batchLimit);
+            $members = $this->api->listMembers($this->listId, 'cleaned', $this->lastSyncDate, $start, $this->batchLimit);
             if($this->api->errorCode){
                 $this->_addError("Unable to load listMembers(): ".$this->api->errorMessage, $this->api->errorCode, true);
                 return false;
@@ -214,6 +226,7 @@ class listSync{
                 
             }//end foreach
             
+            $start++;
         }while(count($members) == $this->batchLimit);
         
         

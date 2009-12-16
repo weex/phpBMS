@@ -39,20 +39,20 @@ p{
 .success{
     color: green;
     line-height: 16px;
-    background: url("success.gif") no-repeat left;
+    background: url("../common/image/success.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 
 .fail {
     color: red;
     line-height: 16px;
-    background: url("fail.gif") no-repeat left;
+    background: url("../common/image/fail.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 
 .warning {
     line-height: 16px;
-    background: url("warning.gif") no-repeat left;
+    background: url("../common/image/warning.gif") no-repeat left;
     padding:2px 0 2px 20px;
 }
 
