@@ -73,6 +73,8 @@ class mailchimpUpdate{
 					  *  Check to see if the list has a uuid. 
 					  */
 					$hasUuid = false;
+					$hasCompany = false;
+					$hasType = false;
 					$mergeVars = $api->listMergeVars($variables["mailchimp_list_id"]);
 					if($api->errorCode){
 						unset($variables["mailchimp_list_id"]);
@@ -80,12 +82,24 @@ class mailchimpUpdate{
 						return $variables;
 					}//end if
 						
+					$req = array();
 					foreach($mergeVars as $mergeVar){
 						
-						if($mergeVar["tag"] == "UUID"){
-							$hasUuid = true;
-							break;
-						}//end if
+						switch($mergeVar["tag"]){
+							
+							case "UUID":
+								$hasUuid = true;
+								break;
+							
+							case "COMPANY":
+								$hasCompany = true;
+								break;
+							
+							case "TYPE":
+								$hasType = true;
+								break;
+							
+						}//end switch
 						
 					}//end foreach
 					
@@ -99,6 +113,42 @@ class mailchimpUpdate{
 							"field_type"=>"text"
 						);
 						$api->listMergeVarAdd($variables["mailchimp_list_id"], "UUID", "phpbms unique user id", $req);
+						if($api->errorCode){
+							unset($variables["mailchimp_list_id"]);
+							$this->updateErrorMessage = "Unable to change the MailChimp list id: ".$api->errorMessage." (".$api->errorCode.")";
+							return $variables;
+						}//end if
+						
+					}//end if
+					
+					/**
+					  *  If it doesn't have a company field, create it. 
+					  */
+					if(!$hasCompany){
+						$req = array(
+							"req"=>false,
+							"public"=>true,
+							"field_type"=>"text"
+						);
+						$api->listMergeVarAdd($variables["mailchimp_list_id"], "COMPANY", "Company", $req);
+						if($api->errorCode){
+							unset($variables["mailchimp_list_id"]);
+							$this->updateErrorMessage = "Unable to change the MailChimp list id: ".$api->errorMessage." (".$api->errorCode.")";
+							return $variables;
+						}//end if
+						
+					}//end if
+					
+					/**
+					  *  If it doesn't have a type field, create it. 
+					  */
+					if(!$hasType){
+						$req = array(
+							"req"=>false,
+							"public"=>true,
+							"field_type"=>"text"
+						);
+						$api->listMergeVarAdd($variables["mailchimp_list_id"], "TYPE", "Type", $req);
 						if($api->errorCode){
 							unset($variables["mailchimp_list_id"]);
 							$this->updateErrorMessage = "Unable to change the MailChimp list id: ".$api->errorMessage." (".$api->errorCode.")";
@@ -136,7 +186,7 @@ class mailchimpDisplay{
 			$theinput = new inputField("mailchimp_apikey",$therecord["mailchimp_apikey"],"MailChimp Apikey", false, NULL, 48);
 			$fields[] = $theinput;
 			
-			$theinput = new inputCheckbox("mailchimp_secure", $therecord["mailchimp_secure"], "secure");
+			$theinput = new inputCheckbox("mailchimp_secure", $therecord["mailchimp_secure"], "Use SSL Connection");
 			$fields[] = $theinput;
 			
 			$theinput = new inputField("mailchimp_batch_limit", $therecord["mailchimp_batch_limit"], "Batch Limit");
@@ -159,12 +209,31 @@ class mailchimpDisplay{
 <fieldset>
 	<legend>Main</legend>
 
+	
 	<input type="hidden" id="apikey_changed" name="apikey_changed" value="0" />
-    <p><?php echo $theform->showField("mailchimp_apikey");?></p>
+    <p>
+		<?php echo $theform->showField("mailchimp_apikey");?>
+		<br/>
+		<span class="notes">
+			Your MailChimp api key may found under the "API Keys &amp; Info" section
+			in your "Account" page (<a href="http://admin.mailchimp.com/account/api" >http://admin.mailchimp.com/account/api</a>).
+		</span>
+	</p>
 	<input type="hidden" id="listid_changed" name="apilist_changed" value="0" />
-	<p><?php echo $theform->showField("mailchimp_list_id");?></p>
+	<p><?php echo $theform->showField("mailchimp_list_id");?>
+		<br/>
+		<span class="notes">
+			The list id for the list can be found under the list's settings near
+			the bottom of the page.  It should say "unique id for list |*list name*|"
+			where |*list name*| is the name of the list.
+			<br/>
+			When selecting a list to use, be aware that the sync process will
+			remove records (on the MailChimp side) that do not exist in the client
+			table.
+		</span>
+	</p>
 	<p><?php echo $theform->showField("mailchimp_secure");?></p>
-	<p><?php echo $theform->showField("mailchimp_batch_limit");?></p>
+	<?php /*echo $theform->showField("mailchimp_batch_limit");*/?>
 	<p><?php echo $theform->showField("mailchimp_last_sync_date");?></p>
 
     </fieldset>
