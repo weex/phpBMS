@@ -150,6 +150,10 @@ if(class_exists("phpbmsTable")){
 			}else
 				$variables["enddatetime"] = NULL;
 
+			
+			if(!isset($variables["scripttype"]))
+				$variables["scripttype"] = "job";
+				
 			switch($variables["scripttype"]){
 				
 				case "job":

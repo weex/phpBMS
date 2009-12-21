@@ -9,7 +9,7 @@ $listSync = new listSync(
                          MAILCHIMP_APIKEY,
                          MAILCHIMP_LIST_ID,
                          MAILCHIMP_LAST_SYNC_DATE,
-                         MAILCHIMP_BATCH_LIMIT,
+                         NULL,
                          MAILCHIMP_SECURE
                          );
 

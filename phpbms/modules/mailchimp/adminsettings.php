@@ -112,7 +112,7 @@ class mailchimpUpdate{
 							"public"=>false,
 							"field_type"=>"text"
 						);
-						$api->listMergeVarAdd($variables["mailchimp_list_id"], "UUID", "phpbms unique user id", $req);
+						$api->listMergeVarAdd($variables["mailchimp_list_id"], "UUID", "phpBMS unique user id", $req);
 						if($api->errorCode){
 							unset($variables["mailchimp_list_id"]);
 							$this->updateErrorMessage = "Unable to change the MailChimp list id: ".$api->errorMessage." (".$api->errorCode.")";
@@ -183,19 +183,16 @@ class mailchimpDisplay{
 
 			global $db;
 
-			$theinput = new inputField("mailchimp_apikey",$therecord["mailchimp_apikey"],"MailChimp Apikey", false, NULL, 48);
+			$theinput = new inputField("mailchimp_apikey",$therecord["mailchimp_apikey"],"mailchimp apikey", false, NULL, 48);
 			$fields[] = $theinput;
 			
-			$theinput = new inputCheckbox("mailchimp_secure", $therecord["mailchimp_secure"], "Use SSL Connection");
+			$theinput = new inputCheckbox("mailchimp_secure", $therecord["mailchimp_secure"], "use ssl connection");
 			$fields[] = $theinput;
 			
-			$theinput = new inputField("mailchimp_batch_limit", $therecord["mailchimp_batch_limit"], "Batch Limit");
+			$theinput = new inputField("mailchimp_list_id", $therecord["mailchimp_list_id"], "list id");
 			$fields[] = $theinput;
 			
-			$theinput = new inputField("mailchimp_list_id", $therecord["mailchimp_list_id"], "List Id");
-			$fields[] = $theinput;
-			
-			$theinput = new inputField("mailchimp_last_sync_date", $therecord["mailchimp_last_sync_date"], "Last Sync Date");
+			$theinput = new inputField("mailchimp_last_sync_date", $therecord["mailchimp_last_sync_date"], "last sync date");
 			$theinput->setAttribute("class", "uneditable");
 			$theinput->setAttribute("readonly", "readonly");
 			$fields[] = $theinput;
@@ -211,6 +208,14 @@ class mailchimpDisplay{
 
 	
 	<input type="hidden" id="apikey_changed" name="apikey_changed" value="0" />
+	
+	<p>
+		<span class="notes">
+			To use this module, you need to create an account with MailChimp
+			(<a href="http://mailchimp.com">http://mailchimp.com</a>).
+		</span>
+	</p>
+	
     <p>
 		<?php echo $theform->showField("mailchimp_apikey");?>
 		<br/>
@@ -233,7 +238,6 @@ class mailchimpDisplay{
 		</span>
 	</p>
 	<p><?php echo $theform->showField("mailchimp_secure");?></p>
-	<?php /*echo $theform->showField("mailchimp_batch_limit");*/?>
 	<p><?php echo $theform->showField("mailchimp_last_sync_date");?></p>
 
     </fieldset>

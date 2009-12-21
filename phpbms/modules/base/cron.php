@@ -29,15 +29,32 @@
 			`scheduler`.job,
 			`scheduler`.`pushrecordid`,
 			`scheduler`.startdatetime,
-			`scheduler`.enddatetime,
+			`scheduler`.enddatetime
+			";
+		
+	if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules)){
+		$querystatement .= "
+			,
 			`tabledefs`.`maintable`,
 			`modules`.`name` AS `modulename`
 		FROM
+		";
+		$querystatement .= "
 			(((scheduler LEFT JOIN `pushrecords` ON `scheduler`.`pushrecordid` = `pushrecords`.`uuid`) LEFT JOIN `tabledefs` ON `pushrecords`.`originuuid` = `tabledefs`.`uuid`) LEFT JOIN `modules` ON `tabledefs`.`moduleid` = `modules`.`uuid`)
-		WHERE
-			inactive = 0
-			AND startdatetime < NOW()
-			AND (enddatetime > NOW() OR enddatetime IS NULL)
+		";
+	}else{
+		$querystatement .= "
+		FROM
+		";
+		$querystatement .= "
+			`scheduler`
+		";
+	}//end if
+	
+	$querystatement .= " WHERE
+			`scheduler`.inactive = '0'
+			AND `scheduler`.startdatetime < NOW()
+			AND (`scheduler`.enddatetime > NOW() OR `scheduler`.enddatetime IS NULL)
 	";
 
 	$queryresult=$db->query($querystatement);

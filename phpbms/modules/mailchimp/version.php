@@ -8,6 +8,6 @@
 	"This module adds the ability to sync the client list to a MailChimp list.";
 	
 	$modules["mailchimp"]["requirements"] = 
-	"phpBMS Core v0.98 or greater; BMS module v0.98 or greater.";
+	"phpBMS Core v0.98 or greater; BMS module v0.98 or greater; A MailChimp account (http://www.mailchimp.com/).";
 
 ?>
