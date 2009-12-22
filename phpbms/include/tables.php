@@ -340,6 +340,7 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
           * Uses the field names to guess a default value.  If it cannot find
           * one of the standard names it sets the default value based on the type
           *
+          * @retrun array associative array with record defaults
           */
         function getDefaults(){
 
@@ -441,8 +442,13 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
         }//end getRecord function
 
 
-        // This is a placeholder function for preparing variables form a form
-        // In most cases it is overriden.
+        /**
+         * prepares variables (usually from a form) for inserting or updating
+         *
+         * @param array $variables associative array with the record information
+         *
+         * @return array associative array with the record information 'prepped'
+         */
         function prepareVariables($variables){
 
             if(isset($variables["uuid"]))
