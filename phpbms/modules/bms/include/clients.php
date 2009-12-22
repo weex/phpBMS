@@ -433,6 +433,252 @@ if(class_exists("phpbmsTable")){
 			return $newid;
 
 		}//end method - insertRecord
+		
+		/*
+		 * function api_searchByEmail
+		 * @param array $requestData Array containing a key named "email"
+		 * @param bool $returnUuid If true, returns result's uuid , if
+		 * false, the id.
+		 * @return array An array containing response information
+		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
+		 * @returnf string 'message' Message explaining the type / result
+		 * @returnf array details Either the array of uuid / ids if no errors
+		 * were encountered, or the original $requestData if there was an error
+		 */
+		
+		function api_searchByEmail($requestData, $returnUuid = true) {
+			
+			/**
+			  *  Check for required fields and return error if not there.
+			  */
+			if(!isset($requestData["email"])){
+				$response["type"] = "error";
+				$response["message"] = "Data does not contain a key of 'email'";
+				$response["details"] = $requestData;
+				return $response;
+			}//end if
+			
+			/**
+			  *  Do sql search 
+			  */
+			$querystatement = "
+				SELECT
+					`id`,
+					`uuid`
+				FROM
+					`clients`
+				WHERE
+					`email` = '".mysql_real_escape_string($requestData["email"])."'
+			";
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			/**
+			  *  Construct return array 
+			  */
+			$thereturn["type"] = "result";
+			$thereturn["message"] = "The function api_searchByEmail has been run successfully.";
+			$thereturn["details"] = array();
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				if($returnUuid)
+					$thereturn["details"][] = $therecord["uuid"];
+				else
+					$thereturn["details"][] = $therecord["id"];
+				
+			}//end while
+			
+			return $thereturn;
+			
+		}//end function --api_serchByEmail--
+		
+		/*
+		 * function api_searchByNameAndPostalcode
+		 * @param array $requestData Array containing the keys 'postalcode',
+		 * 'firstname', or 'lastname'.
+		 * @param bool $returnUuid If true, returns result's uuid , if
+		 * false, the id.
+		 * @return array An array containing response information
+		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
+		 * @returnf string 'message' Message explaining the type / result
+		 * @returnf array details Either the array of uuid / ids if no errors
+		 * were encountered, or the original $requestData if there was an error
+		 */
+		
+		function api_searchByNameAndPostalcode($requestData, $returnUuid = true) {
+			
+			/**
+			  *  check for required fields 
+			  */
+			$requiredArray = array(
+				"postalcode",
+				"firstname",
+				"lastname"
+			);
+			
+			$missingArray = array();
+			
+			foreach($requiredArray as $requiredField)
+				if(!isset($requestData[$requiredField]))
+					$missingArray[] = $requiredField;
+			
+			$count = count($missingArray);
+			if($count){
+				
+				$response["type"] = "error";
+				$response["details"] = $requestData;
+				$response["message"] = "";
+				
+				$i=0;
+				foreach($missingArray as $missingField){
+					
+					if(++$i == $count){
+						if($response["message"])
+							$response["message"] .= "and '".$missingField."'";
+						else
+							$response["message"] .= "'".$missingField."'";
+					}else
+						$response["message"] .= "'".$missingField."', ";
+					
+				}//end foreach
+				
+				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
+				
+				return $response;
+			
+			}//end if
+			
+			/**
+			  *  do sql search 
+			  */
+			$querystatement = "
+				SELECT
+					`clients`.`id`,
+					`clients`.`uuid`
+				FROM
+					(
+						(clients INNER JOIN addresstorecord on clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND addresstorecord.primary=1)
+						INNER JOIN 	addresses ON  addresstorecord.addressid = addresses.uuid
+					)
+				WHERE
+					`clients`.`firstname` = '".mysql_real_escape_string($requestData["firstname"])."'
+					AND
+					`clients`.`lastname` = '".mysql_real_escape_string($requestData["lastname"])."'
+					AND
+					`addresses`.`postalcode` = '".mysql_real_escape_string($requestData["postalcode"])."'
+			";
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			/**
+			  *  report findings 
+			  */
+			$thereturn["details"] = array();
+			$thereturn["type"] = "result";
+			$thereturn["message"] = "The function api_searchByNameAndPostalcode has been run successfully.";
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				if($returnUuid)
+					$thereturn["details"][] = $therecord["uuid"];
+				else
+					$thereturn["details"][] = $therecord["id"];
+				
+			}//end while
+			
+			return $thereturn;
+			
+		}//end function --api_searchByNameAndPostalcode
+		
+		/*
+		 * function api_searchByUsernameAndPassword
+		 * @param array $requestData Array containing the keys 'username' and
+		 * 'password'.
+		 * @param bool $returnUuid If true, returns result's uuid , if
+		 * false, the id.
+		 * @return array An array containing response information
+		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
+		 * @returnf string 'message' Message explaining the type / result
+		 * @returnf array details Either the array of uuid / ids if no errors
+		 * were encountered, or the original $requestData if there was an error
+		 */
+		
+		function api_searchByUsernameAndPassword($requestData, $returnUuid = true) {
+			
+			/**
+			  *  check for required fields 
+			  */
+			$requiredArray = array(
+				"username",
+				"password"
+			);
+			
+			$missingArray = array();
+			
+			foreach($requiredArray as $requiredField)
+				if(!isset($requestData[$requiredField]))
+					$missingArray[] = $requiredField;
+			
+			$count = count($missingArray);
+			if($count){
+				
+				$response["type"] = "error";
+				$response["details"] = $requestData;
+				$response["message"] = "";
+				
+				$i=0;
+				foreach($missingArray as $missingField){
+					
+					if(++$i == $count){
+						if($response["message"])
+							$response["message"] .= "and '".$missingField."'";
+						else
+							$response["message"] .= "'".$missingField."'";
+					}else
+						$response["message"] .= "'".$missingField."', ";
+					
+				}//end foreach
+				
+				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
+				
+				return $response;
+			
+			}//end if
+			
+			/**
+			  *  do sql search 
+			  */
+			$querystatement = "
+				SELECT
+					`id`,
+					`uuid`
+				FROM
+					`clients`
+				WHERE
+					`username` = '".mysql_real_escape_string($requestData["username"])."'
+					AND
+					`password` = '".mysql_real_escape_string($requestData["password"])."'
+			";
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			/**
+			  *  report findings 
+			  */
+			$thereturn["details"] = array();
+			$thereturn["type"] = "result";
+			$thereturn["message"] = "The function api_searchByUsernameAndPassword has been run successfully.";
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				if($returnUuid)
+					$thereturn["details"][] = $therecord["uuid"];
+				else
+					$thereturn["details"][] = $threturn["id"];
+				
+			}//end while
+			
+			return $thereturn;
+			
+		}//end function --api_searchByUsernameAndPassword--
 
 	}//end class
 

@@ -388,7 +388,7 @@ class api{
 
                         $methodName = $request["command"];
 
-                        $this->response[] = $processor->$methodName($request["data"]);
+                        $this->response[] = $processor->$methodName($request["data"], $this->options->useUuid);
 
                     }//endif
 
@@ -419,7 +419,7 @@ class api{
 
                     $methodName = $request["command"];
 
-                    $this->response[] = $processor->$methodName($request["data"]);
+                    $this->response[] = $processor->$methodName($request["data"], $this->options->useUuid);
 
                 }//endif
 

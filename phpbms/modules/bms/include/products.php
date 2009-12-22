@@ -530,6 +530,64 @@ if(class_exists("phpbmsTable")){
 			}//endforeach
 
 		}//end function updateCategories
+		
+		/*
+		 * function api_searchByPartNumber
+		 * @param array $requestData Array containing the "partnumber" key.
+		 * @param bool $returnUuid If true, returns result's uuid , if
+		 * false, the id.
+		 * @return array An array containing response information
+		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
+		 * @returnf string 'message' Message explaining the type / result
+		 * @returnf array details Either the array of uuid / ids if no errors
+		 * were encountered, or the original $requestData if there was an error
+		 */
+		
+		function api_searchByPartNumber($requestData, $returnUuid = true) {
+			
+			/**
+			  *  do error search 
+			  */
+			if(!isset($requestData["partnumber"])){
+				$response["type"] = "error";
+				$response["message"] = "Data does not contain a key of 'partnumber'.";
+				$response["details"] = $requestData;
+				return $response;
+			}//end if
+			
+			/**
+			  *  do query search 
+			  */
+			$querystatement = "
+				SELECT
+					`id`,
+					`uuid`
+				FROM
+					`products`
+				WHERE
+					`partnumber` = '".mysql_real_escape_string($requestData["partnumber"])."'
+			";
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			/**
+			  *  report result 
+			  */
+			$thereturn["message"] = "The function api_searchByPartNumber has been run successfully.";
+			$thereturn["type"] = "";
+			$thereturn["details"] = array();
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				if($returnUuid)
+					$thereturn["details"][] = $therecord["uuid"];
+				else
+					$thereturn["details"][] = $therecord["id"];
+					
+			}//end while
+			
+			return $thereturn;
+			
+		}//end function --api_searchByPartNumber--
 
 	}//end class products
 

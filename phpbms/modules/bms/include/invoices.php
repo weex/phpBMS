@@ -1211,6 +1211,77 @@ if(class_exists("phpbmsTable")){
 			return $newid;
 
 		}//end method - insertRecord
+		
+		/*
+		 * function api_searchByClientUuid
+		 * @param array $requestData Array containting the key "clientid", and,
+		 * optionally, the keys "type" (relating to the invoice type, e.g. "Quote"),
+		 * "startdate", and "enddate" which put an upper and lower bound to the
+		 * invoice's datetime (with sql format).
+		 * @param bool $returnUuid If true, returns result's uuid , if
+		 * false, the id.
+		 * @return array An array containing response information
+		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
+		 * @returnf string 'message' Message explaining the type / result
+		 * @returnf array details Either the array of uuid / ids if no errors
+		 * were encountered, or the original $requestData if there was an error
+		 */
+		
+		function api_searchByClientUuid($requestData, $returnUuid = true) {
+			
+			/**
+			  *  check for required field 
+			  */
+			if(!isset($requestData["clientid"])){
+				$response["type"] = "error";
+				$response["message"] = "Data does not contain a key of 'clientid'.";
+				$response["details"] = $requestData;
+				
+				return $response;
+			}//end if
+			
+			/**
+			  *  do sql search 
+			  */
+			$querystatement = "
+				SELECT
+					`id`,
+					`uuid`
+				FROM
+					`invoices`
+				WHERE
+					`clientid` = '".mysql_real_escape_string($requestData["clientid"])."'
+			";
+			
+			if(isset($requestData["type"]))
+				$querystatement .= "AND `type` = '".mysql_real_escape_string($requestData["type"])."'";
+			
+			if(isset($requestData["startdate"]))
+				$querystatement .= "AND `creationdate` >= '".mysql_real_escape_string($requestData["startdate"])."'";
+				
+			if(isset($requestData["enddate"]))
+				$querystatement .= "AND `creationdate` <= '".mysql_real_escape_string($requestData["enddate"])."'";
+			
+			$queryresult = $this->db->query($querystatement);
+			
+			/**
+			  *  report findings 
+			  */
+			$thereturn["details"] = array();
+			$thereturn["message"] = "The function api_searchByPartNumber has been run successfully.";
+			$thereturn["type"] = "result";
+			while($therecord = $this->db->fetchArray($queryresult)){
+				
+				if($returnUuid)
+					$thereturn["details"][] = $therecord["uuid"];
+				else
+					$thereturn["details"][] = $therecord["id"];
+				
+			}//end while
+			
+			return $thereturn;
+			
+		}//end function --api_searchByClientUuid--
 
 	}//end class
 
