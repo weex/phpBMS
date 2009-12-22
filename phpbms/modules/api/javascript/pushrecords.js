@@ -41,16 +41,16 @@ pushrecords = {
 
 		var theForm = getObjectFromID("record");
 
+		//skip validation if cancel
+		var cancelClick = getObjectFromID("cancelclick");
+		if(cancelClick.value !=0)
+			return true;
+		
 		if(!validateForm(theForm)){
 			if(e)
 				e.stop();
 			return false;
 		}
-
-        //skip validation if cancel
-		cancelClick = getObjectFromID("cancelclick");
-		if(cancelClick.value !=0)
-			return true;
 
         var useCustomDestUuid = getObjectFromID("usecustomdestuuid");
         var customDestUuid = getObjectFromID("customdestuuid");

@@ -54,7 +54,7 @@
 
 		//Form Elements
 		//==============================================================
-		$theform = new phpbmsForm();
+		$theform = new phpbmsForm(NULL, "post", "record", NULL);
         $theform->id = $theform->name;
 
         /**
