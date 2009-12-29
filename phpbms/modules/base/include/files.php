@@ -134,7 +134,7 @@ if(class_exists("searchFunctions")){
 				//so, we adjust the attachment where clause to always be
 				//uuids.
 
-				$this->idsArray = getUuidArray($this->db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475", $this-idsArray);
+				$this->idsArray = getUuidArray($this->db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475", $this->idsArray);
 
 			}else
 				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
