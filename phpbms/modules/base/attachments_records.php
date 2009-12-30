@@ -79,6 +79,9 @@
 		}
 		$_POST["startnum"]=1;
 	} elseif($_POST["desc"]!="")  $displayTable->querysortorder.=" DESC";
+	
+	//record offset?
+	if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
 
 	$displayTable->issueQuery();
 

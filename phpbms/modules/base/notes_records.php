@@ -69,6 +69,7 @@
 	//on the fly sorting... this needs to be done after command processing or the querystatement will not work.
 	if(!isset($_POST["newsort"])) $_POST["newsort"]="";
 	if(!isset($_POST["desc"])) $_POST["desc"]="";
+	
 
 	if($_POST["newsort"]!="") {
 		//$displayTable->setSort($_POST["newsort"]);
@@ -79,6 +80,9 @@
 	} elseif($_POST["desc"]!="")  $displayTable->querysortorder.=" DESC";
 
 	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
+		
+	//record offset?
+	if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
 
 	$displayTable->issueQuery();
 

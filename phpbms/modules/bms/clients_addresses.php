@@ -154,6 +154,9 @@
 
 	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
 
+		//record offset?
+		if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
+		
 		$displayTable->issueQuery();
 
 		$phpbms->cssIncludes[] = "pages/search.css";
