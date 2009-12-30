@@ -52,8 +52,104 @@ if(class_exists("phpbmsTable")){
 
 			return $file;
 		}
+		
+		
+		/**
+          * function getDefaults
+          *
+          * Retrieves default values for a single record
+          *
+          * Uses the field names to guess a default value.  If it cannot find
+          * one of the standard names it sets the default value based on the type
+          *
+          * @retrun array associative array with record defaults
+          */
+        function getDefaults(){
+			
+			$therecord = parent::getDefaults();
+			
+			$therecord["apifileurl"] = "";
+			
+			return $therecord;
+			
+		}//end function --getDefaults
 
 
+		/**
+         * function getRecord
+         *
+         * Retrieves a single record from the database
+         *
+         * @param integer|string $id the record id or uuid
+         * @param bool $useUuid specifies whther the $id is a uuid (true) or not.  Default is false
+         *
+         * @return array the record as an associative array
+         */
+        function getRecord($id, $useUuid = false){
+			
+			if($useUuid){
+			
+				$id = mysql_real_escape_string($id);
+				$whereclause = "`uuid` = '".$id."'";
+			
+			} else {
+			
+				$id = (int) $id;
+				$whereclause = "`id` = ".$id;
+			
+			}//endif
+			
+			$querystatement = "
+				SELECT
+					`id`,
+					`uuid`,
+					`name`,
+					`description`,
+					`type`,
+					`createdby`,
+					`creationdate`,
+					`modifiedby`,
+					`modifieddate`,
+					`roleid`,
+					'' AS `file`,
+					`custom1`,
+					`custom2`,
+					`custom3`,
+					`custom4`,
+					`custom5`,
+					`custom6`,
+					`custom7`,
+					`custom8`
+				FROM
+					`files`
+				WHERE
+					".$whereclause;
+					
+			$queryresult = $this->db->query($querystatement);
+					
+			if($this->db->numRows($queryresult)){
+                $therecord = $this->db->fetchArray($queryresult);
+				
+				if(!empty($_SERVER["HTTPS"]))
+					$protocol = "https://";
+				else
+					$protocol = "http://";
+					
+				
+				if( ($_SERVER["SERVER_PORT"] == "443" && !empty($_SERVER["HTTPS"])) || ($_SERVER["SERVER_PORT"] == "80" && empty($_SERVER["HTTPS"])) )
+					$port = "";
+				else
+					$port = ":".$_SERVER["SEVER_PORT"];
+				
+				$therecord["apifileurl"] = $protocol.$_SERVER["SERVER_NAME"].$port.APP_PATH."modules/api/api_servefile.php?i=".(int)$therecord["id"];
+			}else
+                $therecord = $this-> getDefaults();
+			
+			return $therecord;
+			
+		}//end function --getRecord--
+		
+		
 		function verifyVariables($variables){
 
 			//if it is set, we'll have to check, if not, it defaults to '' which is an acceptable

@@ -597,8 +597,19 @@ class api{
                             $processor->dateFormat =  $this->options->dateFormat;
                             $processor->timeFormat =  $this->options->timeFormat;
                         }//end if
-
-                        if(!$this->options->useUuid){
+                        
+                        $errorMessage = "";
+                        if($this->options->useUuid){
+                            if(!isset($request["data"]["uuid"]))
+                                $errorMessage = "The `uuid` field must be set.";
+                        }else{
+                            if(!isset($request["data"]["id"]))
+                                $errorMessage = "The `id` field must be set.";
+                        }//end if
+                        
+                        if($errorMessage)
+                            $this->sendError("Update failed from request number ".$i, $errorMessage);
+                        elseif(!$this->options->useUuid){
                             $therecord = $processor->getRecord((int) $request["data"]["id"], $this->options->useUuid);
                             $thereturn = $therecord["id"];
                             $thevalue = (int)$request["data"]["id"];
@@ -607,7 +618,6 @@ class api{
                             $thereturn = $therecord["uuid"];
                             $thevalue = $request["data"]["uuid"];
                         }
-
 
                         if($thereturn == $thevalue)
                             $this->_addToResponse("retrieved", "record (".htmlQuotes($thevalue).") retrieved in tabledef ".$tabledefid, $therecord);

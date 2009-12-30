@@ -65,7 +65,7 @@
 
 
 	function getAttachments($db,$uuid){
-		$querystatement="
+		$querystatement = "
 			SELECT
 				`tabledefs`.`displayname`,
 				`attachments`.`recordid`,
