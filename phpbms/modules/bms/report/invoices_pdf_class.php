@@ -788,8 +788,8 @@ class invoicePDF extends phpbmsReport{
 
                             $to = 		$this->invoicerecord["email"];
                             $from = 	$userinfo["email"];
-                            $subject = 	"Your ".$this->title." from ".COMPANY_NAME;
-                            $message = 	"Attached is your ".$this->title." from ".COMPANY_NAME."\n\n" .
+                            $subject = 	"Your ".$this->settings["reportTitle"]." from ".COMPANY_NAME;
+                            $message = 	"Attached is your ".$this->settings["reportTitle"]." from ".COMPANY_NAME."\n\n" .
                                                     "The attachment requires Adobe Acrobat Reader to view. \n If you do not " .
                                                     "have Acrobat Reader, you can download it at http://www.adobe.com  \n\n" .
                                                     COMPANY_NAME."\n".
@@ -814,9 +814,9 @@ class invoicePDF extends phpbmsReport{
 
                             $message .= "--{$mime_boundary}\n" .
                                              "Content-Type: {application/pdf};\n" .
-                                             " name=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
+                                             " name=\"".$this->settings["reportTitle"].$this->invoicerecord["id"].".pdf\"\n" .
                                              "Content-Disposition: attachment;\n" .
-                                             " filename=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
+                                             " filename=\"".$this->settings["reportTitle"].$this->invoicerecord["id"].".pdf\"\n" .
                                              "Content-Transfer-Encoding: base64\n\n" .
                                              $pdf . "\n\n" .
                                              "--{$mime_boundary}--\n";

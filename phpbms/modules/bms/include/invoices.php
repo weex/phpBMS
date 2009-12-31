@@ -1211,7 +1211,7 @@ if(class_exists("phpbmsTable")){
 			return $newid;
 
 		}//end method - insertRecord
-		
+
 		/*
 		 * function api_searchByClientUuid
 		 * @param array $requestData Array containting the key "clientid", and,
@@ -1226,22 +1226,22 @@ if(class_exists("phpbmsTable")){
 		 * @returnf array details Either the array of uuid / ids if no errors
 		 * were encountered, or the original $requestData if there was an error
 		 */
-		
+
 		function api_searchByClientUuid($requestData, $returnUuid = true) {
-			
+
 			/**
-			  *  check for required field 
+			  *  check for required field
 			  */
 			if(!isset($requestData["clientid"])){
 				$response["type"] = "error";
 				$response["message"] = "Data does not contain a key of 'clientid'.";
 				$response["details"] = $requestData;
-				
+
 				return $response;
 			}//end if
-			
+
 			/**
-			  *  do sql search 
+			  *  do sql search
 			  */
 			$querystatement = "
 				SELECT
@@ -1252,35 +1252,35 @@ if(class_exists("phpbmsTable")){
 				WHERE
 					`clientid` = '".mysql_real_escape_string($requestData["clientid"])."'
 			";
-			
+
 			if(isset($requestData["type"]))
 				$querystatement .= "AND `type` = '".mysql_real_escape_string($requestData["type"])."'";
-			
+
 			if(isset($requestData["startdate"]))
 				$querystatement .= "AND `creationdate` >= '".mysql_real_escape_string($requestData["startdate"])."'";
-				
+
 			if(isset($requestData["enddate"]))
 				$querystatement .= "AND `creationdate` <= '".mysql_real_escape_string($requestData["enddate"])."'";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			/**
-			  *  report findings 
+			  *  report findings
 			  */
 			$thereturn["details"] = array();
 			$thereturn["message"] = "The function api_searchByPartNumber has been run successfully.";
 			$thereturn["type"] = "result";
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
+
 				if($returnUuid)
 					$thereturn["details"][] = $therecord["uuid"];
 				else
 					$thereturn["details"][] = $therecord["id"];
-				
+
 			}//end while
-			
+
 			return $thereturn;
-			
+
 		}//end function --api_searchByClientUuid--
 
 	}//end class
@@ -1458,13 +1458,14 @@ if(class_exists("searchFunctions")){
 
 				$this->db->setEncoding("latin1");
 
-				include("modules/bms/report/invoices_pdf_class.php");
+				require_once("report/report_class.php");
+                                include("modules/bms/report/invoices_pdf_class.php");
 
 				$processed = 0;
 
 				foreach($this->idsArray as $id){
 
-					$report = new invoicePDF($this->db, 'P', 'in', 'Letter');
+					$report = new invoicePDF($this->db, 'rpt:44b21461-6e67-c284-0ccf-36ab1af47c9b', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'P', 'in', 'Letter');
 
 					if(!$useUuid)
 						$report->generate("invoices.id = ".$id);
@@ -1492,7 +1493,7 @@ if(class_exists("searchFunctions")){
 		}//end method
 
 
-		function email_quote($useUuid){
+		function email_quote($useUuid = false){
 
 				if(DEMO_ENABLED == "true")
 					return "Functionality disabled in demo.";
@@ -1500,6 +1501,7 @@ if(class_exists("searchFunctions")){
 				$this->db->setEncoding("latin1");
 
 				$noOutput = true;
+				require_once("report/report_class.php");
 				include("modules/bms/report/invoices_pdf_class.php");
 				include("modules/bms/report/invoices_pdfquote.php");
 
@@ -1507,7 +1509,7 @@ if(class_exists("searchFunctions")){
 
 				foreach($this->idsArray as $id){
 
-					$report = new quotePDF($this->db, 'P', 'in', 'Letter');
+					$report = new quotePDF($this->db, 'rpt:44b21461-6e67-c284-0ccf-36ab1af47c9b', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'P', 'in', 'Letter');
 
 					if(!$useUuid)
 						$report->generate("invoices.id = ".$id);
