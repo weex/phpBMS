@@ -367,11 +367,13 @@ class invoicePDF extends phpbmsReport{
 
             $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
 
+            $companyDisplay = "";
+
             switch($areaToPrint){
+
 
                 case "billto":
 
-                    $companyDisplay = "";
                     if($this->invoicerecord["company"]){
 
                             $companyDisplay .= $this->invoicerecord["company"];
