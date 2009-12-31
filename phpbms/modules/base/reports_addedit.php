@@ -45,16 +45,25 @@
 	$thetable = new reports($db, "tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb");
 	$therecord = $thetable->processAddEditPage();
 
+        if($therecord["id"]){
+
+            $reportSettings = new reportSettings($db, $therecord["uuid"]);
+            $reportSettings->get();
+
+        }//endif
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 
 	$pageTitle="Report";
 
-	$phpbms->cssIncludes[] = "pages/reports.css";
+	$phpbms->cssIncludes[] = "pages/base/reports.css";
+	$phpbms->jsIncludes[] = "modules/base/javascript/reports.js";
 
 		//Form Elements
 		//==============================================================
-		$theform = new phpbmsForm();
+		$theform = new phpbmsForm(NULL, "post", "record", NULL);
+                $theform->id = "record";
 
 		$theinput = new inputField("name",$therecord["name"],NULL,true,NULL,32,64);
 		$theinput->setAttribute("class","important");
@@ -69,8 +78,18 @@
 		$theinput = new inputRolesList($db,"roleid",$therecord["roleid"],"access (role)");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("reportfile",$therecord["reportfile"],"report file",true,NULL,64,128);
-		$theform->addField($theinput);
+		if($therecord["id"]){
+
+                    $theinput = new inputField("reportfile",$therecord["reportfile"],"report file",true,NULL,64,128);
+                    $theinput->setAttribute("readonly","readonly");
+                    $theinput->setAttribute("class","uneditable");
+
+                    $theform->addField($theinput);
+
+                }//endif
+
+                $theinput = new inputTextarea("description", $therecord["description"], NULL, false, 3, 48);
+                $theform->addField($theinput);
 
 		$thetable->getCustomFieldInfo();
 		$theform->prepCustomFields($db, $thetable->customFieldsQueryResult, $therecord);
@@ -81,20 +100,19 @@
 	include("header.php");
 
 ?><div class="bodyline">
-	<?php $theform->startForm($pageTitle)?>
-
+<?php $theform->startForm($pageTitle) ?>
 	<fieldset id="fsAttributes">
 		<legend>Attributes</legend>
+
+                <p><?php $theform->showField("type")?></p>
 
 		<p>
 			<label for="tabledefid">report table</label><br />
 			<?php $thetable->displayTables("tabledefid",$therecord["tabledefid"]);?><br />
-			<span class="notes">Note: Use the global option to associate the report with every table in the system.</span>
 		</p>
 
 		<p>
 			<?php $theform->showField("displayorder"); ?><br />
-			<span class="notes">Lower numbers are displayed first.  Reports with the same order are grouped together.</span>
 		</p>
 
 		<p><?php $theform->showField("roleid")?></p>
@@ -107,15 +125,67 @@
 
 			<p class="big"><?php $theform->showField("name"); ?></p>
 
-			<p><?php $theform->showField("type")?></p>
-
-			<p><?php $theform->showField("reportfile")?></p>
 
 			<p>
-				<label for="description">description</label><br />
-				<textarea id="description" name="description"  cols="61" rows="5" tabindex="35"><?php echo htmlQuotes($therecord["description"])?></textarea>
-			</p>
+                        <?php
+                            if($therecord["id"])
+                                $theform->showField("reportfile");
+                            else
+                                $thetable->displayRerportFiles();
+                        ?>
+                        </p>
+
+			<p class="big"><?php $theform->showField("description"); ?></p>
+
 		</fieldset>
+
+                <fieldset>
+                    <legend>settings</legend>
+                    <?php if(!$therecord["id"]) {
+                        ?><p class="notes">Report settings are available after initial record creation.</p><?php
+                    } else {
+                      ?>
+
+
+                        <textarea class="hiddenTextAreas" id="rsUpdates" name="rsUpdates" rows="1" cols="5"></textarea>
+                        <textarea class="hiddenTextAreas" id="rsDelList" name="rsDelList" rows="1" cols="5"></textarea>
+                        <textarea class="hiddenTextAreas" id="rsAdds"    name="rsAdds" rows="1" cols="5"></textarea>
+                        <table class="querytable simple" id="settingsTable" cellspacing="0" cellpadding="0" border="0" summary="report settings">
+                            <thead>
+                                <tr>
+                                    <th align="right">name</th>
+                                    <th>value</th>
+                                    <th>type</th>
+                                    <th width="100%">description</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rsTbody">
+                                <tr id="addNewRow">
+                                    <td>
+                                        <input type="text" id="rsAddName"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="rsAddValue" size="32"/>
+                                    </td>
+                                    <td>string</td>
+                                    <td>user added setting</td>
+                                    <td>
+                                        <button title="Add Setting" class="graphicButtons buttonPlus" id="rsButtonAdd" type="button"><span>+</span></button>
+                                    </td>
+                                </tr>
+                                <?php
+                                    $reportSettings->display();
+                                ?>
+                                <tr class="queryfooter" id="rsFooterTr">
+                                    <td colspan="5">&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                      <?php
+                    }//endif
+                    ?>
+                </fieldset>
 
 	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>
 
@@ -123,7 +193,7 @@
 
 	<?php
 		$theform->showGeneralInfo($phpbms,$therecord);
-		$theform->endForm();
+                $theform->endForm();
 	?>
 </div>
 <?php include("footer.php");?>

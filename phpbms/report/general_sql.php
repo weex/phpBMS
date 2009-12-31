@@ -36,129 +36,156 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+if(!class_exists("phpbmsReport"))
+    include("report_class.php");
 
-	if(!class_exists("phpbmsReport"))
-		include("report_class.php");
+/**
+ * Handles creation of SQL insert records
+ *
+ * This class handles the file creation of SQL Insert records that
+ * correspond to the table definition main table that intializes a print of this
+ * report
+ */
+class sqlExport extends phpbmsReport{
 
-	class sqlExport extends phpbmsReport{
+    /**
+     * $maintable
+     * @var string the SQL name of the main table to print.
+     */
+    var $maintable = "";
 
-		var $maintable = "";
-		var $reportOutput = "";
-                var $tabledefuuid;
+    /**
+     * function generalTablePrint
+     *
+     * Initialization function
+     *
+     * @param object $db database object
+     * @param string $reportUUID UUID of report record
+     * @param string $tabledefUUID UUID of table definition intializing print
+     */
+    function sqlExport($db, $reportUUID, $tabledefUUID){
 
-		function sqlExport($db, $tabledefuuid){
+        parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
+        $therecord = $this->getTableDefInfo();
 
-			parent::phpbmsReport($db);
+        $this->maintable = $therecord["maintable"];
 
-			$querystatement = "
-				SELECT
-					maintable
-				FROM
-					tabledefs
-				WHERE
-					uuid = '".$this->tabledefuuid."'";
-
-			$queryresult = $db->query($querystatement);
-			$therecord=$db->fetchArray($queryresult);
-
-			$this->maintable = $therecord["maintable"];
-
-		}//end method
-
-
-		function generate(){
-
-			$querystatement = "
-				SELECT
-					*
-				FROM
-					".$this->maintable;
-
-			$querystatement = $this->assembleSQL($querystatement);
-
-			$queryresult = $this->db->query($querystatement);
-
-			$num_fields = $this->db->numFields($queryresult);
-
-			$statementstart = "INSERT INTO `".$this->maintable."` (";
-
-			for($i=0; $i<$num_fields ;$i++)
-				$statementstart .= "`".$this->db->fieldName($queryresult,$i)."`, ";
-
-			$statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
-
-			while($therecord = $this->db->fetchArray($queryresult)){
-
-				$insertstatement = $statementstart;
-
-				foreach($therecord as $name => $field){
-
-					if($field === NULL)
-						$addfield = "NULL, ";
-					else
-						$addfield = "'".mysql_real_escape_string($field)."', ";
-
-					//this is in temp for intallation exporting
-					if(hasRights("Admin")){
-
-						switch($name){
-
-							case "createdby":
-							case "modifiedby":
-								$addfield = "1, ";
-								break;
-
-							case "creationdate":
-							case "modifieddate":
-								$addfield = "NOW(), ";
-								break;
-
-						}//end switch
-
-					}//endif
-
-					$insertstatement .= $addfield;
-
-				}//endforeach
-
-				$insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
-
-				$this->reportOutput .= $insertstatement;
-
-			}//endwhile
-
-		}//end method
+    }//end function init
 
 
-		function show(){
+    /**
+     * function generate
+     *
+     * Generates the SQL Insert statements for each record
+     */
+    function generate(){
 
-			header("Content-type: text/plain");
-			header('Content-Disposition: attachment; filename="export.sql"');
+        $querystatement = "
+            SELECT
+                *
+            FROM
+                ".$this->maintable;
 
-			echo $this->reportOutput;
+        $querystatement = $this->assembleSQL($querystatement);
 
-		}//end method
+        $queryresult = $this->db->query($querystatement);
+
+        $num_fields = $this->db->numFields($queryresult);
+
+        $statementstart = "INSERT INTO `".$this->maintable."` (";
+
+        for($i=0; $i<$num_fields ;$i++)
+             $statementstart .= "`".$this->db->fieldName($queryresult,$i)."`, ";
+
+        $statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $insertstatement = $statementstart;
+
+            foreach($therecord as $name => $field){
+
+                if($field === NULL)
+                     $addfield = "NULL, ";
+                else
+                     $addfield = "'".mysql_real_escape_string($field)."', ";
+
+                //this is in temp for intallation exporting
+                if(hasRights("Admin")){
+
+                    switch($name){
+
+                        case "createdby":
+                        case "modifiedby":
+                            $addfield = "1, ";
+                            break;
+
+                        case "creationdate":
+                        case "modifieddate":
+                            $addfield = "NOW(), ";
+                            break;
+
+                    }//end switch
+
+                }//endif
+
+                $insertstatement .= $addfield;
+
+            }//endforeach
+
+            $insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
+
+            $this->reportOutput .= $insertstatement;
+
+        }//endwhile
+
+    }//end function generate
+
+    /**
+     * function show
+     *
+     * outputs the report to a .sql file
+     */
+    function show(){
+
+        if(!isset($this->settings["filename"]))
+           $this->settings["filename"] = $this->maintable."-export.sql";
+
+        header("Content-type: text/plain");
+        header('Content-Disposition: attachment; filename="'.$this->settings["filename"].'"');
+
+        echo $this->reportOutput;
+
+    }//end function show
+
+}//end class sqlExport
 
 
-	}//end class
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
 
-	//PROCESSING
-	//========================================================================
+    session_cache_limiter('private');
 
-	if(!isset($noOutput)){
+    require_once("../include/session.php");
 
-		session_cache_limiter('private');
+    checkForReportArguments();
 
-		require("../include/session.php");
-		if(!isset($_GET["tid"]))
-			$error = new appError(200,"URL variable missing: tid");
+    $report = new sqlExport($db, $_GET["rid"],$_GET["tid"]);
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $report->show();
 
-		$report = new sqlExport($db, $_GET["tid"]);
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$report->show();
+}//end if
 
-	}//end if
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="pdfLabels";
+
 ?>

@@ -58,9 +58,9 @@ class aritemsSummary extends phpbmsReport{
 	);
 
 
-	function aritemsSummary($db, $statementDate = NULL, $showPayments = "new", $showClosed = false){
+	function aritemsSummary($db, $reportUUID, $tabledefUUID, $statementDate = NULL, $showPayments = "new", $showClosed = false){
 
-		parent::phpbmsReport($db);
+                parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
 		if($statementDate)
 			$this->statementDate = $statementDate;
@@ -77,10 +77,10 @@ class aritemsSummary extends phpbmsReport{
 
 
 		if($whereclause)
-			$this->whereclause = $whereclause;
+			$this->whereClause = $whereclause;
 
-		if(!$this->whereclause)
-			$this->whereclause = "
+		if(!$this->whereClause)
+			$this->whereClause = "
 				aritems.status = 'open'
 				AND aritems.posted = 1";
 
@@ -115,7 +115,7 @@ class aritemsSummary extends phpbmsReport{
 				)LEFT JOIN users
 					ON clients.salesmanagerid = users.uuid";
 
-		$this->sortorder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
+		$this->sortOrder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
 
 		$querystatement = $this->assembleSQL($querystatement);
 
@@ -572,15 +572,16 @@ if(!isset($noOutput)){
 
 	}//endif
 
+        session_cache_limiter('private');
+        //set encoding to latin1 (fpdf doesnt like utf8)
+        $sqlEncoding = "latin1";
+        require_once("../../../include/session.php");
+
+        checkForReportArguments();
+
+        $report = new aritemsSummary($db, $_GET["rid"], $_GET["tid"]);
+
 	if(isset($_POST["command"])) {
-
-		session_cache_limiter('private');
-
-		//set encoding to latin1 (fpdf doesnt like utf8)
-		$sqlEncoding = "latin1";
-		require_once("../../../include/session.php");
-
-		$report = new aritemsSummary($db);
 
 		switch($_POST["command"]){
 
@@ -591,10 +592,6 @@ if(!isset($noOutput)){
 		}//endswitch
 
 	} else {
-
-		require_once("../../../include/session.php");
-
-		$report = new aritemsSummary($db);
 
 		$report->showOptions();
 

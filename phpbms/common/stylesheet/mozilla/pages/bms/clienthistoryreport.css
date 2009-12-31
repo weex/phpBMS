@@ -1,0 +1,37 @@
+h2{
+    clear: left;
+    color: black;
+    border: none;
+    padding-bottom: 0.0625in;
+    padding-top: 0.25in;
+    font-size: 14pt;
+}
+
+td, th{
+    border: 0.01in solid black;
+    font-size: 8pt;
+    padding: 0.0625in;
+}
+
+th{
+    background:black none repeat scroll 0 0;
+    border-right-color:white;
+    border-bottom-color:white;
+    color:white;
+}
+
+.lastHeader{
+    border-right-color: black;
+}
+
+ul{
+    margin:0;
+    padding:0;
+}
+
+li{
+    float:left;
+    display:inline;
+    padding-left: 0.125in;
+    font-size: 8pt;
+}

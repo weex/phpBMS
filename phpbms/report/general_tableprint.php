@@ -36,143 +36,221 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	if(!class_exists("phpbmsReport"))
-		include("report_class.php");
 
-	class generalTablePrint extends phpbmsReport {
+if(!class_exists("phpbmsReport"))
+    include("report_class.php");
 
-		var $maintable = "";
-		var $resultOutput = "";
-                var $tabledefuuid;
+/**
+ * Record Reporting in HTML table format
+ *
+ * This class implements a report used for printing out general table information
+ * in HTML table format
+ */
+class generalTablePrint extends phpbmsReport {
 
-		function generalTablePrint($db, $tabledefuuid){
+    /**
+     * $maintable
+     * @var string the SQL name of the main table to print.
+     */
+    var $maintable = "";
 
-			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
-
-			parent::phpbmsReport($db);
-
-			$querystatement = "
-				SELECT
-					maintable, displayname
-				FROM
-					tabledefs
-				WHERE
-					uuid = '".$this->tabledefuuid."'";
-
-			$queryresult = $db->query($querystatement);
-			$therecord=$db->fetchArray($queryresult);
-
-			$this->maintable = $therecord["maintable"];
-			$this->displayname = $therecord["displayname"];
-
-		}//end method
+    /**
+     * $displayname
+     * @var string display name of table definition
+     */
+    var $displayname = "";
 
 
-		function generate(){
+    /**
+     * function generalTablePrint
+     *
+     * Initialization function
+     *
+     * @param object $db database object
+     * @param string $reportUUID UUID of report record
+     * @param string $tabledefUUID UUID of table definition intializing print
+     */
+    function generalTablePrint($db, $reportUUID, $tabledefUUID){
 
-			$querystatement = "
-				SELECT
-					*
-				FROM
-					".$this->maintable;
+        parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-			$querystatement = $this->assembleSQL($querystatement);
+        $therecord = $this->getTableDefInfo();
 
-			$queryresult = $this->db->query($querystatement);
+        $this->maintable = $therecord["maintable"];
+        $this->displayname = $therecord["displayname"];
 
-			$num_fields = $this->db->numFields($queryresult);
-
-			ob_start();
-
-			?>
-			<div id="container">
-				<h1><?php echo formatVariable($this->displayname)?></h1>
-				<table id="results">
-					<thead>
-						<tr>
-			<?php
-
-			for($i=0;$i<$num_fields;$i++){
-
-				?>
-					<th <?php if($i == $num_fields-1) echo 'id="lastHeader"' ?>><?php echo $this->db->fieldName($queryresult, $i); ?></th>
-
-				<?php
-
-			}//end for
-
-			?>
-						</tr>
-					</thead>
-
-					<tbody>
-			<?php
-
-			while($therecord = $this->db->fetchArray($queryresult)){
-
-				?><tr><?php
-
-				foreach($therecord as $value){
-
-					?><td><?php echo formatVariable($value)?></td><?php
-
-				}//end foreach
-
-				?></tr><?php
-
-			}//endwhile
-
-			?>
-					</tbody>
-
-				</table>
-			</div>
-			<?php
-
-			$this->reportOutput = ob_get_contents();
-			ob_end_clean();
-
-		}//end method
+    }//end function init
 
 
-		function show(){
+    /**
+     * function generate
+     *
+     * Creates the main part of the report (table)
+     */
+    function generate(){
 
-			global $phpbms;
-			$db = &$this->db;
+        $fromFields = "*";
 
-			$phpbms->cssIncludes[] = "reports.css";
-			$phpbms->cssIncludes[] = "pages/generaltableprint.css";
+        $columns = array();
+        foreach($this->settings as $key=>$value){
 
-			$phpbms->showMenu = false;
-			$phpbms->showFooter = false;
+            if(strpos($key, "column") === 0){
 
-			include("header.php");
+                $pos = substr($key,6)-1;
+                $columns[$pos]["field"] = $value;
 
-			echo $this->reportOutput;
+                if(isset($this->settings["titleColumn".($pos + 1)]))
+                    $columns[$pos]["title"] = $this->settings["titleColumn".($pos +1)];
+                else
+                    $columns[$pos]["title"] = "";
 
-			include("footer.php");
+            }//endif
 
-		}//end method
+        }//endforeach
 
-	}//end class
+        if(count($columns)){
+
+            ksort($columns);
+            $columns = array_reverse($columns);
+
+            $fromFields = "";
+            foreach($columns as $column){
+
+                $fromFields .= ", ".$column["field"];
+                if($column["title"])
+                    $fromFields .= " AS `".$column["title"]."`";
+
+                $fromFields.="\n";
+
+            }//endforeach
+
+            $fromFields = substr($fromFields, 1);
+
+        }//endif
+
+        if(isset($this->settings["fromTable"]))
+            $querytable = $this->settings["fromTable"];
+        else
+            $querytable = $this->maintable;
+
+        $querystatement = "
+            SELECT
+                ".$fromFields."
+            FROM
+                ".$querytable;
+
+        $querystatement = $this->assembleSQL($querystatement);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $num_fields = $this->db->numFields($queryresult);
 
 
-	//PROCESSING
-	//========================================================================
+        if(!isset($this->settings["reportTitle"]))
+            $this->settings["reportTitle"] = $this->displayname;
 
-	if(!isset($noOutput)){
+        ob_start();
 
-		session_cache_limiter('private');
+        ?>
+        <div id="container">
+            <h1><?php echo formatVariable($this->settings["reportTitle"])?></h1>
+            <table id="results">
+                <thead>
+                    <tr>
+        <?php
 
-		require("../include/session.php");
-		if(!isset($_GET["tid"]))
-			$error = new appError(200,"URL variable missing: tid");
+        for($i=0;$i<$num_fields;$i++){
 
-		$report = new generalTablePrint($db, $_GET["tid"]);
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$report->show();
+                ?>
+                    <th <?php if($i == $num_fields-1) echo 'id="lastHeader"' ?>><?php echo $this->db->fieldName($queryresult, $i); ?></th>
+                <?php
 
-	}//end if
+        }//end for
+
+        ?>
+                    </tr>
+                </thead>
+
+                <tbody>
+        <?php
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            ?><tr><?php
+
+            foreach($therecord as $value){
+
+                ?><td><?php echo formatVariable($value)?></td><?php
+
+            }//end foreach
+
+            ?></tr><?php
+
+        }//endwhile
+
+        ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+
+        $this->reportOutput = ob_get_contents();
+        ob_end_clean();
+
+    }//end function generate
+
+
+    /**
+     * function show
+     *
+     * outputs HTML report
+     */
+    function show(){
+
+        global $phpbms;
+        $db = &$this->db;
+
+        $phpbms->cssIncludes[] = "reports.css";
+        $phpbms->cssIncludes[] = "pages/generaltableprint.css";
+
+        $phpbms->showMenu = false;
+        $phpbms->showFooter = false;
+
+        include("header.php");
+
+        echo $this->reportOutput;
+
+        include("footer.php");
+
+    }//end method
+
+}//end class
+
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    session_cache_limiter('private');
+
+    require_once("../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new generalTablePrint($db, $_GET["rid"], $_GET["tid"]);
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $report->show();
+
+}//end if
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="generalTablePrint";
 
 ?>

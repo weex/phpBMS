@@ -548,7 +548,7 @@ function getPathToAppRoot() {
 
 /**
   *  function makeDelimeterString
-  *  
+  *
   *  Creates a string with the same length as $string, with a delimeter where
   *  the corresponding part of the string is on or within that delimeter, and
   *  zeroes everywhere else.
@@ -564,19 +564,19 @@ function getPathToAppRoot() {
   *  an error has occurred
   */
 function makeDelimeterString($string, $delimeters, $escapeCharacter = "\\"){
-	
+
 	if(!$escapeCharacter)
 		$escapeCharacter = NULL;
-	
+
 	if(strlen($escapeCharacter) > 1)
 		return false;
-	
+
 	$returnString = "";
 	$stringArray = str_split($string);
 	$inside = false;
 	$prevChar = "";
 	foreach($stringArray as $char){
-		
+
 		if(!$inside){
 			if(in_array($char, $delimeters) && $prevChar != $escapeCharacter){
 				$inside = true;
@@ -585,40 +585,40 @@ function makeDelimeterString($string, $delimeters, $escapeCharacter = "\\"){
 			}else
 				$returnString .= "0";
 		}else{
-			
+
 			if($char == $delimeter && $prevChar != $escapeCharacter){
 				$inside = false;
 				$returnString .= "0";
 			}else
 				$returnString .= $delimeter;
-			
+
 		}//end if
-		
+
 		$prevChar = $char;
-		
+
 	}//end foreach
-	
+
 	return $returnString;
 
 }//end function
+
 
 /*
  * function getSearchFrom
  * Returns the part of $querystatement from the general FROM to its ORDER BY or
  * the end of the querystatement if no ORDER BY exists.
- * 
+ *
  * @param $querystatement
  * @return string The part of $querystatement from the general FROM to its
  * ORDER BY.
  */
-
 function getSearchFrom($querystatement) {
-	
+
 	$modstatement = $querystatement;
 	$insideString = makeDelimeterString($querystatement, array("'", "\"", "`"));
 	$insideArray = str_split($insideString);
-	
-	
+
+
 	/**
 	  *  Check for SELECTs that are not inside quotes or tics.
 	  *  Put the positions of them in the string inside an ordered array,
@@ -627,16 +627,16 @@ function getSearchFrom($querystatement) {
 	$selectArray = array();
 	$offset = 0;
 	do{
-		
+
 		$pos = stripos($querystatement, "select", $offset);
-		
+
 		if($pos !== false)
 			if(!$insideArray[$pos])
 				$selectArray[] = $pos;
 		$offset = $pos+1;
-	
+
 	}while($pos !== false);
-	
+
 	/**
 	  *  Check for FROMSs that are not inside quotes or tics.
 	  *  Put the positions of them in the string inside an ordered array,
@@ -645,16 +645,16 @@ function getSearchFrom($querystatement) {
 	$fromArray = array();
 	$offset = 0;
 	do{
-		
+
 		$pos = stripos($querystatement, "from", $offset);
-		
+
 		if($pos !== false)
 			if(!$insideArray[$pos])
 				$fromArray[] = $pos;
 		$offset = $pos+1;
-	
+
 	}while($pos !== false);
-	
+
 	/**
 	  *  Check for ORDER BYs that are not inside quotes or tics.
 	  *  Put the positions of them in the string inside an ordered array,
@@ -663,25 +663,25 @@ function getSearchFrom($querystatement) {
 	$orderArray = array();
 	$offset = 0;
 	do{
-		
+
 		$pos = stripos($querystatement, "order by", $offset);
-		
+
 		if($pos !== false)
 			if(!$insideArray[$pos])
 				$orderArray[] = $pos;
 		$offset = $pos+1;
-	
+
 	}while($pos !== false);
-	
-	
+
+
 	/**
-	  *  Pair the SELECTs with their appropriate FROMs 
+	  *  Pair the SELECTs with their appropriate FROMs
 	  */
 	$godArray = array();
 	$tempSelectArray = $selectArray;
 	$j = 0;
 	foreach($fromArray as $fromPos){
-		
+
 		$closest = 0;
 		$index = 0;
 		for($i=0; $i < count($tempSelectArray); $i++)
@@ -689,15 +689,15 @@ function getSearchFrom($querystatement) {
 				$closest = $tempSelectArray[$i];
 				$index = $i;
 			}//end if
-			
+
 		unset($tempSelectArray[$index]);
 		$godArray[$j]["select"] = $closest;
 		$godArray[$j]["from"] = $fromPos;
 		$j++;
-		
+
 	}//end foreach
-	
-	
+
+
 	/**
 	  *  Pair the ORDER BYs with their approriate FROMs (and thus their
 	  *  appropriate SELECTs).
@@ -705,7 +705,7 @@ function getSearchFrom($querystatement) {
 	$tempFromArray = $fromArray;
 	$j = 0;
 	foreach($orderArray as $orderPos){
-		
+
 		$closest = 0;
 		$index = 0;
 		for($i=0; $i < count($tempFromArray); $i++)
@@ -713,17 +713,17 @@ function getSearchFrom($querystatement) {
 				$closest = $tempFromArray[$i];
 				$index = $i;
 			}//end if
-			
+
 		unset($tempFromArray[$index]);
 		for($k=0; $k < count($godArray); $k++)
 			if($godArray[$k]["from"] == $closest)
 				$godArray[$k]["order"] = $orderPos;
-		
+
 		$j++;
-		
+
 	}//end foreach
-	
-	
+
+
 	/**
 	  *  The last entry in the $godArray should be the outermost / first
 	  *  SQL statement.
@@ -731,12 +731,12 @@ function getSearchFrom($querystatement) {
 	$l = count($godArray) - 1;
 	if(!isset($godArray[$l]["order"]))
 		$godArray[$l]["order"] = strlen($querystatement);
-	
+
 	if(!($godArray[$l]["order"]))
 		$godArray[$l]["order"] = strlen($querystatement);
-	
+
 	return substr($querystatement, $godArray[$l]["from"], $godArray[$l]["order"] - $godArray[$l]["from"]);
-	
+
 }//end function
 
 // date/time functions
@@ -1124,19 +1124,19 @@ function htmlQuotes($string){
 
 
 /*
- * function cleanFilename	
+ * function cleanFilename
  * @param $string
  * @return string $string with only alpha-numeric characters, periods (.),
  * dashes (-), and underscores (_)
  */
 
 function cleanFilename($string) {
-	
+
 	$pattern = "/[^\w\d\.\-\_]/";
 	$string = preg_replace($pattern, "", $string);
-	
+
 	return $string;
-	
+
 }//end function --cleanFilename--
 
 
@@ -1244,6 +1244,42 @@ function formatVariable($value, $format=NULL){
 	return $value;
 }
 
+
+/**
+ * function debug
+ *
+ * essentially provides a formatted var_dump with extra info for development purposes
+ */
+function debug($variable, $exit = false){
+
+        echo "<pre>";
+        var_dump($variable);
+        echo "</pre>";
+
+        $backtrace = debug_backtrace();
+
+        if(count($backtrace) > 1)
+            array_shift($backtrace);
+
+        foreach($backtrace as $trace){
+
+                echo "* ";
+
+                if(isset($trace["class"]))
+                    echo $trace["class"]."-&gt; ";
+
+                if(isset($trace["function"]))
+                    echo $trace["function"]." ";
+
+                echo "in ".$trace["file"]." ";
+                echo "on line ".$trace["line"]."<br />";
+
+        }//endforeach
+
+        if($exit)
+                exit();
+
+}//endif
 
 //for windows servers, we have no define time constants and nl_langinfo function
 //in a limited fashion; some windows servers still show that the function

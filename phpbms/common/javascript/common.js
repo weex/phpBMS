@@ -128,7 +128,7 @@ phpBMS.base.update(phpBMS.base, {
 		} else
 			alert(error);
 
-	}//end method - reportError
+	},//end method - reportError
 
 
 });//end update

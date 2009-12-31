@@ -37,642 +37,890 @@
  +-------------------------------------------------------------------------+
 */
 
-	if(!class_exists("phpbmsReport"))
-		include("report/report_class.php");
+if(!class_exists("phpbmsReport"))
+    include("../../../report/report_class.php");
 
-	class invoicePDF extends phpbmsReport{
+class invoicePDF extends phpbmsReport{
 
-		var $title = "Invoice";
-		var $showShipNameInShipTo = true;
-		var $lineitemBoxHeight = 4.25;
-		
-		/**
-		  * $count
-		  * @var int The number of invoice records being displayed
-		  */
-		var $count;
+    var $showShipNameInShipTo = true;
+    var $lineitemBoxHeight = 4.25;
+    var $templateUUID = NULL;
 
-		function invoicePDF($db, $orientation='P', $unit='mm', $format='Letter'){
+    /**
+      * $count
+      * @var int The number of invoice records being displayed
+      */
+    var $count;
 
-			$this->db = $db;
 
-			if(!class_exists("phpbmsPDFReport"))
-				include("report/pdfreport_class.php");
+    function invoicePDF($db, $reportUUID, $tabledefUUID, $orientation='P', $unit='mm', $format='Letter'){
 
-			$this->pdf = new phpbmsPDFReport($db, $orientation, $unit, $format);
+        parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-			$this->initialize();
+        if(!class_exists("phpbmsPDFReport"))
+            include("report/pdfreport_class.php");
 
-		}//end method
+        $this->pdf = new phpbmsPDFReport($db, $orientation, $unit, $format);
 
+        $this->checkForDefaultSettings();
+        $this->initialize();
 
-		function initialize(){
-			//This function will set column headings, sizes and formatting
+    }//end method
 
-			$pdf = &$this->pdf;
 
-			$topinfo = array();
-			$topinfo[] = new pdfColumn("Order ID", "id", 0.75);
-			$topinfo[] = new pdfColumn("Order Date", "orderdate", 1, "date");
-			$topinfo[] = new pdfColumn("Client PO", "ponumber", 1);
-			$topinfo[] = new pdfColumn("Processed By", "processedby", 0);
-			$topinfo[] = new pdfColumn("Payment Method", "paymentname",2);
+    /**
+     * function checkForDefaultSettings
+     *
+     * Checks to make sure loaded report Settings exist and are correct
+     */
+    function checkForDefaultSettings(){
 
-			$size = 0;
-			foreach($topinfo as $column)
-				$size += $column->size;
+        if(!isset($this->settings["reportTitle"]))
+            $this->settings["reportTitle"] = "Invoice";
 
-			$topinfo[3]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
+        if(!isset($this->settings["printLogo"]))
+            $this->settings["printLogo"] = 1;
 
-			$this->topinfo = $topinfo;
+        if(!isset($this->settings["printCompanyInfo"]))
+            $this->settings["printCompanyInfo"] = 1;
 
+        if(!isset($this->settings["leftTopBox"]))
+            $this->settings["leftTopBox"] = "billto";
 
-			$lineitems = array();
-			$lineitems[] = new pdfColumn("Product / (Part Number)", "parts", 0);
-			$lineitems[] = new pdfColumn("Tax", "taxable", 0.5, "boolean", "C");
-			$lineitems[] = new pdfColumn("Unit Price", "unitprice", 0.75, "currency", "R");
-			$lineitems[] = new pdfColumn("Qty", "quantity", 0.5, "real","R");
-			$lineitems[] = new pdfColumn("Extended", "extended", 0.75, "currency", "R");
+        if(!isset($this->settings["leftTopBoxTitle"]))
+            $this->settings["leftTopBoxTitle"] = "SOLD TO";
 
-			$size = 0;
-			foreach($lineitems as $column)
-				$size += $column->size;
+        if(!isset($this->settings["rightTopBox"]))
+            $this->settings["rightTopBox"] = "shipto";
 
-			$lineitems[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
+        if(!isset($this->settings["rightTopBoxTitle"]))
+            $this->settings["rightTopBoxTitle"] = "SHIP TO";
 
-			$this->lineitems = $lineitems;
+        if(!isset($this->settings["templateFormatting"]))
+            $this->settings["templateFormatting"] = 0;
 
-			$totalsinfo = array();
-			$totalsinfo[] = new pdfColumn("Discount", "discountamount", 1, "currency", "R");
-			$totalsinfo[] = new pdfColumn("Subtotal", "totaltni", 0, "currency", "R");
-			$totalsinfo[] = new pdfColumn("Tax", "tax", 1, "currency", "R");
-			$totalsinfo[] = new pdfColumn("Shipping", "shipping", 1, "currency", "R");
-			$totalsinfo[] = new pdfColumn("Total", "totalti", 1, "currency", "R");
-			$totalsinfo[] = new pdfColumn("Due", "amountdue", 1, "currency", "R");
+        if(!isset($this->settings["templateUUID"]))
+            $this->settings["templateUUID"] = "";
 
-			$this->totalsinfo = $totalsinfo;
+    }//end function checkForDefaultSettings
 
-		}//end method
 
+    function initialize(){
+            //This function will set column headings, sizes and formatting
 
-		function generate($whereclause = NULL, $sortorder = "invoices.id"){
+            $pdf = &$this->pdf;
 
-			$pdf = &$this->pdf;
+            $topinfo = array();
+            $topinfo[] = new pdfColumn("Order ID", "id", 0.75);
+            $topinfo[] = new pdfColumn("Order Date", "orderdate", 1, "date");
+            $topinfo[] = new pdfColumn("Client PO", "ponumber", 1);
+            $topinfo[] = new pdfColumn("Processed By", "processedby", 0);
+            $topinfo[] = new pdfColumn("Payment Method", "paymentname",2);
 
-			if($whereclause)
-				$this->whereclause = $whereclause;
-			elseif(!$this->whereclause)
-				$this->whereclause = "invoices.id = -400";
+            $size = 0;
+            foreach($topinfo as $column)
+                    $size += $column->size;
 
-			if($sortorder)
-				$this->sortorder = $sortorder;
-			elseif(!$this->sortorder)
-				$this->sortorder = "invoices.id";
+            $topinfo[3]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-			$paymentFields = "";
-			if(ENCRYPT_PAYMENT_FIELDS){
+            $this->topinfo = $topinfo;
 
-				$paymentFields = "
-					".$this->db->decrypt("`ccnumber`")." AS `ccnumber`,
-					".$this->db->decrypt("`ccverification`")." AS `ccverification`,
-					".$this->db->decrypt("`ccexpiration`")." AS `ccexpiration`,
-					".$this->db->decrypt("`routingnumber`")." AS `routingnumber`,
-					".$this->db->decrypt("`accountnumber`")." AS `accountnumber`,
-				";
 
-			}//end if
+            $lineitems = array();
+            $lineitems[] = new pdfColumn("Product / (Part Number)", "parts", 0);
+            $lineitems[] = new pdfColumn("Tax", "taxable", 0.5, "boolean", "C");
+            $lineitems[] = new pdfColumn("Unit Price", "unitprice", 0.75, "currency", "R");
+            $lineitems[] = new pdfColumn("Qty", "quantity", 0.5, "real","R");
+            $lineitems[] = new pdfColumn("Extended", "extended", 0.75, "currency", "R");
 
-			$querystatement = "
-				SELECT
-					invoices.*,
-					".$paymentFields."
+            $size = 0;
+            foreach($lineitems as $column)
+                    $size += $column->size;
 
-					invoices.totalti - invoices.amountpaid AS amountdue,
+            $lineitems[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-					clients.firstname,
-					clients.lastname,
-					clients.company,
-					clients.homephone,
-					clients.workphone,
-					clients.email,
+            $this->lineitems = $lineitems;
 
-					shippingmethods.name AS shippingname,
+            $totalsinfo = array();
+            $totalsinfo[] = new pdfColumn("Discount", "discountamount", 1, "currency", "R");
+            $totalsinfo[] = new pdfColumn("Subtotal", "totaltni", 0, "currency", "R");
+            $totalsinfo[] = new pdfColumn("Tax", "tax", 1, "currency", "R");
+            $totalsinfo[] = new pdfColumn("Shipping", "shipping", 1, "currency", "R");
+            $totalsinfo[] = new pdfColumn("Total", "totalti", 1, "currency", "R");
+            $totalsinfo[] = new pdfColumn("Due", "amountdue", 1, "currency", "R");
 
-					paymentmethods.name AS paymentname,
-					paymentmethods.type AS paymenttype,
+            $this->totalsinfo = $totalsinfo;
 
-					tax.name as taxname,
+    }//end method
 
-					users.firstname AS processorfirst,
-					users.lastname AS processorlast
 
-				FROM
-					invoices INNER JOIN clients ON invoices.clientid = clients.uuid
-					INNER JOIN users ON invoices.modifiedby = users.id
-					LEFT JOIN shippingmethods ON invoices.shippingmethodid = shippingmethods.uuid
-					LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
-					LEFT JOIN tax ON invoices.taxareaid = tax.uuid";
+    function generate($whereclause = NULL, $sortorder = "invoices.id"){
 
-			$querystatement = $this->assembleSQL($querystatement);
-			$queryresult = $this->db->query($querystatement);
+            $pdf = &$this->pdf;
 
-			$this->count = $this->db->numRows($queryresult);
-			if($this->count == 0){
-				
-				$this->_showNoRecords();
-				exit;
+            if($whereclause)
+                    $this->whereClause = $whereclause;
+            elseif(!$this->whereClause)
+                    $this->whereClause = "invoices.id = -400";
 
-			}//end if
+            if($sortorder)
+                    $this->sortOrder = $sortorder;
+            elseif(!$this->sortOrder)
+                    $this->sortOrder = "invoices.id";
 
+            $paymentFields = "";
+            if(ENCRYPT_PAYMENT_FIELDS){
 
-			$pdf->hasComapnyHeader = true;
-			$pdf->SetMargins();
+                    $paymentFields = "
+                            ".$this->db->decrypt("`ccnumber`")." AS `ccnumber`,
+                            ".$this->db->decrypt("`ccverification`")." AS `ccverification`,
+                            ".$this->db->decrypt("`ccexpiration`")." AS `ccexpiration`,
+                            ".$this->db->decrypt("`routingnumber`")." AS `routingnumber`,
+                            ".$this->db->decrypt("`accountnumber`")." AS `accountnumber`,
+                    ";
 
-			//iterate through each invoice record
-			while($invoicerecord = $this->db->fetchArray($queryresult)){
+            }//end if
 
-				$this->page = 0;
+            $querystatement = "
+                    SELECT
+                            invoices.*,
+                            ".$paymentFields."
 
-				$this->invoicerecord = $invoicerecord;
+                            invoices.totalti - invoices.amountpaid AS amountdue,
 
-				//adds top info
-				$top = $this->_addPage();
+                            clients.firstname,
+                            clients.lastname,
+                            clients.company,
+                            clients.homephone,
+                            clients.workphone,
+                            clients.email,
 
-				$this->_addLineItems($top);
+                            shippingmethods.name AS shippingname,
 
-				$pdf->SetXY($pdf->leftmargin, $top["y"] + $this->lineitemBoxHeight + 0.125);
+                            paymentmethods.name AS paymentname,
+                            paymentmethods.type AS paymenttype,
 
-				//Print any special/instructions and stuff
-				$this->_addNotes();
+                            tax.name as taxname,
 
-				//totals
-				$this->_addTotals();
+                            users.firstname AS processorfirst,
+                            users.lastname AS processorlast
 
-				//payment details
-				$this->_addPaymentDetails();
+                    FROM
+                            invoices INNER JOIN clients ON invoices.clientid = clients.uuid
+                            INNER JOIN users ON invoices.modifiedby = users.id
+                            LEFT JOIN shippingmethods ON invoices.shippingmethodid = shippingmethods.uuid
+                            LEFT JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid
+                            LEFT JOIN tax ON invoices.taxareaid = tax.uuid";
 
-			}//end while;
+            $querystatement = $this->assembleSQL($querystatement);
 
+            $queryresult = $this->db->query($querystatement);
 
-		}//end method
+            $this->count = $this->db->numRows($queryresult);
+            if($this->count == 0){
 
+                    $this->showNoRecords();
+                    exit;
 
-		function _addPage(){
+            }//end if
 
-			$pdf = &$this->pdf;
+            $pdf->logoInHeader = $this->settings["printLogo"];
+            $pdf->companyInfoInHeader = $this->settings["printCompanyInfo"];
 
+            $pdf->SetMargins();
 
-			$pdf->AddPage();
-			$this->page++;
+            //iterate through each invoice record
+            while($invoicerecord = $this->db->fetchArray($queryresult)){
 
-			$nextY = $pdf->getY();
+                    $this->page = 0;
 
-			//TITLE
-			$title = "Statement";
-			$titleWidth=2.375;
-			$titleHeight=.25;
-			$pdf->setStyle("title");
-			$pdf->SetXY(-1*($titleWidth+$pdf->rightmargin), $pdf->topmargin);
-			$pdf->Cell($titleWidth, $titleHeight,$this->title, $pdf->borderDebug,1,"R");
+                    $this->invoicerecord = $invoicerecord;
 
-			$startY = $pdf->GetY() + 0.75;
+                    //adds top info
+                    $top = $this->_addPage();
 
-			//page number?
-			$pdf->setStyle("normal");
-			$pageNoWidth = 1;
-			$pdf->SetFontSize(8);
-			$pdf->SetXY(-1*($pageNoWidth + $pdf->rightmargin), $pdf->topmargin + $titleHeight + 0.25);
-			$pdf->Cell($pageNoWidth, 0.17, "page: ".$this->page, $pdf->borderDebug,1,"R");
+                    $this->_addLineItems($top);
 
+                    $pdf->SetXY($pdf->leftmargin, $top["y"] + $this->lineitemBoxHeight + 0.125);
 
-			//SOLD TO
-			$boxHeight = 1.75;
-			$boxWidth = ($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin)/2 -0.0625;
+                    //Print any special/instructions and stuff
+                    $this->_addNotes();
 
-			$pdf->setLineWidth(0.02);
-			$pdf->Rect($pdf->leftmargin, $startY, $boxWidth, $boxHeight);
-			$pdf->setLineWidth(0.01);
+                    //totals
+                    $this->_addTotals();
 
-			$pdf->setStyle("header");
-			$pdf->setY($startY);
-			$pdf->Cell($boxWidth, 0.17, "SOLD TO", $pdf->borderDebug, 2, "L", 1);
-			$pdf->setStyle("normal");
+                    //payment details
+                    $this->_addPaymentDetails();
 
-			//Company Name
-			$companyDisplay = "";
-			if($this->invoicerecord["company"]){
-				$companyDisplay .= $this->invoicerecord["company"];
-				if($this->invoicerecord["firstname"])
-					$companyDisplay .= " (".$this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"].")";
-			} else
-				$companyDisplay .= $this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"];
+            }//end while;
 
-			$pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
-			$pdf->SetFont("Arial", "B", 10);
-			$pdf->Cell($boxWidth - 0.125, 0.17, $companyDisplay, $pdf->borderDebug, 2, "L");
 
-			$billto = $this->_setBillTo();
-			$pdf->SetFont("Arial", "", 10);
-			$pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
-			$pdf->MultiCell($boxWidth - 0.125,.17,$billto, $pdf->borderDebug);
+    }//end method
 
-			//SHIP TO
-			$pdf->setLineWidth(0.02);
-			$pdf->Rect($pdf->leftmargin + $boxWidth + 0.125, $startY, $boxWidth, $boxHeight);
-			$pdf->setLineWidth(0.01);
 
-			$pdf->setStyle("header");
-			$pdf->setXY($pdf->leftmargin + $boxWidth + 0.125, $startY);
-			$pdf->Cell($boxWidth, 0.17, "SHIP TO", $pdf->borderDebug, 2, "L", 1);
-			$pdf->setStyle("normal");
+    function _addPage(){
 
-			$pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
-			$pdf->SetFont("Arial", "B", 10);
+            $pdf = &$this->pdf;
 
-			$shipDisplay = (!$this->invoicerecord["shiptosameasbilling"] && $this->invoicerecord["shiptoname"])? $this->invoicerecord["shiptoname"] :$companyDisplay;
-			$pdf->Cell($boxWidth - 0.125, 0.17, $shipDisplay, $pdf->borderDebug, 2, "L");
+            $pdf->AddPage();
 
-			$shipto = $this->_setShipTo();
-			$pdf->SetFont("Arial", "", 10);
-			$pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
-			$pdf->MultiCell($boxWidth - 0.125,.17, $shipto, $pdf->borderDebug);
+            if($this->settings["templateUUID"]){
 
-			$pdf->setXY($pdf->leftmargin, $startY + $boxHeight + 0.125);
+                if(!isset($GLOBALS["pdfDoc"])){
 
-			$this->_topInvoiceInfo();
+                    $querystatement = "
+                        SELECT
+                            `file`
+                        FROM
+                            `files`
+                        WHERE
+                            `uuid` = '".$this->settings["templateUUID"]."'";
 
-			//line item headings
-			$pdf->setStyle("header");
-			$pdf->SetLineWidth(0.02);
+                    $queryresult = $this->db->query($querystatement);
 
-			$coords["x"] = $pdf->GetX();
-			$coords["y"] = $pdf->GetY();
+                    $therecord = $this->db->fetchArray($queryresult);
 
-			foreach($this->lineitems as $column)
-				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
+                    $GLOBALS["pdfDoc"] = $therecord["file"];
+                    $pdf->setSourceFile("global://pdfDoc");
+                    $this->tplIdx = $pdf->importPage(1);
 
-			return $coords;
+                }//endif
 
-		}//end method
+                $pdf->useTemplate($this->tplIdx);
 
+            }//endif
 
-		function _setBillTo(){
 
-			$billto = $this->invoicerecord["address1"];
+            $this->page++;
 
-			if($this->invoicerecord["address2"])
-				$billto .= "\n".$this->invoicerecord["address2"];
+            $nextY = $pdf->getY();
 
-			$billto .="\n".$this->invoicerecord["city"].", ".$this->invoicerecord["state"]." ".$this->invoicerecord["postalcode"];
+            //TITLE
+            $title = "Statement";
+            $titleWidth=2.375;
+            $titleHeight=.25;
+            $pdf->setStyle("title");
+            $pdf->SetXY(-1*($titleWidth+$pdf->rightmargin), $pdf->topmargin);
+            $pdf->Cell($titleWidth, $titleHeight, $this->settings["reportTitle"], $pdf->borderDebug,1,"R");
 
-			if($this->invoicerecord["country"])
-				$billto .=" ".$this->invoicerecord["country"];
+            $startY = $pdf->GetY() + 0.75;
 
-			$phoneemail = "";
-			if($this->invoicerecord["workphone"] || $this->invoicerecord["homephone"]){
+            //page number?
+            $pdf->setStyle("normal");
+            $pageNoWidth = 1;
+            $pdf->SetFontSize(8);
+            $pdf->SetXY(-1*($pageNoWidth + $pdf->rightmargin), $pdf->topmargin + $titleHeight + 0.25);
+            $pdf->Cell($pageNoWidth, 0.17, "page: ".$this->page, $pdf->borderDebug,1,"R");
 
-				if($this->invoicerecord["workphone"])
-					$phoneemail = $this->invoicerecord["workphone"]." (W)";
-				else
-					$phoneemail = $this->invoicerecord["homephone"]." (H)";
+            $boxHeight = 1.75;
+            $boxWidth = ($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin)/2 -0.0625;
 
-				$phoneemail.="\n";
+            //Left Top Box
+            $this->_addTopBox($this->settings["leftTopBox"], $this->settings["leftTopBoxTitle"], $pdf->leftmargin, $startY, $boxWidth, $boxHeight);
 
-			}//end if
+            //Right Top Box
+            $this->_addTopBox($this->settings["rightTopBox"], $this->settings["rightTopBoxTitle"], $pdf->leftmargin + $boxWidth + 0.125, $startY, $boxWidth, $boxHeight);
 
-			if($this->invoicerecord["email"])
-				$phoneemail .= $this->invoicerecord["email"];
+            $pdf->setXY($pdf->leftmargin, $startY + $boxHeight + 0.125);
 
-			if($phoneemail)
-				$billto .= "\n\n".$phoneemail;
+            $this->_topInvoiceInfo();
 
-			return $billto;
 
-		}//end method
+            $coords["x"] = $pdf->GetX();
+            $coords["y"] = $pdf->GetY();
 
+            if(!$this->settings["templateFormatting"]){
 
-		function _setShipTo(){
+                //line item headings
+                $pdf->setStyle("header");
+                $pdf->SetLineWidth(0.02);
 
-			$added = ($this->invoicerecord["shiptosameasbilling"])? "" : "shipto";
+                foreach($this->lineitems as $column)
+                    $pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
 
-			$shipto = "";
+            }//endif
 
-			$shipto .= $this->invoicerecord[$added."address1"];
+            return $coords;
 
-			if($this->invoicerecord[$added."address2"])
-				$shipto .= "\n".$this->invoicerecord[$added."address2"];
+    }//end method
 
-			$shipto .="\n".$this->invoicerecord[$added."city"].", ".$this->invoicerecord[$added."state"]." ".$this->invoicerecord[$added."postalcode"];
 
-			if($this->invoicerecord[$added."country"])
-				$shipto .=" ".$this->invoicerecord[$added."country"];
+    function _addTopBox($areaToPrint, $title, $x, $y, $boxWidth, $boxHeight){
 
-			if($this->showShipNameInShipTo)
-				if($this->invoicerecord["shippingname"])
-					$shipto .="\n\nShipping Method:\n".$this->invoicerecord["shippingname"];
+        if($areaToPrint != "noshow"){
 
-			return $shipto;
+            $pdf = &$this->pdf;
 
-		}//end method
+            if(!$this->settings["templateFormatting"]){
 
+                $pdf->setLineWidth(0.02);
+                $pdf->Rect($x, $y, $boxWidth, $boxHeight);
+                $pdf->setLineWidth(0.01);
 
-		function _topInvoiceInfo(){
+                $pdf->setStyle("header");
+                $pdf->setXY($x, $y);
+                $pdf->Cell($boxWidth, 0.17, $title, $pdf->borderDebug, 2, "L", 1);
+                $pdf->setStyle("normal");
 
-			$pdf = &$this->pdf;
+            } else
+                $pdf->SetXY($x ,$y + 0.17);
 
-			$pdf->setStyle("header");
-			$pdf->SetLineWidth(0.02);
+            $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
 
-			foreach($this->topinfo as $column)
-				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
+            switch($areaToPrint){
 
-			$pdf->Rect($pdf->leftmargin, $pdf->GetY(), ($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin), 0.39);
+                case "billto":
 
-			$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + .2);
+                    $companyDisplay = "";
+                    if($this->invoicerecord["company"]){
 
+                            $companyDisplay .= $this->invoicerecord["company"];
+                            if($this->invoicerecord["firstname"])
+                                    $companyDisplay .= " (".$this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"].")";
 
-			$this->invoicerecord["processedby"] = $this->invoicerecord["processorfirst"]." ".$this->invoicerecord["processorlast"];
-			$pdf->setStyle("normal");
+                    } else
+                            $companyDisplay .= $this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"];
 
-			foreach($this->topinfo as $column){
+                    $pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
+                    $pdf->SetFont("Arial", "B", 10);
+                    $pdf->Cell($boxWidth - 0.125, 0.17, $companyDisplay, $pdf->borderDebug, 2, "L");
 
-				if($column->format != "")
-					$value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
-				else
-					$value = $this->invoicerecord[$column->fieldname];
+                    $billto = $this->_setBillTo();
+                    $pdf->SetFont("Arial", "", 10);
+                    $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
+                    $pdf->MultiCell($boxWidth - 0.125,.17,$billto, $pdf->borderDebug);
+                    break;
 
-				$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
+                case "shipto":
 
-			}//end foreach
+                    $pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
+                    $pdf->SetFont("Arial", "B", 10);
 
-			$pdf->SetY($pdf->GetY() + 0.18 + 0.125);
+                    $shipDisplay = (!$this->invoicerecord["shiptosameasbilling"] && $this->invoicerecord["shiptoname"])? $this->invoicerecord["shiptoname"] :$companyDisplay;
+                    $pdf->Cell($boxWidth - 0.125, 0.17, $shipDisplay, $pdf->borderDebug, 2, "L");
 
-		}//end method
+                    $shipto = $this->_setShipTo();
+                    $pdf->SetFont("Arial", "", 10);
+                    $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
+                    $pdf->MultiCell($boxWidth - 0.125,.17, $shipto, $pdf->borderDebug);
+                    break;
 
+                case "companyinfo":
 
-		function _addLineItems($coords){
+                    $cname = COMPANY_NAME;
+                    $caddress = COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
 
-			$pdf = &$this->pdf;
+                    $pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
+                    $pdf->SetFont("Arial","B",10);
+                    $pdf->Cell($boxWidth - 0.125, 0.17, $cname, $pdf->borderDebug, 2, "L");
 
-			$lineitemresult = $this->_getLineItems();
+                    //and last, company address
+                    $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.0625);
+                    $pdf->SetFont("Arial", "", 10);
+                    $pdf->MultiCell($boxWidth - 0.125,.17 , $caddress, $pdf->borderDebug);
+                    break;
 
-			$pdf->setStyle("normal");
+                case "invoiceinfo":
 
-			$pdf->SetY($pdf->GetY() + 0.18 + 0.0625);
+                    $pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
+                    $pdf->SetFont("Arial","B",14);
+                    $pdf->Cell($boxWidth - 0.125, 0.25, $this->invoicerecord["id"], $pdf->borderDebug, 2, "R");
 
-			while($line = $this->db->fetchArray($lineitemresult)){
 
+                    $details = "payment method\n".$this->invoicerecord["paymentname"];
+                    $pdf->setXY($pdf->GetX(), $pdf->GetY() + 0.125);
+                    $pdf->SetFont("Arial", "", 8);
+                    $pdf->MultiCell($boxWidth - 0.125,.17, $details, $pdf->borderDebug, "R");
 
-			if($line["partname"] || $line["partnumber"] || $line["extended"]){
+                    break;
 
-				if($pdf->GetY() + 0.17*3 > $coords["y"] + $this->lineitemBoxHeight){
+            }//endswitch
 
-					$pdf->SetLineWidth(0.02);
-					$pdf->Rect($coords["x"], $coords["y"], $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $this->lineitemBoxHeight);
-					$pdf->SetLineWidth(0.01);
+        }//endif
 
-					$this->_addPage();
+    }//end function _addTopBox
 
-					$pdf->setStyle("normal");
 
-					$pdf->SetY($pdf->GetY() + 0.18 + 0.0625);
+    function _setBillTo(){
 
-				}//end if
+            $billto = $this->invoicerecord["address1"];
 
-				foreach($this->lineitems as $column){
+            if($this->invoicerecord["address2"])
+                    $billto .= "\n".$this->invoicerecord["address2"];
 
-					$ln = 0;
+            $billto .="\n".$this->invoicerecord["city"].", ".$this->invoicerecord["state"]." ".$this->invoicerecord["postalcode"];
 
+            if($this->invoicerecord["country"])
+                    $billto .=" ".$this->invoicerecord["country"];
 
-					switch($column->fieldname){
+            $phoneemail = "";
+            if($this->invoicerecord["workphone"] || $this->invoicerecord["homephone"]){
 
-						case "parts":
-							$pdf->SetFont("Arial", "B", 8);
-							$pdf->Write(0.17, $line["partname"]);
-							$pdf->setStyle("normal");
-							$pdf->SetX($pdf->leftmargin + $column->size);
-							break;
+                    if($this->invoicerecord["workphone"])
+                            $phoneemail = $this->invoicerecord["workphone"]." (W)";
+                    else
+                            $phoneemail = $this->invoicerecord["homephone"]." (H)";
 
-						default:
-							if($column->format != "")
-								$value = formatVariable($line[$column->fieldname], $column->format);
-							else
-								$value = $line[$column->fieldname];
+                    $phoneemail.="\n";
 
-							if($value == "&middot;")
-								$value = " ";
-							if($column->fieldname == $this->lineitems[count($this->lineitems)-1]->fieldname)
-								$ln = 2;
+            }//end if
 
-							$pdf->Cell($column->size, 0.17, $value, $pdf->borderDebug, $ln, $column->align);
-							break;
+            if($this->invoicerecord["email"])
+                    $phoneemail .= $this->invoicerecord["email"];
 
-					}//end switch
+            if($phoneemail)
+                    $billto .= "\n\n".$phoneemail;
 
-				}//end foreach
+            return $billto;
 
-				$pdf->SetX($pdf->leftmargin);
-				$pdf->Write(0.17, "(".$line["partnumber"].")");
-				$pdf->Ln();
+    }//end method
 
-				}//endif
 
-				if($line["memo"]){
+    function _setShipTo(){
 
-					$pdf->SetX($pdf->leftmargin + 0.0625);
-					$pdf->SetFont("Arial", "I", 8);
-					$pdf->MultiCell($this->lineitems[0]->size - 0.0625, 0.16, $line["memo"], $pdf->borderDebug);
-					$pdf->setStyle("normal");
+            $added = ($this->invoicerecord["shiptosameasbilling"])? "" : "shipto";
 
-				}//end if
+            $shipto = "";
 
-				$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.0625);
-				$pdf->SetLineWidth(0.01);
-				$pdf->SetDrawColor(180,180,180);
-				$pdf->Line($pdf->leftmargin, $pdf->GetY(), $pdf->paperwidth - $pdf->rightmargin, $pdf->GetY());
-				$pdf->SetDrawColor(0,0,0);
-				$pdf->SetLineWidth(0.02);
-				$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.0625);
+            $shipto .= $this->invoicerecord[$added."address1"];
 
-			}//end while
+            if($this->invoicerecord[$added."address2"])
+                    $shipto .= "\n".$this->invoicerecord[$added."address2"];
 
-			$pdf->SetLineWidth(0.02);
-			$pdf->Rect($coords["x"], $coords["y"], $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $this->lineitemBoxHeight);
+            $shipto .="\n".$this->invoicerecord[$added."city"].", ".$this->invoicerecord[$added."state"]." ".$this->invoicerecord[$added."postalcode"];
 
-		}//end method
+            if($this->invoicerecord[$added."country"])
+                    $shipto .=" ".$this->invoicerecord[$added."country"];
 
+            if($this->showShipNameInShipTo)
+                    if($this->invoicerecord["shippingname"])
+                            $shipto .="\n\nShipping Method:\n".$this->invoicerecord["shippingname"];
 
-		function _getLineItems(){
+            return $shipto;
 
-			$querystatement = "
-			SELECT
-				lineitems.*,
-				lineitems.quantity * lineitems.unitprice AS extended,
-				products.partname,
-				products.partnumber
-			FROM
-				lineitems LEFT JOIN products ON lineitems.productid = products.uuid
-			WHERE
-				lineitems.invoiceid ='".((int) $this->invoicerecord["id"])."'
-			ORDER BY
-				displayorder";
+    }//end method
 
-			$queryresult = $this->db->query($querystatement);
 
-			return $queryresult;
+    function _topInvoiceInfo(){
 
-		}//end method
+            $pdf = &$this->pdf;
 
+            if(!$this->settings["templateFormatting"]){
 
-		function _addNotes(){
+                $pdf->setStyle("header");
+                $pdf->SetLineWidth(0.02);
 
-			$pdf = &$this->pdf;
+                foreach($this->topinfo as $column)
+                        $pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
 
-			$height = 1;
-			$nextPos = $pdf->GetY() + $height + 0.125;
+                $pdf->Rect($pdf->leftmargin, $pdf->GetY(), ($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin), 0.39);
 
-			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
-			$pdf->setStyle("header");
-			$pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Notes/Instructions", 1, 2, "L", 1);
+            }//endif
 
-			$pdf->setStyle("normal");
-			$pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
-			$pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["printedinstructions"]);
+            $pdf->SetXY($pdf->leftmargin, $pdf->GetY() + .2);
 
-			$pdf->SetXY($pdf->leftmargin, $nextPos);
 
-		}//end method
+            $this->invoicerecord["processedby"] = $this->invoicerecord["processorfirst"]." ".$this->invoicerecord["processorlast"];
+            $pdf->setStyle("normal");
 
+            foreach($this->topinfo as $column){
 
-		function _addTotals(){
+                    if($column->format != "")
+                            $value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
+                    else
+                            $value = $this->invoicerecord[$column->fieldname];
 
-			$pdf = &$this->pdf;
+                    $pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
 
-			$size = 0;
-			foreach($this->totalsinfo as $column)
-				switch($column->fieldname){
-					case "shipping":
-					case "discountamount":
-						if($this->invoicerecord[$column->fieldname])
-							$size += $column->size;
-						break;
-					default:
-						$size += $column->size;
-				}//endswitch
-			$this->totalsinfo[1]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
+            }//end foreach
 
-			$height = .5;
-			$nextPos = $pdf->GetY() + $height + 0.125;
+            $pdf->SetY($pdf->GetY() + 0.18 + 0.125);
 
-			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
+    }//end method
 
-			$pdf->setStyle("header");
-			foreach($this->totalsinfo as $column)
-				switch($column->fieldname){
-					case "shipping":
-					case "discountamount":
-						if($this->invoicerecord[$column->fieldname])
-							$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
-						break;
-					default:
-						$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
-				}//endswitch
 
-			$pdf->setStyle("normal");
-			$pdf->SetFont("Arial", "B", 10);
-			$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
+    function _addLineItems($coords){
 
-			foreach($this->totalsinfo as $column){
+            $pdf = &$this->pdf;
 
-				if($column->format != "")
-					$value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
-				else
-					$value = $this->invoicerecord[$column->fieldname];
+            $lineitemresult = $this->_getLineItems();
 
-				switch($column->fieldname){
-					case "shipping":
-					case "discountamount":
-						if($this->invoicerecord[$column->fieldname])
-							$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
-						break;
-					default:
-						$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
-				}//endswitch
-			}//end foreach
-			$this->totalsinfo[1]->size = 0;
+            $pdf->setStyle("normal");
 
-			$pdf->SetXY($pdf->leftmargin, $nextPos);
+            $pdf->SetY($pdf->GetY() + 0.18 + 0.0625);
 
-		}//end method
+            while($line = $this->db->fetchArray($lineitemresult)){
 
 
-		function _addPaymentDetails(){
-		}//end method
+                if($line["partname"] || $line["partnumber"] || $line["extended"]){
 
+                    if($pdf->GetY() + 0.17*3 > $coords["y"] + $this->lineitemBoxHeight){
 
-		function output($destination = "screen" , $userinfo = NULL){
+                        if(!$this->settings["templateFormatting"]){
 
-			switch($destination){
+                            $pdf->SetLineWidth(0.02);
+                            $pdf->Rect($coords["x"], $coords["y"], $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $this->lineitemBoxHeight);
+                            $pdf->SetLineWidth(0.01);
 
-				case "screen":
-					$userinfo = cleanFilename((string)$userinfo);
-					$this->pdf->Output($userinfo, 'D');
-					break;
+                        }//endif
 
-				case "email":
+                        $this->_addPage();
 
-					if(!$userinfo)
-						$userinfo = $_SESSION["userinfo"];
+                        $pdf->setStyle("normal");
 
-					if(!$userinfo["email"] || !$this->invoicerecord["email"])
-						return false;
+                        $pdf->SetY($pdf->GetY() + 0.18 + 0.0625);
 
-					$pdf = $this->pdf->Output(NULL, "S");
+                    }//end if
 
-					$to = 		$this->invoicerecord["email"];
-					$from = 	$userinfo["email"];
-					$subject = 	"Your ".$this->title." from ".COMPANY_NAME;
-					$message = 	"Attached is your ".$this->title." from ".COMPANY_NAME."\n\n" .
-								"The attachment requires Adobe Acrobat Reader to view. \n If you do not " .
-								"have Acrobat Reader, you can download it at http://www.adobe.com  \n\n" .
-								COMPANY_NAME."\n".
-								COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
+                    foreach($this->lineitems as $column){
 
-					$headers = "From: $from";
+                            $ln = 0;
 
-					$semi_rand = md5( time() );
-					$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
 
-					$headers .= "\nMIME-Version: 1.0\n" .
-								"Content-Type: multipart/mixed;\n" .
-								" boundary=\"{$mime_boundary}\"";
+                            switch($column->fieldname){
 
-					$message = "This is a multi-part message in MIME format.\n\n" .
-							"--{$mime_boundary}\n" .
-							"Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
-							"Content-Transfer-Encoding: 7bit\n\n" .
-							$message . "\n\n";
+                                    case "parts":
+                                            $pdf->SetFont("Arial", "B", 8);
+                                            $pdf->Write(0.17, $line["partname"]);
+                                            $pdf->setStyle("normal");
+                                            $pdf->SetX($pdf->leftmargin + $column->size);
+                                            break;
 
-					$pdf = chunk_split( base64_encode( $pdf ) );
+                                    default:
+                                            if($column->format != "")
+                                                    $value = formatVariable($line[$column->fieldname], $column->format);
+                                            else
+                                                    $value = $line[$column->fieldname];
 
-					$message .= "--{$mime_boundary}\n" .
-							 "Content-Type: {application/pdf};\n" .
-							 " name=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
-							 "Content-Disposition: attachment;\n" .
-							 " filename=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
-							 "Content-Transfer-Encoding: base64\n\n" .
-							 $pdf . "\n\n" .
-							 "--{$mime_boundary}--\n";
+                                            if($value == "&middot;")
+                                                    $value = " ";
+                                            if($column->fieldname == $this->lineitems[count($this->lineitems)-1]->fieldname)
+                                                    $ln = 2;
 
-					return @ mail($to, $subject, $message, $headers);
+                                            $pdf->Cell($column->size, 0.17, $value, $pdf->borderDebug, $ln, $column->align);
+                                            break;
 
-					break;
+                            }//end switch
 
-			}//endswitch
+                    }//end foreach
 
-		}//end method
+                    $pdf->SetX($pdf->leftmargin);
+                    $pdf->Write(0.17, "(".$line["partnumber"].")");
+                    $pdf->Ln();
 
-	}//end class
+                }//endif
+
+                if($line["memo"]){
+
+                    $pdf->SetX($pdf->leftmargin + 0.0625);
+                    $pdf->SetFont("Arial", "I", 8);
+                    $pdf->MultiCell($this->lineitems[0]->size - 0.0625, 0.16, $line["memo"], $pdf->borderDebug);
+                    $pdf->setStyle("normal");
+
+                }//end if
+
+                if(!$this->settings["templateFormatting"]){
+
+                    $pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.0625);
+                    $pdf->SetLineWidth(0.01);
+                    $pdf->SetDrawColor(180,180,180);
+                    $pdf->Line($pdf->leftmargin, $pdf->GetY(), $pdf->paperwidth - $pdf->rightmargin, $pdf->GetY());
+                    $pdf->SetDrawColor(0,0,0);
+                    $pdf->SetLineWidth(0.02);
+
+                }//endif
+
+                $pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.0625);
+
+            }//end while
+
+            if(!$this->settings["templateFormatting"]){
+
+                $pdf->SetLineWidth(0.02);
+                $pdf->Rect($coords["x"], $coords["y"], $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $this->lineitemBoxHeight);
+                $pdf->SetLineWidth(0.01);
+
+            }//endif
+
+    }//end method
+
+
+    function _getLineItems(){
+
+            $querystatement = "
+            SELECT
+                    lineitems.*,
+                    lineitems.quantity * lineitems.unitprice AS extended,
+                    products.partname,
+                    products.partnumber
+            FROM
+                    lineitems LEFT JOIN products ON lineitems.productid = products.uuid
+            WHERE
+                    lineitems.invoiceid ='".((int) $this->invoicerecord["id"])."'
+            ORDER BY
+                    displayorder";
+
+            $queryresult = $this->db->query($querystatement);
+
+            return $queryresult;
+
+    }//end method
+
+
+    function _addNotes(){
+
+            $pdf = &$this->pdf;
+
+            $height = 1;
+            $nextPos = $pdf->GetY() + $height + 0.125;
+
+            if(!$this->settings["templateFormatting"]){
+
+                $pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
+                $pdf->setStyle("header");
+                $pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Notes/Instructions", 1, 2, "L", 1);
+                $pdf->setStyle("normal");
+
+            } else
+                $pdf->SetY($pdf->GetY() + 0.18);
+
+            $pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
+            $pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["printedinstructions"]);
+
+            $pdf->SetXY($pdf->leftmargin, $nextPos);
+
+    }//end method
+
+
+    function _addTotals(){
+
+            $pdf = &$this->pdf;
+
+            $size = 0;
+            foreach($this->totalsinfo as $column)
+                    switch($column->fieldname){
+                            case "shipping":
+                            case "discountamount":
+                                    if($this->invoicerecord[$column->fieldname])
+                                            $size += $column->size;
+                                    break;
+                            default:
+                                    $size += $column->size;
+                    }//endswitch
+            $this->totalsinfo[1]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
+
+            $height = .5;
+            $nextPos = $pdf->GetY() + $height + 0.125;
+
+            if(!$this->settings["templateFormatting"]){
+
+                $pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
+
+                $pdf->setStyle("header");
+                foreach($this->totalsinfo as $column)
+                    switch($column->fieldname){
+
+                        case "shipping":
+                        case "discountamount":
+                            if($this->invoicerecord[$column->fieldname])
+                                $pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
+                            break;
+
+                        default:
+                            $pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
+
+                    }//endswitch
+
+            }//endif
+
+            $pdf->setStyle("normal");
+            $pdf->SetFont("Arial", "B", 10);
+            $pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
+
+            foreach($this->totalsinfo as $column){
+
+                    if($column->format != "")
+                            $value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
+                    else
+                            $value = $this->invoicerecord[$column->fieldname];
+
+                    switch($column->fieldname){
+                            case "shipping":
+                            case "discountamount":
+                                    if($this->invoicerecord[$column->fieldname])
+                                            $pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
+                                    break;
+                            default:
+                                    $pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
+                    }//endswitch
+            }//end foreach
+            $this->totalsinfo[1]->size = 0;
+
+            $pdf->SetXY($pdf->leftmargin, $nextPos);
+
+    }//end method
+
+
+    function _addPaymentDetails(){
+    }//end method
+
+
+    function output($destination = "screen" , $userinfo = NULL){
+
+            switch($destination){
+
+                    case "screen":
+                            $userinfo = cleanFilename((string)$userinfo);
+                            $this->pdf->Output($userinfo, 'D');
+                            break;
+
+                    case "email":
+
+                            if(!$userinfo)
+                                    $userinfo = $_SESSION["userinfo"];
+
+                            if(!$userinfo["email"] || !$this->invoicerecord["email"])
+                                    return false;
+
+                            $pdf = $this->pdf->Output(NULL, "S");
+
+                            $to = 		$this->invoicerecord["email"];
+                            $from = 	$userinfo["email"];
+                            $subject = 	"Your ".$this->title." from ".COMPANY_NAME;
+                            $message = 	"Attached is your ".$this->title." from ".COMPANY_NAME."\n\n" .
+                                                    "The attachment requires Adobe Acrobat Reader to view. \n If you do not " .
+                                                    "have Acrobat Reader, you can download it at http://www.adobe.com  \n\n" .
+                                                    COMPANY_NAME."\n".
+                                                    COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
+
+                            $headers = "From: $from";
+
+                            $semi_rand = md5( time() );
+                            $mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
+
+                            $headers .= "\nMIME-Version: 1.0\n" .
+                                                    "Content-Type: multipart/mixed;\n" .
+                                                    " boundary=\"{$mime_boundary}\"";
+
+                            $message = "This is a multi-part message in MIME format.\n\n" .
+                                            "--{$mime_boundary}\n" .
+                                            "Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
+                                            "Content-Transfer-Encoding: 7bit\n\n" .
+                                            $message . "\n\n";
+
+                            $pdf = chunk_split( base64_encode( $pdf ) );
+
+                            $message .= "--{$mime_boundary}\n" .
+                                             "Content-Type: {application/pdf};\n" .
+                                             " name=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
+                                             "Content-Disposition: attachment;\n" .
+                                             " filename=\"".$this->title.$this->invoicerecord["id"].".pdf\"\n" .
+                                             "Content-Transfer-Encoding: base64\n\n" .
+                                             $pdf . "\n\n" .
+                                             "--{$mime_boundary}--\n";
+
+                            return @ mail($to, $subject, $message, $headers);
+
+                            break;
+
+            }//endswitch
+
+    }//end method
+
+
+    /**
+     * function addingRecordDefaultSettings
+     *
+     * Creates an array of settings associative arrays for use by the system when
+     * a new report record is added that references the file containing this class
+     *
+     * @retrun array of settings. Each setting should itself be
+     * an associative array containing the following
+     * name: name of the setting
+     * defaultvalue: default value for setting
+     * type: (string, int, real, bool) type for value of setting
+     * required: (0,1) whether the setting is required or not
+     * description: brief description for what this setting is used for.
+     */
+    function addingRecordDefaultSettings(){
+
+        $settings[] = array(
+            "name"=>"reportTitle",
+            "defaultValue"=>"Invoice",
+            "type"=>"string",
+            "required"=>1,
+            "description"=>"Title printed on reports"
+        );
+
+        $settings[] = array(
+            "name"=>"printLogo",
+            "defaultValue"=>1,
+            "type"=>"bool",
+            "required"=>1,
+            "description"=>"Should the logo print (1 = yes, 0 = no)"
+        );
+
+        $settings[] = array(
+            "name"=>"printCompanyInfo",
+            "defaultValue"=>1,
+            "type"=>"bool",
+            "required"=>1,
+            "description"=>"Should the top company information print (1 = yes, 0 = no)"
+        );
+
+        $settings[] = array(
+            "name"=>"leftTopBox",
+            "defaultValue"=>"billto",
+            "type"=>"string",
+            "required"=>1,
+            "description"=>"Contents of Right Top Header Box (can be `billto`, `shipto`, `invoiceinfo`, `companyinfo`, `nowshow` or `blank`)"
+        );
+
+        $settings[] = array(
+            "name"=>"leftTopBoxTitle",
+            "defaultValue"=>"SOLD TO",
+            "type"=>"string",
+            "required"=>1,
+            "description"=>"Title of Left Top Header Box"
+        );
+
+        $settings[] = array(
+            "name"=>"rightTopBox",
+            "defaultValue"=>"shipto",
+            "type"=>"string",
+            "required"=>1,
+            "description"=>"Contents of Right Top Header Box (can be `billto`, `shipto`, `invoiceinfo`, `companyinfo`, `nowshow` or `blank`)"
+        );
+
+        $settings[] = array(
+            "name"=>"rightTopBoxTitle",
+            "defaultValue"=>"SHIP TO",
+            "type"=>"string",
+            "required"=>1,
+            "description"=>"Title of Right Top Header Box"
+        );
+
+        $settings[] = array(
+            "name"=>"templateFormatting",
+            "defaultValue"=>"0",
+            "type"=>"bool",
+            "required"=>1,
+            "description"=>"Should PDF remove lines and dark titles (1 = remove, 0 = keep)"
+        );
+
+        $settings[] = array(
+            "name"=>"templateUUID",
+            "defaultValue"=>"",
+            "type"=>"string",
+            "required"=>0,
+            "description"=>"Optional UUID of file record for PDF to be used as background template"
+        );
+
+        return $settings;
+
+    }//endfunction addingRecordDefaultSettings
+
+}//end class
 
 
 

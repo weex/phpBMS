@@ -36,155 +36,220 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+if(!class_exists("phpbmsReport"))
+    include("../../../report/report_class.php");
 
-require("../../../include/session.php");
+class totalReport extends phpbmsReport{
 
-class totalReport{
+    var $selectcolumns;
+    var $selecttable;
+    var $group = "";
+    var $showinvoices = false;
+    var $showlineitems = false;
+    var $padamount = 20;
+    var $title = "Totals";
 
-	var $selectcolumns;
-	var $selecttable;
-	var $whereclause="";
-	var $group="";
-	var $showinvoices=false;
-	var $showlineitems=false;
-	var $padamount=20;
+	function totalReport($db, $reportUUID, $tabledefUUID, $variables = NULL){
 
-	function totalReport($db,$variables = NULL){
-		$this->db = $db;
+            parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-		// first we define the available groups
-		$this->addGroup("Invoice Date - Year","YEAR(invoices.invoicedate)"); //0
-		$this->addGroup("Invoice Date - Quarter","QUARTER(invoices.invoicedate)"); //1
-		$this->addGroup("Invoice Date - Month","MONTH(invoices.invoicedate)"); //2
-		$this->addGroup("Invoice Date","invoices.invoicedate","date"); //3
+            // first we define the available groups
+            $this->addGroup("Invoice Date - Year","YEAR(invoices.invoicedate)"); //0
+            $this->addGroup("Invoice Date - Quarter","QUARTER(invoices.invoicedate)"); //1
+            $this->addGroup("Invoice Date - Month","MONTH(invoices.invoicedate)"); //2
+            $this->addGroup("Invoice Date","invoices.invoicedate","date"); //3
 
-		$this->addGroup("Order Date - Year","YEAR(invoices.orderdate)"); //4
-		$this->addGroup("Order Date - Quarter","QUARTER(invoices.orderdate)");//5
-		$this->addGroup("Order Date - Month","MONTH(invoices.orderdate)");//6
-		$this->addGroup("Order Date","invoices.orderdate","date");//7
+            $this->addGroup("Order Date - Year","YEAR(invoices.orderdate)"); //4
+            $this->addGroup("Order Date - Quarter","QUARTER(invoices.orderdate)");//5
+            $this->addGroup("Order Date - Month","MONTH(invoices.orderdate)");//6
+            $this->addGroup("Order Date","invoices.orderdate","date");//7
 
-		$this->addGroup("Required Date - Year","YEAR(invoices.requireddate)");//8
-		$this->addGroup("Required Date - Quarter","QUARTER(invoices.requireddate)");//9
-		$this->addGroup("Required Date - Month","MONTH(invoices.requireddate)");//10
-		$this->addGroup("Required Date","invoices.requireddate","date");//11
+            $this->addGroup("Required Date - Year","YEAR(invoices.requireddate)");//8
+            $this->addGroup("Required Date - Quarter","QUARTER(invoices.requireddate)");//9
+            $this->addGroup("Required Date - Month","MONTH(invoices.requireddate)");//10
+            $this->addGroup("Required Date","invoices.requireddate","date");//11
 
-		$this->addGroup("Client","if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company)");//12
+            $this->addGroup("Client","if(clients.lastname!='',concat(clients.lastname,', ',clients.firstname,if(clients.company!='',concat(' (',clients.company,')'),'')),clients.company)");//12
 
-		$this->addGroup("Client Sales Person","concat(salesPerson.firstname,' ',salesPerson.lastname)",NULL, "LEFT JOIN users AS salesPerson ON clients.salesmanagerid = salesPerson.uuid");//13
+            $this->addGroup("Client Sales Person","concat(salesPerson.firstname,' ',salesPerson.lastname)",NULL, "LEFT JOIN users AS salesPerson ON clients.salesmanagerid = salesPerson.uuid");//13
 
-		$this->addGroup("Client Lead Source","clients.leadsource");//14
+            $this->addGroup("Client Lead Source","clients.leadsource");//14
 
-		$this->addGroup("Invoice Lead Source","invoices.leadsource");//15
+            $this->addGroup("Invoice Lead Source","invoices.leadsource");//15
 
-		$this->addGroup("Payment Method","paymentmethods.name");//16
+            $this->addGroup("Payment Method","paymentmethods.name");//16
 
-		$this->addGroup("Shipping Method","shippingmethods.name");//17
-		$this->addGroup("Invoice Shipping Country","invoices.shiptocountry");//18
-		$this->addGroup("Invoice Shipping State / Province","invoices.shiptostate");//19
-		$this->addGroup("Invoice Shipping Postal Code","invoices.shiptopostalcode");//20
-		$this->addGroup("Invoice Shipping City","invoices.shiptocity");//21
+            $this->addGroup("Shipping Method","shippingmethods.name");//17
+            $this->addGroup("Invoice Shipping Country","invoices.shiptocountry");//18
+            $this->addGroup("Invoice Shipping State / Province","invoices.shiptostate");//19
+            $this->addGroup("Invoice Shipping Postal Code","invoices.shiptopostalcode");//20
+            $this->addGroup("Invoice Shipping City","invoices.shiptocity");//21
 
-		$this->addGroup("Web Order","invoices.weborder","boolean");//22
+            $this->addGroup("Web Order","invoices.weborder","boolean");//22
 
-		$this->addGroup("Invoice billing Country","invoices.country");//23
-		$this->addGroup("Invoice Billing State / Province","invoices.state");//24
-		$this->addGroup("Invoice Billing Postal Code","invoices.postalcode");//25
-		$this->addGroup("Invoice Billing City","invoices.city");//26
-
-
-		//next we do the columns
-		$this->addColumn("Record Count","count(invoices.id)");//0
-		$this->addColumn("Invoice Total","sum(invoices.totalti)","currency");//1
-		$this->addColumn("Average Invoice Total","avg(invoices.totalti)","currency");//2
-
-		$this->addColumn("Subtotal","sum(invoices.totaltni)","currency");//3
-		$this->addColumn("Average Subtotal","avg(invoices.totaltni)","currency");//4
-
-		$this->addColumn("Tax","sum(invoices.tax)","currency");//5
-		$this->addColumn("Average Tax","avg(invoices.tax)","currency");//6
-
-		$this->addColumn("Shipping","sum(invoices.shipping)","currency");//7
-		$this->addColumn("Average Shipping","avg(invoices.shipping)","currency");//8
-
-		$this->addColumn("Amount Paid","sum(invoices.amountpaid)","currency");//9
-		$this->addColumn("Average Amount Paid","avg(invoices.amountpaid)","currency");//10
-
-		$this->addColumn("Amount Due","sum(invoices.totalti - invoices.amountpaid)","currency");//11
-		$this->addColumn("Average Amount Due","avg(invoices.totalti - invoices.amountpaid)","currency");//12
-
-		$this->addColumn("Cost","sum(invoices.totalcost)","currency");//13
-		$this->addColumn("Average Cost","avg(invoices.totalcost)","currency");//14
-
-		$this->addColumn("Total Weight","sum(invoices.totalweight)","real");//15
-		$this->addColumn("Average Total Weight","avg(invoices.totalweight)","real");//16
+            $this->addGroup("Invoice billing Country","invoices.country");//23
+            $this->addGroup("Invoice Billing State / Province","invoices.state");//24
+            $this->addGroup("Invoice Billing Postal Code","invoices.postalcode");//25
+            $this->addGroup("Invoice Billing City","invoices.city");//26
 
 
-		if($variables){
-			$tempArray = explode("::", $variables["columns"]);
+            //next we do the columns
+            $this->addColumn("Record Count","count(invoices.id)");//0
+            $this->addColumn("Invoice Total","sum(invoices.totalti)","currency");//1
+            $this->addColumn("Average Invoice Total","avg(invoices.totalti)","currency");//2
 
-			foreach($tempArray as $id)
-				$this->selectcolumns[] = $this->columns[$id];
-			$this->selectcolumns = array_reverse($this->selectcolumns);
+            $this->addColumn("Subtotal","sum(invoices.totaltni)","currency");//3
+            $this->addColumn("Average Subtotal","avg(invoices.totaltni)","currency");//4
 
-			$this->selecttable="((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`) LEFT JOIN `shippingmethods` ON `shippingmethods`.`uuid` = `invoices`.`shippingmethodid`) LEFT JOIN `paymentmethods` ON `paymentmethods`.`id`=`invoices`.`paymentmethodid`";
+            $this->addColumn("Tax","sum(invoices.tax)","currency");//5
+            $this->addColumn("Average Tax","avg(invoices.tax)","currency");//6
 
-			if($variables["groupings"] !== ""){
-				$this->group = explode("::",$variables["groupings"]);
-				$this->group = array_reverse($this->group);
-			} else
-				$this->group = array();
+            $this->addColumn("Shipping","sum(invoices.shipping)","currency");//7
+            $this->addColumn("Average Shipping","avg(invoices.shipping)","currency");//8
 
-			foreach($this->group as $grp){
-				if($this->groupings[$grp]["table"])
-					$this->selecttable="(".$this->selecttable." ".$this->groupings[$grp]["table"].")";
-			}
+            $this->addColumn("Amount Paid","sum(invoices.amountpaid)","currency");//9
+            $this->addColumn("Average Amount Paid","avg(invoices.amountpaid)","currency");//10
 
-			$this->whereclause=$_SESSION["printing"]["whereclause"];
-			if($this->whereclause=="") $this->whereclause="WHERE invoices.id!=-1";
+            $this->addColumn("Amount Due","sum(invoices.totalti - invoices.amountpaid)","currency");//11
+            $this->addColumn("Average Amount Due","avg(invoices.totalti - invoices.amountpaid)","currency");//12
 
-			switch($variables["showwhat"]){
-				case "invoices":
-					$this->showinvoices = true;
-					$this->showlineitems = false;
-					break;
+            $this->addColumn("Cost","sum(invoices.totalcost)","currency");//13
+            $this->addColumn("Average Cost","avg(invoices.totalcost)","currency");//14
 
-				case "lineitems":
-					$this->showinvoices = true;
-					$this->showlineitems = true;
-					break;
+            $this->addColumn("Total Weight","sum(invoices.totalweight)","real");//15
+            $this->addColumn("Average Total Weight","avg(invoices.totalweight)","real");//16
 
-				default:
-					$this->showinvoices = false;
-					$this->showlineitems = false;
-			}// endswitch
+            $this->selecttable="((`invoices` INNER JOIN `clients` ON `invoices`.`clientid`=`clients`.`uuid`)
+                                LEFT JOIN `shippingmethods` ON `shippingmethods`.`uuid` = `invoices`.`shippingmethodid`)
+                                LEFT JOIN `paymentmethods` ON `paymentmethods`.`id`=`invoices`.`paymentmethodid`";
 
-			if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
-		}// endif
 	}//end method
 
 
-	function addGroup($name, $field, $format = NULL, $tableAddition = NULL){
-		$temp = array();
-		$temp["name"] = $name;
-		$temp["field"] = $field;
-		$temp["format"] = $format;
-		$temp["table"] = $tableAddition;
+        function processFromPost($variables){
 
-		$this->groupings[] = $temp;
+            $tempArray = explode("::", $variables["columns"]);
+
+            foreach($tempArray as $id)
+                $this->selectcolumns[] = $this->columns[$id];
+
+            $this->selectcolumns = array_reverse($this->selectcolumns);
+
+            if($variables["groupings"] !== ""){
+
+                $this->group = explode("::",$variables["groupings"]);
+                $this->group = array_reverse($this->group);
+
+            } else
+                $this->group = array();
+
+            foreach($this->group as $grp)
+                if($this->groupings[$grp]["table"])
+                    $this->selecttable="(".$this->selecttable." ".$this->groupings[$grp]["table"].")";
+
+            switch($variables["showwhat"]){
+
+                case "invoices":
+                    $this->showinvoices = true;
+                    $this->showlineitems = false;
+                    break;
+
+                case "lineitems":
+                    $this->showinvoices = true;
+                    $this->showlineitems = true;
+                    break;
+
+                default:
+                    $this->showinvoices = false;
+                    $this->showlineitems = false;
+
+            }// endswitch
+
+            if($variables["reporttitle"])
+                $this->title = $variables["reporttitle"];
+
+        }//end function processFromPost
+
+
+        function processFromSettings(){
+
+            foreach($this->settings as $key=>$value)
+                if(strpos($key, "column") === 0)
+                    $this->selectcolumns[substr($key,6)-1] = $this->columns[$value];
+
+            ksort($this->selectcolumns);
+            $this->selectcolumns = array_reverse($this->selectcolumns);
+
+            $this->group = array();
+
+            foreach($this->settings as $key=>$value)
+                if(strpos($key, "group") === 0)
+                    $this->group[substr($key,5)-1] = $value;
+
+            ksort($this->group);
+            $this->group = array_reverse($this->group);
+
+            foreach($this->group as $grp)
+                if($this->groupings[$grp]["table"])
+                    $this->selecttable="(".$this->selecttable." ".$this->groupings[$grp]["table"].")";
+
+
+            if(isset($this->settings["showWhat"]))
+                $showWhat = $this->settings["showWhat"];
+            else
+                $showWhat = "";
+
+            switch($showWhat){
+
+                case "invoices":
+                    $this->showinvoices = true;
+                    $this->showlineitems = false;
+                    break;
+
+                case "lineitems":
+                    $this->showinvoices = true;
+                    $this->showlineitems = true;
+                    break;
+
+                default:
+                    $this->showinvoices = false;
+                    $this->showlineitems = false;
+
+            }// endswitch
+
+            if(isset($this->settings["reportTitle"]))
+                $this->title = $this->settings["reportTitle"];
+
+        }//end function processFromSettings
+
+
+	function addGroup($name, $field, $format = NULL, $tableAddition = NULL){
+
+            $temp = array();
+            $temp["name"] = $name;
+            $temp["field"] = $field;
+            $temp["format"] = $format;
+            $temp["table"] = $tableAddition;
+
+            $this->groupings[] = $temp;
+
 	}//end method
 
 
 	function addColumn($name, $field, $format = NULL){
-		$temp = array();
-		$temp["name"] = $name;
-		$temp["field"] = $field;
-		$temp["format"] = $format;
 
-		$this->columns[] = $temp;
+            $temp = array();
+            $temp["name"] = $name;
+            $temp["field"] = $field;
+            $temp["format"] = $format;
+
+            $this->columns[] = $temp;
+
 	}//end method
 
 
 	function showReportTable(){
+
 		?><table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<th>&nbsp;</th>
@@ -206,7 +271,7 @@ class totalReport{
 		foreach($this->selectcolumns as $thecolumn)
 			$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 		$querystatement.=" count(invoices.id) as thecount ";
-		$querystatement.=" FROM ".$this->selecttable.$this->whereclause;
+		$querystatement.=" FROM ".$this->selecttable.$this->whereClause;
 		$queryresult=$this->db->query($querystatement);
 
 		$therecord=$this->db->fetchArray($queryresult);
@@ -235,7 +300,7 @@ class totalReport{
 			foreach($this->selectcolumns as $thecolumn)
 				$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 			$querystatement .= $this->groupings[$groupby]["field"]." AS thegroup, count(invoices.id) as thecount ";
-			$querystatement .= " FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY ".$this->groupings[$groupby]["field"];
+			$querystatement .= " FROM ".$this->selecttable.$this->whereClause.$where." GROUP BY ".$this->groupings[$groupby]["field"];
 			$queryresult=$this->db->query($querystatement);
 
 			while($therecord=$this->db->fetchArray($queryresult)){
@@ -287,7 +352,7 @@ class totalReport{
 			$querystatement.=$thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 		$querystatement.=" invoices.id as theid, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) as thename,
 							invoices.orderdate,invoices.invoicedate";
-		$querystatement.=" FROM ".$this->selecttable.$this->whereclause.$where." GROUP BY invoices.id";
+		$querystatement.=" FROM ".$this->selecttable.$this->whereClause.$where." GROUP BY invoices.id";
 		$queryresult=$this->db->query($querystatement);
 
 		while($therecord=$this->db->fetchArray($queryresult)){
@@ -369,11 +434,12 @@ class totalReport{
 
 	function showReport(){
 
-		if($_POST["reporttitle"])
-			$pageTitle = $_POST["reporttitle"];
-		else
-			$pageTitle = "Invoice Totals";
+            if(!$this->whereClause)
+                $this->whereClause = "invoices.id!=-1";
 
+            $this->whereClause = " WHERE ".$this->whereClause;
+
+            $pageTitle = $this->title;
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -426,7 +492,7 @@ class totalReport{
 
         <div class="bodyline">
             <h1>Invoice Total Options</h1>
-            <form id="GroupForm" action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="GroupForm">
+            <form id="GroupForm" action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="GroupForm">
 
                 <fieldset>
 
@@ -494,15 +560,46 @@ class totalReport{
         include("footer.php");
     }//end method
 
-}//endclass
+}//end class totalReport
 
-// Processing ===================================================================================================================
-if(!isset($dontProcess)){
-	if(isset($_POST["columns"])){
-		$myreport= new totalReport($db,$_POST);
-		$myreport->showReport();
-	} else {
-		$myreport = new totalReport($db);
-		$myreport->showSelectScreen();
-	}
-}?>
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    require("../../../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new totalReport($db, $_GET["rid"], $_GET["tid"]);
+
+    if(isset($_POST["columns"])){
+
+        $report->setupFromPrintScreen();
+        $report->processFromPost($_POST);
+        $report->showReport();
+
+    } elseif(isset($report->settings["column1"])){
+
+        $report->setupFromPrintScreen();
+        $report->processFromSettings();
+        $report->showReport();
+
+    } else {
+
+        $report->showSelectScreen();
+
+    }//endif
+
+}//endif
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="totalReport";
+
+?>

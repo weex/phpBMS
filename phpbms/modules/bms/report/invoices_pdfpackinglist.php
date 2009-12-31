@@ -37,194 +37,262 @@
  +-------------------------------------------------------------------------+
 */
 
-	if(!isset($_SESSION["userinfo"]["id"])){
+if(!class_exists("invoicePDF"))
+    include("invoices_pdf_class.php");
 
-		//IE needs caching to be set to private in order to display PDFS
-		session_cache_limiter('private');
+class  packinglistPDF extends invoicePDF{
 
-		//set encoding to latin1 (fpdf doesnt like utf8)
-		$sqlEncoding = "latin1";
-		require_once("../../../include/session.php");
+    var $showShipNameInShipTo = false;
 
-	}//end if
+    function packinglistPDF($db, $reportUUID, $tabledefUUID, $orientation='P', $unit='mm', $format='Letter'){
 
-	if(!class_exists("invoicePDF"))
-		include("invoices_pdf_class.php");
+            $this->invoicePDF($db, $reportUUID, $tabledefUUID, $orientation, $unit, $format);
 
-	class  packinglistPDF extends invoicePDF{
-
-		var $title = "Packing List";
-		var $showShipNameInShipTo = false;
-
-		function packinglistPDF($db, $orientation='P', $unit='mm', $format='Letter'){
-
-			$this->invoicePDF($db, $orientation, $unit, $format);
-
-		}//end method
+    }//end method
 
 
-		function initialize(){
-			//This function will set column headings, sizes and formatting
+    /**
+     * function checkForDefaultSettings
+     *
+     * Checks to make sure loaded report Settings exist and are correct
+     */
+    function checkForDefaultSettings(){
 
-			$pdf = &$this->pdf;
+        if(!isset($this->settings["reportTitle"]))
+            $this->settings["reportTitle"] = "Packing List";
 
-			$topinfo = array();
-			$topinfo[] = new pdfColumn("Order ID", "id", 0.75);
-			$topinfo[] = new pdfColumn("Order Date", "orderdate", 1, "date");
-			$topinfo[] = new pdfColumn("Client PO", "ponumber", 0);
+        parent::checkForDefaultSettings();
 
-			$size = 0;
-			foreach($topinfo as $column)
-				$size += $column->size;
-
-			$topinfo[2]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
-
-			$this->topinfo = $topinfo;
-
-			$lineitems = array();
-			$lineitems[] = new pdfColumn("Product / (Part Number)", "parts", 0);
-			$lineitems[] = new pdfColumn("Prepackaged", "isprepackaged", 0.75, "boolean", "C");
-			$lineitems[] = new pdfColumn("Oversized", "isoversized", 0.75, "boolean", "C");
-			$lineitems[] = new pdfColumn("Unit Weight", "unitweight", 0.75, "real", "R");
-			$lineitems[] = new pdfColumn("Qty", "quantity", 0.5, "real","R");
-			$lineitems[] = new pdfColumn("Weight Ext.", "extended", 0.75, "real", "R");
-
-			$size = 0;
-			foreach($lineitems as $column)
-				$size += $column->size;
-
-			$lineitems[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
-
-			$this->lineitems = $lineitems;
-
-			$totalsinfo = array();
-			$totalsinfo[] = new pdfColumn("Shipping Method", "shippingname", 0);
-			$totalsinfo[] = new pdfColumn("Estimated Boxes", "estimatedboxes", 1, NULL, "C");
-			$totalsinfo[] = new pdfColumn("Total Weight", "totalweight", 1, "real", "R");
-			$totalsinfo[] = new pdfColumn("Shipping", "shipping", 1, "currency", "R");
-
-			$size = 0;
-			foreach($totalsinfo as $column)
-				$size += $column->size;
-
-			$totalsinfo[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
-
-			$this->totalsinfo = $totalsinfo;
-
-		}//end method
+    }//end function checkForDefaultSettings
 
 
-		function _addNotes(){
+    function initialize(){
+            //This function will set column headings, sizes and formatting
 
-			$pdf = &$this->pdf;
+            $pdf = &$this->pdf;
 
-			$height = 1;
-			$nextPos = $pdf->GetY() + $height + 0.125;
+            $topinfo = array();
+            $topinfo[] = new pdfColumn("Order ID", "id", 0.75);
+            $topinfo[] = new pdfColumn("Order Date", "orderdate", 1, "date");
+            $topinfo[] = new pdfColumn("Client PO", "ponumber", 0);
 
-			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
-			$pdf->setStyle("header");
-			$pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Special Instructions", 1, 2, "L", 1);
+            $size = 0;
+            foreach($topinfo as $column)
+                    $size += $column->size;
 
-			$pdf->setStyle("normal");
-			$pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
-			$pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
+            $topinfo[2]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-			$pdf->SetXY($pdf->leftmargin, $nextPos);
+            $this->topinfo = $topinfo;
 
-		}//end method
+            $lineitems = array();
+            $lineitems[] = new pdfColumn("Product / (Part Number)", "parts", 0);
+            $lineitems[] = new pdfColumn("Prepackaged", "isprepackaged", 0.75, "boolean", "C");
+            $lineitems[] = new pdfColumn("Oversized", "isoversized", 0.75, "boolean", "C");
+            $lineitems[] = new pdfColumn("Unit Weight", "unitweight", 0.75, "real", "R");
+            $lineitems[] = new pdfColumn("Qty", "quantity", 0.5, "real","R");
+            $lineitems[] = new pdfColumn("Weight Ext.", "extended", 0.75, "real", "R");
 
+            $size = 0;
+            foreach($lineitems as $column)
+                    $size += $column->size;
 
-		function _getLineItems(){
+            $lineitems[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-			$querystatement = "
-			SELECT
-				lineitems.*,
-				lineitems.quantity*lineitems.unitweight as extended,
-				products.partname,
-				products.partnumber,
-				products.isoversized,
-				products.isprepackaged,
-				products.packagesperitem
-			FROM
-				lineitems LEFT JOIN products ON lineitems.productid = products.id
-			WHERE
-				lineitems.invoiceid =".((int) $this->invoicerecord["id"])."
-			ORDER BY
-				displayorder";
+            $this->lineitems = $lineitems;
 
-			$queryresult = $this->db->query($querystatement);
+            $totalsinfo = array();
+            $totalsinfo[] = new pdfColumn("Shipping Method", "shippingname", 0);
+            $totalsinfo[] = new pdfColumn("Estimated Boxes", "estimatedboxes", 1, NULL, "C");
+            $totalsinfo[] = new pdfColumn("Total Weight", "totalweight", 1, "real", "R");
+            $totalsinfo[] = new pdfColumn("Shipping", "shipping", 1, "currency", "R");
 
-			//determine estimated total boxes
-			$this->invoicerecord["estimatedboxes"] = 0;
-			while($therecord = $this->db->fetchArray($queryresult)){
+            $size = 0;
+            foreach($totalsinfo as $column)
+                    $size += $column->size;
 
-				if($therecord["isprepackaged"])
-					$this->invoicerecord["estimatedboxes"] += $therecord["quantity"];
-				else
-					$this->invoicerecord["estimatedboxes"] += $therecord["quantity"] * $therecord["packagesperitem"];
+            $totalsinfo[0]->size = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - $size;
 
-			}//endwhile
+            $this->totalsinfo = $totalsinfo;
 
-			$this->db->seek($queryresult, 0);
-
-			return $queryresult;
-
-		}//end method
-
-		function _addTotals(){
-
-			$pdf = &$this->pdf;
-
-			$height = .5;
-			$nextPos = $pdf->GetY() + $height + 0.125;
-
-			$pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
-
-			$pdf->setStyle("header");
-			foreach($this->totalsinfo as $column)
-				$pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
-
-			$pdf->setStyle("normal");
-			$pdf->SetFont("Arial", "B", 10);
-			$pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
-
-			foreach($this->totalsinfo as $column){
-
-				if($column->format != "")
-					$value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
-				else
-					$value = $this->invoicerecord[$column->fieldname];
-
-				$pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
-
-			}//end foreach
-
-		}//end method
-
-	}//end class
+    }//end method
 
 
-	//PROCESSING
-	//=============================================================================
-	if(!isset($noOutput)){
+    function _addNotes(){
 
-		$report = new packinglistPDF($db, 'P', 'in', 'Letter');
+            $pdf = &$this->pdf;
 
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$filename = "Packing_List";
-		
-		if($report->count === 1){
-			
-			if($report->invoicerecord["company"])
-				$filename .= "_".$report->invoicerecord["company"];
-			
-			$filename .= "_".$report->invoicerecord["id"];
-			
-		}elseif((int)$report->count)
-			$filename .= "_Multiple";
-		
-		$report->output('screen', $filename);
+            $height = 1;
+            $nextPos = $pdf->GetY() + $height + 0.125;
 
-	}//end if
+            if(!$this->settings["templateFormatting"]){
+
+                $pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
+                $pdf->setStyle("header");
+                $pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, "Special Instructions", 1, 2, "L", 1);
+
+            }//endif
+
+            $pdf->setStyle("normal");
+            $pdf->SetXY($pdf->GetX() + .06125, $pdf->GetY() + .06125);
+            $pdf->MultiCell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125, 0.18, $this->invoicerecord["specialinstructions"]);
+
+            $pdf->SetXY($pdf->leftmargin, $nextPos);
+
+    }//end method
+
+
+    function _getLineItems(){
+
+            $querystatement = "
+            SELECT
+                    lineitems.*,
+                    lineitems.quantity*lineitems.unitweight as extended,
+                    products.partname,
+                    products.partnumber,
+                    products.isoversized,
+                    products.isprepackaged,
+                    products.packagesperitem
+            FROM
+                    lineitems LEFT JOIN products ON lineitems.productid = products.id
+            WHERE
+                    lineitems.invoiceid =".((int) $this->invoicerecord["id"])."
+            ORDER BY
+                    displayorder";
+
+            $queryresult = $this->db->query($querystatement);
+
+            //determine estimated total boxes
+            $this->invoicerecord["estimatedboxes"] = 0;
+            while($therecord = $this->db->fetchArray($queryresult)){
+
+                    if($therecord["isprepackaged"])
+                            $this->invoicerecord["estimatedboxes"] += $therecord["quantity"];
+                    else
+                            $this->invoicerecord["estimatedboxes"] += $therecord["quantity"] * $therecord["packagesperitem"];
+
+            }//endwhile
+
+            $this->db->seek($queryresult, 0);
+
+            return $queryresult;
+
+    }//end method
+
+
+    function _addTotals(){
+
+            $pdf = &$this->pdf;
+
+            $height = .5;
+            $nextPos = $pdf->GetY() + $height + 0.125;
+
+            if(!$this->settings["templateFormatting"]){
+
+                $pdf->Rect($pdf->GetX(), $pdf->GetY(), $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, $height);
+
+                $pdf->setStyle("header");
+                foreach($this->totalsinfo as $column)
+                    $pdf->Cell($column->size, 0.18, $column->title, 1, 0, $column->align, 1);
+
+            } else
+                $pdf->SetY($pdf->GetY() + 0.18);
+
+            $pdf->setStyle("normal");
+            $pdf->SetFont("Arial", "B", 10);
+            $pdf->SetXY($pdf->leftmargin, $pdf->GetY() + 0.18 + 0.0625);
+
+            foreach($this->totalsinfo as $column){
+
+                    if($column->format != "")
+                            $value = formatVariable($this->invoicerecord[$column->fieldname], $column->format);
+                    else
+                            $value = $this->invoicerecord[$column->fieldname];
+
+                    $pdf->Cell($column->size, 0.18, $value, $pdf->borderDebug, 0, $column->align);
+
+            }//end foreach
+
+    }//end method
+
+
+    /**
+     * function addingRecordDefaultSettings
+     *
+     * Creates an array of settings associative arrays for use by the system when
+     * a new report record is added that references the file containing this class
+     *
+     * @retrun array of settings. Each setting should itself be
+     * an associative array containing the following
+     * name: name of the setting
+     * defaultvalue: default value for setting
+     * type: (string, int, real, bool) type for value of setting
+     * required: (0,1) whether the setting is required or not
+     * description: brief description for what this setting is used for.
+     */
+    function addingRecordDefaultSettings(){
+
+        $settings = parent::addingRecordDefaultSettings();
+
+        for($i=0; $i< count($settings); $i++){
+
+            switch($settings[$i]["name"]){
+
+                case "reportTitle":
+                    $settings[$i]["defaultValue"] = "Packing List";
+
+            }//endswitch
+
+        }//end foreach
+
+        return $settings;
+
+    }//endfunction addingRecordDefaultSettings
+
+}//end class
+
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    //IE needs caching to be set to private in order to display PDFS
+    session_cache_limiter('private');
+
+    //set encoding to latin1 (fpdf doesnt like utf8)
+    $sqlEncoding = "latin1";
+    require_once("../../../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new packinglistPDF($db, $_GET["rid"], $_GET["tid"], 'P', 'in', 'Letter');
+
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $filename = "Packing_List";
+
+    if($report->count === 1){
+
+        if($report->invoicerecord["company"])
+            $filename .= "_".$report->invoicerecord["company"];
+
+        $filename .= "_".$report->invoicerecord["id"];
+
+    }elseif((int)$report->count)
+        $filename .= "_Multiple";
+
+    $filename .=".pdf";
+
+    $report->output('screen', $filename);
+
+}//end if
+
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="packinglistPDF";
 ?>

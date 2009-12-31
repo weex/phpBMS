@@ -39,35 +39,52 @@
 	include("../../include/session.php");
 	include("include/fields.php");
 
-	if(!hasRights("role:259ead9f-100b-55b5-508a-27e33a6216bf")) goURL(APP_PATH."noaccess.php");
+	if(!hasRights("role:259ead9f-100b-55b5-508a-27e33a6216bf"))
+            goURL(APP_PATH."noaccess.php");
 
-	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
-	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
-	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
-	if(!isset($_POST["command"])) $_POST["command"]="show";
-	if(!isset($_POST["date_order"])) $_POST["date_order"]="DESC";
+	if(!isset($_POST["fromdate"]))
+            $_POST["fromdate"] = dateToString(strtotime("-1 year"));
+
+        if(!isset($_POST["todate"]))
+            $_POST["todate"] = dateToString(mktime());
+
+	if(!isset($_POST["status"]))
+            $_POST["status"] = "Orders and Invoices";
+
+        if(!isset($_POST["command"]))
+            $_POST["command"] = "show";
+
+	if(!isset($_POST["date_order"]))
+            $_POST["date_order"] = "DESC";
 
 	if($_POST["command"]=="print")	{
-			$_SESSION["printing"]["whereclause"]="WHERE products.id=".$_GET["id"];
-			$_SESSION["printing"]["dataprint"]="Single Record";
-			$fromProduct=true;
-			require("report/products_saleshistory.php");
+
+            $_SESSION["printing"]["whereclause"]="products.id=".$_GET["id"];
+            $_SESSION["printing"]["dataprint"]="Single Record";
+
+            goURL("report/products_saleshistory.php?rid=".urlencode("rpt:a278af28-9c34-da2e-d81b-4caa36dfa29f")."&tid=".urlencode("tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34")."&status=".urlencode($_POST["status"])."&fromdate=".urlencode($_POST["fromdate"])."&todate=".urlencode($_POST["todate"]));
+
 	} else {
-	$thestatus="(invoices.type =\"";
-	switch($_POST["status"]){
-		case "Orders/Invoices":
-			$thestatus.="Order\" or invoices.type=\"Invoice\")";
-			$searchdate="orderdate";
-		break;
+
+            $thestatus="(invoices.type =\"";
+            switch($_POST["status"]){
+
+		case "Orders and Invoices":
+                    $thestatus.="Order\" or invoices.type=\"Invoice\")";
+                    $searchdate="orderdate";
+                    break;
+
 		case "Invoices":
-			$thestatus.="Invoice\")";
-			$searchdate="invoicedate";
-		break;
+                    $thestatus.="Invoice\")";
+                    $searchdate="invoicedate";
+                    break;
+
 		case "Orders":
-			$thestatus.="Order\")";
-			$searchdate="orderdate";
-		break;
-	}
+                    $thestatus.="Order\")";
+                    $searchdate="orderdate";
+                    break;
+
+            }//endswitch
         $dateOrder = ($_POST['date_order'] == 'DESC') ? 'ASC' : 'DESC';
 
 	$mysqlfromdate=sqlDateFromString($_POST["fromdate"]);
@@ -131,7 +148,7 @@
 		<p class="timelineP">
 		   <label for="status">type</label><br />
 		   <select name="status" id="status">
-				<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected=\"selected\""?>>Orders/Invoices</option>
+				<option value="Orders and Invoices" <?php if($_POST["status"]=="Orders and Invoices") echo "selected=\"selected\""?>>Orders and Invoices</option>
 				<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
 				<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
 		   </select>
@@ -142,7 +159,7 @@
 		<p class="timelineP"><?php $theform->showField("todate")?></p>
 
 		<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
-		<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
+		<p id="changeTimelineP"><br /><input name="command" type="submit" value="update" class="smallButtons" /></p>
 		<input name="date_order" id="date_order" type="hidden" value="<?php echo $_POST["date_order"]; ?>" />
 	</div>
 

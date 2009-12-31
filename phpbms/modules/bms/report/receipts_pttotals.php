@@ -38,13 +38,13 @@
 */
 
 if(!class_exists("phpbmsReport"))
-	include("../../../report/report_class.php");
+    include("../../../report/report_class.php");
 
 class receiptsPTTotals extends phpbmsReport{
 
-	function receiptsPTTotals($db){
+	function receiptsPTTotals($db, $reportUUID, $tabledefUUID){
 
-		parent::phpbmsReport($db);
+            parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
 	}//end method
 
@@ -66,10 +66,10 @@ class receiptsPTTotals extends phpbmsReport{
 				((receipts INNER JOIN clients ON receipts.clientid = clients.uuid)
 				LEFT JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid)";
 
-		if($this->sortorder)
-			$this->sortorder = "paymentmethods.id DESC, ".$this->sortorder;
+		if($this->sortOrder)
+			$this->sortOrder= "paymentmethods.id DESC, ".$this->sortorder;
 		else
-			$this->sortorder = "paymentmethods.id DESC, receipts.receiptdate";
+			$this->sortOrder= "paymentmethods.id DESC, receipts.receiptdate";
 
 		$querystatement = $this->assembleSQL($querystatement);
 
@@ -215,23 +215,32 @@ class receiptsPTTotals extends phpbmsReport{
 
 	}//end method
 
-}//end method
+}//end class
 
 
-	//PROCESSING
-	//========================================================================
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
 
-	if(!isset($noOutput)){
+    session_cache_limiter('private');
 
-		session_cache_limiter('private');
+    require("../../../include/session.php");
 
-		require("../../../include/session.php");
+    checkForReportArguments();
 
-		$report = new receiptsPTTotals($db);
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$report->show();
+    $report = new receiptsPTTotals($db, $_GET["rid"], $_GET["tid"]);
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $report->show();
 
-	}//end if
+}//end if
 
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="generalExport";
 ?>

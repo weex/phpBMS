@@ -36,102 +36,205 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	if(!class_exists("phpbmsReport"))
-		include("report_class.php");
+if(!class_exists("phpbmsReport"))
+    include("report_class.php");
 
-	class generalExport extends phpbmsReport {
+/**
+ * Basic CSV output report
+ *
+ * This class implements a report used for creating a CSV file through reporting
+ */
+class generalExport extends phpbmsReport {
 
-		var $maintable = "";
-		var $resultOutput = "";
-                var $tabledefuuid;
-
-		function generalExport($db, $tabledefuuid){
-
-			$this->tabledefuuid = mysql_real_escape_string($tabledefuuid);
-
-			parent::phpbmsReport($db);
-
-			$querystatement = "
-				SELECT
-					maintable
-				FROM
-					tabledefs
-				WHERE
-					uuid = '".$this->tabledefuuid."'";
-
-			$queryresult = $db->query($querystatement);
-			$therecord=$db->fetchArray($queryresult);
-
-			$this->maintable = $therecord["maintable"];
-
-		}//end method
+    /**
+     * $maintable
+     * @var string the SQL name of the main table to print.
+     */
+    var $maintable = "";
 
 
-		function generate(){
+    /**
+     * function generalExport
+     *
+     * Initialization function
+     *
+     * @param object $db database object
+     * @param string $reportUUID UUID of report record
+     * @param string $tabledefUUID UUID of table definition intializing print
+     */
+    function generalExport($db, $reportUUID, $tabledefUUID){
 
-			$querystatement = "
-				SELECT
-					*
-				FROM
-					".$this->maintable;
+        parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-			$querystatement = $this->assembleSQL($querystatement);
+        $this->checkForDefaultSettings();
 
-			$queryresult = $this->db->query($querystatement);
+        $therecord = $this->getTableDefInfo();
 
-			$num_fields = $this->db->numFields($queryresult);
+        $this->maintable = $therecord["maintable"];
 
-			for($i=0;$i<$num_fields;$i++)
-				$this->reportOutput .= ",".$this->db->fieldName($queryresult, $i);
-
-			$this->reportOutput = substr($this->reportOutput, 1)."\n";
-
-			while($therecord = $this->db->fetchArray($queryresult)){
-
-				$line = "";
-
-				foreach($therecord as $value)
-					$line .= ',"'.mysql_real_escape_string($value).'"';
-
-				$line = substr($line, 1)."\n";
-
-				$this->reportOutput .= $line;
-
-			}//endwhile
-
-			$this->reportOutput = substr($this->reportOutput, 0, strlen($this->reportOutput)-1);
-
-		}//end method
+    }//end function init
 
 
-		function show(){
+    /**
+     * function checkForDefaultSettings
+     *
+     * Checks to make sure loaded report Settings exist and are correct
+     */
+    function checkForDefaultSettings(){
 
-			header("Content-type: text/plain");
-			header('Content-Disposition: attachment; filename="export.txt"');
+        if(!isset($this->settings["showHeader"]))
+            $this->settings["showHeader"] = 1;
 
-			echo $this->reportOutput;
+        if(!isset($this->settings["fieldDelimiter"]))
+            $this->settings["fieldDelimiter"] = ",";
 
-		}//end method
+        if(!isset($this->settings["recordDelimiter"]))
+            $this->settings["recordDelimiter"] = "\n";
 
-	}//end class
+        if(!isset($this->settings["fieldEncapsulation"]))
+            $this->settings["fieldEncapsulation"] = "\"";
+
+    }//end function checkForDefaultSettings
 
 
-	//PROCESSING
-	//========================================================================
+    /**
+     * function generate
+     *
+     * Creates body of the file.
+     */
+    function generate(){
 
-	if(!isset($noOutput)){
+        $fromFields = "*";
 
-		session_cache_limiter('private');
+        $columns = array();
+        foreach($this->settings as $key=>$value){
 
-		require("../include/session.php");
-		if(!isset($_GET["tid"]))
-			$error = new appError(200,"URL variable missing: tid");
+            if(strpos($key, "column") === 0){
 
-		$report = new generalExport($db, $_GET["tid"]);
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$report->show();
+                $pos = substr($key,6)-1;
+                $columns[$pos]["field"] = $value;
 
-	}//end if
+                if(isset($this->settings["titleColumn".($pos + 1)]))
+                    $columns[$pos]["title"] = $this->settings["titleColumn".($pos +1)];
+                else
+                    $columns[$pos]["title"] = "";
 
+            }//endif
+
+        }//endforeach
+
+        if(count($columns)){
+
+            ksort($columns);
+
+            $fromFields = "";
+            foreach($columns as $column){
+
+                $fromFields .= ", ".$column["field"];
+                if($column["title"])
+                    $fromFields .= " AS `".$column["title"]."`";
+
+                $fromFields.="\n";
+
+            }//endforeach
+
+            $fromFields = substr($fromFields, 1);
+
+        }//endif
+
+        if(isset($this->settings["fromTable"]))
+            $querytable = $this->settings["fromTable"];
+        else
+            $querytable = $this->maintable;
+
+        $querystatement = "
+            SELECT
+                ".$fromFields."
+            FROM
+                ".$querytable;
+
+        $querystatement = $this->assembleSQL($querystatement);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $num_fields = $this->db->numFields($queryresult);
+
+        /**
+         * generating column names.  First row is just field names
+         */
+        if($this->settings["showHeader"])
+            for($i=0;$i<$num_fields;$i++)
+                $this->reportOutput .= $this->settings["fieldDelimiter"].$this->db->fieldName($queryresult, $i);
+
+        $this->reportOutput = substr($this->reportOutput, strlen($this->settings["fieldDelimiter"])).$this->settings["recordDelimiter"];
+
+        /**
+         * Looping through retrieved records.
+         */
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $line = "";
+
+            foreach($therecord as $value)
+               $line .= $this->settings["fieldDelimiter"].$this->settings["fieldEncapsulation"].mysql_real_escape_string($value).$this->settings["fieldEncapsulation"];
+
+            $line = substr($line, strlen($this->settings["fieldDelimiter"])).$this->settings["recordDelimiter"];
+
+            $this->reportOutput .= $line;
+
+        }//endwhile
+
+        /**
+         * removing last \n
+         */
+        $this->reportOutput = substr($this->reportOutput, 0, strlen($this->reportOutput) - strlen($this->settings["recordDelimiter"]));
+
+    }//end function generate
+
+
+    /**
+     * function show
+     *
+     * Outputing generated data
+     */
+    function show(){
+
+        if(!isset($this->settings["filename"]))
+           $this->settings["filename"] = $this->maintable."-export.txt";
+echo "<pre>";
+        //header("Content-type: text/plain");
+        //header('Content-Disposition: attachment; filename="'.$this->settings["filename"].'"');
+
+        echo $this->reportOutput;
+
+    }//end function show
+
+}//end class
+
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    session_cache_limiter('private');
+
+    require_once("../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new generalExport($db, $_GET["rid"],$_GET["tid"]);
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $report->show();
+
+}//end if
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="generalExport";
 ?>

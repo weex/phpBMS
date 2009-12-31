@@ -99,22 +99,47 @@ if (isset($_POST["command"])){
 			$_SESSION["printing"]["sortorder"]=$sortorder;
 
 			if(isset($_POST["choosereport"])){
+
 				$tablePrinter->openwindows="";
+
 				for($i=0;$i<count($_POST["choosereport"]);$i++){
+
 					if($_POST["choosereport"][$i]){
-						$querystatement="SELECT reportfile,type from reports where id=".$_POST["choosereport"][$i].";";
-						$queryresult=$db->query($querystatement);
-						if(!$queryresult) $error = new appError(100,"Could not Retrieve Report Information");
-						$reportrecord=$db->fetchArray($queryresult);
+
+						$querystatement = "
+                                                    SELECT
+                                                        `uuid`,
+                                                        `reportfile`,
+                                                        `type`
+                                                    FROM
+                                                        `reports`
+                                                    WHERE
+                                                        id = ".$_POST["choosereport"][$i];
+
+						$queryresult = $db->query($querystatement);
+
+						if(!$queryresult)
+                                                    $error = new appError(100,"Could not Retrieve Report Information");
+
+                                                $reportrecord = $db->fetchArray($queryresult);
+
 						$fakeExtForIE="";
-						if($reportrecord["type"]=="PDF Report")
-							$fakeExtForIE="&amp;ext=.pdf";
-						$dateTimeStamp="&amp;ts=".mktime(); // make the url unique to avoid using browser cache
+
+                                                if($reportrecord["type"] == "PDF Report")
+							$fakeExtForIE = "' + String.fromCharCode(38) + ' &amp;ext=.pdf";
+
+                                                // make the url unique to avoid using browser cache
+						$dateTimeStamp = "' + String.fromCharCode(38) + 'ts=".mktime();
+
 						//javascript open each report in new window
-						$tablePrinter->openwindows.="window.open('".APP_PATH.$reportrecord["reportfile"]."?tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
-					}
-				}
-			}
+						$tablePrinter->openwindows .= "window.open('".APP_PATH.$reportrecord["reportfile"]."?rid=".urlencode($reportrecord["uuid"])."' + String.fromCharCode(38) + 'tid=".urlencode($tablePrinter->tableid).$dateTimeStamp.$fakeExtForIE."','print".$i."');\n";
+
+					}//endif
+
+				}//endfor
+
+                        }//endif
+
 		break;
 	}
 }

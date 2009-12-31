@@ -37,86 +37,109 @@
  +-------------------------------------------------------------------------+
 */
 
-require("../../../include/session.php");
+if(!class_exists("phpbmsReport"))
+    require("../../../report/report_class.php");
 
-class totalReport{
+class totalReport extends phpbmsReport{
 
 	var $selectcolumns;
         var $tableClause = array();
-	var $whereClause = array();
+	var $whereClauses = array();
 	var $group = "";
 	var $showItems = false;
 	var $padamount = 20;
         var $fromDate;
         var $toDate;
 
-	function totalReport($db,$variables = NULL){
-		$this->db = $db;
 
-		// first we define the available groups
-		$this->addGroup("Year","YEAR(docdate)"); //0
-		$this->addGroup("Quarter","QUARTER(docdate)"); //1
-		$this->addGroup("Month","DATE_FORMAT(docdate, '%m - %b')"); //2
-		$this->addGroup("Week","WEEK(docdate)"); //3
-		$this->addGroup("Payment Method","paymentmethods.name"); //4
-		$this->addGroup("Document Type","doctype"); //5
+	function totalReport($db, $reportUUID, $tabledefUUID){
 
+            $this->db = $db;
 
-		//next we do the columns
-		$this->addColumn("Record Count","COUNT(id)");//0
-		$this->addColumn("Total","SUM(doctotal)","currency");//1
+            parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
+            // first we define the available groups
+            $this->addGroup("Year","YEAR(docdate)"); //0
+            $this->addGroup("Quarter","QUARTER(docdate)"); //1
+            $this->addGroup("Month","DATE_FORMAT(docdate, '%m - %b')"); //2
+            $this->addGroup("Week","WEEK(docdate)"); //3
+            $this->addGroup("Payment Method","paymentmethods.name"); //4
+            $this->addGroup("Document Type","doctype"); //5
 
-		if($variables){
+            //next we do the columns
+            $this->addColumn("Record Count","COUNT(id)");//0
+            $this->addColumn("Total","SUM(doctotal)","currency");//1
 
-                        $this->selectcolumns = $this->columns;
+            $this->tableClause["invoices"] = "(invoices INNER JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid)";
+            $this->tableClause["receipts"] = "(receipts INNER JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid)";
 
-                        $this->fromDate = $variables["fromdate"];
-                        $this->toDate = $variables["todate"];
-
-                        $this->tableClause["invoices"] = "(invoices INNER JOIN paymentmethods ON invoices.paymentmethodid = paymentmethods.uuid)";
-                        $this->tableClause["receipts"] = "(receipts INNER JOIN paymentmethods ON receipts.paymentmethodid = paymentmethods.uuid)";
-
-			if($variables["groupings"] !== ""){
-
-				$this->group = explode("::",$variables["groupings"]);
-				$this->group = array_reverse($this->group);
-
-			} else
-				$this->group = array();
-
-			foreach($this->group as $grp){
-
-				if($this->groupings[$grp]["table"]){
-
-                                        foreach($this->tableClause as $key => $value);
-                                            $this->tableClause[$key]="(".$this->tableClause[$key]." ".$this->groupings[$grp]["table"].")";
-
-				}//endif
-
-			}//endforeach
-
-//			$this->whereclause = $_SESSION["printing"]["whereclause"];
-//			if($this->whereclause=="") $this->whereclause="WHERE invoices.id!=-1";
-                        $this->whereClause["invoices"] = "
-                            WHERE
-                                (invoices.type = 'Invoice'
-                                AND paymentmethods.type != 'receivable'
-                                AND invoicedate >= '".sqlDateFromString($variables["fromdate"])."'
-                                AND invoicedate <= '".sqlDateFromString($variables["todate"])."')
-                            ";
-
-                        $this->whereClause["receipts"] = "
-                            WHERE
-                                (receipts.posted = 1
-                                AND receiptdate >= '".sqlDateFromString($variables["fromdate"])."'
-                                AND receiptdate <= '".sqlDateFromString($variables["todate"])."')
-                            ";
-
-                        $this->showItems = isset($variables["showitems"]);
-
-		}// endif
 	}//end method
+
+
+        function processFromPost($variables){
+
+            $this->selectcolumns = $this->columns;
+
+            $this->fromDate = $variables["fromdate"];
+            $this->toDate = $variables["todate"];
+
+            if($variables["groupings"] !== ""){
+
+                $this->group = explode("::",$variables["groupings"]);
+                $this->group = array_reverse($this->group);
+
+            } else
+                $this->group = array();
+
+            foreach($this->group as $grp){
+
+                if($this->groupings[$grp]["table"]){
+
+                    foreach($this->tableClause as $key => $value);
+                        $this->tableClause[$key] = "(".$this->tableClause[$key]." ".$this->groupings[$grp]["table"].")";
+
+                }//endif
+
+            }//endforeach
+
+            $this->whereClauses["invoices"] = "
+                WHERE
+                    (invoices.type = 'Invoice'
+                    AND paymentmethods.type != 'receivable'
+                    AND invoicedate >= '".sqlDateFromString($variables["fromdate"])."'
+                    AND invoicedate <= '".sqlDateFromString($variables["todate"])."')
+                ";
+
+            $this->whereClauses["receipts"] = "
+                WHERE
+                    (receipts.posted = 1
+                    AND receiptdate >= '".sqlDateFromString($variables["fromdate"])."'
+                    AND receiptdate <= '".sqlDateFromString($variables["todate"])."')
+                ";
+
+            $this->showItems = isset($variables["showitems"]);
+
+        }//end function processFromPost
+
+
+        function processFromSettings(){
+
+            $variables["fromdate"] = $this->settings["fromDate"];
+            $variables["todate"] = $this->settings["toDate"];
+
+            $variables["groupings"] = "";
+            foreach($this->settings as $key=>$value)
+                if(strpos($key, "group") === 0)
+                    $variables["groupings"] .= "::".$value;
+
+            if($variables["groupings"])
+                $variables["groupings"] = substr($variables["groupings"], 2);
+
+            $variables["showitems"] = isset($this->settings["showItems"]);
+
+            $this->processFromPost($variables);
+
+        }//end function processFromSettings
 
 
 	function addGroup($name, $field, $format = NULL, $tableAddition = NULL){
@@ -205,11 +228,11 @@ class totalReport{
 
                 $querystatement = "(SELECT";
                 $querystatement .= $this->generateColumns("invoices").", COUNT(invoices.id) AS thecount ";
-                $querystatement .= "FROM ".$this->tableClause["invoices"]." ".$this->whereClause["invoices"].")";
+                $querystatement .= "FROM ".$this->tableClause["invoices"]." ".$this->whereClauses["invoices"].")";
                 $querystatement .= " UNION ";
                 $querystatement .= "(SELECT";
                 $querystatement .= $this->generateColumns("receipts").", COUNT(receipts.id) AS thecount ";
-                $querystatement .= "FROM ".$this->tableClause["receipts"]." ".$this->whereClause["receipts"].")";
+                $querystatement .= "FROM ".$this->tableClause["receipts"]." ".$this->whereClauses["receipts"].")";
 
 
                 $queryresult = $this->db->query($querystatement);
@@ -256,13 +279,13 @@ class totalReport{
                         $querystatement = "(SELECT";
                         $querystatement .= $this->generateColumns("invoices").", COUNT(invoices.id) AS `thecount` ";
                         $querystatement .= ", ".$this->typeSubstitute($this->groupings[$groupby]["field"], "invoices")." AS `thegroup`";
-                        $querystatement .= "FROM ".$this->tableClause["invoices"]." ".$this->whereClause["invoices"].$this->typeSubstitute($where, "invoices");
+                        $querystatement .= "FROM ".$this->tableClause["invoices"]." ".$this->whereClauses["invoices"].$this->typeSubstitute($where, "invoices");
                         $querystatement .= " GROUP BY `thegroup`)";
                         $querystatement .= " UNION ";
                         $querystatement .= "(SELECT";
                         $querystatement .= $this->generateColumns("receipts").", COUNT(receipts.id) AS thecount ";
                         $querystatement .= ", ".$this->typeSubstitute($this->groupings[$groupby]["field"], "receipts")." AS `thegroup`";
-                        $querystatement .= "FROM ".$this->tableClause["receipts"]." ".$this->whereClause["receipts"].$this->typeSubstitute($where, "receipts");
+                        $querystatement .= "FROM ".$this->tableClause["receipts"]." ".$this->whereClauses["receipts"].$this->typeSubstitute($where, "receipts");
                         $querystatement .= " GROUP BY `thegroup`)";
                         $querystatement .= " ORDER BY `thegroup`";
 
@@ -420,7 +443,7 @@ class totalReport{
                         invoices.invoicedate AS `docdate`
                     FROM
                         (".$this->tableClause["invoices"].") INNER JOIN clients ON invoices.clientid = clients.uuid
-                        ".$this->whereClause["invoices"].$this->typeSubstitute($where, "invoices")."
+                        ".$this->whereClauses["invoices"].$this->typeSubstitute($where, "invoices")."
                     GROUP BY `theid`)
                     UNION
                     (SELECT
@@ -430,7 +453,7 @@ class totalReport{
                         receipts.receiptdate AS `docdate`
                     FROM
                         (".$this->tableClause["receipts"].") INNER JOIN clients ON receipts.clientid = clients.uuid
-                        ".$this->whereClause["receipts"].$this->typeSubstitute($where, "receipts")."
+                        ".$this->whereClauses["receipts"].$this->typeSubstitute($where, "receipts")."
                     GROUP BY `theid`)
                     ORDER BY `docdate`";
 
@@ -463,7 +486,8 @@ class totalReport{
 
 	function showReport(){
 
-	    $pageTitle = "Incoming Cash Flow";
+            if(!isset($this->settings["reportTitle"]))
+                $this->settings["reportTitle"] = "Incoming Cash Flow";
 
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -476,7 +500,7 @@ class totalReport{
 
 <body>
 	<div id="toprint">
-		<h1><span><?php echo $pageTitle?></span></h1>
+		<h1><span><?php echo formatVariable($this->settings["reportTitle"]); ?></span></h1>
 		<h2>Dates: <?php echo $this->fromDate ?> - <?php echo $this->toDate ?></h2>
 
 		<?php $this->showReportTable();?>
@@ -581,13 +605,44 @@ class totalReport{
 
 }//endclass
 
-// Processing ===================================================================================================================
-if(!isset($dontProcess)){
-	if(isset($_POST["fromdate"])){
-		$myreport= new totalReport($db,$_POST);
-		$myreport->showReport();
-	} else {
-		$myreport = new totalReport($db);
-		$myreport->showSelectScreen();
-	}
-}?>
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    //IE needs caching to be set to private in order to display PDFS
+    session_cache_limiter('private');
+
+    //set encoding to latin1 (fpdf doesnt like utf8)
+    $sqlEncoding = "latin1";
+    require_once("../../../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new totalReport($db, $_GET["rid"], $_GET["tid"]);
+
+    if(isset($_POST["fromdate"])){
+
+        $report->processFromPost($_POST);
+        $report->showReport();
+
+    } elseif(isset($report->settings["fromdate"]) && isset($report->settings["todate"]) && isset($report->settings["groupings"])){
+
+        $report->processFromSettings();
+        $report->showReport();
+
+    }else
+        $report->showSelectScreen();
+
+}//end if
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="totalReport";
+
+?>

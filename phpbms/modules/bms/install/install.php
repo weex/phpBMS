@@ -46,6 +46,7 @@ $theModule->tables = array(
 			"smartsearches",
 			"relationships",
 			"reports",
+			"reportsettings",
 			"tablecolumns",
 			"tabledefs",
 			"tablegroupings",

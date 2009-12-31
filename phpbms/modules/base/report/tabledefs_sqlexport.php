@@ -37,144 +37,144 @@
  +-------------------------------------------------------------------------+
 */
 
-	if(!isset($_SESSION["userinfo"])){
+if(!class_exists("phpbmsReport"))
+    include("../../../report/report_class.php");
 
-		session_cache_limiter('private');
+class tabledefSQLExport extends phpbmsReport{
 
-		require("../../../include/session.php");
+    function tabledefSQLExport($db, $reportUUID, $tabledefUUID){
 
-	}//end if
+        parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
-
-	if(!class_exists("phpbmsReport"))
-		include("report/report_class.php");
-
-	class tabledefSQLExport extends phpbmsReport{
-
-		var $reportOutput = "";
-
-		function sqlExport($db){
-
-			parent::phpbmsReport($db);
-
-		}//end method
+    }//end method
 
 
-		function generate(){
+    function generate(){
 
-			$this->reportOutput .= $this->_addTableInfo("tablecolumns");
-			$this->reportOutput .= $this->_addTableInfo("tablefindoptions");
-			$this->reportOutput .= $this->_addTableInfo("tablegroupings");
-			$this->reportOutput .= $this->_addTableInfo("tableoptions");
-			$this->reportOutput .= $this->_addTableInfo("tablesearchablefields");
+            $this->reportOutput .= $this->_addTableInfo("tablecolumns");
+            $this->reportOutput .= $this->_addTableInfo("tablefindoptions");
+            $this->reportOutput .= $this->_addTableInfo("tablegroupings");
+            $this->reportOutput .= $this->_addTableInfo("tableoptions");
+            $this->reportOutput .= $this->_addTableInfo("tablesearchablefields");
 
-		}//end method
-
-
-		function _addTableInfo($tablename){
-
-			$querystatement = "
-				SELECT
-					`uuid`
-				FROM
-					`tabledefs`
-				WHERE
-					".$this->whereclause."
-				";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$whereclause = "";
-			while($therecord = $this->db->fetchArray($queryresult)){
-
-				$whereclause .= " OR `tabledefid` = '".mysql_real_escape_string($therecord["uuid"])."'";
-
-			}//end while
-
-			$whereclause = substr($whereclause, 4);
-
-			$output = 	"/* Begin ".$tablename." */\n".
-						"/* ====================================================================== */\n";
-
-			$querystatement = "
-				SELECT
-					*
-				FROM
-					`".$tablename."`
-				WHERE
-					".$whereclause."
-				ORDER BY
-					".$tablename.".tabledefid";
-
-			$queryresult = $this->db->query($querystatement);
-
-			$num_fields = $this->db->numFields($queryresult);
-
-			$statementstart = "INSERT INTO `".$tablename."` (";
-
-			for($i=0; $i<$num_fields ;$i++){
-
-				$fieldname = $this->db->fieldName($queryresult,$i);
-
-				if($fieldname != "id")
-					$statementstart .= "`".$fieldname."`, ";
-
-			}//endfor
-
-			$statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
-
-			while($therecord = $this->db->fetchArray($queryresult)){
-
-				$insertstatement = $statementstart;
-
-				foreach($therecord as $name => $field){
-
-					if($field === NULL)
-						$addfield = "NULL, ";
-					else
-						$addfield = "'".mysql_real_escape_string($field)."', ";
-
-					if($name != "id")
-						$insertstatement .= $addfield;
-
-				}//endforeach
-
-				$insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
-
-				$output .= $insertstatement;
-
-			}//endwhile
+    }//end method
 
 
-			$output .= 	"/* ====================================================================== */\n".
-						"/* END ".$tablename." - record count: ".$this->db->numRows($queryresult)."*/\n\n";
+    function _addTableInfo($tablename){
 
-			return $output;
+        $querystatement = "
+            SELECT
+                    `uuid`
+            FROM
+                    `tabledefs`
+            WHERE
+                    ".$this->whereClause;
 
-		}//end method
+        $queryresult = $this->db->query($querystatement);
+
+        $whereclause = "";
+
+        while($therecord = $this->db->fetchArray($queryresult))
+            $whereclause .= " OR `tabledefid` = '".mysql_real_escape_string($therecord["uuid"])."'";
+
+        $whereclause = substr($whereclause, 4);
+
+        $output = 	"/* Begin ".$tablename." */\n".
+                        "/* ====================================================================== */\n";
+
+        $querystatement = "
+                SELECT
+                        *
+                FROM
+                        `".$tablename."`
+                WHERE
+                        ".$whereclause."
+                ORDER BY
+                        ".$tablename.".tabledefid";
+
+        $queryresult = $this->db->query($querystatement);
+
+        $num_fields = $this->db->numFields($queryresult);
+
+        $statementstart = "INSERT INTO `".$tablename."` (";
+
+        for($i=0; $i<$num_fields ;$i++){
+
+            $fieldname = $this->db->fieldName($queryresult,$i);
+
+            if($fieldname != "id")
+                $statementstart .= "`".$fieldname."`, ";
+
+        }//endfor
+
+        $statementstart = substr($statementstart,0,strlen($statementstart)-2).") VALUES (";
+
+        while($therecord = $this->db->fetchArray($queryresult)){
+
+            $insertstatement = $statementstart;
+
+            foreach($therecord as $name => $field){
+
+                if($field === NULL)
+                    $addfield = "NULL, ";
+                else
+                    $addfield = "'".mysql_real_escape_string($field)."', ";
+
+                if($name != "id")
+                    $insertstatement .= $addfield;
+
+            }//endforeach
+
+            $insertstatement = substr($insertstatement,0,strlen($insertstatement)-2).");\n";
+
+            $output .= $insertstatement;
+
+        }//endwhile
 
 
-		function show(){
+        $output .= 	"/* ====================================================================== */\n".
+                        "/* END ".$tablename." - record count: ".$this->db->numRows($queryresult)."*/\n\n";
 
-			header("Content-type: text/plain");
-			header('Content-Disposition: attachment; filename="tableInfoSQL.sql"');
+        return $output;
 
-			echo $this->reportOutput;
-
-		}//end method
+    }//end method
 
 
-	}//end class
+    function show(){
 
-	//PROCESSING
-	//========================================================================
+        header("Content-type: text/plain");
+        header('Content-Disposition: attachment; filename="tableInfoSQL.sql"');
 
-	if(!isset($noOutput)){
+        echo $this->reportOutput;
 
-		$report = new tabledefSQLExport($db);
-		$report->setupFromPrintScreen();
-		$report->generate();
-		$report->show();
+    }//end method
 
-	}//end if
+
+}//end class
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    session_cache_limiter('private');
+
+    require_once("../../../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new tabledefSQLExport($db, $_GET["rid"],$_GET["tid"]);
+    $report->setupFromPrintScreen();
+    $report->generate();
+    $report->show();
+
+}//end if
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="tabledefSQLExport";
 ?>

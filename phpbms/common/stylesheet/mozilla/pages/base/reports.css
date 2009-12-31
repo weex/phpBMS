@@ -1,0 +1,41 @@
+/* $Rev: 154 $ | $LastChangedBy: brieb $ */
+/* $LastChangedDate: 2006-10-22 15:05:13 -0600 (Sun, 22 Oct 2006) $ */
+#topButtons{float:right;width:160px;}
+#topTitle{margin-right:170px;}
+
+#fsAttributes{float:right;width:200px;}
+
+#leftSideDiv{margin-right:230px; padding-top: 1px;}
+
+#description{
+    width: 99%;
+}
+
+#settingsTable{
+    width: 100%;
+}
+
+    #settingsTable th{
+        text-align: left;
+    }
+
+    #settingsTable td{
+        vertical-align: top;
+    }
+
+#rsAddName{
+    text-align: right;
+    font-weight: bold;
+    width: 110px;
+    padding-left: 0;
+    padding-right: 3px;
+}
+
+#addNewRow td{
+    border-bottom:1px solid #BBBBBB;
+    color: #999999;
+}
+
+.hiddenTextAreas {
+    display:none;
+}

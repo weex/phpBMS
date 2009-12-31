@@ -41,6 +41,19 @@ CREATE TABLE `widgets` (
   KEY `uniqueid` (`uuid`)
 ) ENGINE=INNODB;
 --end widgets CREATE--
+--reportsettings CREATE--
+CREATE TABLE `reportsettings` (
+  `id` int(11) NOT NULL auto_increment,
+  `reportuuid` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL default '',
+  `value` text default '',
+  `type` varchar(32) NOT NULL default 'string',
+  `required` tinyint(4) NOT NULL default '0',
+  `defaultvalue` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=INNODB;
+--end reportsettings CREATE--
 
 --attachments ALTER--
 ALTER TABLE `attachments` ENGINE=INNODB;
@@ -275,22 +288,12 @@ INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `created
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:f07d910f-f56d-3d24-e74f-7a3b36b2d3c8', 'Account', '', '', '5', 1, 1, NOW(), NOW(), '');
 INSERT INTO `menu` (`uuid`, `name`, `link`, `parentid`, `displayorder`, `createdby`, `modifiedby`, `creationdate`, `modifieddate`, `roleid`) VALUES ('menu:e8401ebb-c369-304f-053d-8195988e7faf', '----', 'N/A', 'menu:f07d910f-f56d-3d24-e74f-7a3b36b2d3c8', '30', 1, 1, NOW(), NOW(), '');
 --end menu INSERT--
---modules UPDATE--
-UPDATE `modules` SET `uuid`='mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7' WHERE `id`='1';
---end modules UPDATE--
---reports UPDATE--
-UPDATE `reports` SET
-    `uuid`='rpt:37cee478-b57e-2d53-d951-baf3937ba9e0'
-WHERE
-    `name`='Raw Table Print';
-UPDATE `reports` SET
-    `uuid`='rpt:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8',
-    `description` = 'This report will generate a comma-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.'
-WHERE
-    `name`='Raw Table Export';
-UPDATE `reports` SET `uuid`='rpt:a6999cc3-59bb-6af3-460e-d5d791afb842' WHERE `name`='Note Summary';
-UPDATE `reports` SET `uuid`='rpt:2944b204-5967-348a-8679-6835f45f0d79' WHERE `name`='SQL Export';
-UPDATE `reports` SET `uuid`='rpt:37a299d1-d795-ad83-4b47-0778c16a381c' WHERE `name`='Support Tables SQL Export';
+--reports DELETE/INSERT--
+DELETE FROM `reports` WHERE `name` IN ('Raw Table Print', 'Raw Table Export', 'Note Summary', 'SQL Export', 'Support Tables SQL Export');
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:37cee478-b57e-2d53-d951-baf3937ba9e0', 'Raw Table Print', 'report', '', '0', 'role:259ead9f-100b-55b5-508a-27e33a6216bf', 'report/general_tableprint.php', 'This report will prints out of every field for the table for the given records.  The report is displayed HTML format.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:dac75fb9-91d2-cb1e-9213-9fab6d32f4c8', 'Raw Table Export', 'export', '', '0', 'role:259ead9f-100b-55b5-508a-27e33a6216bf', 'report/general_export.php', 'This report will generate a comma-delimited text file. Values are encapsulated in quotes, and the first line lists the field names.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:2944b204-5967-348a-8679-6835f45f0d79', 'SQL Export', 'export', '', '0', 'Admin', 'report/general_sql.php', 'Generate SQL INSERT statements for records.', 1, NOW(), 1, NOW());
+INSERT INTO `reports` (`uuid`, `name`, `type`, `tabledefid`, `displayorder`, `roleid`, `reportfile`, `description`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('rpt:37a299d1-d795-ad83-4b47-0778c16a381c', 'Support Tables SQL Export', 'export', 'tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3', '0', '', 'modules/base/report/tabledefs_sqlexport.php', 'Insert statements for all support table records for table definition records.', 1, NOW(), 1, NOW());
 --end reports UPDATE--
 --scheduler INSERT--
 INSERT INTO `scheduler` (`uuid`, `name`, `job`, `crontab`, `lastrun`, `startdatetime`, `enddatetime`, `description`, `inactive`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`) VALUES ('schd:fb52e7fb-bb49-7f5f-89e1-002b2785f085', 'Clean Import Files', './scheduler_delete_tempimport.php', '30::*::*::*::*', '2009-05-28 12:30:02', '2009-05-07 17:27:13', NULL, 'This will delete any temporary import files that are present (for whatever reason) after 30 minutes of their creation.', '0', 1, NOW(), 1, NOW());

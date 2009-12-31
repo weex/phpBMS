@@ -37,37 +37,53 @@
  +-------------------------------------------------------------------------+
 */
 
-//PROCESSING
-//=============================================================================
+/**
+ * PROCESSING
+ * =============================================================================
+ */
 if(!isset($noOutput)){
 
-	//IE needs caching to be set to private in order to display PDFS
-	session_cache_limiter('private');
+    //IE needs caching to be set to private in order to display PDFS
+    session_cache_limiter('private');
 
-	//set encoding to latin1 (fpdf doesnt like utf8)
-	$sqlEncoding = "latin1";
-	require_once("../../../include/session.php");
+    //set encoding to latin1 (fpdf doesnt like utf8)
+    $sqlEncoding = "latin1";
+    require_once("../../../include/session.php");
 
-	include("modules/bms/report/invoices_pdf_class.php");
+    include("modules/bms/report/invoices_pdf_class.php");
 
-	$report = new invoicePDF($db, 'P', 'in', 'Letter');
-	$report->setupFromPrintScreen();
-	$report->generate();
-	
-	$filename = "Invoice";
-	if($report->count === 1){
-		
-		if($report->invoicerecord["company"])
-			$filename .= "_".$report->invoicerecord["company"];
-		
-		$filename .= "_".$report->invoicerecord["id"];
-		
-	}elseif((int)$report->count)
-		$filename .= "_Multiple";
-	
-	$filename .= ".pdf";
-	$report->output('screen', $filename);
+    checkForReportArguments();
+
+    $report = new invoicePDF($db, $_GET["rid"], $_GET["tid"], 'P', 'in', 'Letter');
+    $report->setupFromPrintScreen();
+    $report->generate();
+
+    $filename = "Invoice";
+    if($report->count === 1){
+
+        if($report->invoicerecord["company"])
+            $filename .= "_".$report->invoicerecord["company"];
+
+        $filename .= "_".$report->invoicerecord["id"];
+
+    }elseif((int)$report->count)
+        $filename .= "_Multiple";
+
+    $filename .= ".pdf";
+
+    $report->output('screen', $filename);
 
 }//end if
 
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord)){
+
+    include("modules/bms/report/invoices_pdf_class.php");
+    $reportClass = "invoicePDF";
+
+}//endif
 ?>

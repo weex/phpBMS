@@ -49,9 +49,9 @@ class aritemsClientStatements extends phpbmsReport{
 	var $showPayments = true;
 	var $showClosed = false;
 
-	function aritemsClientStatements($db, $statementDate = NULL, $showPayments = true, $showClosed = false){
+	function aritemsClientStatements($db, $reportUUID, $tabledefUUID, $statementDate = NULL, $showPayments = true, $showClosed = false){
 
-		parent::phpbmsReport($db);
+                parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
 		if($statementDate)
 			$this->statementDate = $statementDate;
@@ -68,10 +68,10 @@ class aritemsClientStatements extends phpbmsReport{
 
 
 		if($whereclause)
-			$this->whereclause = $whereclause;
+			$this->whereClause = $whereclause;
 
-		if(!$this->whereclause)
-			$this->whereclause = "
+		if(!$this->whereClause)
+			$this->whereClause = "
 				aritems.status = 'open'
 				AND aritems.posted = 1";
 
@@ -107,7 +107,7 @@ class aritemsClientStatements extends phpbmsReport{
 				)LEFT JOIN users
 					ON clients.salesmanagerid = users.uuid";
 
-		$this->sortorder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
+		$this->sortOrder = 'if(clients.lastname!="",concat(clients.lastname,", ",clients.firstname,if(clients.company!="",concat(" (",clients.company,")"),"")),clients.company)';
 
 		$querystatement = $this->assembleSQL($querystatement);
 
@@ -133,7 +133,8 @@ class aritemsClientStatements extends phpbmsReport{
 
 		//uncomment the following line to help troubleshoot formatting
 		//$pdf->borderDebug = 1;
-		$pdf->hasComapnyHeader = true;
+		$pdf->logoInHeader = true;
+                $pdf->companyInfoInHeader = true;
 		$pdf->SetMargins();
 
 		while($clientrecord = $this->db->fetchArray($clientresult)){
@@ -607,6 +608,17 @@ class aritemsClientStatements extends phpbmsReport{
 //=============================================================================
 if(!isset($noOutput)){
 
+    //IE needs caching to be set to private in order to display PDFS
+    session_cache_limiter('private');
+
+    //set encoding to latin1 (fpdf doesnt like utf8)
+    $sqlEncoding = "latin1";
+    require_once("../../../include/session.php");
+
+    checkForReportArguments();
+
+    $report = new aritemsClientStatements($db, $_GET["rid"], $_GET["tid"]);
+
 	if(isset($_GET["cmd"])){
 
 		$_POST["command"] = $_GET["cmd"];
@@ -615,14 +627,6 @@ if(!isset($noOutput)){
 	}//endif
 
 	if(isset($_POST["command"])) {
-
-		session_cache_limiter('private');
-
-		//set encoding to latin1 (fpdf doesnt like utf8)
-		$sqlEncoding = "latin1";
-		require_once("../../../include/session.php");
-
-		$report = new aritemsClientStatements($db);
 
 		switch($_POST["command"]){
 
@@ -634,13 +638,17 @@ if(!isset($noOutput)){
 
 	} else {
 
-		require_once("../../../include/session.php");
-
-		$report = new aritemsClientStatements($db);
-
 		$report->showOptions();
 
 	}//end if
 
 }//end if
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass ="aritemsClientStatements";
+
 ?>

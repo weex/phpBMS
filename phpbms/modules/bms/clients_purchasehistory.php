@@ -51,15 +51,15 @@
 
 	if(!isset($_POST["fromdate"])) $_POST["fromdate"]=dateToString(strtotime("-1 year"));
 	if(!isset($_POST["todate"])) $_POST["todate"]=dateToString(mktime());
-	if(!isset($_POST["status"])) $_POST["status"]="Orders/Invoices";
+	if(!isset($_POST["status"])) $_POST["status"]="Orders and Invoices";
 	if(!isset($_POST["command"])) $_POST["command"]="show";
 
 	if($_POST["command"]=="print")	{
 
-	    	$_SESSION["printing"]["whereclause"]="WHERE clients.id=".$_GET["id"];
-    		$_SESSION["printing"]["dataprint"]="Single Record";
-                $fromClient=true;
-                require("report/clients_purchasehistory.php");
+            $_SESSION["printing"]["whereclause"] = "clients.id=".$_GET["id"];
+            $_SESSION["printing"]["dataprint"] = "Single Record";
+
+            goURL("report/clients_purchasehistory.php?rid=".urlencode("rpt:1908b03c-cacc-f03a-6d22-21fdef123f65")."&tid=".urlencode("tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083")."&status=".urlencode($_POST["status"])."&fromdate=".urlencode($_POST["fromdate"])."&todate=".urlencode($_POST["todate"]));
 
 	} else {
 
@@ -71,7 +71,7 @@
 
 	$thestatus="(invoices.type =\"";
 	switch($_POST["status"]){
-		case "Orders/Invoices":
+		case "Orders and Invoices":
 			$thestatus.="Order\" or invoices.type=\"Invoice\")";
 		break;
 		case "Invoices":
@@ -109,7 +109,7 @@
 	    ORDER BY
                 thedate,
                 invoices.id";
-                
+
 	$queryresult=$db->query($querystatement);
 
 	$numrows=$db->numRows($queryresult);
@@ -141,7 +141,7 @@
 			<p class="timelineP">
 			   <label for="status">type</label><br />
 			   <select name="status" id="status">
-					<option value="Orders/Invoices" <?php if($_POST["status"]=="Orders/Invoices") echo "selected=\"selected\""?>>Orders/Invoices</option>
+					<option value="Orders abd Invoices" <?php if($_POST["status"]=="Orders and Invoices") echo "selected=\"selected\""?>>Orders and Invoices</option>
 					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
 					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
 			   </select>
@@ -152,7 +152,7 @@
 			<p class="timelineP"><?php $theform->showField("todate")?></p>
 
 			<p id="printP"><br /><input id="print" name="command" type="submit" value="print" class="Buttons" /></p>
-			<p id="changeTimelineP"><br /><input name="command" type="submit" value="change timeframe/view" class="smallButtons" /></p>
+			<p id="changeTimelineP"><br /><input name="command" type="submit" value="update" class="smallButtons" /></p>
 		</div>
 	</form>
 	<div class="fauxP">
