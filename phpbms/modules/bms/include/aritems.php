@@ -120,7 +120,7 @@ class aritemPayments{
 
 			if($this->aritem["type"] == "deposit")
 				$querystatement.="
-					AND receipts.uuid != ".mysql_real_escape_string($this->aritem["relatedid"]);
+					AND receipts.uuid != '".mysql_real_escape_string($this->aritem["relatedid"])."'";
 
 			$querystatement.=
 				"

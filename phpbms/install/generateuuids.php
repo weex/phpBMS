@@ -50,6 +50,8 @@ class generateUUIDS extends installUpdateBase{
     var $roleList;
     var $tabledefList;
     var $moduleList;
+    var $receiptList;
+    var $invoiceList;
 
 
     function process(){
@@ -115,7 +117,7 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:157b7707-5503-4161-4dcf-6811f8b0322f"); //client email projects
 
             $this->aritemList = $this->generateUUIDList("aritems");
-            $this->recieptList = $this->generateUUIDList("reciepts");
+            $this->receiptList = $this->generateUUIDList("receipts");
             $this->productsList = $this->generateUUIDList("products");
             $this->addressList = $this->generateUUIDList("addresses");
             $this->productcatList = $this->generateUUIDList("productcategories");
@@ -210,7 +212,7 @@ class generateUUIDS extends installUpdateBase{
             $this->updateFields("receipts", array("clientid"=>$this->clientList, "payementmethodid"=>$this->paymentList));
             $this->updateFields("aritems", array("clientid"=>$this->clientList));
             $this->updateFields("prerequisites", array("parentid"=>$this->productList, "childid"=>$this->productList));
-            $this->updateAritems("clientemailprojects", array("userid"=>$this->userList));
+            $this->updateFields("clientemailprojects", array("userid"=>$this->userList));
 
             //we would have to run this if their were addresses associated with other records
             //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
@@ -458,13 +460,12 @@ class generateUUIDS extends installUpdateBase{
             switch($therecord["type"]){
 
                 case "credit":
-
                     $oldRelatedid = $therecord["relatedid"];
                     $updatestatement = "
                         UPDATE
                             `aritems`
                         SET
-                            `relatedid`='".$this->recieptList[$oldRelatedid]."'
+                            `relatedid`='".$this->receiptList[$oldRelatedid]."'
                         WHERE
                             `relatedid` = '".$oldRelatedid."'
                             AND
@@ -481,7 +482,7 @@ class generateUUIDS extends installUpdateBase{
                         UPDATE
                             `aritems`
                         SET
-                            `relatedid`='".$this->recieptList[$oldRelatedid]."'
+                            `relatedid`='".$this->invoiceList[$oldRelatedid]."'
                         WHERE
                             `relatedid` = '".$oldRelatedid."'
                             AND

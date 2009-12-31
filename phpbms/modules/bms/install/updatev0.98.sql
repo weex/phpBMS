@@ -749,7 +749,7 @@ UPDATE `tablefindoptions` SET `displayorder` = '18' WHERE `tabledefid` = '2' AND
 UPDATE `tablegroupings` SET `name` = 'concat(invoices.type ,\"s\",IF(`invoices`.`iscreditmemo`, \" - Credit Memo\", \"\"))' WHERE `name` = 'concat(invoices.type,"s")';
 --end tablegroupings UPDATE--
 --tableoptions DELETE--
-DELETE FROM `tableoptions WHERE `name`='massEmail';
+DELETE FROM `tableoptions` WHERE `name`='massEmail';
 --end tableoptions DELETe
 --tableoptions INSERT--
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'import', '0', '0', '0', 'Admin', '0');

@@ -446,43 +446,6 @@ class updateBMS extends updateModuleAjax{
 
 	}//end function v098UpdatePostingSession
 
-        /**
-         * function v098UpdateProducts
-         * Updates the categoryid field from the category's id to uuid.
-         */
-
-        function v098UpdateProducts() {
-
-                $querystatement = "
-                        SELECT
-                                `id`,
-                                `uuid`
-                        FROM
-                                `productcategories`
-                        ";
-
-                $queryresult = $this->db->query($querystatement);
-
-                while($therecord = $this->db->fetchArray($queryresult)){
-
-                        $id = $therecord["id"];
-                        $uuid = $therecord["uuid"];
-
-                        $updatestatement = "
-                                UPDATE
-                                        `products`
-                                SET
-                                        `categoryid`='".$uuid."'
-                                WHERE
-                                        `categoryid`='".$id."'
-                                ";
-
-                        $this->db->query($updatestatement);
-
-                }//end while
-
-        }//end method --v098UpdateProducts00
-
 }//end class updateBMS
 
 // Processor
