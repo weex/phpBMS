@@ -38,7 +38,11 @@ ALTER TABLE `aritems` ENGINE=INNODB;
 ALTER TABLE `aritems`
     ADD COLUMN `uuid` VARCHAR(64) NOT NULL,
     MODIFY `clientid` VARCHAR(64) NOT NULL,
-    MODIFY `relatedid` VARCHAR(64);
+    MODIFY `relatedid` VARCHAR(64),
+    MODIFY `type` ENUM('invoice','credit','service charge', 'deposit') NOT NULL;
+UPDATE `aritems` SET `type`='credit' WHERE `type`='deposit';
+ALTER TABLE `aritems`
+    MODIFY `type` ENUM('invoice','credit','service charge') NOT NULL;
 --end aritems ALTER--
 --attachements ALTER--
 ALTER TABLE `attachments` ENGINE=INNODB;

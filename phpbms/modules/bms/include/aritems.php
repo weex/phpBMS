@@ -36,6 +36,30 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+
+if(class_exists("phpbmsTable")){
+	class aritems extends phpbmsTable{
+		
+		function getRecord($id, $useUuid = false){
+			
+			$therecord = parent::getRecord($id, $useUuid);
+			
+			/**
+			  *   If type is credit, get the receipt id
+			  *   else get the invoice id
+			  */
+			if($therecord["type"] == "credit")
+				$therecord["editrelatedid"] = getId($this->db, "tbld:43678406-be25-909b-c715-7e2afc7db601", $therecord["relatedid"]);
+			else
+				$therecord["editrelatedid"] = getId($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883", $therecord["relatedid"]);
+				
+			return $therecord;
+			
+		}//end function --getRecord--
+		
+	}//end class
+}//end if
+
 class relatedClient{
 
 	var $clientid = "";
@@ -118,7 +142,7 @@ class aritemPayments{
 				receiptitems.aritemid = '".mysql_real_escape_string($this->aritem["uuid"])."'
 		";
 
-			if($this->aritem["type"] == "deposit")
+			if($this->aritem["type"] == "credit")
 				$querystatement.="
 					AND receipts.uuid != '".mysql_real_escape_string($this->aritem["relatedid"])."'";
 
@@ -146,7 +170,7 @@ class aritemPayments{
 
 		$this->totals = $this->db->fetchArray($totalresult);
 
-		if($this->aritem["type"] == "deposit")
+		if($this->aritem["type"] == "credit")
 			$this->totals["applied"] = $this->totals["applied"] + $this->aritem["amount"];
 
 	}//end method
@@ -202,7 +226,7 @@ class aritemPayments{
 							if(!$therecord["name"])
 								$therecord["name"] = "other";
 
-							if($therecord["id"] == $this->aritem["relatedid"] && $this->aritem["type"] == "deposit")
+							if($therecord["id"] == $this->aritem["relatedid"] && $this->aritem["type"] == "credit")
 								$therecord["applied"] = -1 * $therecord["applied"];
 
 							?><tr class="row<?php echo $row?>">

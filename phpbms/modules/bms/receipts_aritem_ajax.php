@@ -20,7 +20,7 @@
 					`aritems`.`uuid`,
 					`aritems`.`relatedid`,
 					`aritems`.`itemdate`,
-					IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`,
+					`aritems`.`type`,
 					`aritems`.`amount`,
 					`aritems`.`paid`
 				FROM
@@ -47,7 +47,7 @@
 					`aritems`.`uuid`,
 					`aritems`.`relatedid`,
 					`aritems`.`itemdate`,
-					IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`,
+					`aritems`.`type`,
 					`aritems`.`amount`,
 					`aritems`.`paid`
 				FROM
@@ -113,7 +113,7 @@
 		function _showOpenARSelect($clientid, $type){
 
 			$queryType = $type;
-			if($type == "deposit")
+			if($type == "credit")
 				$queryType = "credit";
 
 			$querystatement = "
@@ -138,7 +138,7 @@
 				ORDER BY
 			";
 
-				if($type == "deposit")
+				if($type == "credit")
 					$querystatement .= "itemdate";
 				else
 					$querystatement .= "relatedid";
@@ -188,7 +188,7 @@
 
 				<p>
 					<select id="newItemType">
-						<option value="deposit">deposit</option>
+						<option value="credit">credit</option>
 						<option value="invoice">invoice</option>
 						<option value="service charge">service charge</option>
 					</select>
@@ -196,21 +196,21 @@
 
 			</fieldset>
 
-			<fieldset id="newItemDepositFieldset">
-				<legend>Deposits</legend>
+			<fieldset id="newItemCreditFieldset">
+				<legend>Credits</legend>
 
-				<p id="newItemDepositNewP">
-					<input type="radio" class="radiochecks" name="newItemDepositType" id="newItemDepositNew" checked="checked"/>
-					<label for="newItemDepositNew">new</label>
+				<p id="newItemCreditNewP">
+					<input type="radio" class="radiochecks" name="newItemCreditType" id="newItemCreditNew" checked="checked"/>
+					<label for="newItemCreditNew">new</label>
 				</p>
 
-				<p id="newItemDepositExistingP">
-					<input type="radio" class="radiochecks" name="newItemDepositType" id="newItemDepositExisting"/>
-					<label for="newItemDepositExisting">existing deposit</label>
+				<p id="newItemCreditExistingP">
+					<input type="radio" class="radiochecks" name="newItemCreditType" id="newItemCreditExisting"/>
+					<label for="newItemCreditExisting">existing credit</label>
 				</p>
 
 				<p id="newItemExisingListP">
-					<?php $this->_showOpenARSelect($clientid, "deposit"); ?>
+					<?php $this->_showOpenARSelect($clientid, "credit"); ?>
 				</p>
 			</fieldset>
 

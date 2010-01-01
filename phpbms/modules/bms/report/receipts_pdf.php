@@ -489,7 +489,7 @@ class receiptPDF extends phpbmsReport{
                         } else
                                 $line["duedate"] = "";
 
-                        if($line["type"] == "deposit" && $line["relatedid"] == $this->receiptrecord["id"]){
+                        if($line["type"] == "credit" && $line["relatedid"] == $this->receiptrecord["id"]){
                                 $line["relatedid"] = "";
                                 $line["amount"] = 0;
                                 $line["aritemid"] = 0;

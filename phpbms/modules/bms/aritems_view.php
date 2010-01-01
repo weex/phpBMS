@@ -41,7 +41,7 @@
 	include("include/tables.php");
 	include("modules/bms/include/aritems.php");
 
-	$aritems = new phpbmstable($db,"tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
+	$aritems = new aritems($db,"tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c");
 	$therecord = $aritems->processAddEditPage();
 
 	$payments = new aritemPayments($db, $therecord);
@@ -85,7 +85,7 @@
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
 
-		$theinput = new inputField("relatedid",$therecord["relatedid"],"related record id",true,NULL,14,64);
+		$theinput = new inputField("relatedid",$therecord["relatedid"],"related record id",true,NULL,42,64);
 		$theinput->setAttribute("class","uneditable");
 		$theinput->setAttribute("readonly","readonly");
 		$theform->addField($theinput);
@@ -136,7 +136,13 @@
 
 			<p><?php $theform->showField("type"); ?></p>
 
-			<p><?php $theform->showField("relatedid"); ?> <button type="button" title="view related record" class="graphicButtons buttonInfo" id="viewRelatedButton"><span>View Record</span></button></p>
+			<p>
+            <input type="hidden" id="editrelatedid" name="editrelatedid" value="<?php echo($therecord["editrelatedid"]); ?>" />
+            <?php $theform->showField("relatedid"); ?>
+            <button type="button" title="view related record" class="graphicButtons buttonInfo" id="viewRelatedButton">
+                <span>View Record</span>
+            </button>
+            </p>
 
 		</fieldset>
 

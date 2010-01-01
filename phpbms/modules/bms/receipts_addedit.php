@@ -39,6 +39,14 @@
 	include("include/fields.php");
 	include("modules/bms/include/receipts.php");
 
+	if(!isset($_GET["backurl"]))
+		$backurl = NULL;
+	else{
+		$backurl = $_GET["backurl"];
+		if(isset($_GET["refid"]))
+			$backurl .= "?refid=".$_GET["refid"];
+	}
+	
 	if(!isset($_GET["id"]))
 		$_GET["id"] = 0;
 	$_GET["id"] = (int) $_GET["id"];
@@ -46,7 +54,7 @@
 	if(isset($_POST["referrer"]))
 		$_SERVER['HTTP_REFERER'] = $_POST["referrer"];
 
-	$thetable = new receipts($db,"tbld:43678406-be25-909b-c715-7e2afc7db601");
+	$thetable = new receipts($db,"tbld:43678406-be25-909b-c715-7e2afc7db601", $backurl);
 	$therecord = $thetable->processAddEditPage();
 
 	if($therecord["id"]){

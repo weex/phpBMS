@@ -590,13 +590,13 @@ aritems = {
 		var appliedFields = getElementsByClassName("appliedFields");
 		var theID, docDue, amountToApply, refid, theType;
 
-		//first find all non-zero deposits and add it to the total;
+		//first find all non-zero credits and add it to the total;
 		for(var i=0; i< appliedFields.length; i++){
 
 			theID = appliedFields[i].id.substr(0,2);
 			theType = getObjectFromID(theID+"Type");
 
-			if(theType.value == "deposit"){
+			if(theType.value == "credit"){
 
 				docDue = currencyToNumber(getObjectFromID(theID + "DocDue").value) + currencyToNumber(appliedFields[i].value);
 
@@ -705,14 +705,14 @@ newItemDialog = {
 				connect(typeCheckBox, "onchange", newItemDialog.switchType)
 			];
 
-		var depositSelect = getObjectFromID("newItemDepositARID");
-		console.log(depositSelect);
-		if(!depositSelect){
+		var creditSelect = getObjectFromID("newItemCreditARID");
+		
+		if(!creditSelect){
 
-			var depositP = getObjectFromID("newItemDepositExistingP");
-			var depositExistingCheckbox = getObjectFromID("newItemDepositExisting");
-			depositExistingCheckbox.disabled = true;
-			depositP.className = "disabledtext";
+			var creditP = getObjectFromID("newItemCreditExistingP");
+			var creditExistingCheckbox = getObjectFromID("newItemCreditExisting");
+			creditExistingCheckbox.disabled = true;
+			creditP.className = "disabledtext";
 
 		}//endif
 
@@ -727,14 +727,14 @@ newItemDialog = {
 			return false;
 
 		var type = getObjectFromID("newItemType");
-		var newItemDepositExisting = getObjectFromID("newItemDepositExisting");
+		var newItemCreditExisting = getObjectFromID("newItemCreditExisting");
 
 		var theSelect = null;
 
 		switch(type.value){
-			case "deposit":
-				if(newItemDepositExisting.checked)
-					theSelect = getObjectFromID("newItemDepositARID");
+			case "credit":
+				if(newItemCreditExisting.checked)
+					theSelect = getObjectFromID("newItemCreditARID");
 				break;
 
 			case "invoice":
@@ -794,7 +794,7 @@ newItemDialog = {
 				id: null,
 				invoiceid:null,
 				uuid:null,
-				type: 'deposit',
+				type: 'credit',
 				relatedid: null,
 				itemdate: dateToString(new Date(), 'SQL'),
 				amount: 0,
@@ -812,7 +812,7 @@ newItemDialog = {
 
 		checkbox = e.src();
 
-		var newItemDepositFieldset = getObjectFromID("newItemDepositFieldset");
+		var newItemCreditFieldset = getObjectFromID("newItemCreditFieldset");
 		var newItemInvoiceFieldset = getObjectFromID("newItemInvoiceFieldset");
 		var newItemServiceChargeFieldset = getObjectFromID("newItemServiceChargeFieldset");
 		var addButton = getObjectFromID("newItemLoadButton");
@@ -820,7 +820,7 @@ newItemDialog = {
 		switch(checkbox.value){
 
 			case "invoice":
-				newItemDepositFieldset.style.display = "none";
+				newItemCreditFieldset.style.display = "none";
 				newItemServiceChargeFieldset.style.display = "none";
 				newItemInvoiceFieldset.style.display = "block";
 
@@ -833,7 +833,7 @@ newItemDialog = {
 				break;
 
 			case "service charge":
-				newItemDepositFieldset.style.display = "none";
+				newItemCreditFieldset.style.display = "none";
 				newItemServiceChargeFieldset.style.display = "block";
 				newItemInvoiceFieldset.style.display = "none";
 
@@ -848,8 +848,8 @@ newItemDialog = {
 
 				break;
 
-			case "deposit":
-				newItemDepositFieldset.style.display = "block";
+			case "credit":
+				newItemCreditFieldset.style.display = "block";
 				newItemServiceChargeFieldset.style.display = "none";
 				newItemInvoiceFieldset.style.display = "none";
 

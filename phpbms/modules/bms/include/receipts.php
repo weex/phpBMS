@@ -54,7 +54,7 @@ if(class_exists("phpbmsTable")){
 					`receiptitems`.`applied`,
 					`receiptitems`.`discount`,
 					`receiptitems`.`taxadjustment`,
-					IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`,
+					`aritems`.`type`,
 					`aritems`.`relatedid`,
 					`aritems`.`itemdate`,
 					`aritems`.`amount`,
@@ -97,7 +97,7 @@ if(class_exists("phpbmsTable")){
 				} else
 					$dueDate = "&nbsp;";
 
-				if($therecord["type"] == "deposit" && $therecord["relatedid"] == $receiptid){
+				if($therecord["type"] == "credit" && $therecord["relatedid"] == $receiptid){
 					$therecord["relatedid"] = "";
 					$therecord["amount"] = 0;
 					$therecord["aritemid"] = "";
@@ -148,14 +148,14 @@ if(class_exists("phpbmsTable")){
 			$deletestatement = "DELETE FROM receiptitems WHERE receiptid = '".mysql_real_escape_string($receiptid)."'";
 			$this->db->query($deletestatement);
 
-			//remove any ar deposits created by ths receipt
+			//remove any ar credits created by ths receipt
 			$deletestatement = "DELETE FROM aritems WHERE relatedid = '".mysql_real_escape_string($receiptid)."' AND `type` = 'credit'";
 			$this->db->query($deletestatement);
 
 			foreach($itemlist as $itemRecord){
 
-				//if no ar uuid, or the deposit is from this record, we need to create the ar item
-				if(!$itemRecord["aritemid"] || ($itemRecord["relatedid"] == $receiptid && $itemRecord["type"] == "deposit") ){
+				//if no ar uuid, or the credit is from this record, we need to create the ar item
+				if(!$itemRecord["aritemid"] || ($itemRecord["relatedid"] == $receiptid && $itemRecord["type"] == "credit") ){
 
 					$arrecord = array();
 					$arrecord["type"] = "credit";
@@ -637,7 +637,7 @@ if(class_exists("searchFunctions")){
 				DELETE FROM
 					aritems
 				WHERE
-					`type` = 'deposit'
+					`type` = 'credit'
 					AND (".str_replace("uuid", "relatedid", $newWhere).")";
 
 			$this->db->query($deletestatement);
@@ -826,7 +826,7 @@ function defineReceiptsPost(){
 						aritems.paid,
 						aritems.status,
 						aritems.relatedid,
-						IF(`aritems`.`type` = 'credit', 'deposit', `aritems`.`type`) AS `type`
+						`aritems`.`type`
 					FROM
 						`receiptitems` INNER JOIN `aritems` ON `receiptitems`.`aritemid` = `aritems`.`uuid`
 					WHERE
@@ -837,7 +837,7 @@ function defineReceiptsPost(){
 
 				while($itemrecord = $this->db->fetchArray($itemsresult)){
 
-					if($itemrecord["relatedid"] == $therecord["uuid"] && $itemrecord["type"] == "deposit")
+					if($itemrecord["relatedid"] == $therecord["uuid"] && $itemrecord["type"] == "credit")
 						$paid = $itemrecord["paid"];
 					else
 						$paid = $itemrecord["paid"] + $itemrecord["applied"] + $itemrecord["discount"] + $itemrecord["taxadjustment"];

@@ -40,7 +40,7 @@ aritem = {
 	viewRecord: function(e){
 		
 		var type = getObjectFromID("type");
-		var relatedid = getObjectFromID("relatedid")
+		var relatedid = getObjectFromID("editrelatedid")
 		var id = getObjectFromID("id");
 		
 		var invoiceEdit = getObjectFromID("invoiceEdit");
@@ -48,7 +48,7 @@ aritem = {
 		
 		var theURL = "";
 		
-		if(type.value == "deposit")
+		if(type.value == "credit")
 			theURL += receiptEdit.value;
 		else
 			theURL += invoiceEdit.value;
