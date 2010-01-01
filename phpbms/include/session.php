@@ -238,8 +238,8 @@ class phpbmsLog{
 	var $db = NULL;
 	var $type = "ERROR";
 	var $value = "";
-	
-	/**	
+
+	/**
 	  *   $userid
 	  *   @var string user's uuid
 	  */
@@ -478,19 +478,30 @@ class phpbmsSession{
 
 			if(defined("ENCRYPTION_KEY_PATH"))
 				if(is_file(ENCRYPTION_KEY_PATH)){
-					$res = fopen(ENCRYPTION_KEY_PATH, "r");
+
+					$res = @ fopen(ENCRYPTION_KEY_PATH, "r");
+
 					if($res !== false){
+
+                                            if(@filesize(ENCRYPTION_KEY_PATH))
 						define("ENCRYPTION_KEY",trim(fread($res, filesize(ENCRYPTION_KEY_PATH))));
-					}elseif(ENCRYPT_PAYMENT_FIELDS){
-						new appError(-229, "encryption key path setting is not a valid path");
+                                            else
+                                                $error = new appError(-230, "Cannot open path '".ENCRYPTION_KEY_PATH."' or file has zero length ", "Invalid Encryption Key File", true, true);
+
+                                        } elseif(ENCRYPT_PAYMENT_FIELDS){
+
+                                            $error = new appError(-229, "Invalid encryption file or cannot open '".ENCRYPTION_KEY_PATH."'", "Invalid Encryption Key File", true, true);
+
 					}else{
-						define("ENCRYPTION_KEY", "");
+
+                                            define("ENCRYPTION_KEY", "");
+
 					}//end if
-				}elseif(ENCRYPT_PAYMENT_FIELDS){
-						new appError(-228, "encryption key path setting is not a valid path");
-				}else{
-					define("ENCRYPTION_KEY", "");
-				}//end if
+
+				}elseif(ENCRYPT_PAYMENT_FIELDS)
+                                    $error = new appError(-228, ENCRYPTION_KEY_PATH." missing or invalid.", "Cannot Open Encryption Key File", true, true);
+				else
+				    define("ENCRYPTION_KEY", "");
 
 			// This following code is for windows boxen, because they lack some server varables as well
 			// formating options for the strftime function

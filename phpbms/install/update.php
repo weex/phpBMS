@@ -222,6 +222,12 @@
 
 				<h1>Update Modules</h1>
 
+                                <p>
+                                    To install a module that is not currently installed, wait unitl the update process
+                                    has completed successfully.  Then run the installation script and skip to the "install
+                                    modules" section.
+                                </p>
+
 				<?php $updater->showModulesUpdate(); ?>
 
 				<div class="debugResults">
@@ -289,6 +295,16 @@
 						</p>
 						<p>
 							Most browsers will clear this cache automatically if you simply restart the browser
+						</p>
+					</li>
+					<li>
+						<h3>Payment Information Encryption</h3>
+						<p>
+                                                    If you store sensitive payment information such as credit card
+                                                    numbers make sure to enable the encrption option in the configuration page
+                                                    underneath the BMS module section. You will also need to create and link
+                                                    to an external file on the server that contains the encryption key. Typically,
+                                                    encyrption key files are text files containing a 64-128 character hash.
 						</p>
 					</li>
 

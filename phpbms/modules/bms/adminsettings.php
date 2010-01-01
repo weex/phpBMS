@@ -28,6 +28,7 @@
 
 			if(is_file($path))
 				if(is_readable($path))
+                                    if(filesize($path) > 0)
 					$theReturn = true;
 
 			return $theReturn;
@@ -443,18 +444,26 @@
 	<input type="hidden" name="encryptionStatusChanged" id="encryptionStatusChanged" value="0" />
 	<p><?php echo $theform->showField("encrypt_payment_fields");?></p>
 	<p class="notes">
-		Withe this option enabled, sensitive payment information in sales orders and
-		receipts with a `type` of 'Order' will be encrypted.<br/>
+		Enabling this option encrypts sensitive payment information in sales orders and
+		receipts with a `type` of 'Order'.<br/>
 
-		Also, payment fields in sales orders and receipts records of `type`
+		In addition, payment fields in sales orders and receipts records of `type`
 		'Invoice' will be removed or obfuscated when a sales order or receipt
-		is posted as an invoice or voided/deleted.  <strong>This type of obfuscation,
-		is not reversible</strong>
-
+		is posted as an invoice or voided/deleted.
 	</p>
+
+        <p class="notes"><strong>Obfuscation is not reversible.</strong></p>
 
 	<input type="hidden" name="encryptionPathChanged" id="encryptionPathChanged" value="0" />
 	<p><?php echo $theform->showField("encryption_key_path");?></p>
+
+        <p class="notes">
+             Typically, encyrption key files are text containing a 64-128 character hash. Good security practices include regularly
+             rotating key files.  Do not delete the old key until the new key has been accepted and processed by phpBMS.  The system will
+             decrypt data using the old key and then re-encrypt it using the new key.
+        </p>
+
+        <p class="notes"><strong>Always keep back ups of your key file(s). Losing them may result in unencryptable data.</strong></p>
 
     </fieldset>
     <p class="updateButtonP"><button type="button" class="Buttons UpdateButtons">save</button></p>

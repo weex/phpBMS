@@ -383,9 +383,20 @@
 					</li>
 				</ul>
 
-				<h2>Suggested Security Steps</h2>
+				<h2>Additional Security Steps</h2>
 
 				<ul>
+					<li>
+						<h3>Payment Information Encryption</h3>
+						<p>
+                                                    If you plan on storing sensitive payment information such as credit card
+                                                    numbers make sure to enable the encrption option in the configuration page
+                                                    underneath the BMS module section. You will also need to create and link
+                                                    to an external file on the server that contains the encryption key. Typically,
+                                                    encyrption key files are text files containing a 64-128 character hash.
+						</p>
+					</li>
+
 					<li>
 						<h3>Run phpBMS On a Secure Connection (SSL)</h3>
 						<p>
