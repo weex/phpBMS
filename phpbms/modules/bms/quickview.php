@@ -39,7 +39,7 @@
 	require_once("../../include/session.php");
 	require_once("include/fields.php");
 
-	$pagetitle="Quick View";
+	$pagetitle="Search Clients and Prospects";
 
 	$phpbms->cssIncludes[] = "pages/quickview.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/quickview.js";
@@ -74,9 +74,7 @@
 <div class="bodyline">
 	<h1><?php echo $pagetitle?></h1>
 
-	<div class="fauxDiv">
-
-		<label for="lookupby">search by</label><br />
+	<div class="fauxDiv big">
 
 		<select id="lookupby">
 			<?php foreach($lookUp as $key=>$value) {?>

@@ -140,11 +140,11 @@ class quickView{
 
                             <fieldset>
                                     <legend>sales</legend>
-                                    <p>
-                                            <button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883","add")?>')"><span>new</span></button>
-                                            <button id="invoiceedit" type="button" disabled="disabled" class="graphicButtons buttonEditDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')"><span>edit</span></button>
-                                    </p>
-                                    <div class="fauxP">
+                                    <ul class="recordCommands">
+                                        <li class="firstToolbarItem"><a href="#" class="newRecord" onclick="addEditRecord('new','invoice','<?php echo getAddEditFile($this->db, "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883","add")?>')" title="new sales order"><span>new</span></a></li>
+                                        <li><a href="#" id="invoiceedit" class="editRecordDisabled" onclick="addEditRecord('edit','invoice','<?php echo $invoiceEditFile?>')" title="edit"><span>edit</span></a></li>
+                                    </ul>
+                                    <div class="recordContainers">
                                     <div id="salesTable" class="smallQueryTableHolder">
                                             <?php if(!count($clientInfo["invoices"])) {?>
                                                     <div class="small"><em>no records</em></div>
@@ -174,11 +174,13 @@ class quickView{
                             <fieldset>
                                     <legend>notes</legend>
 
-                                    <div class="fauxP">
-                                    <p>
-                                            <button type="button" class="graphicButtons buttonNew" onclick="addEditRecord('new','note','<?php echo getAddEditFile($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1","add")?>')"><span>new</span></button>
-                                            <button id="noteedit" type="button" class="graphicButtons buttonEditDisabled" disabled="disabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></button>
-                                    </p>
+
+                                    <ul class="recordCommands">
+                                        <li class="firstToolbarItem"><a href="#" title="new note" class="newRecord" onclick="addEditRecord('new','note','<?php echo getAddEditFile($this->db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1","add")?>')"><span>new</span></a></li>
+                                        <li><a href="#" title="edit" id="noteedit" class="editRecordDisabled" onclick="addEditRecord('edit','note','<?php echo $noteEditFile?>')"><span>edit</span></a></li>
+                                    </ul>
+                                    <div class="recordContainers">
+
                                     <div id="notesTable"  class="smallQueryTableHolder">
                                             <?php if(!count($clientInfo["notes"])) {?>
                                                     <div class="small"><em>no records</em></div>

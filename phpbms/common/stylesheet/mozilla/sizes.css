@@ -73,6 +73,6 @@ H4{
     font-family: Arial, Helvitica, sans-serif;
 }
 
-.big input, .big button{
+.big input, .big button, .big select{
     font-size: 15px;
 }

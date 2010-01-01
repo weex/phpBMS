@@ -45,6 +45,7 @@ function addClient(){
 function addEditRecord(newedit, what, addeditfile){
 
     var clientid = getObjectFromID("theuuid");
+    var clientrealid = getObjectFromID("theid");
     var theURL = addeditfile;
 
     var currentURL = "" + document.location;
@@ -64,38 +65,46 @@ function addEditRecord(newedit, what, addeditfile){
             break;
 
         case "client":
-            theid = clientid.value;
+            theid = clientrealid.value;
             break;
 
     }//endswitch
 
     theURL += "?backurl=" + encodeURIComponent(currentURL + "?cid=" + clientid.value)
 
-    if(newedit == "edit")
-        theURL += "&id="  + encodeURIComponent(theid);
-    else
+    if(newedit == "edit"){
+
+        if(!theid)
+            return false;
+        else
+            theURL += "&id="  + encodeURIComponent(theid);
+
+    } else
         theURL += "&cid=" + encodeURIComponent(clientid.value);
 
-//console.log(theURL);
-//return false;
     document.location = theURL;
+
+    return false;
 
 }//end function addEditRecord
 
+
 function selectEdit(thetr,id,noteinvoice){
+
 	var theeditbutton=getObjectFromID(noteinvoice+"edit");
 	var theSelected;
+
 	if(noteinvoice=="note")
 		theSelected=selectedNote;
 	else
 		theSelected=selectedInvoice;
 
-
 	if(theSelected==id){
-		theeditbutton.className="graphicButtons buttonEditDisabled";
-		theeditbutton.disabled = true;
+
+		theeditbutton.className="editRecordDisabled";
 		theSelected="";
 		thetr.className=""
+
 	} else {
 		for(var i=0; i<thetr.parentNode.childNodes.length;i++){
 			if(thetr.parentNode.childNodes[i].tagName)
@@ -104,8 +113,7 @@ function selectEdit(thetr,id,noteinvoice){
 		}
 		thetr.className="smallQueryTableSelected";
 		theSelected=id;
-		theeditbutton.className="graphicButtons buttonEdit";
-		theeditbutton.disabled = false;
+		theeditbutton.className="editRecord";
 	}
 	if(noteinvoice=="note")
 		selectedNote=theSelected;

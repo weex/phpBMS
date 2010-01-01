@@ -2,113 +2,203 @@
 /* $LastChangedDate$ */
 
 .SBResults A.client{
-	padding-left:30px;
-	background-image:url("../image/client.png");
+    padding-left:30px;
+    background-image:url("../image/client.png");
 }
 
 .SBResults A.prospect{
-	padding-left:30px;
-	background-image:url("../image/prospect.png");
+    padding-left:30px;
+    background-image:url("../image/prospect.png");
 }
 
 #viewButton, #addButton{
-	width:70px
+    width:70px
 }
 
 #clientIDDiv{
-	width:100%;
-	margin-right:200px;
-	margin-left: 170px;
-	background:red;
+    width:100%;
+    margin-right:200px;
+    margin-left: 170px;
+    background:red;
 }
+
 #ds-clientid{
-	width:55%;
+    width:55%;
 }
-
-
-
 
 #crTile.fsclient{
-	background-image:url("../image/client.png");
+    background-image:url("../image/client.png");
 }
 
 #crTile.fsprospect{
-	background-image:url("../image/prospect.png");
+    background-image:url("../image/prospect.png");
 }
 
 #crTile{
-	background:white no-repeat 13px 13px;
+    background:white no-repeat 13px 13px;
 }
 
 #crTile H1 {
-	background:none;
-	padding-left:26px;
-	font-weight:bold;
+    background:none;
+    padding-left:26px;
+    font-weight:bold;
 }
 
 #crTile P{
-	margin: 5px 0 5px 42px;
-	padding: 0;
+    margin: 5px 0 5px 42px;
+    padding: 0;
 }
 
 #crName{
-	font-size:14px;
-	font-weight:bold;
-	margin-top:0;
+    font-size:14px;
+    font-weight:bold;
+    margin-top:0;
 }
 
 #crLocation{
-	font-size:10px;
+    font-size:10px;
 }
 
 .RDNames{
-	float:left;
-	width:100px;
-	text-align:right;
-	font-weight:bold;
+    float:left;
+    width:100px;
+    text-align:right;
+    font-weight:bold;
 }
 
 .RDData{
-	margin-left:120px;
+    margin-left:120px;
 }
 
 .RDData UL {
-	margin:0;
-	padding:0;
-	padding-left:15px;
+    margin:0;
+    padding:0;
+    padding-left:15px;
 }
 
 .RDData LI {
-	margin:0;
-	padding:0px 0px 5px 0;
+    margin:0;
+    padding:0px 0px 5px 0;
 }
 
 #theclear{
-	clear:both;
+    clear:both;
 }
 
 
-.disabledP{display:none;}
+.disabledP{
+    display:none;
+}
 
-#theDetails{margin-top:15px;}
-#rightSideDiv{float:right;width:300px;margin-top:0;}
-#leftSideDiv{margin-right:308px;padding-top:1px;}
+#theDetails{
+    margin-top:15px;
+}
 
-H2{margin-top:5px;}
+#rightSideDiv{
+    float:right;
+    width:300px;
+    margin-top:0;
+}
 
-.RDNames{float:left; width:100px;text-align:right;}
-.RDData{margin-left:120px;}
+#leftSideDiv{
+    margin-right:308px;
+    padding-top:1px;
+}
 
-#editClient{display:block;width:75px;float:right;}
+H2{
+    margin-top:5px;
+}
 
-#endClient{clear:both;}
+.RDNames{
+    float:left;
+    width:100px;
+    text-align:right;
+}
+
+.RDData{
+    margin-left:120px;
+}
+
+#editClient{
+    display:block;
+    width:75px;
+    float:right;
+}
+
+#endClient{
+    clear:both;
+}
 
 .salesNotesButtons{
-	float:right;
-	margin-top:4px;
-	width:46px;
-	text-align:left;
+    float:right;
+    margin-top:4px;
+    width:46px;
+    text-align:left;
 }
 
-#salesTable{height:140px;overflow:auto;}
-#notesTable{height:140px;overflow:auto;}
+#salesTable{
+    height:140px;
+    overflow:auto;
+}
+
+#notesTable{
+    height:140px;
+    overflow:auto;
+}
+
+.recordContainers{
+    clear:both;
+}
+
+.recordCommands{
+	background:url("../image/search-toolbar-back.png") repeat-x;
+	height:32px;
+	float:left;
+	margin:0;padding:0;
+}
+
+    .recordCommands li{
+        float:left;
+        list-style-type:none;
+        padding:0;
+        margin:0;
+        background:url("../image/search-toolbar-itemback.png") no-repeat;
+        width:32px;
+    }
+
+        .recordCommands li a{
+            display:block;
+            margin:2px 0 0 2px;
+            width:26px;
+            height:26px;
+            background-repeat:no-repeat;
+        }
+
+        .recordCommands a span{
+            display:none;
+        }
+
+    .recordCommands .firstToolbarItem{
+        background-image:url("../image/search-toolbar-firstback.png")
+    }
+
+.newRecord{
+    background-image: url("../image/search-toolbar-new.png")
+}
+
+.editRecord{
+    background-image: url("../image/search-toolbar-edit.png")
+}
+
+.editRecordDisabled{
+    background-image: url("../image/search-toolbar-edit-db.png")
+}
+
+.deleteRecord{
+    background-image: url("../image/search-toolbar-delete.png")
+}
+
+.deleteRecordDisabled{
+    background-image: url("../image/search-toolbar-delete-db.png")
+}
+

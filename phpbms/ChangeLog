@@ -5,7 +5,15 @@ http://phpbms.org/browser/tags/phpbms-0.98
  * Snapshot is now modular and uses widgets
  * Snapshot is customizable based on user's preference
  * Centralized posting for receipts and invoices
- * Menu system now uses a uuid instead of an id, making module development easier.
+ * System now uses UUIDs in addition to the mysql id, making module and API development easier.
+ * Formal API system that utilizes JSON to interact with other applications
+ * Push technology allows phpBMS to push data to other systems.
+ * True payment encryption/obfuscation for credit cards
+ * Reports now administratively configurable allowing for flexible report creation/modification without need for customization
+ * MailChimp module allows synchronization of clients with MailChimp e-mail marketing and e-mail list manager
+ * Easier to use configuration screen
+ * Automatically check for updates
+ * Increased security and security logging
 
 The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.98
 

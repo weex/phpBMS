@@ -150,8 +150,13 @@
 		</li>
 
 		<li>
-			<h3>fpdf (<a href="http://www.fpdf.org">www.fpdf.org</a>)</h3>
+			<h3>fpdf (<a href="http://www.setasign.de/products/pdf-php-solutions/fpdi/">www.setasign.de</a>)</h3>
 			<p>A PHP class which allows to generate PDF files with pure PHP</p>
+		</li>
+
+		<li>
+			<h3>FPDI (<a href="http://www.fpdf.org">www.fpdf.org</a>)</h3>
+			<p>Extends FPDF to read pages from an existing PDF document and use them as templates in FPDF</p>
 		</li>
 
 		<li>
@@ -167,6 +172,11 @@
 		<li>
 			<h3>parseCSV (<a href="http://code.google.com/p/parsecsv-for-php/" >code.google.com/p/parsecsv-for-php/</a>)</h3>
 			<p>An easy to use PHP class to read and write CSV data properly.</p>
+		</li>
+
+		<li>
+			<h3>MailChimp API(<a href="http://mailchip.com/">MailChimp.com</a>)</h3>
+			<p>Email Marketing and Email List Manager</p>
 		</li>
 	</ul>
 
