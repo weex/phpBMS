@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -36,64 +36,98 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require("include/session.php");
 
-	function showSearch($tabledefid,$basepath,$db){
-		//First, grab table name from id	
-		$querystatement="SELECT querytable FROM tabledefs WHERE id=".$tabledefid;
-		$queryresult = $db->query($querystatement);
-		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
-		$thetabledef=$db->fetchArray($queryresult);
+class advancedSearch{
 
-		//Grab query for all columns
-		$querystatement="SELECT * FROM ".$thetabledef["querytable"]." LIMIT 1";
-		$queryresult = $db->query($querystatement);
-		if(!$queryresult) $error = new appError(500,"Cannot retrieve Table Information");
-		$numfields = $db->numFields($queryresult);
-		for ($i=0;$i<$numfields;$i++) $fieldlist[]=$db->fieldTable($queryresult,$i).".".$db->fieldName($queryresult,$i);
-		?>
-		<p align="right" style="float:right">
-			<input id="ASsearchbutton" type="button" onclick="performAdvancedSearch(this)" class="Buttons" disabled="disabled" value="search" />		
-		</p>
+    var $db;
+    var $tabledefid;
 
-		<p>match <select id="ASanyall" onchange="updateAS()">
-			<option value="and" selected="selected">all</option>
-			<option value="or">any</option>
-		</select> of the following rules:</p>
-		<div id="theASCs">
-			<div id="ASC1">
-				<select id="ASC1field" onchange="updateAS()">
-					<?php 
-						foreach($fieldlist as $field){
-							echo "<option value=\"".$field."\" >".$field."</option>\n";}?>
-				</select>
-				<select id="ASC1operator" onchange="updateAS()">
-					 <option value="=" selected="selected">=</option>
-					 <option value="!=">!=</option>
-					 <option value=">">&gt;</option>
-					 <option value="<">&lt;</option>
-					 <option value=">=">&gt;=</option>
-					 <option value="<=">&lt;=</option>
-					 <option value="like">like</option>
-					 <option value="not like">not like</option>
-				</select>
-				<input type="text" id="ASC1text" size="30" maxlength="255" onkeyup="updateAS()" value="" />
-				<button type="button" id="ASC1minus" class="graphicButtons buttonMinusDisabled" onclick="removeLineAS(this)"><span>-</span></button>
-				<button type="button" id="ASC1plus" class="graphicButtons buttonPlus" onclick="addlineAS()"><span>+</span></button>
-			</div>
-		</div>
-		<p>
-			sql where clause<br/>
-			<textarea id="ASSQL" style="width:99%" cols="90" rows="3" onkeyup="ASEnableSave(this)"></textarea>		
-		</p><?php		
-	}
+    function advancedSearch($db, $tabledefid){
+
+        $this->db = $db;
+        $this->tabledefid = (int) $tabledefid;
+
+    }//end function
 
 
-	if(isset($_GET["cmd"])){
-		switch($_GET["cmd"]){
-			case "show":
-				showSearch($_GET["tid"],$_GET["base"],$db);
-			break;
-		}//end switch
-	}
+    function display(){
+
+    	$querystatement = "
+            SELECT
+                `querytable`
+            FROM
+                `tabledefs`
+            WHERE
+                id=".$this->tabledefid;
+
+    	$queryresult = $this->db->query($querystatement);
+
+        $thetabledef = $this->db->fetchArray($queryresult);
+
+        //Grab query for all columns
+        $querystatement = "
+            SELECT
+                *
+            FROM
+                ".$thetabledef["querytable"]."
+            LIMIT 1";
+
+	$queryresult = $this->db->query($querystatement);
+
+        $numfields = $this->db->numFields($queryresult);
+
+        for ($i=0;$i<$numfields;$i++)
+            $fieldlist[]=$this->db->fieldTable($queryresult,$i).".".$this->db->fieldName($queryresult,$i);
+
+        ?>
+        <p align="right" style="float:right">
+                <input id="ASsearchbutton" type="button" onclick="performAdvancedSearch(this)" class="Buttons" disabled="disabled" value="search" />
+        </p>
+
+        <p>match <select id="ASanyall" onchange="updateAS()">
+                <option value="and" selected="selected">all</option>
+                <option value="or">any</option>
+        </select> of the following rules:</p>
+        <div id="theASCs">
+                <div id="ASC1">
+                        <select id="ASC1field" onchange="updateAS()">
+                                <?php
+                                        foreach($fieldlist as $field){
+                                                echo "<option value=\"".$field."\" >".$field."</option>\n";}?>
+                        </select>
+                        <select id="ASC1operator" onchange="updateAS()">
+                                 <option value="=" selected="selected">=</option>
+                                 <option value="!=">!=</option>
+                                 <option value=">">&gt;</option>
+                                 <option value="<">&lt;</option>
+                                 <option value=">=">&gt;=</option>
+                                 <option value="<=">&lt;=</option>
+                                 <option value="like">like</option>
+                                 <option value="not like">not like</option>
+                        </select>
+                        <input type="text" id="ASC1text" size="30" maxlength="255" onkeyup="updateAS()" value="" />
+                        <button type="button" id="ASC1minus" class="graphicButtons buttonMinusDisabled" onclick="removeLineAS(this)"><span>-</span></button>
+                        <button type="button" id="ASC1plus" class="graphicButtons buttonPlus" onclick="addlineAS()"><span>+</span></button>
+                </div>
+        </div>
+        <p>
+                sql where clause<br/>
+                <textarea id="ASSQL" style="width:99%" cols="90" rows="3" onkeyup="ASEnableSave(this)"></textarea>
+        </p><?php
+
+    }//end function
+
+}//end class
+
+
+/**
+ * PROCESSING ==================================================================
+ */
+require("include/session.php");
+
+if(!isset($_GET["cmd"]) || !isset($_GET["tid"]))
+    $error = new appError(200, "passed parameters missing");
+
+$as = new advancedSearch($db, $_GET["tid"]);
+$as->display();
 ?>

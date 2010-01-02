@@ -202,7 +202,7 @@
 	</tr>
 	</table></div>
 
-	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
+	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<input id="columnid" name="columnid" type="hidden" value="<?php echo $thecolumn["id"]?>" />

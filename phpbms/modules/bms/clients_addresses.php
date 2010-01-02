@@ -156,7 +156,7 @@
 
 		//record offset?
 		if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
-		
+
 		$displayTable->issueQuery();
 
 		$phpbms->cssIncludes[] = "pages/search.css";
@@ -170,7 +170,7 @@
 
 			<h1 id="h1Title"><?php echo $pageTitle?></h1>
 
-			<form name="search" id="search" action="<?php echo str_replace("&", "&amp;" ,$_SERVER["REQUEST_URI"])?>" method="post" onsubmit="setSelIDs(this);return true;">
+			<form name="search" id="search" action="<?php echo htmlentities($_SERVER["REQUEST_URI"])?>" method="post" onsubmit="setSelIDs(this);return true;">
 			<input name="command" id="reset" type="submit"/>
 			<input name="theids" id="theids" type="hidden"  />
 			<?php

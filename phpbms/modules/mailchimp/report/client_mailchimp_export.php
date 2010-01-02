@@ -48,17 +48,17 @@ class MCReport{
 
 	function MCReport($db,$variables = NULL){
 		$this->db = $db;
-        
+
 		//next we do the columns
 		$this->addColumn("Email","`email`");//0
 		$this->addColumn("First Name","`firstname`");//1
 		$this->addColumn("Last Name","`lastname`");//2
 		$this->addColumn("Company","`company`");//3
 		$this->addColumn("Uuid","`uuid`");//4
-		
+
 		$this->addColumn("Type","`type`");//5
 		$this->addColumn("Id","`id`");//6
-		
+
 
 		if($variables){
 			//$tempArray = explode("::", $variables["columns"]);
@@ -67,7 +67,7 @@ class MCReport{
 			foreach($tempArray as $id)
 				$this->selectcolumns[] = $this->columns[$id];
 			$this->selectcolumns = array_reverse($this->selectcolumns);
-			
+
 			$this->selecttable = "`clients`";
 
 			$this->whereclause = $_SESSION["printing"]["whereclause"];
@@ -75,7 +75,7 @@ class MCReport{
 
 			if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
 		}// endif
-		
+
 	}//end method
 
 
@@ -87,20 +87,20 @@ class MCReport{
 
 		$this->columns[] = $temp;
 	}//end method
-	
-	
+
+
 	function generate(){
-		
+
 		$querystatement = "SELECT ";
 		foreach($this->selectcolumns as $thecolumn)
 			$querystatement .= $thecolumn["field"]." AS `".$thecolumn["name"]."`,";
 		$querystatement = substr($querystatement, 0, -1);
 		$querystatement .= " FROM ".$this->selecttable.$this->whereclause;
-		
+
 		$queryresult = $this->db->query($querystatement);
 
 		$num_fields = $this->db->numFields($queryresult);
-		
+
 		for($i=0;$i<$num_fields;$i++)
 			$this->reportOutput .= ",".$this->db->fieldName($queryresult, $i);
 
@@ -122,17 +122,17 @@ class MCReport{
 		$this->reportOutput = "----- The headings should be deleted before importing into MailChimp -----\n".$this->reportOutput;
 		$this->reportOutput = substr($this->reportOutput, 0, strlen($this->reportOutput)-1);
 	}
-	
-	
+
+
 	function output(){
-		
+
 		header("Content-type: text/plain");
 		header('Content-Disposition: attachment; filename="clients_mailchimp_export.csv"');
 
 		echo $this->reportOutput;
-		
+
 	}//end function --output--
-	
+
 
 	function showOptions($what){
 		?><option value="0">----- Choose One -----</option>
@@ -163,7 +163,7 @@ class MCReport{
 
         <div class="bodyline">
             <h1>Invoice Total Options</h1>
-            <form id="GroupForm" action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="GroupForm">
+            <form id="GroupForm" action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>" method="post" name="GroupForm">
 
                 <fieldset>
 

@@ -131,7 +131,7 @@ if(isset($_POST["command"])){
 ?>
 <?php $phpbms->showTabs("products entry","tab:9bfc7eea-5abb-f5d8-763f-f78fe499464d",$_GET["id"]);?><div class="bodyline">
 	<h1><span><?php echo $pageTitle ?></span></h1>
-	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
+	<form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" name="record">
 	<input id="deleteid" name="deleteid" type="hidden" value="0" />
 	<input id="command" name="command" type="hidden" value="" />
 	<div class="fauxP">

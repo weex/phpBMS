@@ -76,7 +76,7 @@ $pageTitle="Post Records";
 	include("header.php");
 
 ?><div class="bodyline" id="mainline">
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="record" id="record" onsubmit="return false">
+	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>" method="post" name="record" id="record" onsubmit="return false">
 	<input type="hidden" id="cmd" name="cmd" value=""/>
 
 	<h1><span><?php echo $pageTitle ?></span></h1>

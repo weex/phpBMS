@@ -144,7 +144,7 @@
 
 	include("header.php");
 ?>
-<form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" id="record" onsubmit="return false;">
+<form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" enctype="multipart/form-data" name="record" id="record" onsubmit="return false;">
 <?php $phpbms->showTabs("products entry","tab:17346362-261b-4d1d-fa77-99e84cfd9b8a",$therecord["id"]);?><div class="bodyline">
         <input type="hidden" value="" name="command" id="hiddenCommand"/>
 
@@ -272,7 +272,7 @@
 				<div class="fauxP">
 					thumbnail graphic<br />
 					<?php if($therecord["thumbnailmime"]) {?>
-						<img id="thumbpic" src="<?php echo APP_PATH ?>dbgraphic.php?t=products&f=thumbnail&mf=thumbnailmime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+						<img id="thumbpic" src="<?php echo APP_PATH ?>dbgraphic.php?t=productThumb&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
 					<?php } else {?>
 						<div id="noThumb" class="tiny" align="center">no thumbnail</div>
 					<?php } ?>
@@ -285,7 +285,7 @@
 				<div class="fauxP">
 					main picture<br />
 					<?php if($therecord["picturemime"]) {?>
-						<img id="picturepic" src="<?php echo APP_PATH ?>dbgraphic.php?t=products&f=picture&mf=picturemime&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
+						<img id="picturepic" src="<?php echo APP_PATH ?>dbgraphic.php?t=productPic&r=<?php echo $therecord["id"]?>" style="border: 1px solid black; display: block; margin: 3px;;" />
 					<?php } else {?>
 						<div id="noPicture" class="tiny" align="center">no picture</div>
 					<?php } ?>

@@ -37,6 +37,8 @@
  +-------------------------------------------------------------------------+
 */
 	require_once("include/session.php");
+
+
 	require_once("include/login_include.php");
 
 
@@ -51,6 +53,10 @@
 		$_POST["name"] = "";
 
 	}//endif
+
+
+        if(isset($_SESSION["userinfo"]))
+            goURL(DEFAULT_LOAD_PAGE);
 
 	$pageTitle = formatVariable(APPLICATION_NAME)." Log in";
 
@@ -73,7 +79,7 @@
 			<p> Please check browser requirements.</p>
 		</noscript>
 
-		<form name="form1" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>">
+		<form name="form1" method="post" action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>">
 
 			<p>
 				<label for="username">name</label><br />

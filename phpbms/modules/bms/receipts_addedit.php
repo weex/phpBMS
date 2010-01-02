@@ -46,7 +46,7 @@
 		if(isset($_GET["refid"]))
 			$backurl .= "?refid=".$_GET["refid"];
 	}
-	
+
 	if(!isset($_GET["id"]))
 		$_GET["id"] = 0;
 	$_GET["id"] = (int) $_GET["id"];
@@ -139,7 +139,7 @@
 	include("header.php");
 
 ?><div class="bodyline">
-<form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
+<form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
 
 	<div id="topButtons"><?php showSaveCancel(1); ?></div>
 

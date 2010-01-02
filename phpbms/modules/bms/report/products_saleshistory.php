@@ -312,7 +312,7 @@ class salesHistoryReport extends phpbmsReport{
 
         include("header.php");
         ?>
-        <form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]); ?>" method="post" name="totals" onsubmit="return validateForm(this)">
+        <form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]); ?>" method="post" name="totals" onsubmit="return validateForm(this)">
 
             <div class="bodyline" id="reportOptions">
 

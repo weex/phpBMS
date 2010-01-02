@@ -155,7 +155,7 @@ class arAging{
 		$phpbms->jsIncludes[] = "modules/bms/javascript/aritem_aging.js";
 		$phpbms->showMenu = false;
 
-		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);
+		$formSubmit = htmlentities($_SERVER['REQUEST_URI']);
 
 		include("header.php");
 		?>

@@ -144,7 +144,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 	include("header.php");
 ?>
 <div class="bodyline">
-    <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" enctype="multipart/form-data" id="record" name="record" onsubmit="return false;">
+    <form action="<?php echo htmlentities($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data" id="record" name="record" onsubmit="return false;">
     <input type="hidden" id="command" name="command" value="save"/>
 
     <h1 id="h1Title"><span><?php echo $pageTitle ?></span></h1>
@@ -269,7 +269,7 @@ foreach($phpbms->modules as $module => $moduleinfo)
 
                     <div class="fauxP">
                         print logo
-                        <div id="graphicHolder"><img alt="logo" src="<?php echo APP_PATH?>dbgraphic.php?t=files&amp;f=file&amp;mf=type&amp;r=1" /></div>
+                        <div id="graphicHolder"><img alt="logo" src="<?php echo APP_PATH?>dbgraphic.php?t=file&amp;r=1" /></div>
                     </div>
 
                     <p>

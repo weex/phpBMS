@@ -39,7 +39,10 @@
 
 	require("../../include/session.php");
 
-	if(!isset($_GET["id"])) $error = new appError(300,"Passed variable not set (id)");
+	if(!isset($_GET["id"]))
+            $error = new appError(300,"Passed variable not set (id)");
+
+        $uuid = mysql_real_escape_string($_GET["id"]);
 
 	$querystatement = "
         SELECT
@@ -47,7 +50,7 @@
         FROM
             `discounts`
         WHERE
-            `uuid`='".mysql_real_escape_string($_GET["id"])."'
+            `uuid`='".$uuid."'
     ";
 
 	$queryresult = $db->query($querystatement);

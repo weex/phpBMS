@@ -64,7 +64,7 @@
 ?>
 
 <div class="bodyline">
-<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
+<form action="<?php echo htmlentities($_SERVER["PHP_SELF"]) ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<h1 id="topTitle"><span><?php echo $pageTitle ?></span></h1>
 
 		<fieldset id="fsAttributes">

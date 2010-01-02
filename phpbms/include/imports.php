@@ -456,7 +456,7 @@
 
 			function startForm($pageTitle, $pageType, $numberOfRecords = 0){
 
-				?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php
+				?><form action="<?php echo htmlentities($this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" onsubmit="<?php echo $this->onsubmit?>" <?php
 					if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
 					if(isset($this->id)) echo ' id="'.$this->id.'" ';
 				?>><?php

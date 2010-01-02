@@ -69,7 +69,7 @@
 	//on the fly sorting... this needs to be done after command processing or the querystatement will not work.
 	if(!isset($_POST["newsort"])) $_POST["newsort"]="";
 	if(!isset($_POST["desc"])) $_POST["desc"]="";
-	
+
 
 	if($_POST["newsort"]!="") {
 		//$displayTable->setSort($_POST["newsort"]);
@@ -80,7 +80,7 @@
 	} elseif($_POST["desc"]!="")  $displayTable->querysortorder.=" DESC";
 
 	if($displayTable->querytype!="new" and $displayTable->querytype!="edit") {
-		
+
 	//record offset?
 	if(isset($_POST["offset"])) if($_POST["offset"]!="") $displayTable->recordoffset=$_POST["offset"];
 
@@ -95,7 +95,7 @@
 	$phpbms->showTabs($tabgroup,$selectedtabid,$_GET["id"]);?><div class="bodyline">
 	<h1><?php echo $pageTitle ?></h1>
 	<div>
-		<form name="search" id="search" action="<?php echo $_SERVER["REQUEST_URI"]?>" method="post" onsubmit="setSelIDs(this);return true;">
+		<form name="search" id="search" action="<?php echo htmlentities($_SERVER["REQUEST_URI"])?>" method="post" onsubmit="setSelIDs(this);return true;">
 		<input name="theids" type="hidden" value="" />
 		<?php
 			$displayTable->displayQueryButtons();

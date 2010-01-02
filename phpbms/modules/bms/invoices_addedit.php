@@ -241,7 +241,7 @@
 	include("header.php");
 
 
-?><form action="<?php echo str_replace("&","&amp;",$_SERVER["REQUEST_URI"]) ?>"
+?><form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>"
 	method="post" name="record" id="record"><div id="dontSubmit"><input type="submit" value=" " onclick="return false;" /></div>
 <?php $phpbms->showTabs("invoices entry","tab:20276b44-9cfa-403e-4c2a-ac6f0987ae20",$therecord["id"]);?><div class="bodyline">
 	<div id="topButtons">

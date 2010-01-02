@@ -142,7 +142,7 @@
 		}
 	?>
 
-	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" id="record" name="record">
+	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])."?id=".$_GET["id"] ?>" method="post" id="record" name="record">
 
 		<fieldset>
 			<legend><?php echo $title?></legend>

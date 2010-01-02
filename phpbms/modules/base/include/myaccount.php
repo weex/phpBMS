@@ -1,8 +1,21 @@
 <?php
 
-function displayRoles($db){
 
-	$uuid = $_SESSION["userinfo"]["uuid"];
+class myAccount{
+
+    var $db;
+    var $userUUID;
+
+    function myAccount($db, $userUUID){
+
+        $this->db = $db;
+
+        $this->userUUID = $userUUID;
+
+    }//end function init
+
+
+    function displayRoles(){
 
 	$querystatement = "
 		SELECT
@@ -11,47 +24,73 @@ function displayRoles($db){
 		FROM
 			`roles` INNER JOIN `rolestousers` ON `rolestousers`.`roleid`=`roles`.`uuid`
 		WHERE
-			`rolestousers`.`userid` = '".mysql_real_escape_string($uuid)."'
+			`rolestousers`.`userid` = '".$this->userUUID."'
 		";
-	$assignedquery = $db->query($querystatement);
-	while($therecord = $db->fetchArray($assignedquery))
+
+	$queryresult = $this->db->query($querystatement);
+
+	while($therecord = $this->db->fetchArray($queryresult))
 		echo "<li>".$therecord["name"]."</li>";
-}
 
-function changePassword($variables,$id,$db){
-	if(DEMO_ENABLED=="false"){
-		$querystatement="SELECT id FROM users WHERE id=".$id." AND password=ENCODE(\"".$variables["curPass"]."\",\"".mysql_real_escape_string(ENCRYPTION_SEED)."\")";
-		$queryresult=$db->query($querystatement);
-		if($queryresult)
-			if ($db->numRows($queryresult)){
-				$querystatement="UPDATE users SET password=ENCODE(\"".$variables["newPass"]."\",\"".ENCRYPTION_SEED."\") WHERE id=".$id;
-				$queryresult=$db->query($querystatement);
-				return "Password Updated";
-			} else
-				return "Current Password Incorrect";
-	} else
-		return "Changing password is disabled in demonstration mode.";
-}
-
-function updateContact($variables,$id,$db){
-	$querystatement="UPDATE users SET email=\"".$variables["email"]."\", phone=\"".$variables["phone"]."\" WHERE id=".$id;
-	$queryresult=$db->query($querystatement);
-	$_SESSION["userinfo"]["email"]=$variables["email"];
-	$_SESSION["userinfo"]["phone"]=$variables["phone"];
-	return "Contact Information Updated";
-}
+    }//end function displayRoles
 
 
-if(isset($_POST["command"]))
-	switch($_POST["command"]){
-		case "Change Password":
-			$statusmessage=changePassword(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"],$db);
-		break;
-		case "Update Contact":
-			$statusmessage=updateContact(addSlashesToArray($_POST),$_SESSION["userinfo"]["id"],$db);
-		break;
-		default:
-			$statusmessage="\"".$_POST["command"]."\"";
-		break;
-	}
+    function changePassword($oldPassword, $newPassword){
+
+        if(DEMO_ENABLED !== "false")
+            return "Cannot change password when in demonstration mode.";
+
+        $querystatement = "
+            SELECT
+                `id`
+            FROM
+                `users`
+            WHERE
+                `uuid` = '".$this->userUUID."'
+                AND password = ENCODE('".mysql_real_escape_string($oldPassword)."', '".mysql_real_escape_string(ENCRYPTION_SEED)."')";
+
+        $queryresult = $this->db->query($querystatement);
+
+        if($this->db->numRows($queryresult)){
+
+            $updatestatement = "
+                UPDATE
+                    `users`
+                SET
+                    `password` = ENCODE('".mysql_real_escape_string($newPassword)."', '".mysql_real_escape_string(ENCRYPTION_SEED)."')
+                WHERE
+                    `uuid` = '".$this->userUUID."'";
+
+            $this->db->query($updatestatement);
+
+            return "password changed";
+
+        }else
+            return "Current password incorrect";
+
+    }//end function changePassword
+
+
+    function update($variables){
+
+        $updatestatement = "
+            UPDATE
+                `users`
+            SET
+                `email` = '".mysql_real_escape_string($variables["email"])."',
+                `phone` = '".mysql_real_escape_string($variables["phone"])."'
+            WHERE
+                `uuid` = '".$this->userUUID."'";
+
+        $this->db->query($updatestatement);
+
+        $_SESSION["userinfo"]["email"] = $variables["email"];
+        $_SESSION["userinfo"]["phone"] = $variables["phone"];
+
+        return "Record Updated";
+
+    }//end function update
+
+}//end class
+
 ?>

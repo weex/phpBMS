@@ -74,7 +74,7 @@
             <p id="noCustom">Table is not set up with custom fields.</p>
             </form>
         <?php } else { ?>
-            <form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
+            <form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" name="record" id="record">
 
                 <p id="topSaveP"><button type="button" class="Buttons saveButtons" accesskey="s">save</button></p>
 

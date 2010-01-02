@@ -535,7 +535,7 @@ class totalReport extends phpbmsReport{
 		$phpbms->jsIncludes[] = "modules/bms/javascript/incoming_cashflow.js";
 		$phpbms->showMenu = false;
 
-		$formSubmit = str_replace("&","&amp;",$_SERVER['REQUEST_URI']);
+		$formSubmit = htmlentities($_SERVER['REQUEST_URI']);
 
 		$theform = new phpbmsForm();
 

@@ -143,7 +143,7 @@ class pdfLabels extends phpbmsReport{
 	include("header.php");
 
         ?>
-        <form action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"])?>" method="post" name="print_form">
+        <form action="<?php echo htmlentities($_SERVER["REQUEST_URI"])?>" method="post" name="print_form">
             <div class="bodyline" id="reportOptions">
 
                 <h1 id="topTitle"><span>Label Options</span></h1>
@@ -474,7 +474,7 @@ if(!isset($noOutput)){
     checkForReportArguments();
 
     $report = new pdfLabels($db, $_GET["rid"], $_GET["tid"]);
-    
+
     if(!isset($_POST["skipLabels"]))
         $report->displaySkipLabels();
     else{

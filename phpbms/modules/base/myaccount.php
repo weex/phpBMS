@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev: 186 $ | $LastChangedBy: brieb $
  $LastChangedDate: 2007-02-16 11:59:50 -0700 (Fri, 16 Feb 2007) $
@@ -42,6 +42,29 @@ require_once("../../include/session.php");
 require_once("../../include/fields.php");
 require_once("include/myaccount.php");
 
+$user = new myAccount($db, $_SESSION["userinfo"]["uuid"]);
+
+if(isset($_POST["command"])){
+
+    switch($_POST["command"]){
+
+        case "Change Password":
+
+            if($_POST["newPass"] === $_POST["confirmPass"])
+                $statusmessage = $user->changePassword($_POST["curPass"], $_POST["newPass"]);
+            else
+                $statusmessage = "New password not confirmed";
+            break;
+
+        case "Update Contact":
+
+            $statusmessage = $user->update($_POST);
+            break;
+
+    }//endswitch
+
+}//endif
+
 $pageTitle="My Account";
 
 	$phpbms->cssIncludes[] = "pages/myaccount.css";
@@ -56,30 +79,30 @@ $pageTitle="My Account";
 
 		$theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
 		$theform->addField($theinput);
-				
+
 		$theform->jsMerge();
 		//==============================================================
-		//End Form Elements	
-	
+		//End Form Elements
+
 	include("header.php");
 ?><div class="bodyline">
-	<form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="record" id="record" onsubmit="return false">
+	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>" method="post" name="record" id="record" onsubmit="return false">
 	<input type="hidden" id="command" name="command" value=""/>
-	
+
 	<h1><span><?php echo $pageTitle ?></span></h1>
 
 	<fieldset>
 		<legend>Name</legend>
 		<p id="nameP"><?php echo htmlQuotes($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></p>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>Change Password</legend>
 		<p>
 			<label for="curPass">current password</label><br />
 			<input type="password" id="curPass" name="curPass" maxlength="32"/>
 		</p>
-		
+
 		<p>
 			<label for="newPass">new password</label><br />
 			<input type="password" id="newPass" name="newPass" maxlength="32"/>
@@ -92,23 +115,23 @@ $pageTitle="My Account";
 	<p>
 		<button type="button" class="Buttons" onclick="changePass()">Change Password</button>
 	</p>
-	
+
 	<fieldset>
 		<legend>Contact Information</legend>
 
 			<p><?php $theform->showField("email")?></p>
-			
+
 			<p><?php $theform->showField("phone")?></p>
 
 	</fieldset>
 	<p><button type="button" class="Buttons" onclick="changeContact()">Update Contact Information</button></p>
-	
+
 	<fieldset>
 		<legend>Access / Assigned Roles</legend>
 		<ul>
-		<?php 
+		<?php
 			if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrator</strong></li><?php }
-			displayRoles($db)
+			$user->displayRoles();
 		?></ul>
 	</fieldset>
 	</form>

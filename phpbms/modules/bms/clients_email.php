@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  $Rev$ | $LastChangedBy$
  $LastChangedDate$
@@ -40,11 +40,11 @@
 	include("include/fields.php");
 
 	include("./include/clients_email_include.php");
-	
-	
+
+
 	$thecommand="showoptions";
 	if(isset($_POST["command"])) $thecommand=$_POST["command"];
-	
+
 	switch($thecommand){
 		case "send email":
 			 // first build the where clause
@@ -53,7 +53,7 @@
 					$whereclause="WHERE ";
 					foreach($_SESSION["emailids"] as $id)
 						$whereclause.="clients.id=".$id." or ";
-					$whereclause=substr($whereclause,0,strlen($whereclause)-3);					
+					$whereclause=substr($whereclause,0,strlen($whereclause)-3);
 				break;
 				case "savedsearch":
 					$querystatement="SELECT sqlclause FROM usersearches WHERE id=".$_POST["savedsearches"];
@@ -63,19 +63,19 @@
 				break;
 				case "all":
 					$whereclause="";
-				break;						
+				break;
 			}//end switch
 			//next the from:
-			$_SESSION["massemail"]["from"]=str_replace("]",">",str_replace("[","<",$_POST["ds-email"]));			
+			$_SESSION["massemail"]["from"]=str_replace("]",">",str_replace("[","<",$_POST["ds-email"]));
 			$_SESSION["massemail"]["whereclause"]=$whereclause;
 			$_SESSION["massemail"]["subject"]=$_POST["subject"];
 			$_SESSION["massemail"]["body"]=$_POST["body"];
 			$_SESSION["massemail"]["savedproject"]=$_POST["pid"];
-			
+
 			$querystatement="SELECT id,email, if(clients.lastname!=\"\",concat(clients.lastname,\", \",clients.firstname,if(clients.company!=\"\",concat(\" (\",clients.company,\")\"),\"\")),clients.company) AS name FROM clients ".$whereclause;
 			$sendqueryresult=$db->query($querystatement);
 			if(!$sendqueryresult) $error = new appError(300,"Error with: ".$querystatement);
-			
+
 		break;
 		case "delete project":
 			deleteProject($db, $_POST["projectid"]);
@@ -99,89 +99,89 @@
 			$therecord=loadProject($id);
 			$thecommand="showoptions";
 		break;
-		
+
 		case "done":
 		case "cancel":
 			goURL(APP_PATH."search.php?id=2");
-			
+
 		break;
 	}
-	
-	
+
+
 	$pageTitle="Client/Prospect E-Mail";
- 
+
  	$phpbms->cssIncludes[] = "pages/clientemail.css";
 	$phpbms->jsIncludes[] = "modules/bms/javascript/clientemail.js";
 
 		//Form Elements
 		//==============================================================
 		$theform = new phpbmsForm();
-		
+
 		if(is_numeric($therecord["emailfrom"]))
 			$theid=$therecord["emailfrom"];
 		else
 			$theid=0;
-		
+
 		$theinput = new inputSmartSearch($db, "email", "Pick Active User Email", $theid, "from");
 		$theform->addField($theinput);
-		
+
 		$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
-		
+
 		if($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all")
 			$phpbms->bottomJS[] ='thediv=getObjectFromID("showsavedsearches");thediv.style.display="block"';
 
 		if(!is_numeric($therecord["emailfrom"]))
 			$phpbms->bottomJS[] ='thefield=getObjectFromID("ds-email");thefield.value="'.$therecord["emailfrom"].'"';
-		
+
 		if($thecommand=="send email"){
-		
-			$phpbms->topJS[]='		
-			ids=new Array();			
+
+			$phpbms->topJS[]='
+			ids=new Array();
 			emails=new Array();
 			names= new Array();';
-			
+
 			while($therecord = $db->fetchArray($sendqueryresult)){
 				$phpbms->topJS[]="ids[ids.length]=".$therecord["id"].";";
 				$phpbms->topJS[]="names[names.length]=\"".$therecord["name"]."\";";
 				$phpbms->topJS[]="emails[emails.length]=\"".$therecord["email"]."\";";
-			}			
+			}
 		}//end if
- 
+
  	include("header.php")
 
 ?>
 
 	<div class="bodyline" id="mainBG">
 		<h1 id="topTitle"><span><?php echo $pageTitle?></span></h1>
-		
-		<form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="theform" id="theform">
+
+		<form action="<?php echo htmlentities($_SERVER["PHP_SELF"]) ?>" method="post" name="theform" id="theform">
 	<?php if($thecommand=="showoptions") { ?>
-	
+
 		<input type="hidden" name="pid" id="pid" value="<?php echo $therecord["id"]?>" />
 		<div class="box">
-			
+
 			<p id="toP">
-				<label for="therecords">to</label><br />			
+				<label for="therecords">to</label><br />
 				<select id="therecords" name="therecords" onchange="showSavedSearches(this);">
 					<option value="selected" <?php if ($therecord["emailto"]=="selected") echo "selected=\"selected\""?>>e-mail addresses from selected records (<?php echo count($_SESSION["emailids"]) ?> record<?php if(count($_SESSION["emailids"])>1) echo "s"?>)</option>
 					<option value="savedsearch" <?php if ($therecord["emailto"]!="selected" AND $therecord["emailto"]!="all") echo "selected=\"selected\""?>>e-mail addresses from saved search...</option>
-				</select>				
+				</select>
 			</p>
 			<p id="showsavedsearches" >
 				<label for="savedsearches">load e-mail addresses from saved search...</label><br />
-				<?php showSavedSearches($db,$therecord["emailto"]); ?>			
+				<?php showSavedSearches($db,$therecord["emailto"]); ?>
 			</p>
-			
+
 			<div class="fauxP" id="fromDiv"><?php  $theform->showField("email")?></div>
-			
+
 			<p>
 				<label for="subject">subject</label><br />
-				<input type="text" name="subject" id="subject" maxlength="128" value="<?php echo htmlQuotes($therecord["subject"])?>"/>			
+				<input type="text" name="subject" id="subject" maxlength="128" value="<?php echo htmlQuotes($therecord["subject"])?>"/>
 			</p>
 		</div>
-		
+
 		<div class="box">
 			<p>
 				<label for="addfield">add data field</label><br />
@@ -193,7 +193,7 @@
 				<textarea class="mono" rows="15" name="body" id="body" cols="40" ><?php echo $therecord["body"]?></textarea>
 			</p>
 		</div>
-		
+
 		<div class="box">
 			<div id="projectButtons">
 				<input type="button" name="loademail"	id="loademil" value="load project..." class="Buttons" onclick="showSavedProjects();" />
@@ -204,10 +204,10 @@
 			<div align="right">
 				<input type="submit" name="command" 	id="sendemail" value="send email" class="Buttons" />
 				<input type="submit" name="command" 	id="cancel" value="cancel" class="Buttons" />
-				<input type="submit" name="command" 	id="othercommand" value="" class="Buttons" />				
+				<input type="submit" name="command" 	id="othercommand" value="" class="Buttons" />
 			</div>
 		</div>
-		
+
 		<div id="loadedprojects">
 			<p><?php showSavedProjects($db)?></p>
 			<p align="right">
@@ -217,7 +217,7 @@
 			</p>
 		</div>
 <?php } elseif($thecommand=="send email"){?>
-		
+
 		<div id="processingWrap">
 			<div class="box">
 				<div class="fauxP">

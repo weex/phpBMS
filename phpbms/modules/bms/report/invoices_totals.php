@@ -492,7 +492,7 @@ class totalReport extends phpbmsReport{
 
         <div class="bodyline">
             <h1>Invoice Total Options</h1>
-            <form id="GroupForm" action="<?php echo str_replace("&", "&amp;", $_SERVER["REQUEST_URI"]) ?>" method="post" name="GroupForm">
+            <form id="GroupForm" action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" name="GroupForm">
 
                 <fieldset>
 

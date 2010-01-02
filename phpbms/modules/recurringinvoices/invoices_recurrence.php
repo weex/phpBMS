@@ -149,7 +149,7 @@
 
 	$phpbms->showTabs("invoices entry","tab:d303321e-7ff5-fe4b-29ec-fe3eb0305576",$_GET["id"]);
 ?><div class="bodyline">
-<form action="<?php echo $_SERVER["REQUEST_URI"] ?>"
+<form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>"
 	method="post" name="record" id="record"
 	onsubmit="return false;">
 	<div id="topButtons">

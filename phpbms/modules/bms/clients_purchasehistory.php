@@ -136,7 +136,7 @@
 
 	<h1><?php echo $pageTitle ?></h1>
 
-	<form action="<?php echo $_SERVER["REQUEST_URI"] ?>" method="post" name="record">
+	<form action="<?php echo htmlentities($_SERVER["REQUEST_URI"]) ?>" method="post" name="record">
 		<div class="box">
 			<p class="timelineP">
 			   <label for="status">type</label><br />

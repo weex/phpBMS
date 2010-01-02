@@ -93,7 +93,7 @@
 
 	<?php $groupings->showRecords($allRecords) ?>
 
-	<form action="<?php echo $_SERVER["PHP_SELF"]."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
+	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])."?id=".$_GET["id"] ?>" method="post" name="record" onsubmit="return validateForm(this);">
 	<fieldset>
 		<legend><?php echo $action?></legend>
 		<input id="id" name="id" type="hidden" value="<?php echo $therecord["id"]?>" />

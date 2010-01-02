@@ -36,18 +36,54 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	session_cache_limiter('private');
-	require_once("include/session.php");
+session_cache_limiter('private');
+require_once("include/session.php");
 
-	if(!isset($_GET["t"]) or !isset($_GET["r"]) or !isset($_GET["f"]) or !isset($_GET["mf"])) die("Invalid Parameters Set");
+if(!isset($_GET["t"]) or !isset($_GET["r"]))
+    $error = new appError(200, "passed parameters not set");
 
-	$querystatement="SELECT ".$_GET["f"].",".$_GET["mf"]." FROM ".$_GET["t"]." WHERE id=".$_GET["r"];
-	$queryresult=$db->query($querystatement);
-	if(!$queryresult) die("bad query".$querystatement);
-	if($db->numRows($queryresult)){
-		$therecord=$db->fetchArray($queryresult);
-		header('Content-type: '.$therecord[$_GET["mf"]]);
+switch($_GET["t"]){
 
-		echo $therecord[$_GET["f"]];
-	}
+    case "productThumb":
+        $table = "products";
+        $fileField = "thumbnail";
+        $mimeField = "thumbnailmime";
+
+    case "productPic":
+        $table = "products";
+        $fileField = "picture";
+        $mimeField = "picturemime";
+
+        break;
+
+    case "file":
+        $table = "files";
+        $fileField = "file";
+        $mimeField = "type";
+        break;
+
+}//endswitch
+
+$id = (int) $_GET["r"];
+
+$querystatement = "
+    SELECT
+        `".$fileField."` AS theFile,
+        `".$mimeField."` AS theMime
+    FROM
+        ".$table."
+    WHERE
+        id = ".$_GET["r"];
+
+$queryresult = $db->query($querystatement);
+
+if($db->numRows($queryresult)){
+
+    $therecord = $db->fetchArray($queryresult);
+
+    header('Content-type: '.$therecord["theMime"]);
+
+    echo $therecord["theFile"];
+
+}//end if
 ?>

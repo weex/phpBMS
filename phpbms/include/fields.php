@@ -81,7 +81,7 @@ class phpbmsForm{
     // and include the page title
     function startForm($pageTitle){
 
-        ?><form action="<?php echo str_replace("&","&amp;",$this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" <?php
+        ?><form action="<?php echo htmlentities($this->action) ?>" method="<?php echo $this->method?>" name="<?php echo $this->name?>" <?php
                 if($this->onsubmit !== NULL) { ?>onsubmit="<?php echo $this->onsubmit?>" <?php }
                 if(isset($this->enctype)) echo ' enctype="'.$this->enctype.'" ';
                 if(isset($this->id)) echo ' id="'.$this->id.'" ';

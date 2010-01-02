@@ -303,7 +303,7 @@
 				 $this->numrows=$this->db->numRows($this->queryresult);
 				 if($this->numrows==RECORD_LIMIT or $this->recordoffset!=0){
 				    //if you max the record limit or are already offsetiing get the true count
-					
+
 					$truecountstatement = "
 						SELECT
 							count(distinct ".$this->thetabledef["maintable"].".id) as thecount
@@ -586,7 +586,7 @@
 		function displaySearch(){
 
 		?>
-<form name="search" id="search" method="post" action="<?php echo $_SERVER["PHP_SELF"]?>?id=<?php echo $this->thetabledef["uuid"]?>" onsubmit="setSelIDs(this);return true;">
+<form name="search" id="search" method="post" action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>?id=<?php echo $this->thetabledef["uuid"]?>" onsubmit="setSelIDs(this);return true;">
 <input id="tabledefid" name="tabledefid" type="hidden" value="<?php echo $this->thetabledef["id"]?>" />
 <input id="theids" name="theids" type="hidden" value="" />
 <input id="advancedsearch" name="advancedsearch" type="hidden" value="" />
