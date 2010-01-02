@@ -1841,4 +1841,9 @@ connect(window,"onload",function() {
 		connect(cmButtons[i], "onclick", invoice.confirmInvoice);
 
 
+        //Payment processing
+        var processPayment = getObjectFromID("processPayment")
+        if(processPayment.value)
+                payment.process();
+
 });

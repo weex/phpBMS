@@ -258,6 +258,9 @@
 			*this record has associated credit memos
 		</p>
 	<?php }//end if ?>
+
+        <input type="hidden" id="processPayment" value="<?php if(isset($_POST["saveandprocess"])) echo $_POST["saveandprocess"]; ?>" />
+
 	<div id="fsAttributes">
 		<fieldset >
 			<legend>attributes</legend>
@@ -563,6 +566,7 @@
 						?>
 						<button id="paymentProcessButton" type="button" class="graphicButtons buttonMoney<?php echo $paymentButtonDisable?>" title="process payment online"><span>process payment online</span></button>
 						<input type="hidden" id="processscript"/>
+						<input type="hidden" id="saveandprocess" name="saveandprocess"/>
 					</p>
 
 					<div id="checkpaymentinfo">

@@ -1,7 +1,7 @@
 <?php
 /*
- $Rev$ | $LastChangedBy$
- $LastChangedDate$
+ $Rev: 702 $ | $LastChangedBy: brieb $
+ $LastChangedDate: 2010-01-01 15:14:57 -0700 (Fri, 01 Jan 2010) $
  +-------------------------------------------------------------------------+
  | Copyright (c) 2004 - 2010, Kreotek LLC                                  |
  | All rights reserved.                                                    |
@@ -38,52 +38,95 @@
 */
 
 /**
- * PROCESSING
- * =============================================================================
+ * payment processing template object and file layout
  */
-if(!isset($noOutput)){
+class paymentProcessor{
 
-    //IE needs caching to be set to private in order to display PDFS
-    session_cache_limiter('private');
+    var $db;
+    var $salesorderUUID;
 
-    //set encoding to latin1 (fpdf doesnt like utf8)
-    $sqlEncoding = "latin1";
-    require_once("../../../include/session.php");
 
-    include("modules/bms/report/invoices_pdf_class.php");
+    /**
+     * function paymentProcessor
+     *
+     * initializes the class
+     *
+     * @param object $db the db object
+     * @param string $salesorderUUID the UUID of the salesorder that will be processed
+     */
+    function paymentProcessor($db, $salesorderUUID){
 
-    checkForReportArguments();
+        $this->db = $db;
+        $this->db->errorFormat = "json";
 
-    $report = new invoicePDF($db, $_GET["rid"], $_GET["tid"], 'P', 'in', 'Letter');
-    $report->setupFromPrintScreen();
-    $report->generate();
+        $this->salesorderUUID = mysql_real_escape_string($salesorderUUID);
 
-    $filename = "Invoice";
-    if($report->count === 1){
+    }//end function init
 
-        if($report->invoicerecord["company"])
-            $filename .= "_".$report->invoicerecord["company"];
 
-        $filename .= "_".$report->invoicerecord["id"];
+    /**
+     * function process
+     *
+     * process the actual payment.  This function needs to do a couple of things
+     * It needs to retrieve any pertinent information from the sales order/client
+     * record that it needs to pass on to the payment gateway.  It then needs
+     * to interact with the gateway.  Next, if successfull it will probably need
+     * to update the sales order record with the appropriate transaction id that
+     * the gateway returned.  Lastly, it needs to return the response in JSON format.
+     *
+     * Remember, if you hit any errors, it is best to return errors in JSON format
+     *
+     * @return string json struct with the response from the gateway
+     *
+     * @returnf 'result' should be either success, declined, or error
+     * @returnf 'transactionid' transactionid if success
+     * @returnf 'details' any error or decline details if not success
+     */
+    function process(){
 
-    }elseif((int)$report->count)
-        $filename .= "_Multiple";
+        $thereturn = array();
 
-    $filename .= ".pdf";
+        /**
+         * Retrieve pertinent sales order / client information
+         * Also need to check if appropriate information is there to pass
+         * to getway
+         */
 
-    $report->output('screen', $filename);
+        /**
+         * Make connection to gateway and send information
+         */
 
-}//end if
+        /**
+         * parse results from gateway and format the return.
+         */
+
+        $thereturn["result"] = "success";
+        $thereturn["transactionid"] = "TR000001";
+
+        return json_encode($thereturn);
+
+    }//end function process
+
+}//end class
 
 
 /**
- * When adding a new report record, the add/edit needs to know what the class
- * name is so that it can instantiate it, and grab it's default settings.
+ * PROCESSING ==============================================================
  */
-if(isset($addingReportRecord)){
+if(!isset($noOutput)){
 
-    include("modules/bms/report/invoices_pdf_class.php");
-    $reportClass = "invoicePDF";
+
+    require_once("../../include/session.php");
+
+    /**
+     * the processor will sent the sales order id via get
+     */
+    if(!isset($_GET["soid"]))
+        $error = new appError(200, "Passed parameter expexted", "", true, true, false, "json");
+
+    $processor = new paymentProcessor($db, $_GET["soid"]);
+
+    echo $processor->process();
 
 }//endif
 ?>
