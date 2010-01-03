@@ -29,12 +29,10 @@
 
 H1 {
 	font-family: Arial, Helvitica, sans-serif;
-	font-size:20px;
-	margin:3px;
-	padding-left:24px;
-	margin-bottom:9px;
-	font-weight:normal;
-	background: url("image/h1graphic.png") 4px 4px no-repeat;;
+	font-size: 24px;
+	margin:0 0 5px 2px;
+        padding: 0;
+	font-weight: normal;
 }
 
 LEGEND,H2{

@@ -607,66 +607,87 @@
 </ul>
 <div class="box" id="searchBox">
 	<div id="basicSearchTab">
-		<table cellpadding="0" cellspacing="0" border="0">
-			<tr>
-				<td nowrap="nowrap" valign="top">
-					<p>
-						<label for="find">find</label><br />
-						<select name="find" id="find">
-						<?php
-							for($i=0;$i<count($this->findoptions);$i++) {
-								if(hasRights($this->findoptions[$i]["roleid"])){
-									?><option value="<?php echo $this->findoptions[$i]["name"]?>"<?php
-										if($this->querytype=="search" and $this->findoptions[$i]["name"]==$this->savedfindoptions) echo "selected=\"selected\"";
-									?>><?php echo $this->findoptions[$i]["name"]?></option><?php
-								}
-							}
-						?>
-						</select>
-					</p>
-				</td>
-			<td nowrap="nowrap" valign="top">
-				<p>
-				<label for="startswithfield">where</label><br />
-					<select name="startswithfield" id="startswithfield">
-						<?php
-							for($i=0;$i<count($this->searchablefields);$i++) {
-								echo "<option value=\"".$this->searchablefields[$i]["id"]."\" ";
-									if(!isset($this->savedstartswithfield)){
-										if($this->querytype!="search" and $i==0) echo "selected=\"selected\"";
-									} else {
-										if($this->querytype=="search" and addslashes($this->searchablefields[$i]["id"])==$this->savedstartswithfield) echo "selected=\"selected\"";
-									}
-								echo ">".$this->searchablefields[$i]["name"]."</option>\n";
-							}
-						?>
-					</select>
-				</p>
-			</td>
-			<td width="100%" nowrap="nowrap" valign="top" >
-				<p><label for="startswith">starts with</label><br />
-					<input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo str_replace("\"","&quot;",stripslashes($this->savedstartswith))?>" size="35" maxlength="128" /><script language="JavaScript" type="text/javascript">setMainFocus()</script>
-				</p>
-			</td>
-			<td align="left" valign="top" nowrap="nowrap" class="small">
-				<p>
-					<br />
-					<input name="command" id="searchbutton" type="submit" class="Buttons" value="search"/>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3" align="left" valign="middle" nowrap="nowrap">
-			<p>
-			<select name="Selection">
-				<option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected=\"selected\""?> >new result</option>
-				<option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected=\"selected\""?>>add to result</option>
-				<option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "selected=\"selected\""?>>remove from result</option>
-				<option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "selected=\"selected\""?>>narrow result</option>
-			</select></p></td>
-			<td align="left" valign="top" nowrap="nowrap"><p><input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(access key+t)"/></p></td>
-		</tr>
-	</table>
+
+            <p id="bstFindP" class="big">
+
+                <label for="find">find</label><br />
+                <select name="find" id="find">
+                <?php
+
+                        foreach($this->findoptions as $option) {
+
+                            if(hasRights($option["roleid"])){
+
+                                ?><option value="<?php echo formatVariable($option["name"]) ?>" <?php
+
+                                    if($this->querytype=="search" && $option["name"] == $this->savedfindoptions)
+                                        echo 'selected="selected"';
+
+                                    ?>><?php echo formatVariable($option["name"])?></option><?php
+
+                            }//endif
+
+                        }//enforeach
+
+                ?>
+                </select>
+
+            </p>
+
+            <p id="bstStartsWithFieldP" class="big">
+
+                <label for="startswithfield">where</label><br />
+                <select name="startswithfield" id="startswithfield">
+                <?php
+
+                    $i=0;
+
+                    foreach($this->searchablefields as $searchField) {
+
+                            ?><option value="<?php echo $searchField["id"]?>" <?php
+
+                                if(!isset($this->savedstartswithfield))
+                                    if($this->querytype != "search" && $i == 0)
+                                        echo "selected=\"selected\"";
+                                else
+                                    if($this->querytype == "search" && addslashes($searchField["id"]) == $this->savedstartswithfield)
+                                        echo 'selected="selected"';
+
+                            echo ">".$searchField["name"]."</option>\n";
+
+                        $i++;
+
+                    }//endforeach
+                    ?>
+                </select>
+
+            </p>
+
+            <p id="bstSearchButtonP" class="big">
+                <input name="command" id="searchbutton" type="submit" class="Buttons" value="search"/>
+            </p>
+
+            <p id="bstStartsWithP" class="big">
+
+                <label for="startswith">starts with</label><br />
+                <input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo formatVariable($this->savedstartswith) ?>" size="35" maxlength="128" />
+
+            </p>
+
+
+	    <p id="bstSelectionP">
+		<select name="Selection">
+                    <option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected=\"selected\""?> >new result</option>
+                    <option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected=\"selected\""?>>add to result</option>
+                    <option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "selected=\"selected\""?>>remove from result</option>
+                    <option value="narrow" <?php if ($this->querytype=="search" and $this->savedselection=="narrow")echo "selected=\"selected\""?>>narrow result</option>
+                </select>
+            </p>
+
+            <p id="bstResetButtonP">
+                <input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(access key+t)"/>
+            </p>
+
 </div><?php if(hasRights($this->thetabledef["advsearchroleid"])){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end access ?>
 <div id="loadSearchTab" style="display:none;padding:0px;margin:0px;"></div>
 <div id="saveSearchTab" style="display:none;margin:0px;padding:0px;margin:0px;">

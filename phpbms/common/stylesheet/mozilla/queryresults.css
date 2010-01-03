@@ -24,9 +24,9 @@
 }
 
 	.querytable td, .querytable th{
-		font-size: 11px;
-		padding:6px;
-		border-right:1px solid #BBBBBB;
+		font-size: 12px;
+		padding:7px 8px;
+		border-right:1px solid #EEEEEE;
 	}
 
 	.norecords td {
@@ -38,8 +38,9 @@
 
 .querytable th{
 	border-bottom:1px solid #BBBBBB;
+        border-color: #BBBBBB;
 	background:#7B8DA1;
-	font-size:12px;
+	font-size:14px;
 	color:white;
 }
 .querytable th A{color: white;}
@@ -47,13 +48,14 @@
 
 .queryGroup td{
 	background:#97A7BA;
-	font-size: 14px;
+	font-size: 16px;
 	font-weight:bold;
-	border-bottom:1px solid #BBBBBB;
+        border: none;
 }
 
 .querytable .queryfooter td{
 	border-top:1px solid #BBBBBB;
+        border-color: #CCCCCC;
 	white-space:nowrap;
 	background:#DDDDDD;
 }

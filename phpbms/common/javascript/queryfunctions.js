@@ -915,3 +915,13 @@ function sortSavedLoad(base){
 
 	closeModal();
 }
+
+/* OnLoad Listner ---------------------------------------- */
+/* ------------------------------------------------------- */
+
+connect(window,"onload",function() {
+
+	var startsWith = getObjectFromID("startswith");
+        if(startsWith)
+            startsWith.focus();
+})

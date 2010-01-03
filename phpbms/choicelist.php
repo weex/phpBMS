@@ -195,23 +195,5 @@ if(!isset($noOutput)){
 
 }//endif
 
-	if(!isset($_GET["cm"]))
-		$_GET["cm"]="shw";
-
-
-
-	$theList = new choiceList($db);
-
-	switch($_GET["cm"]){
-		case "shw":
-			$theList->displayBox($_GET["ln"],$_GET["bv"],$_GET["lid"]);
-		break;
-		case "del":
-			$theList->deleteList($_GET["ln"]);
-		break;
-		case "add":
-			$theList->addToList($_GET["ln"],$_GET["val"]);
-		break;
-	}
 
 ?>
