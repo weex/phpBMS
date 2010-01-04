@@ -249,9 +249,10 @@ class clientConsolidator{
 
 	$pageTitle = "Consolidate Clients and Prospects";
 	$phpbms->cssIncludes[] = "pages/bms/consolidateclients.css";
-	include("header.php");
 
         $statusmessage = count($changeArray)." record(s) consolidated successfully";
+
+	include("header.php");
 
         ?>
         <form action="clients_consolidate.php" method="post" name="print_form">
@@ -297,7 +298,7 @@ if(!isset($noOutput)){
 
     if(!isset($_POST["consolidateTo"]) || !isset($_POST["uuidsArray"]))
         $error = new appError(200, "passed parameters are not set");
-        
+
     $consolidator->consolidate($_POST["consolidateTo"], $_POST["uuidsArray"]);
 
 }//endif

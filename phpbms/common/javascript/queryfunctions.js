@@ -71,9 +71,12 @@ function clickIt(theTR,theevent,disablectrl){
 	var shiftkeydown=false;
 	// stupid browser incompatibilities...//
 	if(!disablectrl) {
-		if (navigator.userAgent.toLowerCase().indexOf("msie")!=-1)
+		if (navigator.userAgent.toLowerCase().indexOf("msie")!=-1){
 			theevent=window.event
-		ctrlkeydown=theevent.ctrlKey;
+        		ctrlkeydown = theevent.ctrlKey;
+		} else
+                    ctrlkeydown = theevent.metaKey;
+                    
 		shiftkeydown=theevent.shiftKey;
 	}
 
