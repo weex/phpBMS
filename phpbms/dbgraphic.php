@@ -73,7 +73,7 @@ $querystatement = "
     FROM
         ".$table."
     WHERE
-        id = ".$_GET["r"];
+        id = ".$id;
 
 $queryresult = $db->query($querystatement);
 
