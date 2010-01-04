@@ -301,7 +301,7 @@ UPDATE `paymentmethods` SET `uuid`='paym:aa837c8a-8878-5339-bc5c-0004cd6e091c' W
 UPDATE `paymentmethods` SET `uuid`='paym:d2909465-4a20-9e88-5e2a-d4f85a57a547' WHERE `name`='Discover Card';
 --end paymentmethods UPDATE--
 --relationships INSERT--
-DELETE FROM `relationships` WHERE `id`<= '32';
+DELETE FROM `relationships`;
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:eb5f285a-da6b-73e4-c098-878f517863b9', 'uuid', 'sales managers', 'salesmanagerid', 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 'tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb', 1, NOW(), 1, NOW(), '0');
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:66443c52-6dd4-b339-aee5-d9794d076e1b', 'clientid', 'sales orders', 'uuid', 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 1, NOW(), 1, NOW(), '1');
 INSERT INTO `relationships` (`uuid`, `tofield`, `name`, `fromfield`, `fromtableid`, `totableid`, `createdby`, `creationdate`, `modifiedby`, `modifieddate`, `inherint`) VALUES ('rln:758183a0-d5f1-eb19-8acc-2de7789895c9', 'uuid', 'clients', 'clientid', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 1, NOW(), 1, NOW(), '0');
@@ -766,6 +766,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `other
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'create_credit_memo', 'create credit memo(s)', '1', '1', 'role:259ead9f-100b-55b5-508a-27e33a6216bf', '60');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 'import', '1', '0', '0', 'Admin', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083', 'consolidate_clients', 'consolidate clients', '1', '1', 'role:259ead9f-100b-55b5-508a-27e33a6216bf', '50');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34', 'import', '1', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:8179e105-5487-5173-d835-d9d510cc7f1b', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c', 'import', '0', '0', '0', 'Admin', '0');
