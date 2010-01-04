@@ -1248,8 +1248,21 @@ if(class_exists("phpbmsImport")){
 						//if valid, insert, if not, log error and don't insert.
 						if($rowFieldNum == $fieldNum){
 							$verify = $this->table->verifyVariables($trimmedRowData);
-							if(!count($verify))
-								$theid = $this->table->insertRecord($trimmedRowData, NULL, true);
+							if(!count($verify)){
+								$createdby = NULL;
+								$overrideID = true;
+								$replace = false;
+								if(!isset($trimmedRowData["uuid"])){
+									$useUuid = true;
+									$thereturn = $this->table->insertRecord($trimmedRowData, $createdby, $overrideID, $replace, $useUuid);
+									$theid = $thereturn["id"];
+								}else{
+									$useUuid = false;
+									$thereturn = $this->table->insertRecord($trimmedRowData, $createdby, $overrideID, $replace, $useUuid);
+									$theid = $thereturn;
+								}//end if
+							}//end if
+								
 						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
 
@@ -1397,7 +1410,7 @@ if(class_exists("phpbmsImport")){
 							`addresses`.`country`,
 							`addresses`.`phone`
 						FROM
-							((clients INNER JOIN addresstorecord ON clients.id = addresstorecord.recordid AND addresstorecord.tabledefid=2 AND addresstorecord.primary=1) INNER JOIN addresses ON  addresstorecord.addressid = addresses.id)
+							((clients INNER JOIN addresstorecord ON clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND addresstorecord.primary='1') INNER JOIN addresses ON  addresstorecord.addressid = addresses.uuid)
 						WHERE
 							`clients`.`id` IN (".$inStatement.")
 						ORDER BY
@@ -1417,7 +1430,7 @@ if(class_exists("phpbmsImport")){
 
 
 		function displayTransaction($recordsArray, $fieldsArray){
-
+			
 			if(count($recordsArray) && count($fieldsArray)){
 
 				//Need to include addresses in the fieldArray

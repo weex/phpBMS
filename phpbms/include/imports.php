@@ -107,11 +107,12 @@
 
 		//DO NOT CALL IN TRANSACTION
 		function _storeTempCSV($fileName){
-
+			
 			$querystatement = "
 				INSERT INTO
 					`files`
 					(
+						`uuid`,
 						`name`,
 						`description`,
 						`file`,
@@ -123,11 +124,12 @@
 					)
 					VALUES
 					(
+						'".uuid(getUuidPrefix($this->table->db, "tbld:80b4f38d-b957-bced-c0a0-ed08a0db6475"))."',
 						'temporary',
 						'This is a temporary import file',
 						'".$this->_getFile($fileName)."',
 						'phpbms/temp',
-						'-100',
+						'Admin',
 						NOW(),
 						'".$_SESSION["userinfo"]["id"]."',
 						'".$_SESSION["userinfo"]["id"]."'
@@ -252,8 +254,20 @@
 						//if valid, insert, if not, log error and don't insert.
 						if($rowFieldNum == $fieldNum){
 							$verify = $this->table->verifyVariables($trimmedRowData);
-							if(!count($verify))
-								$theid = $this->table->insertRecord($trimmedRowData, NULL, true);
+							if(!count($verify)){
+								$createdby = NULL;
+								$overrideID = true;
+								$replace = false;
+								if(!isset($trimmedRowData["uuid"])){
+									$useUuid = true;
+									$thereturn = $this->table->insertRecord($trimmedRowData, $createdby, $overrideID, $replace, $useUuid);
+									$theid = $thereturn["id"];
+								}else{
+									$useUuid = false;
+									$thereturn = $this->table->insertRecord($trimmedRowData, $createdby, $overrideID, $replace, $useUuid);
+									$theid = $thereturn;
+								}
+							}//end if
 						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
 
@@ -475,8 +489,8 @@
 					<input <?php if($ids==1) {?>accesskey="u"<?php }?> title="Upload (alt+u)" id="uploadButton<?php echo $ids?>" name="command" type="submit" value="upload" class="Buttons" />
 					<input id="cancelButton<?php echo $ids?>" name="command" type="submit" value="cancel" class="Buttons" <?php if($ids==1) {?>accesskey="x" <?php }?> title="(access key+x)" />
 					<?php }else{?>
-					<input type="submit" class="Buttons" value="import" name="command" id="import<?php echo $ids?>" title="commit" <?php echo ($numberOfRecords? '':'disabled="disabled"') ?>/>
-					<input type="submit" class="Buttons" value="cancel" name="command" id="cancelButton<?php echo $ids?>" title="rollback"/>
+					<input type="submit" class="Buttons" value="import" name="command" id="import<?php echo $ids?>" title="commit" <?php if($ids==1) {?>accesskey="i"<?php }?> <?php echo ($numberOfRecords? '':'disabled="disabled"') ?>/>
+					<input type="submit" class="Buttons" value="cancel" name="command" id="cancelButton<?php echo $ids?>" <?php if($ids==1) {?>accesskey="x"<?php }?> title="rollback"/>
 					<?php }//end if ?>
 				</div><?php
 			}//end method --showButtons--
