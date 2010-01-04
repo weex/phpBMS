@@ -460,9 +460,8 @@
 				<th nowrap="nowrap" class="queryheader" align="left" colspan="2">product</th>
 				<th nowrap="nowrap" class="queryheader" align="left" id="memoHeader">memo</th>
 				<th align="right" nowrap="nowrap" class="queryheader">price</th>
-				<th align="center" nowrap="nowrap" class="queryheader">qty.</th>
-				<th align="right" nowrap="nowrap" class="queryheader">extended</th>
-				<th nowrap="nowrap" class="queryheader">&nbsp;</th>
+				<th align="right" nowrap="nowrap" class="queryheader">qty.</th>
+				<th align="right" nowrap="nowrap" class="queryheader" colspan="2" id="liHeaderExtendedTd">extended</th>
 			</tr>
 		</thead>
 
@@ -473,8 +472,8 @@
 			<td><input name="memo" type="text" id="memo" size="12" maxlength="255" /></td>
 			<td align="right" nowrap="nowrap"><input name="price" type="text" id="price" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="10" maxlength="16" class="fieldCurrency" /></td>
 			<td align="center" nowrap="nowrap"><input name="qty" type="text" id="qty" value="1" size="5" maxlength="16" /></td>
-			<td align="right" nowrap="nowrap"><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="readonly" /></td>
-			<td nowrap="nowrap" align="left"><button type="button" id="lineitemAddButton" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
+			<td align="right" nowrap="nowrap"id="liAddExtendedTD"><input name="extended" type="text" id="extended" class="uneditable fieldCurrency" value="<?php echo htmlQuotes(numberToCurrency(0))?>" size="12" maxlength="16" readonly="readonly" /></td>
+			<td nowrap="nowrap" align="left" id="liAddButtonTd"><button type="button" id="lineitemAddButton" class="graphicButtons buttonPlus" title="Add Line Item"><span>+</span></button></td>
 		</tr><?php }//end if
 
 		$thetable->lineitems->show($therecord["thelineitems"]);
@@ -670,7 +669,7 @@
 		<td class="totalItems"><input name="shipping" id="shipping" type="text" value="<?php echo numberToCurrency($therecord["shipping"])?>" size="12" maxlength="15" onchange="calculateTotal();" class="fieldCurrency fieldTotal" /></td>
 		<td class="totalItems">&nbsp;</td>
 	</tr>
-	<tr>
+	<tr id="totalDisplayTr">
 		<td colspan="2" class="invoiceTotalLabels important"><div>total</div></td>
 		<td class="totalItems">
 			<input class="uneditable fieldCurrency important fieldTotal" name="totalti" id="totalti" type="text" value="<?php echo numberToCurrency($therecord["totalti"])?>" size="12" maxlength="15" onchange="calculateTotal();"  readonly="readonly" />
@@ -687,7 +686,7 @@
 		<td class="totalItems"><input name="amountpaid" id="amountpaid" type="text" value="<?php echo numberToCurrency($therecord["amountpaid"])?>" size="12" maxlength="15" onchange="calculatePaidDue();"  class="important fieldCurrency fieldTotal" /></td>
 		<td class="totalItems"><button id="payinfull" type="button" onclick="payInFull()" class="graphicButtons buttonCheck" title="Pay in full"><span>pay in full</span></button></td>
 	</tr>
-	<tr>
+	<tr id="lastTotalsTr">
 		<td colspan="2" class="invoiceTotalLabels" nowrap="nowrap"><div>amount due</div></td>
 		<td class="totalItems"><input id="amountdue" name="amountdue" type="text" value="<?php echo numberToCurrency($therecord["amountdue"]) ?>" size="12" maxlength="15" onchange="calculatePaidDue();" class="important fieldCurrency fieldTotal" /></td>
 		<td class="totalItems">&nbsp;</td>

@@ -43,7 +43,13 @@ LEGEND,H2{
 	font-family: Arial, Helvitica, sans-serif;
 }
 
-LEGEND {margin-top:0px; font-size:14px;}
+legend {
+    margin-top:0px;
+    font-size:16px;
+    font-weight: normal;
+    padding: 0 3px;
+    margin-left: 4px;
+}
 
 H2{
 	border-bottom: 1px solid #ccc;
@@ -51,7 +57,7 @@ H2{
 	padding-left:3px;
 	padding-bottom:0px;
 	margin:0px;
-	margin-top:30px;
+	margin-top:35px;
 	margin-bottom:5px;
 }
 

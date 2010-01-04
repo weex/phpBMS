@@ -141,6 +141,7 @@
 
                 <fieldset>
                     <legend>settings</legend>
+                    <div class="fauxP">
                     <?php if(!$therecord["id"]) {
                         ?><p class="notes">Report settings are available after initial record creation.</p><?php
                     } else {
@@ -185,6 +186,7 @@
                       <?php
                     }//endif
                     ?>
+                    </div>
                 </fieldset>
 
 	        <?php $theform->showCustomFields($db, $thetable->customFieldsQueryResult) ?>

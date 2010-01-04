@@ -14,6 +14,7 @@ http://phpbms.org/browser/tags/phpbms-0.98
  * Easier to use configuration screen
  * Automatically check for updates
  * Increased security and security logging
+ * Formal credit memo functionality that can be associated with existing invoices
 
 The complete list of closed tickets can be found here: http://phpbms.org/query?status=closed&milestone=0.98
 

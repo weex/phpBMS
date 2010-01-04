@@ -70,6 +70,7 @@
 		$pageTitle.=$clientrecord["company"];
 
 	$thestatus="(invoices.type =\"";
+
 	switch($_POST["status"]){
 		case "Orders and Invoices":
 			$thestatus.="Order\" or invoices.type=\"Invoice\")";
@@ -141,7 +142,7 @@
 			<p class="timelineP">
 			   <label for="status">type</label><br />
 			   <select name="status" id="status">
-					<option value="Orders abd Invoices" <?php if($_POST["status"]=="Orders and Invoices") echo "selected=\"selected\""?>>Orders and Invoices</option>
+					<option value="Orders and Invoices" <?php if($_POST["status"]=="Orders and Invoices") echo "selected=\"selected\""?>>Orders and Invoices</option>
 					<option value="Invoices" <?php if($_POST["status"]=="Invoices") echo "selected=\"selected\""?>>Invoices</option>
 					<option value="Orders" <?php if($_POST["status"]=="Orders") echo "selected=\"selected\""?>>Orders</option>
 			   </select>

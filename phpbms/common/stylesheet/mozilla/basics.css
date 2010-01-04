@@ -1,17 +1,17 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-BODY { 
-	background: white url("image/back.png"); 
+BODY {
+	background: #F8F8F8;
 	margin:0;
 }
 
-BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI, BUTTON { 
+BODY, P, TABLE, TD, FORM, INPUT, SELECT, TEXTAREA, OL, UL, LI, BUTTON {
 	font-size : 12px;
 	font-family : Arial,Helvitica,sans-serif;
-	color : black; 
+	color : black;
 }
-	
+
 P,.fauxP{
 	margin:0;
 	padding:0 5px 10px;
@@ -27,9 +27,9 @@ UL,OL{
 
 LI{margin-bottom:5px;}
 
-A {	
-	color : #455372; 
-	font-weight:bold; 
+A {
+	color : #455372;
+	font-weight:bold;
 	text-decoration:none;
 }
 

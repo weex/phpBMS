@@ -1,9 +1,9 @@
 /* $Rev$ | $LastChangedBy$ */
 /* $LastChangedDate$ */
 
-fieldset,.bodyline,.box{ 
-	border: 1px solid #ACB7C4; 
-	padding:5px; 		
+fieldset,.bodyline,.box{
+	border: 1px solid #ACB7C4;
+	padding:5px;
 	margin-bottom:5px;
 }
 .bodyline,#modalBox{
@@ -15,19 +15,20 @@ fieldset,.bodyline,.box{
 .bodyline{
 	clear:both;
 	border-color:#CAD1D1;
+        border: none;
 	padding:10px;
 }
 
-fieldset,.box{	
+fieldset,.box{
 	margin:3px 3px 7px 3px;
 }
 
 fieldset{
-	padding:8px;
+	padding:4px 8px;
 	overflow:hidden;
 }
 
 .box{
 	background-color:#EFF9F9;
-	border-color:#CCCCCC;	
+	border-color:#CCCCCC;
 }

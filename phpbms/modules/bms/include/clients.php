@@ -433,7 +433,7 @@ if(class_exists("phpbmsTable")){
 			return $newid;
 
 		}//end method - insertRecord
-		
+
 		/*
 		 * function api_searchByEmail
 		 * @param array $requestData Array containing a key named "email"
@@ -445,9 +445,9 @@ if(class_exists("phpbmsTable")){
 		 * @returnf array details Either the array of uuid / ids if no errors
 		 * were encountered, or the original $requestData if there was an error
 		 */
-		
+
 		function api_searchByEmail($requestData, $returnUuid = true) {
-			
+
 			/**
 			  *  Check for required fields and return error if not there.
 			  */
@@ -457,9 +457,9 @@ if(class_exists("phpbmsTable")){
 				$response["details"] = $requestData;
 				return $response;
 			}//end if
-			
+
 			/**
-			  *  Do sql search 
+			  *  Do sql search
 			  */
 			$querystatement = "
 				SELECT
@@ -470,28 +470,28 @@ if(class_exists("phpbmsTable")){
 				WHERE
 					`email` = '".mysql_real_escape_string($requestData["email"])."'
 			";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			/**
-			  *  Construct return array 
+			  *  Construct return array
 			  */
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByEmail has been run successfully.";
 			$thereturn["details"] = array();
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
+
 				if($returnUuid)
 					$thereturn["details"][] = $therecord["uuid"];
 				else
 					$thereturn["details"][] = $therecord["id"];
-				
+
 			}//end while
-			
+
 			return $thereturn;
-			
+
 		}//end function --api_serchByEmail--
-		
+
 		/*
 		 * function api_searchByNameAndPostalcode
 		 * @param array $requestData Array containing the keys 'postalcode',
@@ -504,34 +504,34 @@ if(class_exists("phpbmsTable")){
 		 * @returnf array details Either the array of uuid / ids if no errors
 		 * were encountered, or the original $requestData if there was an error
 		 */
-		
+
 		function api_searchByNameAndPostalcode($requestData, $returnUuid = true) {
-			
+
 			/**
-			  *  check for required fields 
+			  *  check for required fields
 			  */
 			$requiredArray = array(
 				"postalcode",
 				"firstname",
 				"lastname"
 			);
-			
+
 			$missingArray = array();
-			
+
 			foreach($requiredArray as $requiredField)
 				if(!isset($requestData[$requiredField]))
 					$missingArray[] = $requiredField;
-			
+
 			$count = count($missingArray);
 			if($count){
-				
+
 				$response["type"] = "error";
 				$response["details"] = $requestData;
 				$response["message"] = "";
-				
+
 				$i=0;
 				foreach($missingArray as $missingField){
-					
+
 					if(++$i == $count){
 						if($response["message"])
 							$response["message"] .= "and '".$missingField."'";
@@ -539,17 +539,17 @@ if(class_exists("phpbmsTable")){
 							$response["message"] .= "'".$missingField."'";
 					}else
 						$response["message"] .= "'".$missingField."', ";
-					
+
 				}//end foreach
-				
+
 				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
-				
+
 				return $response;
-			
+
 			}//end if
-			
+
 			/**
-			  *  do sql search 
+			  *  do sql search
 			  */
 			$querystatement = "
 				SELECT
@@ -567,28 +567,28 @@ if(class_exists("phpbmsTable")){
 					AND
 					`addresses`.`postalcode` = '".mysql_real_escape_string($requestData["postalcode"])."'
 			";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			/**
-			  *  report findings 
+			  *  report findings
 			  */
 			$thereturn["details"] = array();
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByNameAndPostalcode has been run successfully.";
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
+
 				if($returnUuid)
 					$thereturn["details"][] = $therecord["uuid"];
 				else
 					$thereturn["details"][] = $therecord["id"];
-				
+
 			}//end while
-			
+
 			return $thereturn;
-			
+
 		}//end function --api_searchByNameAndPostalcode
-		
+
 		/*
 		 * function api_searchByUsernameAndPassword
 		 * @param array $requestData Array containing the keys 'username' and
@@ -601,33 +601,33 @@ if(class_exists("phpbmsTable")){
 		 * @returnf array details Either the array of uuid / ids if no errors
 		 * were encountered, or the original $requestData if there was an error
 		 */
-		
+
 		function api_searchByUsernameAndPassword($requestData, $returnUuid = true) {
-			
+
 			/**
-			  *  check for required fields 
+			  *  check for required fields
 			  */
 			$requiredArray = array(
 				"username",
 				"password"
 			);
-			
+
 			$missingArray = array();
-			
+
 			foreach($requiredArray as $requiredField)
 				if(!isset($requestData[$requiredField]))
 					$missingArray[] = $requiredField;
-			
+
 			$count = count($missingArray);
 			if($count){
-				
+
 				$response["type"] = "error";
 				$response["details"] = $requestData;
 				$response["message"] = "";
-				
+
 				$i=0;
 				foreach($missingArray as $missingField){
-					
+
 					if(++$i == $count){
 						if($response["message"])
 							$response["message"] .= "and '".$missingField."'";
@@ -635,17 +635,17 @@ if(class_exists("phpbmsTable")){
 							$response["message"] .= "'".$missingField."'";
 					}else
 						$response["message"] .= "'".$missingField."', ";
-					
+
 				}//end foreach
-				
+
 				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
-				
+
 				return $response;
-			
+
 			}//end if
-			
+
 			/**
-			  *  do sql search 
+			  *  do sql search
 			  */
 			$querystatement = "
 				SELECT
@@ -658,26 +658,26 @@ if(class_exists("phpbmsTable")){
 					AND
 					`password` = '".mysql_real_escape_string($requestData["password"])."'
 			";
-			
+
 			$queryresult = $this->db->query($querystatement);
-			
+
 			/**
-			  *  report findings 
+			  *  report findings
 			  */
 			$thereturn["details"] = array();
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByUsernameAndPassword has been run successfully.";
 			while($therecord = $this->db->fetchArray($queryresult)){
-				
+
 				if($returnUuid)
 					$thereturn["details"][] = $therecord["uuid"];
 				else
 					$thereturn["details"][] = $threturn["id"];
-				
+
 			}//end while
-			
+
 			return $thereturn;
-			
+
 		}//end function --api_searchByUsernameAndPassword--
 
 	}//end class
@@ -687,6 +687,19 @@ if(class_exists("phpbmsTable")){
 
 if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{
+
+                function consolidate_clients($useUuid = false){
+
+                    $noOutput = true;
+                    include("modules/bms/clients_consolidate.php");
+
+                    $consolidator = new clientConsolidator($this->db);
+
+                    $consolidator->showPicker($this->idsArray, $useUuid);
+                    exit();
+
+
+                }//end function consolidate_clients
 
 		function mark_asclient($useUuid = false){
 
@@ -940,6 +953,7 @@ if(class_exists("searchFunctions")){
 
 	}//end class
 }//end if
+
 if(class_exists("phpbmsImport")){
 	class clientsImport extends phpbmsImport{
 

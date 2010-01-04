@@ -17,11 +17,7 @@ label{
 }
 
 	#loginbox h1{
-		font-size: 21px;
-		font-weight: bold;
-		background-position: 6px 6px;
-		padding-left: 28px;
-		color:#455372;
+            margin: 10px 10px 0;
 	}
 
 	#loginbox .box{

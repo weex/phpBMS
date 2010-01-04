@@ -10,11 +10,11 @@
 	height: 100%;
 	padding:0px;
 	margin:0px;
-	background-color: #666666; 
+	background-color: #666666;
 }
 
-#modalBox {	
-	border:1px solid #ABB1B1;
+#modalBox {
+	/*border:1px solid #ABB1B1;*/
 	padding:0px;
 	position: absolute;
 	z-index: 201;
@@ -28,7 +28,7 @@
 	padding-left:4px;
 	background-color:#0B63A2;
 	border-bottom:1px solid #ABB1B1;
-	color:white; 
+	color:white;
 }
 #modalContent{
 	padding:10px;

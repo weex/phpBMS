@@ -2,7 +2,8 @@
 /* $LastChangedDate$ */
 
 SELECT, INPUT, TEXTAREA, .uneditable,button{
-	border:1px solid #ABB1B1;
+	/*border:1px solid #ABB1B1;*/
+        border: 1px solid #C0C7C7;
 	font-size: 11px;
 	padding: 2px 0px 2px 3px;
 	background: #F7FAFA;
@@ -20,7 +21,7 @@ FORM{margin:0px;padding:0px;}
 
 .uneditable,.uneditable:Focus {
 	background-color:transparent;
-	border-color:#ABB1B1;
+	border-color:#C0C7C7;
 	color:#666666;
 }
 
