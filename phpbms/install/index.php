@@ -457,8 +457,27 @@
 				If you have problems during installation, have questions about how the program works, or would like additional
 				information about phpBMS, please visit the <a href="http://www.phpbms.org">phpBMS Project web site</a>.  The phpBMS project web site
 				has many resources to help you including a user wiki, users forum, and mailing list that can help you.</p>
-				<h3>Paid Customization, Installation, Support Options</h3>
-				<p>Paid technical support and phpBMS customization is available from <a href="http://www.kreotek.com">Kreotek</a>,</p>
+				<h3>Paid Installation and Support Options</h3>
+				<p>Paid technical support and phpBMS customization is available from <a href="http://www.kreotek.com">Kreotek</a></p>
+
+                                <h2>Help Make phpBMS Better!</h2>
+
+                                <h3>Registration</h3>
+
+                                <p>
+                                    Take the time to register your copy of phpBMS.  Registration helps
+                                    guide future development of the project so we can continue to make
+                                    focus on the communities needs.
+                                </p>
+                                <p id="registerP">Take a minute to <a href="kreotek.com/registerphpbms">register your copy of phpBMS</a> today.</p>
+
+                                <h3>Contribute</h3>
+
+                                <p>
+                                    phpBMS is true open source software.  Contributions in the form of code patches, new modules,
+                                    documentation, and bug reporting are always appreciated.  You can find out more about
+                                    contributing to the project at <a href="http://www.phpbms.org">community web site</a>.
+                                </p>
 
 			</div>
 		</div>

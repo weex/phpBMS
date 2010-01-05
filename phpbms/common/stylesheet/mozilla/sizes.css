@@ -20,7 +20,6 @@
 }
 
 .notes {
-    font-style: italic;
     color: #9F0000;
     line-height: 1.5em;
 }
@@ -37,7 +36,7 @@ H1 {
 
 LEGEND,H2{
 	font-weight:bold;
-	font-size:15px;
+	font-size: 19px;
 	color:#455372;
 	text-transform:capitalize;
 	font-family: Arial, Helvitica, sans-serif;
@@ -52,21 +51,16 @@ legend {
 }
 
 H2{
-	border-bottom: 1px solid #ccc;
-	padding:2px;
-	padding-left:3px;
-	padding-bottom:0px;
-	margin:0px;
-	margin-top:35px;
-	margin-bottom:5px;
+	/*border-bottom: 1px solid #ccc;*/
+	padding: 0;
+        margin: 18px 0 10px;
 }
 
 H3{
-	font-size:14px;
+	font-size:15px;
 	font-weight:bold;
-	margin:2px;
-	margin-top:10px;
-    font-family: Arial, Helvitica, sans-serif;
+	margin:12px 0 5px;
+        font-family: Arial, Helvitica, sans-serif;
 }
 
 H4{

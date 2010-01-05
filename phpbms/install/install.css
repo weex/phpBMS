@@ -113,9 +113,19 @@ p{
     min-width: 120px;
 }
 
+#registerP {
+    background:white none repeat scroll 0 0;
+    border:1px solid #CCCCCC;
+    font-size:19px;
+    padding:10px;
+    color: #9F0000;
+    text-align:center;
+    margin: 15px 10px;
+}
+
 #userpassTable{
 
-    margin: 0 auto;
+    margin: 10px auto;
 
 }
 
