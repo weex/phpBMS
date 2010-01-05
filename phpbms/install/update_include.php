@@ -130,8 +130,8 @@ require("../include/session.php");
 				<thead>
 					<tr>
 						<th>module</th>
-						<th>database version</th>
 						<th>file version</th>
+						<th>database version</th>
 						<th>&nbsp;</th>
 					</tr>
 				</thead>

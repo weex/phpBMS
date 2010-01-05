@@ -282,7 +282,7 @@ class updateBMS extends updateModuleAjax{
 				$address["postalcode"] = $therecord["shiptopostalcode"];
 				$address["country"] = $therecord["shiptocountry"];
 
-				$newid = insertAddress($db, $address);
+				$newid = $this->v096insertAddress($address);
 
 				$a2r["addressid"] = $newid;
 				$a2r["primary"] = 0;
@@ -294,7 +294,7 @@ class updateBMS extends updateModuleAjax{
 
 			}//endif - shiptoaddress1
 
-			$this->v096insertA2R($db, $a2r);
+			$this->v096insertA2R($a2r);
 
 		}//endwhile
 
@@ -315,6 +315,8 @@ class updateBMS extends updateModuleAjax{
 				DROP COLUMN `shiptocountry`";
 
 		$this->db->query($alterstatement);
+
+                return true;
 
 	}//end function
 
