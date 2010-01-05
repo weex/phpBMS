@@ -32,11 +32,13 @@ list = {
     reportResult:function(response){
         
         var resultText = getObjectFromID("resultText");
+		var cancelSpan = getObjectFromID("cancelButton");
 
         if(response.type && response.details){
             
             if(response.type == "success"){
                 resultText.innerHTML = "Success";
+				cancelSpan.innerHTML = "done";
             }else{
                 resultText.innerHTML = "The following errors were found:";
 				

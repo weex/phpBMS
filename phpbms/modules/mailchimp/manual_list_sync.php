@@ -32,7 +32,7 @@ include("header.php");
 		</p>
 	</div>
 	<p id="cancelP">
-		<button type="button" class="Buttons" id="cancelButton" accesskey="c" title="access key = 'c'"><span>cancel</span></button>
+		<button type="button" class="Buttons" id="cancelButton" accesskey="x" title="access key='x'"><span id="cancelSpan">cancel</span></button>
 	</p>
 </div>
 <?php include("footer.php")?>
