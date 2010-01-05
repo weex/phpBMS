@@ -127,7 +127,7 @@
 		// for each field we will use, create the field object and add it to
 		// the forms list.
 
-		$list = array("phpBMS csv file" => 0, "Sugar CRM (v5.0)" => 1);
+		$list = array("phpBMS csv file" => 0, "Sugar CRM (v5.5.0)" => 1);
 		$default = 0;
 		if(isset($_POST["importType"]))
 			$default = ((int) $_POST["importType"]);

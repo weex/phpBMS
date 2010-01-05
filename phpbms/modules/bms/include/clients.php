@@ -1188,6 +1188,7 @@ if(class_exists("phpbmsImport")){
 						case "ownership":
 						case "employees":
 						case "ticker_symbol":
+						case "id":
 							if($data)
 								$addComments .= "\n".str_replace("_"," ",$name).": ".trim($data);
 						break;
@@ -1275,6 +1276,8 @@ if(class_exists("phpbmsImport")){
 							if(!$this->revertID)
 								$this->revertID = $theid;
 
+							$theuuid = getUuid($this->table->db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", (int) $theid);
+							
 							//If it is a sugarcrm import, insert the shipping address as well
 							$addressVerify = array();
 							if($this->importType == "sugarcrm"){
@@ -1298,19 +1301,20 @@ if(class_exists("phpbmsImport")){
 										SET
 											`addresstorecord`.`defaultshipto` = '0'
 										WHERE
-											`addresstorecord`.`recordid` = '".((int) $theid)."'
+											`addresstorecord`.`recordid` = '".mysql_real_escape_string($theuuid)."'
 											AND
-											`addresstorecord`.`tabledefid` = '2';
+											`addresstorecord`.`tabledefid` = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083';
 										";
 
 									$this->table->db->query($querystatement);
 
 									$variables["title"] = "Main Shipping Address";
-									$variables["tabledefid"] = 2;
-									$variables["recordid"] = $theid;
+									$variables["tabledefid"] = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
+									$variables["recordid"] = $theuuid;
 									$variables["defaultshipto"] = 1;
 									$variables["primary"] = 0;
 									$variables["existingaddressid"] = false;
+									$variables["uuid"] = uuid($this->table->address->prefix);
 
 									$addressVerify = $this->table->address->verifyVariables($variables);//verify address
 									if(!count($addressVerify))//check for errors
@@ -1390,7 +1394,7 @@ if(class_exists("phpbmsImport")){
 							`addresses2`.`custom7` AS `shipcustom7`,
 							`addresses2`.`custom8` AS `shipcustom8`
 						FROM
-							((((clients INNER JOIN addresstorecord AS `addresstorecord1` ON clients.id = addresstorecord1.recordid AND addresstorecord1.tabledefid=2 AND addresstorecord1.primary=1) INNER JOIN addresses AS addresses1 ON  addresstorecord1.addressid = addresses1.id)LEFT JOIN addresstorecord AS `addresstorecord2` on clients.id = addresstorecord2.recordid AND addresstorecord2.tabledefid=2 AND addresstorecord2.primary=0 AND addresstorecord2.defaultshipto=1) LEFT JOIN addresses AS addresses2 ON  addresstorecord2.addressid = addresses2.id)
+							((((clients INNER JOIN addresstorecord AS `addresstorecord1` ON clients.uuid = addresstorecord1.recordid AND addresstorecord1.tabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND addresstorecord1.primary=1) INNER JOIN addresses AS addresses1 ON  addresstorecord1.addressid = addresses1.uuid)LEFT JOIN addresstorecord AS `addresstorecord2` on clients.uuid = addresstorecord2.recordid AND addresstorecord2.tabledefid='tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083' AND addresstorecord2.primary=0 AND addresstorecord2.defaultshipto=1) LEFT JOIN addresses AS addresses2 ON  addresstorecord2.addressid = addresses2.uuid)
 						WHERE
 							`clients`.`id` IN (".$inStatement.")
 						ORDER BY
@@ -1436,7 +1440,7 @@ if(class_exists("phpbmsImport")){
 				//Need to include addresses in the fieldArray
 
 				//list of values that should not be displayed
-				$removalArray = array("id", "modifiedby", "modifieddate", "createdby", "creationdate", "notes", "title", "shiptoname");
+				$removalArray = array("id", "modifiedby", "modifieddate", "createdby", "creationdate", "notes", "title", "shiptoname", "uuid");
 				//gets the address table's columnnames/information (fields)
 				$addressArray = $this->table->address->fields;
 
