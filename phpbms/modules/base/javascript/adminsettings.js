@@ -316,7 +316,7 @@ updateObj = {
 
         } catch(err) {
 
-            alert(err);
+            return false;
 
         }//end try/catch
 
@@ -356,8 +356,11 @@ updateObj = {
 
         var updateResponse = updateObj.checkForUpdate(manual);
 
-
         processSpan.style.display = "none";
+
+        if(!updateResponse)
+            updateResponse.checked = false;
+
         if(updateResponse.checked == true){
             date.value = updateResponse.date;
 
