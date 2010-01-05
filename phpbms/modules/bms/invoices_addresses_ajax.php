@@ -61,8 +61,7 @@ class clientAddresses{
 				addresstorecord INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid
 			WHERE
 				addresstorecord.tabledefid = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
-				AND addresstorecord.recordid = '".mysql_real_escape_string($uuid)."'
-		";
+				AND addresstorecord.recordid = '".mysql_real_escape_string($uuid)."'";
 
 		return $this->db->query($querystatement);
 
@@ -130,8 +129,7 @@ class clientAddresses{
 			FROM
 				addresses
 			WHERE
-				uuid ='".mysql_real_escape_string($uuid)."'
-		";
+				uuid ='".mysql_real_escape_string($uuid)."'";
 
 		$therecord = $this->db->fetchArray($this->db->query($querystatement));
 

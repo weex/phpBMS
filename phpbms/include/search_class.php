@@ -611,7 +611,7 @@
             <p id="bstFindP" class="big">
 
                 <label for="find">find</label><br />
-                <select name="find" id="find">
+                <select name="find" id="find" tabindex="1">
                 <?php
 
                         foreach($this->findoptions as $option) {
@@ -637,7 +637,7 @@
             <p id="bstStartsWithFieldP" class="big">
 
                 <label for="startswithfield">where</label><br />
-                <select name="startswithfield" id="startswithfield">
+                <select name="startswithfield" id="startswithfield" tabindex="1">
                 <?php
 
                     $i=0;
@@ -664,19 +664,19 @@
             </p>
 
             <p id="bstSearchButtonP" class="big">
-                <input name="command" id="searchbutton" type="submit" class="Buttons" value="search"/>
+                <input name="command" id="searchbutton" type="submit" class="Buttons" value="search" tabindex="2"/>
             </p>
 
             <p id="bstStartsWithP" class="big">
 
                 <label for="startswith">starts with</label><br />
-                <input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo formatVariable($this->savedstartswith) ?>" size="35" maxlength="128" />
+                <input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo formatVariable($this->savedstartswith) ?>" size="35" maxlength="128" tabindex="1"/>
 
             </p>
 
 
 	    <p id="bstSelectionP">
-		<select name="Selection">
+		<select name="Selection" tabindex="2">
                     <option value="new" <?php if ($this->querytype!="search" or ($this->querytype=="search" and $this->savedselection=="new") ) echo "selected=\"selected\""?> >new result</option>
                     <option value="add" <?php if ($this->querytype=="search" and $this->savedselection=="add")echo "selected=\"selected\""?>>add to result</option>
                     <option value="remove" <?php if ($this->querytype=="search" and $this->savedselection=="remove")echo "selected=\"selected\""?>>remove from result</option>
@@ -685,7 +685,7 @@
             </p>
 
             <p id="bstResetButtonP">
-                <input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(access key+t)"/>
+                <input name="command" type="submit" id="reset" class="smallButtons" value="reset" accesskey="t" title="(access key+t)" tabindex="2"/>
             </p>
 
 </div><?php if(hasRights($this->thetabledef["advsearchroleid"])){?><div id="advancedSearchTab" style="display:none;"></div><?php } //end access ?>
