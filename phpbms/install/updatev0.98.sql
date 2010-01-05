@@ -96,6 +96,7 @@ ALTER TABLE `modules` ENGINE=INNODB;
 ALTER TABLE `modules`
     ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`;
 --end modules ALTER--
+UPDATE `modules` SET `uuid`='mod:29873ee8-c12a-e3f6-9010-4cd24174ffd7' WHERE `id`='1';
 --notes ALTER--
 ALTER TABLE `notes` ENGINE=INNODB;
 ALTER TABLE `notes`

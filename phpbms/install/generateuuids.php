@@ -194,7 +194,7 @@ class generateUUIDS extends installUpdateBase{
                                   "paymentmethodid" =>$this->paymentList
                                   );
             $this->updateFields("invoices", $invoiceArray);
-            
+
             $clientArray = array(
                                 "taxareaid"         =>$this->taxList,
                                 "shippingmethodid"  =>$this->shippingList,
@@ -287,9 +287,9 @@ class generateUUIDS extends installUpdateBase{
                 `".$table."`";
 
         $queryresult = $this->db->query($querystatement);
-        
+
         $initialClause = "";
-        
+
         $tablestatement = "
             SHOW FIELDS FROM
                 `".$table."`
@@ -298,22 +298,22 @@ class generateUUIDS extends installUpdateBase{
             OR
                 `field` = 'modifieddate'
         ";
-        
+
         $tableresult = $this->db->query($tablestatement);
 
 
         while($tablerecord = $this->db->fetchArray($tableresult))
             switch($tablerecord["Field"]){
-                
+
                 case "modifieddate":
                 case "stamp":
                     $initialClause .= ", `".$tablerecord["Field"]."` = `".$tablerecord["Field"]."`";
                     break;
-                
+
                 default:
                     break;
             }//end switch
-            
+
         while($therecord = $this->db->fetchArray($queryresult)){
 
 
@@ -322,7 +322,7 @@ class generateUUIDS extends installUpdateBase{
             foreach($fields as $key=>$value)
                 if(strpos($therecord[$key],":") === false)
                     $updateClause .= ", `".$key."` = '".$value[$therecord[$key]]."'";
-            
+
             if($updateClause){
 
                 $updateClause = substr($updateClause, 1);
@@ -335,7 +335,7 @@ class generateUUIDS extends installUpdateBase{
                     WHERE
                         `id` = ".$therecord["id"]."
                 ";
-                
+
                 $this->db->query($updatestatement);
 
             }//endif
@@ -347,13 +347,13 @@ class generateUUIDS extends installUpdateBase{
 
     /**
       *  function creatUUIDs
-      *  
+      *
       *  Gives randomly created uuids to a table with $tabledefuuid (keeping
       *  the prefix in the tabledef consistent).
-      *  
+      *
       *  @param string $tabledefuuid
       */
-    
+
     function createUUIDs($tabledefuuid){
 
         $querystatement  = "
