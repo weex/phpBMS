@@ -48,7 +48,7 @@ ALTER TABLE `aritems`
 ALTER TABLE `attachments` ENGINE=INNODB;
 --end attachements ALTER--
 --clientemailprojects DROP--
-DROP TABLE `clientemailprojects`
+DROP TABLE `clientemailprojects`;
 --end clientemailprojects DROP--
 --clients ALTER--
 ALTER TABLE `clients` ENGINE=INNODB;
