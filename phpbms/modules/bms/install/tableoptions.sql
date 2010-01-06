@@ -1,8 +1,3 @@
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'edit', '1', '1', '0', '', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'select', '1', '1', '0', '', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'new', '0', '1', '0', '', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'printex', '1', '1', '0', '', '0');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'import', '0', '0', '0', 'Admin', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'new', '1', '1', '0', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'edit', '1', '1', '0', '', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `needselect`, `othercommand`, `roleid`, `displayorder`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'printex', '1', '1', '0', '', '0');

@@ -1,5 +1,3 @@
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'all records', 'clientemailprojects.id!=-1', '0', '');
-INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'global projects', 'clientemailprojects.userid=0', '1', '');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'All Records', 'addresses.id!=-1', '0', '');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c', 'All Records', 'lineitems.id!=0', '0', 'role:259ead9f-100b-55b5-508a-27e33a6216bf');
 INSERT INTO `tablefindoptions` (`tabledefid`, `name`, `search`, `displayorder`, `roleid`) VALUES ('tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c', 'Orders', 'invoices.type=\"Order\"', '1', '');

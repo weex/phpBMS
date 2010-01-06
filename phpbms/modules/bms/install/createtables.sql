@@ -1,17 +1,3 @@
-CREATE TABLE `clientemailprojects` (
-  id int(11) NOT NULL auto_increment,
-  `uuid` varchar(64) NOT NULL,
-  name varchar(64) default '',
-  userid varchar(64) NOT NULL,
-  emailto varchar(9) NOT NULL default '',
-  emailfrom varchar(128) default '',
-  subject varchar(128) default '',
-  body text,
-  lastrun timestamp(14) NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY (`uuid`)
-) ENGINE=INNODB;
-
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL auto_increment,
   `uuid` varchar(64) NOT NULL,

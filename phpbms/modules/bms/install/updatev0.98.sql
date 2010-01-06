@@ -47,12 +47,9 @@ ALTER TABLE `aritems`
 --attachements ALTER--
 ALTER TABLE `attachments` ENGINE=INNODB;
 --end attachements ALTER--
---clientemailprojects ALTER--
-ALTER TABLE `clientemailprojects` ENGINE=INNODB;
-ALTER TABLE `clientemailprojects`
-    ADD COLUMN `uuid` varchar(64) NOT NULL AFTER `id`,
-    MODIFY `userid` VARCHAR(64) NOT NULL;
---end clientemailprojects ALTER--
+--clientemailprojects DROP--
+DROP TABLE `clientemailprojects`
+--end clientemailprojects DROP--
 --clients ALTER--
 ALTER TABLE `clients` ENGINE=INNODB;
 ALTER TABLE `clients`
@@ -662,6 +659,16 @@ UPDATE `tabledefs` SET
     `querytable` = '((clients INNER JOIN addresstorecord on clients.uuid = addresstorecord.recordid AND addresstorecord.tabledefid=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND addresstorecord.primary=1) INNER JOIN addresses ON addresstorecord.addressid = addresses.uuid),((clients AS dclients INNER JOIN addresstorecord as daddresstorecord on dclients.uuid = daddresstorecord.recordid AND daddresstorecord.tabledefid=\'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083\' AND daddresstorecord.primary=1) INNER JOIN addresses AS daddresses ON daddresstorecord.addressid = daddresses.uuid)'
 WHERE
     `id`='18';
+
+DELETE FROM `tabledefs` WHERE `id` = 22;
+DELETE FROM `tableoptions` WHERE `tabledefid` = 22;
+DELETE FROM `tablecolumns` WHERE `tabledefid` = 22;
+DELETE FROM `tableoptions` WHERE `tabledefid` = 22;
+DELETE FROM `tablegroupings` WHERE `tabledefid` = 22;
+DELETE FROM `tablefindoptions` WHERE `tabledefid` = 22;
+DELETE FROM `tablesearchablefields` WHERE `tabledefid` = 22;
+DELETE FROM `menu` WHERE `name` = 'Email Projects';
+
 UPDATE `tabledefs` SET
     `uuid`='tbld:157b7707-5503-4161-4dcf-6811f8b0322f',
     `querytable` = '`clientemailprojects` LEFT JOIN `users` ON `clientemailprojects`.`userid`=`users`.`uuid`'

@@ -1,5 +1,3 @@
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'clientemailprojects.name', 'name', '0', 'field');
-INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:157b7707-5503-4161-4dcf-6811f8b0322f', 'users.firstname like \"{{value}}%\" or users.lastname like \"{{value}}%\"', 'user', '1', 'whereclause');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:27b99bda-7bec-b152-8397-a3b09c74cb23', 'addresses.id', 'id', '1', 'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c', 'products.partnumber', 'part number', '0', 'field');
 INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorder`, `type`) VALUES ('tbld:31423480-a9b0-f0ff-749e-b3b5e18ca93c', 'lineitems.invoiceid', 'invoice id', '2', 'field');
