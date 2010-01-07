@@ -47,8 +47,10 @@ class cleanSysLog{
 
 }//end class --cleanImports--
 
-if(!isset($noProcess)){
-	$clean = new cleanSysLog($db);
-	$clean->removeExcessLogs();
+if(!isset($noOutput) && isset($db)){
+
+    $clean = new cleanSysLog($db);
+    $clean->removeExcessLogs();
+
 }//end if
 ?>

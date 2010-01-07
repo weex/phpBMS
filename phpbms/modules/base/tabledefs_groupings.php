@@ -42,6 +42,11 @@
 
 	include("include/tablegroupings.php");
 
+	if(!hasRights("Admin"))
+		goURL(APP_PATH."noaccess.php");
+
+	if(!isset($_GET["id"]))
+		$error = new appError(-200, "Passed parameter missing", "Invalid request", true);
 
 	//grab the table name
 	$querystatement = "SELECT displayname FROM tabledefs WHERE id=".((int) $_GET["id"]);

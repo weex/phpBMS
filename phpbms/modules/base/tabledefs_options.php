@@ -44,6 +44,9 @@
 	if(!isset($_GET["id"]))
 		$error = new appError(100, "Passed Parameter not present.");
 
+	if(!hasRights("Admin"))
+		goURL(APP_PATH."noaccess.php");
+
 	$options = new tableOptions($db, $_GET["id"]);
 
 	$pageTitle = "Table Definition Options: ".$options->tablename;

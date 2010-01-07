@@ -44,7 +44,10 @@
 
         //Make sure table definition id is set
 	if(!isset($_GET["id"]))
-            $error = new appError(300,"Passed variable not set (id)");
+            $error = new appError(200,"Passed variable not set");
+
+	if(!hasRights("Admin"))
+		goURL(APP_PATH."noaccess.php");
 
         $customFields = new customFields($db, ((int) $_GET["id"]));
 

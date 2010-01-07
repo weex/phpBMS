@@ -46,7 +46,7 @@
 		goURL(APP_PATH."noaccess.php");
 
 	if(!isset($_GET["id"]))
-		$error = new appError(-200, "Passed parameter missing", "Invalid request", true);
+		$error = new appError(200, "Passed parameter missing", "Invalid request", true);
 
 	$columns = new tableColumns($db, $_GET["id"]);
 

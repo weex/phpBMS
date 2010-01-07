@@ -666,7 +666,7 @@ class generateUUIDS extends installUpdateBase{
 // START PROCESSING
 //==============================================================================
 
-if(!isset($noProcess)){
+if(!isset($noOutput)){
     $genUUIDS = new generateUUIDS();
     echo $genUUIDS->process();
 }//end if

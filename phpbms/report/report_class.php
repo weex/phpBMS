@@ -114,11 +114,42 @@ class phpbmsReport{
 
         $this->tabledefUUID = mysql_real_escape_string($tabledefUUID);
 
-        if($reportUUID)
-            $this->retrieveReportSettings();
+        $this->checkRights();
+
+        $this->retrieveReportSettings();
 
     }//end function init
 
+
+    /**
+     * function checkRight
+     *
+     * Checks report record and current user to make sure they have rights to run this report
+     */
+     function checkRights(){
+
+        $querystatement = "
+            SELECT
+                `roleid`
+            FROM
+                `reports`
+            WHERE
+                `uuid` = '".$this->reportUUID."'
+        ";
+
+        $queryresult = $this->db->query($querystatement);
+
+        if($this->db->numRows($queryresult)){
+
+            $therecord = $this->db->fetchArray($queryresult);
+
+            if(!hasRights($therecord["roleid"]))
+                goURL(APP_PATH."noaccess.php");
+
+        } else
+            $error = new appError(500, "Bad report uuid");
+
+     }//end function checkRights
 
     /**
      * function retrieveReportSettings()

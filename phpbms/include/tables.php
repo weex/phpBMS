@@ -821,6 +821,9 @@ $LastChangedDate: 2007-07-02 15:50:36 -0600 (Mon, 02 Jul 2007) $
 
                     case "save":
 
+                        if(!hasRights($this->editroleid))
+                            goURL(APP_PATH."noaccess.php");
+                            
                         $variables = $this->prepareVariables($_POST);
                         $errorArray = $this->verifyVariables($variables);
 

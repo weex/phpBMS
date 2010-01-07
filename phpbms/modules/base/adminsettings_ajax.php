@@ -96,20 +96,34 @@ class checkUpdate {
     }//end function
 
 }//end class
-/*--[Processing]-------------------------------------------------------------*/
-/*---------------------------------------------------------------------------*/
-if(!isset($_GET["m"]))
-    exit;
-require_once("../../include/session.php");
 
-$checkUpdate = new checkUpdate($db);
-$response = array();
-if($checkUpdate->needUpdateCheck($_GET["m"])){
-    $response = $checkUpdate->checkForUpdate();
-}else{
-    $response["checked"] = false;
-    $response = json_encode($response);
-}//end if
 
-echo $response;
+/**
+ * Processing ==================================================================
+ */
+if(!isset($noOutput)){
+
+    require_once("../../include/session.php");
+
+    $db->errorFormat = "json";
+
+    if(!isset($_GET["m"]))
+        $error = new appError(200, "invalid passed paramaters", "", true, true, "json");
+
+    if(!$_SESSION["userinfo"]["admin"])
+        $error = new appError(970, "no rights to function", "", true, true, "json");
+
+    $checkUpdate = new checkUpdate($db);
+    $response = array();
+
+    if($checkUpdate->needUpdateCheck($_GET["m"]))
+        $response = $checkUpdate->checkForUpdate();
+    else{
+        $response["checked"] = false;
+        $response = json_encode($response);
+    }//end if
+
+    echo $response;
+
+}//endif
 ?>

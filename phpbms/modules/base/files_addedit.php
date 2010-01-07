@@ -60,6 +60,9 @@
 
 	$therecord = $thetable->processAddEditPage();
 
+        if(!hasRights($therecord["roleid"]))
+            goURL("../../noaccess.php");
+
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
 

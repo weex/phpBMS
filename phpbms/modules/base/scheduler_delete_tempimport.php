@@ -28,8 +28,10 @@ class cleanImports{
 
 }//end class --cleanImports--
 
-if(!isset($noProcess)){
-	$clean = new cleanImports($db);
-	$clean->removeTempCSV();
+if(!isset($noOutput) && isset($db)){
+
+    $clean = new cleanImports($db);
+    $clean->removeTempCSV();
+
 }//end if
 ?>

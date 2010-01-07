@@ -414,7 +414,7 @@ class recurr{
 
 //PROCESSOR
 //=============================================================================================
-if(!isset($noProcess)){
+if(!isset($noOutput)){
 	$recurr = new recurr($db);
 	$invoiceArray = $recurr->getInvoicesToRepeat();
 	foreach($invoiceArray as $invoiceid)

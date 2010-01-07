@@ -36,8 +36,7 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-//var_dump($_POST);
-//exit;
+
 	require_once("../../include/session.php");
 	require_once("include/fields.php");
 	require_once("include/tables.php");
@@ -57,6 +56,9 @@
 
 	$thetable = new notes($db, "tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1", $backurl);
 	$therecord = $thetable->processAddEditPage();
+
+        if($therecord["private"] && $therecord["createdby"] != $_SESSION["userinfo"]["id"] && !$_SESSION["userinfo"]["admin"])
+            goURL("../../noaccess.php");
 
 	if(isset($therecord["phpbmsStatus"]))
 		$statusmessage = $therecord["phpbmsStatus"];
