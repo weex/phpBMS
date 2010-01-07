@@ -36,40 +36,82 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require ("include/session.php");
 
-	function isUnique($tablename,$column,$value,$excludeid,$db){
-		
-		$thereturn=false;
-		
-		$querystatement="SELECT count(id) AS thecount FROM ".$tablename." WHERE ".$column."=\"".$value."\" AND id!=".$excludeid;
-		$queryresult=$db->query($querystatement);
-		if($queryresult){
-			$therecord=$db->fetchArray($queryresult);
-			if($therecord["thecount"]==0)
-				$thereturn=true;
-		}
-		
-		return $thereturn;
-	}
-	
-	
-	$isunique=false;
-	
-	if(isset($_GET["tdid"]) && isset($_GET["c"]) && isset($_GET["val"]) && isset($_GET["xid"])) {
-		$_GET["tdid"]=((int) $_GET["tdid"]);
-		$_GET["xid"]=((int) $_GET["xid"]);
-		
-		$querystatement="SELECT maintable FROM tabledefs WHERE id=".$_GET["tdid"];
-		$queryresult=$db->query($querystatement);
-		if($queryresult)
-			if($therecord=$db->fetchArray($queryresult))
-				$isunique=isUnique($therecord["maintable"],$_GET["c"],$_GET["val"],$_GET["xid"],$db);		
-	}
-	
-	header('Content-Type: text/xml');
-	echo '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
-?>
-<response>
-  <isunique><?php echo ((int) $isunique) ?></isunique>
-</response>
+
+class uniqueChecker{
+
+    var $db;
+
+    function uniqueChecker($db){
+
+        $this->db = $db;
+        $this->db->errorFormat = "json";
+
+    }//end function init
+
+
+    function check($tabledefuuid, $columname, $value, $excludeid = NULL){
+
+        $querystatement = "
+            SELECT
+                `maintable`
+            FROM
+                `tabledefs`
+            WHERE
+                `uuid` = '".mysql_real_escape_string($tabledefuuid)."'";
+
+        $queryresult = $this->db->query($querystatement);
+
+        if($this->db->numRows($queryresult) === 0)
+            return "error";
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        $table = $therecord["maintable"];
+
+        $columname = mysql_real_escape_string(str_replace("`","", $columname));
+        $value = mysql_real_escape_string($value);
+
+        $querystatement = "
+            SELECT
+                count(id) AS thecount
+            FROM
+                `".$table."`
+            WHERE
+                `".$columname."` = '".$value."'";
+
+        if($excludeid){
+
+            $querystatement .= " AND `uuid` != '".mysql_real_escape_string($excludeid)."'";
+
+        }//endif
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        return ($therecord["thecount"] == 0);
+
+    }//end function check
+
+}//end class
+
+
+/**
+ * PROCESSING ==================================================================
+ */
+if(!isset($noOutput)){
+
+    require_once("include/session.php");
+
+    if(!isset($_GET["tduuid"]) || !isset($_GET["cname"]) || !isset($_GET["value"]))
+        $error = new appError(200, "passed parameters not set");
+
+    if(!isset($_GET["xuuid"]))
+        $_GET["xuuid"] = "";
+
+    $checker = new uniqueChecker($db);
+
+    echo json_encode($checker->check($_GET["tduuid"], $_GET["cname"], $_GET["value"], $_GET["xuuid"]));
+
+}//endif

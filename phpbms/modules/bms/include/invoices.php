@@ -815,7 +815,7 @@ if(class_exists("phpbmsTable")){
 
 				}//end if
 
-				if(!in_array(((string)$variables["assignedtoid"]),$this->_availableUserUUIDs))
+				if(!in_array(((string)$variables["assignedtoid"]), $this->_availableUserUUIDs))
 					$this->verifyErrors[] = "The `assignedtoid` field does not give an existing/acceptable user id number.";
 
 			}//end if
@@ -1555,7 +1555,7 @@ if(class_exists("searchFunctions")){
 				$therecord = $this->db->fetchArray($queryresult);
 
 				if($therecord["defaultassignedtoid"]!="")
-					$assignedtoid = $therecord["defaultassignedtoid"];
+					$assignedtoid = "'".$therecord["defaultassignedtoid"]."'";
 				else
 					$assignedtoid="NULL";
 
@@ -1594,7 +1594,7 @@ if(class_exists("searchFunctions")){
 						invoices
 					SET
 						invoices.statusdate=NOW(),
-						assignedtoid='".$assignedtoid."',
+						assignedtoid=".$assignedtoid.",
 						modifiedby=".$_SESSION["userinfo"]["id"].", ";
 
 				if($readytopost){
@@ -1626,7 +1626,7 @@ if(class_exists("searchFunctions")){
 				//insert new history
 				$querystatement="INSERT INTO invoicestatushistory (invoiceid,invoicestatusid,statusdate,assignedtoid) values (";
 				$querystatement.="'".$therecord["uuid"]."','".$statusid."',NOW(),";
-				$querystatement.="'".$assignedtoid."'";
+				$querystatement.= $assignedtoid;
 				$querystatement.=")";
 				$insertresult = $this->db->query($querystatement);
 

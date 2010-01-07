@@ -48,9 +48,9 @@
 
 	//initialize the object
 	$displayTable->initialize($_GET["id"]);
-	
-	if (isset($passedjoinclause)) $_SESSION["passedjoinclause"] = $passedjoinclause; 
- 	if (isset($passedjoinwhere)) $_SESSION["passedjoinwhere"] = $passedjoinwhere; 
+
+	if (isset($passedjoinclause)) $_SESSION["passedjoinclause"] = $passedjoinclause;
+ 	if (isset($passedjoinwhere)) $_SESSION["passedjoinwhere"] = $passedjoinwhere;
 
 
 	//process commands...
@@ -120,13 +120,13 @@
 				$functionname = $therecord["name"];
 
 			}//endif
-			
+
 			/**
-			  *  If the command is a push command, include tables.php 
+			  *  If the command is a push command, include tables.php
 			  */
 			if(strpos($functionname, ":") !== false)
 				include("include/tables.php");
-			
+
 			//try to include table specific functions
 			if(file_exists("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php"))
 				include("modules/".$displayTable->thetabledef["name"]."/include/".$displayTable->thetabledef["maintable"].".php");
@@ -141,17 +141,17 @@
 				$searchFunctions = new searchFunctions($db,$displayTable->thetabledef["uuid"],$theids);
 
 			if(!preg_match("/\:/", $functionname)){
-				
+
 				if(method_exists($searchFunctions,$functionname))
 					$statusmessage = $searchFunctions->$functionname();
 				else
 					$statusmessage = "Function ".$functionname." not defined";
-					
+
 			}else{
-				
+
 				if(moduleExists("mod:b2d42220-443b-fe74-dbdb-ed2c0968c38c", $phpbms->modules))
 					$statusmessage = $searchFunctions->runPush($therecord["name"]);
-				
+
 			}//end if
 			break;
 

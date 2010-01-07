@@ -80,9 +80,9 @@ var product = {
     checkPartNumber: function(){
 
         var partnumber = getObjectFromID("partnumber");
-        var excludeid = getObjectFromID("id");
+        var excludeid = getObjectFromID("uuid");
 
-        if(!checkUnique(4, "partnumber", partnumber.value, parseInt(excludeid.value))){
+        if(!checkUnique('tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34', "partnumber", partnumber.value, excludeid.value)){
 
             alert("Part number must be unique.");
             partnumber.value="";

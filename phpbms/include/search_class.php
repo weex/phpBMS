@@ -670,7 +670,7 @@
             <p id="bstStartsWithP" class="big">
 
                 <label for="startswith">starts with</label><br />
-                <input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo formatVariable($this->savedstartswith) ?>" size="35" maxlength="128" tabindex="1"/>
+                <input id="startswith" name="startswith" type="text"  value="<?php if($this->querytype=="search" and isset($this->savedstartswith)) echo formatVariable(stripslashes(stripslashes($this->savedstartswith))) ?>" size="35" maxlength="128" tabindex="1"/>
 
             </p>
 
