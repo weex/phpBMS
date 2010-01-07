@@ -208,6 +208,7 @@ class recurr{
 		$therecord = $this->db->fetchArray($queryresult);
 
 		$fieldList = array();
+
 		foreach($therecord as $name=>$value){
 			switch($name){
 				case "id":
@@ -292,8 +293,9 @@ class recurr{
 
 		$theid = $this->db->insertId();
 
-		$this->copyLineItems($therecord["uuid"],$theid);
-		$this->insertHistory($theid,$therecord["statusid"],$therecord["statusdate"],$therecord["assignedtoid"]);
+		$this->copyLineItems($therecord["id"], $theid);
+
+		$this->insertHistory($therecord["uuid"], $therecord["statusid"], $therecord["statusdate"], $therecord["assignedtoid"]);
 
 		$this->updateReccurence($therecord["recurrid"],$therecord["firstrepeat"]);
 
@@ -322,7 +324,7 @@ class recurr{
 						break;
 
 					case "invoiceid":
-						$therecord[$name] = "'".$newInvoiceID."'";
+						$therecord[$name] = $newInvoiceID;
 						$fieldlist[] = $name;
 						break;
 
