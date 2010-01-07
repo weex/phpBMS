@@ -799,17 +799,17 @@ INSERT INTO `tablesearchablefields` (`tabledefid`, `field`, `name`, `displayorde
 --tabs UPDATE--
 UPDATE `tabs` SET `uuid`='tab:becfca94-ae25-a42c-7909-247d5324e4b5' WHERE `id`='6';
 UPDATE `tabs` SET `uuid`='tab:ef895fc0-bbea-9bf5-47ac-4913c6dace13' WHERE `id`='7';
-UPDATE `tabs` SET `uuid`='tab:19e34181-65f0-bfcf-6e09-99d0575ebd74' WHERE `id`='8';
-UPDATE `tabs` SET `uuid`='tab:d8e888af-d147-98ae-6849-a159a7c9daae' WHERE `id`='9';
+UPDATE `tabs` SET `uuid`='tab:19e34181-65f0-bfcf-6e09-99d0575ebd74', `notificationsql` = 'SELECT count(attachments.id) AS theresult FROM attachments INNER JOIN clients ON attachments.recordid = clients.uuid WHERE clients.id = {{id}}' WHERE `id`='8';
+UPDATE `tabs` SET `uuid`='tab:d8e888af-d147-98ae-6849-a159a7c9daae', `notificationsql` = 'SELECT count(notes.id) AS theresult FROM notes INNER JOIN clients ON notes.attachedid = clients.uuid WHERE clients.id ={{id}}' WHERE `id`='9';
 UPDATE `tabs` SET `uuid`='tab:17346362-261b-4d1d-fa77-99e84cfd9b8a' WHERE `id`='10';
 UPDATE `tabs` SET `uuid`='tab:9bfc7eea-5abb-f5d8-763f-f78fe499464d' WHERE `id`='11';
 UPDATE `tabs` SET `uuid`='tab:cd09d4a1-7d32-e08a-bd6e-5850bc9af88e' WHERE `id`='12';
-UPDATE `tabs` SET `uuid`='tab:4c853d8b-8895-a8c5-8ff6-1128e6e1a798' WHERE `id`='13';
-UPDATE `tabs` SET `uuid`='tab:d62cf7eb-fd2a-948a-6279-8a61d02390ae' WHERE `id`='14';
+UPDATE `tabs` SET `uuid`='tab:4c853d8b-8895-a8c5-8ff6-1128e6e1a798', `notificationsql` = 'SELECT count(attachments.id) AS theresult FROM attachments INNER JOIN products ON attachments.recordid = products.uuid WHERE  products.id = {{id}}' WHERE `id`='13';
+UPDATE `tabs` SET `uuid`='tab:d62cf7eb-fd2a-948a-6279-8a61d02390ae', `notificationsql` = 'SELECT count(notes.id) AS theresult FROM notes INNER JOIN products ON notes.attachedid = products.uuid WHERE products.id = {{id}}' WHERE `id`='14';
 UPDATE `tabs` SET `uuid`='tab:20276b44-9cfa-403e-4c2a-ac6f0987ae20' WHERE `id`='15';
 UPDATE `tabs` SET `uuid`='tab:809d644e-fa40-5ad3-0426-3d84cf15b32e' WHERE `id`='16';
-UPDATE `tabs` SET `uuid`='tab:23687374-5c14-04af-74ac-0f74342e1019' WHERE `id`='17';
-UPDATE `tabs` SET `uuid`='tab:c4cbfabf-a00e-7b82-b411-0e442205360a' WHERE `id`='18';
+UPDATE `tabs` SET `uuid`='tab:23687374-5c14-04af-74ac-0f74342e1019', `notificationsql` = 'SELECT count(attachments.id) AS theresult FROM attachments INNER JOIN invoices ON attachments.recordid = invoices.uuid WHERE  invoices.id = {{id}}' WHERE `id`='17';
+UPDATE `tabs` SET `uuid`='tab:c4cbfabf-a00e-7b82-b411-0e442205360a', `notificationsql` = 'SELECT count(notes.id) AS theresult FROM notes INNER JOIN invoices ON notes.attachedid = invoices.uuid WHERE invoices.id ={{id}}' WHERE `id`='18';
 UPDATE `tabs` SET `uuid`='tab:5a6ef814-2689-4e3b-2609-db43fb3cc001' WHERE `id`='300';
 UPDATE `tabs` SET `uuid`='tab:625192d0-00e6-ae2c-5b8c-f433bbf6e546' WHERE `id`='303';
 --end tabs UPDATE--
