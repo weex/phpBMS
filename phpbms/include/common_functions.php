@@ -303,7 +303,7 @@ function getUuid($db, $tabledefuuid, $id){
                 FROM
                         `".$tablerecord["maintable"]."`
                 WHERE
-                        `id` = ".$id;
+                        `id` = ".((int) $id);
 
         $queryresult = $db->query($querystatement);
 

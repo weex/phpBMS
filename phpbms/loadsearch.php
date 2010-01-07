@@ -65,7 +65,7 @@
 		function save($name,$tabledefid,$userid){
 
 			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
-			
+
 			$querystatement = "
                 SELECT
                     `prefix`
@@ -74,9 +74,9 @@
                 WHERE
                     `uuid` = '".$uuid."'
             ";
-            
+
             $queryresult = $this->db->query($querystatement);
-            
+
             $therecord = $this->db->fetchArray($queryresult);
             $prefix = $therecord["prefix"];
 
@@ -264,36 +264,58 @@
 
 
 
-	if(isset($_GET["cmd"])){
+if(isset($_GET["cmd"])){
 
-		$thesearch = new savedSearch($db);
+    $thesearch = new savedSearch($db);
 
-		switch($_GET["cmd"]){
-			case "show":
-				$securitywhere = "";
+    switch($_GET["cmd"]){
 
-				if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
+            case "show":
 
-					$securitywhere = "";
+                $securitywhere = "";
 
-					foreach($_SESSION["userinfo"]["roles"] as $role)
-						$securitywhere .= ", '".$role."'";
+                if ($_SESSION["userinfo"]["admin"]!=1 && count($_SESSION["userinfo"]["roles"])>0){
 
-					$securitywhere = " AND (`roleid` IN (''".$securitywhere.") OR `roleid` IS NULL)";
+                    $securitywhere = "";
 
-				}//endif
+                    foreach($_SESSION["userinfo"]["roles"] as $role)
+                        $securitywhere .= ", '".$role."'";
 
-				$thesearch->showLoad($_GET["tid"], $_SESSION["userinfo"]["uuid"], $securitywhere);
-				break;
+                    $securitywhere = " AND (`roleid` IN (''".$securitywhere.") OR `roleid` IS NULL)";
 
-			case "getsearch":
-				$thesearch->get($_GET["id"]);
-			break;
-			case "savesearch":
-				$thesearch->save($_GET["name"],$_GET["tid"],$_SESSION["userinfo"]["uuid"]);
-			break;
-			case "deletesearch":
-				$thesearch->delete($_GET["id"]);
-			break;
-		}//end switch
-	}?>
+                }//endif
+
+                if(!isset($_GET["tid"]))
+                    $error = new appError(200, "passed parameters not set");
+
+                $thesearch->showLoad($_GET["tid"], $_SESSION["userinfo"]["uuid"], $securitywhere);
+                break;
+
+            case "getsearch":
+
+                if(!isset($_GET["id"]))
+                    $error = new appError(200, "passed parameters not set");
+
+                $thesearch->get($_GET["id"]);
+                break;
+
+            case "savesearch":
+
+                if(!isset($_GET["tid"]) || !isset($_GET["name"]))
+                    $error = new appError(200, "passed parameters not set");
+
+                $thesearch->save($_GET["name"] ,$_GET["tid"], $_SESSION["userinfo"]["uuid"]);
+                break;
+
+            case "deletesearch":
+
+                if(!isset($_GET["id"]))
+                    $error = new appError(200, "passed parameters not set");
+
+                $thesearch->delete($_GET["id"]);
+                break;
+
+    }//end switch
+
+}//endif
+?>
