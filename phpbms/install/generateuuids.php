@@ -206,7 +206,7 @@ class generateUUIDS extends installUpdateBase{
 
             $this->updateFields("lineitems", array("productid"=>$this->productsList));
             $this->updateFields("invoicestatuses", array("defaultassignedtoid"=>$this->userList));
-            $this->updateFields("invoicestatushistory", array("invoiceid"=>$this->invoiceList, "invoicestatusid"=>$this->invoiceStatsList, "assignedtoid"=>$this->userList));
+            $this->updateFields("invoicestatushistory", array("invoiceid"=>$this->invoiceList, "invoicestatusid"=>$this->invoiceStatusList, "assignedtoid"=>$this->userList));
             $this->updateFields("addresstorecord", array("tabledefid"=>$this->tabledefList, "recordid"=>$this->clientList, "addressid"=>$this->addressList));
             $this->updateFields("receiptitems", array("receiptid"=>$this->receiptList, "aritemid"=>$this->aritemList));
             $this->updateFields("receipts", array("clientid"=>$this->clientList, "paymentmethodid"=>$this->paymentList));
