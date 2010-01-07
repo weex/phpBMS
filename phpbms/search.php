@@ -40,9 +40,9 @@
 	require_once("include/search_class.php");
 
 	if(!isset($_GET["id"]))
-		$error = new appError(100,"Passed Parameter not present.");
+	    $error = new appError(100,"Passed Parameter not present.");
 
-	$_GET["id"]= mysql_real_escape_string($_GET["id"]);
+	$_GET["id"] = mysql_real_escape_string($_GET["id"]);
 
 	$displayTable= new displaySearchTable($db);
 
@@ -108,7 +108,8 @@
 
 				$querystatement = "
 					SELECT
-						name
+						name,
+                                                roleid
 					FROM
 						tableoptions
 					WHERE id = ".((int) $_POST["othercommands"]);
@@ -168,39 +169,81 @@
 		case "omit":
 			// omit selected from current query
 			//=====================================================================================================
-			$displayTable->recordoffset=0;
-			$tempwhere="";
-			$theids=explode(",",$_POST["theids"]);
-			foreach($theids as $theid){
-				$tempwhere.=" or ".$displayTable->thetabledef["maintable"].".id=".$theid;
-			}
-			$tempwhere=substr($tempwhere,3);
-			$displayTable->querywhereclause="(".$displayTable->querywhereclause.") and not (".$tempwhere.")";
+			$displayTable->recordoffset = 0;
+			$tempwhere = "";
+			$theids = explode(",",$_POST["theids"]);
+
+                        foreach($theids as $theid)
+			    $tempwhere.=" OR ".$displayTable->thetabledef["maintable"].".id=".((int) $theid);
+
+			$tempwhere = substr($tempwhere,3);
+
+                        $displayTable->querywhereclause="(".$displayTable->querywhereclause.") AND NOT (".$tempwhere.")";
 			break;
 
 		case "keep":
 			// keep only those ids
 			//=====================================================================================================
-			$displayTable->recordoffset=0;
-			$tempwhere="";
-			$theids=explode(",",$_POST["theids"]);
-			foreach($theids as $theid){
-				$tempwhere.=" or ".$displayTable->thetabledef["maintable"].".id=".$theid;
-			}
+			$displayTable->recordoffset = 0;
+			$tempwhere = "";
+			$theids = explode(",",$_POST["theids"]);
+
+			foreach($theids as $theid)
+                            $tempwhere.=" or ".$displayTable->thetabledef["maintable"].".id=".((int) $theid);
+
 			$tempwhere=substr($tempwhere,3);
-			$displayTable->querywhereclause=$tempwhere;
+
+			$displayTable->querywhereclause = $tempwhere;
+
 			break;
 
 		case "advanced search":
+
+                        if(!hasRights($displayTable->thetabledef["advsearchroleid"]))
+                	    goURL(APP_PATH."noaccess.php");
+
 			$displayTable->recordoffset=0;
 			$displayTable->querywhereclause=stripslashes($_POST["advancedsearch"]);
 			$displayTable->querytype="advanced search";
 			break;
 
+                case "run search":
+                    /**
+                     * Run a loaded search
+                     */
+
+                        if(!hasRights($displayTable->thetabledef["advsearchroleid"])){
+                            /**
+                             * Need to load search from id, because the
+                             * person does not have rights to override loaded
+                             * searches
+                             */
+
+                            $querystatement="
+                                SELECT
+                                        sqlclause
+                                FROM
+                                        usersearches
+                                WHERE id=".((int) $_POST["LSList"]);
+
+                            $queryresult = $db->query($querystatement);
+
+                            $therecord = $db->fetchArray($queryresult);
+
+                            $_POST["LSSQL"] = $therecord["sqlclause"];
+
+                        }//endif
+
+			$displayTable->recordoffset=0;
+			$displayTable->querywhereclause=stripslashes($_POST["LSSQL"]);
+			$displayTable->querytype="advanced search";
+			break;
+                    break;
+
 		case "advanced sort":
 			$displayTable->showGroupings = 0;
 			$displayTable->recordoffset = 0;
-			$displayTable->querysortorder=$_POST["advancedsort"];
+			$displayTable->querysortorder = $_POST["advancedsort"];
 			break;
 
 		case "relate records":

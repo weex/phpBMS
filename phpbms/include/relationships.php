@@ -101,7 +101,7 @@ class relationship{
           saved where clause.
         */
 	foreach($theids as $theid)
-            $_SESSION["passedjoinwhere"] .= " OR ".$therecord["fromtable"].".id = ".$theid;
+            $_SESSION["passedjoinwhere"] .= " OR ".$therecord["fromtable"].".id = ".((int) $theid);
 
 	$_SESSION["passedjoinwhere"] = substr($_SESSION["passedjoinwhere"], 3);
 

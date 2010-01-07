@@ -80,9 +80,11 @@
 					modules.name,
 					searchroleid,
 					advsearchroleid,
-					viewsqlroleid
+					viewsqlroleid,
+                                        editroleid,
+                                        addroleid
 				FROM
-					tabledefs inner join modules on tabledefs.moduleid = modules.uuid
+					tabledefs INNER JOIN modules on tabledefs.moduleid = modules.uuid
 				WHERE
 					tabledefs.uuid= '".$id."'";
 

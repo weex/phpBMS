@@ -76,7 +76,7 @@ function clickIt(theTR,theevent,disablectrl){
         		ctrlkeydown = theevent.ctrlKey;
 		} else
                     ctrlkeydown = theevent.metaKey;
-                    
+
 		shiftkeydown=theevent.shiftKey;
 	}
 
@@ -609,12 +609,6 @@ function LSsearchSelect(theselect,base){
 	}
 }
 
-function LSRunSearch(){
-	var sqlbox=getObjectFromID("LSSQL");
-	var advancedsearch=getObjectFromID("advancedsearch");
-	advancedsearch.value=sqlbox.value
-	advancedsearch.form.submit();
-}
 function LSDeleteSearch(base){
 	var theselect=getObjectFromID("LSList");
 	var resultbox=getObjectFromID("LSResults");

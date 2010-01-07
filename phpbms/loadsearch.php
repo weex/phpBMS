@@ -248,11 +248,11 @@ class savedSearch{
                                             <input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />
                                     </p>
                                     <p>
-                                            <textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
+                                            <textarea id="LSSQL" name="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo ' readonly="readonly"'?>></textarea>
                                     </p>
                             </td>
                             <td valign="top">
-                                    <p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
+                                    <p><br/><input id="LSLoad" type="submit" name="command" class="Buttons" disabled="disabled" value="run search"/></p>
                                     <p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo APP_PATH ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
                                     <div id="LSResults">&nbsp;</div>
                             </td>
@@ -268,6 +268,8 @@ class savedSearch{
 
 
 if(isset($_GET["cmd"])){
+
+    require_once("include/session.php");
 
     $thesearch = new savedSearch($db);
 
