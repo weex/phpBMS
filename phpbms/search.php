@@ -81,11 +81,11 @@
 			$displayTable->querytype="print";
 
 			if($_POST["theids"] === "")
-				$_POST["theids"]="-100";
+			    $_POST["theids"]="-100";
 
 			$theids=explode(",",$_POST["theids"]);
-			$_SESSION["printing"]["tableid"]=$displayTable->thetabledef["uuid"];
-			$_SESSION["printing"]["maintable"]=$displayTable->thetabledef["maintable"];
+			$_SESSION["printing"]["tableid"] = $displayTable->thetabledef["uuid"];
+			$_SESSION["printing"]["maintable"] = $displayTable->thetabledef["maintable"];
 			$_SESSION["printing"]["theids"]=$theids;
 			goURL("print.php");
 			break;
@@ -102,9 +102,11 @@
 			$theids=explode(",",$_POST["theids"]);
 
 			//grab the method name
-			if(((int) $_POST["othercommands"]) === -1)
-				$functionname = "delete_record";
-			else {
+			if(((int) $_POST["othercommands"]) === -1){
+
+			    $functionname = "delete_record";
+
+			} else {
 
 				$querystatement = "
 					SELECT
@@ -119,6 +121,9 @@
 				$therecord = $db->fetchArray($queryresult);
 
 				$functionname = $therecord["name"];
+
+                                if(!hasRights($therecord["roleid"]))
+                            	    goURL(APP_PATH."noaccess.php");
 
 			}//endif
 

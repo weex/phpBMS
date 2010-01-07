@@ -513,7 +513,7 @@
 				}//endif
 
 			}//endwhile
-
+//debug($options);
 			return $options;
 
 		}//end getTableOptions

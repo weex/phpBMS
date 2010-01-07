@@ -49,6 +49,7 @@
 		var $db;
 
 		function printer($db,$tableid,$theids){
+
 			$this->db = $db;
 			$this->tableid = $tableid;
 			$this->theids = $theids;
@@ -61,9 +62,11 @@
 				WHERE
 					`uuid` = '".$this->tableid."'
 				";
-			$queryresult = $this->db->query($querystatement);
-			if(!$queryresult) $error = new appError(500,"Error retrieving table info.");
+
+                        $queryresult = $this->db->query($querystatement);
+
 			$therecord = $this->db->fetchArray($queryresult);
+
 			$this->maintable = $therecord["maintable"];
 
 			$securitywhere="";
