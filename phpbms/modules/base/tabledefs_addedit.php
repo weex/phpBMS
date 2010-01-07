@@ -68,7 +68,7 @@
 		$theinput = new inputCheckbox("hascustomfields",$therecord["hascustomfields"],"has custom fields");
 		$theform->addField($theinput);
 
-        $theinput = new inputCheckbox("apiaccessible",$therecord["apiaccessible"],"api accessible");
+                $theinput = new inputCheckbox("apiaccessible",$therecord["apiaccessible"],"api accessible");
 		$theform->addField($theinput);
 
 		$theinput = new inputDataTableList($db, "moduleid", $therecord["moduleid"], "modules", "uuid", "displayname",

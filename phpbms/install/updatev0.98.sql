@@ -334,12 +334,18 @@ UPDATE `tabledefs` SET `hascustomfields` = 1 WHERE `id` IN(12, 9, 26, 200);
 
 UPDATE `tabledefs` SET
     `uuid` = 'tbld:afe6d297-b484-4f0b-57d4-1c39412e9dfb',
+    `searchroleid` = -100,
+    `addroleid` = -100,
+    `editroleid` = -100,
     `prefix` = 'usr'
 WHERE
     `id`='9';
 
 UPDATE `tabledefs` SET
     `uuid`='tbld:8d19c73c-42fb-d829-3681-d20b4dbe43b9',
+    `searchroleid` = -100,
+    `addroleid` = -100,
+    `editroleid` = -100,
     `prefix` = 'rln',
     `querytable` = '(`relationships` INNER JOIN `tabledefs` AS `fromtable` ON `relationships`.`fromtableid`=`fromtable`.`uuid`) INNER JOIN `tabledefs` AS `totable` ON `relationships`.`totableid`=`totable`.`uuid`'
 WHERE
@@ -360,6 +366,9 @@ WHERE
 
 UPDATE `tabledefs` SET
     `uuid`='tbld:d595ef42-db9d-2233-1b9b-11dfd0db9cbb',
+    `searchroleid` = -100,
+    `addroleid` = -100,
+    `editroleid` = -100,
     `prefix` = 'rpt',
     `querytable` = '`reports` LEFT JOIN `tabledefs` ON `reports`.`tabledefid` = `tabledefs`.`uuid`'
 WHERE
@@ -367,6 +376,9 @@ WHERE
 
 UPDATE `tabledefs` SET
     `uuid`='tbld:e251524a-2da4-a0c9-8725-d3d0412d8f4a',
+    `searchroleid` = -100,
+    `addroleid` = -100,
+    `editroleid` = -100,
     `prefix` = 'sss',
     `querytable` = '(`usersearches` LEFT JOIN `users` ON `usersearches`.`userid` = `users`.`uuid`) INNER JOIN `tabledefs` ON `usersearches`.`tabledefid`=`tabledefs`.`uuid`'
 WHERE
@@ -374,6 +386,9 @@ WHERE
 
 UPDATE `tabledefs` SET
     `uuid`='tbld:ea159d67-5e89-5b7f-f5a0-c740e147cd73',
+    `searchroleid` = -100,
+    `addroleid` = -100,
+    `editroleid` = -100,
     `prefix` = 'mod'
 WHERE
     `id`='21';

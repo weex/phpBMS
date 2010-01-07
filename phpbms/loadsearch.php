@@ -36,230 +36,233 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
-	require("include/session.php");
 
-	class savedSearch{
+class savedSearch{
 
-		var $db;
+    var $db;
 
-		function savedSearch($db){
-			$this->db=$db;
-		}
+    function savedSearch($db){
 
-		function delete($id){
-			$querystatement="DELETE FROM usersearches
-							WHERE id=".((int) $id);
-			$queryresult = $this->db->query($querystatement);
+        $this->db=$db;
 
-			echo "success";
-		}
+    }//end function init
 
 
-		/**
-		 * saves current search
-		 *
-		 * @param string $name name to save search as
-		 * @param integer $tabledefid table definition's id
-		 * @param string $userid uuid of user
-		 */
-		function save($name,$tabledefid,$userid){
+    function delete($id){
 
-			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+        $querystatement="DELETE FROM usersearches
+                                        WHERE id=".((int) $id);
+        $queryresult = $this->db->query($querystatement);
 
-			$querystatement = "
-                SELECT
-                    `prefix`
-                FROM
-                    `tabledefs`
-                WHERE
-                    `uuid` = '".$uuid."'
-            ";
+        echo "success";
+
+    }//end function delete
+
+
+    /**
+     * saves current search
+     *
+     * @param string $name name to save search as
+     * @param integer $tabledefid table definition's id
+     * @param string $userid uuid of user
+     */
+    function save($name,$tabledefid,$userid){
+
+        $uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+
+        $querystatement = "
+            SELECT
+                `prefix`
+            FROM
+                `tabledefs`
+            WHERE
+                `uuid` = '".$uuid."'";
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+        $prefix = $therecord["prefix"];
+
+        $insertstatement = "
+                INSERT INTO
+                        usersearches
+                (
+                        userid,
+                        tabledefid,
+                        name,
+                        `type`,
+                        sqlclause,
+                        `uuid`
+                ) VALUES (
+                        '".mysql_real_escape_string($userid)."',
+                        '".mysql_real_escape_string($uuid)."',
+                        '".mysql_real_escape_string($name)."',
+                        'SCH',
+                        '".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."',
+                        '".uuid($prefix.":")."'
+                )";
+
+        $this->db->query($insertstatement);
+
+        echo "search saved";
+
+    }//endfunction save
+
+
+    /**
+     * displays sql clause for saved search
+     *
+     * @param integer $id savedsearch id
+     */
+    function get($id){
+
+        $querystatement="
+                    SELECT
+                            sqlclause
+                    FROM
+                            usersearches
+                    WHERE id=".((int) $id);
+
+        $queryresult = $this->db->query($querystatement);
+
+        $therecord = $this->db->fetchArray($queryresult);
+
+        echo $therecord["sqlclause"];
+
+    }//end function
+
+
+    /**
+     * generates the select input of saved searches
+     *
+     * @param mysql query result $queryresult
+     */
+    function showSavedSearchList($queryresult){
+
+        $numrows = $this->db->numRows($queryresult);
+
+        ?>
+        <select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo APP_PATH ?>')">
+            <?php if($numrows<1) {?>
+
+                <option value="NA">No Saved Searches</option>
+
+            <?php
+                } else {
+
+                    $numglobal=0;
+
+                    while($therecord=$this->db->fetchArray($queryresult))
+                            if($therecord["userid"]<1) $numglobal++;
+
+                    $this->db->seek($queryresult,0);
+
+                     if($numglobal>0){ ?>
+                            <option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
+                    <?php
+                    }//end if
+
+                    $userqueryline = true;
+
+                    while($therecord=$this->db->fetchArray($queryresult)){
+
+                        if ($therecord["userid"] != '' and $userqueryline) {
+
+                            $userqueryline = false;
+
+                            ?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php
+
+                        }//endif
+
+                        ?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php
+
+                    }// end while
+
+                }//end if
+                ?>
+        </select>
+        <?php
+
+    }//end function showSavedSearchList
+
+
+    /**
+     * displays the load box for saved searches
+     *
+     * @param integer $tabledefid id of tabledef
+     * @param string $userid uuid of user
+     * @param string $securitywhere additional security based where clause to pass
+     */
+    function showLoad($tabledefid,$userid,$securitywhere){
+
+            $uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
+
+            $querystatement = "
+                    SELECT
+                            id,
+                            name,
+                            userid
+                    FROM
+                            usersearches
+                    WHERE
+                            tabledefid = '".$uuid."'
+                            AND type='SCH'
+                            AND (
+                                    (userid = '' ".$securitywhere.")
+                                    OR userid = '".$userid."')
+                    ORDER BY
+                            userid,
+                            name";
 
             $queryresult = $this->db->query($querystatement);
 
-            $therecord = $this->db->fetchArray($queryresult);
-            $prefix = $therecord["prefix"];
+            if(!$queryresult)
+                    $error = new appError(500,"Cannot retrieve saved search information");
 
-			$insertstatement = "
-				INSERT INTO
-					usersearches
-				(
-					userid,
-					tabledefid,
-					name,
-					`type`,
-					sqlclause,
-					`uuid`
-				) VALUES (
-					'".mysql_real_escape_string($userid)."',
-					'".mysql_real_escape_string($uuid)."',
-					'".mysql_real_escape_string($name)."',
-					'SCH',
-					'".addslashes($_SESSION["tableparams"][$tabledefid]["querywhereclause"])."',
-					'".uuid($prefix.":")."'
-				)";
+            $querystatement="
+                    SELECT
+                            advsearchroleid
+                    FROM
+                            tabledefs
+                    WHERE id= '".$tabledefid."'";
 
-			$this->db->query($insertstatement);
+            $tabledefresult = $this->db->query($querystatement);
 
-			echo "search saved";
+            if(!$tabledefresult)
+                    $error = new appError(500,"Cannot retrieve table definition information.");
 
-		}//endfunction save
+            $tableinfo=$this->db->fetchArray($tabledefresult);
 
+            ?>
+            <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                            <td valign="top">
+                                    <p>
+                                            <label for="LSList">saved searches</label><br />
+                                            <?php $this->showSavedSearchList($queryresult)?>
+                                    </p>
+                            </td>
+                            <td valign="top" width="100%">
+                                    <p>
+                                            <label for="LSSelectedSearch">name</label><br />
+                                            <input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />
+                                    </p>
+                                    <p>
+                                            <textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
+                                    </p>
+                            </td>
+                            <td valign="top">
+                                    <p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
+                                    <p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo APP_PATH ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
+                                    <div id="LSResults">&nbsp;</div>
+                            </td>
+                    </tr>
+            </table>
+            <?php
 
-		/**
-		 * displays sql clause for saved search
-		 *
-		 * @param integer $id savedsearch id
-		 */
-		function get($id){
+    }//end function showLoad
 
-		    $querystatement="
-				SELECT
-					sqlclause
-				FROM
-					usersearches
-				WHERE id=".((int) $id);
-
-		    $queryresult = $this->db->query($querystatement);
-
-		    $therecord = $this->db->fetchArray($queryresult);
-
-		    echo $therecord["sqlclause"];
-
-		}//end function
-
-
-		/**
-		 * generates the select input of saved searches
-		 *
-		 * @param mysql query result $queryresult
-		 */
-		function showSavedSearchList($queryresult){
-
-			$numrows = $this->db->numRows($queryresult);
-
-			?>
-			<select id="LSList" name="LSList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:170px;height:160px;" onchange="LSsearchSelect(this,'<?php echo APP_PATH ?>')">
-				<?php if($numrows<1) {?>
-
-					<option value="NA">No Saved Searches</option>
-
-				<?php
-					} else {
-
-						$numglobal=0;
-
-						while($therecord=$this->db->fetchArray($queryresult))
-							if($therecord["userid"]<1) $numglobal++;
-
-						$this->db->seek($queryresult,0);
-
-						 if($numglobal>0){ ?>
-							<option value="NA" style="font-style:italic;font-weight:bold"> -- global searches ---------</option>
-						<?php
-						}//end if
-
-						$userqueryline = true;
-
-						while($therecord=$this->db->fetchArray($queryresult)){
-
-							if ($therecord["userid"] != '' and $userqueryline) {
-
-								$userqueryline = false;
-
-								?><option value="NA" style="font-style:italic;font-weight:bold"> -- user searches ---------</option><?php
-
-							}//endif
-
-							?><option value="<?php echo $therecord["id"]?>"><?php echo $therecord["name"]?></option><?php
-
-						}// end while
-
-					}//end if
-				?>
-			</select>
-			<?php
-
-		}//end function showSavedSearchList
-
-
-		/**
-		 * displays the load box for saved searches
-		 *
-		 * @param integer $tabledefid id of tabledef
-		 * @param string $userid uuid of user
-		 * @param string $securitywhere additional security based where clause to pass
-		 */
-		function showLoad($tabledefid,$userid,$securitywhere){
-
-			$uuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", $tabledefid);
-
-			$querystatement = "
-				SELECT
-					id,
-					name,
-					userid
-				FROM
-					usersearches
-				WHERE
-					tabledefid = '".$uuid."'
-					AND type='SCH'
-					AND (
-						(userid = '' ".$securitywhere.")
-						OR userid = '".$userid."')
-				ORDER BY
-					userid,
-					name";
-
-			$queryresult = $this->db->query($querystatement);
-
-			if(!$queryresult)
-				$error = new appError(500,"Cannot retrieve saved search information");
-
-			$querystatement="
-				SELECT
-					advsearchroleid
-				FROM
-					tabledefs
-				WHERE id= '".$tabledefid."'";
-
-			$tabledefresult = $this->db->query($querystatement);
-
-			if(!$tabledefresult)
-				$error = new appError(500,"Cannot retrieve table definition information.");
-
-			$tableinfo=$this->db->fetchArray($tabledefresult);
-
-			?>
-			<table border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td valign="top">
-						<p>
-							<label for="LSList">saved searches</label><br />
-							<?php $this->showSavedSearchList($queryresult)?>
-						</p>
-					</td>
-					<td valign="top" width="100%">
-						<p>
-							<label for="LSSelectedSearch">name</label><br />
-							<input type="text" id="LSSelectedSearch" size="10" readonly="readonly" class="uneditable" />
-						</p>
-						<p>
-							<textarea id="LSSQL" rows="8" cols="10" <?php if(!hasRights($tableinfo["advsearchroleid"])) echo " readonly=\"readonly\""?>></textarea>
-						</p>
-					</td>
-					<td valign="top">
-						<p><br/><input id="LSLoad" type="button" onclick="LSRunSearch()" class="Buttons" disabled="disabled" value="run search"/></p>
-						<p><input id="LSDelete" type="button" onclick="LSDeleteSearch('<?php echo APP_PATH ?>')" class="Buttons" disabled="disabled" value="delete"/></p>
-						<div id="LSResults">&nbsp;</div>
-					</td>
-				</tr>
-			</table>
-			<?php
-
-		}//end function showLoad
-
-	}//end class
+}//end class
 
 
 
