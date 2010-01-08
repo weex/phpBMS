@@ -36,18 +36,19 @@
  |                                                                         |
  +-------------------------------------------------------------------------+
 */
+if(!class_exists("phpbmsReport"))
+    include("../../../report/report_class.php");
 
-require("../../../include/session.php");
-
-class MCReport{
+class MCReport extends phpbmsReport{
 
 	var $selectcolumns;
 	var $selecttable;
 	var $whereclause="";
 	var $reportOutput = "";
 
-	function MCReport($db,$variables = NULL){
-		$this->db = $db;
+	function MCReport($db, $reportUUID, $tabledefUUID, $variables = NULL){
+
+            parent::phpbmsReport($db, $reportUUID, $tabledefUUID);
 
 		//next we do the columns
 		$this->addColumn("Email","`email`");//0
@@ -60,24 +61,33 @@ class MCReport{
 		$this->addColumn("Id","`id`");//6
 
 
-		if($variables){
-			//$tempArray = explode("::", $variables["columns"]);
-			$tempArray = json_decode($variables["columns"], true);
-
-			foreach($tempArray as $id)
-				$this->selectcolumns[] = $this->columns[$id];
-			$this->selectcolumns = array_reverse($this->selectcolumns);
-
-			$this->selecttable = "`clients`";
-
-			$this->whereclause = $_SESSION["printing"]["whereclause"];
-			if($this->whereclause=="") $this->whereclause="WHERE clients.id != -1";
-
-			if($this->whereclause!="") $this->whereclause=" WHERE (".substr($this->whereclause,6).") ";
-		}// endif
+            $this->selecttable = "`clients`";
 
 	}//end method
 
+
+        function processFromPost($variables){
+
+            $tempArray = json_decode($variables["columns"], true);
+
+            foreach($tempArray as $id)
+                    $this->selectcolumns[] = $this->columns[$id];
+            $this->selectcolumns = array_reverse($this->selectcolumns);
+
+
+        }//end function processFromPost
+
+
+        function processFromSettings(){
+
+            foreach($this->settings as $key=>$value)
+                if(strpos($key, "column") === 0)
+                    $this->selectcolumns[substr($key,6)-1] = $this->columns[$value];
+
+            ksort($this->selectcolumns);
+            $this->selectcolumns = array_reverse($this->selectcolumns);
+
+        }//end function processFromSettings
 
 	function addColumn($name, $field, $format = NULL){
 		$temp = array();
@@ -90,6 +100,13 @@ class MCReport{
 
 
 	function generate(){
+
+            $this->whereClause = $_SESSION["printing"]["whereclause"];
+            if($this->whereClause=="")
+                $this->whereclause="WHERE clients.id != -1";
+
+            if($this->whereClause!="")
+                $this->whereClause = " WHERE (".substr($this->whereClause,6).") ";
 
 		$querystatement = "SELECT ";
 		foreach($this->selectcolumns as $thecolumn)
@@ -233,14 +250,43 @@ class MCReport{
 
 }//endclass
 
-// Processing ===================================================================================================================
-if(!isset($dontProcess)){
+
+/**
+ * PROCESSING
+ * =============================================================================
+ */
+if(!isset($noOutput)){
+
+    require("../../../include/session.php");
+
+        checkForReportArguments();
+
+        $report = new MCReport($db, $_GET["rid"], $_GET["tid"]);
+
 	if(isset($_POST["columns"])){
-		$myreport= new MCReport($db,$_POST);
-		$myreport->generate();
-		$myreport->output();
+
+            $report->processFromPost($_POST);
+            $report->generate();
+            $report->output();
+
+	} elseif(isset($report->settings["column1"])) {
+
+            $report->processFromSettings();
+            $report->generate();
+            $report->output();
+
 	} else {
-		//$myreport = new MCReport($db);
-		//$myreport->showSelectScreen();
-	}
-}?>
+
+            $report->showSelectScreen();
+
+        }//endif
+
+}//endif
+
+/**
+ * When adding a new report record, the add/edit needs to know what the class
+ * name is so that it can instantiate it, and grab it's default settings.
+ */
+if(isset($addingReportRecord))
+    $reportClass = "MCReport";
+?>
