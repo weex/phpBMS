@@ -39,6 +39,8 @@
 $theModule = new installModuleAjax($this->db, $this->phpbmsSession, "../modules/mailchimp/install/");
 $theModule->tables = array(
 			"modules",
+                        "reports",
+                        "reportsettings",
 			"settings",
             "tableoptions"
 			);
