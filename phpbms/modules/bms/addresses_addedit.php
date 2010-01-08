@@ -175,13 +175,13 @@
 			}//endif - addressid
 
 			$theinput = new inputDataTableList($db, "table", $therecord["tabledefid"],
-												"tabledefs", "id", "displayname",
+												"tabledefs", "uuid", "displayname",
 												"", "", false, "table");
 			$theinput->setAttribute("disabled","disabled");
 			$theinput->setAttribute("class","uneditable");
 			$theform->addField($theinput);
 
-			$theinput = new inputField("recordid",$therecord["recordid"],"record",false,NULL,5,12);
+			$theinput = new inputField("recordid",$therecord["recordid"],"record",false,NULL);
 			$theinput->setAttribute("readonly","readonly");
 			$theinput->setAttribute("class","uneditable");
 			$theform->addField($theinput);
