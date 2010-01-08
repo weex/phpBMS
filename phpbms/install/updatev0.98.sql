@@ -515,6 +515,7 @@ UPDATE `tabs` SET `uuid`='tab:22d08e82-5047-4150-6de7-49e89149f56b' WHERE `id`='
 UPDATE `tabs` SET `uuid`='tab:c111eaf5-692b-9c7d-1d46-1bacb6703361' WHERE `id`='100';
 --end tabs UPDATE--
 --users UPDATE--
+UPDATE `users` SET `admin`='1' WHERE `portalaccess`='1';
 UPDATE `users` SET `uuid`='usr:5c196e01-193a-8952-fee7-29b4e5e6a0b0' WHERE `id`='1';
 UPDATE `users` SET `uuid`='usr:cb67a60b-a264-735c-6189-49a7c883af0b' WHERE `id`='2';
 UPDATE `users` SET `uuid`='usr:42e0cc76-3c31-d9b6-ff12-fe4adfd15e75' WHERE `id`='-2';
