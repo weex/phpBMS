@@ -73,7 +73,7 @@ if(class_exists("phpbmsTable")){
 					)
 					;
 				";
-
+				
 			$queryresult = $this->db->query($querystatement);
 
 			return $this->db->numRows($queryresult);
@@ -109,8 +109,8 @@ if(class_exists("phpbmsTable")){
 			//check parent ids under certain circumstances
 			//not set is acceptable
 			if(isset($variables["parentid"])){
-
-				$uuid = 0;// can still check for an invalid parentid even though the current uuid is bad
+				
+				$uuid = "";// can still check for an invalid parentid even though the current uuid is bad
 
 				//use the current id if it exists (A menu record cannot be its own parent)
 				if(isset($variables["uuid"]))
@@ -132,7 +132,7 @@ if(class_exists("phpbmsTable")){
 			switch($variables["radio"]){
 				case "cat":
 					$variables["link"] = "";
-					$variables["parentid"] = 0;
+					$variables["parentid"] = "";
 				break;
 				case "search":
 					$variables["link"] = $variables["linkdropdown"];
@@ -166,9 +166,6 @@ if(class_exists("phpbmsTable")){
 
 		function displayParentDropDown($selectedpid, $uuid){
 
-			//if($uuid == "")
-			//	$uuid = 0;
-
 			$querystatement = "
 				SELECT
 					`uuid`,
@@ -178,7 +175,7 @@ if(class_exists("phpbmsTable")){
 				WHERE
 					`uuid` != '".$uuid."'
 					AND
-					`parentid` = 0
+					`parentid` = ''
 					AND
 					(
 						link=\"\"
