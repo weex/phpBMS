@@ -2061,8 +2061,13 @@ if(class_exists("searchFunctions")){
 					}//end if
 
 				}//end foreach
-
-				$this->buildStatusMessage($count);
+				
+				if($count == count($this->idsArray))
+					$message = $count." related credit memo(s) have been created.";
+				else
+					$message = $count." related credit memo(s) (of ".count($this->idsArray)." selected) have been created.";
+				
+				return $message;
 
 		}//end method
 
