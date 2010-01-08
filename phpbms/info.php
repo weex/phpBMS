@@ -118,7 +118,7 @@
 
 		<h3>Kreotek, LLC</h3>
 		<p>
-			610 Quantum<br />
+			610 Quantum Rd. NE<br />
 			Rio Rancho, NM 87124 USA
 		</p>
 		<p><a href="http://www.kreotek.com">http://www.kreotek.com</a></p>
@@ -132,7 +132,7 @@
 
 		<p>
 			Outside US and Canada<br />
-			+1-505-994-6388
+			+1.505.349.0437
 		</p>
 
 		<h3>phpBMS Open Source Project</h3>

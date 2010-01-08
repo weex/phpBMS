@@ -108,7 +108,7 @@
 
 	<p class="small">
 		<strong>Kreotek, LLC</strong><br />
-		610 Quantum<br />
+		610 Quantum Rd. NE<br />
 		Rio Rancho, NM 87124 USA
 	</p>
 
@@ -120,7 +120,7 @@
 
 	<p class="tiny">
 		Outside US and Canada<br />
-		+1-505-994-6388
+		+1.505.349.0437
 	</p>
 
 	<h3>Community Support</h3>
