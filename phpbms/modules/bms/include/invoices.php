@@ -648,8 +648,8 @@ if(class_exists("phpbmsTable")){
 
 			$therecord = parent::getRecord($id, $useUuid);
 
-                        if(!$therecord["id"])
-                            $error = new appError(430, "Sales Order record '".$id."' does not exist", "No Record Available", true, true);
+			if(!$therecord["id"])
+				$error = new appError(430, "Sales Order record '".$id."' does not exist", "No Record Available", true, true);
 
 			/**
 			  *  If `type` is not an order and not a quote and payment information is being

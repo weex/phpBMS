@@ -300,7 +300,7 @@
 				?>
 				<p id="cmidP" style="<?php echo $style; ?>">
 					<?php $theform->showfield("cmid"); ?>
-					<button class="graphicButtons buttonInfo CMButtons" title="view record" type="button" id="cmb-<?php echo $therecord["cmuuid"];?>">
+					<button class="graphicButtons buttonInfo CMButtons" title="view record" type="button" id="cmb-<?php echo $therecord["cmid"];?>">
 						<span>view record</span>
 					</button>
 				</p>
