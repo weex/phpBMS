@@ -114,13 +114,13 @@ class generateUUIDS extends installUpdateBase{
             $this->createUUIDs("tbld:27b99bda-7bec-b152-8397-a3b09c74cb23"); //addresses
             $this->createUUIDs("tbld:c595dbe7-6c77-1e02-5e81-c2e215736e9c"); //aritems
             $this->createUUIDs("tbld:43678406-be25-909b-c715-7e2afc7db601"); //receipts
-            $this->createUUIDs("tbld:157b7707-5503-4161-4dcf-6811f8b0322f"); //client email projects
 
             $this->aritemList = $this->generateUUIDList("aritems");
             $this->receiptList = $this->generateUUIDList("receipts");
             $this->productsList = $this->generateUUIDList("products");
             $this->addressList = $this->generateUUIDList("addresses");
             $this->productcatList = $this->generateUUIDList("productcategories");
+            $this->productList = $this->generateUUIDList("products");
             $this->clientList = $this->generateUUIDList("clients");
             $this->statusList = $this->generateUUIDList("invoicestatuses");
             $this->discountList = $this->generateUUIDList("discounts");
@@ -169,11 +169,11 @@ class generateUUIDS extends installUpdateBase{
         $this->updateFields("relationships", array("fromtableid"=>$this->tabledefList, "totableid"=>$this->tabledefList));
 
         $this->updateFields("files", array("roleid"=>$this->roleList));
-        $this->updateFields("attachments", array("fileid"=>$this->fileList));
+        $this->updateFields("attachments", array("fileid"=>$this->fileList, "tabledefid"=>$this->tabledefList));
         $this->updateFields("menu", array("parentid"=>$menuList, "roleid"=>$this->roleList));
         $this->updateFields("smartsearches", array("tabledefid"=>$this->tabledefList, "moduleid"=>$this->moduleList));
         $this->updateFields("tabs", array("roleid"=>$this->roleList));
-        $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid", "parentid"=>$notesList));
+        $this->updateFields("notes", array("assignedtoid"=>$this->userList, "assignedbyid"=>$this->userList, "attachedtabledefid"=>$this->tabledefList, "parentid"=>$notesList));
         $this->updateFields("log", array("userid"=>$this->userList));
 
         //custom stuff
@@ -212,7 +212,6 @@ class generateUUIDS extends installUpdateBase{
             $this->updateFields("receipts", array("clientid"=>$this->clientList, "paymentmethodid"=>$this->paymentList));
             $this->updateFields("aritems", array("clientid"=>$this->clientList));
             $this->updateFields("prerequisites", array("parentid"=>$this->productList, "childid"=>$this->productList));
-            $this->updateFields("clientemailprojects", array("userid"=>$this->userList));
 
             //we would have to run this if their were addresses associated with other records
             //$this->updateVariableUUIDs("addresstorecord", "tabledefid", "recordid");
@@ -320,8 +319,11 @@ class generateUUIDS extends installUpdateBase{
             $updateClause = $initialClause;
 
             foreach($fields as $key=>$value)
-                if(strpos($therecord[$key],":") === false)
-                    $updateClause .= ", `".$key."` = '".$value[$therecord[$key]]."'";
+                if(strpos($therecord[$key],":") === false && ((int) $therecord[$key]))
+                    if(isset($value[$therecord[$key]]) && $therecord[$key] != 0)
+                        $updateClause .= ", `".$key."` = '".$value[$therecord[$key]]."'";
+                    else
+                        $updateClause .= ", `".$key."` = ''";
 
             if($updateClause){
 
@@ -508,7 +510,7 @@ class generateUUIDS extends installUpdateBase{
             SELECT
                 *
             FROM
-                `setings`
+                `settings`
             WHERE
                 `name` = 'default_payment'
                 OR `name` = 'default_shipping'
@@ -614,6 +616,8 @@ class generateUUIDS extends installUpdateBase{
                     `".$recordfield."` = '".$theList[$therecord[$recordfield]]."'
                 WHERE
                     `id` = ".$therecord["id"];
+
+            $this->db->query($updatestatement);
 
         }//endwhile
 
