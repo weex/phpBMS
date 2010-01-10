@@ -48,9 +48,9 @@ $querystatement = "
         AND tabledefid = 'tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083'
         ";
 
-$queryresult = $this->db->query($querystatement);
+$queryresult = $db->query($querystatement);
 
-$therecord = $this->db->fetchArray($queryresult);
+$therecord = $db->fetchArray($queryresult);
 
 if(!hasRights($therecord["roleid"]))
     goURL(APP_PATH."noaccess.php");

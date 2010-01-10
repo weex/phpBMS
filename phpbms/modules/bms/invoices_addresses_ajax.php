@@ -105,7 +105,7 @@ class clientAddresses{
 
 			} else {
 
-				?><p><em>no records found</em></p><?
+				?><p><em>no records found</em></p><?php
 
 			}//endif numrows
 

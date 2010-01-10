@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 	$loginNoKick=true;
-	$loginNoDisplayError=true;;
+	$loginNoDisplayError=true;
 	require("include/session.php");
 
 	$pageTitle = "phpBMS Browser Requirements";
@@ -47,7 +47,8 @@
 	$phpbms->showMenu = false;
 	$phpbms->showFooter = false;
 
-	include("header.php")
+	include("header.php");
+        
 ?><div class="bodyline" id="container">
 
 	<h1>phpBMS Browser Requirements</h1>

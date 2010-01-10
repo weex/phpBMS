@@ -469,7 +469,7 @@
                                     guide future development of the project so we can continue to make
                                     focus on the communities needs.
                                 </p>
-                                <p id="registerP">Take a minute to <a href="kreotek.com/registerphpbms">register your copy of phpBMS</a> today.</p>
+                                <p id="registerP">Take a minute to <a href="http://kreotek.com/registerphpbms">register your copy of phpBMS</a> today.</p>
 
                                 <h3>Contribute</h3>
 
