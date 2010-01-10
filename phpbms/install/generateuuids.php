@@ -259,7 +259,8 @@ class generateUUIDS extends installUpdateBase{
 
         $list = array();
         while($therecord = $this->db->fetchArray($queryresult))
-            $list[$therecord["id"]] = $therecord["uuid"];
+            if($therecord["uuid"])
+                $list[$therecord["id"]] = $therecord["uuid"];
 
         return $list;
 
@@ -319,8 +320,8 @@ class generateUUIDS extends installUpdateBase{
             $updateClause = $initialClause;
 
             foreach($fields as $key=>$value)
-                if(strpos($therecord[$key],":") === false && ((int) $therecord[$key]))
-                    if(isset($value[$therecord[$key]]) && $therecord[$key] != 0)
+                if(strpos($therecord[$key],":") === false)
+                    if(isset($value[$therecord[$key]]))
                         $updateClause .= ", `".$key."` = '".$value[$therecord[$key]]."'";
                     else
                         $updateClause .= ", `".$key."` = ''";
