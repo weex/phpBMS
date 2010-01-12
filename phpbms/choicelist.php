@@ -56,7 +56,7 @@ class choiceList{
                 `choices`
             WHERE
                 `listname` = '".mysql_real_escape_string($listname)."' ";
-            $queryresult=$this->db->query($querystatement);
+            $queryresult=$this->db->query($deletestatement);
 
             echo "ok";
     }//end function deleteList
@@ -68,7 +68,7 @@ class choiceList{
             INSERT INTO
                 `choices`(
                 `listname`,
-                `choices`
+                `thevalue`
             ) VALUES (
                 '".mysql_real_escape_string($listname)."',
                 '".mysql_real_escape_string($value)."'
