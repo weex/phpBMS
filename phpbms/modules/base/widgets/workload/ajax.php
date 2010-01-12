@@ -49,8 +49,11 @@ if(isset($_GET["cm"])){
 
         case "updateTask":
 
-            $thetable = new notes($db,12);
-            $thereturn = $thetable->updateTask((int) $_GET["id"],(int) $_GET["cp"], mysql_real_escape_string($_GET["ty"]));
+            if(!isset($_GET["id"]) || !isset($_GET["cp"]) || !isset($_GET["ty"]))
+                $error = new appError(200, "passed parameters not set");
+
+            $thetable = new notes($db, 'tbld:a4cdd991-cf0a-916f-1240-49428ea1bdd1');
+            $thereturn = $thetable->updateTask((int) $_GET["id"], (int) $_GET["cp"], mysql_real_escape_string($_GET["ty"]));
             break;
 
     }//endswitch
