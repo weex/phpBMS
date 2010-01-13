@@ -541,17 +541,15 @@ class apiwrapper{
         
         if(ini_get("magic_quotes_runtime")) $response = stripslashes($response);
         
-        if($decode){
-            $decodedResponse = $this->_decode($response);
-                
-            if($response && $decodedResponse === false) {
-                $this->errorMessage = "Bad Response. Got This:".$response;
-                return false;
-            } else {
-                $response = $decodedResponse;
-            }
-        }//end if
         
+        $decodedResponse = $this->_decode($response);
+            
+        if($response && $decodedResponse === false) {
+            $this->errorMessage = "Bad Response. Got This:".$response;
+            return false;
+        } else {
+            $response = $decodedResponse;
+        }
         
         return $response;
         
