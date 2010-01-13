@@ -218,7 +218,7 @@ class pdf_parser {
 
         if ($xrefPos === false) {
             fseek($this->f, $offset);
-            $c =&  new pdf_context($this->f);
+            $c =  new pdf_context($this->f);
             $xrefStreamObjDec = $this->pdf_read_value($c);
 
             if (is_array($xrefStreamObjDec) && isset($xrefStreamObjDec[0]) && $xrefStreamObjDec[0] == PDF_TYPE_OBJDEC) {
@@ -298,7 +298,7 @@ class pdf_parser {
 
         fseek($this->f, $o_pos+$trailerPos+7);
 
-        $c =&  new pdf_context($this->f);
+        $c = new pdf_context($this->f);
 	    $trailer = $this->pdf_read_value($c);
 
 	    $c = null;
