@@ -477,12 +477,11 @@ class apiwrapper{
      * function _callServer
      * 
      * @param array $params
-     * @param bool $decode
      * 
      * @return array False if major (i.e. connection) error has occurred.  Otherwise, returns an array of associative arrays.
      */
     
-    private function _callServer($params, $decode = false) {
+    private function _callServer($params) {
         
         $params["phpbmsusername"] = $this->username;
         $params["phpbmspassword"] = $this->password;
