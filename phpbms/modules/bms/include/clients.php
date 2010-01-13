@@ -440,10 +440,10 @@ if(class_exists("phpbmsTable")){
 		 * @param bool $returnUuid If true, returns result's uuid , if
 		 * false, the id.
 		 * @return array An array containing response information
-		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
-		 * @returnf string 'message' Message explaining the type / result
-		 * @returnf array details Either the array of uuid / ids if no errors
-		 * were encountered, or the original $requestData if there was an error
+		 * @returnf string type The type of response (e.g. 'error' or 'result')
+		 * @returnf string message Message explaining the type / result
+		 * @returnf array extras Either the array of uuid / ids if no errors
+		 * were encountered, or the empty if there was an error
 		 */
 
 		function api_searchByEmail($requestData, $returnUuid = true) {
@@ -454,7 +454,6 @@ if(class_exists("phpbmsTable")){
 			if(!isset($requestData["email"])){
 				$response["type"] = "error";
 				$response["message"] = "Data does not contain a key of 'email'";
-				$response["details"] = $requestData;
 				return $response;
 			}//end if
 
@@ -478,13 +477,13 @@ if(class_exists("phpbmsTable")){
 			  */
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByEmail has been run successfully.";
-			$thereturn["details"] = array();
+			$thereturn["extras"] = array();
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				if($returnUuid)
-					$thereturn["details"][] = $therecord["uuid"];
+					$thereturn["extras"][] = $therecord["uuid"];
 				else
-					$thereturn["details"][] = $therecord["id"];
+					$thereturn["extras"][] = $therecord["id"];
 
 			}//end while
 
@@ -499,10 +498,10 @@ if(class_exists("phpbmsTable")){
 		 * @param bool $returnUuid If true, returns result's uuid , if
 		 * false, the id.
 		 * @return array An array containing response information
-		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
-		 * @returnf string 'message' Message explaining the type / result
-		 * @returnf array details Either the array of uuid / ids if no errors
-		 * were encountered, or the original $requestData if there was an error
+		 * @returnf string type The type of response (e.g. 'error' or 'result')
+		 * @returnf string message Message explaining the type / result
+		 * @returnf array extras Either the array of uuid / ids if no errors
+		 * were encountered, or the empty if there was an error
 		 */
 
 		function api_searchByNameAndPostalcode($requestData, $returnUuid = true) {
@@ -526,7 +525,6 @@ if(class_exists("phpbmsTable")){
 			if($count){
 
 				$response["type"] = "error";
-				$response["details"] = $requestData;
 				$response["message"] = "";
 
 				$i=0;
@@ -573,15 +571,15 @@ if(class_exists("phpbmsTable")){
 			/**
 			  *  report findings
 			  */
-			$thereturn["details"] = array();
+			$thereturn["extras"] = array();
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByNameAndPostalcode has been run successfully.";
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				if($returnUuid)
-					$thereturn["details"][] = $therecord["uuid"];
+					$thereturn["extras"][] = $therecord["uuid"];
 				else
-					$thereturn["details"][] = $therecord["id"];
+					$thereturn["extras"][] = $therecord["id"];
 
 			}//end while
 
@@ -596,10 +594,10 @@ if(class_exists("phpbmsTable")){
 		 * @param bool $returnUuid If true, returns result's uuid , if
 		 * false, the id.
 		 * @return array An array containing response information
-		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
-		 * @returnf string 'message' Message explaining the type / result
-		 * @returnf array details Either the array of uuid / ids if no errors
-		 * were encountered, or the original $requestData if there was an error
+		 * @returnf string type The type of response (e.g. 'error' or 'result')
+		 * @returnf string message Message explaining the type / result
+		 * @returnf array extras Either the array of uuid / ids if no errors
+		 * were encountered, or the empty if there was an error
 		 */
 
 		function api_searchByUsernameAndPassword($requestData, $returnUuid = true) {
@@ -622,7 +620,6 @@ if(class_exists("phpbmsTable")){
 			if($count){
 
 				$response["type"] = "error";
-				$response["details"] = $requestData;
 				$response["message"] = "";
 
 				$i=0;
@@ -664,15 +661,15 @@ if(class_exists("phpbmsTable")){
 			/**
 			  *  report findings
 			  */
-			$thereturn["details"] = array();
+			$thereturn["extras"] = array();
 			$thereturn["type"] = "result";
 			$thereturn["message"] = "The function api_searchByUsernameAndPassword has been run successfully.";
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				if($returnUuid)
-					$thereturn["details"][] = $therecord["uuid"];
+					$thereturn["extras"][] = $therecord["uuid"];
 				else
-					$thereturn["details"][] = $threturn["id"];
+					$thereturn["extras"][] = $threturn["id"];
 
 			}//end while
 

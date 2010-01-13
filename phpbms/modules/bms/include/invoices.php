@@ -1224,10 +1224,10 @@ if(class_exists("phpbmsTable")){
 		 * @param bool $returnUuid If true, returns result's uuid , if
 		 * false, the id.
 		 * @return array An array containing response information
-		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
-		 * @returnf string 'message' Message explaining the type / result
-		 * @returnf array details Either the array of uuid / ids if no errors
-		 * were encountered, or the original $requestData if there was an error
+		 * @returnf string type The type of response (e.g. 'error' or 'result')
+		 * @returnf string message Message explaining the type / result
+		 * @returnf array extras Either the array of uuid / ids if no errors
+		 * were encountered, or the empty if there was an error
 		 */
 
 		function api_searchByClientUuid($requestData, $returnUuid = true) {
@@ -1238,7 +1238,6 @@ if(class_exists("phpbmsTable")){
 			if(!isset($requestData["clientid"])){
 				$response["type"] = "error";
 				$response["message"] = "Data does not contain a key of 'clientid'.";
-				$response["details"] = $requestData;
 
 				return $response;
 			}//end if
@@ -1270,15 +1269,15 @@ if(class_exists("phpbmsTable")){
 			/**
 			  *  report findings
 			  */
-			$thereturn["details"] = array();
+			$thereturn["extras"] = array();
 			$thereturn["message"] = "The function api_searchByPartNumber has been run successfully.";
 			$thereturn["type"] = "result";
 			while($therecord = $this->db->fetchArray($queryresult)){
 
 				if($returnUuid)
-					$thereturn["details"][] = $therecord["uuid"];
+					$thereturn["extras"][] = $therecord["uuid"];
 				else
-					$thereturn["details"][] = $therecord["id"];
+					$thereturn["extras"][] = $therecord["id"];
 
 			}//end while
 

@@ -47,7 +47,7 @@ class apiwrapper{
      * function __construct
      * 
      * @param string $hostname The hostname of the target script
-     * @param string $urlPath The path from the host to the target script (usually something like 'modules/api/api_json.php').
+     * @param string $urlPath The location of the target script in relation to $hostname (usually something like 'modules/api/api_json.php').
      * @param string $username The username of an user with portal access
      * @param string $password The password of the same user with portal access
      * @param bool $secure Whether or not to transfer data over ssl.
@@ -201,6 +201,166 @@ class apiwrapper{
     
     
     /*
+     * function searchClientByEmail
+     * @param string $email The email to be searched for
+     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     */
+    
+    public function searchClientByEmail($email, $options = NULL) {
+        
+        $method = "api_searchByEmail";
+        $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
+        $data["email"] = (string)$email;
+        
+        $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
+        
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end function
+    
+    /*
+     * function searchClientByNameAndPostalcode
+     * @param $firstname
+     * @param $lastname
+     * @param $postalcode
+     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     */
+    
+    public function searchClientByNameAndPostalcode($firstname, $lastname, $postalcode, $options = NULL) {
+        
+        $method = "api_searchByNameAndPostalcode";
+        $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
+        $data["firstname"] = (string)$firstname;
+        $data["lastname"] = (string)$lastname;
+        $data["postalcode"] = (string)$postalcode;
+        
+        $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
+        
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end function
+    
+    
+    /*
+     * function searchClientByUsernameAndPassword
+     * @param $username
+     * @param $password
+     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     */
+    
+    public function searchClientByUsernameAndPassword($username, $password, $options = NULL) {
+        
+        $method = "api_searchByUsernameAndPassword";
+        $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
+        $data["username"] = (string)$username;
+        $data["password"] = (string)$password;
+        
+        $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
+        
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end function
+    
+    
+    /*
+     * function searchSalesOrdersByClientUuid
+     * @param $clientuuid
+     * @param $ordertype
+     * @param $startdate
+     * @param $enddate
+     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     */
+    
+    function searchSalesOrdersByClientUuid($clientuuid, $ordertype = NULL, $startdate = NULL, $enddate = NULL, $options = NULL) {
+        
+        $method = "api_searchByClientUuid";
+        $tabledefuuid = "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
+        $data["clientid"] = $clientuuid;
+        if($ordertype !== NULL)
+            $data["type"] = $ordertype;
+        if($startdate !== NULL)
+            $data["startdate"] = $startdate;
+        if($enddate !== NULL)
+            $data["enddate"] = $enddate;
+            
+        $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
+        
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end function
+    
+    
+    /*
+     * function getFile
+     * @param string $url The full url to the api_servfile.php url. This can be retrieved from the getRecords method on a `files` table get (the 'apifileurl' key in the record).
+     *
+     * @return mixed The file if successful, false, if not.
+     */
+    
+    public function getFile($url) {
+        
+        $urlInfo = parse_url($url);
+        
+        $oldHost = $this->apiHostname;
+        $oldPort = $this->port;
+        $oldUrl = $this->apiUrl;
+        
+        $this->apiHostname = $urlInfo["host"];
+        if($port === 0 || (int)$port > 0)
+            $this->port = $urlInfo["port"];
+        else
+            $this->port = NULL;
+        $this->apiUrl = $urlInfo["path"]."?".$urlInfo["query"];
+        
+        $response = $this->_callServer(array());
+        
+        $this->apiUrl = $oldUrl;
+        $this->apiHostname = $oldHost;
+        $this->port = $oldPort;
+        
+        if($response !== false)
+            return $response;
+        else{
+            $this->errorMessage = "";
+            return false;
+        }//end if
+        
+    }//end function
+    
+    
+    /*
      * function runApiMethod
      * 
      * @param string $method The name of the api method to be called.  This must start with 'api_'.
@@ -317,11 +477,12 @@ class apiwrapper{
      * function _callServer
      * 
      * @param array $params
+     * @param bool $decode
      * 
      * @return array False if major (i.e. connection) error has occurred.  Otherwise, returns an array of associative arrays.
      */
     
-    private function _callServer($params) {
+    private function _callServer($params, $decode = false) {
         
         $params["phpbmsusername"] = $this->username;
         $params["phpbmspassword"] = $this->password;
@@ -381,14 +542,16 @@ class apiwrapper{
         
         if(ini_get("magic_quotes_runtime")) $response = stripslashes($response);
         
-        $decode = $this->_decode($response);
-        
-        if($response && $decode === false) {
-            $this->errorMessage = "Bad Response. Got This:".$response;
-            return false;
-        } else {
-        	$response = $decode;
-        }
+        if($decode){
+            $decodedResponse = $this->_decode($response);
+                
+            if($response && $decodedResponse === false) {
+                $this->errorMessage = "Bad Response. Got This:".$response;
+                return false;
+            } else {
+                $response = $decodedResponse;
+            }
+        }//end if
         
         
         return $response;
