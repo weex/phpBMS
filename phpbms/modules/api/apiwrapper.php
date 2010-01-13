@@ -228,9 +228,9 @@ class apiwrapper{
     
     /*
      * function searchClientByNameAndPostalcode
-     * @param $firstname
-     * @param $lastname
-     * @param $postalcode
+     * @param name $firstname The first name to search for in the client's table
+     * @param name $lastname The last name to search for in the client's table
+     * @param name $postalcode The postal code to search for in the client's table
      * @param array $options An associative array of options. Possible options are : 'useUuid'
      *
      * @return array An associative array response for the get
@@ -259,8 +259,8 @@ class apiwrapper{
     
     /*
      * function searchClientByUsernameAndPassword
-     * @param $username
-     * @param $password
+     * @param string $username The username to search for in the client's table
+     * @param string $password The password to search for in the client's table
      * @param array $options An associative array of options. Possible options are : 'useUuid'
      *
      * @return array An associative array response for the get
@@ -288,10 +288,10 @@ class apiwrapper{
     
     /*
      * function searchSalesOrdersByClientUuid
-     * @param $clientuuid
-     * @param $ordertype
-     * @param $startdate
-     * @param $enddate
+     * @param string $clientuuid The uuid of a client record
+     * @param string $ordertype The type of the sales order.  Possible types are :'Quote','Order','Invoice','VOID'
+     * @param string $startdate The sql encoded DATETIME lower range of creation dates.
+     * @param string $enddate The sql encoded DATETIME upper range of creation dates.
      * @param array $options An associative array of options. Possible options are : 'useUuid'
      *
      * @return array An associative array response for the get
