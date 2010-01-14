@@ -637,7 +637,6 @@
             </p>
 
             <p id="bstStartsWithFieldP" class="big">
-
                 <label for="startswithfield">where</label><br />
                 <select name="startswithfield" id="startswithfield" tabindex="1">
                 <?php
@@ -648,12 +647,13 @@
 
                             ?><option value="<?php echo $searchField["id"]?>" <?php
 
-                                if(!isset($this->savedstartswithfield))
+                                if(!isset($this->savedstartswithfield)) {
                                     if($this->querytype != "search" && $i == 0)
-                                        echo "selected=\"selected\"";
-                                else
+                                        echo 'selected="selected"';
+                                } else {
                                     if($this->querytype == "search" && addslashes($searchField["id"]) == $this->savedstartswithfield)
                                         echo 'selected="selected"';
+                                }//endif
 
                             echo ">".$searchField["name"]."</option>\n";
 
