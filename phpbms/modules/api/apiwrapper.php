@@ -66,6 +66,30 @@ class apiwrapper{
         
     }//end function
     
+    /*
+     * function ping
+     * @param string $tabledefuuid A tabledef uuid.
+     *
+     * @return array|bool An associative array containing the response, or false if a connection error has occured (in which case see $this->errorMessage).
+     * @returnf string type The type of response.  This will either be 'error' or 'message'.
+     * @returnf string message The related message.  This will be 'Everything is phpBMSy!' if no errors have occurred and the tabledefuuid is api accessible.
+     */
+    
+    function ping($tabledefuuid) {
+        
+        $params["request"][0]["tabledefid"] = $tabledefuuid;
+        $params["request"][0]["command"] = "ping";
+        $params["request"][0]["data"] = array();
+        
+        $response = $this->_callServer($params);
+        
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end funciton
+    
     
     /*
      * function insertRecords
@@ -283,7 +307,8 @@ class apiwrapper{
     
     /*
      * function runStoredProcedure
-     * 
+     *
+     * @param string $tabledefuuid The uuid of an api accessible tabledefinition.
      * @param string $procedureName The stored procedure to be called.
      *
      * @return array An associative array response for the procedure
@@ -291,10 +316,11 @@ class apiwrapper{
      * @returnf string message The detailed message describing the result
      */
     
-    public function runStoredProcedure($procedureName) {
+    public function runStoredProcedure($tabledefuuid, $procedureName) {
         
         $params["request"][0]["command"] = "procedure";
         $params["request"][0]["data"]["name"] = $procedurename;
+        $params["request"][0]["tabledefid"] = $tabledefuuid;
         
         $response = $this->_callServer($params);
         
@@ -718,7 +744,6 @@ class apiwrapper{
         }
         fclose($sock);
         ob_end_clean();
-        
         list($throw, $response) = explode("\r\n\r\n", $response, 2);
         
         if ($info["timed_out"]) return false;

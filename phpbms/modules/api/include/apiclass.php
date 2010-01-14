@@ -455,6 +455,13 @@ class api{
                 */
 
                 switch($request["command"]){
+                    
+                    case "ping":
+                        //======================================================
+                        
+                        $this->_addToResponse("message", "Everything is phpBMSy!");
+                        
+                        break;
 
                     case "insert":
                         //======================================================
@@ -634,19 +641,6 @@ class api{
                         else {
 
                             include_once("include/search_class.php");
-
-                           //if($useUuid){
-                           //     if(!isset($request["data"]->uuid))
-                           //         $this->sendError("The `uuid` field must be set in request number ".$i, $request["data"], true);
-                           //     else
-                           //         $id = $request["data"]->uuid;
-                           //
-                           // }else{
-                           //     if(!isset($request["data"]->id))
-                           //         $this->sendError("The `id` field must be set in request number ".$i, $request["data"], true);
-                           //     else
-                           //         $id = $request["data"]->uuid;
-                           // }//end if
 
                             if($hasTableClassOveride){
 
