@@ -495,7 +495,7 @@ class totalReport extends phpbmsReport{
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="<?php echo APP_PATH ?>common/stylesheet/<?php echo STYLESHEET ?>/pages/totalreports.css" rel="stylesheet" type="text/css" />
-<title><?php echo $pageTitle?></title>
+<title><?php echo $this->settings["reportTitle"]?></title>
 </head>
 
 <body>
