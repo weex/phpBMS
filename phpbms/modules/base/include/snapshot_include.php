@@ -274,7 +274,7 @@ class snapshot{
             $areaWhere = "!= 'N/A'";
 
         if(!$_SESSION["userinfo"]["admin"])
-            $rolewhere = "AND `roleid` IN ('".implode($_SESSION["userinfo"]["roles"])."')";
+            $rolewhere = "AND (`roleid` IN ('".implode($_SESSION["userinfo"]["roles"])."') OR `roleid` ='' OR `roleid` IS NULL)";
         else
             $rolewhere = "";
 

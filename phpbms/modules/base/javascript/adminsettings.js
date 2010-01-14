@@ -302,11 +302,12 @@ updateObj = {
      */
     checkForUpdate : function(manual){
 
-        var url;
+        var url = APP_PATH;
+
         if(manual)
-            url = "adminsettings_ajax.php?m=1";
+            url += "adminsettings_ajax.php?m=1";
         else
-            url = "adminsettings_ajax.php?m=0";
+            url += "adminsettings_ajax.php?m=0";
 
         loadXMLDoc(url, null, false);
 
