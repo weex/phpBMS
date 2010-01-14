@@ -112,7 +112,7 @@ class apiwrapper{
      * function getRecords
      * 
      * @param string $tabledefuuid The uuid of the tabledefinition that you wish to get records.
-     * @param array $data An array of table uuids (or integer ids if useUuid option is set to false)
+     * @param array $data An array of associative arrays of table uuids (or integer ids if useUuid option is set to false).  The key=>value format is 'uuid'=>'{the actual uuid}'
      * @param array $options An associative array of options. Possible options are : 'useUuid', 'dateFormat', 'timeFormat'
      *
      * @return array An array of associative arrays of responses for each get
@@ -459,6 +459,21 @@ class apiwrapper{
     
     
     /*
+     * function _encode
+     * 
+     * @param array $message Message to be encoded
+     * 
+     * @return string Encoded message
+     */
+    
+    private function _encode($message) {
+        
+        return json_encode($message);
+        
+    }//end function
+    
+    
+    /*
      * function _decode
      * 
      * @param string $response Encoded api response
@@ -486,10 +501,16 @@ class apiwrapper{
         $params["phpbmsusername"] = $this->username;
         $params["phpbmspassword"] = $this->password;
         
+        if(!isset($params["request"]))
+            $params["request"] = array();
+        
+        $params["request"] = $this->_encode($params["request"]);
+            
+        
         $this->errorMessage = "";
         $this->errorCode = "";
         
-        $post_vars = $this->httpBuildQuery($params);
+        $post_vars = http_build_query($params);
         
         $payload = "POST " .$this->apiUrl. " HTTP/1.0\r\n";
         $payload .= "Host: " . $this->apiHostname . "\r\n";
@@ -506,7 +527,7 @@ class apiwrapper{
             else
                 $port = 443;
             
-            $sock = fsockopen("ssl://".$host, $port, $errno, $errstr, 30);
+            $sock = fsockopen("ssl://".$this->apiHostname, $port, $errno, $errstr, 30);
         } else {
             
             if($this->port !== NULL)
@@ -514,7 +535,7 @@ class apiwrapper{
             else
                 $port = 80;
             
-            $sock = fsockopen($host, $port, $errno, $errstr, 30);
+            $sock = fsockopen($this->apiHostname, $port, $errno, $errstr, 30);
         }
         if(!$sock) {
             $this->errorMessage = "Could not connect (ERR $errno: $errstr)";
@@ -537,6 +558,9 @@ class apiwrapper{
         }
         fclose($sock);
         ob_end_clean();
+        
+        list($throw, $response) = explode("\r\n\r\n", $response, 2);
+        
         if ($info["timed_out"]) return false;
         
         if(ini_get("magic_quotes_runtime")) $response = stripslashes($response);
