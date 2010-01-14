@@ -72,7 +72,11 @@ class apiwrapper{
      * 
      * @param string $tabledefuuid The uuid of the tabledefinition that you wish to insert records.
      * @param array $data An array of associative arrays consising of fieldname => value pairs.
-     * @param array $options An associative array of options. Possible options are : 'useUuid', 'dateFormat', 'timeFormat', 'keepDestId'
+     * @param bool $generateUuid Whether to generate a new uuid for the inserted record (and ignore any passed uuid field).
+     * @param bool $keepDestId This option dictates whether or not to keep the destination's id field if "replacing" (via the mysql replace) when there is no id field set.
+     * @param string $dateFormat The format of the dates (if any) in $data.  Possible choices are : 'SQL', 'English, US', 'English, UK', or 'Dutch, NL'.  If none of these are chosen, it will default to 'SQL'.
+     * @param string $timeFormat The format of the times (if any) in $data.  Possible choices are : '24 Hour' or '12 Hour'.  If none of these are chosen, it will default to '24 Hour'.
+     * 
      *
      * @return array An array of associative arrays of responses for each insert
      * @returnf array Associative array (integer key)
@@ -81,9 +85,48 @@ class apiwrapper{
      * @returnff string extras The uuid of the inserted record (or the integer id if the 'useUuid' option is false).  <em>Note:</em> his field only exists if type is not 'error'.
      */
     
-    public function insertRecords($tabledefuuid, $data, $options = NULL) {
+    public function insertRecords($tabledefuuid, $data, $generateUuid = true, $keepDestId = true, $dateFormat = NULL, $timeFormat = NULL) {
         
-       return $this->_runTableCommnad("insert", $tabledefuuid, $data, $options);
+        if($generateUuid !== true)
+            $generateUuid = false;
+        
+        if($keepDestId !== true)
+            $keepDestId = false;
+            
+        switch($dateFormat){
+            
+            case "SQL":
+            case "English, US":
+            case "English, UK":
+            case "Dutch, NL":
+            break;
+
+            default:
+                $dateFormat = "SQL";
+            break;
+        
+        }//end switch
+        
+        switch($timeFormat){
+            
+            case "24 Hour":
+            case "12 Hour":
+            break;
+
+            default:
+                $timeFormat = "24 Hour";
+            break;
+        
+        }//end switch
+        
+        $options = array(
+                    "useUuid" => $generateUuid,
+                    "dateFormat" => $dateFormat,
+                    "timeFormat" => $timeFormat,
+                    "keepDestId" => $keepDestId
+                    );
+        
+        return $this->_runTableCommnad("insert", $tabledefuuid, $data, $options);
         
     }//end function
     
@@ -93,7 +136,9 @@ class apiwrapper{
      * 
      * @param string $tabledefuuid The uuid of the tabledefinition that you wish to update records.
      * @param array $data An array of associative arrays consising of fieldname => value pairs.
-     * @param array $options An associative array of options. Possible options are : 'useUuid', 'dateFormat', 'timeFormat', 'keepDestId'
+     * @param bool $useUuid Whether to use the id (false) or the uuid (true) in the update whereclause.
+     * @param string $dateFormat The format of the dates (if any) in $data.  Possible choices are : 'SQL', 'English, US', 'English, UK', or 'Dutch, NL'.  If none of these are chosen, it will default to 'SQL'.
+     * @param string $timeFormat The format of the times (if any) in $data.  Possible choices are : '24 Hour' or '12 Hour'.  If none of these are chosen, it will default to '24 Hour'.
      *
      * @return array An array of associative arrays of responses for each update
      * @returnf array Associative array (integer key)
@@ -101,7 +146,42 @@ class apiwrapper{
      * @returnff string message The detailed message describing the result
      */
     
-    public function updateRecords($tabledefuuid, $data, $options = NULL) {
+    public function updateRecords($tabledefuuid, $data, $useUuid = true, $dateFormat = NULL, $timeFormat = NULL) {
+        
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        switch($dateFormat){
+            
+            case "SQL":
+            case "English, US":
+            case "English, UK":
+            case "Dutch, NL":
+            break;
+
+            default:
+                $dateFormat = "SQL";
+            break;
+        
+        }//end switch
+        
+        switch($timeFormat){
+            
+            case "24 Hour":
+            case "12 Hour":
+            break;
+
+            default:
+                $timeFormat = "24 Hour";
+            break;
+        
+        }//end switch
+        
+        $options = array(
+                    "useUuid" => $useUuid,
+                    "dateFormat" => $dateFormat,
+                    "timeFormat" => $timeFormat
+                    );
         
         return $this->_runTableCommnad("update", $tabledefuuid, $data, $options);
         
@@ -112,8 +192,8 @@ class apiwrapper{
      * function getRecords
      * 
      * @param string $tabledefuuid The uuid of the tabledefinition that you wish to get records.
-     * @param array $data An array of associative arrays of table uuids (or integer ids if useUuid option is set to false).  The key=>value format is 'uuid'=>'{the actual uuid}'
-     * @param array $options An associative array of options. Possible options are : 'useUuid', 'dateFormat', 'timeFormat'
+     * @param mixed $ids Either an array uuids (or ids if $useUuid = false), or an individual uuid (or id).
+     * @param bool $useUuid Whether the data is an array of uuids or ids
      *
      * @return array An array of associative arrays of responses for each get
      * @returnf array Associative array (integer key)
@@ -122,7 +202,33 @@ class apiwrapper{
      * @returnff array extras The associative array containing the record retrieved.  <em>Note:</em> This field only exists if type is not 'error' AND there is a record that corresponds to the uuid/id searched for.
      */
     
-    public function getRecords($tabledefuuid, $data, $options = NULL) {
+    public function getRecords($tabledefuuid, $ids, $useUuid = true) {
+        
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        if($useUuid)
+            $keyName = "uuid";
+        else
+            $keyName = "id";
+            
+        if(!is_array($ids))
+            $ids = array($ids);
+        
+        $data = array();
+        foreach($ids as $id){
+            
+            if($useUuid)
+                $id = (string)$id;
+            else
+                $id = (int)$id;
+            $data[][$keyName] = $id;
+            
+        }//end foreach
+        
+        $options = array(
+                         "useUuid" => $useUuid
+                        );
         
         return $this->_runTableCommnad("get", $tabledefuuid, $data, $options);
         
@@ -132,9 +238,9 @@ class apiwrapper{
     /*
      * function deleteRecords
      * 
-     * @param string $tabledefuuid The uuid of the tabledefinition that you wish to delete records.
-     * @param array $data An array associative arrays with the key 'uuid' (or 'id' if useUuid option is set to false) and the relevant value.
-     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     * @param string $tabledefuuid The uuid of the tabledefinition that you wish to delete (or inactivate, depending upon the tabledef) records.
+     * @param mixed $ids Either an array uuids (or ids if $useUuid is false), or an individual uuid (or id).
+     * @param bool $useUuid Whether the data is an array of uuids or ids.
      *
      * @return array An array of associative arrays of responses for each delete
      * @returnf array Associative array (integer key)
@@ -142,9 +248,35 @@ class apiwrapper{
      * @returnff string message The detailed message describing the result
      */
     
-    public function deleteRecords($tabledefuuid, $records, $options = NULL) {
+    public function deleteRecords($tabledefuuid, $ids, $useUuid = true) {
         
-        return $this->_runTableCommnad("delete", $tabledefuuid, $records, $options);
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        if($useUuid)
+            $keyName = "uuid";
+        else
+            $keyName = "id";
+            
+        if(!is_array($ids))
+            $ids = array($ids);
+        
+        $data = array();
+        foreach($ids as $id){
+            
+            if($useUuid)
+                $id = (string)$id;
+            else
+                $id = (int)$id;
+            $data[][$keyName] = $id;
+            
+        }//end foreach
+        
+        $options = array(
+                         "useUuid" => $useUuid
+                        );
+        
+        return $this->_runTableCommnad("delete", $tabledefuuid, $data, $options);
         
     }//end function
     
@@ -203,7 +335,7 @@ class apiwrapper{
     /*
      * function searchClientByEmail
      * @param string $email The email to be searched for
-     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     * @param bool $useUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
@@ -211,11 +343,18 @@ class apiwrapper{
      * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
     
-    public function searchClientByEmail($email, $options = NULL) {
+    public function searchClientByEmail($email, $useUuid = true) {
         
         $method = "api_searchByEmail";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
         $data["email"] = (string)$email;
+        
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        $options = array(
+                          "useUuid" => $useUuid  
+                        );
         
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
         
@@ -231,7 +370,7 @@ class apiwrapper{
      * @param name $firstname The first name to search for in the client's table
      * @param name $lastname The last name to search for in the client's table
      * @param name $postalcode The postal code to search for in the client's table
-     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     * @param bool $useUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
@@ -239,13 +378,20 @@ class apiwrapper{
      * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
     
-    public function searchClientByNameAndPostalcode($firstname, $lastname, $postalcode, $options = NULL) {
+    public function searchClientByNameAndPostalcode($firstname, $lastname, $postalcode, $useUuid = true) {
         
         $method = "api_searchByNameAndPostalcode";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
         $data["firstname"] = (string)$firstname;
         $data["lastname"] = (string)$lastname;
         $data["postalcode"] = (string)$postalcode;
+        
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        $options = array(
+                          "useUuid" => $useUuid  
+                        );
         
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
         
@@ -261,7 +407,7 @@ class apiwrapper{
      * function searchClientByUsernameAndPassword
      * @param string $username The username to search for in the client's table
      * @param string $password The password to search for in the client's table
-     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     * @param bool $useUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
@@ -269,12 +415,19 @@ class apiwrapper{
      * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
     
-    public function searchClientByUsernameAndPassword($username, $password, $options = NULL) {
+    public function searchClientByUsernameAndPassword($username, $password, $useUuid = true) {
         
         $method = "api_searchByUsernameAndPassword";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
         $data["username"] = (string)$username;
         $data["password"] = (string)$password;
+        
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        $options = array(
+                          "useUuid" => $useUuid  
+                        );
         
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
         
@@ -292,7 +445,7 @@ class apiwrapper{
      * @param string $ordertype The type of the sales order.  Possible types are :'Quote','Order','Invoice','VOID'
      * @param string $startdate The sql encoded DATETIME lower range of creation dates.
      * @param string $enddate The sql encoded DATETIME upper range of creation dates.
-     * @param array $options An associative array of options. Possible options are : 'useUuid'
+     * @param bool $useUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
@@ -300,7 +453,7 @@ class apiwrapper{
      * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
     
-    function searchSalesOrdersByClientUuid($clientuuid, $ordertype = NULL, $startdate = NULL, $enddate = NULL, $options = NULL) {
+    function searchSalesOrdersByClientUuid($clientuuid, $ordertype = NULL, $startdate = NULL, $enddate = NULL, $useUuid = true) {
         
         $method = "api_searchByClientUuid";
         $tabledefuuid = "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
@@ -311,6 +464,13 @@ class apiwrapper{
             $data["startdate"] = $startdate;
         if($enddate !== NULL)
             $data["enddate"] = $enddate;
+            
+        if($useUuid !== true)
+            $useUuid = false;
+        
+        $options = array(
+                          "useUuid" => $useUuid  
+                        );
             
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
         
