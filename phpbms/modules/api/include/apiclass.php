@@ -463,6 +463,42 @@ class api{
 
                         break;
 
+                    case "getDefaults":
+
+                        include_once("include/tables.php");
+
+                        if($hasTableClassOveride){
+
+                            @ include_once("modules/".$modulename."/include/".$maintable.".php");
+
+                            if(class_exists($maintable)){
+
+                                $processor = new $maintable($this->db, $tabledefid);
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
+
+                            }else{
+
+                                $processor = new phpbmsTable($this->db, $tabledefid);
+                                $processor->dateFormat =  $this->options->dateFormat;
+                                $processor->timeFormat =  $this->options->timeFormat;
+
+                            }//end if
+
+                        } else {
+
+                            $processor = new phpbmsTable($this->db, $tabledefid);
+                            $processor->dateFormat =  $this->options->dateFormat;
+                            $processor->timeFormat =  $this->options->timeFormat;
+
+                        }//end if
+
+                        $therecord = $processor->getDefaults();
+                        
+                        $this->_addToResponse("retrieved", "defaults retrieved in tabledef ".$tabledefid, $therecord);
+
+                       break;
+
                     case "insert":
                         //======================================================
                         include_once("include/tables.php");
@@ -615,7 +651,7 @@ class api{
                         }//end if
 
                         if($errorMessage)
-                            $this->sendError("Update failed from request number ".$i, $errorMessage);
+                            $this->sendError("Get failed from request number ".$i, $errorMessage);
                         elseif(!$this->options->useUuid){
                             $therecord = $processor->getRecord((int) $request["data"]["id"], $this->options->useUuid);
                             $thereturn = $therecord["id"];

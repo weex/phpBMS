@@ -624,6 +624,7 @@ if(class_exists("phpbmsTable")){
 			$therecord["taxname"]=$taxinfo["name"];
 			$therecord["taxpercentage"]=$taxinfo["percentage"];
 			$therecord["amountdue"]=0;
+			$therecord["amountpaid"]=0;
 
 			$therecord["hascredit"]=0;
 			$therecord["creditlimit"]=0;
@@ -631,6 +632,8 @@ if(class_exists("phpbmsTable")){
 
 			$therecord["thelineitems"] = array();
 			$therecord["cmid"] = "";
+
+                        $therecord["lineitemschanged"] = "";
 
 			return $therecord;
 		}
@@ -832,7 +835,11 @@ if(class_exists("phpbmsTable")){
 				if(!in_array(((string)$variables["statusid"]),$this->_availableStatusUUIDs))
 					$this->verifyErrors[] = "The `statusid` field does not give an existing/acceptable status id number.";
 
-			}//end if
+			} else {
+
+				$this->verifyErrors[] = "The `statusid` field must be set.";
+
+                        }//end if
 
 			//check booleans
 				//readytopost
@@ -1186,6 +1193,9 @@ if(class_exists("phpbmsTable")){
 				require_once("addresses.php");
 				require_once("addresstorecord.php");
 
+                                if(!isset($variables["uuid"]))
+                                    $variables["uuid"] = getUuid($this->db, $this->uuid, $newid);
+
 				$newuuid = mysql_real_escape_string($variables["uuid"]);
 
 				$this->addressUpdate($variables, $newuuid, $createdby, "billing");
@@ -1193,6 +1203,9 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
+
+                        if(!isset($variables["lineitemschanged"]))
+                            $variables["lineitemschanged"] ='';
 
 			if($variables["lineitemschanged"]==1){
 
@@ -1205,8 +1218,14 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
+                        if(!isset($variables["statusdate"]))
+                            $variables["statusdate"] ='';
+
+                        if(!isset($variables["assignedtoid"]))
+                            $variables["assignedtoid"] ='';
+
 			//if($variables["statuschanged"]==1)
-				$this->updateStatus($id,$variables["statusid"],$variables["statusdate"],$variables["assignedtoid"], $replace);
+                        $this->updateStatus($id, $variables["statusid"], $variables["statusdate"], $variables["assignedtoid"], $replace);
 
 			if($variables["clienttype"] == "prospect" && $variables["type"] == "Order")
 				$this->prospectToClient($variables["clientid"]);
@@ -2060,12 +2079,12 @@ if(class_exists("searchFunctions")){
 					}//end if
 
 				}//end foreach
-				
+
 				if($count == count($this->idsArray))
 					$message = $count." related credit memo(s) have been created.";
 				else
 					$message = $count." related credit memo(s) (of ".count($this->idsArray)." selected) have been created.";
-				
+
 				return $message;
 
 		}//end method

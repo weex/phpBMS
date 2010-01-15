@@ -259,6 +259,27 @@ class apiwrapper{
     }//end function
 
 
+    /**
+     * function getDefaults
+     *
+     */
+
+    function getDefaults($tabledefuuid){
+
+        $params["request"][0]["command"] = "getDefaults";
+        $params["request"][0]["data"] = "";
+        $params["request"][0]["tabledefid"] = $tabledefuuid;
+
+        $response = $this->_callServer($params);
+
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
+    }//end function getDefaults
+
+
     /*
      * function deleteRecords
      *
