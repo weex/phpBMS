@@ -262,9 +262,15 @@ class apiwrapper{
     /**
      * function getDefaults
      *
+     * @param string $tabledefuuid The uuid of the tabledefinition that you wish to get defaults.
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the procedure (either 'retrieved' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras The associative array containing the default record.  <em>Note:</em> This field only exists if type is not 'error'.
      */
 
-    function getDefaults($tabledefuuid){
+    public function getDefaults($tabledefuuid){
 
         $params["request"][0]["command"] = "getDefaults";
         $params["request"][0]["data"] = "";
@@ -382,25 +388,25 @@ class apiwrapper{
     /*
      * function searchClientByEmail
      * @param string $email The email to be searched for
-     * @param bool $useUuid Whether to return uuids or ids.
+     * @param bool $returnUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
      * @returnf string message The detailed message describing the result
-     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'returnUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
 
-    public function searchClientByEmail($email, $useUuid = true) {
+    public function searchClientByEmail($email, $returnUuid = true) {
 
         $method = "api_searchByEmail";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
         $data["email"] = (string)$email;
 
-        if($useUuid !== true)
-            $useUuid = false;
+        if($returnUuid !== true)
+            $returnUuid = false;
 
         $options = array(
-                          "useUuid" => $useUuid
+                          "useUuid" => $returnUuid
                         );
 
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
@@ -417,15 +423,15 @@ class apiwrapper{
      * @param name $firstname The first name to search for in the client's table
      * @param name $lastname The last name to search for in the client's table
      * @param name $postalcode The postal code to search for in the client's table
-     * @param bool $useUuid Whether to return uuids or ids.
+     * @param bool $returnUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
      * @returnf string message The detailed message describing the result
-     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'returnUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
 
-    public function searchClientByNameAndPostalcode($firstname, $lastname, $postalcode, $useUuid = true) {
+    public function searchClientByNameAndPostalcode($firstname, $lastname, $postalcode, $returnUuid = true) {
 
         $method = "api_searchByNameAndPostalcode";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
@@ -433,11 +439,11 @@ class apiwrapper{
         $data["lastname"] = (string)$lastname;
         $data["postalcode"] = (string)$postalcode;
 
-        if($useUuid !== true)
-            $useUuid = false;
+        if($returnUuid !== true)
+            $returnUuid = false;
 
         $options = array(
-                          "useUuid" => $useUuid
+                          "useUuid" => $returnUuid
                         );
 
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
@@ -454,26 +460,26 @@ class apiwrapper{
      * function searchClientByUsernameAndPassword
      * @param string $username The username to search for in the client's table
      * @param string $password The password to search for in the client's table
-     * @param bool $useUuid Whether to return uuids or ids.
+     * @param bool $returnUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
      * @returnf string message The detailed message describing the result
-     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'returnUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
 
-    public function searchClientByUsernameAndPassword($username, $password, $useUuid = true) {
+    public function searchClientByUsernameAndPassword($username, $password, $returnUuid = true) {
 
         $method = "api_searchByUsernameAndPassword";
         $tabledefuuid = "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083";
         $data["username"] = (string)$username;
         $data["password"] = (string)$password;
 
-        if($useUuid !== true)
-            $useUuid = false;
+        if($returnUuid !== true)
+            $returnUuid = false;
 
         $options = array(
-                          "useUuid" => $useUuid
+                          "useUuid" => $returnUuid
                         );
 
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
@@ -492,15 +498,15 @@ class apiwrapper{
      * @param string $ordertype The type of the sales order.  Possible types are :'Quote','Order','Invoice','VOID'
      * @param string $startdate The sql encoded DATETIME lower range of creation dates.
      * @param string $enddate The sql encoded DATETIME upper range of creation dates.
-     * @param bool $useUuid Whether to return uuids or ids.
+     * @param bool $returnUuid Whether to return uuids or ids.
      *
      * @return array An associative array response for the get
      * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
      * @returnf string message The detailed message describing the result
-     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'useUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'returnUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
      */
 
-    function searchSalesOrdersByClientUuid($clientuuid, $ordertype = NULL, $startdate = NULL, $enddate = NULL, $useUuid = true) {
+    function searchSalesOrdersByClientUuid($clientuuid, $ordertype = NULL, $startdate = NULL, $enddate = NULL, $returnUuid = true) {
 
         $method = "api_searchByClientUuid";
         $tabledefuuid = "tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883";
@@ -512,11 +518,11 @@ class apiwrapper{
         if($enddate !== NULL)
             $data["enddate"] = $enddate;
 
-        if($useUuid !== true)
-            $useUuid = false;
+        if($returnUuid !== true)
+            $returnUuid = false;
 
         $options = array(
-                          "useUuid" => $useUuid
+                          "useUuid" => $returnUuid
                         );
 
         $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
@@ -526,6 +532,43 @@ class apiwrapper{
         else
             return false;
 
+    }//end function
+    
+    
+    /*
+     * function searchProductsByPartnumber
+     * @param $partnumber
+     * @param $webenabled
+     * @param $inactive
+     * @param $returnUuid
+     *
+     * @return array An associative array response for the get
+     * @returnf string type The result of the get (either 'result' if successful, or 'error' if not).
+     * @returnf string message The detailed message describing the result
+     * @returnf array extras If the type is 'result', this will be a (possibly empty) array of uuids (or ids if the 'returnUuid' option is false).  <em>Note:</em> This field only exists if type is not 'error'.
+     */
+    
+    public function searchProductsByPartnumber($partnumber, $webenabled = true, $inactive = false, $returnUuid = true) {
+        
+        $method = "api_searchByPartNumber";
+        $tabledefuuid = "tbld:7a9e87ed-d165-c4a4-d9b9-0a4adc3c5a34";
+        $data["partnumber"] = (string)$partnumber;
+        $data["webenabled"] = (bool)$webenabled;
+        $data["inactive"] = (bool)$inactive;
+        
+        $returnUuid = (bool)$returnUuid;
+        
+        $options = array(
+                          "useUuid" => $returnUuid
+                        );
+
+        $response = $this->runApiMethod($method, $tabledefuuid, $data, $options);
+
+        if($response !== false)
+            return $response[0];
+        else
+            return false;
+        
     }//end function
 
 

@@ -533,27 +533,52 @@ if(class_exists("phpbmsTable")){
 		
 		/*
 		 * function api_searchByPartNumber
+		 * 
 		 * @param array $requestData Array containing the "partnumber" key.
 		 * @param bool $returnUuid If true, returns result's uuid , if
 		 * false, the id.
+		 * 
 		 * @return array An array containing response information
-		 * @returnf string 'type' The type of response (e.g. 'error' or 'result')
-		 * @returnf string 'message' Message explaining the type / result
-		 * @returnf array details Either the array of uuid / ids if no errors
+		 * @returnf string type The type of response (e.g. 'error' or 'result')
+		 * @returnf string message Message explaining the type / result
+		 * @returnf array extras Either the array of uuid / ids if no errors
 		 * were encountered, or the original $requestData if there was an error
 		 */
 		
 		function api_searchByPartNumber($requestData, $returnUuid = true) {
 			
 			/**
-			  *  do error search 
+			  *  verify data integrity. 
 			  */
+			
+			$response["type"] = "";
+			$response["message"] = "";
 			if(!isset($requestData["partnumber"])){
 				$response["type"] = "error";
-				$response["message"] = "Data does not contain a key of 'partnumber'.";
-				$response["details"] = $requestData;
-				return $response;
+				$response["message"] = "Data does not contain a key of 'partnumber'";
 			}//end if
+			
+			if(!isset($requestData["webenabled"])){
+				$response["type"] = "error";
+				if($response["message"])
+					$response["message"] .= " or 'webenabled'.";
+				else
+					$response["message"] = "Data does not contain a key of 'webenabled'.";
+				
+			}//end if
+			
+			if(!isset($requestData["inactive"])){
+				$response["type"] = "error";
+				if($response["message"])
+					$response["message"] .= " or 'inactive'.";
+				else
+					$response["message"] = "Data does not contain a key of 'inactive'.";
+				
+			}//end if
+			
+			if($response["type"] == "error")
+				return $response;
+			
 			
 			/**
 			  *  do query search 
@@ -566,6 +591,10 @@ if(class_exists("phpbmsTable")){
 					`products`
 				WHERE
 					`partnumber` = '".mysql_real_escape_string($requestData["partnumber"])."'
+					AND
+					`webenabled` = '".(int)$response["webenabled"]."'
+					AND
+					`inactive` = '".(int)$response["inactive"]."'
 			";
 			
 			$queryresult = $this->db->query($querystatement);
@@ -575,13 +604,13 @@ if(class_exists("phpbmsTable")){
 			  */
 			$thereturn["message"] = "The function api_searchByPartNumber has been run successfully.";
 			$thereturn["type"] = "";
-			$thereturn["details"] = array();
+			$thereturn["extras"] = array();
 			while($therecord = $this->db->fetchArray($queryresult)){
 				
 				if($returnUuid)
-					$thereturn["details"][] = $therecord["uuid"];
+					$thereturn["extras"][] = $therecord["uuid"];
 				else
-					$thereturn["details"][] = $therecord["id"];
+					$thereturn["extras"][] = $therecord["id"];
 					
 			}//end while
 			
