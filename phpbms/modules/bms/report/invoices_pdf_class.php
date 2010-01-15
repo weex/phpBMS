@@ -369,19 +369,19 @@ class invoicePDF extends phpbmsReport{
 
             $companyDisplay = "";
 
+            if($this->invoicerecord["company"]){
+
+                $companyDisplay .= $this->invoicerecord["company"];
+                if($this->invoicerecord["firstname"])
+                        $companyDisplay .= " (".$this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"].")";
+
+            } else
+                $companyDisplay .= $this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"];
+
             switch($areaToPrint){
 
 
                 case "billto":
-
-                    if($this->invoicerecord["company"]){
-
-                            $companyDisplay .= $this->invoicerecord["company"];
-                            if($this->invoicerecord["firstname"])
-                                    $companyDisplay .= " (".$this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"].")";
-
-                    } else
-                            $companyDisplay .= $this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"];
 
                     $pdf->SetXY($pdf->GetX() + 0.0625, $pdf->GetY() + 0.0625);
                     $pdf->SetFont("Arial", "B", 10);
