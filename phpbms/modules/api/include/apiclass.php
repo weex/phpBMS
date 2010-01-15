@@ -455,12 +455,12 @@ class api{
                 */
 
                 switch($request["command"]){
-                    
+
                     case "ping":
                         //======================================================
-                        
+
                         $this->_addToResponse("message", "Everything is phpBMSy!");
-                        
+
                         break;
 
                     case "insert":
@@ -604,7 +604,7 @@ class api{
                             $processor->dateFormat =  $this->options->dateFormat;
                             $processor->timeFormat =  $this->options->timeFormat;
                         }//end if
-                        
+
                         $errorMessage = "";
                         if($this->options->useUuid){
                             if(!isset($request["data"]["uuid"]))
@@ -613,7 +613,7 @@ class api{
                             if(!isset($request["data"]["id"]))
                                 $errorMessage = "The `id` field must be set.";
                         }//end if
-                        
+
                         if($errorMessage)
                             $this->sendError("Update failed from request number ".$i, $errorMessage);
                         elseif(!$this->options->useUuid){
@@ -842,7 +842,7 @@ class api{
     function _addToResponse($type = "message", $message ="", $extras = ""){
 
         $response["type"] = $type;
-        $response["messsage"] = $message;
+        $response["message"] = $message;
         if($extras)
             $response["extras"] = $extras;
 

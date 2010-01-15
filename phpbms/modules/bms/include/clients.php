@@ -540,7 +540,7 @@ if(class_exists("phpbmsTable")){
 
 				}//end foreach
 
-				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
+				$response["message"] = "Data does not contain the key(s): ".$response["message"];
 
 				return $response;
 
@@ -635,7 +635,7 @@ if(class_exists("phpbmsTable")){
 
 				}//end foreach
 
-				$response["messsage"] = "Data does not contain the key(s): ".$response["message"];
+				$response["message"] = "Data does not contain the key(s): ".$response["message"];
 
 				return $response;
 
@@ -1260,7 +1260,7 @@ if(class_exists("phpbmsImport")){
 									$theid = $thereturn;
 								}//end if
 							}//end if
-								
+
 						}else
 							$this->error .= '<li> incorrect amount of fields for line number '.$rowNum.'.</li>';
 
@@ -1274,7 +1274,7 @@ if(class_exists("phpbmsImport")){
 								$this->revertID = $theid;
 
 							$theuuid = getUuid($this->table->db, "tbld:6d290174-8b73-e199-fe6c-bcf3d4b61083", (int) $theid);
-							
+
 							//If it is a sugarcrm import, insert the shipping address as well
 							$addressVerify = array();
 							if($this->importType == "sugarcrm"){
@@ -1431,7 +1431,7 @@ if(class_exists("phpbmsImport")){
 
 
 		function displayTransaction($recordsArray, $fieldsArray){
-			
+
 			if(count($recordsArray) && count($fieldsArray)){
 
 				//Need to include addresses in the fieldArray
