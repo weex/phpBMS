@@ -34,7 +34,7 @@ class snapshot{
             foreach($_SESSION["userinfo"]["roles"] as $role)
                 $rolemodifier .= ", '".$role."'";
 
-            $rolemodifier = "AND `roleid` IN(".$rolemodifier.") OR roleid IS NULL";
+            $rolemodifier = "AND (`roleid` IN(".$rolemodifier.") OR `roleid` IS NULL)";
 
         }//endif
 
@@ -274,7 +274,7 @@ class snapshot{
             $areaWhere = "!= 'N/A'";
 
         if(!$_SESSION["userinfo"]["admin"])
-            $rolewhere = "AND (`roleid` IN ('".implode($_SESSION["userinfo"]["roles"])."') OR `roleid` ='' OR `roleid` IS NULL)";
+            $rolewhere = "AND (`roleid` IN ('".implode($_SESSION["userinfo"]["roles"], "', '")."') OR `roleid` ='' OR `roleid` IS NULL)";
         else
             $rolewhere = "";
 
