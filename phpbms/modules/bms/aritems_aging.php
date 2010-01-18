@@ -331,36 +331,39 @@ class arAging{
 
 //Processor
 //===========================================================================
-if(!isset($bypass)){
+if(!isset($noOutput)){
 
-	include_once("../../include/session.php");
+    include_once("../../include/session.php");
 
-	$aging = new arAging($db);
+    $aging = new arAging($db);
 
-	if(isset($_POST["command"])){
+    if(isset($_POST["command"])){
 
-		switch($_POST["command"]){
+            switch($_POST["command"]){
 
-			case "run":
-				$aging->run($_POST["agingdate"]);
+                case "run":
 
-				if(isset($_POST["printStatements"]))
-					$aging->printClientStatements = true;
+                    if(!isset($_POST["agingdate"]))
+                        $error = new appError(200, "passed parameters not set");
 
-				if(isset($_POST["printSummary"]))
-					$aging->printSummary = true;
+                    $aging->run($_POST["agingdate"]);
 
-				$aging->showResults();
+                    if(isset($_POST["printStatements"]))
+                        $aging->printClientStatements = true;
 
-				break;
+                    if(isset($_POST["printSummary"]))
+                        $aging->printSummary = true;
 
-			case "cancel":
-				goURL(APP_PATH."search.php?id=tbld%3Ac595dbe7-6c77-1e02-5e81-c2e215736e9c");
+                    $aging->showResults();
+                    break;
 
-		}//endswitch
+                case "cancel":
 
-	} else
-		$aging->showDialog();
+                    goURL(APP_PATH."search.php?id=tbld%3Ac595dbe7-6c77-1e02-5e81-c2e215736e9c");
+
+            }//endswitch
+    } else
+        $aging->showDialog();
 
 }//end if
 ?>

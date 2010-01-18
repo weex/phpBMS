@@ -37,11 +37,20 @@
  +-------------------------------------------------------------------------+
 */
 
-// Turn on/or off debugging
+/**
+ * Turn on/or off debugging
+ */
 @ define("APP_DEBUG", true);
 if(APP_DEBUG)
-	error_reporting(E_ALL);
+    error_reporting(E_ALL);
+else
+    error_reporting(0);
 
+/**
+ * Until we instatiate time zone in the program
+ * This lines suppress warnings when error reporting is strict
+ */
+@ date_default_timezone_set(date_default_timezone_get());
 
 // Error Class - This class reports errors.  It can also log these errors
 // to the phpBMS log table in some cases.
