@@ -136,6 +136,16 @@ client = {
 		} else
 			alert("No valid address given");
 
+	},//end method
+	
+	inactivate: function(){
+		
+		var inactive = getObjectFromID("inactive");
+		var canemail = getObjectFromID("canemail");
+		
+		if(inactive.checked === true)
+			canemail.checked = false;
+		
 	}//end method
 
 }//endstruct
@@ -146,6 +156,9 @@ connect(window,"onload",function() {
 
 	var mapIt = getObjectFromID("buttonMap");
 	connect(mapIt, "onclick", client.mapIt);
+	
+	var inactive = getObjectFromID("inactive");
+	connect(inactive, "onchange", client.inactivate);
 
         var company = getObjectFromID("company");
         company.focus();

@@ -685,18 +685,18 @@ if(class_exists("phpbmsTable")){
 if(class_exists("searchFunctions")){
 	class clientsSearchFunctions extends searchFunctions{
 
-                function consolidate_clients($useUuid = false){
+		function consolidate_clients($useUuid = false){
 
-                    $noOutput = true;
-                    include("modules/bms/clients_consolidate.php");
+			$noOutput = true;
+			include("modules/bms/clients_consolidate.php");
 
-                    $consolidator = new clientConsolidator($this->db);
+			$consolidator = new clientConsolidator($this->db);
 
-                    $consolidator->showPicker($this->idsArray, $useUuid);
-                    exit();
+			$consolidator->showPicker($this->idsArray, $useUuid);
+			exit();
 
 
-                }//end function consolidate_clients
+		}//end function consolidate_clients
 
 		function mark_asclient($useUuid = false){
 
@@ -946,6 +946,40 @@ if(class_exists("searchFunctions")){
 				return "mass e-mail feature disabled in demo";
 			}
 		}
+		
+		
+		/*
+		 * function delete_record
+		 * @param bool $useUUID Whether the identifiers passed to the constructor are integer ids or string uuids.
+		 */
+		
+		function delete_record($useUUID = false) {
+			
+			if(!$useUUID)
+				$whereclause = $this->buildWhereClause();
+			else
+				$whereclause = $this->buildWhereClause($this->maintable.".uuid");
+
+			
+			$querystatement = "
+				UPDATE
+					`clients`
+				SET
+					`clients`.`inactive` = '1',
+					`clients`.`canemail` = '0',
+					`modifiedby` = ".$_SESSION["userinfo"]["id"].",
+					`modifieddate` = NOW()
+				WHERE
+					".$whereclause;
+					
+			$endmessage =" marked inactive";
+			
+			$queryresult = $this->db->query($querystatement);
+			$message = $this->buildStatusMessage().$endmessage;
+
+			return $message;
+			
+		}//end function
 
 
 	}//end class
