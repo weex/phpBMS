@@ -65,12 +65,16 @@ function addEditRecord(newedit, what, addeditfile){
             break;
 
         case "client":
+            if(clientrealid)
             theid = clientrealid.value;
             break;
 
     }//endswitch
 
-    theURL += "?backurl=" + encodeURIComponent(currentURL + "?cid=" + clientid.value)
+    if(clientid)
+        theURL += "?backurl=" + encodeURIComponent(currentURL + "?cid=" + clientid.value);
+    else
+        theURL += "?backurl=" + encodeURIComponent(currentURL);
 
     if(newedit == "edit"){
 
@@ -79,8 +83,12 @@ function addEditRecord(newedit, what, addeditfile){
         else
             theURL += "&id="  + encodeURIComponent(theid);
 
-    } else
-        theURL += "&cid=" + encodeURIComponent(clientid.value);
+    } else {
+
+        if(clientid)
+            theURL += "&cid=" + encodeURIComponent(clientid.value);
+            
+    }//endif
 
     document.location = theURL;
 
