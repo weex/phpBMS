@@ -49,7 +49,7 @@
             $this->db = $db;
             $this->tabledefid = $tabledefid;
             $this->tabledefuuid = getUuid($this->db, "tbld:5c9d645f-26ab-5003-b98e-89e9049f8ac3", ((int) $tabledefid));
-            
+
             $querystatement = "
                 SELECT
                     `prefix`
@@ -58,9 +58,9 @@
                 WHERE
                     `uuid` = '".$this->tabledefuuid."'
             ";
-            
+
             $queryresult = $this->db->query($querystatement);
-            
+
             $therecord = $this->db->fetchArray($queryresult);
             $this->prefix = $therecord["prefix"];
 
@@ -106,7 +106,7 @@
             $numrows = $this->db->numRows($queryresult);
 
             ?>
-            <select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onchange="sortSavedSelect(this)" />
+            <select id="sortSavedList" name="sortSavedList" <?php if ($numrows<1) echo "disabled" ?> size="10" style="width:99%" onchange="sortSavedSelect(this)">
             <?php
 
                 if($numrows<1){

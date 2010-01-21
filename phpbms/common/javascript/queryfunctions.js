@@ -37,7 +37,7 @@
 */
 window.onload=function(){
 
-	var sqlbttn=getObjectFromID("showSQLButton");;
+	var sqlbttn=getObjectFromID("showSQLButton");
 
 	if(sqlbttn){
 		var sqlDivs = new Array();

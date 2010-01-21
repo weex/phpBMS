@@ -12,7 +12,7 @@ updater = {
 		if(response.success === true){
 
 			noDebug.className = "success";
-			noDebug.innerHTML = "Core Program Updated Succefully";
+			noDebug.innerHTML = "Core Program Updated Successfully";
 
 		} else {
 

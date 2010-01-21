@@ -81,7 +81,7 @@ require("../include/session.php");
 			$querystatement = "SELECT VERSION() AS ver";
 			$queryresult = $this->db->query($querystatement);
 			if($this->db->error)
-				$error = new appError(-425,"Could not retrieve mysql verson. ","Database Error", true, true, false);
+				$error = new appError(-425,"Could not retrieve mysql version. ","Database Error", true, true, false);
 
 			$therecord = $this->db->fetchArray($queryresult);
 

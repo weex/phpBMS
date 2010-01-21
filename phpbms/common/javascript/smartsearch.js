@@ -504,7 +504,7 @@ connect(window,"onload",function() {
 		connect(smartSearches[i], "onkeyup", smartSearch.changeDisplay);
 		connect(smartSearches[i], "onblur", smartSearch.blurDisplay);
 
-		var ssID = smartSearches[i].id.substr(3);
+		ssID = smartSearches[i].id.substr(3);
 
 		smartSearch.displayValue[ssID] = smartSearches[i].value;
 		smartSearch.committedDisplayValue[ssID] = smartSearches[i].value;

@@ -129,7 +129,7 @@
 
 				<h1>Preparing For Update</h1>
 				<p>
-					Before updating, There are several steps to take and insure that backup runs smoothly.
+					Before updating, there are several steps to take and insure that backup runs smoothly.
 				</p>
 				<ul>
 					<li>
@@ -223,7 +223,7 @@
 				<h1>Update Modules</h1>
 
                                 <p>
-                                    To install a module that is not currently installed, wait unitl the update process
+                                    To install a module that is not currently installed, wait until the update process
                                     has completed successfully.  Then run the installation script and skip to the "install
                                     modules" section.
                                 </p>
@@ -301,10 +301,10 @@
 						<h3>Payment Information Encryption</h3>
 						<p>
                                                     If you store sensitive payment information such as credit card
-                                                    numbers make sure to enable the encrption option in the configuration page
+                                                    numbers make sure to enable the encryption option in the configuration page
                                                     underneath the BMS module section. You will also need to create and link
                                                     to an external file on the server that contains the encryption key. Typically,
-                                                    encyrption key files are text files containing a 64-128 character hash.
+                                                    encryption key files are text files containing a 64-128 character hash.
 						</p>
 					</li>
 
