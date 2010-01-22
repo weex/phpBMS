@@ -73,7 +73,7 @@ if(class_exists("phpbmsTable")){
 					)
 					;
 				";
-				
+
 			$queryresult = $this->db->query($querystatement);
 
 			return $this->db->numRows($queryresult);
@@ -109,7 +109,7 @@ if(class_exists("phpbmsTable")){
 			//check parent ids under certain circumstances
 			//not set is acceptable
 			if(isset($variables["parentid"])){
-				
+
 				$uuid = "";// can still check for an invalid parentid even though the current uuid is bad
 
 				//use the current id if it exists (A menu record cannot be its own parent)
@@ -175,10 +175,10 @@ if(class_exists("phpbmsTable")){
 				WHERE
 					`uuid` != '".$uuid."'
 					AND
-					`parentid` = ''
+					(`parentid` = '' OR `parentid` IS NULL)
 					AND
 					(
-						link=\"\"
+						link=''
 						OR
 						link IS NULL
 					)
@@ -216,7 +216,7 @@ if(class_exists("searchFunctions")){
 		function delete_record($useUUID = false){
 
 			if(!$useUUID){
-				
+
 				$whereclause=$this->buildWhereClause();
 				//menu.parentid must be a uuid and not an id.
 				//so, we adjust the verify where clause to always be
