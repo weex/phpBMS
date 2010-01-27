@@ -324,7 +324,7 @@ CREATE TABLE `paymentmethods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL,
   `name` varchar(128) NOT NULL default '',
-  `type` enum('draft','charge','receivable') default NULL,
+  `type` varchar(32) default NULL,
   `priority` int(8) NOT NULL default '0',
   `inactive` tinyint(1) NOT NULL default '0',
   `onlineprocess` tinyint(1) NOT NULL default '0',

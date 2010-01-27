@@ -404,7 +404,7 @@ class recurr{
 			$to = $therecord["email"];
 			$headers = "From: ".$to;
 
-			@ mail ($to,$subject,$message,$headers);
+			@ mail($to,$subject,$message,$headers);
 		}// endwhile
 
 	}//end method

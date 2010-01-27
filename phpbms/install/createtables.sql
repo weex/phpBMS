@@ -127,7 +127,7 @@ CREATE TABLE `reportsettings` (
   `id` int(11) NOT NULL auto_increment,
   `reportuuid` varchar(64) NOT NULL,
   `name` varchar(64) NOT NULL default '',
-  `value` text default '',
+  `value` text,
   `type` varchar(32) NOT NULL default 'string',
   `required` tinyint(4) NOT NULL default '0',
   `defaultvalue` varchar(255) NOT NULL,
