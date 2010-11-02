@@ -622,7 +622,7 @@
 				</fieldset>
 			</div>
 
-			<table border="0" cellpadding="0" cellspacing="0" id="parenInfo">
+			<table border="0" cellpadding="0" cellspacing="0" id="parenInfo" align="right">
 				<tbody>
 					<tr><td id="parenDiscount"><?php if($therecord["discountname"])  echo "(".htmlQuotes($therecord["discountname"]).")"; else echo "&nbsp;"; ?></td></tr>
 					<tr><td class="blanks">&nbsp;</td></tr>
