@@ -1,6 +1,3 @@
-[submodule "phpbms/modules/timeentry"]
-	path = phpbms/modules/timeentry
-	url = git://git.savannah.nongnu.org/timeentry.git
 [submodule "modules/timeentry"]
 	path = modules/timeentry
 	url = git://git.savannah.nongnu.org/timeentry.git
