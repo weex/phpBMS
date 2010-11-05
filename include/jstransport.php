@@ -32,6 +32,9 @@
 	//time formating
 	?>TIME_FORMAT="<?php echo htmlQuotes(TIME_FORMAT)?>";<?php
 
+	//current year for datepicker
+	?>CURRENT_YEAR="<?php echo htmlQuotes(date('Y'))?>";<?php
+
 	//currency formating
 	?>CURRENCY_SYM="<?php echo htmlQuotes(CURRENCY_SYM)?>";<?php
 

@@ -593,23 +593,47 @@ function stringToDate(sDate,format){
 			break;
 			case "English, US":
 				sep="/";
-				month=parseInt(sDate.substring(0,sDate.indexOf(sep)),10)-1;
-				day=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10);
-				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				var substrings = sDate.split(sep);
+				var parts = substrings.length;
+				if(parts == 2){
+					month=parseInt(sDate.substring(0,sDate.indexOf(sep)),10)-1 ;
+					day=parseInt(sDate.substring(sDate.indexOf(sep)+1),10);
+					year=CURRENT_YEAR;
+				} else if (parts == 3){
+					month=parseInt( sDate.substring(0,sDate.indexOf(sep)),10)-1 ;
+					day=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10);
+					year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				}
 				if(year<100) year+=2000;
 			break;
 			case "English, UK":
 				sep="/";
-				day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
-				month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
-				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				var substrings = sDate.split(sep);
+                                var parts = substrings.length;
+                                if(parts == 2){
+					day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+					month=parseInt(sDate.substring(sDate.indexOf(sep)+1),10)-1;
+					year=CURRENT_YEAR;
+				} else if (parts == 3){
+					day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+					month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
+					year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				}
 				if(year<100) year+=2000;
 			break;
 			case "Dutch, NL":
 				sep="-";
-				day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
-				month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
-				year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				var substrings = sDate.split(sep);
+                                var parts = substrings.length;
+                                if(parts == 2){
+                                        day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+					month=parseInt(sDate.substring(sDate.indexOf(sep)+1),10)-1;
+					year=CURRENT_YEAR;
+				} else if (parts == 3){
+                                        day=parseInt(sDate.substring(0,sDate.indexOf(sep)),10);
+					month=parseInt(sDate.substring(sDate.indexOf(sep)+1,sDate.indexOf(sep,sDate.indexOf(sep)+1)),10)-1;
+					year=parseInt(sDate.substring(sDate.lastIndexOf(sep)+1),10);
+				}
 				if(year<100) year+=2000;
 			break;
 		}
