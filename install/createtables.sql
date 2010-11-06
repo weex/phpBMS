@@ -182,7 +182,7 @@ CREATE TABLE `tabledefs` (
   `querytable` text,
   `editfile` varchar(128) default NULL,
   `editroleid` varchar(64),
-  `addfile` varchar(100) default '',
+  `addfile` varchar(128) default '',
   `addroleid` varchar(64),
   `importfile` VARCHAR(128) DEFAULT NULL,
   `importroleid` VARCHAR(64) default 'Admin',
