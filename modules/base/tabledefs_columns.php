@@ -130,6 +130,8 @@
 		$formatArray["Currency"] = "currency";
 		$formatArray["Boolean (yes / no)"] = "boolean";
 		$formatArray["File Link"] = "filelink";
+                $formatArray["Invoice link"] = "invoice";
+                $formatArray["Client id link"] = "client";
 		$formatArray["No Encoding (HTML acceptable)"] = "noencoding";
 		$formatArray["BBCode (Limited BBCode conversion)"] = "bbcode";
 		$theinput = new inputBasicList ("format", $thecolumn["format"], $formatArray);

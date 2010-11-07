@@ -1219,8 +1219,18 @@ function formatVariable($value, $format=NULL){
 			//$value="<a href=\"".APP_PATH."servefile.php?i=".$value."\" style=\"display:block;\"><img src=\"".APP_PATH."common/stylesheet/".STYLESHEET."/image/button-download.png\" align=\"middle\" alt=\"view\" width=\"16\" height=\"16\" border=\"0\" /></a>";
 			break;
 
-		case "noencoding":
-			$value=$value;
+		case "invoice":
+			if($value > 0 and $value != 9999999) {
+				$value = "<a href=\"".APP_PATH."modules/bms/invoices_addedit.php?id=$value\">$value</a>"; 
+			}
+			break;
+                
+ 		case "client":
+			$value = "<a href=\"".APP_PATH."modules/bms/clients_addedit.php?id=$value\">$value</a>"; 
+			break;
+
+ 		case "noencoding":
+ 			$value=$value;
 			break;
 
 

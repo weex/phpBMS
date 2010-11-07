@@ -164,7 +164,7 @@ CREATE TABLE `tablecolumns` (
   `sortorder` varchar(128) default '',
   `wrap` tinyint(1) NOT NULL default '0',
   `size` varchar(16) NOT NULL default '',
-  `format` enum('date','time','currency','boolean','datetime','filelink','noencoding','bbcode') default NULL,
+  `format` enum('date','time','currency','boolean','datetime','filelink','noencoding','bbcode','client','invoice') default NULL,
   `roleid` VARCHAR(64),
   PRIMARY KEY  (`id`),
   KEY `tabledef` (`tabledefid`),
