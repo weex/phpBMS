@@ -107,7 +107,7 @@
 		$theinput = new inputDatePicker("statusdate", $therecord["statusdate"], "status date");
 		$theform->addField($theinput);
 
-		$theinput = new inputSmartSearch($db, "assignedtoid", "Pick Active User", $therecord["assignedtoid"], "assigned to", false, 36);
+		$theinput = new inputSmartSearch($db, "assignedtoid", "Pick Active User", $therecord["assignedtoid"], "assigned to", false, 28);
 		$theform->addField($theinput);
 
 		$theinput = new inputCheckBox("readytopost",$therecord["readytopost"],"ready to post");
