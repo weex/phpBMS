@@ -544,7 +544,7 @@
 
 					<p>
 						<label for="trackingno">tracking number</label><br />
-						<input id="trackingno" name="trackingno" type="text" value="<?php echo htmlQuotes($therecord["trackingno"]) ?>" size="50" maxlength="64" />
+						<input id="trackingno" name="trackingno" type="text" value="<?php echo htmlQuotes($therecord["trackingno"]) ?>" size="40" maxlength="64" />
 					</p>
 				</fieldset>
 			</div>
