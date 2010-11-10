@@ -196,7 +196,7 @@
 		//=====Payment Info====================
 
 
-		$theinput = new inputComparisonField("accountnumber",$therecord["accountnumber"],  "account number" ,false, NULL, 20, 64);
+		$theinput = new inputComparisonField("accountnumber",$therecord["accountnumber"],  "account number" ,false, NULL, 10, 64);
 		$theform->addField($theinput);
 
 		$theinput = new inputComparisonField("routingnumber",$therecord["routingnumber"],  "routing number" ,false, NULL, 30, 64);
@@ -571,7 +571,7 @@
 					<div id="checkpaymentinfo">
 						<p id="pCheckNumber">
 							<label for="checkno">check number</label><br />
-							<input name="checkno" type="text" id="checkno" value="<?php echo htmlQuotes($therecord["checkno"])?>" size="20" maxlength="32" />
+							<input name="checkno" type="text" id="checkno" value="<?php echo htmlQuotes($therecord["checkno"])?>" size="10" maxlength="32" />
 						</p>
 						<p>
 							<label for="bankname">bank name</label><br />
