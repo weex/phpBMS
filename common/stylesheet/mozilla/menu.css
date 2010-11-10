@@ -6,7 +6,7 @@
 	padding:0px;
 	background:url("image/menu.png") repeat-x;
 	color:white;
-	margin:0 0 20px;
+	margin:0 0 10px;
 }
 
 #menu a, #topMenu a:hover{
@@ -23,7 +23,7 @@
 	background:none;
 	float:left;
 	margin:0;
-	padding:9px 10px 11px;
+	padding:5px 10px 7px;
 	padding-left:15px;
 	font-weight:bold;
 	font-size:22px;
