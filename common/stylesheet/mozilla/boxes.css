@@ -8,8 +8,7 @@ fieldset,.bodyline,.box{
 }
 .bodyline,#modalBox{
 	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
-	margin-left:8px;
-	margin-right:8px;
+	margin:0px;
 }
 
 .bodyline{
@@ -19,12 +18,7 @@ fieldset,.bodyline,.box{
 	padding:10px;
 }
 
-fieldset,.box{
-/*	margin:3px 3px 7px 3px;*/
-}
-
 fieldset{
-/*	padding:4px 8px;*/
 	overflow:hidden;
 }
 
