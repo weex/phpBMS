@@ -8,7 +8,8 @@ fieldset,.bodyline,.box{
 }
 .bodyline,#modalBox{
 	background:#E4ECEC url("image/bodyline.png") bottom left repeat-x;
-	margin:0px;
+	margin-right:8px;
+	margin-left:8px;
 }
 
 .bodyline{
