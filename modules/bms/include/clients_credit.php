@@ -19,7 +19,8 @@
 					lastname, 
 					company, 
 					hascredit,
-					creditlimit
+					creditlimit,
+					uuid
 				FROM
 					clients
 				WHERE
@@ -36,7 +37,7 @@
 					aritems
 				WHERE
 					`status` = 'open'
-					AND clientid = ".$this->id."
+					AND clientid = '".$therecord["uuid"]."'
 					AND posted = 1";
 
 			$queryresult = $this->db->query($querystatement);
@@ -77,7 +78,20 @@
 		
 		
 		function showHistory($clientid){
-		
+
+			$querystatement = "
+				SELECT 
+					id, 
+					uuid
+				FROM
+					clients
+				WHERE
+					id=".((int) $clientid);
+			
+			$queryresult = $this->db->query($querystatement);
+
+			$therecord = $this->db->fetchArray($queryresult);	
+
 			$querystatement = "
 				SELECT
 					relatedid,
@@ -89,7 +103,7 @@
 				FROM
 					aritems
 				WHERE
-					clientid = ".((int) $clientid)."
+					clientid = '".$therecord["uuid"]."'
 					AND `status` = 'open'
 				ORDER BY
 					posted";
@@ -103,7 +117,7 @@
 				FROM
 					aritems
 				WHERE
-					clientid = ".((int) $clientid)."
+					clientid = '".$therecord["uuid"]."'
 					AND `status` = 'open'
 				ORDER BY
 					posted";
@@ -115,11 +129,11 @@
 
 			<thead>
 				<tr>
-					<th align="left" nowrap="nowrap">doc ref</th>
+					<th align="left" width="35%" nowrap="nowrap">doc ref</th>
 					<th align="left" nowrap="nowrap">type</th>
 					<th align="left" nowrap="nowrap">doc date</th>
 					<th align="left" nowrap="nowrap">due date</th>
-					<th align="right" width="100%" nowrap="nowrap">amount</th>
+					<th align="right" width="65%" nowrap="nowrap">amount</th>
 					<th align="right">due</th>
 				</tr>
 			</thead>
