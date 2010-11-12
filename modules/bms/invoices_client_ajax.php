@@ -37,7 +37,7 @@
  +-------------------------------------------------------------------------+
 */
 
-session_cache_limiter('private');
+session_cache_limiter('nocache');
 
 include("../../include/session.php");
 
