@@ -1478,6 +1478,9 @@ if(class_exists("searchFunctions")){
 					return "Functionality disabled in demo.";
 
 				$this->db->setEncoding("latin1");
+				global $phpbmsSession, $sqlEncoding;
+				$sqlEncoding = 'latin1';
+				$phpbmsSession->loadSettings('latin1');
 
 				require_once("report/report_class.php");
                                 include("modules/bms/report/invoices_pdf_class.php");

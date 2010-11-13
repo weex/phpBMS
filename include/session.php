@@ -331,6 +331,7 @@ class phpbmsLog{
 class phpbmsSession{
 
 	var $db = null;
+	var $currency_sym = '';
 
 	function loadDBSettings($reportError = true){
 
@@ -475,6 +476,11 @@ class phpbmsSession{
 				//old versions used a reserved constant in certain php versions
 				if($therecord["name"] == "currency_symbol")
 					$therecord["name"] = "currency_sym";
+
+				if ($therecord['name'] == 'currency_sym') {
+					$this->currency_sym = $therecord['value'];
+				}
+
 
 				if(!defined(strtoupper($therecord["name"])))
 					define(strtoupper($therecord["name"]),$therecord["value"]);

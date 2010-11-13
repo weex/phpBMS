@@ -966,6 +966,7 @@ function sqlTimeFromString($timestring,$format=TIME_FORMAT){
 // Currency functions
 //=====================================================================
 function numberToCurrency($number){
+	global $phpbmsSession;
 	$currency="";
 	if($number<0)
 		$currency.="-";
