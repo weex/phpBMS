@@ -497,9 +497,10 @@ class phpbmsSession{
 
 					if($res !== false){
 
-                                            if(@filesize(ENCRYPTION_KEY_PATH))
-						define("ENCRYPTION_KEY",trim(fread($res, filesize(ENCRYPTION_KEY_PATH))));
-                                            else
+                                            if(@filesize(ENCRYPTION_KEY_PATH)){
+					        if(!defined('ENCRYPTION_KEY'))
+                                                    define("ENCRYPTION_KEY",trim(fread($res, filesize(ENCRYPTION_KEY_PATH))));
+                                            }else
                                                 $error = new appError(-230, "Cannot open path '".ENCRYPTION_KEY_PATH."' or file has zero length ", "Invalid Encryption Key File", true, true);
 
                                         } elseif(ENCRYPT_PAYMENT_FIELDS){
@@ -508,14 +509,14 @@ class phpbmsSession{
 
 					}else{
 
-                                            define("ENCRYPTION_KEY", "");
+                                            if(!defined('ENCRYPTION_KEY')) define("ENCRYPTION_KEY", "");
 
 					}//end if
 
 				}elseif(ENCRYPT_PAYMENT_FIELDS)
                                     $error = new appError(-228, ENCRYPTION_KEY_PATH." missing or invalid.", "Cannot Open Encryption Key File", true, true);
 				else
-				    define("ENCRYPTION_KEY", "");
+				    if(!defined('ENCRYPTION_KEY')) define("ENCRYPTION_KEY", "");
 
 			// This following code is for windows boxen, because they lack some server varables as well
 			// formating options for the strftime function

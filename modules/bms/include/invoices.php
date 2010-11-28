@@ -1503,6 +1503,7 @@ if(class_exists("searchFunctions")){
 
 				$this->db->setEncoding();
 
+				$phpbmsSession->loadSettings();
 
 				$count = count($this->idsArray);
 				$message = $processed." of ".$count." invoice PDF";
