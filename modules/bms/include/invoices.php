@@ -1666,7 +1666,7 @@ if(class_exists("searchFunctions")){
 		}//end private method
 
 
-		function mark_ashipped($useUuid = false){
+		function mark_asshipped($useUuid = false){
 
 			$statusid = "inst:e8b5e6a7-5797-7901-6266-6adeedd15ec9"; //The default id for "shipped";
 
