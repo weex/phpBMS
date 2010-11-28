@@ -231,7 +231,7 @@
 
 			<p><button class="Buttons" onclick="generateUserAndPass()" type="button">Generate</button></p>
 
-			<p class="notes">Client user names and passwords are <strong>not</strong> used for clients' to log in directly to phpBMS.</p>
+			<p class="notes">Client user names and passwords are <strong>not</strong> used for clients to log in directly to phpBMS.</p>
 		</fieldset>
 	</div>
 
