@@ -970,7 +970,7 @@ function numberToCurrency($number){
 	$currency="";
 	if($number<0)
 		$currency.="-";
-	$currency.=CURRENCY_SYM.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
+	$currency.=$phpbmsSession->currency_sym.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
 	return $currency;
 }
 

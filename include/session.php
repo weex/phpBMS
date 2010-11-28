@@ -481,7 +481,6 @@ class phpbmsSession{
 					$this->currency_sym = $therecord['value'];
 				}
 
-
 				if(!defined(strtoupper($therecord["name"])))
 					define(strtoupper($therecord["name"]),$therecord["value"]);
 			}//end while
