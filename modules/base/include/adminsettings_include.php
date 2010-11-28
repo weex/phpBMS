@@ -241,14 +241,14 @@ class settings{
     /**
      * Updates the password encryption seed and the password for the current user
      *
-     * Updates the encryption seed, and alsoupdates the encryption seed for the
+     * Updates the encryption seed, and also updates the encryption seed for the
      * given user (current)
      *
-     * @param string $newseed the new encrptions seed
+     * @param string $newseed the new encryptions seed
      * @param string $currpassword the user's current password
      * @param integer $userid the user's id
      */
-    function updateEncyptionSeed($newseed, $currpassword, $userid){
+    function updateEncryptionSeed($newseed, $currpassword, $userid){
 
 		$userid = (int) $userid;
 
@@ -328,7 +328,7 @@ class settings{
 
 			case "encryption seed":
 			if(isset($variables["changeseed"]))
-				$statusmessage = $this->updateEncyptionSeed($variables["encryption_seed"],$variables["currentpassword"],$_SESSION["userinfo"]["id"]);
+				$statusmessage = $this->updateEncryptionSeed($variables["encryption_seed"],$variables["currentpassword"],$_SESSION["userinfo"]["id"]);
 			break;
 
 		}//endswitch

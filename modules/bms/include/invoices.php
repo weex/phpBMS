@@ -656,7 +656,7 @@ if(class_exists("phpbmsTable")){
 
 			/**
 			  *  If `type` is not an order and not a quote and payment information is being
-			  *  encypted, we need to not decypt unencrypted payment information.
+			  *  encrypted, we need to not decypt unencrypted payment information.
 			  */
 			if($therecord["type"] != "Order" && $therecord["type"] != "Quote" && ENCRYPT_PAYMENT_FIELDS){
 
