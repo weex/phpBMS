@@ -656,7 +656,7 @@ if(class_exists("phpbmsTable")){
 
 			/**
 			  *  If `type` is not an order and not a quote and payment information is being
-			  *  encypted, we need to not decypt unencrypted payment information.
+			  *  encrypted, we need to not decypt unencrypted payment information.
 			  */
 			if($therecord["type"] != "Order" && $therecord["type"] != "Quote" && ENCRYPT_PAYMENT_FIELDS){
 
@@ -1478,6 +1478,9 @@ if(class_exists("searchFunctions")){
 					return "Functionality disabled in demo.";
 
 				$this->db->setEncoding("latin1");
+				global $phpbmsSession, $sqlEncoding;
+				$sqlEncoding = 'latin1';
+				$phpbmsSession->loadSettings('latin1');
 
 				require_once("report/report_class.php");
                                 include("modules/bms/report/invoices_pdf_class.php");
@@ -1500,6 +1503,7 @@ if(class_exists("searchFunctions")){
 
 				$this->db->setEncoding();
 
+				$phpbmsSession->loadSettings();
 
 				$count = count($this->idsArray);
 				$message = $processed." of ".$count." invoice PDF";
@@ -1662,7 +1666,7 @@ if(class_exists("searchFunctions")){
 		}//end private method
 
 
-		function mark_ashipped($useUuid = false){
+		function mark_asshipped($useUuid = false){
 
 			$statusid = "inst:e8b5e6a7-5797-7901-6266-6adeedd15ec9"; //The default id for "shipped";
 

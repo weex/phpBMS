@@ -232,9 +232,9 @@
 				<?php $theform->showfield("packagesperitem")?>
 			</p>
 
-			<p><?php $theform->showfield("isprepackaged");?> <span class="notes">(product is not packed with any other product.)</span></p>
+			<p><?php $theform->showfield("isprepackaged");?> <span class="notes">(product is not packed with any other product)</span></p>
 
-			<p><?php $theform->showfield("isoversized");?> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes.)</span></p>
+			<p><?php $theform->showfield("isoversized");?> <span class="notes">(product must be delivered in a box designated as oversized for shipping purposes)</span></p>
 
                 </fieldset>
 

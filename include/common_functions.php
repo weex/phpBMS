@@ -966,10 +966,11 @@ function sqlTimeFromString($timestring,$format=TIME_FORMAT){
 // Currency functions
 //=====================================================================
 function numberToCurrency($number){
+	global $phpbmsSession;
 	$currency="";
 	if($number<0)
 		$currency.="-";
-	$currency.=CURRENCY_SYM.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
+	$currency.=$phpbmsSession->currency_sym.number_format(abs($number),CURRENCY_ACCURACY,DECIMAL_SYMBOL,THOUSANDS_SEPARATOR);
 	return $currency;
 }
 

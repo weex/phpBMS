@@ -390,7 +390,7 @@
 						<h3>Payment Information Encryption</h3>
 						<p>
                                                     If you plan on storing sensitive payment information such as credit card
-                                                    numbers make sure to enable the encrption option in the configuration page
+                                                    numbers make sure to enable the encryption option in the configuration page
                                                     underneath the BMS module section. You will also need to create and link
                                                     to an external file on the server that contains the encryption key. Typically,
                                                     encyrption key files are text files containing a 64-128 character hash.

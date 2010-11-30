@@ -86,7 +86,7 @@
 		  *  @param string $encryptionKey An overriding encryption key.
 		  */
 
-		function encyptPaymentInformation($encryptionKey = NULL){
+		function encryptPaymentInformation($encryptionKey = NULL){
 
 			if($encryptionKey !== NULL)
 				$encryptionKey = mysql_real_escape_string($encryptionKey);
@@ -222,7 +222,7 @@
 							fclose($res);
 							$key = trim($key);
 
-							$this->encyptPaymentInformation($key);
+							$this->encryptPaymentInformation($key);
 							$this->obfuscatePaymentInformation();
 
 						}else{
@@ -236,7 +236,7 @@
 					}else{
 
 						if($this->isValidPath(ENCRYPTION_KEY_PATH)){
-							$this->encyptPaymentInformation();
+							$this->encryptPaymentInformation();
 							$this->obfuscatePaymentInformation();
 						}else{
 							$this->updateErrorMessage = "No valid encryption key path";
@@ -262,7 +262,7 @@
 							fclose($res);
 							$key = trim($key);
 
-							$this->encyptPaymentInformation($key);
+							$this->encryptPaymentInformation($key);
 							$this->obfuscatePaymentInformation();
 
 						}//end if --encrypt fields?--

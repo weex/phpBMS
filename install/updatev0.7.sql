@@ -8,7 +8,7 @@ INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creatio
 INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('----','N/A',15,15,2,2,'2006-10-19 15:26:58','2006-10-19 21:33:32',90);
 INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('reports','search.php?id=16',15,50,2,2,'2006-10-19 15:42:58','2006-10-19 21:43:19',-90);
 INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('relationships','search.php?id=10',15,60,2,2,'2006-10-19 15:44:10','2006-10-19 21:44:10',90);
-INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('Saved Searchs/Sorts','search.php?id=17',15,40,2,2,'2006-10-19 15:44:54','2006-10-19 21:44:54',90);
+INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('Saved Searches/Sorts','search.php?id=17',15,40,2,2,'2006-10-19 15:44:54','2006-10-19 21:44:54',90);
 INSERT INTO `menu` (name,link,parentid,displayorder,createdby,modifiedby,creationdate,modifieddate,accesslevel) VALUES ('----','N/A',15,45,2,2,'2006-10-19 15:45:18','2006-10-19 21:45:18',90);
 ALTER TABLE tablecolumns CHANGE COLUMN `format` `format` enum('date','time','currency','boolean','datetime','filelink','noencoding') default NULL;
 UPDATE tablecolumns SET format="noencoding" WHERE `column` like "%<%";

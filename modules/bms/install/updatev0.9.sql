@@ -223,7 +223,7 @@ INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `rol
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('2', 'select', '1', '0', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'email_invoice', 'e-mail client invoice PDF', '1', '20', '100');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'mark_asinvoice', 'post as invoice', '1', '30', '50');
-INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'mark_ashipped', 'mark as shipped', '1', '0', '0');
+INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'mark_asshipped', 'mark as shipped', '1', '0', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'mark_rtp', 'mark ready to post', '1', '20', '0');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'email_quote', 'e-mail client quote PDF', '1', '20', '100');
 INSERT INTO `tableoptions` (`tabledefid`, `name`, `option`, `othercommand`, `roleid`, `displayorder`) VALUES ('3', 'edit', '1', '0', '0', '0');

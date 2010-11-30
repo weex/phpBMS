@@ -390,7 +390,7 @@ if(class_exists("phpbmsTable")){
 
 					default:
 						$this->verifyErrors[] = "The value of the `status` field is invalid.  It must
-							be either 'open' or 'closed'.";
+							be either 'open' or 'collected'.";
 					break;
 
 				}//end switch
@@ -681,8 +681,6 @@ if(class_exists("searchFunctions")){
 					receipts
 				WHERE
 					posted = '0'
-					AND
-					collected = '0'
 					AND (".$whereclause.")";
 
 			$queryresult = $this->db->query($querystatement);
