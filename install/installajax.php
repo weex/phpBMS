@@ -129,7 +129,7 @@ class installAjax extends installUpdateBase{
 
 		}//end foreach
 
-		// next we need to generate the encrption seed and update the
+		// next we need to generate the encryption seed and update the
 		// setting in the table
 		$newSeed = $this->generateRandomString(16);
 

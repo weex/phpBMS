@@ -256,7 +256,7 @@ aritems = {
 		loadXMLDoc(theURL, null, false);
 
 		var theReturn;
-		console.log(req.responseText);
+		
 		try {
 			eval("theReturn = "+req.responseText);
 		} catch (e) {

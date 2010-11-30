@@ -844,7 +844,7 @@ class api{
      * Logs error to response message and optionally exits
      *
      * Adds an entry of type error to the response array. Can also optionally
-     * quit processing of the scrpt gracefully, and outputs the response.
+     * quit processing of the script gracefully, and outputs the response.
      *
      * @param string $errorMessage message to log in response
      * @param var $dump any extra information to send back n the response - usually a dump of the offending variable

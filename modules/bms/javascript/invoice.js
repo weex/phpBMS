@@ -719,6 +719,9 @@ lineitems = {
 		var taxable = getObjectFromID("taxable");
 		var extended = getObjectFromID("extended");
 
+		if(partnumber.value == "")
+                        return;
+
 		if(unitcost.value == "")
 			unitcost.value = "0";
 
