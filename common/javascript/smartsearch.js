@@ -64,7 +64,7 @@ smartSearch = {
 			if(smartSearch.triggerLookup[ssID])
 				window.clearTimeout(smartSearch.triggerLookup[ssID]);
 
-			smartSearch.triggerLookup[ssID] = window.setTimeout("smartSearch.lookup('"+ssID+"')",250);
+			smartSearch.triggerLookup[ssID] = window.setTimeout("smartSearch.lookup('"+ssID+"')",500);
 
 		} else {
 			//it is possible they hit the down, up arrow, or the return button
