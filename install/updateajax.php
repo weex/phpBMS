@@ -166,6 +166,24 @@ class updateAjax extends installUpdateBase{
 
 					break;
 
+				// ================================================================================================
+				case 0.98:
+
+					$version = 0.99;
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
+
+					//Updating Module Table
+					$thereturn = $this->updateModuleVersion("base", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
+
+					$currentVersion = $version;
+
+					break;
+
 			}//endswitch currentVersion
 
 		}//endwhile currentversion/newversion
