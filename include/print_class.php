@@ -183,13 +183,19 @@
 				if($this->db->numRows($this->reports)){
 					$this->db->seek($this->reports,0);
 					$displayorder=-1;
+					$first=true;
 					while($therecord=$this->db->fetchArray($this->reports)){
 						if ($displayorder!=$therecord["displayorder"]){
 							if($displayorder>0)
 								echo "<option value=\"\">----------------------------------------------------------------</option>\n";
 							$displayorder=$therecord["displayorder"];
 						}
-						echo "<option value=\"".$therecord["id"]."\">".$therecord["name"]."</option>\n";
+						$selected = '';
+						if($first) {
+							$selected = " selected";
+							$first=false;
+						}
+						echo "<option value=\"".$therecord["id"]."\"".$selected.">".$therecord["name"]."</option>\n";
 					}
 				} else {?><option value="0">No Reports Available</option><?php }
 		   ?>
