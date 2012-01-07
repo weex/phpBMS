@@ -59,7 +59,15 @@ class login{
 				phone,
 				department,
 				employeenumber,
-				admin
+				admin,
+				mailer,
+				sendmail,
+				smtpauth,
+				smtpsecure,
+				smtpport,
+				smtpuser,
+				smtppass,
+				smtphost
 			FROM
 				users
 			WHERE
