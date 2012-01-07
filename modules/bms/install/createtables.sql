@@ -22,8 +22,8 @@ CREATE TABLE `addresses` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -114,8 +114,8 @@ CREATE TABLE `clients` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`),
   KEY `notin` (`inactive`),
@@ -144,8 +144,8 @@ CREATE TABLE `discounts` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -220,8 +220,8 @@ CREATE TABLE `invoices` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`),
   KEY `client` (`clientid`)
@@ -246,8 +246,8 @@ CREATE TABLE `invoicestatuses` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -283,8 +283,8 @@ CREATE TABLE `lineitems` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `invoice` (`invoiceid`),
   KEY `product` (`productid`)
@@ -309,8 +309,8 @@ CREATE TABLE `paymentmethods` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -353,8 +353,8 @@ CREATE TABLE `productcategories` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -396,8 +396,8 @@ CREATE TABLE `products` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`),
   UNIQUE KEY `thpartnum` (`partnumber`),
@@ -454,8 +454,8 @@ CREATE TABLE `receipts` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -478,8 +478,8 @@ CREATE TABLE `shippingmethods` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -500,8 +500,8 @@ CREATE TABLE `tax` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

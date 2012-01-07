@@ -38,8 +38,8 @@ CREATE TABLE `files` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -127,8 +127,8 @@ CREATE TABLE `notes` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -197,8 +197,8 @@ CREATE TABLE `roles` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -439,8 +439,8 @@ CREATE TABLE `users` (
   `custom4` datetime DEFAULT NULL,
   `custom5` varchar(255) DEFAULT NULL,
   `custom6` varchar(255) DEFAULT NULL,
-  `custom7` tinyint(1) DEFAULT NULL,
-  `custom8` tinyint(1) DEFAULT NULL,
+  `custom7` tinyint(1) NOT NULL,
+  `custom8` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uuid` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
