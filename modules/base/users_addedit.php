@@ -90,9 +90,9 @@
         $theinput->setAttribute("title","Enter the email address to send site mail from. Will also be used as part of your contact details.");
         $theform->addField($theinput);
         
-        if(!$therecord["id"]) $therecord["sendmail"] = "/usr/sbin/sendmail"; // Set default
+        if(!$therecord["id"]) $therecord["sendmail"] = "/usr/sbin/sendmail -bs"; // Set default
         $theinput = new inputField("sendmail",$therecord["sendmail"],"sendmail path",false,null,32,255);
-        $theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail'");
+        $theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail -bs'");
         $theform->addField($theinput);
 
         if(!$therecord["id"]) $therecord["smtphost"] = "localhost"; // Set default
