@@ -28,3 +28,12 @@ function changeContact(){
 		theform.submit();
 	}
 }
+
+function changeEmail(){
+    var theform=getObjectFromID("record");
+    var thecommand=getObjectFromID("command");
+    if(validateForm(theform)){
+        thecommand.value="Update Email";
+        theform.submit();
+    }
+}
