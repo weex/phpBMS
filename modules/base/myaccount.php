@@ -60,7 +60,12 @@ if(isset($_POST["command"])){
 
             $statusmessage = $user->update($_POST);
             break;
+            
+        case "Update Email":
 
+            $statusmessage = $user->updateEmail($_POST);
+            break;
+            
     }//endswitch
 
 }//endif
@@ -72,15 +77,36 @@ $pageTitle="My Account";
 
 		//Form Elements
 		//==============================================================
-		$theform = new phpbmsForm();
+        	$theform = new phpbmsForm();
 
-		$theinput = new inputField("email",$_SESSION["userinfo"]["email"],"e-mail address",false,"email",32,64);
-		$theform->addField($theinput);
+        	$theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
+        	$theform->addField($theinput);
+        
+        	$theinput = new inputField("email",$_SESSION["userinfo"]["email"],"e-mail address",false,"email",32,64);
+        	$theinput->setAttribute("title","Enter the email address to send site mail from. Will also be used as part of your contact details.");
+        	$theform->addField($theinput);
+        
+        	$theinput = new inputField("sendmail",$_SESSION["userinfo"]["sendmail"],"sendmail path",false,null,32,255);
+        	$theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail'");
+        	$theform->addField($theinput);
 
-		$theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
-		$theform->addField($theinput);
+       		$theinput = new inputField("smtphost",$_SESSION["userinfo"]["smtphost"],"SMTP host",false,null,32,255);
+        	$theinput->setAttribute("title","Enter the name of the SMTP host. Defaults to: 'localhost'");
+        	$theform->addField($theinput);
 
-		$theform->jsMerge();
+        	$theinput = new inputField("smtpport",$_SESSION["userinfo"]["smtpport"],"SMTP port",false,"integer",10,10);
+        	$theinput->setAttribute("title","Enter the port number of your SMTP server. Use 25 for most unsecure servers and 465 for most secure servers. Defaults to: 25");
+        	$theform->addField($theinput);
+        
+        	$theinput = new inputField("smtpuser",$_SESSION["userinfo"]["smtpuser"],"SMTP username",false,NULL,32,255);
+        	$theinput->setAttribute("title","Enter the username for access to the SMTP host.");
+        	$theform->addField($theinput);
+
+        	$theinput = new inputField("smtppass",$_SESSION["userinfo"]["smtppass"],"SMTP password",false,"password",32,255);
+        	$theinput->setAttribute("title","Enter the password for the SMTP host.");
+        	$theform->addField($theinput);
+
+        	$theform->jsMerge();
 		//==============================================================
 		//End Form Elements
 
