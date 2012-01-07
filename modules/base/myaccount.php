@@ -87,7 +87,7 @@ $pageTitle="My Account";
         $theform->addField($theinput);
         
         $theinput = new inputField("sendmail",$_SESSION["userinfo"]["sendmail"],"sendmail path",false,null,32,255);
-        $theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail'");
+        $theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail -bs'");
         $theform->addField($theinput);
 
         $theinput = new inputField("smtphost",$_SESSION["userinfo"]["smtphost"],"SMTP host",false,null,32,255);
