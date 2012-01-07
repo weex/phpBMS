@@ -784,47 +784,101 @@ class invoicePDF extends phpbmsReport{
                             if(!$userinfo["email"] || !$this->invoicerecord["email"])
                                     return false;
 
-                            $pdf = $this->pdf->Output(NULL, "S");
-
-                            $to = 		$this->invoicerecord["email"];
-                            $from = 	$userinfo["email"];
-                            $subject = 	"Your ".$this->settings["reportTitle"]." from ".COMPANY_NAME;
-                            $message = 	"Attached is your ".$this->settings["reportTitle"]." from ".COMPANY_NAME."\n\n" .
-                                                    "The attachment requires Adobe Acrobat Reader to view. \n If you do not " .
-                                                    "have Acrobat Reader, you can download it at http://www.adobe.com  \n\n" .
-                                                    COMPANY_NAME."\n".
-                                                    COMPANY_ADDRESS."\n".COMPANY_CSZ."\n".COMPANY_PHONE;
-
-                            $headers = "From: $from";
-
-                            $semi_rand = md5( time() );
-                            $mime_boundary = "==Multipart_Boundary_x{$semi_rand}x";
-
-                            $headers .= "\nMIME-Version: 1.0\n" .
-                                                    "Content-Type: multipart/mixed;\n" .
-                                                    " boundary=\"{$mime_boundary}\"";
-
-                            $message = "This is a multi-part message in MIME format.\n\n" .
-                                            "--{$mime_boundary}\n" .
-                                            "Content-Type: text/plain; charset=\"iso-8859-1\"\n" .
-                                            "Content-Transfer-Encoding: 7bit\n\n" .
-                                            $message . "\n\n";
-
-                            $pdf = chunk_split( base64_encode( $pdf ) );
-
-                            $message .= "--{$mime_boundary}\n" .
-                                             "Content-Type: {application/pdf};\n" .
-                                             " name=\"".$this->settings["reportTitle"].$this->invoicerecord["id"].".pdf\"\n" .
-                                             "Content-Disposition: attachment;\n" .
-                                             " filename=\"".$this->settings["reportTitle"].$this->invoicerecord["id"].".pdf\"\n" .
-                                             "Content-Transfer-Encoding: base64\n\n" .
-                                             $pdf . "\n\n" .
-                                             "--{$mime_boundary}--\n";
-
-                            return @ mail($to, $subject, $message, $headers);
-
+                            $to          = $this->invoicerecord["email"];
+                            $toName      = $this->invoicerecord["firstname"]." ".$this->invoicerecord["lastname"];
+                            $from        = $userinfo["email"];
+                            $fromName    = $userinfo["firstname"]." ".$userinfo["lastname"];
+                            $subject     = "Your ".$this->settings["reportTitle"]." (".$this->invoicerecord["id"].") from ".COMPANY_NAME;
+                            $pdf         = $this->pdf->Output(NULL, "S");
+                            $filename    = $this->settings["reportTitle"]."_".$this->invoicerecord["id"].".pdf";
+                            $mailer      = $userinfo["mailer"];
+                            $sendmail    = $userinfo["sendmail"];
+                            $smtpauth    = $userinfo["smtpauth"];
+                            $smtpsecure  = $userinfo["smtpsecure"];
+                            $smtpport    = $userinfo["smtpport"];
+                            $smtpuser    = $userinfo["smtpuser"];
+                            $smtppass    = $userinfo["smtppass"];
+                            $smtphost    = $userinfo["smtphost"];
+                            $messageTXT  =  'Dear Client,\n\n'.
+                                            'Attached is your '.$this->settings["reportTitle"].' from '.COMPANY_NAME.'\n\n'.
+                                            'The attachment requires Adobe Acrobat Reader to view.\n'.
+                                            'If you do not have Acrobat Reader, you can download it from http://www.adobe.com\n\n'.
+                                            'Kind Regards,\n'.COMPANY_NAME;
+                            $messageHTML =  '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'.
+                                            '<html>'.
+                                            '    <head>'.
+                                            '        <title>'.$subject.'</title>'.
+                                            '        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'.
+                                            '    </head>'.
+                                            '    <body>'.
+                                            '        <p>'.
+                                            '        Dear Client,</br>'.
+                                            '        </br>'.
+                                            '        Attached is your '.$this->settings["reportTitle"].' from '.COMPANY_NAME.'</br>'.
+                                            '        </br>'.
+                                            '        The attachment requires Adobe Acrobat Reader to view.</br>'.
+                                            '        If you do not have Acrobat Reader, you can download it from <a href="http://www.adobe.com">Adobe</a></br>'.
+                                            '        </br>'.
+                                            '        Kind Regards,</br>'.
+                                            '        '.COMPANY_NAME.'</br>'.
+                                            '        </p>'.
+                                            '    </body>'.
+                                            '</html>';
+ 										
+							// Catch Exceptions
+							try {
+								
+								require_once("swift-mailer/lib/swift_required.php");
+								
+								// Create the Transport
+								if ($mailer == "sendmail") {
+									$transport = Swift_SendmailTransport::newInstance($sendmail); // Sendmail
+								} elseif ($mailer == "smtp") {
+									$transport = Swift_SmtpTransport::newInstance(); // SMTP
+									$transport->setHost($smtphost);
+									$transport->setPort($smtpport);
+									if ($smtpauth) {
+										$transport->setUsername($smtpuser);
+										$transport->setPassword($smtppass);
+									}
+									if ($smtpsecure != "none") {
+										$transport->setEncryption($smtpsecure);
+									}
+								} else {
+									$transport = Swift_MailTransport::newInstance(); // Mail
+								}
+								
+								// Create the Mailer using your created Transport
+								$mailer = Swift_Mailer::newInstance($transport);
+								
+								// Create the message
+								$message = Swift_Message::newInstance();
+								$message->setSubject($subject); // Give the message a subject
+								$message->setFrom(array($from => $fromName)); // Set the From address with an associative array
+								$message->setTo(array($to => $toName)); // Set the To addresses with an associative array
+								$message->setBody($messageHTML, 'text/html'); // Give it a body
+								$message->addPart($messageTXT, 'text/plain'); // And optionally an alternative body
+								
+								// Create the attachment with the pdf data
+								$attachment = Swift_Attachment::newInstance($pdf, $filename, 'application/pdf');
+								$message->attach($attachment); // Attach it to the message
+								
+								// Send the message
+								 $result = $mailer->send($message);
+								
+							// Handle Exceptions
+							} catch (Exception $ex) {
+							
+								echo '<label style="padding:4px 6px 4px 6px;"><b>Exception captured for (<u>'.$this->invoicerecord["id"].'</u>) : </b>'.$ex->getMessage().'</label></br>';
+								
+								$result = FALSE;
+								
+							}
+							
+							return $result;
+							
                             break;
-
+							
             }//endswitch
 
     }//end method
