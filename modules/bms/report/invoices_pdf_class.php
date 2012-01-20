@@ -764,7 +764,136 @@ class invoicePDF extends phpbmsReport{
 
 
     function _addPaymentDetails(){
+    
+        $querystatement = "
+            SELECT
+                `value`,
+                `name`
+            FROM
+                `settings`
+            WHERE
+                `name` IN ('show_payment_instructions','invoice_paymentinstruc')";
+
+        $queryresult = $this->db->query($querystatement);
+
+        while($setting = $this->db->fetchArray($queryresult))
+            $therecord[$setting["name"]] = $setting["value"];
+        
+        if ($therecord["show_payment_instructions"]){
+
+            $pdf = &$this->pdf;
+			
+			$pdf->SetFont("Arial", "", 8);
+			
+            $paymentInstructions = $therecord["invoice_paymentinstruc"];
+			
+			$startY = 1.75; //Starting place below the header.
+			$breakmargin = 0.75; //Place where pagebreak occur
+			$cellwidth = $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin - 0.125; //Width of the Multicell for the payment instructions, but make it 0.125 smaller so border fits better
+			$cellheight = 8.25; //Height of the Multicell for the payment instructions, but make it 0.125 smaller so border fits better
+			$txtheight = 0.18; //Height of the text
+			
+			//Determine if the instructions will need multiple pages
+			if ($this->_getMultiCellHeight($paymentInstructions, $cellwidth, $txtheight) > $cellheight)
+			{
+			
+				//Disable page breaks
+				$pdf->SetAutoPageBreak(false, $breakmargin);
+				
+				//Breakdown the instructions into seperate sentences
+				$line = explode("\n", $paymentInstructions); $paymentInstructions = '';
+				for ($i = 0; $i < count($line); ++$i)
+				{
+					if ($this->_getMultiCellHeight($paymentInstructions.$line[$i], $cellwidth, $txtheight) > $cellheight)
+					{
+					
+						$word = explode(' ', $line[$i]); $line[$i] = '';
+						for ($ii = 0; $ii < count($word); ++$ii)
+						{
+							if (($pdf->GetStringWidth($line[$i].' '.$word[$ii])) > $cellwidth) {
+								$line[$i+1] = implode(' ', array_slice($word,$ii)) . "\n" . $line[$i+1];
+								break;
+							} else {
+								$line[$i] .= $word[$ii] . ' ';
+							}
+						}
+						$this->_addPaymentDetailsHeader(); //Add page and header
+						$pdf->MultiCell($cellwidth, $txtheight, $paymentInstructions.rtrim($line[$i]), $pdf->borderDebug, "L"); //Write instruction text
+						$pdf->Rect($pdf->leftmargin, $startY, $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, ($pdf->GetY() - $startY)); //Draw rect around the text
+						$paymentInstructions = '';
+						
+					} else {
+					
+						$paymentInstructions .= $line[$i] . "\n";
+					
+					}
+					
+				}
+				
+				//Enable page breaks
+				$pdf->SetAutoPageBreak(true, $breakmargin);
+			
+			}
+
+			$this->_addPaymentDetailsHeader(); //Add page and header
+			$pdf->MultiCell($cellwidth, $txtheight, $paymentInstructions, $pdf->borderDebug, "L"); //Write instruction text
+			$pdf->Rect($pdf->leftmargin, $startY, $pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, ($pdf->GetY() - $startY)); //Draw rect around the text
+
+        }//end if
+        
     }//end method
+
+
+    function _addPaymentDetailsHeader(){
+	
+        $pdf = &$this->pdf;
+		
+		$pdf->AddPage();
+		
+        $this->page++;
+		
+        //Title
+        $title = "Statement";
+        $titleWidth=2.375;
+        $titleHeight=.25;
+        $pdf->setStyle("title");
+        $pdf->SetXY(-1*($titleWidth+$pdf->rightmargin), $pdf->topmargin);
+        $pdf->Cell($titleWidth, $titleHeight, $this->settings["reportTitle"], $pdf->borderDebug,1,"R");
+		
+        //Page number
+        $pdf->setStyle("normal");
+        $pageNoWidth = 1;
+        $pdf->SetFontSize(8);
+        $pdf->SetXY(-1*($pageNoWidth + $pdf->rightmargin), $pdf->topmargin + $titleHeight + 0.25);
+        $pdf->Cell($pageNoWidth, 0.17, "page: ".$this->page, $pdf->borderDebug,1,"R");
+            
+        $pdf->setXY($pdf->leftmargin, 1.75); //Set starting point for payment instructions
+            
+        //Draw payment instruction text
+        if(!$this->settings["templateFormatting"]){
+            $pdf->setStyle("header");
+            $pdf->Cell($pdf->paperwidth - $pdf->leftmargin - $pdf->rightmargin, 0.18, " Payment Instructions", 1, 2, "L", 1);
+            $pdf->setStyle("normal");
+        } else
+            $pdf->SetY($pdf->GetY() + 0.18);
+			
+		$pdf->SetXY($pdf->leftmargin, 1.75 + 0.18);
+	}//end method
+
+
+	function _getMultiCellHeight($s, $cw, $txtheight)
+	{
+		$pdf = &$this->pdf;
+		$line = explode("\n", $s);
+		$h = 0;
+		$cw -= 0.00063;
+		for ($i = 0; $i < count($line); ++$i)
+		{
+			$w = $pdf->GetStringWidth($line[$i]);
+			$h += ceil(($w / $cw));
+		}
+		return $h * $txtheight;
+	}//end method
 
 
     function output($destination = "screen" , $userinfo = NULL){

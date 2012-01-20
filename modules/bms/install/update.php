@@ -168,6 +168,24 @@ class updateBMS extends updateModuleAjax{
 
 					break;
 
+				// ================================================================================================
+				case 0.98:
+
+					$version = 0.99;
+
+					//Processing Data Structure Changes
+					$thereturn = $updater->processSQLfile("../modules/bms/install/updatev".$version.".sql");
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
+
+					//Updating Module Table
+					$thereturn = $this->updateModuleVersion("bms", $version);
+					if($thereturn !== true)
+						return $this->returnJSON(false, $thereturn);
+
+					$currentVersion = $version;
+
+					break;
 			}//endswitch currentVersion
 
 		}//endwhile currentversion/newversion

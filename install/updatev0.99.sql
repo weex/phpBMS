@@ -22,3 +22,6 @@ ADD `smtpuser` VARCHAR( 255 ) NOT NULL AFTER `smtpauth` ,
 ADD `smtppass` VARCHAR( 255 ) NOT NULL AFTER `smtpuser` ,
 ADD `smtpsecure` VARCHAR( 255 ) NOT NULL DEFAULT 'none' AFTER `smtppass` ;
 --end users ALTER--
+--settings ALTER--
+ALTER TABLE `settings` CHANGE `value` `value` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+--end settings ALTER--
