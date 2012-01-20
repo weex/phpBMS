@@ -240,7 +240,7 @@ CREATE TABLE `settings` (
   `name` varchar(64) NOT NULL DEFAULT '',
   `value` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `smartsearches` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
