@@ -111,7 +111,7 @@ class pdfStyle{
 if(!class_exists("FPDI")){
 
     require_once("fpdf/fpdf.php");
-    require_once("fpdf/tpl_and_memimage.php");
+    require_once("fpdf/fpdf_tpl.php");
     require_once("fpdf/fpdi.php");
     require_once('fpdf/fpdi_pdf_parser.php');
 

@@ -1534,7 +1534,7 @@ if(class_exists("searchFunctions")){
 
 				foreach($this->idsArray as $id){
 
-					$report = new quotePDF($this->db, 'rpt:44b21461-6e67-c284-0ccf-36ab1af47c9b', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'P', 'in', 'Letter');
+					$report = new quotePDF($this->db, 'rpt:b683e2f0-e52b-4dd4-33e1-7566616893ca', 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883', 'P', 'in', 'Letter');
 
 					if(!$useUuid)
 						$report->generate("invoices.id = ".$id);

@@ -12,3 +12,32 @@ ALTER TABLE `tablecolumns` CHANGE `format` `format` ENUM( 'date', 'time', 'curre
 UPDATE `tableoptions` SET `name` = 'mark_asshipped' where `tabledefid` = 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883' and `name` = 'mark_ashipped';
 UPDATE `tablecolumns` SET `format` = 'invoices' WHERE `tabledefid` = 'tbld:62fe599d-c18f-3674-9e54-b62c2d6b1883' AND `name` = 'id';
 --end tableoptions UPDATE--
+--users ALTER--
+ALTER TABLE `users` ADD `mailer` VARCHAR( 255 ) NOT NULL DEFAULT 'mail' AFTER `email` ,
+ADD `sendmail` VARCHAR( 255 ) NOT NULL DEFAULT '/usr/sbin/sendmail -bs' AFTER `mailer` ,
+ADD `smtphost` VARCHAR( 255 ) NOT NULL DEFAULT 'localhost' AFTER `sendmail` ,
+ADD `smtpport` INT( 11 ) NOT NULL DEFAULT '25' AFTER `smtphost` ,
+ADD `smtpauth` INT( 11 ) NOT NULL DEFAULT '0' AFTER `smtpport` ,
+ADD `smtpuser` VARCHAR( 255 ) NOT NULL AFTER `smtpauth` ,
+ADD `smtppass` VARCHAR( 255 ) NOT NULL AFTER `smtpuser` ,
+ADD `smtpsecure` VARCHAR( 255 ) NOT NULL DEFAULT 'none' AFTER `smtppass` ;
+--end users ALTER--
+--settings ALTER--
+ALTER TABLE `settings` CHANGE `value` `value` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+--end settings ALTER--
+--files ALTER--
+ALTER TABLE `files` CHANGE `custom7` `custom7` tinyint(1) NOT NULL;
+ALTER TABLE `files` CHANGE `custom8` `custom8` tinyint(1) NOT NULL;
+--end files ALTER--
+--notes ALTER--
+ALTER TABLE `notes` CHANGE `custom7` `custom7` tinyint(1) NOT NULL;
+ALTER TABLE `notes` CHANGE `custom8` `custom8` tinyint(1) NOT NULL;
+--end notes ALTER--
+--roles ALTER--
+ALTER TABLE `roles` CHANGE `custom7` `custom7` tinyint(1) NOT NULL;
+ALTER TABLE `roles` CHANGE `custom8` `custom8` tinyint(1) NOT NULL;
+--end roles ALTER--
+--users ALTER--
+ALTER TABLE `users` CHANGE `custom7` `custom7` tinyint(1) NOT NULL;
+ALTER TABLE `users` CHANGE `custom8` `custom8` tinyint(1) NOT NULL;
+--end users ALTER--

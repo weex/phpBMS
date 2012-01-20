@@ -18,3 +18,5 @@ INSERT INTO `settings` (`name`, `value`) VALUES ('prospects_on_orders','1');
 INSERT INTO `settings` (`name`, `value`) VALUES ('encrypt_payment_fields', '0');
 INSERT INTO `settings` (`name`, `value`) VALUES ('encryption_key_path', '');
 INSERT INTO `settings` (`name`, `value`) VALUES ('company_taxid', '');
+INSERT INTO `settings` (`name`, `value`) VALUES ('show_payment_instructions','0');
+INSERT INTO `settings` (`name`, `value`) VALUES ('invoice_paymentinstruc','Enter your payment details here');
