@@ -77,20 +77,54 @@ class myAccount{
             UPDATE
                 `users`
             SET
-                `email` = '".mysql_real_escape_string($variables["email"])."',
                 `phone` = '".mysql_real_escape_string($variables["phone"])."'
             WHERE
                 `uuid` = '".$this->userUUID."'";
 
         $this->db->query($updatestatement);
 
-        $_SESSION["userinfo"]["email"] = $variables["email"];
         $_SESSION["userinfo"]["phone"] = $variables["phone"];
 
         return "Record Updated";
 
     }//end function update
 
+    
+    function updateEmail($variables){
+
+        $updatestatement = "
+            UPDATE
+                `users`
+            SET
+                `email` = '".mysql_real_escape_string($variables["email"])."',
+                `mailer` = '".mysql_real_escape_string($variables["mailer"])."',
+                `sendmail` = '".mysql_real_escape_string($variables["sendmail"])."',
+                `smtphost` = '".mysql_real_escape_string($variables["smtphost"])."',
+                `smtpport` = ".(int)mysql_real_escape_string($variables["smtpport"]).",
+                `smtpauth` = ".(int)mysql_real_escape_string($variables["smtpauth"]).",
+                `smtpuser` = '".mysql_real_escape_string($variables["smtpuser"])."',
+                `smtppass` = '".mysql_real_escape_string($variables["smtppass"])."',
+                `smtpsecure` = '".mysql_real_escape_string($variables["smtpsecure"])."'
+            WHERE
+                `uuid` = '".$this->userUUID."'";
+
+        $this->db->query($updatestatement);
+
+        $_SESSION["userinfo"]["email"] = $variables["email"];
+        $_SESSION["userinfo"]["mailer"] = $variables["mailer"];
+        $_SESSION["userinfo"]["sendmail"] = $variables["sendmail"];
+        $_SESSION["userinfo"]["smtphost"] = $variables["smtphost"];
+        $_SESSION["userinfo"]["smtpport"] = (int)$variables["smtpport"];
+        $_SESSION["userinfo"]["smtpauth"] = (int)$variables["smtpauth"];
+        $_SESSION["userinfo"]["smtpuser"] = $variables["smtpuser"];
+        $_SESSION["userinfo"]["smtppass"] = $variables["smtppass"];
+        $_SESSION["userinfo"]["smtpsecure"] = $variables["smtpsecure"];
+        
+
+        return "Email Settings Updated";
+
+    }//end function updateEmail
+    
 }//end class
 
 ?>

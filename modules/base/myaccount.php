@@ -60,6 +60,11 @@ if(isset($_POST["command"])){
 
             $statusmessage = $user->update($_POST);
             break;
+            
+        case "Update Email":
+
+            $statusmessage = $user->updateEmail($_POST);
+            break;
 
     }//endswitch
 
@@ -67,74 +72,139 @@ if(isset($_POST["command"])){
 
 $pageTitle="My Account";
 
-	$phpbms->cssIncludes[] = "pages/myaccount.css";
-	$phpbms->jsIncludes[] = "modules/base/javascript/myaccount.js";
+    $phpbms->cssIncludes[] = "pages/myaccount.css";
+    $phpbms->jsIncludes[] = "modules/base/javascript/myaccount.js";
 
-		//Form Elements
-		//==============================================================
-		$theform = new phpbmsForm();
+        //Form Elements
+        //==============================================================
+        $theform = new phpbmsForm();
 
-		$theinput = new inputField("email",$_SESSION["userinfo"]["email"],"e-mail address",false,"email",32,64);
-		$theform->addField($theinput);
+        $theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
+        $theform->addField($theinput);
+        
+        $theinput = new inputField("email",$_SESSION["userinfo"]["email"],"e-mail address",false,"email",32,64);
+        $theinput->setAttribute("title","Enter the email address to send site mail from. Will also be used as part of your contact details.");
+        $theform->addField($theinput);
+        
+        $theinput = new inputField("sendmail",$_SESSION["userinfo"]["sendmail"],"sendmail path",false,null,32,255);
+        $theinput->setAttribute("title","Enter the path to the sendmail program directory on the host server. Defaults to: '/usr/sbin/sendmail -bs'");
+        $theform->addField($theinput);
 
-		$theinput = new inputField("phone",$_SESSION["userinfo"]["phone"],"phone/extension",false,"phone",32,64);
-		$theform->addField($theinput);
+        $theinput = new inputField("smtphost",$_SESSION["userinfo"]["smtphost"],"SMTP host",false,null,32,255);
+        $theinput->setAttribute("title","Enter the name of the SMTP host. Defaults to: 'localhost'");
+        $theform->addField($theinput);
 
-		$theform->jsMerge();
-		//==============================================================
-		//End Form Elements
+        $theinput = new inputField("smtpport",$_SESSION["userinfo"]["smtpport"],"SMTP port",false,"integer",10,10);
+        $theinput->setAttribute("title","Enter the port number of your SMTP server. Use 25 for most unsecure servers and 465 for most secure servers. Defaults to: 25");
+        $theform->addField($theinput);
+        
+        $theinput = new inputField("smtpuser",$_SESSION["userinfo"]["smtpuser"],"SMTP username",false,NULL,32,255);
+        $theinput->setAttribute("title","Enter the username for access to the SMTP host.");
+        $theform->addField($theinput);
 
-	include("header.php");
+        $theinput = new inputField("smtppass",$_SESSION["userinfo"]["smtppass"],"SMTP password",false,"password",32,255);
+        $theinput->setAttribute("title","Enter the password for the SMTP host.");
+        $theform->addField($theinput);
+
+        $theform->jsMerge();
+        //==============================================================
+        //End Form Elements
+
+    include("header.php");
 ?><div class="bodyline">
-	<form action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>" method="post" name="record" id="record" onsubmit="return false">
-	<input type="hidden" id="command" name="command" value=""/>
+    <form action="<?php echo htmlentities($_SERVER["PHP_SELF"])?>" method="post" name="record" id="record" onsubmit="return false">
+    <input type="hidden" id="command" name="command" value=""/>
 
-	<h1><span><?php echo $pageTitle ?></span></h1>
+    <h1><span><?php echo $pageTitle ?></span></h1>
 
-	<fieldset>
-		<legend>Name</legend>
-		<p id="nameP"><?php echo htmlQuotes($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></p>
-	</fieldset>
+    <fieldset>
+        <legend>Name</legend>
+        <p id="nameP"><?php echo htmlQuotes($_SESSION["userinfo"]["firstname"]." ".$_SESSION["userinfo"]["lastname"])?></p>
+    </fieldset>
 
-	<fieldset>
-		<legend>Change Password</legend>
-		<p>
-			<label for="curPass">current password</label><br />
-			<input type="password" id="curPass" name="curPass" maxlength="32"/>
-		</p>
+    <fieldset>
+        <legend>Change Password</legend>
+        <p>
+            <label for="curPass">current password</label><br />
+            <input type="password" id="curPass" name="curPass" maxlength="32"/>
+        </p>
 
-		<p>
-			<label for="newPass">new password</label><br />
-			<input type="password" id="newPass" name="newPass" maxlength="32"/>
-		</p>
-		<p>
-			<label for="confirmPass">re-type new password</label><br />
-			<input type="password" id="confirmPass" name="confirmPass" maxlength="32"/>
-		</p>
-	</fieldset>
-	<p>
-		<button type="button" class="Buttons" onclick="changePass()">Change Password</button>
-	</p>
+        <p>
+            <label for="newPass">new password</label><br />
+            <input type="password" id="newPass" name="newPass" maxlength="32"/>
+        </p>
+        <p>
+            <label for="confirmPass">re-type new password</label><br />
+            <input type="password" id="confirmPass" name="confirmPass" maxlength="32"/>
+        </p>
+    </fieldset>
+    <p>
+        <button type="button" class="Buttons" onclick="changePass()">Change Password</button>
+    </p>
 
-	<fieldset>
-		<legend>Contact Information</legend>
+    <fieldset>
+        <legend>Contact Information</legend>
 
-			<p><?php $theform->showField("email")?></p>
+            <p><?php $theform->showField("phone")?></p>
 
-			<p><?php $theform->showField("phone")?></p>
+    </fieldset>
+    <p><button type="button" class="Buttons" onclick="changeContact()">Update Contact Information</button></p>
+    
+    <fieldset>
+        <legend>E-Mail Settings</legend>
+        
+            <p><?php $theform->showField("email")?></p>
 
-	</fieldset>
-	<p><button type="button" class="Buttons" onclick="changeContact()">Update Contact Information</button></p>
+            <p><label for="mailer">select the mailer to use</label><br />
+            <select id="mailer" name="mailer" style="width: 80px;" title="Select which mailer for the delivery of site email.  Defaults to: 'PHP Mail'">
+                <option value="mail" <?php if($_SESSION["userinfo"]["mailer"] == "mail")  echo "selected=\"selected\"";?> >PHP Mail</option>
+                <option value="sendmail" <?php if($_SESSION["userinfo"]["mailer"] == "sendmail")  echo "selected=\"selected\"";?> >Sendmail</option>
+                <option value="smtp" <?php if($_SESSION["userinfo"]["mailer"] == "smtp")  echo "selected=\"selected\"";?> >SMTP</option>
+            </select></p>
 
-	<fieldset>
-		<legend>Access / Assigned Roles</legend>
-		<ul>
-		<?php
-			if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrator</strong></li><?php }
-			$user->displayRoles();
-		?></ul>
-	</fieldset>
-	</form>
+            <fieldset style="width: 250px;">
+                <legend>Sendmail Settings</legend>
+                    <p class="notes"><strong>Note:</strong> Only used if mailer is set to use Sendmail</p>
+                
+                    <p><?php $theform->showField("sendmail")?></p>
+            </fieldset>
+            
+            <fieldset style="width: 250px;">
+                <legend>SMTP Settings</legend>
+                    <p class="notes"><strong>Note:</strong> Only used if mailer is set to use SMTP</p>
+    
+                    <p><?php $theform->showField("smtphost")?></p>
+
+                    <p><?php $theform->showField("smtpport")?></p>
+
+                    <p><label for="smtpauth" title="Select Yes if your SMTP Host requires SMTP Authentication.  Defaults to: 'No'">SMTP authentication</label><br />
+                    <input type="radio" id="smtpauth0" name="smtpauth" value="1" <?php if($_SESSION["userinfo"]["smtpauth"] == 1)  echo "checked=\"checked\"";?> /><label for="smtpauth0">Yes</label>
+                    <input type="radio" id="smtpauth1" name="smtpauth" value="0" <?php if($_SESSION["userinfo"]["smtpauth"] == 0)  echo "checked=\"checked\"";?> /><label for="smtpauth1">No</label></p>
+
+                    <p><?php $theform->showField("smtpuser")?></p>
+
+                    <p><?php $theform->showField("smtppass")?></p>
+
+                    <p><label for="smtpsecure" >SMTP security</label><br />
+                    <select id="smtpsecure" name="smtpsecure" style="width: 80px;" title="Select the security model that your SMTP server uses.  Defaults to: 'None'">
+                        <option value="none" <?php if($_SESSION["userinfo"]["smtpsecure"] == "none")  echo "selected=\"selected\"";?> >None</option>
+                        <option value="ssl" <?php if($_SESSION["userinfo"]["smtpsecure"] == "ssl")  echo "selected=\"selected\"";?> >SSL</option>
+                        <option value="tls" <?php if($_SESSION["userinfo"]["smtpsecure"] == "tls")  echo "selected=\"selected\"";?> >TLS</option>
+                    </select></p>
+
+            </fieldset>
+    </fieldset>
+    <p><button type="button" class="Buttons" onclick="changeEmail()">Update E-Mail Settings</button></p>
+
+    <fieldset>
+        <legend>Access / Assigned Roles</legend>
+        <ul>
+        <?php
+            if($_SESSION["userinfo"]["admin"]) {?><li><strong>Administrator</strong></li><?php }
+            $user->displayRoles();
+        ?></ul>
+    </fieldset>
+    </form>
 </div>
 
 <?php include("footer.php"); ?>

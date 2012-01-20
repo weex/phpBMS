@@ -85,6 +85,12 @@ if(class_exists("phpbmsTable")){
 
 			}//end if
 
+			//set the order defaults
+			$therecord["discountid"] = DEFAULT_DISCOUNT;
+			$therecord["taxareaid"] = DEFAULT_TAXAREA;
+			$therecord["shippingmethodid"] = DEFAULT_SHIPPING;
+			$therecord["paymentmethodid"] = DEFAULT_PAYMENT;
+
 			$therecord["webaddress"] = "http://";
 
 			//now for the address information.

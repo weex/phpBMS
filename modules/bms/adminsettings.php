@@ -181,6 +181,9 @@
 			if(!isset($variables["encrypt_payment_fields"]))
 				$variables["encrypt_payment_fields"] = 0;
 
+            if(!isset($variables["show_payment_instructions"]))
+                $variables["show_payment_instructions"] = 0;
+
 			$variables["default_creditlimit"] = currencyToNumber($variables["default_creditlimit"]);
 
 			/**
@@ -350,6 +353,9 @@
 			$theinput = new inputField("encryption_key_path", $therecord["encryption_key_path"], "absolute server path to a file containing the encryption key", false, NULL, 64);
 			$fields[] = $theinput;
 
+            $theinput = new inputCheckbox("show_payment_instructions",$therecord["show_payment_instructions"],"show payment instrucions");
+            $fields[] = $theinput;
+
 			return $fields;
 		}
 
@@ -464,6 +470,21 @@
         </p>
 
         <p class="notes"><strong>Always keep back ups of your key file(s). Losing them may result in unencryptable data.</strong></p>
+
+    </fieldset>
+    <p class="updateButtonP"><button type="button" class="Buttons UpdateButtons">save</button></p>
+</div>
+
+<div class="moduleTab" title="payment instructions">
+    <fieldset>
+        <legend>Payment Instructions</legend>
+        
+        <p><?php $theform->showField("show_payment_instructions");?></p>
+
+        <p>
+            <label for="invoice_paymentinstruc">printed payment instructions</label><br/>
+            <textarea id="invoice_default_printinstruc" name="invoice_paymentinstruc" cols="118" rows="20" ><?php echo $therecord["invoice_paymentinstruc"]?></textarea>
+        </p>
 
     </fieldset>
     <p class="updateButtonP"><button type="button" class="Buttons UpdateButtons">save</button></p>
